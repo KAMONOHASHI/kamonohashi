@@ -1,0 +1,68 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "@(Model.Name)"
+  namespace: "@(Model.NameSpace)"
+data:
+@if (Model.Server != null && Model.Token != null) {
+@:  kqi-conf: |
+@:    {
+@:    "token": "@Raw(Model.Token)", 
+@:    "timeout": 30, 
+@:    "server": "@Raw(Model.Server)"
+@:    }
+}
+  show-logo: |
+    cat << "EOD"
+    --------------------------------------------------------------------------------------------
+                ..NNNMMMMNNgJ..         #   #      ##     #     #    #####    #      #    ##### 
+            ..NMMMMMMMMMMMMMMMMNa,      #  #       ##     ##   ##   #     #   ##     #   #     #
+          .dMMMMMMMMMMMMMMMMMMMM"!      # #       #  #    # # # #   #     #   # #    #   #     #
+        .dMMMMMMMMMMMMMMMMMMMD`         ###       #  #    # # # #   #     #   #  #   #   #     #
+       .MMMMMMMMMMMMMMMMMMM'`           # #      #    #   #  #  #   #     #   #   #  #   #     #
+      .MMMMMMMMMMMMMMMMMMM'    .MM      #  #     ######   #     #   #     #   #    # #   #     #
+      MMMMMMMH""MMMMMMMMMM{    MMM'     #   #    #    #   #     #   #     #   #     ##   #     #
+     .MMMMM'       _7"WMMY"             #    #   #    #   #     #    #####    #      #    ##### 
+     dMMMM!                                                                                     
+     dMMM#                              #    #     ##       ####     #    #      #              
+     JMMMN                              #    #     ##      #         #    #      #              
+     .MMMMp                             #    #    #  #     #         #    #      #              
+      ?MMMMMNJ..                        ######    #  #      ##       ######      #              
+       TMMMMMMMMMMMMMMMMMMMMMMMMNN..    #    #   #    #       ##     #    #      #              
+        ?MMMMMMMMMMMMMMMMMMMMMMMMMMMMt  #    #   ######         #    #    #      #              
+          TMMMMMMMMMMMMMMMMMMMMMMMMM!   #    #   #    #    #    #    #    #      #              
+            7MMMMMMMMMMMMMMMMMMMM"`     #    #   #    #    #####     #    #      #              
+               ?YMMMMMMMMMMMMB"`                                                                
+    --------------------------------------------------------------------------------------------
+    EOD
+    sleep 100 # DNS is unstable immediately after boot. wait dns is available. 
+  prepare-kqi-conf: |
+    echo "------------------------- [KAMONOHASHI Prepare] prepare kqi config  -------------------------"
+    mkdir ~/.kqi/
+    cp /kqi/scripts/common/kqi-conf ~/.kqi/config.json
+    [ $? -eq 0 ] && echo "done copying kqi config" || echo "copying kqi config failed"
+  prepare-git: |
+    echo "------------------------- [KAMONOHASHI Prepare] deploy model from git into /kqi/git . -------------------------"
+    git config --global credential.helper store
+    echo $MODEL_REPOSITORY > ~/.git-credentials
+    git clone $MODEL_REPOSITORY_URL /kqi/git
+    cd /kqi/git
+    git checkout $COMMIT_ID
+    git submodule update --init
+    git remote -v
+  prepare-dataset: |
+    echo "------------------------- [KAMONOHASHI Prepare] deploy dataset $DATASET_ID into /kqi/input . -------------------------"
+    kqi dataset download-files -d /kqi/input $DATASET_ID
+  notify-finish:
+    echo $1 > /kqi/tmp/result_exit_code
+  wait-ready: |
+    # DNS is unstable immediately after boot. wait dns is available. 
+    sleep 100
+    # wait "finish container" ready
+    while [ ! -f /kqi/tmp/result_exit_code ]; do
+      sleep 10
+    done
+  wait-finish: |
+    echo "------------------------- [KAMONOHASHI Wait Finish] wait for main container finish  -------------------------"
+    touch /kqi/tmp/result_exit_code
+    inotifywait /kqi/tmp/result_exit_code > /dev/null

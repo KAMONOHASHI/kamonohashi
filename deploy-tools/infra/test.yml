@@ -1,0 +1,42 @@
+- name: check gpu node
+  hosts: gpu-node
+  tasks:
+    - name: nvidia-smi works correctly
+      shell: "test $(nvidia-smi -L | wc -l) -gt 0"
+      changed_when: false
+    - name: docker with nvidia-smi works correctly
+      shell: "test $(docker run -it --rm nvidia/cuda:9.0-base nvidia-smi -L | wc -l) -gt 0"
+      changed_when: false
+    - name: Log into private registry and force re-authorization
+      shell: docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD $REGISTRY_SERVER
+      environment:
+        REGISTRY_SERVER: "{{ registry_server }}"
+        REGISTRY_USER: "{{ registry_user }}"
+        REGISTRY_PASSWORD: "{{ registry_password }}"
+      when: registry_user is defined
+      changed_when: false
+    - name: Log into private registry and force re-authorization
+      shell: "docker pull {{ test_image  }}"
+      when: test_image is defined
+      changed_when: false
+- name: check kubernetes
+  hosts: kube-master
+  tasks:
+    - name: check proxy mode is iptables
+      shell: "test $(kubectl get configmap kube-proxy -n kube-system -o yaml | grep 'mode:' | grep 'iptables' | wc -l) -eq 1"
+      changed_when: false
+    - name: check device plugin works
+      shell: 
+        test 
+          $(
+            kubectl run test -it
+            --restart=Never
+            --limits='nvidia.com/gpu=1'
+            --image=nvidia/cuda:9.0-base
+            -- bash -c "nvidia-smi -L | wc -l"
+            ) 
+          -eq 
+          1
+        &&
+        kubectl delete pod test
+      changed_when: false

@@ -1,0 +1,30 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress
+  namespace: kqi-system
+  annotations:
+    "nginx.org/websocket-services": "platypus-web-api-ws"
+spec:
+  rules:
+{{- range .Values.virtualHosts }}
+  - host: {{ . }}
+    http:
+      paths:
+      - path: /ws
+        backend:
+          serviceName: platypus-web-api-ws
+          servicePort: 8091
+      - path: /swagger
+        backend:
+          serviceName: platypus-web-api
+          servicePort: 8090
+      - path: /api
+        backend:
+          serviceName: platypus-web-api
+          servicePort: 8090
+      - path: /
+        backend:
+          serviceName: platypus-web-pages
+          servicePort: 8080
+{{- end }}

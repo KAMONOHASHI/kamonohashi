@@ -1,0 +1,4 @@
+- name: ensure nvidia driver is installed
+  apt:
+    name: "{{ nvidia_driver }}"
+    state: present    

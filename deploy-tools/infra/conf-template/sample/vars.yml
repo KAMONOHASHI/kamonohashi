@@ -1,0 +1,20 @@
+# 空の場合にエラーが出るのを回避する
+dummy_data_vars: ''
+
+# 環境に応じ適宜コメントアウトをはずして設定を行う
+## proxy設定
+http_proxy: "http://proxy.local:8080"
+https_proxy: "http://proxy.local:8080"
+no_proxy: "k8s-master-node,1.1.1.1,localhost,127.0.0.1,.local,gitlab.local,minio.local"
+
+## insecure registry設定
+docker_insecure_registries:
+  - gitlab.local:1234
+
+# Kubernetes・Dockerの内部ネットワーク設定
+# 内部ネットワークのデフォルトの10.233.0.0/16や172.17.0.0/16が外部と衝突すると、そのサブネットと
+# コンテナ・ホストが疎通できないので、必要であればコメントアウトをはずしデフォルトから変更する
+kube_pods_subnet: 192.168.252.0/24
+kube_service_addresses: 192.168.253.0/24
+docker_bip: 192.168.251.1/24
+

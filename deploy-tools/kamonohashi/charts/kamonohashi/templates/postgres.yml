@@ -1,0 +1,79 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-env
+  namespace: kqi-system
+data:
+  POSTGRES_USER: platypus
+  POSTGRES_DB: platypusdb
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: kqi-system
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: postgres
+      namespace: kqi-system
+      labels:
+        app: postgres
+    spec:
+      nodeSelector:
+{{if .Values.kqi_node}}
+        kubernetes.io/hostname: {{ .Values.kqi_node }}
+{{ else }}
+{{ toYaml .Values.postgres.nodeSelector | indent 8 }}
+{{end}}
+      volumes:
+      - name: host-dir
+        hostPath:
+          path: /var/lib/kamonohashi/
+          type: DirectoryOrCreate
+      - name: ntp
+        hostPath:
+          path: /etc/localtime
+      containers:
+        - name: postgres
+          image: postgres:10
+          resources:
+            limits:
+              cpu: {{ .Values.resources.postgres.cpu }}
+              memory: {{ .Values.resources.postgres.memory }}
+            requests:
+              cpu: {{ .Values.resources.postgres.cpu }}
+              memory: {{ .Values.resources.postgres.memory }}
+          volumeMounts:
+            - mountPath: /etc/localtime
+              name: ntp
+              readOnly: true
+            - mountPath: /var/lib/postgresql/data 
+              name: host-dir
+              subPath: postgresql/data
+            - mountPath: /docker-entrypoint-initdb.d
+              name: host-dir
+              subPath: postgresql/tmp
+            - mountPath: /backup
+              name: host-dir
+              subPath: postgresql/backup
+          ports:
+            - containerPort: 5432
+          envFrom:
+            - secretRef:
+                name: postgres-credential
+            - configMapRef:
+                name: postgres-env
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: postgres
+  namespace: kqi-system
+spec:
+  selector:
+    app: postgres
+  ports:
+  - port: 5432
+    targetPort: 5432

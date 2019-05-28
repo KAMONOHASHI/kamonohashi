@@ -1,0 +1,7 @@
+﻿[
+	{
+		"op": "@(Model.Operation)",
+		"path": "/metadata/labels/@(Model.Label)",
+		"value": "@(Model.Value)"
+	}
+]

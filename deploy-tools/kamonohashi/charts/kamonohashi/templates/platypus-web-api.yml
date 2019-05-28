@@ -1,0 +1,79 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: platypus-web-api
+  namespace: kqi-system
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: platypus-web-api
+      labels:
+        app: platypus-web-api
+    spec:
+      serviceAccountName: platypus
+      nodeSelector:
+{{if .Values.kqi_node}}
+        kubernetes.io/hostname: {{ .Values.kqi_node }}
+{{ else }}
+{{ toYaml .Values.platypus_web_api.nodeSelector | indent 8 }}
+{{end}}
+      volumes:
+        - name: ntp
+          hostPath:
+            path: /etc/localtime
+        - name: kamonohashi-log
+          hostPath:
+            path: /var/log/kamonohashi/platypus-web-api
+      securityContext:
+        fsGroup: 0    
+      containers:
+        - name: platypus-web-api
+          image: kamonohashi/web-api:{{ .Values.image_tag | default .Chart.Version }}
+          imagePullPolicy: Always
+          resources:
+            limits:
+              cpu: {{ .Values.resources.platypus_web_api.cpu }}
+              memory: {{ .Values.resources.platypus_web_api.memory }}
+            requests:
+              cpu: {{ .Values.resources.platypus_web_api.cpu }}
+              memory: {{ .Values.resources.platypus_web_api.memory }}
+          volumeMounts:
+            - mountPath: /etc/localtime
+              name: ntp
+              readOnly: true
+            - mountPath: /app/App_Data/Logs/
+              name: kamonohashi-log
+          ports:
+            - containerPort: 5000
+          envFrom:
+            - configMapRef:
+                name: platypus-web-api-env
+            - secretRef:
+                name: platypus-web-api-env-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: platypus-web-api
+  namespace: kqi-system
+spec:
+  selector:
+   app: platypus-web-api
+  ports:
+    - port: 8090
+      targetPort: 5000
+      name: platypus-web-api
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: platypus-web-api-ws
+  namespace: kqi-system
+spec:
+  selector:
+   app: platypus-web-api
+  ports:
+    - port: 8091
+      targetPort: 5000
+      name: platypus-web-api-ws

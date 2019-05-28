@@ -1,0 +1,37 @@
+- name: download minio binary
+  get_url:
+    url: https://dl.minio.io/server/minio/release/linux-amd64/archive/minio.RELEASE.2019-01-23T23-18-58Z
+    dest: /bin/minio
+    mode: 0700
+- name: make minio systemd environment file
+  template:
+    src: minio-conf.j2
+    dest: /etc/default/minio
+    mode: 0700
+- name: make minio systemd file
+  copy:
+    content: |
+      [Unit]
+      Description=Minio NAS Gateway
+      Documentation=https://docs.minio.io
+      Wants=network-online.target
+      After=network-online.target
+      AssertFileIsExecutable=/bin/minio
+      
+      [Service]
+      EnvironmentFile=/etc/default/minio
+      ExecStart=/bin/minio gateway nas /var/lib/kamonohashi/nfs
+      Restart=on-failure
+      LimitNOFILE=65536
+      TimeoutStopSec=infinity
+      SendSIGKILL=no
+      
+      [Install]
+      WantedBy=multi-user.target
+    dest: /etc/systemd/system/minio.service
+- name: enable minio service
+  systemd:
+    name: minio
+    enabled: yes
+    state: started
+    daemon_reload: yes

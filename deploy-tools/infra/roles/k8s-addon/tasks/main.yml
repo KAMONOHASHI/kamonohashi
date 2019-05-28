@@ -1,0 +1,2 @@
+- name: create nvidia device plugin daemonset
+  shell: kubectl create -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/{{ nvidia_device_plugin_version }}/nvidia-device-plugin.yml

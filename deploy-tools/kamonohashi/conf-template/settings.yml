@@ -1,0 +1,55 @@
+# リバースプロキシ設定
+ingress:
+  controller:
+    nodeSelector:
+      kubernetes.io/hostname: "${INGRESS_NODE}"
+    service:
+      externalIPs:
+       - "${INGRESS_NODE_IP}"
+# 外部からkamonohashiのweb画面にブラウザアクセスする際のhost名
+virtualHosts:
+  - "${VIRTUAL_HOST}"
+
+# kamonohashiをデプロイするnode
+kqi_node: "${KQI_NODE}"
+
+appsettings:
+  DeployOptions__GpuNodes: "${NODES}"
+  DeployOptions__ObjectStorageNode: "${OBJECT_STORAGE}"
+  DeployOptions__ObjectStoragePort: "${OBJECT_STORAGE_PORT}"
+  DeployOptions__ObjectStorageAccessKey: "${OBJECT_STORAGE_ACCESSKEY}"
+  DeployOptions__NfsStorage: "${NFS_STORAGE}"
+  DeployOptions__NfsPath: "${NFS_PATH}"
+#   ActiveDirectoryOptions__Domain: ""
+#   ActiveDirectoryOptions__BaseDn: ""
+#   ActiveDirectoryOptions__BaseOu: "\"\""
+#   ActiveDirectoryOptions__Server: ""
+#   BackupPostgresTimerOptions__WeeklyTimeSchedule: "Sun=01:00:00"
+#   BackupPostgresTimerOptions__MaxNumberOfBackupFiles: "1"
+
+
+# 各種パスワード。実行時のsetオプションで設定ファイルに
+# 書かないようにできる
+# password: ""
+# db_password: ""
+# storage_secretkey: ""
+
+# 明示的にkqiイメージのタグを指定する場合に記載
+# image_tag: 
+
+# 各コンテナのリソース割り当て
+# resources:
+# platypus_web_api:
+#  cpu: 2
+#  memory: 1024Mi
+# platypus_web_pages:
+#   cpu: 0.3
+#   memory: 512Mi
+# postgres:
+#  cpu: 2
+#  memory: 2048Mi
+
+# コンテナに指定するプロキシ
+# http_proxy:
+# https_proxy:
+# no_proxy:

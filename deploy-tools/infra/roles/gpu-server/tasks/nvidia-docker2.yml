@@ -1,0 +1,40 @@
+- name: ensure nvidia-docker 1 is absent
+  apt:
+    name: nvidia-docker
+    state: absent
+
+- name: Add nvidia docker Apt signing key, uses whichever key is at the URL
+  apt_key:
+    url: https://nvidia.github.io/nvidia-docker/gpgkey
+    state: present
+
+- name: add nvidia docker apt repo
+  get_url:
+    url: https://nvidia.github.io/nvidia-docker/ubuntu16.04/amd64/nvidia-docker.list
+    dest: /etc/apt/sources.list.d/nvidia-docker.list
+
+- name: Install the package "nvidia docker2"
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items: "{{ nvidia_docker_packages }}"
+  register: nvidia_docker_install
+  
+- name: replace /etc/docker/daemon.json for nvidia-docker2
+  copy:
+      content: |
+        {
+            "default-runtime": "nvidia",
+            "runtimes": {
+                "nvidia": {
+                    "path": "/usr/bin/nvidia-container-runtime",
+                    "runtimeArgs": []
+                }
+            }
+        }
+      dest: /etc/docker/daemon.json
+
+- name: Reboot gpu servers
+  reboot:
+    reboot_timeout: 3600

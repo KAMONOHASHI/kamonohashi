@@ -1,0 +1,69 @@
+        - name: "@(Model.Name)"
+          image: "@(Model.ContainerImage)"
+          imagePullPolicy: Always
+          resources:
+            limits:
+              cpu: @Model.Cpu
+              memory: @(Model.Memory)
+@if (Model.Gpu > 0 ) {
+@:              nvidia.com/gpu: @Model.Gpu
+}
+@if (Model.PortMappings != null && Model.PortMappings.Length > 0 ) {
+@:          ports:
+  foreach (var item in Model.PortMappings) {
+@:            - containerPort: @(item.TargetPort)
+  }
+}
+@if (Model.EnvList != null) {
+@:          env:
+@if (Model.Gpu == 0) {
+@:            - name: "NVIDIA_VISIBLE_DEVICES"
+@:              value: "none"
+ }
+  foreach(var env in Model.EnvList) {
+    if(env.Value != null && env.Value != "") {
+@:            - name: "@(env.Key)"
+@:              value: |-
+@:                @Raw(env.Value)
+    } else {
+@:            - name: "@(env.Key)"
+@:              value: ""
+    }
+  }
+}
+          volumeMounts:
+            - mountPath: /dev/shm
+              name: dshm
+            - mountPath: "/etc/localtime"
+              name: "localtime"
+              readOnly: true
+@foreach (KeyValuePair<string, string> pair in Model.ContainerSharedPath) {
+@:            - name: "@pair.Key"
+@:              mountPath: "@pair.Value"
+}
+            - mountPath: "/kqi/scripts/common/"
+              name: "common-scripts"
+            - mountPath: "/kqi/scripts/@(Model.ScriptType)/"
+              name: "scripts"
+@if (Model.NfsVolumeMounts != null && Model.NfsVolumeMounts.Count > 0 ) {
+  foreach (var volume in Model.NfsVolumeMounts) {
+@:            - mountPath: "@(volume.MountPath)"
+@:              subPath: "@(volume.SubPath)"
+@:              name: @(volume.Name)
+@:              readOnly: @(volume.ReadOnly)
+  }
+}
+          command:
+            - "/bin/bash"
+            - "-c"
+          args:
+@*
+# ログへの書き込みを即時にするためにstdbufを使っている。stdbufでは限界があるので、PYTHONUNBUFFERED環境変数も必要
+# http://x68000.q-e-d.net/~68user/unix/pickup?stdbuf#prgmemo-stdbuf-what-is-buffering
+# TODO: kubernetesのログAPIを使うことを検討する。
+*@
+@if (Model.LogPath != null ) {
+@:            - "stdbuf -i0 -o0 -e0 bash /kqi/scripts/@(Model.ScriptType)/@(Model.Name) 2>&1 | tee -a @(Model.LogPath)"
+} else {
+@:            - "stdbuf -i0 -o0 -e0 bash /kqi/scripts/@(Model.ScriptType)/@(Model.Name)"
+}

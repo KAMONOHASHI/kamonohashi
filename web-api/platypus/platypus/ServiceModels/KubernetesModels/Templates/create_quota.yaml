@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: "@(Model.Name)"
+spec:
+  hard:
+@if (Model.Cpu > 0 ) {
+@:    requests.cpu: "@(Model.Cpu)"
+@:    limits.cpu: "@(Model.Cpu)"
+}
+@if (Model.Memory != null ) {
+@:    requests.memory: "@(Model.Memory)"
+@:    limits.memory: "@(Model.Memory)"
+}
+@if (Model.Gpu > 0 ) {
+@:    requests.nvidia.com/gpu: "@(Model.Gpu)"
+}

@@ -1,0 +1,5 @@
+# .editorconfig について詳しくは、次をご覧ください https://aka.ms/editorconfigdocs
+root = true
+
+[*.{yml,yaml}]
+indent_style = tab

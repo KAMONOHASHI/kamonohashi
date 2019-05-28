@@ -1,0 +1,17 @@
+FROM node:8.15.1-stretch AS build
+
+COPY / /src
+ARG version
+RUN cd /src/ && npm install && VERSION=$version npm run build 
+
+
+FROM node:8.15.1-stretch
+RUN npm install -g http-server
+RUN groupadd -r -g 900 platypus-pages && \
+    useradd -r -s /bin/false -g platypus-pages -u 900 platypus-pages
+COPY --from=build /src/dist /app
+RUN chown -R platypus-pages:platypus-pages /app
+USER platypus-pages
+WORKDIR /app
+
+CMD ["http-server", "/app"]

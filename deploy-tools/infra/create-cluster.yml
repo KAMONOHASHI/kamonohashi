@@ -1,0 +1,32 @@
+- name: install os packages
+  hosts: all
+  roles:
+   - os
+
+- name: create kubernetes cluster
+  include: kubespray/cluster.yml
+
+- name: enable gpu docker on server
+  hosts: gpu-node
+  roles:
+   - gpu-server
+
+- name: configure kqi-node
+  hosts: kqi-node
+  roles:
+   - kqi-node
+
+- name: enable k8s functions(gpu)
+  hosts: kube-master
+  roles:
+   - k8s-addon
+
+- name: create nfs server
+  hosts: nfs-server
+  roles:
+   - nfs-server
+
+- name: create object-storage(minio)
+  hosts: object-storage
+  roles:
+   - object-storage

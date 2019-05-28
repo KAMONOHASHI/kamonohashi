@@ -1,0 +1,78 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "@(Model.Name)"
+  namespace: "@(Model.NameSpace)"
+  labels:
+    app: "@(Model.Name)"
+spec:
+  parallelism: 1
+  completions: 1
+  backoffLimit: 0
+# Podの指定(Jobの中にPodは複数立てられるので、その共通設定をtemplateで書く)
+  template:
+    metadata:
+      labels:
+        app: "@(Model.Name)"
+    spec:
+      restartPolicy: Never
+# このコンテナの利用ユーザを指定。k8s内ではこのユーザ名で管理されるため、
+# リソースの利用状況をユーザ単位で集計したい場合などに必要。
+      serviceAccount: "@(Model.LoginUser)"
+      serviceAccountName: "@(Model.LoginUser)"
+      terminationGracePeriodSeconds: 5
+@if (Model.ConstraintList != null && Model.ConstraintList.Count > 0 ) {
+@:      affinity:
+@:        nodeAffinity:
+@:          requiredDuringSchedulingIgnoredDuringExecution:
+@:            nodeSelectorTerms:
+@:            - matchExpressions:
+  foreach (var constraint in Model.ConstraintList) {
+@:              - key: "@(constraint.Key)"
+@:                operator: In
+@:                values:
+    foreach (var label in constraint.Value) {
+@:                - "@(label)"
+    }
+  }
+}
+@if (Model.RepositoryTokenName != null) {
+@:      imagePullSecrets:
+@:        - name: "@(Model.RepositoryTokenName)"
+ }
+      volumes:
+       - name: dshm
+         emptyDir:
+           medium: Memory
+       - name: "localtime"
+         hostPath:
+           path: "/etc/localtime"
+@foreach (KeyValuePair<string, string> pair in Model.ContainerSharedPath) {
+@:       - name: "@pair.Key"
+@:         emptyDir: {}
+}
+       - name: "common-scripts"
+         configMap:
+           name: "@(Model.Name)-common-scripts" 
+       - name: "scripts"
+         configMap:
+           name: "@(Model.Name)-scripts" 
+# NFSサーバーをマウント。
+@if (Model.NfsVolumeMounts != null && Model.NfsVolumeMounts.Count > 0 ) {
+  foreach (var volume in Model.NfsVolumeMounts) {
+@:       - name: @volume.Name
+@:         nfs:
+@:           server: @volume.Server
+@:           path: @volume.ServerPath
+  }
+}
+@if (Model.InitContainers != null && Model.InitContainers.Count > 0 ) {
+@:      initContainers:
+  foreach (var container in Model.InitContainers) {
+@:@Raw(container)
+  }
+}
+      containers:
+@foreach (var container in Model.Containers) {
+@:@Raw(container)
+}

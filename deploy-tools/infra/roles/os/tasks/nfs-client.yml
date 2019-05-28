@@ -1,0 +1,4 @@
+- name: Ensure NFS utilities are installed.
+  apt: 
+    name: nfs-common
+    state: installed

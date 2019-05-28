@@ -1,0 +1,26 @@
+
+ingress:
+  rbac:
+    create: true
+  controller:
+    defaultBackendService: "kqi-system/platypus-web-pages"
+    scope:
+      enabled: true
+      namespace: kqi-system
+  defaultBackend:
+    enabled: false
+
+resources:
+  platypus_web_api:
+    cpu: 1.5
+    memory: 1024Mi
+  platypus_web_pages:
+    cpu: 0.3
+    memory: 512Mi
+  postgres:
+    cpu: 1.5
+    memory: 2048Mi
+
+appsettings:
+  BackupPostgresTimerOptions__WeeklyTimeSchedule: "Sun=01:00:00"
+  BackupPostgresTimerOptions__MaxNumberOfBackupFiles: "1"

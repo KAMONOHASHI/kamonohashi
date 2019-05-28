@@ -1,0 +1,15 @@
+﻿apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: @(Model.TenantName)
+  name: @(Model.TenantName)-@(Model.UserName)
+  labels:
+    lab: @(Model.TenantName)
+roleRef:
+  kind: Role
+  name: @(Model.TenantName)
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+- kind: ServiceAccount
+  name: @(Model.UserName)
+  namespace: @(Model.TenantName)

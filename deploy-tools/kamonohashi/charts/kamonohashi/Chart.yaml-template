@@ -1,0 +1,4 @@
+apiVersion: v1
+description: KAMONOHASHI Helm chart
+name: kamonohashi
+version: ${VERSION}

@@ -1,0 +1,3 @@
+- include_tasks: nvidia-driver.yml
+  when: install_nvidia_driver
+- include_tasks: nvidia-docker2.yml

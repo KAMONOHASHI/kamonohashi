@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: "@(Model.Name)"
+  namespace: "@(Model.NameSpace)"
+spec:
+  selector:
+    app: "@(Model.Name)"
+@if (Model.PortMappings != null) {
+@:  ports:
+  foreach (var item in Model.PortMappings) {
+@:    - protocol: "@(item.Protocol)"
+@:      port: @(item.Port)
+@:      targetPort: @(item.TargetPort)
+@:      nodePort: @(item.NodePort)
+@:      name: "@(item.Name)"
+  }
+}
+  type: "NodePort"

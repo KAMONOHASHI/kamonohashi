@@ -1,0 +1,53 @@
+﻿using Nssol.Platypus.ApiModels.Components;
+using Nssol.Platypus.Infrastructure;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace Nssol.Platypus.ApiModels.NodeApiModels
+{
+    public class CreateInputModel
+    {
+        /// <summary>
+        /// 名前
+        /// </summary>
+        /// <remarks>
+        /// FQDNやIPアドレスを想定した入力規則を付与。
+        /// </remarks>
+        [Required]
+        [Controllers.Util.CustomValidation(false)]
+        public string Name { get; set; }
+
+        /// <summary>
+        /// メモ
+        /// </summary>
+        public string Memo { get; set; }
+
+        /// <summary>
+        /// パーティション
+        /// </summary>
+        [Controllers.Util.CustomValidation(false)]
+        public string Partition { get; set; }
+
+        /// <summary>
+        /// アクセスレベル
+        /// </summary>
+        [Required]
+        public NodeAccessLevel? AccessLevel { get; set; }
+
+
+        /// <summary>
+        /// このノードを使用できるテナントのID。
+        /// <see cref="AccessLevel"/>が<see cref="NodeAccessLevel.Private"/>の時のみ指定可能。
+        /// それ以外の場合は無視される。
+        /// </summary>
+        public IEnumerable<long> AssignedTenantIds { get; set; }
+
+        /// <summary>
+        /// TensorBoardコンテナの実行可否
+        /// </summary>
+        public bool TensorBoardEnabled { get; set; }
+    }
+}

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "@(Model.Name)"
+  namespace: "@(Model.NameSpace)"
+data:
+  prepare: 
+  main: |
+    # requirement: use tensorboard/tensorboard image   
+    mkdir /tensorboard
+    /usr/local/bin/tensorboard --logdir /kqi/output
+  finish: 
+    # infinite sleep
+    tail -f /dev/null

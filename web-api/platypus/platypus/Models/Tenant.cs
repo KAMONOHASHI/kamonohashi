@@ -1,0 +1,156 @@
+﻿using Nssol.Platypus.Infrastructure;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace Nssol.Platypus.Models
+{
+    /// <summary>
+    /// テナント情報。
+    /// ログインユーザに基づいてテナント名がクレームに一つ格納される。
+    /// その他の情報は必要に応じてテナント名をキーにDBから随時取得する。
+    /// </summary>
+    public class Tenant : ModelBase
+    {
+        /// <summary>
+        /// テナント名。
+        /// 一意制約があるため、最大長を固定。
+        /// </summary>
+        [Required]
+        [RegularExpression("^[0-9a-z-]+$", ErrorMessage = "Please use only [lower case, number, -, .]")]
+        [MaxLength(128)]
+        public string Name { get; set; }
+        /// <summary>
+        /// テナント表示名
+        /// </summary>
+        [Required]
+        public string DisplayName { get; set; }
+
+        #region ストレージ情報
+        /// <summary>
+        /// ストレージID
+        /// </summary>
+        public long? StorageId { get; set; }
+
+        /// <summary>
+        /// オブジェクトストレージのバケット名
+        /// </summary>
+        public string StorageBucket { get; set; }
+
+        /// <summary>
+        /// コンテナ出力ファイル用のNFSマウント元パス
+        /// </summary>
+        [NotMapped]
+        public string TrainingContainerOutputNfsPath
+        {
+            get
+            {
+                return $"{Storage.NfsRootPath}{StorageBucket}/{ResourceType.TrainingContainerOutputFiles}";
+            }
+        }
+
+        /// <summary>
+        /// コンテナ添付ファイル用のNFSマウント元パス
+        /// </summary>
+        [NotMapped]
+        public string TrainingContainerAttachedNfsPath
+        {
+            get
+            {
+                return $"{Storage.NfsRootPath}{StorageBucket}/{ResourceType.TrainingContainerAttachedFiles}";
+            }
+        }
+        /// <summary>
+        /// 前処理のコンテナ添付ファイル用のNFSマウント元パス
+        /// </summary>
+        [NotMapped]
+        public string PreprocContainerAttachedNfsPath
+        {
+            get
+            {
+                return $"{Storage.NfsRootPath}{StorageBucket}/{ResourceType.PreprocContainerAttachedFiles}";
+            }
+        }
+        /// <summary>
+        /// 推論ジョブのコンテナ出力ファイル用のNFSマウント元パス
+        /// </summary>
+        [NotMapped]
+        public string InferenceContainerOutputNfsPath
+        {
+            get
+            {
+                return $"{Storage.NfsRootPath}{StorageBucket}/{ResourceType.InferenceContainerOutputFiles}";
+            }
+        }
+        /// <summary>
+        /// 推論のコンテナ添付ファイル用のNFSマウント元パス
+        /// </summary>
+        [NotMapped]
+        public string InferenceContainerAttachedNfsPath
+        {
+            get
+            {
+                return $"{Storage.NfsRootPath}{StorageBucket}/{ResourceType.InferenceContainerAttachedFiles}";
+            }
+        }
+        #endregion
+
+        /// <summary>
+        /// GitリポジトリのID
+        /// </summary>
+        [Required]
+        public long? DefaultGitId { get; set; }
+
+        /// <summary>
+        /// DockerレジストリのID
+        /// </summary>
+        [Required]
+        public long? DefaultRegistryId { get; set; }
+
+        /// <summary>
+        /// Cpu制限（クォータ）
+        /// </summary>
+        public int? LimitCpu { get; set; }
+
+        /// <summary>
+        /// メモリ制限（クォータ）
+        /// </summary>
+        public int? LimitMemory { get; set; }
+
+        /// <summary>
+        /// Gpu制限（クォータ）
+        /// </summary>
+        public int? LimitGpu { get; set; }
+
+        /// <summary>
+        /// ストレージ
+        /// </summary>
+        [ForeignKey(nameof(StorageId))]
+        public virtual Storage Storage { get; set; }
+
+        /// <summary>
+        /// Gitリポジトリ
+        /// </summary>
+        [ForeignKey(nameof(DefaultGitId))]
+        public virtual Git DefaultGit { get; set; }
+
+        /// <summary>
+        /// Dockerレジストリ
+        /// </summary>
+        [ForeignKey(nameof(DefaultRegistryId))]
+        public Registry DefaultRegistry { get; set; }
+
+        /// <summary>
+        /// レジストリとのマッピング情報
+        /// </summary>
+        public virtual ICollection<TenantRegistryMap> RegistryMaps { get; set; }
+
+        /// <summary>
+        /// レジストリとのマッピング情報
+        /// </summary>
+        public virtual ICollection<TenantGitMap> GitMaps { get; set; }
+    }
+}

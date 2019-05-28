@@ -1,0 +1,5 @@
+{
+  "kind": "DeleteOptions",
+  "apiVersion": "v1",
+  "propagationPolicy": "Background"
+}

@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: platypus-web-api-env
+  namespace: kqi-system
+data:
+{{if .Values.http_proxy}}
+  http_proxy: {{.Values.http_proxy}}
+{{end}}
+{{if .Values.https_proxy}}
+  https_proxy: {{.Values.https_proxy}}
+{{end}}
+{{if .Values.no_proxy}}
+  no_proxy: {{.Values.no_proxy}}
+{{end}}
+  DeployOptions__Mode: "production"
+  ContainerManageOptions__DataSetServerUrl: "http://platypus-web-api.kqi-system.svc.cluster.local:8090"
+  ContainerManageOptions__WebEndPoint: {{ index .Values.virtualHosts 0 }}
+{{ toYaml .Values.appsettings | indent 2}}
