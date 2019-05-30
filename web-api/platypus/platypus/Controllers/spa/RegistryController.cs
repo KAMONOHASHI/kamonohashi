@@ -62,8 +62,8 @@ namespace Nssol.Platypus.Controllers.spa
         public IActionResult GetAllTypes()
         {
             var registryTypes = Enum.GetValues(typeof(RegistryServiceType)) as RegistryServiceType[];
-
-            return JsonOK(registryTypes.Select(r => new EnumInfo() { Id = (int)r, Name = r.ToString() }));
+            //Noneは除外して返却
+            return JsonOK(registryTypes.Where(r => r != RegistryServiceType.None).Select(r => new EnumInfo() { Id = (int)r, Name = r.ToString() }));
         }
 
         /// <summary>

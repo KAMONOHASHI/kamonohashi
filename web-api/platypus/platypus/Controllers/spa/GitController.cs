@@ -61,8 +61,8 @@ namespace Nssol.Platypus.Controllers.spa
         public IActionResult GetAllTypes()
         {
             var gitTypes = Enum.GetValues(typeof(GitServiceType)) as GitServiceType[];
-
-            return JsonOK(gitTypes.Select(g => new EnumInfo() { Id = (int)g, Name = g.ToString() }));
+            //Noneは除外して返却
+            return JsonOK(gitTypes.Where(r => r != GitServiceType.None).Select(g => new EnumInfo() { Id = (int)g, Name = g.ToString() }));
         }
 
         /// <summary>
