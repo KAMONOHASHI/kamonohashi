@@ -258,7 +258,7 @@ namespace Nssol.Platypus.Logic
             {
                 ID = preprocessHistory.Id,
                 TenantName = TenantName,
-                LoginUser = UserName,
+                LoginUser = CurrentUserInfo.Alias, //アカウントはエイリアスから指定
                 Name = preprocessHistory.Name,
                 ContainerImage = registryMap.Registry.GetImagePath(preprocessHistory.Preprocess.ContainerImage, preprocessHistory.Preprocess.ContainerTag),
                 ScriptType = "preproc", // 実行スクリプトの指定
@@ -406,7 +406,7 @@ namespace Nssol.Platypus.Logic
             {
                 ID = trainHistory.Id,
                 TenantName = TenantName,
-                LoginUser = UserName,
+                LoginUser = CurrentUserInfo.Alias, //アカウントはエイリアスから指定
                 Name = trainHistory.Key,
                 ContainerImage = registryMap.Registry.GetImagePath(trainHistory.ContainerImage, trainHistory.ContainerTag),
                 ScriptType = "training", 
@@ -562,7 +562,7 @@ namespace Nssol.Platypus.Logic
             {
                 ID = inferenceHistory.Id,
                 TenantName = TenantName,
-                LoginUser = UserName,
+                LoginUser = CurrentUserInfo.Alias, //アカウントはエイリアスから指定
                 Name = inferenceHistory.Key,
                 ContainerImage = registryMap.Registry.GetImagePath(inferenceHistory.ContainerImage, inferenceHistory.ContainerTag),
                 ScriptType = "inference", 
@@ -716,7 +716,7 @@ namespace Nssol.Platypus.Logic
             {
                 ID = trainingHistory.Id,
                 TenantName = TenantName,
-                LoginUser = UserName,
+                LoginUser = CurrentUserInfo.Alias, //アカウントはエイリアスから指定
                 Name = containerName,
                 ContainerImage = "tensorflow/tensorflow",
                 ScriptType = "tensorboard",
@@ -977,10 +977,23 @@ namespace Nssol.Platypus.Logic
         {
             string token = userRepository.GetClusterToken(CurrentUserInfo.Id, CurrentUserInfo.SelectedTenant.Id);
 
-            if(token == null)
+            if (token == null)
             {
                 //トークンがない場合、新規に作成する
-                token = await clusterManagementService.RegistUserAsync(TenantName, UserName);
+                //作成時の名前はUserNameではなくAliasを使う
+                if (string.IsNullOrEmpty(CurrentUserInfo.Alias))
+                {
+                    //Aliasがない場合は、乱数で作成する
+                    string alias = Util.GenerateRandamString(10);
+
+                    //DBに保存
+                    var user = await userRepository.SetAliasAsync(CurrentUserInfo.Id, alias);
+                    LogInformation($"Set alias {alias} to {CurrentUserInfo.Id}:{CurrentUserInfo.Name}");
+                    unitOfWork.Commit(); //仮にクラスタトークンの生成に失敗しても、エイリアスは保存して、ロールバックはしない
+
+                    CurrentUserInfo.Alias = alias;
+                }
+                token = await clusterManagementService.RegistUserAsync(TenantName, CurrentUserInfo.Alias);
 
                 if(token == null)
                 {

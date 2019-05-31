@@ -17,7 +17,7 @@ namespace Nssol.Platypus.ApiModels.NodeApiModels
         /// FQDNやIPアドレスを想定した入力規則を付与。
         /// </remarks>
         [Required]
-        [Controllers.Util.CustomValidation(false)]
+        [Controllers.Util.CustomValidation(Controllers.Util.CustomValidationType.Fqdn)]
         public string Name { get; set; }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace Nssol.Platypus.ApiModels.NodeApiModels
         /// <summary>
         /// パーティション
         /// </summary>
-        [Controllers.Util.CustomValidation(false)]
+        [Controllers.Util.CustomValidation(Controllers.Util.CustomValidationType.Fqdn)]
         public string Partition { get; set; }
 
         /// <summary>

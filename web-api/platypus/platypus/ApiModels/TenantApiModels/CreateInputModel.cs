@@ -16,7 +16,7 @@ namespace Nssol.Platypus.ApiModels.TenantApiModels
         /// k8sの制約で英小文字のみを許可。
         /// </remarks>
         [Required]
-        [Controllers.Util.CustomValidation(true)]
+        [Controllers.Util.CustomValidation(Controllers.Util.CustomValidationType.Alphanumeric)]
         public string Name { get; set; }
     }
 }

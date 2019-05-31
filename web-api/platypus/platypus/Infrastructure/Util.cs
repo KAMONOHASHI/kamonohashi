@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Infrastructure
@@ -195,6 +197,29 @@ namespace Nssol.Platypus.Infrastructure
                 }
             }
             return data;
+        }
+
+        /// <summary>
+        /// 指定した長さのランダム文字列を生成する。
+        /// 使用する文字は英小文字＋数字
+        /// </summary>
+        public static string GenerateRandamString(int size)
+        {
+            char[] chars = "abcdefghijklmnopqrstuvwxyz1234567890".ToCharArray();
+
+            byte[] data = new byte[size];
+
+            // 厳密な乱数（64bit値）を作成。Randomクラスだと速いが予測可能になってしまう。
+            using (RNGCryptoServiceProvider crypto = new RNGCryptoServiceProvider())
+            {
+                crypto.GetBytes(data);
+            }
+            StringBuilder result = new StringBuilder(size);
+            foreach (byte b in data)
+            {
+                result.Append(chars[b % (chars.Length)]);
+            }
+            return result.ToString();
         }
     }
 }

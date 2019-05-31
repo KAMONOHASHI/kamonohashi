@@ -13,7 +13,7 @@ namespace Nssol.Platypus.ApiModels.UserApiModels
         /// 名前
         /// </summary>
         [Required]
-        [Controllers.Util.CustomValidation(true)]
+        [Controllers.Util.CustomValidation(Controllers.Util.CustomValidationType.Email)]
         public string Name { get; set; }
 
         /// <summary>

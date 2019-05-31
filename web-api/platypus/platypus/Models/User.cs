@@ -22,8 +22,7 @@ namespace Nssol.Platypus.Models
         public string Name { get; set; }
 
         /// <summary>
-        /// 別名。<see cref="Name"/>そのままだと、コンテナ管理サービス側の制約で使えない文字列が含まれうるので、別で設ける。
-        /// TODO: まだ未実装。
+        /// 別名。<see cref="Name"/>そのままだと、ドット(.)やアットマーク(@)など、コンテナ管理サービス側の制約で使えない文字列が含まれうるので、識別名を別で設ける。
         /// </summary>
         public string Alias { get; set; }
 
