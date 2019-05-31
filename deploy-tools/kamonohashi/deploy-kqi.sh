@@ -9,7 +9,7 @@ show_help() {
 
 prepare(){
     # helmのインストール
-    curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash /dev/stdin --version v2.7.2
+    curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash /dev/stdin --version v2.13.0
     kubectl create -f helm-rbac-config.yml
     helm init --service-account tiller --upgrade
     # kqi-system namespaceの作成

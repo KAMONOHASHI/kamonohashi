@@ -1,6 +1,6 @@
 #!/bin/bash
 
-readonly KUBESPLAY_VERSION="v2.8.4"
+readonly KUBESPLAY_VERSION="v2.10.0"
 readonly SCRIPT_DIR=$(cd $(dirname $0); pwd)
 readonly REPO_ROOT_DIR="$SCRIPT_DIR/../.."
 
