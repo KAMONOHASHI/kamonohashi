@@ -274,7 +274,7 @@ namespace Nssol.Platypus.Controllers.spa
             }
             else
             {
-                return JsonBadRequest($"Registry Id {selectedRegistryId.Value} is not enabled.");
+                return JsonBadRequest($"Registry Id {selectedRegistryId.Value} is not enabled.: {result.Error}");
             }
         }
 
