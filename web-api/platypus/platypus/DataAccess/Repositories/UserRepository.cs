@@ -107,6 +107,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
             {
                 Id = user.Id,
                 Name = user.Name,
+                Alias = user.Alias,
                 ServiceType = user.ServiceType
             };
 
@@ -410,6 +411,15 @@ namespace Nssol.Platypus.DataAccess.Repositories
             userTenantMap.ClusterToken = token;
         }
 
+        /// <summary>
+        /// 指定したユーザに別名を付与する
+        /// </summary>
+        public async Task<User> SetAliasAsync(long userId, string nameAlias)
+        {
+            var user = await GetByIdAsync(userId);
+            user.Alias = nameAlias;
+            return user;
+        }
         #endregion
 
         /// <summary>
