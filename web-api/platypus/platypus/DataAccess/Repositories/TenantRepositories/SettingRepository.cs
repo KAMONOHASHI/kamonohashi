@@ -49,7 +49,7 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
         public SymmetricSecurityKey GetApiJwtSigningKey()
         {
             // DB の初期化
-            initializeDB();
+            InitializeDB();
 
             if (signingKey == null)
             {
@@ -100,8 +100,11 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
         /// DB を初期化します。同時に ObjectStore や Cluster(k8s) と同期させます。
         /// Postgress が未起動状態で失敗するようなら retry します。
         /// </summary>
-        private void initializeDB()
+        private void InitializeDB()
         {
+            // DBの初期化に成功したか
+            bool isInitializeDB = false;
+
             int retryCount = 1;
             for ( ; retryCount <= DBInitRetryOptions.InitDBRetryMaxCount; retryCount++)
             {
@@ -124,7 +127,7 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
                     }
 
                     // DB 初期化の設定値のチェック
-                    if (!seed.isValidDeployOptions())
+                    if (!seed.IsValidDeployOptions())
                     {
                         LogError($"DB 初期化用の設定値が不正ですので全ての処理を終了します。");
                         // 全ての処理を終了
@@ -132,7 +135,7 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
                     }
 
                     // DB の初期化
-                    seed.InitilizeDB();
+                    isInitializeDB = seed.InitilizeDB();
                     LogInfo($"DB を初期化しました。");
                     break;
                 }
@@ -149,70 +152,74 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
                 return;
             }
 
-            //
-            //　初期生成テナントと ObjectStore を同期
-            //
-            retryCount = 1;
-            for (; retryCount <= DBInitRetryOptions.SyncObjectStoreRetryMaxCount; retryCount++)
+            // DBの初期化に成功した場合
+            if (isInitializeDB)
             {
-                if (retryCount > 1)
+                //
+                //　初期生成テナントと ObjectStore を同期
+                //
+                retryCount = 1;
+                for (; retryCount <= DBInitRetryOptions.SyncObjectStoreRetryMaxCount; retryCount++)
                 {
-                    LogDebug($"初期生成テナントと ObjectStore の同期処理の retry まで {DBInitRetryOptions.SyncObjectStoreRetrySleepSec} 秒間 sleep します。");
-                    Thread.Sleep(DBInitRetryOptions.SyncObjectStoreRetrySleepSec * 1000);
-                }
-                try
-                {
-                    LogInfo($"初期生成テナントと ObjectStore を同期します。(第 {retryCount} 回目)");
-                    seed.SyncInitialObjectStore();
-                    LogInfo($"初期生成テナントと ObjectStore を同期しました。");
-                    break;
-                }
-                catch (Exception e)
-                {
-                    //例外をキャッチしたが ERROR ログを出力して処理を継続(retry)
-                    LogError($"初期生成テナントと ObjectStore の同期処理中に例外をキャッチしました。 例外メッセージ=\"{e.Message}\"");
-                }
-            }
-            if (retryCount > DBInitRetryOptions.SyncObjectStoreRetryMaxCount)
-            {
-                LogError($"初期生成テナントと ObjectStore を同期処理を {DBInitRetryOptions.SyncObjectStoreRetryMaxCount} 回実行しましたが最終的に失敗で終わりました。");
-                // 処理失敗でも次に続く
-            }
-
-            //
-            //　初期生成テナントと ClusterManager(k8s) を同期
-            //
-            retryCount = 1;
-            for (; retryCount <= DBInitRetryOptions.SyncClusterRetryMaxCount; retryCount++)
-            {
-                if (retryCount > 1)
-                {
-                    LogDebug($"初期生成テナントと ClusterManager(k8s) の同期処理の retry まで {DBInitRetryOptions.SyncClusterRetrySleepSec} 秒間 sleep します。");
-                    Thread.Sleep(DBInitRetryOptions.SyncClusterRetrySleepSec * 1000);
-                }
-                try
-                {
-                    LogInfo($"初期生成テナントと ClusterManager(k8s) を同期します。(第 {retryCount} 回目)");
-                    if (seed.SyncInitialClusterManager())
+                    if (retryCount > 1)
                     {
-                        LogInfo($"初期生成テナントと ClusterManager(k8s) を同期しました。");
+                        LogDebug($"初期生成テナントと ObjectStore の同期処理の retry まで {DBInitRetryOptions.SyncObjectStoreRetrySleepSec} 秒間 sleep します。");
+                        Thread.Sleep(DBInitRetryOptions.SyncObjectStoreRetrySleepSec * 1000);
+                    }
+                    try
+                    {
+                        LogInfo($"初期生成テナントと ObjectStore を同期します。(第 {retryCount} 回目)");
+                        seed.SyncInitialObjectStore();
+                        LogInfo($"初期生成テナントと ObjectStore を同期しました。");
                         break;
                     }
-                    else
+                    catch (Exception e)
                     {
-                        LogError($"初期生成テナントと ClusterManager(k8s) の同期に失敗しました。");
+                        //例外をキャッチしたが ERROR ログを出力して処理を継続(retry)
+                        LogError($"初期生成テナントと ObjectStore の同期処理中に例外をキャッチしました。 例外メッセージ=\"{e.Message}\"");
                     }
                 }
-                catch (Exception e)
+                if (retryCount > DBInitRetryOptions.SyncObjectStoreRetryMaxCount)
                 {
-                    //例外をキャッチしたが ERROR ログを出力して処理を継続(retry)
-                    LogError($"初期生成テナントと ClusterManager(k8s) の同期処理中に例外をキャッチしました。 例外メッセージ=\"{e.Message}\"");
+                    LogError($"初期生成テナントと ObjectStore を同期処理を {DBInitRetryOptions.SyncObjectStoreRetryMaxCount} 回実行しましたが最終的に失敗で終わりました。");
+                    // 処理失敗でも次に続く
                 }
-            }
-            if (retryCount > DBInitRetryOptions.SyncClusterRetryMaxCount)
-            {
-                LogError($"初期生成テナントと ClusterManager(k8s) を同期処理を {DBInitRetryOptions.SyncClusterRetryMaxCount} 回実行しましたが最終的に失敗で終わりました。");
-                // 処理失敗でも次に続く
+
+                //
+                //　初期生成テナントと ClusterManager(k8s) を同期
+                //
+                retryCount = 1;
+                for (; retryCount <= DBInitRetryOptions.SyncClusterRetryMaxCount; retryCount++)
+                {
+                    if (retryCount > 1)
+                    {
+                        LogDebug($"初期生成テナントと ClusterManager(k8s) の同期処理の retry まで {DBInitRetryOptions.SyncClusterRetrySleepSec} 秒間 sleep します。");
+                        Thread.Sleep(DBInitRetryOptions.SyncClusterRetrySleepSec * 1000);
+                    }
+                    try
+                    {
+                        LogInfo($"初期生成テナントと ClusterManager(k8s) を同期します。(第 {retryCount} 回目)");
+                        if (seed.SyncInitialClusterManager())
+                        {
+                            LogInfo($"初期生成テナントと ClusterManager(k8s) を同期しました。");
+                            break;
+                        }
+                        else
+                        {
+                            LogError($"初期生成テナントと ClusterManager(k8s) の同期に失敗しました。");
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        //例外をキャッチしたが ERROR ログを出力して処理を継続(retry)
+                        LogError($"初期生成テナントと ClusterManager(k8s) の同期処理中に例外をキャッチしました。 例外メッセージ=\"{e.Message}\"");
+                    }
+                }
+                if (retryCount > DBInitRetryOptions.SyncClusterRetryMaxCount)
+                {
+                    LogError($"初期生成テナントと ClusterManager(k8s) を同期処理を {DBInitRetryOptions.SyncClusterRetryMaxCount} 回実行しましたが最終的に失敗で終わりました。");
+                    // 処理失敗でも次に続く
+                }
             }
         }
 

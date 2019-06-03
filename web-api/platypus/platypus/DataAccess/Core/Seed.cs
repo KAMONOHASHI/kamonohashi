@@ -60,7 +60,7 @@ namespace Nssol.Platypus.DataAccess.Core
             return count != 0;
         }
 
-        public bool isValidDeployOptions()
+        public bool IsValidDeployOptions()
         {
             // 設定値のチェック
             bool ret = true;
@@ -110,14 +110,18 @@ namespace Nssol.Platypus.DataAccess.Core
         /// <summary>
         /// DBを初期化する。
         /// </summary>
-        public void InitilizeDB()
+        public bool InitilizeDB()
         {
+            // DBを初期化したか
+            bool isInitializeDB = false;
             // DB の初期化
             if (!IsInitializedDB())
             {
                 // 念のため初期化済みかどうかをチェック
                 CreateInitialDB();
+                isInitializeDB = true;
             }
+            return isInitializeDB;
         }
 
         private void LogError(string msg)
