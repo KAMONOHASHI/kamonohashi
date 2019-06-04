@@ -62,7 +62,7 @@ namespace Nssol.Platypus.Logic
             }
 
             // 前処理履歴の削除
-            preprocessHistoryRepository.Delete(preprocessHistory);
+            preprocessHistoryRepository.Delete(preprocessHistory, force);
 
             // 結果に関わらずコミット
             unitOfWork.Commit();

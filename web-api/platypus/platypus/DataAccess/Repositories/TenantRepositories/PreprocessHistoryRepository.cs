@@ -187,14 +187,27 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
         /// 削除可否は呼び出し側で判定しておくこと。
         /// またDataの削除はこの中では行わない。
         /// </summary>
-        public override void Delete(PreprocessHistory pph)
+        public override void Delete(PreprocessHistory entity)
         {
             //履歴出力を削除
-            DeleteModelAll<PreprocessHistoryOutput>(p => p.PreprocessHistoryId == pph.Id);
+            DeleteModelAll<PreprocessHistoryOutput>(p => p.PreprocessHistoryId == entity.Id);
             
             //前処理履歴自体をDBから削除
-            base.Delete(pph);
+            base.Delete(entity);
         }
 
+        /// <summary>
+        /// 前処理履歴一件を削除する。
+        /// 削除可否は呼び出し側で判定しておくこと。
+        /// またDataの削除はこの中では行わない。
+        /// </summary>
+        public new void Delete(PreprocessHistory preprocessHistory, bool force)
+        {
+            //履歴出力を削除
+            DeleteModelAll<PreprocessHistoryOutput>(p => p.PreprocessHistoryId == preprocessHistory.Id);
+
+            //前処理履歴自体をDBから削除
+            base.Delete(preprocessHistory, force);
+        }
     }
 }
