@@ -52,10 +52,6 @@ namespace Nssol.Platypus.Services
         /// <summary>
         /// 全てのイメージのリストを取得
         /// </summary>
-        /// <remarks>
-        /// GitLabでは権限の絡みがあるためか通常のAPIが公開されていない。
-        /// https://forum.gitlab.com/t/how-to-get-container-registry-information-using-the-api/10664/2
-        /// </remarks>
         /// <param name="userRegistryMap">ユーザとレジストリのマッピング情報</param>
         /// <returns>全イメージのリスト。エラーの場合はNULL。</returns>
         public async Task<List<string>> GetAllImageListAsync(UserTenantRegistryMap userRegistryMap)
@@ -79,18 +75,18 @@ namespace Nssol.Platypus.Services
         private async Task<IEnumerable<GetImagesApiModel>> GetContainerRegistryJsonAsync(Registry registry, string project, string token)
         {
             // API呼び出しパラメータ作成
+            string encodedProjectName = project.Replace("/", "%2F");
             RequestParam param = new RequestParam()
             {
                 BaseUrl = registry.ApiUrl,
-                ApiPath = $"{project}/container_registry.json",
+                ApiPath = $"api/v4/projects/{encodedProjectName}/registry/repositories",
                 Headers = new Dictionary<string, string>()
                 {
-                    {"Private-Token", token } //GitLabはトークンの形式がBearerではないので、ヘッダに独自で追加
+                    {"PRIVATE-TOKEN", token } //GitLabはトークンの形式がBearerではないので、ヘッダに独自で追加
                 }
             };
             // API 呼び出し
             var response = await this.SendGetRequestAsync(param);
-
             if (response.IsSuccess)
             {
                 var images = ConvertResult<IEnumerable<GetImagesApiModel>>(response);
@@ -123,25 +119,24 @@ namespace Nssol.Platypus.Services
             {
                 return Result<List<string>, string>.CreateErrorResult($"Image {imageName} is not Found.");
             }
-            
+
             // API呼び出しパラメータ作成
+            string encodedProjectName = userRegistryMap.Registry.ProjectName.Replace("/", "%2F");
             RequestParam param = new RequestParam()
             {
                 BaseUrl = registry.ApiUrl,
-                ApiPath = image.TagsPath,
+                ApiPath = $"api/v4/projects/{encodedProjectName}/registry/repositories/{image.Id}/tags",
                 Headers = new Dictionary<string, string>()
                 {
-                    {"Private-Token", userRegistryMap.RegistryPassword } //GitLabはトークンの形式がBearerではないので、ヘッダに独自で追加
+                    {"PRIVATE-TOKEN", userRegistryMap.RegistryPassword } //GitLabはトークンの形式がBearerではないので、ヘッダに独自で追加
                 }
             };
 
             // API 呼び出し
             var response = await this.SendGetRequestAsync(param);
-
             if (response.IsSuccess)
             {
                 var tags = ConvertResult<IEnumerable<GetTagsApiModel>>(response);
-
                 return Result<List<string>, string>.CreateResult(tags.Select(t => t.Name).ToList());
             }
             else
@@ -155,8 +150,6 @@ namespace Nssol.Platypus.Services
             public int Id { get; set; }
             public string Path { get; set; }
             public string Location { get; set; }
-            [JsonProperty("tags_path")]
-            public string TagsPath { get; set; }
         }
 
         private class GetTagsApiModel

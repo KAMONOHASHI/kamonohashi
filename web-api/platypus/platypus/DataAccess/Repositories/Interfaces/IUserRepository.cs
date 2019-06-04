@@ -112,6 +112,11 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces
         /// 指定したユーザ、テナントに対するクラスタトークンを登録する
         /// </summary>
         void SetClusterToken(long userId, long tenantId, string token);
+
+        /// <summary>
+        /// 指定したユーザに別名を付与する
+        /// </summary>
+        Task<User> SetAliasAsync(long userId, string nameAlias);
         #endregion
     }
 }
