@@ -2,7 +2,7 @@
 
 readonly GIT_TAG=$(git tag --points-at HEAD)
 readonly TAG=${GIT_TAG:-"develop"}
-readonly VERSION=${GIT_TAG:-"develop:-`git rev-parse HEAD`}
+readonly VERSION=${GIT_TAG:-"develop"-`git rev-parse HEAD`}
 readonly SCRIPT_DIR=$(cd $(dirname $0); pwd)
 readonly REPO_ROOT_DIR="$SCRIPT_DIR/../.."
 
