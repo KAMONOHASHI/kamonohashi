@@ -2,7 +2,7 @@
 name: リクエスト
 about: KAMONOHASHIへの要望.
 title: ''
-labels: ''
+labels: ''request
 assignees: ''
 
 ---
