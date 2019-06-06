@@ -13,7 +13,7 @@ namespace Nssol.Platypus.ApiModels.RegistryApiModels
         /// Registry識別名
         /// </summary>
         [Required]
-        [Controllers.Util.CustomValidation(true)]
+        [Controllers.Util.CustomValidation(Controllers.Util.CustomValidationType.Alphanumeric)]
         public string Name { get; set; }
 
         /// <summary>

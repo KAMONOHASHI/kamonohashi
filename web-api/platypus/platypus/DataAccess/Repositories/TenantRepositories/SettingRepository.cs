@@ -8,7 +8,6 @@ using Nssol.Platypus.Infrastructure.Options;
 using Nssol.Platypus.Models;
 using System;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 
@@ -59,7 +58,7 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
                 if(settings?.Count() == 0)
                 {
                     //初回起動なので、乱数でパスフレーズを作る
-                    apiSecurityTokenPass = GenerateRandamString(32);
+                    apiSecurityTokenPass = Util.GenerateRandamString(32);
                     Add(new Setting()
                     {
                         ApiSecurityTokenPass = apiSecurityTokenPass
@@ -75,25 +74,6 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
                 signingKey = new SymmetricSecurityKey(key);
             }
             return signingKey;
-        }
-
-        private static string GenerateRandamString(int size)
-        {
-            char[] chars = "abcdefghijklmnopqrstuvwxyz1234567890".ToCharArray();
-
-            byte[] data = new byte[size];
-            
-            // 厳密な乱数（64bit値）を作成。Randomクラスだと速いが予測可能になってしまう。
-            using (RNGCryptoServiceProvider crypto = new RNGCryptoServiceProvider())
-            {
-                crypto.GetBytes(data);
-            }
-            StringBuilder result = new StringBuilder(size);
-            foreach (byte b in data)
-            {
-                result.Append(chars[b % (chars.Length)]);
-            }
-            return result.ToString();
         }
 
         /// <summary>

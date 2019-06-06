@@ -94,7 +94,8 @@
           apiUrl: [{required: true, message: '必須項目です'}],
           registryUrl: [{required: true, message: '必須項目です'}],
           portNo: [{required: true, message: '必須項目です'}],
-          serviceType: [{required: true, message: '必須項目です'}]
+          serviceType: [{required: true, message: '必須項目です'}],
+          projectName: [{required: true, message: '必須項目です'}]
         }
       }
     },

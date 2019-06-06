@@ -1,6 +1,6 @@
 # リリース手順
 ## リリースするソースコードの指定
-* GitHubでバージョン名リリースを作成
+* GitHubでバージョン名リリースを作成(テストが終わるまでプレリリース)
   * 例: 1.0.1
 * git fetch upstream && git merge upstream/(バージョンブランチ) を実行
   * 例: git merge upstream/1.0
@@ -18,3 +18,7 @@
 * archive-deploy-tools/archive.sh の実行
 * deploy-tools-$VERSION.tar.gz がモノリポジトリトップに作られる
 * githubのリリースに添付する
+
+
+# developリリース
+* tagをつけずに`build-docker/build.sh`を実行するとdevelopタグでコンテナが作られる

@@ -9,38 +9,46 @@ namespace Nssol.Platypus.Controllers.Util
 {
     public sealed class CustomValidationAttribute : RegularExpressionAttribute
     {
-        public bool IsAlphanumeric { get; }
+        public CustomValidationType CustomValidationType { get; }
         public string PropertyName { get; }
 
         /// <summary>
         /// 半角英数字（とハイフンなど）のみを許可する入力規則
         /// </summary>
-        public CustomValidationAttribute(bool isAlphanumeric, [CallerMemberName] string propertyName = null) : base(GetExpression(isAlphanumeric))
+        public CustomValidationAttribute(CustomValidationType customValidationType, [CallerMemberName] string propertyName = null) : base(GetExpression(customValidationType))
         {
-            this.IsAlphanumeric = isAlphanumeric;
             this.PropertyName = propertyName;
-            ErrorMessage = GetErrorMessage();
+            this.CustomValidationType = customValidationType;
+            ErrorMessage = $"'{propertyName}' {GetErrorMessage()}";
         }
 
-        private static string GetExpression(bool asName)
+        private static string GetExpression(CustomValidationType customValidationType)
         {
-            if (asName) {
-                return "^[a-z]([-a-z0-9]*[a-z0-9])?$";
-            }
-            else {
-                return "(^$)|(^[a-zA-Z0-9]([-_.a-zA-Z0-9]*[a-zA-Z0-9])?$)";
+            switch (customValidationType)
+            {
+                case CustomValidationType.Alphanumeric:
+                    return "^[a-z]([-a-z0-9]*[a-z0-9])?$";
+                case CustomValidationType.Fqdn:
+                    return "(^[a-zA-Z0-9]([-_.a-zA-Z0-9]*[a-zA-Z0-9])?$)";
+                case CustomValidationType.Email:
+                    return "(^[a-zA-Z0-9]([-_.@a-zA-Z0-9]*[a-zA-Z0-9])?$)";
+                default:
+                    throw new ArgumentException($"Unknown valication type {customValidationType}");
             }
         }
 
         private string GetErrorMessage()
         {
-            if (IsAlphanumeric)
+            switch (CustomValidationType)
             {
-                return $"'{PropertyName}' must consist of lower case alphanumeric characters or dashes(-), start with an alphabetic character, and end with an alphanumeric character.";
-            }
-            else
-            {
-                return $"'{PropertyName}' must be empty or begin and end with an alphanumeric character with dashes(-), underscores(_), dots(.), and alphanumerics between";
+                case CustomValidationType.Alphanumeric:
+                    return "must consist of lower case alphanumeric characters or dashes(-), start with an alphabetic character, and end with an alphanumeric character.";
+                case CustomValidationType.Fqdn:
+                    return "must begin and end with an alphanumeric character with dashes(-), underscores(_), dots(.), and alphanumerics between";
+                case CustomValidationType.Email:
+                    return "must begin and end with an alphanumeric character with dashes(-), underscores(_), dots(.), at(@), and alphanumerics between";
+                default:
+                    throw new ArgumentException($"Unknown valication type {CustomValidationType}");
             }
         }
     }

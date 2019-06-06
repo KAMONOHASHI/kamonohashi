@@ -24,6 +24,11 @@ namespace Nssol.Platypus.Infrastructure
         public string Name { get; set; }
 
         /// <summary>
+        /// ユーザコードとなるユーザの別名
+        /// </summary>
+        public string Alias { get; set; }
+
+        /// <summary>
         /// 認証サービス種別
         /// </summary>
         public AuthServiceType ServiceType { get; set; }
