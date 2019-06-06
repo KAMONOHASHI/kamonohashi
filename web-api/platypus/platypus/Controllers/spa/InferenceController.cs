@@ -179,7 +179,14 @@ namespace Nssol.Platypus.Controllers.spa
             }
             if (string.IsNullOrEmpty(filter.ParentName) == false)
             {
-                data = data.Where(d => d.Parent != null && d.Parent.Name != null && d.Parent.Name.Contains(filter.ParentName));
+                if (filter.ParentName.StartsWith("!"))
+                {
+                    data = data.Where(d => d.Parent != null && d.Parent.Name != null && d.Parent.Name.Contains(filter.ParentName.Substring(1)) == false);
+                }
+                else
+                {
+                    data = data.Where(d => d.Parent != null && d.Parent.Name != null && d.Parent.Name.Contains(filter.ParentName));
+                }
             }
             return data;
         }
