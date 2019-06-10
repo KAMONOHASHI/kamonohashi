@@ -3,7 +3,7 @@
 readonly SCRIPT_DIR=$(cd $(dirname $0); pwd)
 
 show_help() {
-    echo "available args: prepare, deploy, clean, update, credentials, help"
+    echo "available args: prepare, deploy, clean, update, credentials, upgrade, help"
 }
 
 
@@ -32,8 +32,9 @@ deploy(){
     helm install charts/kamonohashi -f conf/settings.yml -n kamonohashi --namespace kqi-system
 }
 
-update(){
-  helm upgrade kamonohashi charts/kamonohashi -f conf/settings.yml --namespace kqi-system
+upgrade(){
+    helm dependency update charts/kamonohashi
+    helm upgrade -i kamonohashi charts/kamonohashi -f conf/settings.yml --namespace kqi-system
 }
 
 clean(){
@@ -44,7 +45,7 @@ main(){
   case $1 in
     prepare) prepare ;;
     deploy) deploy ;;
-    update) update;;
+    upgrade) upgrade;;
     credentials) set_credentials;;
     clean) clean ;;
     help) show_help ;;
