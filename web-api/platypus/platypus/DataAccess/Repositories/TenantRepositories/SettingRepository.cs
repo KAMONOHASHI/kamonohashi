@@ -102,7 +102,7 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
         /// </summary>
         private void InitializeDB()
         {
-            // DBの初期化に成功したか
+            // DBを初期化したか
             bool isInitializeDB = false;
 
             int retryCount = 1;
@@ -135,7 +135,7 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
                     }
 
                     // DB の初期化
-                    isInitializeDB = seed.InitilizeDB();
+                    isInitializeDB = seed.InitializeDB();
                     LogInfo($"DB を初期化しました。");
                     break;
                 }
@@ -152,7 +152,7 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
                 return;
             }
 
-            // DBの初期化に成功した場合
+            // DBを初期化した場合
             if (isInitializeDB)
             {
                 //

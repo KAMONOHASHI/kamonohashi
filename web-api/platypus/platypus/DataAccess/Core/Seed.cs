@@ -110,14 +110,13 @@ namespace Nssol.Platypus.DataAccess.Core
         /// <summary>
         /// DBを初期化する。
         /// </summary>
-        public bool InitilizeDB()
+        public bool InitializeDB()
         {
             // DBを初期化したか
             bool isInitializeDB = false;
-            // DB の初期化
+            // 初期化済みではない場合、DBを初期化
             if (!IsInitializedDB())
             {
-                // 念のため初期化済みかどうかをチェック
                 CreateInitialDB();
                 isInitializeDB = true;
             }
