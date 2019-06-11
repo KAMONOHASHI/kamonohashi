@@ -32,7 +32,7 @@ deploy(){
     helm install charts/kamonohashi -f conf/settings.yml -n kamonohashi --namespace kqi-system
 }
 
-upgrade(){
+update(){
     helm dependency update charts/kamonohashi
     helm upgrade -i kamonohashi charts/kamonohashi -f conf/settings.yml --namespace kqi-system
 }
@@ -45,7 +45,7 @@ main(){
   case $1 in
     prepare) prepare ;;
     deploy) deploy ;;
-    upgrade) upgrade;;
+    update) update;;
     credentials) set_credentials;;
     clean) clean ;;
     help) show_help ;;
