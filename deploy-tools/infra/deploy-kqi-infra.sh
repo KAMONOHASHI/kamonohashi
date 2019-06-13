@@ -55,7 +55,7 @@ deploy(){
 scale(){
     ask_ssh_conf
     make_extra_arg
-    ansible-playbook -i conf/inventory -e "$EXTRA_ARG" -e @conf/vars.yml kubespray/scale.yml -b 
+    ansible-playbook -i conf/inventory -e "$EXTRA_ARG" -e @conf/vars.yml scale-cluster.yml -b 
 }
 
 run_test(){

@@ -1,7 +1,6 @@
 # KQIクラスタのデフォルト構成
 nvidia_device_plugin_version: 1.0.0-beta
-nvidia_driver: nvidia-384
-install_nvidia_driver: false
+
 nvidia_docker_packages:
     - nvidia-container-runtime=2.0.0+docker18.09.6-3
     - nvidia-docker2=2.0.3+docker18.09.6-3
