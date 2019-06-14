@@ -9,7 +9,7 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
     public class EditInputModel
     {
         /// <summary>
-        /// 学習名
+        /// 識別名
         /// </summary>
         [Required]
         [Controllers.Util.CustomValidation(Controllers.Util.CustomValidationType.Alphanumeric)]
