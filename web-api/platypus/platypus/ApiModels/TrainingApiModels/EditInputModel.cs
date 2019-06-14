@@ -9,6 +9,13 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
     public class EditInputModel
     {
         /// <summary>
+        /// 学習名
+        /// </summary>
+        [Required]
+        [Controllers.Util.CustomValidation(Controllers.Util.CustomValidationType.Alphanumeric)]
+        public string Name { get; set; }
+
+        /// <summary>
         /// メモ
         /// </summary>
         public string Memo { get; set; }
