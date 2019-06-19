@@ -56,7 +56,6 @@
 
 <script>
   import api from '@/api/v1/api'
-  import PreprocessingHistoryIndex from './HistoryIndex'
   import SmartSearchInput from '@/components/common/SmartSearchInput/Index'
 
   export default {
@@ -65,7 +64,6 @@
       return this.$t('title')
     },
     components: {
-      'pl-index-details': PreprocessingHistoryIndex,
       'pl-smart-search-input': SmartSearchInput
     },
     data () {

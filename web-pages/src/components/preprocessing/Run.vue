@@ -95,7 +95,6 @@
 </template>
 
 <script>
-  import DisplayTextForm from '@/components/common/DisplayTextForm.vue'
   import DynamicMultiInputField from '@/components/common/DynamicMultiInputField.vue'
   import DisplayError from '@/components/common/DisplayError'
   import PreprocessingsSelector from '@/components/common/PreprocessingSelector.vue'
@@ -107,7 +106,6 @@
     components: {
       'pl-preprocessings-selector': PreprocessingsSelector,
       'pl-string-selector': StringSelector,
-      'pl-display-text': DisplayTextForm,
       'pl-dynamic-multi-input': DynamicMultiInputField,
       'pl-display-error': DisplayError
     },

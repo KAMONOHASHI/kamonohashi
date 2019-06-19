@@ -175,8 +175,6 @@
   import DeleteButton from '@/components/common/DeleteButton.vue'
   import FileManager from '@/components/common/FileManager.vue'
   import DataSetDetails from '@/components/common/DatasetDetails.vue'
-  import ContainerSelector from '@/components/common/ContainerSelector.vue'
-  import TrainingHistorySelector from '@/components/common/TrainingHistorySelector.vue'
   import TrainingHistoryDetails from '@/components/common/TrainingHistoryDetails.vue'
   import api from '@/api/v1/api'
 
@@ -188,8 +186,6 @@
       'pl-display-error': DisplayError,
       'pl-file-manager': FileManager,
       'pl-dataset-details': DataSetDetails,
-      'pl-container-selector': ContainerSelector,
-      'pl-training-history-selector': TrainingHistorySelector,
       'pl-training-history-details': TrainingHistoryDetails
     },
     props: {

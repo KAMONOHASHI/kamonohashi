@@ -2,23 +2,26 @@
   <span>
     <span v-if="multiple">
       <el-select class="selectTenant" :value="value" @change="handleChange" multiple placeholder="Select">
-        <el-option
-          v-for="item in list"
-          :key="item.id"
-          :label="item.displayName"
-          :value="item.id"
-          v-if="item.isSystemRole === showSystem"/>
+        <template v-for="item in list">
+          <el-option
+            :key="item.id"
+            :label="item.displayName"
+            :value="item.id"
+            v-if="item.isSystemRole === showSystem">
+          </el-option>
+        </template>
       </el-select>
     </span>
     <span v-else>
       <el-select class="selectTenant" :value="value" @change="handleChange" placeholder="Select" :clearable="true">
-        <el-option
-          v-for="item in list"
-          :key="item.id"
-          :label="item.displayName"
-          :value="item.id"
-          v-if="item.isSystemRole === showSystem">
-        </el-option>
+        <template v-for="item in list">
+          <el-option
+            :key="item.id"
+            :label="item.displayName"
+            :value="item.id"
+            v-if="item.isSystemRole === showSystem">
+          </el-option>
+        </template>
       </el-select>
     </span>
   </span>

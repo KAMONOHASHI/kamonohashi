@@ -45,14 +45,12 @@
 
 <script>
   import DisplayError from '@/components/common/DisplayError'
-  import DisplayTextForm from '@/components/common/DisplayTextForm'
   import DeleteButton from '@/components/common/DeleteButton.vue'
   import api from '@/api/v1/api'
 
   export default {
     name: 'DataSetCreate',
     components: {
-      'pl-display-text-form': DisplayTextForm,
       'pl-display-error': DisplayError,
       'pl-delete-button': DeleteButton
     },
