@@ -9,7 +9,7 @@
              :rules="rules"
              ref="form">
       <pl-display-error :error="error"/>
-      <pl-display-text label="ユーザアカウント" :value="name"/>
+      <pl-display-text label="ユーザ名" :value="name"/>
       <pl-display-text label="認証タイプ" :value="displayServiceType"/>
       <el-form-item label="テナントロール" prop="roleIds">
         <pl-role-selector v-model="roleIds" :multiple="true" :tenant="true"/>

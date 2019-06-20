@@ -9,7 +9,7 @@
              :rules="rules"
              ref="form">
       <pl-display-error :error="error"/>
-      <el-form-item label="ユーザアカウント" prop="name">
+      <el-form-item label="ユーザ名" prop="name">
         <el-input v-model="name"/>
       </el-form-item>
       <el-form-item label="パスワード" prop="password">
