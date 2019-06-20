@@ -40,7 +40,7 @@
         <el-table class="data-table pl-index-table" :data="tableData" @row-click="openEditDialog" border>
           <el-table-column prop="dataId" label="入力データID" width="120px"/>
           <el-table-column prop="dataName" label="入力データ名" width="auto"/>
-          <el-table-column prop="createdAt" label="実行日" width="170px"/>
+          <el-table-column prop="createdAt" label="実行日時" width="170px"/>
           <el-table-column width="25px">
             <div slot-scope="scope">
               <div v-if="scope.row.status === 'Running' | scope.row.status === 'Completed'">

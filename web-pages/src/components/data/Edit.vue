@@ -26,7 +26,7 @@
         <el-input type="textarea" v-model="memo"/>
       </el-form-item>
       <pl-display-text label="登録者" :value="createdBy"/>
-      <pl-display-text label="登録日" :value="createdAt"/>
+      <pl-display-text label="登録日時" :value="createdAt"/>
 
       <el-form-item label="ファイル一覧">
         <br/>

@@ -33,7 +33,7 @@
           <el-table-column prop="id" label="ID" width="120px"/>
           <el-table-column prop="name" label="前処理名" width="auto"/>
           <el-table-column prop="memo" label="メモ" width="auto"/>
-          <el-table-column prop="createdAt" label="登録日" width="170px"/>
+          <el-table-column prop="createdAt" label="登録日時" width="170px"/>
           <el-table-column width="auto">
             <template slot-scope="props">
               <el-button @click="openHistoryIndex(props.row)" icon="el-icon-time" type="primary"
@@ -76,7 +76,7 @@
           {prop: 'id', name: 'ID', type: 'number'},
           {prop: 'name', name: '前処理名', type: 'text'},
           {prop: 'memo', name: 'メモ', type: 'text'},
-          {prop: 'createdAt', name: '登録日', type: 'date'}
+          {prop: 'createdAt', name: '登録日時', type: 'date'}
         ],
         total: 0,
         tableData: [],

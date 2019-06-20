@@ -68,7 +68,7 @@
                       <pl-display-text label="データ名" :value="data.name"/>
                     </el-col>
                     <el-col :offset="1" :span="8">
-                      <pl-display-text label="登録日" :value="data.createdAt"/>
+                      <pl-display-text label="登録日時" :value="data.createdAt"/>
                       <pl-display-text label="登録者" :value="data.createdBy"/>
                     </el-col>
                   </el-row>
@@ -122,7 +122,7 @@
           {prop: 'id', name: 'ID', type: 'number'},
           {prop: 'name', name: 'データ名', type: 'text'},
           {prop: 'memo', name: 'メモ', type: 'text'},
-          {prop: 'createdAt', name: '登録日', type: 'date'},
+          {prop: 'createdAt', name: '登録日時', type: 'date'},
           {prop: 'createdBy', name: '登録者', type: 'text'},
           {prop: 'tag', name: 'タグ', type: 'text', multiple: true}
         ],
