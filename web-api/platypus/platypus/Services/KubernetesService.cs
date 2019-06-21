@@ -501,7 +501,7 @@ namespace Nssol.Platypus.Services
                 NodeName = item.Spec.NodeName,
                 Status = new ContainerStatus(item.Status.Phase),
                 NodeIpAddress = item.Status.HostIP,
-                CreatedBy = item.Spec.ServiceAccountName
+                CreatedBy = item.Spec.ServiceAccountName //サービスアカウント名（＝ランダム文字列）
             };
 
             info.ConditionNote = item.ConditionNote;
@@ -510,9 +510,17 @@ namespace Nssol.Platypus.Services
             {
                 foreach (var container in item.Spec.Containers) {
                     info.Image += container.Image;
-                    info.Cpu += container.Resources.Requests.CpuNum;
-                    info.Memory += container.Resources.Requests.MemoryGi;
-                    info.Gpu += container.Resources.Requests.Gpu;
+                    if (container.Resources?.Requests == null)
+                    {
+                        //KAMONOHASHIで立てたコンテナは全てResources.Requestsが指定されているが、万が一KAMONOHASHI外から立てたコンテナが存在する場合、NULLになってしまう
+                        info.TenantName = "!Unmanaged! " + info.TenantName;
+                    }
+                    else
+                    {
+                        info.Cpu += container.Resources.Requests.CpuNum;
+                        info.Memory += container.Resources.Requests.MemoryGi;
+                        info.Gpu += container.Resources.Requests.Gpu;
+                    }
                 }
             }
             if (DateTime.TryParse(item.Status.StartTime, out DateTime d))
