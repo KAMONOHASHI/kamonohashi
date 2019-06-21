@@ -24,16 +24,19 @@ namespace Nssol.Platypus.Controllers.spa
     {
         // for DI
         private readonly ITenantRepository tenantRepository;
+        private readonly IUserRepository userRepository;
         private readonly ICommonDiLogic commonDiLogic;
         private readonly IClusterManagementLogic clusterManagementLogic;
 
         public ResourceController(
           ITenantRepository tenantRepository,
+          IUserRepository userRepository,
           ICommonDiLogic commonDiLogic,
           IClusterManagementLogic clusterManagementLogic,
           IHttpContextAccessor accessor) : base(accessor)
         {
             this.tenantRepository = tenantRepository;
+            this.userRepository = userRepository;
             this.commonDiLogic = commonDiLogic;
             this.clusterManagementLogic = clusterManagementLogic;
         }
@@ -135,14 +138,20 @@ namespace Nssol.Platypus.Controllers.spa
                     if (result.ContainsKey(container.TenantName))
                     {
                         //テナント単位で集計する場合、テナントIDは自明なので、CreateContainerDetailsOutputModel()は使わない
-                        result[container.TenantName].Add(new ContainerDetailsOutputModel(container));
+                        result[container.TenantName].Add(new ContainerDetailsOutputModel(container)
+                        {
+                            CreatedBy = userRepository.GetUserName(container.CreatedBy)
+                        });
                     }
                     else
                     {
                         //正体不明のテナントに紐づいたコンテナ
 
                         var unknownModel = new TenantResourceOutputModel(container.TenantName);
-                        unknownModel.Add(new ContainerDetailsOutputModel(container));
+                        unknownModel.Add(new ContainerDetailsOutputModel(container)
+                        {
+                            CreatedBy = userRepository.GetUserName(container.CreatedBy)
+                        });
                         result.Add(container.TenantName, unknownModel);
                     }
                 }
@@ -179,7 +188,10 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         private ContainerDetailsOutputModel CreateContainerDetailsOutputModel(ContainerDetailsInfo info)
         {
-            var model = new ContainerDetailsOutputModel(info);
+            var model = new ContainerDetailsOutputModel(info)
+            {
+                CreatedBy = userRepository.GetUserName(info.CreatedBy)
+            };
             var tenant = tenantRepository.GetFromTenantName(info.TenantName);
             if(tenant == null)
             {
@@ -242,7 +254,8 @@ namespace Nssol.Platypus.Controllers.spa
                 TenantId = tenant.Id,
                 TenantName = tenant.Name,
                 DisplayName = tenant.DisplayName,
-                ContainerType = CheckContainerType(name, true).Item1 //コンテナの種別を確認
+                ContainerType = CheckContainerType(name, true).Item1, //コンテナの種別を確認
+                CreatedBy = userRepository.GetUserName(info.CreatedBy)
             };
 
             return JsonOK(result);

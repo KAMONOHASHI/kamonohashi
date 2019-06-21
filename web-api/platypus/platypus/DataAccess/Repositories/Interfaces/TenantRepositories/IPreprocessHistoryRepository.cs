@@ -66,6 +66,13 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories
         Task<bool> ExistsByInputDataIdAsync(long id);
 
         /// <summary>
+        /// 前処理履歴を削除します。
+        /// </summary>
+        /// <param name="preprocessHistory">削除対象前処理履歴</param>
+        /// <param name="force">他テナントに対する変更を許可するか</param>
+        void Delete(PreprocessHistory preprocessHistory, bool force);
+
+        /// <summary>
         /// 指定したデータIDの派生元データを取得する。
         /// </summary>
         /// <param name="id">データID</param>

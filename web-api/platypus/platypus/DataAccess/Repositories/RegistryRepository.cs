@@ -88,6 +88,10 @@ namespace Nssol.Platypus.DataAccess.Repositories
                         utrMap.RegistryUserName = existMap.RegistryUserName;
                         utrMap.RegistryPassword = existMap.RegistryPassword;
                     }
+                    else
+                    {
+                        utrMap.RegistryUserName = registry.ProjectName;
+                    }
                     AddModel<UserTenantRegistryMap>(utrMap);
                     maps.Add(utrMap);
                 }
