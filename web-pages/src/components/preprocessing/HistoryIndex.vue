@@ -13,7 +13,7 @@
         <el-table class="data-table" :data="tableData" @row-click="openEditDialog" border>
           <el-table-column prop="dataId" label="データID" width="120px"/>
           <el-table-column prop="dataName" label="データ名" width="auto"/>
-          <el-table-column prop="createdAt" label="実行日" width="170px"/>
+          <el-table-column prop="createdAt" label="実行日時" width="170px"/>
           <el-table-column prop="status" label="ステータス" width="120px"/>
         </el-table>
       </div>
