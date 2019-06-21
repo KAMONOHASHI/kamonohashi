@@ -512,8 +512,10 @@ namespace Nssol.Platypus.Services
                     info.Image += container.Image;
                     if (container.Resources?.Requests == null)
                     {
-                        //KAMONOHASHIで立てたコンテナは全てResources.Requestsが指定されているが、万が一KAMONOHASHI外から立てたコンテナが存在する場合、NULLになってしまう
-                        info.TenantName = "!Unmanaged! " + info.TenantName;
+                        //KAMONOHASHIで立てたコンテナは全てResources.Requestsが指定されているはずだが、
+                        //KAMONOHASHI外から立てたコンテナが存在する場合など、NULLになってしまう時は警告だけ出してスキップ
+                        //UI表示は上流で行う
+                        LogWarning($"{info.TenantName}/{info.Name}の要求リソースサイズが取得できません");
                     }
                     else
                     {
@@ -1550,7 +1552,7 @@ namespace Nssol.Platypus.Services
             return Result<Dictionary<string, string>, string>.CreateResult(labelMap);
         }
 
-        /// <sum
+        /// <summary>
         /// 全ノード情報を取得する。
         /// 取得失敗した場合はnullが返る。
         /// </summary>

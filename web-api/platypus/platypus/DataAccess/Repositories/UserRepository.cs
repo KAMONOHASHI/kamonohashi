@@ -70,7 +70,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
             var user = Find(u => u.Alias.Contains(nameAlias));
             if (user == null)
             {
-                return null;
+                return "!Unknown User!";
             }
             return user.Name;
         }
