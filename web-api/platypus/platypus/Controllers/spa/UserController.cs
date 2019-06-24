@@ -107,6 +107,11 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonBadRequest("Invalid inputs.");
             }
+            if (string.IsNullOrWhiteSpace(model.Password))
+            {
+                //パスワードに空文字は許可しない
+                return JsonBadRequest($"Password is NOT allowed to set empty string.");
+            }
             //データの存在チェック
             User user = userRepository.GetUser(model.Name);
             if (user != null)
@@ -318,9 +323,10 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonNotFound($"User ID {id} is not found.");
             }
-            if (string.IsNullOrEmpty(password))
+            if (string.IsNullOrWhiteSpace(password))
             {
-                return JsonNotFound($"password is not found.");
+                //新しいパスワードに空文字は許可しない
+                return JsonBadRequest($"Password is NOT allowed to set empty string.");
             }
 
             //パスワードをハッシュ化
