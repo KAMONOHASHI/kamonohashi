@@ -698,6 +698,19 @@ namespace Nssol.Platypus.Controllers.spa
         }
 
         /// <summary>
+        /// 学習を途中で強制終了させる。
+        /// ユーザ自身がジョブを停止させた場合。
+        /// </summary>
+        /// <param name="id">学習履歴ID</param>
+        [HttpPost("{id}/user-cancel")]
+        [Filters.PermissionFilter(MenuCode.Training)]
+        [ProducesResponseType(typeof(SimpleOutputModel), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> UserCancel(long? id)
+        {
+            return await ExitAsync(id, ContainerStatus.UserCancelled);
+        }
+
+        /// <summary>
         /// 学習を正常終了させる。
         /// </summary>
         /// <param name="id">学習履歴ID</param>
