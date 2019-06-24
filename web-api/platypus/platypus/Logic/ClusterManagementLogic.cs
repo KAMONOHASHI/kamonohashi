@@ -339,11 +339,21 @@ namespace Nssol.Platypus.Logic
             // ユーザの任意追加環境変数をマージする
             AddUserEnvToInputModel(preprocessHistory.OptionDic, inputModel);
 
-            //使用できるノードを取得し、制約に追加
-            inputModel.ConstraintList = new Dictionary<string, List<string>>()
+            // 使用できるノードを取得する
+            var nodes = GetAccessibleNode();
+            if (nodes == null || nodes.Count == 0)
             {
-                { containerOptions.ContainerLabelHostName, GetAccessibleNode() }
-            };
+                // デプロイ可能なノードがゼロなら、エラー扱い
+                return Result<ContainerInfo, string>.CreateErrorResult("Access denied.　There is no node this tenant can use.");
+            }
+            else
+            {
+                // 制約に追加
+                inputModel.ConstraintList = new Dictionary<string, List<string>>()
+                {
+                    { containerOptions.ContainerLabelHostName, nodes }
+                };
+            }
 
             if (string.IsNullOrEmpty(preprocessHistory.Partition) == false)
             {
