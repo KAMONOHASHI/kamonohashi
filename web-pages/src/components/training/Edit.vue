@@ -128,7 +128,7 @@
             <div v-if="statusType === 'Running'  || statusType === 'Error'">
               <el-form-item label="操作">
                 <div class="el-input">
-                  <pl-delete-button buttonLabel="ジョブ停止" @delete="haltJob" message="ジョブを停止しますか"/>
+                  <pl-delete-button buttonLabel="ジョブ停止" @delete="userCancelJob" message="ジョブを停止しますか"/>
                 </div>
                 <div v-if="status === 'Running'">
                   <div class="el-input" style="padding: 10px 0">
@@ -258,6 +258,15 @@
       async haltJob () {
         try {
           await api.training.postHaltById({id: this.trainingId})
+          await this.getDetail()
+          this.error = null
+        } catch (e) {
+          this.error = e
+        }
+      },
+      async userCancelJob () {
+        try {
+          await api.training.postUserCancelById({id: this.trainingId})
           await this.getDetail()
           this.error = null
         } catch (e) {
