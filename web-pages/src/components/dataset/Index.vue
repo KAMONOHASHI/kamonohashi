@@ -14,7 +14,7 @@
       </el-col>
       <el-col class="right-top-button" :span="8">
         <el-button @click="openCreateDialog()" icon="el-icon-edit-outline" type="primary" plain>
-          新規登録
+          新規作成
         </el-button>
       </el-col>
     </el-row>

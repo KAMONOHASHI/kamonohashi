@@ -1,6 +1,6 @@
 <template>
   <el-dialog class="dialog"
-             title="ユーザ新規作成"
+             title="ユーザ作成"
              :visible="dialogVisible"
              :before-close="handleCancel"
              :close-on-click-modal="false">
