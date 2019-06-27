@@ -1,6 +1,6 @@
 <template>
   <el-dialog class="dialog"
-             title="テナント新規作成"
+             title="テナント作成"
              :visible="dialogVisible"
              :before-close="closeDialog"
              :close-on-click-modal="false">

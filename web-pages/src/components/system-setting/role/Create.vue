@@ -24,7 +24,7 @@
       </el-form-item>
       <el-form-item label="ソート順" prop="sortOrder">
         <br />
-        <el-input-number v-model="form.sortOrder" controls-position="right" />
+        <el-input-number v-model="form.sortOrder" controls-position="right" style="vertical-align: middle;"/>
         並び順。小さいほど前に表示される。一意性は不要。
       </el-form-item>
       <el-row class="right-button-group footer">

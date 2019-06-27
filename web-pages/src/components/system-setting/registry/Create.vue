@@ -50,7 +50,7 @@
 
       <el-row class="right-button-group footer">
         <el-button @click="emitCancel">キャンセル</el-button>
-        <el-button type="primary" @click="createRegistry">作成</el-button>
+        <el-button type="primary" @click="createRegistry">登録</el-button>
       </el-row>
 
     </el-form>
