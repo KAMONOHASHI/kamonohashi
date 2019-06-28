@@ -177,6 +177,23 @@ namespace Nssol.Platypus.Controllers.spa
         }
 
         /// <summary>
+        /// マウントする学習履歴を取得
+        /// </summary>
+        [HttpGet("mount")]
+        [Filters.PermissionFilter(MenuCode.Training)]
+        [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
+        public IActionResult GetTrainingToMount()
+        {
+            var data = trainingHistoryRepository.GetAllIncludeDataSetWithOrdering();
+
+            // ステータスを限定する
+            data = data.Where(t => t.GetStatus().ToString() == "Completed" || t.GetStatus().ToString() == "UserCancelled");
+
+            // SQLが多重実行されることを防ぐため、ToListで即時発行させたうえで、結果を生成
+            return JsonOK(data.ToList().Select(history => GetUpdatedIndexOutputModelAsync(history).Result));
+        }
+        
+        /// <summary>
         /// 指定されたIDの学習履歴の詳細情報を取得。
         /// </summary>
         /// <param name="id">学習履歴ID</param>

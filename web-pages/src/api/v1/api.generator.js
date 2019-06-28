@@ -7450,6 +7450,45 @@ export const ApiV1TrainingByIdCompletePostURL = function (parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * マウントする学習履歴を取得
+ * request: ApiV1TrainingToMountGet
+ * url: ApiV1TrainingToMountGetURL
+ * method: ApiV1TrainingToMountGet_TYPE
+ * raw_url: ApiV1TrainingToMountGet_RAW_URL
+ */
+export const ApiV1TrainingToMountGet = function (parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v1/training/mount'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV1TrainingToMountGet_RAW_URL = function () {
+  return '/api/v1/training/mount'
+}
+export const ApiV1TrainingToMountGet_TYPE = function () {
+  return 'get'
+}
+export const ApiV1TrainingToMountGetURL = function (parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v1/training/mount'
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * 管理者向けにユーザの一覧を取得する。
  * request: ApiV1AdminUsersGet
  * url: ApiV1AdminUsersGetURL

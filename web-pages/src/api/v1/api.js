@@ -209,7 +209,8 @@ let api = {
     deleteTensorboardById: gen.ApiV1TrainingByIdTensorboardDelete,
     postHaltById: gen.ApiV1TrainingByIdHaltPost,
     postUserCancelById: gen.ApiV1TrainingByIdUserCancelPost,
-    getEventsById: gen.ApiV1TrainingByIdEventsGet
+    getEventsById: gen.ApiV1TrainingByIdEventsGet,
+    getMount: gen.ApiV1TrainingToMountGet
   },
 
   inference: {

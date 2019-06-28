@@ -1,5 +1,5 @@
-<!--name: 学習完了済み履歴セレクタ,-->
-<!--description: 学習完了済み履歴を選択するドロップダウンメニュー。選択すると詳細がホバーで出る。,-->
+<!--name: マウントする学習履歴セレクタ,-->
+<!--description: マウントする学習履歴を選択するドロップダウンメニュー。選択すると詳細がホバーで出る。,-->
 <!--props: { value: デフォルトで選択されている学習履歴情報},-->
 <!--events: {  input(parent): 選択された学習履歴情報。選択解除時には null が送られる}-->
 <template>
@@ -32,7 +32,7 @@
         remote
         :clearable="true">
         <el-option
-          v-for="item in trainingCompletedHistories"
+          v-for="item in trainingHistoriesToMount"
           :key="item.id"
           :label="item.fullName"
           :value="item">
@@ -55,7 +55,7 @@
     },
     data () {
       return {
-        trainingCompletedHistories: [],
+        trainingHistoriesToMount: [],
         parent: this.value === undefined || this.value === null
           ? {
             id: undefined,
@@ -72,14 +72,11 @@
       }
     },
     async created () {
-      await this.getTrainingCompletedHistories()
+      await this.getTrainingHistoriesToMount()
     },
     methods: {
-      async getTrainingCompletedHistories () {
-        let params = this.parent
-        params.status = 'Completed'
-
-        this.trainingCompletedHistories = (await api.training.get(params)).data
+      async getTrainingHistoriesToMount () {
+        this.trainingHistoriesToMount = (await api.training.getMount()).data
       },
       async onChange (parent) {
         if (parent.id) {
