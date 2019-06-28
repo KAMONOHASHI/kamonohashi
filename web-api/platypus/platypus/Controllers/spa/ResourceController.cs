@@ -462,12 +462,12 @@ namespace Nssol.Platypus.Controllers.spa
                 case ContainerType.Training:
                     //学習コンテナを強制終了させる
                     var trainingLogicForTraining = commonDiLogic.DynamicDi<ITrainingLogic>();
-                    await trainingLogicForTraining.ExitAsync(container.Item2 as TrainingHistory, ContainerStatus.UserCancelled, force);
+                    await trainingLogicForTraining.ExitAsync(container.Item2 as TrainingHistory, ContainerStatus.Killed, force);
                     break;
                 case ContainerType.Inferencing:
                     //推論コンテナを強制終了させる
                     var inferenceLogic = commonDiLogic.DynamicDi<IInferenceLogic>();
-                    await inferenceLogic.ExitAsync(container.Item2 as InferenceHistory, ContainerStatus.UserCancelled, force);
+                    await inferenceLogic.ExitAsync(container.Item2 as InferenceHistory, ContainerStatus.Killed, force);
                     break;
                 case ContainerType.Preprocessing:
                     //前処理コンテナを強制終了させる

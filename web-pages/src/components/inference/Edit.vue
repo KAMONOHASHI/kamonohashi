@@ -124,7 +124,7 @@
             <div v-if="statusType === 'Running'  || statusType === 'Error'">
               <el-form-item label="操作">
                 <div class="el-input">
-                  <pl-delete-button buttonLabel="ジョブ停止" @delete="userCancelJob" message="ジョブを停止しますか"/>
+                  <pl-delete-button buttonLabel="ジョブ停止" @delete="showConfirm" message="ジョブを停止しますか"/>
                 </div>
                 <div v-if="status === 'Running'">
                   <div class="el-input" style="padding: 10px 0">
@@ -248,6 +248,23 @@
         // 共通側ローディングを再度有効化
         this.loading = false
         this.$store.commit('setLoading', true)
+      },
+      async showConfirm () {
+        let confirmMessage = '正常停止しますか、異常停止しますか。'
+        await this.$confirm(confirmMessage, 'Warning', {
+          distinguishCancelAndClose: true,
+          confirmButtonText: '正常停止',
+          cancelButtonText: '異常停止',
+          type: 'warning'
+        })
+        .then(() => {
+          this.userCancelJob() // 正常停止（Status=UserCancelled）
+        })
+        .catch(action => {
+          if (action === 'cancel') {
+            this.haltJob() // 異常停止（Status=Killed）
+          }
+        })
       },
       async haltJob () {
         try {
