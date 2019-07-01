@@ -149,7 +149,13 @@
             name: this.name
           }
           let content = (await api.resource.admin.getContainerLogByName(params)).data
-          this.filename = this.form.node + '_' + this.form.tenant + '_' + this.form.name + '.log'
+
+          if (!this.form.node) {
+            // ノードが振り分けられていない場合
+            this.filename = this.form.tenant + '_' + this.form.name + '.log'
+          } else {
+            this.filename = this.form.node + '_' + this.form.tenant + '_' + this.form.name + '.log'
+          }
 
           let a = document.getElementById('download')
           a.download = this.filename
