@@ -12,7 +12,7 @@
         </el-col>
       </el-row>
 
-      <el-form>
+      <el-form :model="this" :rules="rules" ref="updateForm">
         <pl-display-error :error="error"/>
         <el-row :gutter="20">
           <el-col :span="12">
@@ -22,7 +22,9 @@
                 <div class="el-icon-star-off favorite" v-else v-on:click="favorite = true"></div>
               </span>
             </pl-display-text-form>
-            <pl-display-text-form label="学習名" :value="name"/>
+            <el-form-item label="学習名" prop="name">
+              <el-input v-model="name"/>
+            </el-form-item>
             <div v-if="parent">
               <el-form-item label="親学習">
                 <el-popover
@@ -210,6 +212,9 @@
     },
     data () {
       return {
+        rules: {
+          name: [{required: true, trigger: 'blur', message: '必須項目です'}]
+        },
         trainingId: undefined,
         dialogVisible: true,
         error: undefined,
@@ -356,20 +361,27 @@
       },
       async updateHistory () {
         let putData = {
+          name: this.name,
           memo: this.memo,
           favorite: this.favorite
         }
         await api.training.putById({id: this.trainingId, model: putData})
       },
       async onSubmit () {
-        try {
-          await this.uploadFile()
-          await this.updateHistory()
-          this.emitDone()
-          this.error = null
-        } catch (e) {
-          this.error = e
-        }
+        let form = this.$refs.updateForm
+
+        await form.validate(async (valid) => {
+          if (valid) {
+            try {
+              await this.updateHistory()
+              await this.uploadFile()
+              this.emitDone()
+              this.error = null
+            } catch (e) {
+              this.error = e
+            }
+          }
+        })
       },
       async deleteFile (fileId) {
         try {

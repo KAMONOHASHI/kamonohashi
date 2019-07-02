@@ -12,8 +12,8 @@
 
       <h3>テナント情報</h3>
       <div class="margin">
-        <el-form-item label="テナント名" prop="name">
-          <el-input v-model="form.name"/>
+        <el-form-item label="テナント名" prop="tenantName">
+          <el-input v-model="form.tenantName"/>
         </el-form-item>
         <el-form-item label="表示名" prop="displayName">
           <el-input v-model="form.displayName"/>
@@ -73,7 +73,7 @@
         error: null,
 
         form: {
-          name: '',
+          tenantName: '',
           displayName: '',
           gitIds: [],
           defaultGitId: null,
@@ -83,7 +83,7 @@
         },
 
         rules: {
-          name: [{required: true, trigger: 'blur', message: '必須項目です'}],
+          tenantName: [{required: true, trigger: 'blur', message: '必須項目です'}],
           displayName: [{required: true, trigger: 'blur', message: '必須項目です'}],
           gitIds: [{required: true, trigger: 'blur', message: '必須項目です'}],
           defaultGitId: [{required: true, trigger: 'blur', message: '必須項目です'}],

@@ -61,6 +61,26 @@ namespace Nssol.Platypus.ServiceModels.KubernetesModels
             public string StartTime { get; set; }
 
             public List<ConditionModel> Conditions { get; set; }
+
+            public List<ContainerStatusModel> ContainerStatuses { get; set; }
+
+            public bool isOOMKilled
+            {
+                get
+                {
+                    // コンテナが立っているか
+                    if (ContainerStatuses != null)
+                    {
+                        // mainコンテナのステータスを取得する
+                        var mainContainerStatus = ContainerStatuses.Where(container => container.name == "main").FirstOrDefault().state;
+                        if (mainContainerStatus.terminated != null && mainContainerStatus.terminated.reason == "OOMKilled")
+                        {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+            }
         }
 
         public class ConditionModel
@@ -71,6 +91,22 @@ namespace Nssol.Platypus.ServiceModels.KubernetesModels
             public string LastTransitionTime { get; set; }
             public string Reason { get; set; }
             public string Message { get; set; }
+        }
+
+        public class ContainerStatusModel
+        {
+            public string name { get; set; }
+            public StateModel state { get; set; }
+        }
+
+        public class StateModel
+        {
+            public TerminatedModel terminated { get; set; }
+            public class TerminatedModel
+            {
+                public string exitCode { get; set; }
+                public string reason { get; set; }
+            }
         }
 
         public class SpecModel

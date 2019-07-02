@@ -32,6 +32,10 @@ namespace Nssol.Platypus.Infrastructure
         /// </summary>
         public static ContainerStatus Running = new ContainerStatus("KQI-Running", ContainerStatusType.Running, "Running");
         /// <summary>
+        /// コンテナが立ち実行中だが、OOM Killedとなりコンテナが落ちている状態
+        /// </summary>
+        public static ContainerStatus OOMKilled = new ContainerStatus("OOMKilled", ContainerStatusType.Running, "OOMKilled");
+        /// <summary>
         /// コンテナが正常終了した。
         /// </summary>
         public static ContainerStatus Completed = new ContainerStatus("KQI-Completed", ContainerStatusType.Closed, "Completed");

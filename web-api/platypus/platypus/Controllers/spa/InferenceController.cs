@@ -422,7 +422,14 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonNotFound($"Inference ID {id.Value} is not found.");
             }
+            //推論名の入力チェック
+            if (string.IsNullOrWhiteSpace(model.Name))
+            {
+                //推論名に空文字は許可しない
+                return JsonBadRequest($"A name of inference is NOT allowed to set empty string.");
+            }
 
+            history.Name = EditColumn(model.Name, history.Name);
             history.Memo = EditColumn(model.Memo, history.Memo);
             history.Favorite = EditColumn(model.Favorite, history.Favorite);
             unitOfWork.Commit();

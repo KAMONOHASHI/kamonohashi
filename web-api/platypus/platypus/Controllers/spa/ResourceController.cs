@@ -501,7 +501,10 @@ namespace Nssol.Platypus.Controllers.spa
             var result = await clusterManagementLogic.GetAllContainerDetailsInfosAsync(CurrentUserInfo.SelectedTenant.Name);
             if (result.IsSuccess)
             {
-                return JsonOK(result.Value.Select(info => new ContainerDetailsForTenantOutputModel(info)));
+                return JsonOK(result.Value.Select(info => new ContainerDetailsForTenantOutputModel(info)
+                {
+                    CreatedBy = userRepository.GetUserName(info.CreatedBy)
+                }));
             }
             else
             {
@@ -616,6 +619,7 @@ namespace Nssol.Platypus.Controllers.spa
             }
             var result = new ContainerDetailsForTenantOutputModel(info)
             {
+                CreatedBy = userRepository.GetUserName(info.CreatedBy),
                 ContainerType = CheckContainerType(name, false).Item1 //コンテナの種別を確認
             };
 
