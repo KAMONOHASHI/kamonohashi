@@ -38,3 +38,4 @@
 - name: Reboot gpu servers
   reboot:
     reboot_timeout: 3600
+  when: nvidia_docker_install.changed
