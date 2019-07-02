@@ -404,7 +404,14 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonNotFound($"Training ID {id.Value} is not found.");
             }
+            //学習名の入力チェック
+            if (string.IsNullOrWhiteSpace(model.Name))
+            {
+                //学習名に空文字は許可しない
+                return JsonBadRequest($"A name of Training is NOT allowed to set empty string.");
+            }
 
+            history.Name = EditColumn(model.Name, history.Name);
             history.Memo = EditColumn(model.Memo, history.Memo);
             history.Favorite = EditColumn(model.Favorite, history.Favorite);
             unitOfWork.Commit();
