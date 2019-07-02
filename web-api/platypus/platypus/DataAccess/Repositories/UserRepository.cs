@@ -183,7 +183,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
                 Name = userName,
                 ServiceType = AuthServiceType.Ldap
             };
-            AttachSandbox(user, true);
+            AttachSandbox(user, false);
             Add(user);
         }
 

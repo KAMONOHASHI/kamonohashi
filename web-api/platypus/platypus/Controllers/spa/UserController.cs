@@ -147,36 +147,19 @@ namespace Nssol.Platypus.Controllers.spa
                 Tenant tenant = tenantRepository.Get(tenantInput.Id.Value);
                 if (tenant == null)
                 {
-                    //指定したテナントが存在しなかったら失敗
-                    return JsonNotFound($"Tenant ID {tenantInput.Id} is not found.");
-                }
-            }
-
-            userRepository.AddUser(user);
-            unitOfWork.Commit();
-
-            // 一旦コミットしてユーザIDを確定し、テナントなどの関連 map を生成
-            User createdUser = userRepository.GetUser(model.Name);
-            foreach (var tenantInput in model.Tenants)
-            {
-                // テナント(存在は確認済みだが念のためにチェック)
-                Tenant tenant = tenantRepository.Get(tenantInput.Id.Value);
-                if (tenant == null)
-                {
-                    //指定したテナントが存在しなかったら失敗
-                    userRepository.DeleteUser(createdUser);
-                    unitOfWork.Commit();
+                    // 指定したテナントが存在しなかったら失敗
                     return JsonNotFound($"Tenant ID {tenantInput.Id} is not found.");
                 }
                 // 関連 map の作成
-                var addTenantErrorResult = await AddTenantAsync(createdUser, tenant, tenantInput.Roles, false); // 最後は false を渡すこと
+                var addTenantErrorResult = await AddTenantAsync(user, tenant, tenantInput.Roles, false);
                 if (addTenantErrorResult != null)
                 {
-                    userRepository.DeleteUser(createdUser);
-                    unitOfWork.Commit();
                     return addTenantErrorResult;
                 }
             }
+
+            // ユーザの登録
+            userRepository.AddUser(user);
             unitOfWork.Commit();
 
             return JsonCreated(CraeteIndexOutputModel(user));
