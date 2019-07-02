@@ -141,6 +141,12 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonBadRequest($"Password mismatch. Please input the current correct password.");
             }
 
+            if (string.IsNullOrWhiteSpace(model.NewPassword))
+            {
+                //新しいパスワードに空文字は許可しない
+                return JsonBadRequest($"New password is NOT allowed to set empty string.");
+            }
+
             //パスワードをハッシュ化
             string hash = Infrastructure.Util.GenerateHash(model.NewPassword, user.Name);
 

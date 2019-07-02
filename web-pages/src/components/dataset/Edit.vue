@@ -33,7 +33,7 @@
           <el-form-item label="登録者">
             <pl-display-text-form v-model="model.createdBy"/>
           </el-form-item>
-          <el-form-item label="登録日">
+          <el-form-item label="登録日時">
             <pl-display-text-form v-model="model.createdAt"/>
           </el-form-item>
         </el-col>

@@ -463,6 +463,11 @@ namespace Nssol.Platypus.Services
             var result = await GetPodForJobAsync(containerName, tenantName, token);
             if (result.IsSuccess)
             {
+                // OOM Killedの場合その内容を返却する
+                if (result.Value.Status.isOOMKilled)
+                {
+                    return ContainerStatus.OOMKilled;
+                }
                 return new ContainerStatus(result.Value.Status.Phase);
             }
             return result.Error;
@@ -499,7 +504,7 @@ namespace Nssol.Platypus.Services
                 Name = item.Metadata.Labels.App, // item.Metadata.Name はPod名。ユーザが入力した名前はJobNameでAppと一致させているので、こっちを使う。
                 TenantName = item.Metadata.Namespace,
                 NodeName = item.Spec.NodeName,
-                Status = new ContainerStatus(item.Status.Phase),
+                Status = item.Status.isOOMKilled ? ContainerStatus.OOMKilled : new ContainerStatus(item.Status.Phase),
                 NodeIpAddress = item.Status.HostIP,
                 CreatedBy = item.Spec.ServiceAccountName
             };
@@ -561,7 +566,17 @@ namespace Nssol.Platypus.Services
                     Host = podResult.Value.Status.HostIP,
                     Port = p.NodePort
                 });
-                containerInfo.Status = new ContainerStatus(podResult.Value.Status.Phase);
+
+                // OOM Killedの場合その内容を返却する
+                if (podResult.Value.Status.isOOMKilled)
+                {
+                    containerInfo.Status = ContainerStatus.OOMKilled;
+                }
+                else
+                {
+                    containerInfo.Status = new ContainerStatus(podResult.Value.Status.Phase);
+                }
+
                 return containerInfo;
             }
             else
@@ -1542,7 +1557,7 @@ namespace Nssol.Platypus.Services
             return Result<Dictionary<string, string>, string>.CreateResult(labelMap);
         }
 
-        /// <sum
+        /// <summary>
         /// 全ノード情報を取得する。
         /// 取得失敗した場合はnullが返る。
         /// </summary>

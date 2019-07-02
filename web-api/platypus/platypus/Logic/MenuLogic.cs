@@ -478,7 +478,7 @@ namespace Nssol.Platypus.Logic
         internal static MenuItemInfo UserMenu = new MenuItemInfo()
         {
             Name = "ユーザ管理",
-            Description = "テナントへのユーザー追加・削除や各種ユーザーのロール変更",
+            Description = "テナントへのユーザ追加・削除や各種ユーザのロール変更",
             Code = MenuCode.User,
             Url = "/user",
             ShowTopMenu = false,

@@ -24,10 +24,10 @@
       <el-table :data="tenantRoles">
         <el-table-column prop="displayName" label="テナント名" width="200px">
           <template slot-scope="prop">
-            <el-checkbox v-model="prop.row.default" @change="handleDefaultChange(prop.row)">
+            <el-radio v-model="prop.row.default" :label="true" @change="handleDefaultChange(prop.row)" style="display: block;">
               {{prop.row.displayName}}
               <span v-if="prop.row.default" style="font-size:0.7rem;">(デフォルト)</span>
-            </el-checkbox>
+            </el-radio>
           </template>
         </el-table-column>
         <el-table-column label="ロール" width="auto">

@@ -11,7 +11,7 @@
       <pl-display-error :error="error"/>
       <pl-display-text label="データ名" :value="dataName"/>
       <pl-display-text label="前処理名" :value="preprocessName"/>
-      <pl-display-text label="実行日" :value="createdAt"/>
+      <pl-display-text label="実行日時" :value="createdAt"/>
       <el-form-item label="前処理ログ">
         <br/>
         <pl-download
