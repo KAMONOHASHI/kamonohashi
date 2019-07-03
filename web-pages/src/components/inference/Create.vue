@@ -14,7 +14,7 @@
                 <el-input v-model="name"/>
               </el-form-item>
               <el-form-item label="マウントする学習" prop="parent">
-                <pl-training-history-to-mount-selector v-model="parent" @input="loadParentInfo"/>
+                <pl-training-history-to-mount-selector v-model="parent"/>
               </el-form-item>
               <el-form-item label="データセット" prop="dataSet">
                 <pl-dataset-selector v-model="dataSet"/>
@@ -99,7 +99,7 @@
                     <el-input v-model="name"/>
                   </el-form-item>
                   <el-form-item label="マウントする学習" prop="parent">
-                    <pl-training-history-to-mount-selector v-model="parent" @input="loadParentInfo"/>
+                    <pl-training-history-to-mount-selector v-model="parent"/>
                   </el-form-item>
                 </el-col>
                 <el-col :span="12">

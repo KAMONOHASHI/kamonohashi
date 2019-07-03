@@ -113,6 +113,7 @@ namespace Nssol.Platypus
             services.AddTransient<DockerHubRegistryService>();
             services.AddTransient<GitLabRegistryService>();
             services.AddTransient<PrivateDockerRegistryService>();
+            services.AddTransient<NvidiaGPUCloudRegistryService>();
 
             // RepositoryのDI設定
             services.AddTransient<IDataRepository, DataRepository>();

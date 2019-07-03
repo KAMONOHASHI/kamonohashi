@@ -26,6 +26,7 @@ namespace Nssol.Platypus.Logic.HostedService
         private readonly GitLabRegistryService gitLabRegistryService;
         private readonly DockerHubRegistryService dockerHubRegistryService;
         private readonly PrivateDockerRegistryService privateDockerRegistryService;
+        private readonly NvidiaGPUCloudRegistryService nvidiaGPUCloudRegistryService;
         private readonly ContainerManageOptions containerManageOptions;
 
         /// <summary>
@@ -40,6 +41,7 @@ namespace Nssol.Platypus.Logic.HostedService
             GitLabRegistryService gitLabRegistryService,
             DockerHubRegistryService dockerHubRegistryService,
             PrivateDockerRegistryService privateDockerRegistryService,
+            NvidiaGPUCloudRegistryService nvidiaGPUCloudRegistryService,
             IOptions<ContainerManageOptions> containerManageOptions,
             IOptions<SyncClusterFromDBOptions> SyncClusterFromDBOptions,
             ILogger<SyncClusterFromDBTimer> logger
@@ -54,6 +56,7 @@ namespace Nssol.Platypus.Logic.HostedService
             this.gitLabRegistryService = gitLabRegistryService;
             this.dockerHubRegistryService = dockerHubRegistryService;
             this.privateDockerRegistryService = privateDockerRegistryService;
+            this.nvidiaGPUCloudRegistryService = nvidiaGPUCloudRegistryService;
             this.containerManageOptions = containerManageOptions.Value;
         }
 
@@ -147,7 +150,7 @@ namespace Nssol.Platypus.Logic.HostedService
                         continue;
                     }
                     // RegistryService の取得
-                    IRegistryService registryService = getRegistryService(registry);
+                    IRegistryService registryService = GetRegistryService(registry);
                     if (registryService == null)
                     {
                         LogError($"DB のレジストリ情報 [{mapInfo}] に対応する RegistryService を取得できませんでした。");
@@ -225,7 +228,7 @@ namespace Nssol.Platypus.Logic.HostedService
         /// 本来は <see cref="CommonDiLogic.DynamicDi{T}"/> を通して返却する予定だったが、
         /// Controller 経由で DI していないので null を返却してしまうので代用のメソッドを作成した。
         /// </summary>
-        private IRegistryService getRegistryService(Registry registry)
+        private IRegistryService GetRegistryService(Registry registry)
         {
             if (registry.ServiceType == RegistryServiceType.GitLab)
             {
@@ -238,6 +241,10 @@ namespace Nssol.Platypus.Logic.HostedService
             else if (registry.ServiceType == RegistryServiceType.PrivateDockerRegistry)
             {
                 return privateDockerRegistryService;
+            }
+            else if (registry.ServiceType == RegistryServiceType.NvidiaGPUCloud)
+            {
+                return nvidiaGPUCloudRegistryService;
             }
             // 将来的に RegistryServiceType が増えたら追加実装すること。
             return null;

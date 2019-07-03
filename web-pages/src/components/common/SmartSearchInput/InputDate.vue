@@ -82,6 +82,10 @@ export default {
       }
 
       var y = dt.getFullYear()
+      if (y >= 10000) {
+        // 10000年以上の場合、最大日付を返す
+        return '9999/12/31'
+      }
       var m = ('00' + (dt.getMonth() + 1)).slice(-2)
       var d = ('00' + dt.getDate()).slice(-2)
       var result = y + '/' + m + '/' + d
