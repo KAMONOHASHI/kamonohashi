@@ -130,7 +130,7 @@
             <div v-if="statusType === 'Running'  || statusType === 'Error'">
               <el-form-item label="操作">
                 <div class="el-input">
-                  <pl-delete-button buttonLabel="ジョブ停止" @delete="haltJob" message="ジョブを停止しますか"/>
+                  <pl-delete-button buttonLabel="ジョブ停止" @delete="showConfirm" message="ジョブを停止しますか"/>
                 </div>
                 <div v-if="status === 'Running'">
                   <div class="el-input" style="padding: 10px 0">
@@ -260,9 +260,35 @@
       }
     },
     methods: {
+      async showConfirm () {
+        let confirmMessage = '正常停止しますか、異常停止しますか。'
+        await this.$confirm(confirmMessage, 'Warning', {
+          distinguishCancelAndClose: true,
+          confirmButtonText: '正常停止',
+          cancelButtonText: '異常停止',
+          type: 'warning'
+        })
+        .then(() => {
+          this.userCancelJob() // 正常停止（Status=UserCancelled）
+        })
+        .catch(action => {
+          if (action === 'cancel') {
+            this.haltJob() // 異常停止（Status=Killed）
+          }
+        })
+      },
       async haltJob () {
         try {
           await api.training.postHaltById({id: this.trainingId})
+          await this.getDetail()
+          this.error = null
+        } catch (e) {
+          this.error = e
+        }
+      },
+      async userCancelJob () {
+        try {
+          await api.training.postUserCancelById({id: this.trainingId})
           await this.getDetail()
           this.error = null
         } catch (e) {
@@ -388,12 +414,12 @@
       },
       async emitInferenceCreate () {
         let data = (await api.training.getById({id: this.trainingId})).data
-        if (data.status === 'Completed') {
+        if (data.status === 'Completed' || data.status === 'UserCancelled') {
           this.$router.push('/inference/create/' + this.trainingId + '?origin=train')
         } else {
           this.$notify.info({
             title: 'Information',
-            message: '完了済みの学習のみ推論を実行できます。'
+            message: 'ステータスがCompletedまたはUserCancelledの学習のみ推論を実行できます。'
           })
         }
       },

@@ -622,6 +622,19 @@ namespace Nssol.Platypus.Controllers.spa
         }
 
         /// <summary>
+        /// 推論を途中で強制終了させる。
+        /// ユーザ自身がジョブを停止させた場合。
+        /// </summary>
+        /// <param name="id">推論履歴ID</param>
+        [HttpPost("{id}/user-cancel")]
+        [Filters.PermissionFilter(MenuCode.Inference)]
+        [ProducesResponseType(typeof(InferenceSimpleOutputModel), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> UserCancel(long? id)
+        {
+            return await ExitAsync(id, ContainerStatus.UserCancelled);
+        }
+
+        /// <summary>
         /// 推論を正常終了
         /// </summary>
         /// <param name="id">推論履歴ID</param>

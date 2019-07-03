@@ -14,7 +14,7 @@
                 <el-input v-model="name"/>
               </el-form-item>
               <el-form-item label="マウントする学習" prop="parent">
-                <pl-training-completed-history-selector v-model="parent"/>
+                <pl-training-history-to-mount-selector v-model="parent"/>
               </el-form-item>
               <el-form-item label="データセット" prop="dataSet">
                 <pl-dataset-selector v-model="dataSet"/>
@@ -99,7 +99,7 @@
                     <el-input v-model="name"/>
                   </el-form-item>
                   <el-form-item label="マウントする学習" prop="parent">
-                    <pl-training-completed-history-selector v-model="parent"/>
+                    <pl-training-history-to-mount-selector v-model="parent"/>
                   </el-form-item>
                 </el-col>
                 <el-col :span="12">
@@ -200,7 +200,7 @@
 
 <script>
   import DataSetSelector from '@/components/common/DatasetSelector.vue'
-  import TrainingCompletedHistorySelector from '@/components/common/TrainingCompletedHistorySelector.vue'
+  import TrainingHistoryToMountSelector from '@/components/common/TrainingHistoryToMountSelector.vue'
   import DynamicMultiInputField from '@/components/common/DynamicMultiInputField.vue'
   import ContainerSelector from '@/components/common/ContainerSelector.vue'
   import StringSelector from '@/components/common/StringSelector.vue'
@@ -212,7 +212,7 @@
     name: 'Create',
     components: {
       'pl-dataset-selector': DataSetSelector,
-      'pl-training-completed-history-selector': TrainingCompletedHistorySelector,
+      'pl-training-history-to-mount-selector': TrainingHistoryToMountSelector,
       'pl-string-selector': StringSelector,
       'pl-container-selector': ContainerSelector,
       'pl-git-selector': GitSelector,

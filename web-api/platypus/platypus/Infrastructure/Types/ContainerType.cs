@@ -25,6 +25,10 @@ namespace Nssol.Platypus.Infrastructure.Types
         /// <summary>
         /// 前処理用
         /// </summary>
-        Preprocessing = 3
+        Preprocessing = 3,
+        /// <summary>
+        /// 推論実行用
+        /// </summary>
+        Inferencing = 4
     }
 }

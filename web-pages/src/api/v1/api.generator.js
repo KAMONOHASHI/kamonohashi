@@ -2941,6 +2941,51 @@ export const ApiV1InferencesByIdHaltPostURL = function (parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * 推論を途中で強制終了
+ * request: ApiV1InferencesByIdUserCancelPost
+ * url: ApiV1InferencesByIdUserCancelPostURL
+ * method: ApiV1InferencesByIdUserCancelPost_TYPE
+ * raw_url: ApiV1InferencesByIdUserCancelPost_RAW_URL
+ * @param id - 推論履歴ID
+ */
+export const ApiV1InferencesByIdUserCancelPost = function (parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v1/inferences/{id}/user-cancel'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  return request('post', domain + path, body, queryParameters, form, config)
+}
+export const ApiV1InferencesByIdUserCancelPost_RAW_URL = function () {
+  return '/api/v1/inferences/{id}/user-cancel'
+}
+export const ApiV1InferencesByIdUserCancelPost_TYPE = function () {
+  return 'post'
+}
+export const ApiV1InferencesByIdUserCancelPostURL = function (parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v1/inferences/{id}/user-cancel'
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * 推論を正常終了
  * request: ApiV1InferencesByIdCompletePost
  * url: ApiV1InferencesByIdCompletePostURL
@@ -7315,6 +7360,51 @@ export const ApiV1TrainingByIdHaltPostURL = function (parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * 学習を途中で強制終了させる。
+ * request: ApiV1TrainingByIdUserCancelPost
+ * url: ApiV1TrainingByIdUserCancelPostURL
+ * method: ApiV1TrainingByIdUserCancelPost_TYPE
+ * raw_url: ApiV1TrainingByIdUserCancelPost_RAW_URL
+ * @param id - 学習履歴ID
+ */
+export const ApiV1TrainingByIdUserCancelPost = function (parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v1/training/{id}/user-cancel'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  return request('post', domain + path, body, queryParameters, form, config)
+}
+export const ApiV1TrainingByIdUserCancelPost_RAW_URL = function () {
+  return '/api/v1/training/{id}/user-cancel'
+}
+export const ApiV1TrainingByIdUserCancelPost_TYPE = function () {
+  return 'post'
+}
+export const ApiV1TrainingByIdUserCancelPostURL = function (parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v1/training/{id}/user-cancel'
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * 学習を正常終了させる。
  * request: ApiV1TrainingByIdCompletePost
  * url: ApiV1TrainingByIdCompletePostURL
@@ -7351,6 +7441,45 @@ export const ApiV1TrainingByIdCompletePostURL = function (parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v1/training/{id}/complete'
   path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * マウントする学習履歴を取得
+ * request: ApiV1TrainingToMountGet
+ * url: ApiV1TrainingToMountGetURL
+ * method: ApiV1TrainingToMountGet_TYPE
+ * raw_url: ApiV1TrainingToMountGet_RAW_URL
+ */
+export const ApiV1TrainingToMountGet = function (parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v1/training/mount'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV1TrainingToMountGet_RAW_URL = function () {
+  return '/api/v1/training/mount'
+}
+export const ApiV1TrainingToMountGet_TYPE = function () {
+  return 'get'
+}
+export const ApiV1TrainingToMountGetURL = function (parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v1/training/mount'
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function (parameterName) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]

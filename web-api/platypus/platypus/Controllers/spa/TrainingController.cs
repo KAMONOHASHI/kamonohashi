@@ -177,6 +177,23 @@ namespace Nssol.Platypus.Controllers.spa
         }
 
         /// <summary>
+        /// マウントする学習履歴を取得
+        /// </summary>
+        [HttpGet("mount")]
+        [Filters.PermissionFilter(MenuCode.Training)]
+        [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
+        public IActionResult GetTrainingToMount()
+        {
+            var data = trainingHistoryRepository.GetAllIncludeDataSetWithOrdering();
+
+            // ステータスを限定する
+            data = data.Where(t => t.GetStatus().ToString() == "Completed" || t.GetStatus().ToString() == "UserCancelled");
+
+            // SQLが多重実行されることを防ぐため、ToListで即時発行させたうえで、結果を生成
+            return JsonOK(data.ToList().Select(history => GetUpdatedIndexOutputModelAsync(history).Result));
+        }
+        
+        /// <summary>
         /// 指定されたIDの学習履歴の詳細情報を取得。
         /// </summary>
         /// <param name="id">学習履歴ID</param>
@@ -702,6 +719,19 @@ namespace Nssol.Platypus.Controllers.spa
         public async Task<IActionResult> Halt(long? id)
         {
             return await ExitAsync(id, ContainerStatus.Killed);
+        }
+
+        /// <summary>
+        /// 学習を途中で強制終了させる。
+        /// ユーザ自身がジョブを停止させた場合。
+        /// </summary>
+        /// <param name="id">学習履歴ID</param>
+        [HttpPost("{id}/user-cancel")]
+        [Filters.PermissionFilter(MenuCode.Training)]
+        [ProducesResponseType(typeof(SimpleOutputModel), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> UserCancel(long? id)
+        {
+            return await ExitAsync(id, ContainerStatus.UserCancelled);
         }
 
         /// <summary>
