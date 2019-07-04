@@ -496,7 +496,9 @@ namespace Nssol.Platypus.Services
         {
             var info = new ContainerDetailsInfo()
             {
-                Name = item.Metadata.Labels.App, // item.Metadata.Name はPod名。ユーザが入力した名前はJobNameでAppと一致させているので、こっちを使う。
+                // ユーザが入力した名前はJobNameでAppと一致させているので、基本的にこれを使用するが、
+                // KAMONOHASHI管理外で item.Metadata.Labels がnullの場合、Pod名である item.Metadata.Name を使用する。
+                Name = item.Metadata.Labels != null ? item.Metadata.Labels.App : item.Metadata.Name,
                 TenantName = item.Metadata.Namespace,
                 NodeName = item.Spec.NodeName,
                 Status = new ContainerStatus(item.Status.Phase),
