@@ -64,7 +64,10 @@
       'pl-delete-button': DeleteUserButton
     },
     props: {
-      'id': 0
+      'id': {
+        type: String,
+        defalut: 0
+      }
     },
     data () {
       return {

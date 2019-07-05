@@ -45,7 +45,10 @@
       'pl-display-error': DisplayError
     },
     props: {
-      id: ''
+      id: {
+        type: String,
+        defalut: ''
+      }
     },
     data () {
       return {

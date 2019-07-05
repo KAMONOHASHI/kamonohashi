@@ -33,19 +33,21 @@
       </span>
 
       <!-- 他のデータ区分の表示欄 -->
-      <span v-for="viewInfo in entryViewInfo" v-if="viewInfo.visible" :key="viewInfo.entryName">
-         <!-- dataList, widthは変更監視を有効にするために直接propに入れる -->
-        <pl-data-list
-          :dataList="viewInfo.dataList"
-          :viewInfo="viewInfo"
-          :moveList="moveList"
-          :disabled="disabled"
-          :width="viewInfo.width"
-          @add="handleAdd"
-          @remove="handleRemove"
-          @paging="handlePaging"
-          @filter="handleFilter"
-        />
+      <span v-for="viewInfo in entryViewInfo" :key="viewInfo.entryName">
+        <!-- dataList, widthは変更監視を有効にするために直接propに入れる -->
+        <template v-if="viewInfo.visible">
+          <pl-data-list
+            :dataList="viewInfo.dataList"
+            :viewInfo="viewInfo"
+            :moveList="moveList"
+            :disabled="disabled"
+            :width="viewInfo.width"
+            @add="handleAdd"
+            @remove="handleRemove"
+            @paging="handlePaging"
+            @filter="handleFilter"
+          />
+        </template>
 
       </span>
     </div>

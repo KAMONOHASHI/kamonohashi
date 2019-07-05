@@ -34,10 +34,12 @@
           <template slot-scope="prop">
             <el-checkbox-group v-model="prop.row.$roles" style="white-space: nowrap;"
                                @change="handleRoleChange(prop.row)">
-              <el-checkbox-button v-for="r in roleTypes" :label="r.id" :key="r.id"
-                                  v-if="r.isSystemRole === showSystem && !r.tenantId">
-                {{r.displayName}}
-              </el-checkbox-button>
+              <template v-for="r in roleTypes">
+                <el-checkbox-button :label="r.id" :key="r.id"
+                                    v-if="r.isSystemRole === showSystem && !r.tenantId">
+                  {{r.displayName}}
+                </el-checkbox-button>
+              </template>
             </el-checkbox-group>
           </template>
         </el-table-column>

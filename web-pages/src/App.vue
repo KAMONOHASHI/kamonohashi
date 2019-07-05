@@ -17,7 +17,6 @@
 <script>
   import api from '@/api/v1/api'
   import Header from '@/components/Header.vue'
-  import Footer from '@/components/Footer.vue'
   import Menu from '@/components/Menu.vue'
   import Util from '@/util/util'
 
@@ -26,7 +25,6 @@
 
     components: {
       'pl-header': Header,
-      'pl-footer': Footer,
       'pl-menu': Menu
     },
 
