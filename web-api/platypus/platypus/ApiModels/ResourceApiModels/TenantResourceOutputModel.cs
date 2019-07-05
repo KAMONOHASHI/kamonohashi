@@ -1,4 +1,5 @@
-﻿using Nssol.Platypus.Models;
+﻿using Nssol.Platypus.Infrastructure;
+using Nssol.Platypus.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -118,8 +119,8 @@ namespace Nssol.Platypus.ApiModels.ResourceApiModels
         {
             model.TenantId = Id;
 
-            AssignedCpu += model.Cpu;
-            AssignedMemory += model.Memory;
+            AssignedCpu = Util.SumOfFloat(AssignedCpu, model.Cpu);
+            AssignedMemory = Util.SumOfFloat(AssignedMemory, model.Memory);
             AssignedGpu += model.Gpu;
             ContainerResourceList.Add(model);
         }

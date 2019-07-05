@@ -2,3 +2,4 @@
   apt: 
     name: nfs-common
     state: installed
+    update_cache: yes

@@ -35,3 +35,11 @@ conf-template/sample/のサンプルを参照
 
 ### conf/test-vars.yml
 * insecure registryのテストを行う場合はコメントアウトを外して記載する
+
+# その他
+* アップグレード
+  * デプロイツールではインプレースアップグレードのみ想定しています
+    * k8sのアンインストールとインストールを行います
+    * ansibleのため、デプロイツールを介さずに行った設定ファイル編集は削除されます
+    * LAMONOHASHIのアプリで利用したデータは引き続き利用できます
+* GPUノード追加: inventoryにGPUを追加して`./deploy-kqi-infra.sh scale`の実行

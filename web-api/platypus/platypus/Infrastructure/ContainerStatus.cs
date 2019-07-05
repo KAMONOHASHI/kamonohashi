@@ -32,9 +32,18 @@ namespace Nssol.Platypus.Infrastructure
         /// </summary>
         public static ContainerStatus Running = new ContainerStatus("KQI-Running", ContainerStatusType.Running, "Running");
         /// <summary>
+        /// コンテナが立ち実行中だが、OOM Killedとなりコンテナが落ちている状態
+        /// </summary>
+        public static ContainerStatus OOMKilled = new ContainerStatus("OOMKilled", ContainerStatusType.Running, "OOMKilled");
+        /// <summary>
         /// コンテナが正常終了した。
         /// </summary>
         public static ContainerStatus Completed = new ContainerStatus("KQI-Completed", ContainerStatusType.Closed, "Completed");
+        /// <summary>
+        /// コンテナを手動で削除した。
+        /// KQIのUIからユーザ操作によって停止された場合。
+        /// </summary>
+        public static ContainerStatus UserCancelled = new ContainerStatus("KQI-UserCancelled", ContainerStatusType.Closed, "UserCancelled");
         /// <summary>
         /// コンテナを手動で削除した。
         /// </summary>
@@ -201,6 +210,7 @@ namespace Nssol.Platypus.Infrastructure
                 { Running.Key, Running },
                 { Completed.Key, Completed },
                 { Killed.Key, Killed },
+                { UserCancelled.Key, UserCancelled },
                 { Failed.Key, Failed },
                 { Invalid.Key, Invalid },
                 { Forbidden.Key, Forbidden },

@@ -41,7 +41,7 @@
             </div>
           </div>
         </el-table-column>
-        <el-table-column prop="createdAt" label="登録日" width="200px"/>
+        <el-table-column prop="createdAt" label="登録日時" width="200px"/>
         <el-table-column prop="createdBy" label="登録者" width="120px"/>
         <el-table-column prop="memo" label="メモ" width="auto"/>
         <el-table-column prop="tag" label="タグ" width="120px">
@@ -95,7 +95,7 @@
         searchConfigs: [
           {prop: 'id', name: 'ID', type: 'number'},
           {prop: 'name', name: 'データ名', type: 'text'},
-          {prop: 'createdAt', name: '登録日', type: 'date'},
+          {prop: 'createdAt', name: '登録日時', type: 'date'},
           {prop: 'createdBy', name: '登録者', type: 'text'},
           {prop: 'memo', name: 'メモ', type: 'text'},
           {prop: 'tag', name: 'タグ', type: 'text', multiple: true}

@@ -1,6 +1,6 @@
 <template>
   <el-dialog class="dialog"
-             title="ノード作成"
+             title="ノード登録"
              :visible.sync="dialogVisible"
              :before-close="closeDialog"
              :close-on-click-modal="false">
@@ -34,7 +34,7 @@
       </el-form-item>
       <el-row class="right-button-group footer">
         <el-button @click="emitCancel">キャンセル</el-button>
-        <el-button type="primary" @click="createNode">作成</el-button>
+        <el-button type="primary" @click="createNode">登録</el-button>
       </el-row>
 
     </el-form>

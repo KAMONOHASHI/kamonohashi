@@ -105,11 +105,11 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonBadRequest("Invalid inputs.");
             }
 
-            Tenant tenant = tenantRepository.GetFromTenantName(model.Name);
+            Tenant tenant = tenantRepository.GetFromTenantName(model.TenantName);
             if (tenant != null)
             {
                 //テナント名の重複があるのでエラー
-                return JsonConflict($"Tenant {model.Name} already exists: ID = {tenant.Id}");
+                return JsonConflict($"Tenant {model.TenantName} already exists: ID = {tenant.Id}");
             }
             if (model.DefaultGitId != null && model.GitIds.Contains(model.DefaultGitId.Value) == false)
             {
@@ -124,9 +124,9 @@ namespace Nssol.Platypus.Controllers.spa
 
             tenant = new Tenant()
             {
-                Name = model.Name,
+                Name = model.TenantName,
                 DisplayName = model.DisplayName,
-                StorageBucket = model.Name,
+                StorageBucket = model.TenantName,
                 StorageId = model.StorageId
             };
 
