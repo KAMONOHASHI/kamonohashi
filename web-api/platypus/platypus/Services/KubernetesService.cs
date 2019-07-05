@@ -522,7 +522,7 @@ namespace Nssol.Platypus.Services
                     else
                     {
                         info.Cpu += container.Resources.Requests.CpuNum;
-                        info.Memory += container.Resources.Requests.MemoryGi;
+                        info.Memory += container.Resources.Requests.MemoryGB;
                         info.Gpu += container.Resources.Requests.Gpu;
                     }
                 }
@@ -1568,7 +1568,7 @@ namespace Nssol.Platypus.Services
             return nodes.Select(n => new NodeInfo() {
                 Name = n.Metadata.Name,
                 Labels = n.Metadata.Labels,
-                Memory = n.Status.Capacity.MemoryGi,
+                Memory = n.Status.Capacity.MemoryGB,
                 Cpu = n.Status.Capacity.CpuNum,
                 Gpu = n.Status.Capacity.Gpu
             });
