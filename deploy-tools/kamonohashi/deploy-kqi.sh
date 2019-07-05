@@ -4,7 +4,7 @@ readonly HELM_VERSION="v2.13.0"
 readonly SCRIPT_DIR=$(cd $(dirname $0); pwd)
 
 show_help() {
-    echo "available args: prepare, deploy, clean, update, credentials, help"
+    echo "available args: prepare, deploy, clean, update, credentials, upgrade, help"
 }
 
 
@@ -34,7 +34,8 @@ deploy(){
 }
 
 update(){
-  helm upgrade kamonohashi charts/kamonohashi -f conf/settings.yml --namespace kqi-system
+    helm dependency update charts/kamonohashi
+    helm upgrade -i kamonohashi charts/kamonohashi -f conf/settings.yml --namespace kqi-system
 }
 
 clean(){

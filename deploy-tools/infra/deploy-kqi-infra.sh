@@ -5,7 +5,7 @@ readonly SCRIPT_DIR=$(cd $(dirname $0); pwd)
 readonly REPO_ROOT_DIR="$SCRIPT_DIR/../.."
 
 show_help() {
-    echo "available args: prepare, deploy, clean, help, scale, remove-node" 1>&2
+    echo "available args: prepare, deploy, clean, help, scale, remove-node, upgrade" 1>&2
     exit 1
 }
 
