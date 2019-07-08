@@ -55,11 +55,10 @@
       'pl-display-error': DisplayError
     },
     props: {
-      storageId: Number
+      id: String
     },
     data () {
       return {
-        id: undefined,
         dialogVisible: true,
         error: undefined,
 
@@ -109,8 +108,7 @@
         })
       },
       async retrieveData () {
-        let result = (await api.storage.admin.getById({id: this.storageId})).data
-        this.id = result.id
+        let result = (await api.storage.admin.getById({id: this.id})).data
         this.name = result.name
         this.serverUrl = result.serverUrl
         this.accessKey = result.accessKey
@@ -120,7 +118,7 @@
       },
       async deleteStorage () {
         try {
-          await api.storage.admin.delete({id: this.storageId})
+          await api.storage.admin.delete({id: this.id})
           this.emitDone()
         } catch (e) {
           this.error = e

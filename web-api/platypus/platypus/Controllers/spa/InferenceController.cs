@@ -179,7 +179,14 @@ namespace Nssol.Platypus.Controllers.spa
             }
             if (string.IsNullOrEmpty(filter.ParentName) == false)
             {
-                data = data.Where(d => d.Parent != null && d.Parent.Name != null && d.Parent.Name.Contains(filter.ParentName));
+                if (filter.ParentName.StartsWith("!"))
+                {
+                    data = data.Where(d => string.IsNullOrEmpty(d.Parent.Name) || d.Parent.Name.Contains(filter.ParentName.Substring(1)) == false);
+                }
+                else
+                {
+                    data = data.Where(d => d.Parent != null && d.Parent.Name != null && d.Parent.Name.Contains(filter.ParentName));
+                }
             }
             return data;
         }
@@ -415,7 +422,14 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonNotFound($"Inference ID {id.Value} is not found.");
             }
+            //推論名の入力チェック
+            if (string.IsNullOrWhiteSpace(model.Name))
+            {
+                //推論名に空文字は許可しない
+                return JsonBadRequest($"A name of inference is NOT allowed to set empty string.");
+            }
 
+            history.Name = EditColumn(model.Name, history.Name);
             history.Memo = EditColumn(model.Memo, history.Memo);
             history.Favorite = EditColumn(model.Favorite, history.Favorite);
             unitOfWork.Commit();
@@ -605,6 +619,19 @@ namespace Nssol.Platypus.Controllers.spa
         public async Task<IActionResult> Halt(long? id)
         {
             return await ExitAsync(id, ContainerStatus.Killed);
+        }
+
+        /// <summary>
+        /// 推論を途中で強制終了させる。
+        /// ユーザ自身がジョブを停止させた場合。
+        /// </summary>
+        /// <param name="id">推論履歴ID</param>
+        [HttpPost("{id}/user-cancel")]
+        [Filters.PermissionFilter(MenuCode.Inference)]
+        [ProducesResponseType(typeof(InferenceSimpleOutputModel), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> UserCancel(long? id)
+        {
+            return await ExitAsync(id, ContainerStatus.UserCancelled);
         }
 
         /// <summary>

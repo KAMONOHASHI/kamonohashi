@@ -4,7 +4,7 @@
     <el-row :gutter="20">
       <el-col class="right-top-button">
         <el-button @click="openCreateDialog" icon="el-icon-edit-outline" type="primary" plain>
-          新規登録
+          新規作成
         </el-button>
       </el-col>
     </el-row>

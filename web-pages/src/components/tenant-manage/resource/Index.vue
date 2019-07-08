@@ -19,7 +19,6 @@
 
 <script>
   import api from '@/api/v1/api'
-  import Edit from './Edit'
 
   export default {
     name: 'ManageResourceIndex',
@@ -30,9 +29,6 @@
         editDialogVisible: false,
         selectedRowId: 0
       }
-    },
-    components: {
-      'pl-edit-data': Edit
     },
     async created () {
       await this.getTenantsResource()

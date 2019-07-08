@@ -61,7 +61,7 @@
               </el-table-column>
               <el-table-column prop="size" label="サイズ" width="150px" align="right"/>
               <el-table-column label="" width="20px"/>
-              <el-table-column prop="lastModified" label="更新日" width="210px"/>
+              <el-table-column prop="lastModified" label="更新日時" width="210px"/>
             </el-table>
           </el-col>
         </el-row>

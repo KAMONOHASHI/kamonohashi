@@ -1,5 +1,6 @@
 #!/bin/bash
 
+readonly HELM_VERSION="v2.13.0"
 readonly SCRIPT_DIR=$(cd $(dirname $0); pwd)
 
 show_help() {
@@ -9,7 +10,7 @@ show_help() {
 
 prepare(){
     # helmのインストール
-    curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash /dev/stdin --version v2.13.0
+    curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash /dev/stdin --version $HELM_VERSION
     kubectl create -f helm-rbac-config.yml
     helm init --service-account tiller --upgrade
     # kqi-system namespaceの作成

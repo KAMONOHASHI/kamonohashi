@@ -12,10 +12,10 @@ export default class Util {
     let val = byte
     if (val > (1024 * 1024)) {
       val = val / (1024 * 1024)
-      suffix = ' MiB'
+      suffix = ' MB'
     } else if (val > 1024) {
       val = val / 1024
-      suffix = ' KiB'
+      suffix = ' KB'
     } else {
       suffix = ' Byte'
     }

@@ -463,6 +463,11 @@ namespace Nssol.Platypus.Services
             var result = await GetPodForJobAsync(containerName, tenantName, token);
             if (result.IsSuccess)
             {
+                // OOM Killedの場合その内容を返却する
+                if (result.Value.Status.isOOMKilled)
+                {
+                    return ContainerStatus.OOMKilled;
+                }
                 return new ContainerStatus(result.Value.Status.Phase);
             }
             return result.Error;
@@ -496,12 +501,14 @@ namespace Nssol.Platypus.Services
         {
             var info = new ContainerDetailsInfo()
             {
-                Name = item.Metadata.Labels.App, // item.Metadata.Name はPod名。ユーザが入力した名前はJobNameでAppと一致させているので、こっちを使う。
+                // ユーザが入力した名前はJobNameでAppと一致させているので、基本的にこれを使用するが、
+                // KAMONOHASHI管理外で item.Metadata.Labels がnullの場合、Pod名である item.Metadata.Name を使用する。
+                Name = item.Metadata.Labels != null ? item.Metadata.Labels.App : item.Metadata.Name,
                 TenantName = item.Metadata.Namespace,
                 NodeName = item.Spec.NodeName,
-                Status = new ContainerStatus(item.Status.Phase),
+                Status = item.Status.isOOMKilled ? ContainerStatus.OOMKilled : new ContainerStatus(item.Status.Phase),
                 NodeIpAddress = item.Status.HostIP,
-                CreatedBy = item.Spec.ServiceAccountName
+                CreatedBy = item.Spec.ServiceAccountName //サービスアカウント名（＝ランダム文字列）
             };
 
             info.ConditionNote = item.ConditionNote;
@@ -510,9 +517,19 @@ namespace Nssol.Platypus.Services
             {
                 foreach (var container in item.Spec.Containers) {
                     info.Image += container.Image;
-                    info.Cpu += container.Resources.Requests.CpuNum;
-                    info.Memory += container.Resources.Requests.MemoryGi;
-                    info.Gpu += container.Resources.Requests.Gpu;
+                    if (container.Resources?.Requests == null)
+                    {
+                        //KAMONOHASHIで立てたコンテナは全てResources.Requestsが指定されているはずだが、
+                        //KAMONOHASHI外から立てたコンテナが存在する場合など、NULLになってしまう時は警告だけ出してスキップ
+                        //UI表示は上流で行う
+                        LogWarning($"{info.TenantName}/{info.Name}の要求リソースサイズが取得できません");
+                    }
+                    else
+                    {
+                        info.Cpu += container.Resources.Requests.CpuNum;
+                        info.Memory += container.Resources.Requests.MemoryGB;
+                        info.Gpu += container.Resources.Requests.Gpu;
+                    }
                 }
             }
             if (DateTime.TryParse(item.Status.StartTime, out DateTime d))
@@ -561,7 +578,17 @@ namespace Nssol.Platypus.Services
                     Host = podResult.Value.Status.HostIP,
                     Port = p.NodePort
                 });
-                containerInfo.Status = new ContainerStatus(podResult.Value.Status.Phase);
+
+                // OOM Killedの場合その内容を返却する
+                if (podResult.Value.Status.isOOMKilled)
+                {
+                    containerInfo.Status = ContainerStatus.OOMKilled;
+                }
+                else
+                {
+                    containerInfo.Status = new ContainerStatus(podResult.Value.Status.Phase);
+                }
+
                 return containerInfo;
             }
             else
@@ -1542,7 +1569,7 @@ namespace Nssol.Platypus.Services
             return Result<Dictionary<string, string>, string>.CreateResult(labelMap);
         }
 
-        /// <sum
+        /// <summary>
         /// 全ノード情報を取得する。
         /// 取得失敗した場合はnullが返る。
         /// </summary>
@@ -1556,7 +1583,7 @@ namespace Nssol.Platypus.Services
             return nodes.Select(n => new NodeInfo() {
                 Name = n.Metadata.Name,
                 Labels = n.Metadata.Labels,
-                Memory = n.Status.Capacity.MemoryGi,
+                Memory = n.Status.Capacity.MemoryGB,
                 Cpu = n.Status.Capacity.CpuNum,
                 Gpu = n.Status.Capacity.Gpu
             });

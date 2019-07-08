@@ -61,6 +61,21 @@ namespace Nssol.Platypus.DataAccess.Repositories
         }
 
         /// <summary>
+        /// 指定した別名からユーザ名を取得する。
+        /// 指定した別名のユーザが存在しない場合、NULLが返る。
+        /// </summary>
+        /// <param name="nameAlias">別名</param>
+        public String GetUserName(string nameAlias)
+        {
+            var user = Find(u => u.Alias.Contains(nameAlias));
+            if (user == null)
+            {
+                return "!Unknown User!";
+            }
+            return user.Name;
+        }
+
+        /// <summary>
         /// 指定したユーザ情報に、所属テナント・ロール情報を紐づけ、<see cref="UserInfo"/>オブジェクトとして取得する
         /// ユーザの存在チェックはしない。
         /// </summary>

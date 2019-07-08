@@ -43,6 +43,7 @@ data:
     [ $? -eq 0 ] && echo "done copying kqi config" || echo "copying kqi config failed"
   prepare-git: |
     echo "------------------------- [KAMONOHASHI Prepare] deploy model from git into /kqi/git . -------------------------"
+    git config --global http.sslVerify false
     git config --global credential.helper store
     echo $MODEL_REPOSITORY > ~/.git-credentials
     git clone $MODEL_REPOSITORY_URL /kqi/git

@@ -40,7 +40,7 @@
           </el-collapse>
         </div>
 
-        <el-form-item label="ログ">
+        <el-form-item label="ログ" v-if="this.form.node">
           <br clear="all"/>
           <span v-if="!filename">
             <el-button icon="el-icon-download" @click="handleDonwloadLog">取得</el-button>
@@ -48,7 +48,7 @@
           <span>
             {{filename}}
             <a id="download">
-              <el-button v-if="filename" icon="el-icon-download" size="mini"></el-button>
+              <el-button v-if="filename && exists" icon="el-icon-download" size="mini"></el-button>
             </a>
           </span>
         </el-form-item>
@@ -87,6 +87,7 @@
         dialogVisible: true,
         error: null,
         filename: '',
+        exists: false,
         conditionNote: '',
         events: [],
         form: {
@@ -149,11 +150,24 @@
             name: this.name
           }
           let content = (await api.resource.admin.getContainerLogByName(params)).data
-          this.filename = this.form.node + '_' + this.form.tenant + '_' + this.form.name + '.log'
 
-          let a = document.getElementById('download')
-          a.download = this.filename
-          a.href = 'data:application/octet-stream,' + encodeURIComponent(content)
+          if (content !== '') {
+            this.exists = true
+            if (!this.form.node) {
+              // ノードが振り分けられていない場合
+              this.filename = this.form.tenant + '_' + this.form.name + '.log'
+            } else {
+              this.filename = this.form.node + '_' + this.form.tenant + '_' + this.form.name + '.log'
+            }
+
+            let a = document.getElementById('download')
+            a.download = this.filename
+            a.href = 'data:application/octet-stream,' + encodeURIComponent(content)
+          } else {
+            this.exists = false
+            this.filename = '取得可能なログファイルはありません。'
+          }
+
           this.error = null
         } catch (e) {
           this.error = e

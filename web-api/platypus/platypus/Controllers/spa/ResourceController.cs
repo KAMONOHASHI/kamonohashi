@@ -24,16 +24,19 @@ namespace Nssol.Platypus.Controllers.spa
     {
         // for DI
         private readonly ITenantRepository tenantRepository;
+        private readonly IUserRepository userRepository;
         private readonly ICommonDiLogic commonDiLogic;
         private readonly IClusterManagementLogic clusterManagementLogic;
 
         public ResourceController(
           ITenantRepository tenantRepository,
+          IUserRepository userRepository,
           ICommonDiLogic commonDiLogic,
           IClusterManagementLogic clusterManagementLogic,
           IHttpContextAccessor accessor) : base(accessor)
         {
             this.tenantRepository = tenantRepository;
+            this.userRepository = userRepository;
             this.commonDiLogic = commonDiLogic;
             this.clusterManagementLogic = clusterManagementLogic;
         }
@@ -135,14 +138,20 @@ namespace Nssol.Platypus.Controllers.spa
                     if (result.ContainsKey(container.TenantName))
                     {
                         //テナント単位で集計する場合、テナントIDは自明なので、CreateContainerDetailsOutputModel()は使わない
-                        result[container.TenantName].Add(new ContainerDetailsOutputModel(container));
+                        result[container.TenantName].Add(new ContainerDetailsOutputModel(container)
+                        {
+                            CreatedBy = userRepository.GetUserName(container.CreatedBy)
+                        });
                     }
                     else
                     {
                         //正体不明のテナントに紐づいたコンテナ
 
                         var unknownModel = new TenantResourceOutputModel(container.TenantName);
-                        unknownModel.Add(new ContainerDetailsOutputModel(container));
+                        unknownModel.Add(new ContainerDetailsOutputModel(container)
+                        {
+                            CreatedBy = userRepository.GetUserName(container.CreatedBy)
+                        });
                         result.Add(container.TenantName, unknownModel);
                     }
                 }
@@ -179,7 +188,10 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         private ContainerDetailsOutputModel CreateContainerDetailsOutputModel(ContainerDetailsInfo info)
         {
-            var model = new ContainerDetailsOutputModel(info);
+            var model = new ContainerDetailsOutputModel(info)
+            {
+                CreatedBy = userRepository.GetUserName(info.CreatedBy)
+            };
             var tenant = tenantRepository.GetFromTenantName(info.TenantName);
             if(tenant == null)
             {
@@ -242,7 +254,8 @@ namespace Nssol.Platypus.Controllers.spa
                 TenantId = tenant.Id,
                 TenantName = tenant.Name,
                 DisplayName = tenant.DisplayName,
-                ContainerType = CheckContainerType(name, true).Item1 //コンテナの種別を確認
+                ContainerType = CheckContainerType(name, true).Item1, //コンテナの種別を確認
+                CreatedBy = userRepository.GetUserName(info.CreatedBy)
             };
 
             return JsonOK(result);
@@ -376,6 +389,28 @@ namespace Nssol.Platypus.Controllers.spa
 
                 return new Tuple<ContainerType, TenantModelBase>(ContainerType.Preprocessing, container);
             }
+            else if (containerName.StartsWith("inference"))
+            {
+                //推論コンテナ
+                var container = commonDiLogic.DynamicDi<IInferenceHistoryRepository>().Find(t => t.Key == containerName, force);
+                if (container == null)
+                {
+                    // 存在しないハズのコンテナが生き残っている
+                    LogWarning($"Find unknown container: {containerName}");
+                    return new Tuple<ContainerType, TenantModelBase>(ContainerType.Unknown, null);
+                }
+                else if (container.GetStatus().Exist() == false)
+                {
+                    // 既に終了しているハズのジョブのコンテナ＝何かの理由でコンテナだけ消せなかった
+                    // ジョブ側には何の影響も与えたくないので、未知のコンテナとして削除する
+                    LogWarning($"Find exited container: {containerName}");
+                    return new Tuple<ContainerType, TenantModelBase>(ContainerType.Unknown, null);
+                }
+                else
+                {
+                    return new Tuple<ContainerType, TenantModelBase>(ContainerType.Inferencing, container);
+                }
+            }
             else
             {
                 //学習コンテナ
@@ -425,9 +460,14 @@ namespace Nssol.Platypus.Controllers.spa
                     await trainingLogicForTensorBoard.DeleteTensorBoardAsync(container.Item2 as TensorBoardContainer, force);
                     break;
                 case ContainerType.Training:
-                    //コンテナを強制終了させる
+                    //学習コンテナを強制終了させる
                     var trainingLogicForTraining = commonDiLogic.DynamicDi<ITrainingLogic>();
                     await trainingLogicForTraining.ExitAsync(container.Item2 as TrainingHistory, ContainerStatus.Killed, force);
+                    break;
+                case ContainerType.Inferencing:
+                    //推論コンテナを強制終了させる
+                    var inferenceLogic = commonDiLogic.DynamicDi<IInferenceLogic>();
+                    await inferenceLogic.ExitAsync(container.Item2 as InferenceHistory, ContainerStatus.Killed, force);
                     break;
                 case ContainerType.Preprocessing:
                     //前処理コンテナを強制終了させる
@@ -461,7 +501,10 @@ namespace Nssol.Platypus.Controllers.spa
             var result = await clusterManagementLogic.GetAllContainerDetailsInfosAsync(CurrentUserInfo.SelectedTenant.Name);
             if (result.IsSuccess)
             {
-                return JsonOK(result.Value.Select(info => new ContainerDetailsForTenantOutputModel(info)));
+                return JsonOK(result.Value.Select(info => new ContainerDetailsForTenantOutputModel(info)
+                {
+                    CreatedBy = userRepository.GetUserName(info.CreatedBy)
+                }));
             }
             else
             {
@@ -576,6 +619,7 @@ namespace Nssol.Platypus.Controllers.spa
             }
             var result = new ContainerDetailsForTenantOutputModel(info)
             {
+                CreatedBy = userRepository.GetUserName(info.CreatedBy),
                 ContainerType = CheckContainerType(name, false).Item1 //コンテナの種別を確認
             };
 

@@ -49,6 +49,10 @@ import RegistryIndex from '@/components/system-setting/registry/Index'
 import RegistryCreate from '@/components/system-setting/registry/Create'
 import RegistryEdit from '@/components/system-setting/registry/Edit'
 
+import StorageIndex from '@/components/system-setting/storage/Index'
+import StorageCreate from '@/components/system-setting/storage/Create'
+import StorageEdit from '@/components/system-setting/storage/Edit'
+
 import QuotaIndex from '@/components/system-setting/quota/Index'
 
 import RoleIndex from '@/components/system-setting/role/Index'
@@ -72,7 +76,6 @@ import ClusterResourceContainerList from '@/components/system-setting/cluster-re
 import AccountLogin from '@/components/account/Login'
 import AccountSetting from '@/components/account/Setting'
 import DashBoardIndex from '@/components/dashboard/Index'
-import Storage from '@/components/system-setting/storage/Index'
 import MenuIndex from '@/components/system-setting/menu/Index'
 import ManageMenuIndex from '@/components/tenant-manage/menu/Index'
 import Error from '@/components/error/Error'
@@ -347,6 +350,22 @@ let router = new Router({
       ]
     },
     {
+      path: '/storage',
+      name: 'Storage',
+      component: StorageIndex,
+      children: [
+        {
+          path: 'create',
+          component: StorageCreate
+        },
+        {
+          path: ':id',
+          component: StorageEdit,
+          props: true
+        }
+      ]
+    },
+    {
       path: '/role',
       name: 'Role',
       component: RoleIndex,
@@ -443,11 +462,6 @@ let router = new Router({
           ]
         }
       ]
-    },
-    {
-      path: '/storage',
-      name: 'Storage',
-      component: Storage
     },
     {
       path: '/error',

@@ -10,13 +10,13 @@ namespace Nssol.Platypus.ApiModels.TenantApiModels
     public class CreateInputModel : EditInputModel
     {
         /// <summary>
-        /// 名前
+        /// テナント名
         /// </summary>
         /// <remarks>
         /// k8sの制約で英小文字のみを許可。
         /// </remarks>
         [Required]
         [Controllers.Util.CustomValidation(Controllers.Util.CustomValidationType.Alphanumeric)]
-        public string Name { get; set; }
+        public string TenantName { get; set; }
     }
 }

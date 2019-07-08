@@ -138,6 +138,15 @@ namespace Nssol.Platypus.Controllers.spa
             storage.NfsRoot = model.NfsRoot;
 
             tenantRepository.UpdateStorage(storage);
+
+            // このStorageを登録しているテナントがいた場合、バケットを作成する
+            var tenants = tenantRepository.GetAllTenants().Where(t => t.StorageId == id.Value);
+            foreach (Tenant tenant in tenants)
+            {
+                //バケットを作成する
+                await storageLogic.CreateBucketAsync(tenant, storage);
+            }
+
             unitOfWork.Commit();
             tenantRepository.Refresh();
 

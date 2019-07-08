@@ -11,7 +11,7 @@
         </el-col>
       </el-row>
 
-      <el-form>
+      <el-form :model="this" :rules="rules" ref="updateForm">
         <pl-display-error :error="error"/>
         <el-row :gutter="20">
           <el-col :span="12">
@@ -21,7 +21,9 @@
         <div class="el-icon-star-off favorite" v-else v-on:click="favorite = true"></div>
         </span>
             </pl-display-text-form>
-            <pl-display-text-form label="推論名" :value="name"/>
+            <el-form-item label="推論名" prop="name">
+              <el-input v-model="name"/>
+            </el-form-item>
             <div v-if="parent">
               <el-form-item label="マウントした学習">
                 <el-popover
@@ -124,7 +126,7 @@
             <div v-if="statusType === 'Running'  || statusType === 'Error'">
               <el-form-item label="操作">
                 <div class="el-input">
-                  <pl-delete-button buttonLabel="ジョブ停止" @delete="haltJob" message="ジョブを停止しますか"/>
+                  <pl-delete-button buttonLabel="ジョブ停止" @delete="showConfirm" message="ジョブを停止しますか"/>
                 </div>
                 <div v-if="status === 'Running'">
                   <div class="el-input" style="padding: 10px 0">
@@ -175,8 +177,6 @@
   import DeleteButton from '@/components/common/DeleteButton.vue'
   import FileManager from '@/components/common/FileManager.vue'
   import DataSetDetails from '@/components/common/DatasetDetails.vue'
-  import ContainerSelector from '@/components/common/ContainerSelector.vue'
-  import TrainingHistorySelector from '@/components/common/TrainingHistorySelector.vue'
   import TrainingHistoryDetails from '@/components/common/TrainingHistoryDetails.vue'
   import api from '@/api/v1/api'
 
@@ -188,8 +188,6 @@
       'pl-display-error': DisplayError,
       'pl-file-manager': FileManager,
       'pl-dataset-details': DataSetDetails,
-      'pl-container-selector': ContainerSelector,
-      'pl-training-history-selector': TrainingHistorySelector,
       'pl-training-history-details': TrainingHistoryDetails
     },
     props: {
@@ -197,6 +195,9 @@
     },
     data () {
       return {
+        rules: {
+          name: [{required: true, trigger: 'blur', message: '必須項目です'}]
+        },
         dialogVisible: true,
         error: undefined,
         uploadedFiles: [],
@@ -249,9 +250,35 @@
         this.loading = false
         this.$store.commit('setLoading', true)
       },
+      async showConfirm () {
+        let confirmMessage = '正常停止しますか、異常停止しますか。'
+        await this.$confirm(confirmMessage, 'Warning', {
+          distinguishCancelAndClose: true,
+          confirmButtonText: '正常停止',
+          cancelButtonText: '異常停止',
+          type: 'warning'
+        })
+        .then(() => {
+          this.userCancelJob() // 正常停止（Status=UserCancelled）
+        })
+        .catch(action => {
+          if (action === 'cancel') {
+            this.haltJob() // 異常停止（Status=Killed）
+          }
+        })
+      },
       async haltJob () {
         try {
           await api.inference.postHaltById({id: this.id})
+          await this.getDetail()
+          this.error = null
+        } catch (e) {
+          this.error = e
+        }
+      },
+      async userCancelJob () {
+        try {
+          await api.inference.postUserCancelById({id: this.id})
           await this.getDetail()
           this.error = null
         } catch (e) {
@@ -301,20 +328,27 @@
       },
       async updateHistory () {
         let putData = {
+          name: this.name,
           memo: this.memo,
           favorite: this.favorite
         }
         await api.inference.putById({id: this.id, model: putData})
       },
       async onSubmit () {
-        try {
-          await this.uploadFile()
-          await this.updateHistory()
-          this.emitDone()
-          this.error = null
-        } catch (e) {
-          this.error = e
-        }
+        let form = this.$refs.updateForm
+
+        await form.validate(async (valid) => {
+          if (valid) {
+            try {
+              await this.updateHistory()
+              await this.uploadFile()
+              this.emitDone()
+              this.error = null
+            } catch (e) {
+              this.error = e
+            }
+          }
+        })
       },
       async deleteFile (fileId) {
         try {

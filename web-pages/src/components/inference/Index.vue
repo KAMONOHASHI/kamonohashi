@@ -14,7 +14,7 @@
       </el-col>
       <el-col class="right-top-button" :span="8">
         <el-button @click="openCreateDialog()" icon="el-icon-edit-outline" type="primary" plain>
-          新規登録
+          新規実行
         </el-button>
       </el-col>
     </el-row>
@@ -105,7 +105,7 @@
             prop: 'status',
             name: 'ステータス',
             type: 'select',
-            option: {items: ['None', 'Pending', 'Succeeded', 'Running', 'Completed', 'Failed', 'Killed', 'Invalid', 'Forbidden', 'Multiple', 'Empty', 'Error']}
+            option: {items: ['None', 'Pending', 'Succeeded', 'Running', 'Completed', 'UserCancelled', 'Failed', 'Killed', 'Invalid', 'Forbidden', 'Multiple', 'Empty', 'Error']}
           }
         ],
         total: 0,

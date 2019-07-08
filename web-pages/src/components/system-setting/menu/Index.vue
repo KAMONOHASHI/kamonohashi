@@ -7,13 +7,13 @@
       <el-table height="1000" class="data-table pl-index-table" :data="tableData" border>
         <el-table-column prop="id" label="ID" width="80px"/>
         <el-table-column prop="name" label="メニュー名" width="200px"/>
-        <el-table-column prop="description" label="説明" width="auto"/>
+        <el-table-column prop="description" label="説明" min-width="400px" width="auto"/>
         <el-table-column prop="menuType" label="種別" width="120px">
           <template slot-scope="prop">
             {{ displayTypeName(prop.row.menuType) }}
           </template>
         </el-table-column>
-        <el-table-column prop="roles" label="アクセス許可ロール" :width="roleTypes.length * 100">
+        <el-table-column prop="roles" label="アクセス許可ロール" :width="this.getRoleDisplayWidth()">
           <template slot-scope="prop">
             <div v-if="prop.row.menuType === 4">
               公開
@@ -123,6 +123,15 @@
         } else {
           return ''
         }
+      },
+
+      // ロールの文字数に応じて表示幅を取得する
+      getRoleDisplayWidth () {
+        let wordCount = 0
+        for (let i = 0; i < this.roleTypes.length; i++) {
+          wordCount = wordCount + this.roleTypes[i].displayName.length
+        }
+        return wordCount * 15
       }
     }
   }

@@ -2,21 +2,23 @@
   <div>
     <div v-show="trees">
       <el-menu class="el-menu-vertical-demo" :collapse="isCollapse" :unique-opened="true" :default-active="activeIndex">
-        <el-submenu :index="String(index)" v-for="(menu, index) in trees" :key="index" v-if="menu.children">
-          <template slot="title">
+        <div v-for="(menu, index) in trees" :key="index">
+          <el-submenu v-if="menu.children" :index="String(index)">
+            <template slot="title">
+              <icon v-if="menu.category" class="icon" :name="menu.category" scale="1.5"></icon>
+              <span slot="title">{{ menu.label }}</span>
+            </template>
+            <el-menu-item v-for="(sub, index) in menu.children" :key="index" :index="sub.url"
+                          @click="handleClick(sub.url)" :style="disableActive">
+              <icon v-if="sub.category" class="icon" :name="sub.category" scale="1.5"></icon>
+              <span slot="title">{{ sub.label }}</span>
+            </el-menu-item>
+          </el-submenu>
+          <el-menu-item v-else :index="menu.url" @click="handleClick(menu.url)" :style="disableActive">
             <icon v-if="menu.category" class="icon" :name="menu.category" scale="1.5"></icon>
             <span slot="title">{{ menu.label }}</span>
-          </template>
-          <el-menu-item v-for="(sub, index) in menu.children" :key="index" :index="sub.url"
-                        @click="handleClick(sub.url)" :style="disableActive">
-            <icon v-if="sub.category" class="icon" :name="sub.category" scale="1.5"></icon>
-            <span slot="title">{{ sub.label }}</span>
           </el-menu-item>
-        </el-submenu>
-        <el-menu-item v-else :index="menu.url" @click="handleClick(menu.url)" :style="disableActive">
-          <icon v-if="menu.category" class="icon" :name="menu.category" scale="1.5"></icon>
-          <span slot="title">{{ menu.label }}</span>
-        </el-menu-item>
+        </div>
         <el-menu-item index="/version" @click="handleClick('/version')" :style="disableActive">
           <i class="el-icon-info"></i>
           <span>バージョン情報</span>

@@ -3,7 +3,7 @@
     <h2> ストレージ管理 </h2>
     <el-row :gutter="20">
       <el-col class="right-top-button">
-        <el-button @click="createDialogVisible = true" icon="el-icon-edit-outline" type="primary" plain>
+        <el-button @click="openCreateDialog" icon="el-icon-edit-outline" type="primary" plain>
           新規登録
         </el-button>
       </el-col>
@@ -18,38 +18,19 @@
         <el-table-column prop="nfsRoot" label="NFS共有ディレクトリ" width="auto"/>
       </el-table>
     </el-row>
-    <create-storage
-      v-if="createDialogVisible"
-      @cancel="createDialogVisible = false"
-      @done="retrieveData()"
-    />
-    <edit-storage
-      v-if="editDialogVisible"
-      :storageId="selectedRowId"
-      @cancel="editDialogVisible = false"
-      @done="retrieveData()"
-    />
+    <router-view @cancel="closeDialog" @done="done()"></router-view>
   </div>
 </template>
 
 <script>
   import api from '@/api/v1/api'
-  import CreateStorage from '@/components/system-setting/storage/Create.vue'
-  import EditStorage from '@/components/system-setting/storage/Edit.vue'
 
   export default {
     name: 'StorageIndex',
     title: 'ストレージ管理',
-    components: {
-      'create-storage': CreateStorage,
-      'edit-storage': EditStorage
-    },
     data () {
       return {
-        tableData: [],
-        createDialogVisible: false,
-        editDialogVisible: false,
-        selectedRowId: undefined
+        tableData: []
       }
     },
     async created () {
@@ -59,12 +40,20 @@
       async retrieveData () {
         let response = await api.storage.admin.get()
         this.tableData = response.data
-        this.editDialogVisible = false
-        this.createDialogVisible = false
+      },
+      openCreateDialog () {
+        this.$router.push('/storage/create')
       },
       openEditDialog (selectedRow) {
-        this.selectedRowId = selectedRow.id
-        this.editDialogVisible = true
+        this.$router.push('/storage/' + selectedRow.id)
+      },
+      closeDialog () {
+        this.$router.push('/storage')
+      },
+      async done () {
+        await this.retrieveData()
+        this.closeDialog()
+        this.showSuccessMessage()
       }
     }
   }

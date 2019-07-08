@@ -11,7 +11,7 @@
       <pl-display-error :error="error"/>
 
       <span v-if="serviceType===1">
-        <pl-display-text label="ユーザアカウント" :value="name"/>
+        <pl-display-text label="ユーザ名" :value="name"/>
         <pl-display-text label="認証タイプ" :value="displayServiceType"/>
         <el-form-item label="パスワード（変更する場合のみ入力）" prop="password">
           <el-input v-model="password[0]" type="password"/>
@@ -20,7 +20,7 @@
         </el-form-item>
       </span>
       <span v-else-if="serviceType===2">
-        <pl-display-text label="ユーザアカウント" :value="name"/>
+        <pl-display-text label="ユーザ名" :value="name"/>
         <pl-display-text label="認証タイプ" :value="displayServiceType"/>
       </span>
       <span v-else>
@@ -64,7 +64,10 @@
       'pl-delete-button': DeleteUserButton
     },
     props: {
-      'id': 0
+      'id': {
+        type: String,
+        defalut: 0
+      }
     },
     data () {
       return {

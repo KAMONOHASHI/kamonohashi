@@ -24,6 +24,13 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces
         User GetUser(string accountName);
 
         /// <summary>
+        /// 指定した別名からユーザ名を取得する。
+        /// 指定した別名のユーザが存在しない場合、NULLが返る。
+        /// </summary>
+        /// <param name="nameAlias">別名</param>
+        String GetUserName(string nameAlias);
+
+        /// <summary>
         /// 指定したユーザ情報に、所属テナント・ロール情報を紐づけ、<see cref="UserInfo"/>オブジェクトとして取得する
         /// ユーザの存在チェックはしない。
         /// </summary>
