@@ -19,7 +19,7 @@ namespace Nssol.Platypus.ServiceModels.KubernetesModels
         {
             get
             {
-                return ConvertResourceStrToFloatGB(Cpu);
+                return ConvertCpuStrToFloatGB(Cpu);
             }
         }
         
@@ -36,7 +36,7 @@ namespace Nssol.Platypus.ServiceModels.KubernetesModels
         {
             get
             {
-                return ConvertResourceStrToFloatGB(Memory);
+                return ConvertMemoryStrToFloatGB(Memory);
             }
         }
 
@@ -46,80 +46,155 @@ namespace Nssol.Platypus.ServiceModels.KubernetesModels
         public int Pods { get; set; }
 
         /// <summary>
-        /// CPU数、メモリ容量の文字列表現(e.g. 5Ki, 12Mi, 234Gi)を、GB単位のFloat型に変換する。
-        /// 末尾に単位がない場合、Byte単位と見なす。
+        /// CPU数の文字列表現を、Float型に変換する。
         /// 数値変換に失敗した場合、そのまま例外が上がる。
         /// </summary>
-        private static float ConvertResourceStrToFloatGB(string resourceStr)
+        private static float ConvertCpuStrToFloatGB(string cpuStr)
         {
-            if (string.IsNullOrWhiteSpace(resourceStr))
+            if (string.IsNullOrWhiteSpace(cpuStr))
             {
                 return 0;
             }
             string numStr;
-            if (resourceStr.EndsWith("Ei")) //元がEi単位なら、Byte単位にして単位換算する
+            if (cpuStr.EndsWith("Ei")) //元がEi単位なら、Byte単位にして単位換算する
             {
-                numStr = resourceStr.Substring(0, resourceStr.Length - 2);
+                numStr = cpuStr.Substring(0, cpuStr.Length - 2);
                 return float.Parse(numStr) * 1024 * 1024 * 1024 * 1024 * 1024 * 1024 / 1000 / 1000 / 1000;
             }
-            else if (resourceStr.EndsWith("e") || resourceStr.EndsWith("E")) //元がeまたはE単位なら、1000*1000*1000を掛ける
+            else if (cpuStr.EndsWith("e") || cpuStr.EndsWith("E")) //元がeまたはE単位なら、1000*1000*1000を掛ける
             {
-                numStr = resourceStr.Substring(0, resourceStr.Length - 1);
+                numStr = cpuStr.Substring(0, cpuStr.Length - 1);
                 return float.Parse(numStr) * 1000 * 1000 * 1000;
             }
-            else if (resourceStr.EndsWith("Pi")) //元がPi単位なら、Byte単位にして単位換算する
+            else if (cpuStr.EndsWith("Pi")) //元がPi単位なら、Byte単位にして単位換算する
             {
-                numStr = resourceStr.Substring(0, resourceStr.Length - 2);
+                numStr = cpuStr.Substring(0, cpuStr.Length - 2);
                 return float.Parse(numStr) * 1024 * 1024 * 1024 * 1024 * 1024 / 1000 / 1000 / 1000;
             }
-            else if (resourceStr.EndsWith("p") || resourceStr.EndsWith("P")) //元がpまたはP単位なら、1000*1000を掛ける
+            else if (cpuStr.EndsWith("p") || cpuStr.EndsWith("P")) //元がpまたはP単位なら、1000*1000を掛ける
             {
-                numStr = resourceStr.Substring(0, resourceStr.Length - 1);
+                numStr = cpuStr.Substring(0, cpuStr.Length - 1);
                 return float.Parse(numStr) * 1000 * 1000;
             }
-            else if (resourceStr.EndsWith("Ti")) //元がTi単位なら、Byte単位にして単位換算する
+            else if (cpuStr.EndsWith("Ti")) //元がTi単位なら、Byte単位にして単位換算する
             {
-                numStr = resourceStr.Substring(0, resourceStr.Length - 2);
+                numStr = cpuStr.Substring(0, cpuStr.Length - 2);
                 return float.Parse(numStr) * 1024 * 1024 * 1024 * 1024 / 1000 / 1000 / 1000;
             }
-            else if (resourceStr.EndsWith("t") || resourceStr.EndsWith("T")) //元がtまたはT単位なら、1000を掛ける
+            else if (cpuStr.EndsWith("t") || cpuStr.EndsWith("T")) //元がtまたはT単位なら、1000を掛ける
             {
-                numStr = resourceStr.Substring(0, resourceStr.Length - 1);
+                numStr = cpuStr.Substring(0, cpuStr.Length - 1);
                 return float.Parse(numStr) * 1000;
             }
-            else if (resourceStr.EndsWith("Gi")) //元がGi単位なら、Byte単位にして単位換算する
+            else if (cpuStr.EndsWith("Gi")) //元がGi単位なら、Byte単位にして単位換算する
             {
-                numStr = resourceStr.Substring(0, resourceStr.Length - 2);
+                numStr = cpuStr.Substring(0, cpuStr.Length - 2);
                 return float.Parse(numStr) * 1024 * 1024 * 1024 / 1000 / 1000 / 1000;
             }
-            else if (resourceStr.EndsWith("g") || resourceStr.EndsWith("G")) //元がgまたはG単位なら、そのまま
+            else if (cpuStr.EndsWith("g") || cpuStr.EndsWith("G")) //元がgまたはG単位なら、そのまま
             {
-                numStr = resourceStr.Substring(0, resourceStr.Length - 1);
+                numStr = cpuStr.Substring(0, cpuStr.Length - 1);
                 return float.Parse(numStr);
             }
-            else if (resourceStr.EndsWith("Mi")) //元がMi単位なら、Byte単位にして単位換算する
+            else if (cpuStr.EndsWith("Mi")) //元がMi単位なら、Byte単位にして単位換算する
             {
-                numStr = resourceStr.Substring(0, resourceStr.Length - 2);
+                numStr = cpuStr.Substring(0, cpuStr.Length - 2);
                 return float.Parse(numStr) * 1024 * 1024 / 1000 / 1000 / 1000;
             }
-            else if (resourceStr.EndsWith("m") || resourceStr.EndsWith("M")) //元がmまたはM単位なら、1000で割る
+            else if (cpuStr.EndsWith("m") || cpuStr.EndsWith("M")) //元がmまたはM単位なら、1000で割る
             {
-                numStr = resourceStr.Substring(0, resourceStr.Length - 1);
+                numStr = cpuStr.Substring(0, cpuStr.Length - 1);
                 return float.Parse(numStr) / 1000;
             }
-            else if (resourceStr.EndsWith("Ki")) //元がKi単位なら、Byte単位にして単位換算する
+            else if (cpuStr.EndsWith("Ki")) //元がKi単位なら、Byte単位にして単位換算する
             {
-                numStr = resourceStr.Substring(0, resourceStr.Length - 2);
+                numStr = cpuStr.Substring(0, cpuStr.Length - 2);
                 return float.Parse(numStr) * 1024 / 1000 / 1000 / 1000;
             }
-            else if (resourceStr.EndsWith("k") || resourceStr.EndsWith("K")) //元がkまたはK単位なら、1000*1000で割る
+            else if (cpuStr.EndsWith("k") || cpuStr.EndsWith("K")) //元がkまたはK単位なら、1000*1000で割る
             {
-                numStr = resourceStr.Substring(0, resourceStr.Length - 1);
+                numStr = cpuStr.Substring(0, cpuStr.Length - 1);
+                return float.Parse(numStr) / 1000 / 1000; ;
+            }
+            // その他の場合、GB単位と見なす
+            return float.Parse(cpuStr);
+        }
+
+        /// <summary>
+        /// メモリ容量の文字列表現(e.g. 5Ki, 12Mi, 234Gi)を、GB単位のFloat型に変換する。
+        /// 末尾に単位がない場合、Byte単位と見なす。
+        /// 数値変換に失敗した場合、そのまま例外が上がる。
+        /// </summary>
+        private static float ConvertMemoryStrToFloatGB(string memoryStr)
+        {
+            if (string.IsNullOrWhiteSpace(memoryStr))
+            {
+                return 0;
+            }
+            string numStr;
+            if (memoryStr.EndsWith("Ei")) //元がEi単位なら、Byte単位にして単位換算する
+            {
+                numStr = memoryStr.Substring(0, memoryStr.Length - 2);
+                return float.Parse(numStr) * 1024 * 1024 * 1024 * 1024 * 1024 * 1024 / 1000 / 1000 / 1000;
+            }
+            else if (memoryStr.EndsWith("e") || memoryStr.EndsWith("E")) //元がeまたはE単位なら、1000*1000*1000を掛ける
+            {
+                numStr = memoryStr.Substring(0, memoryStr.Length - 1);
+                return float.Parse(numStr) * 1000 * 1000 * 1000;
+            }
+            else if (memoryStr.EndsWith("Pi")) //元がPi単位なら、Byte単位にして単位換算する
+            {
+                numStr = memoryStr.Substring(0, memoryStr.Length - 2);
+                return float.Parse(numStr) * 1024 * 1024 * 1024 * 1024 * 1024 / 1000 / 1000 / 1000;
+            }
+            else if (memoryStr.EndsWith("p") || memoryStr.EndsWith("P")) //元がpまたはP単位なら、1000*1000を掛ける
+            {
+                numStr = memoryStr.Substring(0, memoryStr.Length - 1);
+                return float.Parse(numStr) * 1000 * 1000;
+            }
+            else if (memoryStr.EndsWith("Ti")) //元がTi単位なら、Byte単位にして単位換算する
+            {
+                numStr = memoryStr.Substring(0, memoryStr.Length - 2);
+                return float.Parse(numStr) * 1024 * 1024 * 1024 * 1024 / 1000 / 1000 / 1000;
+            }
+            else if (memoryStr.EndsWith("t") || memoryStr.EndsWith("T")) //元がtまたはT単位なら、1000を掛ける
+            {
+                numStr = memoryStr.Substring(0, memoryStr.Length - 1);
+                return float.Parse(numStr) * 1000;
+            }
+            else if (memoryStr.EndsWith("Gi")) //元がGi単位なら、Byte単位にして単位換算する
+            {
+                numStr = memoryStr.Substring(0, memoryStr.Length - 2);
+                return float.Parse(numStr) * 1024 * 1024 * 1024 / 1000 / 1000 / 1000;
+            }
+            else if (memoryStr.EndsWith("g") || memoryStr.EndsWith("G")) //元がgまたはG単位なら、そのまま
+            {
+                numStr = memoryStr.Substring(0, memoryStr.Length - 1);
+                return float.Parse(numStr);
+            }
+            else if (memoryStr.EndsWith("Mi")) //元がMi単位なら、Byte単位にして単位換算する
+            {
+                numStr = memoryStr.Substring(0, memoryStr.Length - 2);
+                return float.Parse(numStr) * 1024 * 1024 / 1000 / 1000 / 1000;
+            }
+            else if (memoryStr.EndsWith("m") || memoryStr.EndsWith("M")) //元がmまたはM単位なら、1000で割る
+            {
+                numStr = memoryStr.Substring(0, memoryStr.Length - 1);
+                return float.Parse(numStr) / 1000;
+            }
+            else if (memoryStr.EndsWith("Ki")) //元がKi単位なら、Byte単位にして単位換算する
+            {
+                numStr = memoryStr.Substring(0, memoryStr.Length - 2);
+                return float.Parse(numStr) * 1024 / 1000 / 1000 / 1000;
+            }
+            else if (memoryStr.EndsWith("k") || memoryStr.EndsWith("K")) //元がkまたはK単位なら、1000*1000で割る
+            {
+                numStr = memoryStr.Substring(0, memoryStr.Length - 1);
                 return float.Parse(numStr) / 1000 / 1000; ;
             }
             else //その他の場合、Byte単位と見なす
             {
-                numStr = resourceStr;
+                numStr = memoryStr;
                 return float.Parse(numStr) / 1000 / 1000 / 1000;
             }
         }
