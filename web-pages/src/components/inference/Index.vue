@@ -105,7 +105,7 @@
             prop: 'status',
             name: 'ステータス',
             type: 'select',
-            option: {items: ['None', 'Pending', 'Succeeded', 'Running', 'Completed', 'UserCancelled', 'Failed', 'Killed', 'Invalid', 'Forbidden', 'Multiple', 'Empty', 'Error']}
+            option: {items: ['None', 'Pending', 'Succeeded', 'Running', 'Completed', 'UserCanceled', 'Failed', 'Killed', 'Invalid', 'Forbidden', 'Multiple', 'Empty', 'Error']}
           }
         ],
         total: 0,
