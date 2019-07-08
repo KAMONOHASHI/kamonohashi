@@ -312,6 +312,22 @@ namespace Nssol.Platypus.Controllers.spa
                 }
             }
 
+            // 環境変数名のチェック
+            if (model.Options != null && model.Options.Count > 0)
+            {
+                foreach (var env in model.Options)
+                {
+                    if (!string.IsNullOrEmpty(env.Key))
+                    {
+                        // フォーマットチェック
+                        if (!Regex.IsMatch(env.Key, "^[-._a-zA-Z][-._a-zA-Z0-9]*$"))
+                        {
+                            return JsonNotFound($"Invalid envName. Please match the format of '^[-._a-zA-Z][-._a-zA-Z0-9]*$'.");
+                        }
+                    }
+                }
+            }
+
             //同じ名前のコンテナは実行できないので、確認する
             var currentStatus = await clusterManagementLogic.GetContainerStatusAsync(model.Name, CurrentUserInfo.SelectedTenant.Name, false);
             if (currentStatus.Exist())

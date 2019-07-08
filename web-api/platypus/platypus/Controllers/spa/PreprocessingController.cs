@@ -14,6 +14,7 @@ using Nssol.Platypus.Models.TenantModels;
 using Nssol.Platypus.ApiModels.PreprocessingApiModels;
 using Nssol.Platypus.Filters;
 using Nssol.Platypus.Infrastructure.Types;
+using System.Text.RegularExpressions;
 
 namespace Nssol.Platypus.Controllers.spa
 {
@@ -526,6 +527,22 @@ namespace Nssol.Platypus.Controllers.spa
             [FromServices] IDataRepository dataRepository,
             [FromServices] IClusterManagementLogic clusterManagementLogic)
         {
+            // 環境変数名のチェック
+            if (model.Options != null && model.Options.Count > 0)
+            {
+                foreach (var env in model.Options)
+                {
+                    if (!string.IsNullOrEmpty(env.Key))
+                    {
+                        // フォーマットチェック
+                        if (!Regex.IsMatch(env.Key, "^[-._a-zA-Z][-._a-zA-Z0-9]*$"))
+                        {
+                            return JsonNotFound($"Invalid envName. Please match the format of '^[-._a-zA-Z][-._a-zA-Z0-9]*$'.");
+                        }
+                    }
+                }
+            }
+
             var validateResult = await ValidateCreatePreprocessHistoryInputModelAsync(id, model.DataId, dataRepository);
             if (validateResult.IsSuccess == false)
             {
