@@ -631,7 +631,7 @@ namespace Nssol.Platypus.Controllers.spa
         [ProducesResponseType(typeof(InferenceSimpleOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> UserCancel(long? id)
         {
-            return await ExitAsync(id, ContainerStatus.UserCancelled);
+            return await ExitAsync(id, ContainerStatus.UserCanceled);
         }
 
         /// <summary>
