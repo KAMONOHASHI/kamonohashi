@@ -265,7 +265,7 @@
           type: 'warning'
         })
         .then(() => {
-          this.userCancelJob() // 正常停止（Status=UserCancelled）
+          this.userCancelJob() // 正常停止（Status=UserCanceled）
         })
         .catch(action => {
           if (action === 'cancel') {
@@ -410,12 +410,12 @@
       },
       async emitInferenceCreate () {
         let data = (await api.training.getById({id: this.trainingId})).data
-        if (data.status === 'Completed' || data.status === 'UserCancelled') {
+        if (data.status === 'Completed' || data.status === 'UserCanceled') {
           this.$router.push('/inference/create/' + this.trainingId + '?origin=train')
         } else {
           this.$notify.info({
             title: 'Information',
-            message: 'ステータスがCompletedまたはUserCancelledの学習のみ推論を実行できます。'
+            message: 'ステータスがCompletedまたはUserCanceledの学習のみ推論を実行できます。'
           })
         }
       },
