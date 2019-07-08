@@ -187,7 +187,7 @@ namespace Nssol.Platypus.Controllers.spa
             var data = trainingHistoryRepository.GetAllIncludeDataSetWithOrdering();
 
             // ステータスを限定する
-            data = data.Where(t => t.GetStatus().ToString() == "Completed" || t.GetStatus().ToString() == "UserCancelled");
+            data = data.Where(t => t.GetStatus().ToString() == "Completed" || t.GetStatus().ToString() == "UserCanceled");
 
             // SQLが多重実行されることを防ぐため、ToListで即時発行させたうえで、結果を生成
             return JsonOK(data.ToList().Select(history => GetUpdatedIndexOutputModelAsync(history).Result));
@@ -731,7 +731,7 @@ namespace Nssol.Platypus.Controllers.spa
         [ProducesResponseType(typeof(SimpleOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> UserCancel(long? id)
         {
-            return await ExitAsync(id, ContainerStatus.UserCancelled);
+            return await ExitAsync(id, ContainerStatus.UserCanceled);
         }
 
         /// <summary>
