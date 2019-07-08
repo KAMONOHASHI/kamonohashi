@@ -72,11 +72,16 @@ namespace Nssol.Platypus.ServiceModels.KubernetesModels
                     if (ContainerStatuses != null)
                     {
                         // mainコンテナのステータスを取得する
-                        var mainContainerStatus = ContainerStatuses.Where(container => container.name == "main").FirstOrDefault().state;
-                        if (mainContainerStatus.terminated != null && mainContainerStatus.terminated.reason == "OOMKilled")
+                        var mainContainer = ContainerStatuses.Where(container => container.name == "main").FirstOrDefault();
+                        if (mainContainer != null)
                         {
-                            return true;
+                            var mainContainerStatus = mainContainer.state;
+                            if (mainContainerStatus.terminated != null && mainContainerStatus.terminated.reason == "OOMKilled")
+                            {
+                                return true;
+                            }
                         }
+                        
                     }
                     return false;
                 }
