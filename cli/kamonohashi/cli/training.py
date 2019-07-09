@@ -164,6 +164,19 @@ def download_files(id, destination):
     for x in result:
         object_storage.download_file(pool_manager, x.url, destination, x.file_name)
 
+@training.command('download-log')
+@click.argument('id', type=int)
+@click.option('-d', '--destination', type=click.Path(exists=True, file_okay=False), required=True,
+              help='A path to the output files')
+def download_log(id, destination):
+    """Download files of training"""
+    api = rest.TrainingApi(configuration.get_api_client())
+    result = api.list_training_files(id, with_url=True)
+    result = [ x for x in result if x.file_name.endswith('.log') ]
+    pool_manager = api.api_client.rest_client.pool_manager
+    for x in result:
+        object_storage.download_file(pool_manager, x.url, destination, x.file_name)
+
 
 @training.command('download-container-files')
 @click.argument('id', type=int)
