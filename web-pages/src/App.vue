@@ -145,6 +145,7 @@
 
     .el-main {
       padding-top: $header-height;
+      height: 100vh;
     }
 
     // Components Common style
