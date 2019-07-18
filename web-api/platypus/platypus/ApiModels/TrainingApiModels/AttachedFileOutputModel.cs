@@ -63,7 +63,7 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
                     return -99;
                 }
             }
-            // ファイルIDが正の場合、そのまま
+            // ファイルIDが負以外の場合、そのまま
             return fileId;
         }
     }
