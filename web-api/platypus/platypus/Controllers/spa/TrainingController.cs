@@ -421,11 +421,13 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonNotFound($"Training ID {id.Value} is not found.");
             }
-            //学習名の入力チェック
-            if (string.IsNullOrWhiteSpace(model.Name))
+            if (model.Name != null)
             {
-                //学習名に空文字は許可しない
-                return JsonBadRequest($"A name of Training is NOT allowed to set empty string.");
+                // 学習名がnullでない場合、フォーマットチェック
+                if (!Regex.IsMatch(model.Name, "^[a-z]([-a-z0-9]*[a-z0-9])?$"))
+                {
+                    return JsonBadRequest("`name` must consist of lower case alphanumeric characters or dashes(-), start with an alphabetic character, and end with an alphanumeric character.");
+                }
             }
 
             history.Name = EditColumn(model.Name, history.Name);

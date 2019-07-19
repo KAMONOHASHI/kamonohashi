@@ -11,8 +11,6 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         /// <summary>
         /// 識別名
         /// </summary>
-        [Required]
-        [Controllers.Util.CustomValidation(Controllers.Util.CustomValidationType.Alphanumeric)]
         public string Name { get; set; }
 
         /// <summary>

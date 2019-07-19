@@ -422,11 +422,13 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonNotFound($"Inference ID {id.Value} is not found.");
             }
-            //推論名の入力チェック
-            if (string.IsNullOrWhiteSpace(model.Name))
+            if (model.Name != null)
             {
-                //推論名に空文字は許可しない
-                return JsonBadRequest($"A name of inference is NOT allowed to set empty string.");
+                // 推論名がnullでない場合、フォーマットチェック
+                if (!Regex.IsMatch(model.Name, "^[a-z]([-a-z0-9]*[a-z0-9])?$"))
+                {
+                    return JsonBadRequest("`name` must consist of lower case alphanumeric characters or dashes(-), start with an alphabetic character, and end with an alphanumeric character.");
+                }
             }
 
             history.Name = EditColumn(model.Name, history.Name);

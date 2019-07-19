@@ -121,12 +121,13 @@ def delete(id):
 
 @training.command()
 @click.argument('id', type=int)
+@click.option('-n', '--name', help='A name to update')
 @click.option('-m', '--memo', help='A memo to update')
 @click.option('-fav/-unfav', '--favorite/--un-favorite', default=None, help='A favorite to update')
-def update(id, memo, favorite):
+def update(id, name, memo, favorite):
     """Update training"""
     api = rest.TrainingApi(configuration.get_api_client())
-    model = rest.TrainingApiModelsEditInputModel(memo=memo, favorite=favorite)
+    model = rest.TrainingApiModelsEditInputModel(name=name, memo=memo, favorite=favorite)
     result = api.update_training(id, model=model)
     print('updated', result.id)
 
