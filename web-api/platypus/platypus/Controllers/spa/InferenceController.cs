@@ -312,17 +312,6 @@ namespace Nssol.Platypus.Controllers.spa
                 }
             }
 
-            //同じ名前のコンテナは実行できないので、確認する
-            var currentStatus = await clusterManagementLogic.GetContainerStatusAsync(model.Name, CurrentUserInfo.SelectedTenant.Name, false);
-            if (currentStatus.Exist())
-            {
-                if (currentStatus.IsError())
-                {
-                    return JsonConflict($"Failed to check cluster status. Please contact your server administrator.");
-                }
-                return JsonConflict($"Container {model.Name} already exists: status {currentStatus}");
-            }
-
             long? gitId = model.GitModel.GitId ?? CurrentUserInfo.SelectedTenant.DefaultGit?.Id;
             string branch = model.GitModel.Branch ?? "master";
             string commitId = model.GitModel.CommitId;
@@ -422,16 +411,8 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonNotFound($"Inference ID {id.Value} is not found.");
             }
-            if (model.Name != null)
-            {
-                // 推論名がnullでない場合、フォーマットチェック
-                if (!Regex.IsMatch(model.Name, "^[a-z]([-a-z0-9]*[a-z0-9])?$"))
-                {
-                    return JsonBadRequest("`name` must consist of lower case alphanumeric characters or dashes(-), start with an alphabetic character, and end with an alphanumeric character.");
-                }
-            }
 
-            history.Name = EditColumn(model.Name, history.Name);
+            history.Name = EditColumnNotEmpty(model.Name, history.Name);
             history.Memo = EditColumn(model.Memo, history.Memo);
             history.Favorite = EditColumn(model.Favorite, history.Favorite);
             unitOfWork.Commit();

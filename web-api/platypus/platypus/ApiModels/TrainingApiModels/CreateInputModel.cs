@@ -1,10 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Nssol.Platypus.ApiModels.Components;
-using System;
+﻿using Nssol.Platypus.ApiModels.Components;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Nssol.Platypus.ApiModels.TrainingApiModels
 {
@@ -14,7 +10,6 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         /// 識別名
         /// </summary>
         [Required]
-        [Controllers.Util.CustomValidation(Controllers.Util.CustomValidationType.Alphanumeric)]
         public string Name { get; set; }
         /// <summary>
         /// コンテナ情報

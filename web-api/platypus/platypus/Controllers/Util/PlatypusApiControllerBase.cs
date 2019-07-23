@@ -2,13 +2,13 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Nssol.Platypus.ApiModels;
 using Nssol.Platypus.Filters;
-using System.Linq;
-using System.Net;
 using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Logic.Interfaces;
-using Microsoft.Extensions.Logging;
+using System.Linq;
+using System.Net;
 
 namespace Nssol.Platypus.Controllers.Util
 {
@@ -121,6 +121,18 @@ namespace Nssol.Platypus.Controllers.Util
             {
                 //入力が空を表す文字列＝空で初期化
                 return "";
+            }
+            return input;
+        }
+        /// <summary>
+        /// 入力値が、空なのか、新規文字列なのかによって、返す値を変える（空文字更新はしない）
+        /// </summary>
+        protected string EditColumnNotEmpty(string input, string current)
+        {
+            if (string.IsNullOrEmpty(input) || input == ValueOfEmptyString)
+            {
+                //入力が何もないまたは、入力が空を表す文字列＝未指定
+                return current;
             }
             return input;
         }
