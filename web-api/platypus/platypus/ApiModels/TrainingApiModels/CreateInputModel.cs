@@ -10,6 +10,7 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         /// 識別名
         /// </summary>
         [Required]
+        [MinLength(1)]
         public string Name { get; set; }
         /// <summary>
         /// コンテナ情報

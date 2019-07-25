@@ -129,9 +129,9 @@ namespace Nssol.Platypus.Controllers.Util
         /// </summary>
         protected string EditColumnNotEmpty(string input, string current)
         {
-            if (string.IsNullOrEmpty(input) || input == ValueOfEmptyString)
+            if (string.IsNullOrEmpty(input))
             {
-                //入力が何もないまたは、入力が空を表す文字列＝未指定
+                //入力が何もないまたは、空を表す文字列＝未指定
                 return current;
             }
             return input;

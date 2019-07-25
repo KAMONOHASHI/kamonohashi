@@ -117,6 +117,8 @@ class TrainingApiModelsEditInputModel(object):
         :param name: The name of this TrainingApiModelsEditInputModel.  # noqa: E501
         :type: str
         """
+        if name is not None and len(name) < 1:
+            raise ValueError("Invalid value for `name`, length must be greater than or equal to `1`")  # noqa: E501
 
         self._name = name
 
