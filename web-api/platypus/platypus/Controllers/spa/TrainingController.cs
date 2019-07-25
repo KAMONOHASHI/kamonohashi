@@ -12,7 +12,6 @@ using Nssol.Platypus.Infrastructure.Infos;
 using Nssol.Platypus.Infrastructure.Options;
 using Nssol.Platypus.Infrastructure.Types;
 using Nssol.Platypus.Logic.Interfaces;
-using Nssol.Platypus.Models;
 using Nssol.Platypus.Models.TenantModels;
 using System;
 using System.Collections.Generic;
@@ -313,17 +312,6 @@ namespace Nssol.Platypus.Controllers.spa
                 }
             }
 
-            //同じ名前のコンテナは実行できないので、確認する
-            var currentStatus = await clusterManagementLogic.GetContainerStatusAsync(model.Name, CurrentUserInfo.SelectedTenant.Name, false);
-            if(currentStatus.Exist())
-            {
-                if (currentStatus.IsError())
-                {
-                    return JsonConflict($"Failed to check cluster status. Please contact your server administrator.");
-                }
-                return JsonConflict($"Container {model.Name} already exists: status {currentStatus}");
-            }
-
             long? gitId = model.GitModel.GitId ?? CurrentUserInfo.SelectedTenant.DefaultGit?.Id;
             string branch = model.GitModel.Branch ?? "master";
             string commitId = model.GitModel.CommitId;
@@ -421,14 +409,8 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonNotFound($"Training ID {id.Value} is not found.");
             }
-            //学習名の入力チェック
-            if (string.IsNullOrWhiteSpace(model.Name))
-            {
-                //学習名に空文字は許可しない
-                return JsonBadRequest($"A name of Training is NOT allowed to set empty string.");
-            }
 
-            history.Name = EditColumn(model.Name, history.Name);
+            history.Name = EditColumnNotEmpty(model.Name, history.Name);
             history.Memo = EditColumn(model.Memo, history.Memo);
             history.Favorite = EditColumn(model.Favorite, history.Favorite);
             unitOfWork.Commit();
