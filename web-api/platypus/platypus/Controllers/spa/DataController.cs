@@ -335,7 +335,6 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonNotFound($"Data ID {id} is not found.");
             }
 
-            dataLogic.GetDataFiles(id, withUrl);
             return JsonOK(dataLogic.GetDataFiles(id, withUrl));
         }
 
