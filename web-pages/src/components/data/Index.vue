@@ -199,4 +199,11 @@
     text-align: left;
     width: 120px;
   }
+
+  .el-tag--mini {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 </style>
