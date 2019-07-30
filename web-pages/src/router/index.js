@@ -20,6 +20,10 @@ import RunPreprocessing from '@/components/preprocessing/Run'
 import PreprocessingHistory from '@/components/preprocessing/PreprocessingHistory'
 import PreprocessingHistoryEdit from '@/components/preprocessing/PreprocessingHistoryEdit'
 
+import JupyterIndex from '@/components/jupyter/Index'
+import CreateJupyter from '@/components/jupyter/Create.vue'
+import EditJupyter from '@/components/jupyter/Edit.vue'
+
 import TrainingIndex from '@/components/training/Index'
 import CreateJob from '@/components/training/Create.vue'
 import EditTrain from '@/components/training/Edit.vue'
@@ -195,6 +199,23 @@ let router = new Router({
         {
           path: ':dataId/log',
           component: LogViewer,
+          props: true
+        }
+      ]
+    },
+    {
+      path: '/jupyter',
+      name: 'jupyter',
+      component: JupyterIndex,
+      children: [
+        {
+          path: 'run/:originId?',
+          component: CreateJupyter,
+          props: true
+        },
+        {
+          path: ':id',
+          component: EditJupyter,
           props: true
         }
       ]
