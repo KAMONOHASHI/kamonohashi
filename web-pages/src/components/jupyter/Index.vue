@@ -32,7 +32,6 @@
         </el-table-column>
         <el-table-column prop="id" label="ノートブックID" width="120px"/>
         <el-table-column prop="name" label="ノートブック名" width="240px"/>
-        <el-table-column prop="createdBy" label="作成者" width="200px"/>
         <el-table-column prop="createdAt" label="作成日時" width="200px"/>
         <el-table-column prop="memo" label="メモ" width="auto"/>
         <el-table-column width="25px">
@@ -46,10 +45,11 @@
           </div>
         </el-table-column>
         <el-table-column prop="status" label="ステータス" width="120px"/>
-        <el-table-column prop="status" label="リンク" width="200px">
+        <el-table-column prop="status" label="Action" width="400px">
             <div slot-scope="scope">
             <div v-if="scope.row.status === 'Running'">
               <el-button type="plain" icon="el-icon-document" >ノートブックを開く</el-button>
+              <el-button type="danger">停止</el-button>
             </div>
             <div v-else>
             </div>
