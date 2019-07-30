@@ -81,7 +81,7 @@
             <div v-if="statusType === 'Running'  || statusType === 'Error'">
               <el-form-item label="操作">
                 <div class="el-input">
-                  <pl-delete-button buttonLabel="ジョブ停止" @delete="showConfirm" message="ジョブを停止しますか"/>
+                  <pl-delete-button buttonLabel="ジョブ停止" @delete="haltJupyter"/>
                 </div>
                 <div v-if="status === 'Running'">
                   <div class="el-input" style="padding: 10px 0">
@@ -112,7 +112,7 @@
 
         <el-row :gutter="20" class="footer">
           <el-col :span="12">
-            <pl-delete-button @delete="deleteJob"/>
+            <pl-delete-button @delete="deleteJupyter"/>
           </el-col>
           <el-col class="right-button-group" :span="12">
             <el-button @click="emitCancel">キャンセル</el-button>
@@ -245,6 +245,24 @@
             }
           }
         })
+      },
+      async haltJupyter () {
+        try {
+          await api.jupyter.postHaltById({id: this.jupyterId})
+          await this.getDetail()
+          this.error = null
+        } catch (e) {
+          this.error = e
+        }
+      },
+      async deleteJupyter () {
+        try {
+          await api.jupyter.deleteById({id: this.jupyterId})
+          this.emitDone()
+          this.error = null
+        } catch (e) {
+          this.error = e
+        }
       }
     }
   }
