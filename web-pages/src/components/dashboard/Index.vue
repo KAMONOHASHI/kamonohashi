@@ -60,7 +60,7 @@
                 <br>
                 {{'学習'}}
               </div>
-              <div class=menu-description style="padding:10px;font-size:14px;">{{'あらゆる規模でモデルを訓練し調整します'}}</div>
+              <div class=menu-description style="padding:10px;font-size:14px;">{{'モデルを訓練し調整します'}}</div>
               <router-link :to='"/training"'>
                 <el-row>
                   <div class="menu-item" style="padding:10px;font-size:16px;">
@@ -190,7 +190,8 @@
     padding: 2% 2% 2% 3%;
     margin: 10px 0px;
     overflow: hidden;
-    width: 240px;
+    width: 80%;
+    max-width: 240px;
     border-radius: 4px;
   }
   .menu-item:hover {
