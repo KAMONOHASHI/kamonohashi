@@ -20,9 +20,9 @@ import RunPreprocessing from '@/components/preprocessing/Run'
 import PreprocessingHistory from '@/components/preprocessing/PreprocessingHistory'
 import PreprocessingHistoryEdit from '@/components/preprocessing/PreprocessingHistoryEdit'
 
-import JupyterIndex from '@/components/jupyter/Index'
-import CreateJupyter from '@/components/jupyter/Create.vue'
-import EditJupyter from '@/components/jupyter/Edit.vue'
+import NotebookIndex from '@/components/notebook/Index'
+import CreateNotebook from '@/components/notebook/Create.vue'
+import EditNotebook from '@/components/notebook/Edit.vue'
 
 import TrainingIndex from '@/components/training/Index'
 import CreateJob from '@/components/training/Create.vue'
@@ -204,18 +204,18 @@ let router = new Router({
       ]
     },
     {
-      path: '/jupyter',
-      name: 'jupyter',
-      component: JupyterIndex,
+      path: '/notebook',
+      name: 'notebook',
+      component: NotebookIndex,
       children: [
         {
           path: 'run/:originId?',
-          component: CreateJupyter,
+          component: CreateNotebook,
           props: true
         },
         {
           path: ':id',
-          component: EditJupyter,
+          component: EditNotebook,
           props: true
         }
       ]

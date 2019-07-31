@@ -1,13 +1,50 @@
 <template>
    <div>
     <el-dialog class="dialog"
-               title="ノートブック作成"
+               title="ノートブック起動"
                :visible.sync="dialogVisible"
                :before-close="closeDialog"
                :close-on-click-modal="false">
       <el-form ref="runForm" :rules="rules" :model="this">
         <pl-display-error :error="error"/>
-        <div>
+        <div v-if="originId !== undefined">
+          <el-row :gutter="20">
+            <div class="element">
+              <el-form v-if="active===0">
+                <el-col :span="18" :offset="3">
+                  <el-form-item label="CPU" required>
+                    <el-slider
+                      class="el-input"
+                      v-model="cpu"
+                      :min="1"
+                      :max="200"
+                      show-input>
+                    </el-slider>
+                  </el-form-item>
+                  <el-form-item label="メモリ(GB)" required>
+                    <el-slider
+                      class="el-input"
+                      v-model="memory"
+                      :min="1"
+                      :max="200"
+                      show-input>
+                    </el-slider>
+                  </el-form-item>
+                  <el-form-item label="GPU" required>
+                    <el-slider
+                      class="el-input"
+                      v-model="gpu"
+                      :min="0"
+                      :max="16"
+                      show-input>
+                    </el-slider>
+                  </el-form-item>
+                </el-col>
+              </el-form>
+            </div>
+          </el-row>
+        </div>
+        <div v-else>
           <el-row :gutter="20">
             <el-steps :active="active" align-center>
               <el-step title="Step 1" description="notebook name & dataset"></el-step>
@@ -95,21 +132,21 @@
               </el-form>
             </div>
           </el-row>
-          <el-row class="step">
-          <span class="left-step-group" v-if="active >= 1" style="margin-top: 12px;"
+        </div>
+        <el-row class="step">
+          <span class="left-step-group" v-if="active >= 1 && originId === undefined" style="margin-top: 12px;"
                 @click="previous">
             <i class="el-icon-arrow-left"></i>
             Previous step
           </span>
-            <span class="right-step-group" v-if="active <=2" style="margin-top: 12px;" @click="next">
+          <span class="right-step-group" v-if="active <=2 && originId === undefined" style="margin-top: 12px;" @click="next">
             Next step
             <i class="el-icon-arrow-right"></i>
           </span>
-            <el-button class="right-step-group" v-if="active===3" type="primary"
-                       @click="runJupyter">起動
-            </el-button>
-          </el-row>
-        </div>
+          <el-button class="right-step-group" v-if="active===3 || originId !== undefined" type="primary"
+                     @click="runNotebook">起動
+          </el-button>
+        </el-row>
       </el-form>
     </el-dialog>
   </div>
@@ -124,7 +161,7 @@
   import DisplayError from '@/components/common/DisplayError'
   import api from '@/api/v1/api'
   export default {
-    name: 'CreateJupyter',
+    name: 'CreateNotebook',
     components: {
       'pl-dataset-selector': DataSetSelector,
       'pl-string-selector': StringSelector,
@@ -134,6 +171,7 @@
       'pl-display-error': DisplayError
     },
     props: {
+      originId: String
     },
     data () {
       return {
@@ -165,6 +203,7 @@
     async created () {
       let result = await (api.cluster.getPartitions())
       this.partitions = result.data
+      await this.retrieveOriginNotebook()
     },
     methods: {
       async runTrain () {
@@ -189,7 +228,7 @@
                 Partition: this.partition,
                 Memo: this.memo
               }
-              await api.jupyter.post({model: param})
+              await api.notebook.post({model: param})
 
               // 成功したら、ダイヤログを閉じて更新
               this.emitDone()
@@ -219,6 +258,33 @@
       previous () {
         if (this.active-- < 0) {
           this.active = 0
+        }
+      },
+      async retrieveOriginNotebook () {
+        if (this.originId >= 0) {
+          this.origin = (await api.notebook.getById({id: this.originId})).data
+          this.copyFromOrigin()
+        }
+      },
+      copyFromOrigin () {
+        let origin = this.origin
+
+        if (origin) {
+          this.name = origin.name
+          this.container = origin.containerImage
+          this.dataSet = origin.dataSet
+          this.git = origin.gitModel
+          this.options = origin.options
+          this.memo = origin.memo
+          this.cpu = origin.cpu
+          this.memory = origin.memory
+          this.gpu = origin.gpu
+          this.partition = origin.partition
+          this.containerImage = origin.containerImage
+          this.entryPoint = origin.entryPoint
+          if (origin.parent) {
+            this.parent = origin.parent
+          }
         }
       }
     }

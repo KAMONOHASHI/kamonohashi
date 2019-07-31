@@ -45,7 +45,7 @@
               </div>
               <div class=menu-description style="padding:10px;font-size:14px;">{{'jupyter上で試行錯誤ができます'}}</div>
 
-              <router-link :to='"/jupyter"'>
+              <router-link :to='"/notebook"'>
                 <el-row>
                   <div class="menu-item" style="padding:10px;font-size:16px;">
                     {{'Jupyter Lab'}}

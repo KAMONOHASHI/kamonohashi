@@ -81,7 +81,7 @@
             <div v-if="statusType === 'Running'  || statusType === 'Error'">
               <el-form-item label="操作">
                 <div class="el-input">
-                  <pl-delete-button buttonLabel="ジョブ停止" @delete="haltJupyter"/>
+                  <pl-delete-button buttonLabel="ジョブ停止" @delete="haltNotebook"/>
                 </div>
                 <div v-if="status === 'Running'">
                   <div class="el-input" style="padding: 10px 0">
@@ -112,7 +112,7 @@
 
         <el-row :gutter="20" class="footer">
           <el-col :span="12">
-            <pl-delete-button @delete="deleteJupyter"/>
+            <pl-delete-button @delete="deleteNotebook"/>
           </el-col>
           <el-col class="right-button-group" :span="12">
             <el-button @click="emitCancel">キャンセル</el-button>
@@ -131,7 +131,7 @@
   import DataSetDetails from '@/components/common/DatasetDetails.vue'
   import api from '@/api/v1/api'
   export default {
-    name: 'EditJupyter',
+    name: 'EditNotebook',
     components: {
       'pl-delete-button': DeleteButton,
       'pl-display-text-form': DisplayTextForm,
@@ -146,7 +146,7 @@
         rules: {
           name: [{required: true, trigger: 'blur', message: '必須項目です'}]
         },
-        jupyterId: undefined,
+        notebookId: undefined,
         dialogVisible: true,
         error: undefined,
         containerUrl: undefined, // コンテナの表示用URL
@@ -175,18 +175,18 @@
       }
     },
     async created () {
-      this.jupyterId = this.id
+      this.notebookId = this.id
       await this.getDetail()
     },
     methods: {
       async getDetail () {
-        let data = (await api.training.getById({id: this.jupyterId})).data
+        let data = (await api.notebook.getById({id: this.notebookId})).data
         this.setTrainDetails(data)
         this.containerUrl = data.containerImage.url
       },
       async setTrainDetails (data) {
         this.name = data.name
-        this.jupyterId = data.id
+        this.notebookId = data.id
         this.dataSet = data.dataSet
         this.gitModel = data.gitModel
         this.createdBy = data.createdBy
@@ -207,7 +207,7 @@
         this.conditionNote = data.conditionNote
         this.favorite = data.favorite
         if (this.statusType === 'Running' || this.statusType === 'Error') {
-          this.events = (await api.training.getEventsById({id: data.id})).data
+          this.events = (await api.notebook.getEventsById({id: data.id})).data
         }
         this.waitingTime = data.waitingTime
         this.executionTime = data.executionTime
@@ -229,7 +229,7 @@
           memo: this.memo,
           favorite: this.favorite
         }
-        await api.training.putById({id: this.jupyterId, model: putData})
+        await api.training.putById({id: this.notebookId, model: putData})
       },
       async onSubmit () {
         let form = this.$refs.updateForm
@@ -246,18 +246,18 @@
           }
         })
       },
-      async haltJupyter () {
+      async haltNotebook () {
         try {
-          await api.jupyter.postHaltById({id: this.jupyterId})
+          await api.notebook.postHaltById({id: this.notebookId})
           await this.getDetail()
           this.error = null
         } catch (e) {
           this.error = e
         }
       },
-      async deleteJupyter () {
+      async deleteNotebook () {
         try {
-          await api.jupyter.deleteById({id: this.jupyterId})
+          await api.notebook.deleteById({id: this.notebookId})
           this.emitDone()
           this.error = null
         } catch (e) {

@@ -24,7 +24,8 @@
       </el-col>
     </el-row>
     <el-row>
-      <el-table class="data-table pl-index-table" :data="tableData" @row-click="openEditDialog" border>
+      <el-table class="data-table pl-index-table" :data="tableData" border>
+      <!--<el-table class="data-table pl-index-table" :data="tableData" @row-click="openEditDialog" border>-->
         <el-table-column width="25px">
           <div slot-scope="scope">
             <i class="el-icon-star-on favorite" v-if="scope.row.favorite"></i>
@@ -48,10 +49,10 @@
         <el-table-column prop="status" label="Action" width="400px">
             <div slot-scope="scope">
             <div v-if="scope.row.status === 'Running'">
-              <el-button type="plain" icon="el-icon-document" >ノートブックを開く</el-button>
+                <el-button type="plain" @click="openNotebook(scope.row)" icon="el-icon-document" >ノートブックを開く</el-button>
             </div>
             <div v-if="scope.row.status === 'Killed'">
-              <el-button type="plain" icon="el-icon-document" >再実行</el-button>
+              <el-button type="plain" @click="openRerunDialog(scope.row)" icon="el-icon-document" >再実行</el-button>
             </div>
             <div v-else>
             </div>
@@ -78,6 +79,7 @@
       @return="back"
       @files="files"
       @shell="shell"
+      @rerun="rerun"
     ></router-view>
   </div>
 </template>
@@ -87,7 +89,7 @@
   import SmartSearchInput from '@/components/common/SmartSearchInput/Index.vue'
 
   export default {
-    name: 'JupyterIndex',
+    name: 'NotebookIndex',
     title: '学習管理',
     components: {
       'pl-smart-search-input': SmartSearchInput
@@ -96,7 +98,7 @@
       return {
         searchCondition: {},
         searchConfigs: [
-          {prop: 'id', name: 'JupyterID', type: 'number'},
+          {prop: 'id', name: 'notebookID', type: 'number'},
           {prop: 'name', name: 'ノートブック名', type: 'text'},
           {prop: 'startedAt', name: '作成日時', type: 'date'},
           {prop: 'createdBy', name: '作成者', type: 'text'},
@@ -126,7 +128,7 @@
         params.perPage = this.currentPageSize
         params.withTotal = true
 
-        let response = await api.jupyter.get(params)
+        let response = await api.notebook.get(params)
         this.tableData = response.data
         this.total = parseInt(response.headers['x-total-count'])
       },
@@ -139,7 +141,7 @@
       async currentChange (page) {
         this.currentPage = page
         await this.retrieveData()
-        this.$router.push('/jupyter')
+        this.$router.push('/notebook')
       },
       done () {
         this.currentChange(1)
@@ -147,33 +149,32 @@
         this.showSuccessMessage()
       },
       closeDialog () {
-        this.$router.push('/jupyter')
+        this.$router.push('/notebook')
       },
       back () {
         this.$router.go(-1)
       },
       openEditDialog (selectedRow) {
-        this.$router.push('/jupyter/' + selectedRow.id)
+        this.$router.push('/notebook/' + selectedRow.id)
       },
       openCreateDialog () {
-        this.$router.push('/jupyter/run/')
+        this.$router.push('/notebook/run/')
+      },
+      openNotebook (selectedRow) {
+        this.$router.push(selectedRow.endpoints.url)
       },
       async search () {
         this.currentPage = 1
         await this.retrieveData()
       },
       files (id) {
-        this.$router.push('/jupyter/' + id + '/files')
+        this.$router.push('/notebook/' + id + '/files')
       },
       shell (id) {
-        this.$router.push('/jupyter/' + id + '/shell')
+        this.$router.push('/notebook/' + id + '/shell')
       },
-      log (id) {
-        this.$router.push('/jupyter/' + id + '/log')
-      },
-      handleCommand (row) {
-        this.$router.push('/jupyter/' + row.id)
-        this.$store.commit('setLoading', false)
+      openRerunDialog (selectedRow) {
+        this.$router.push('/notebook/run/' + selectedRow.id)
       }
     }
   }
