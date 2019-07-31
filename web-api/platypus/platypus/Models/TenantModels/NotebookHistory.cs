@@ -26,40 +26,35 @@ namespace Nssol.Platypus.Models.TenantModels
         /// <summary>
         /// データセットID
         /// </summary>
-        [Required]
         public long DataSetId { get; set; }
 
         /// <summary>
-        /// ノートブックモデルGit
+        /// GitID
         /// </summary>
-        [Required]
         public long ModelGitId { get; set; }
 
         /// <summary>
-        /// ノートブックモデルリポジトリ
+        /// リポジトリ
         /// </summary>
-        [Required]
         public string ModelRepository { get; set; }
 
         /// <summary>
-        /// ノートブックモデルリポジトリオーナー
+        /// リポジトリオーナー
         /// </summary>
-        [Required]
         public string ModelRepositoryOwner { get; set; }
 
         /// <summary>
-        /// ノートブックモデルブランチ。
+        /// ブランチ
         /// </summary>
         public string ModelBranch { get; set; }
 
         /// <summary>
-        /// ノートブックモデルコミットID
+        /// コミットID
         /// </summary>
-        [Required]
         public string ModelCommitId { get; set; }
 
         /// <summary>
-        /// Dockerリポジトリ。
+        /// Dockerレジストリ
         /// </summary>
         [Required]
         public long? ContainerRegistryId { get; set; }
@@ -102,23 +97,26 @@ namespace Nssol.Platypus.Models.TenantModels
         /// <summary>
         /// CPUコア数
         /// </summary>
+        [Required]
         public int Cpu { get; set; }
 
         /// <summary>
         /// メモリ容量（GiB）
         /// </summary>
+        [Required]
         public int Memory { get; set; }
-        
+
         /// <summary>
         /// GPU数
         /// </summary>
+        [Required]
         public int Gpu { get; set; }
         
         /// <summary>
         /// パーティション
         /// </summary>
         public string Partition { get; set; }
-        
+
         /// <summary>
         /// コンテナの設定値（起動したときのJson）
         /// </summary>
@@ -136,12 +134,12 @@ namespace Nssol.Platypus.Models.TenantModels
         public string Node { get; set; }
 
         /// <summary>
-        /// 実行開始日時
+        /// 起動日時
         /// </summary>
         public DateTime? StartedAt { get; set; }
 
         /// <summary>
-        /// 学習完了日時。
+        /// 停止日時
         /// エラーなどで中断した際も、その時刻が記録される。
         /// </summary>
         public DateTime? CompletedAt { get; set; }
@@ -175,7 +173,7 @@ namespace Nssol.Platypus.Models.TenantModels
         public virtual Registry ContainerRegistry { get; set; }
 
         /// <summary>
-        /// コンテナ実行時に使用する名前
+        /// コンテナ起動時に使用する名前
         /// </summary>
         public string Key
         {
