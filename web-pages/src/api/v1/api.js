@@ -213,6 +213,18 @@ let api = {
     getMount: gen.ApiV1TrainingToMountGet
   },
 
+  jupyter: {
+    getSimple: gen.ApiV1JupyterSimpleGet,
+    get: gen.ApiV1JupyterGet,
+    post: gen.ApiV1JupyterRunPost,
+    getById: gen.ApiV1JupyterByIdGet,
+    deleteById: gen.ApiV1JupyterByIdDelete,
+    putById: gen.ApiV1JupyterByIdPut,
+    getContainerFilesById: gen.ApiV1JupyterByIdContainer_filesGet,
+    postHaltById: gen.ApiV1JupyterByIdHaltPost,
+    getEventsById: gen.ApiV1JupyterByIdEventsGet
+  },
+
   inference: {
     getSimple: gen.ApiV1InferencesSimpleGet,
     get: gen.ApiV1InferencesGet,
