@@ -10,7 +10,7 @@
         <div>
           <el-row :gutter="20">
             <el-steps :active="active" align-center>
-              <el-step title="Step 1" description="training name & dataset"></el-step>
+              <el-step title="Step 1" description="notebook name & dataset"></el-step>
               <el-step title="Step 2" description="container image & model"></el-step>
               <el-step title="Step 3" description="resource"></el-step>
               <el-step title="Step 4" description="option"></el-step>

@@ -49,7 +49,9 @@
             <div slot-scope="scope">
             <div v-if="scope.row.status === 'Running'">
               <el-button type="plain" icon="el-icon-document" >ノートブックを開く</el-button>
-              <el-button type="danger">停止</el-button>
+            </div>
+            <div v-if="scope.row.status === 'Killed'">
+              <el-button type="plain" icon="el-icon-document" >再実行</el-button>
             </div>
             <div v-else>
             </div>
@@ -124,7 +126,7 @@
         params.perPage = this.currentPageSize
         params.withTotal = true
 
-        let response = await api.training.get(params)
+        let response = await api.jupyter.get(params)
         this.tableData = response.data
         this.total = parseInt(response.headers['x-total-count'])
       },
