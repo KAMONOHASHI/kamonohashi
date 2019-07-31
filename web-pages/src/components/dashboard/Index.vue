@@ -2,7 +2,7 @@
   <div>
     <h2> ダッシュボード </h2>
     <div class="dashboard">
-      <el-card class="box-card" shadow="never">
+      <el-card class="box-card" shadow="Always">
         <div slot="header">
           <span>Workflow</span>
         </div>
@@ -186,12 +186,14 @@
   }
 
   .menu-item {
-    /*background: #fff;*/
-    /*!*border: solid 1px #ccc;*!*/
-    /*box-shadow: 0 1px 1px #ccc;*/
-    /*padding: 2% 2% 2% 3%;*/
-    /*margin: 10px 0px;*/
-    /*overflow: hidden;*/
-    /*width: 360px;*/
+    border: solid 1px #EBEEF5;
+    padding: 2% 2% 2% 3%;
+    margin: 10px 0px;
+    overflow: hidden;
+    width: 240px;
+    border-radius: 4px;
+  }
+  .menu-item:hover {
+    border-left: solid 5px #1abfd5;
   }
 </style>
