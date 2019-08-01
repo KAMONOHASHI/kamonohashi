@@ -29,6 +29,11 @@ namespace Nssol.Platypus.Infrastructure.Types
         /// <summary>
         /// 推論実行用
         /// </summary>
-        Inferencing = 4
+        Inferencing = 4,
+        /// <summary>
+        /// ノートブック実行用
+        /// </summary>
+        Notebook = 5
+
     }
 }
