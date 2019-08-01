@@ -26,7 +26,7 @@ namespace Nssol.Platypus.Controllers.spa
     {
         private readonly INotebookHistoryRepository notebookHistoryRepository;
         private readonly IDataSetRepository dataSetRepository;
-        //private readonly INotebookLogic notebookLogic;
+        private readonly INotebookLogic notebookLogic;
         private readonly IStorageLogic storageLogic;
         private readonly IGitLogic gitLogic;
         private readonly IClusterManagementLogic clusterManagementLogic;
@@ -34,7 +34,7 @@ namespace Nssol.Platypus.Controllers.spa
         public NotebookController(
             INotebookHistoryRepository notebookHistoryRepository,
             IDataSetRepository dataSetRepository,
-            //INotebookLogic notebookLogic,
+            INotebookLogic notebookLogic,
             IStorageLogic storageLogic,
             IGitLogic gitLogic,
             IClusterManagementLogic clusterManagementLogic,
@@ -43,7 +43,7 @@ namespace Nssol.Platypus.Controllers.spa
         {
             this.notebookHistoryRepository = notebookHistoryRepository;
             this.dataSetRepository = dataSetRepository;
-            //this.notebookLogic = notebookLogic;
+            this.notebookLogic = notebookLogic;
             this.storageLogic = storageLogic;
             this.gitLogic = gitLogic;
             this.clusterManagementLogic = clusterManagementLogic;
@@ -412,5 +412,96 @@ namespace Nssol.Platypus.Controllers.spa
             //}
             return JsonError(HttpStatusCode.InternalServerError, "tmp");
         }
+
+        /// <summary>
+        /// コンテナの出力ファイルの一覧を取得する。
+        /// </summary>
+        /// <remarks> 
+        /// コンテナの/output/配下から指定ディレクトリパスの直下を検索する
+        /// 検索対象ディレクトリが見つからない場合もファイル・ディレクトリが空の結果を返す
+        /// </remarks>
+        /// <param name="id">対象の学習履歴ID</param>
+        /// <param name="path">検索対象ディレクトリ。使用可能文字は「-_1-9a-zA-Z/」</param>
+        /// <param name="withUrl">結果にダウンロード用のURLを含めるか</param>
+        [HttpGet("{id}/container-files")]
+        [Filters.PermissionFilter(MenuCode.Training)] // TODO MenuCode.Notebookに変更
+        [ProducesResponseType(typeof(StorageListResultInfo), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetUnderDir(long id, [FromQuery] string path = "/", [FromQuery] bool withUrl = false)
+        {
+            //データの存在チェック
+            var trainingHistory = await notebookHistoryRepository.GetByIdAsync(id);
+            if (trainingHistory == null)
+            {
+                return JsonNotFound($"Notebook ID {id} is not found.");
+            }
+
+            if (!Regex.IsMatch(path, "[-_1-9a-zA-Z/]+"))
+            {
+                return JsonBadRequest("Invalid path. allowed characters are -_1-9a-zA-Z/");
+            }
+
+            // 検索path文字列の先頭・末尾が/でない場合はつける
+            if (!path.StartsWith("/"))
+            {
+                path = "/" + path;
+            }
+            if (!path.EndsWith("/"))
+            {
+                path = path + "/";
+            }
+            var rootDir = $"{id}" + path;
+
+            var result = await storageLogic.GetUnderDirAsync(ResourceType.NotebookContainerOutputFiles, rootDir);
+
+            if (withUrl)
+            {
+                result.Value.Files.ForEach(x => x.Url = storageLogic.GetPreSignedUriForGetFromKey(x.Key, x.FileName, true).ToString());
+            }
+
+            return JsonOK(result.Value);
+        }
+
+        /// <summary>
+        /// ノートブックコンテナを途中で強制終了させる。
+        /// </summary>
+        /// <param name="id">学習履歴ID</param>
+        [HttpPost("{id}/halt")]
+        [Filters.PermissionFilter(MenuCode.Training)] // TODO MenuCode.Notebookに変更
+        [ProducesResponseType(typeof(SimpleOutputModel), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> Halt(long? id)
+        {
+            return await ExitAsync(id, ContainerStatus.Killed);
+        }
+
+        /// <summary>
+        /// ノートブックを終了させる。
+        /// </summary>
+        /// <param name="id">Notebook ID</param>
+        /// <param name="status">変更後のステータス</param>
+        /// <returns></returns>
+        private async Task<IActionResult> ExitAsync(long? id, ContainerStatus status)
+        {
+            //データの入力チェック
+            if (id == null)
+            {
+                return JsonBadRequest("Invalid inputs.");
+            }
+            //データの存在チェック
+            var notebookHistory = await notebookHistoryRepository.GetByIdAsync(id.Value);
+            if (notebookHistory == null)
+            {
+                return JsonNotFound($"Training ID {id} is not found.");
+            }
+            if (notebookHistory.GetStatus().Exist() == false)
+            {
+                //終了できるのはRunningのコンテナだけ
+                return JsonBadRequest($"Notebook {notebookHistory.Name} does not exist.");
+            }
+
+            await notebookLogic.ExitAsync(notebookHistory, status, false);
+
+            return JsonOK(new SimpleOutputModel(notebookHistory));
+        }
     }
+
 }
