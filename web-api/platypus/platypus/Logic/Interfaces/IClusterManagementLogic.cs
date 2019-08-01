@@ -46,6 +46,12 @@ namespace Nssol.Platypus.Logic.Interfaces
         Task<Result<ContainerInfo, string>> RunInferenceContainerAsync(InferenceHistory inferenceHistory);
 
         /// <summary>
+        /// 新規にノートブック用コンテナを作成する。
+        /// </summary>
+        /// <returns>作成したコンテナのステータス</returns>
+        Task<Result<ContainerInfo, string>> RunNotebookContainerAsync(NotebookHistory notebookHistory);
+
+        /// <summary>
         /// 全コンテナの情報を取得する
         /// </summary>
         Task<Result<IEnumerable<ContainerDetailsInfo>, ContainerStatus>> GetAllContainerDetailsInfosAsync();

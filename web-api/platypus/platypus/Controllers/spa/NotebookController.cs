@@ -191,7 +191,7 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             //Gitの表示用URLを作る
-            model.GitModel.Url = gitLogic.GetTreeUiUrl(history.ModelGitId, history.ModelRepository, history.ModelRepositoryOwner, history.ModelCommitId);
+            model.GitModel.Url = gitLogic.GetTreeUiUrl(history.ModelGitId.Value, history.ModelRepository, history.ModelRepositoryOwner, history.ModelCommitId);
             return JsonOK(model);
         }
 

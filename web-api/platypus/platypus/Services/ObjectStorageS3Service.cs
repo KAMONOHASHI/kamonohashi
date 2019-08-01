@@ -365,6 +365,8 @@ namespace Nssol.Platypus.Services
             await createDirAsync(storageConfig.Bucket, createClient, ResourceType.InferenceHistoryAttachedFiles.ToString());
             await createDirAsync(storageConfig.Bucket, createClient, ResourceType.InferenceContainerAttachedFiles.ToString());
             await createDirAsync(storageConfig.Bucket, createClient, ResourceType.InferenceContainerOutputFiles.ToString());
+            await createDirAsync(storageConfig.Bucket, createClient, ResourceType.NotebookContainerAttachedFiles.ToString());
+            await createDirAsync(storageConfig.Bucket, createClient, ResourceType.NotebookContainerOutputFiles.ToString());
             return true;
         }
 

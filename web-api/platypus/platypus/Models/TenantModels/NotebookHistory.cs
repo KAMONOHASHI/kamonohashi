@@ -26,12 +26,12 @@ namespace Nssol.Platypus.Models.TenantModels
         /// <summary>
         /// データセットID
         /// </summary>
-        public long DataSetId { get; set; }
+        public long? DataSetId { get; set; }
 
         /// <summary>
         /// GitID
         /// </summary>
-        public long ModelGitId { get; set; }
+        public long? ModelGitId { get; set; }
 
         /// <summary>
         /// リポジトリ
