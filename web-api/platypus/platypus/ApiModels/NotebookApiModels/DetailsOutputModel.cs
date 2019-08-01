@@ -117,7 +117,7 @@ namespace Nssol.Platypus.ApiModels.NotebookApiModels
         /// <summary>
         /// エンドポイント
         /// </summary>
-        public string JupyterEndpoint { get; set; }
+        public string NotebookEndpoint { get; set; }
 
         /// <summary>
         /// コンテナの状態に対する注釈。何か異常が発生している際は注釈が表示される。
