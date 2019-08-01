@@ -15,7 +15,7 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
     /// <summary>
     /// ノートブック履歴テーブルにアクセスするためのリポジトリクラス
     /// </summary>
-    public class NotebookHistoryRepository : RepositoryForTenantBase<NotebookHistory>, INoteBookHistoryRepository
+    public class NotebookHistoryRepository : RepositoryForTenantBase<NotebookHistory>, INotebookHistoryRepository
     {
         /// <summary>
         /// コンストラクタ

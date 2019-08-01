@@ -12,7 +12,7 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories
     /// <summary>
     /// ノートブック履歴テーブルにアクセスするためのリポジトリインターフェイス
     /// </summary>
-    public interface INoteBookHistoryRepository : IRepositoryForTenant<NotebookHistory>
+    public interface INotebookHistoryRepository : IRepositoryForTenant<NotebookHistory>
     {
         /// <summary>
         /// 全ノートブック履歴を並べ替えありで取得する
