@@ -128,6 +128,7 @@ namespace Nssol.Platypus
             services.AddTransient<ITensorBoardContainerRepository, TensorBoardContainerRepository>();
             services.AddTransient<ITrainingHistoryRepository, TrainingHistoryRepository>();
             services.AddTransient<IInferenceHistoryRepository, InferenceHistoryRepository>();
+            services.AddTransient<INotebookHistoryRepository, NotebookHistoryRepository>();
             services.AddTransient<IRoleRepository, RoleRepository>();
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IMenuRepository, MenuRepository>();
