@@ -329,37 +329,12 @@ namespace Nssol.Platypus.Controllers.spa
                 }
             }
 
-            //gitリポジトリ名が指定されていれば、ブランチ、コミットIDを設定。指定されていなければnull
-            long? gitId = model.GitModel.GitId ?? CurrentUserInfo.SelectedTenant.DefaultGit?.Id;
-            string branch = null;
-            string commitId = null;
-            if (!string.IsNullOrEmpty(model.GitModel.Repository))
-            {
-                branch = model.GitModel.Branch ?? "master";
-                commitId = model.GitModel.CommitId;
-                //コミットIDが指定されていなければ、ブランチのHEADからコミットIDを取得する
-                if (string.IsNullOrEmpty(commitId))
-                {
-                    commitId = await gitLogic.GetCommitIdAsync(gitId.Value, model.GitModel.Repository, model.GitModel.Owner, branch);
-                    if (string.IsNullOrEmpty(commitId))
-                    {
-                        //コミットIDが特定できなかったらエラー
-                        return JsonNotFound($"The branch {branch} for {gitId.Value}/{model.GitModel.Owner}/{model.GitModel.Repository} is not found.");
-                    }
-                }
-            }
-
             //コンテナの実行前に、ノートブック履歴を作成する（コンテナの実行に失敗した場合、そのステータスをユーザに表示するため）
             var notebookHistory = new NotebookHistory()
             {
                 DisplayId = -1,
                 Name = model.Name,
-                DataSetId = model.DataSetId.Value,
-                ModelGitId = gitId.Value,
-                ModelRepository = model.GitModel.Repository,
-                ModelRepositoryOwner = model.GitModel.Owner,
-                ModelBranch = branch,
-                ModelCommitId = commitId,
+                DataSetId = model.DataSetId,
                 ContainerRegistryId = model.ContainerImage.RegistryId ?? CurrentUserInfo.SelectedTenant.DefaultRegistry?.Id,
                 ContainerImage = model.ContainerImage.Image,
                 ContainerTag = model.ContainerImage.Tag, //latestは運用上使用されていないハズなので、そのまま直接代入
@@ -372,6 +347,37 @@ namespace Nssol.Platypus.Controllers.spa
                 Status = ContainerStatus.Running.Key,
                 ExpiresIn = model.Expiresln
             };
+
+            //gitが指定されているかチェック
+            if (model.GitModel != null)
+            {
+                //gitリポジトリ名が指定されていれば、ブランチ、コミットIDを設定。指定されていなければnull
+                long? gitId = model.GitModel.GitId ?? CurrentUserInfo.SelectedTenant.DefaultGit?.Id;
+                string branch = null;
+                string commitId = null;
+                if (!string.IsNullOrEmpty(model.GitModel.Repository))
+                {
+                    branch = model.GitModel.Branch ?? "master";
+                    commitId = model.GitModel.CommitId;
+                    //コミットIDが指定されていなければ、ブランチのHEADからコミットIDを取得する
+                    if (string.IsNullOrEmpty(commitId))
+                    {
+                        commitId = await gitLogic.GetCommitIdAsync(gitId.Value, model.GitModel.Repository, model.GitModel.Owner, branch);
+                        if (string.IsNullOrEmpty(commitId))
+                        {
+                            //コミットIDが特定できなかったらエラー
+                            return JsonNotFound($"The branch {branch} for {gitId.Value}/{model.GitModel.Owner}/{model.GitModel.Repository} is not found.");
+                        }
+                    }
+                }
+                //git情報を設定
+                notebookHistory.ModelGitId = gitId.Value;
+                notebookHistory.ModelRepository = model.GitModel.Repository;
+                notebookHistory.ModelRepositoryOwner = model.GitModel.Owner;
+                notebookHistory.ModelBranch = branch;
+                notebookHistory.ModelCommitId = commitId;
+            }
+
             if (notebookHistory.OptionDic.ContainsKey("")) //空文字は除外する
             {
                 notebookHistory.OptionDic.Remove("");
