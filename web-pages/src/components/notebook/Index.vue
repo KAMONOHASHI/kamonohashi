@@ -24,8 +24,8 @@
       </el-col>
     </el-row>
     <el-row>
-      <el-table class="data-table pl-index-table" :data="tableData" border>
-      <!--<el-table class="data-table pl-index-table" :data="tableData" @row-click="openEditDialog" border>-->
+      <!--<el-table class="data-table pl-index-table" :data="tableData" border>-->
+      <el-table class="data-table pl-index-table" :data="tableData" @row-click="openEditDialog" border>
         <el-table-column width="25px">
           <div slot-scope="scope">
             <i class="el-icon-star-on favorite" v-if="scope.row.favorite"></i>
@@ -49,10 +49,11 @@
         <el-table-column prop="status" label="Action" width="400px">
             <div slot-scope="scope">
             <div v-if="scope.row.status === 'Running'">
-                <el-button type="plain" @click="openNotebook(scope.row)" icon="el-icon-document" >ノートブックを開く</el-button>
+              <el-button type="plain" @click="openNotebook(scope.row)" icon="el-icon-document" >ノートブックを開く</el-button>
+              <el-button type="danger" @click="haltNotebook(scope.row)" icon="el-icon-video-pause" >停止</el-button>
             </div>
             <div v-if="scope.row.status === 'Killed'">
-              <el-button type="plain" @click="openRerunDialog(scope.row)" icon="el-icon-document" >再実行</el-button>
+              <el-button type="plain" @click="openRerunDialog(scope.row)" icon="el-icon-refresh-right" >再実行</el-button>
             </div>
             <div v-else>
             </div>
@@ -79,7 +80,6 @@
       @return="back"
       @files="files"
       @shell="shell"
-      @rerun="rerun"
     ></router-view>
   </div>
 </template>
@@ -174,6 +174,9 @@
         this.$router.push('/notebook/' + id + '/shell')
       },
       openRerunDialog (selectedRow) {
+        this.$router.push('/notebook/run/' + selectedRow.id)
+      },
+      haltNotebook (selectedRow) {
         this.$router.push('/notebook/run/' + selectedRow.id)
       }
     }
