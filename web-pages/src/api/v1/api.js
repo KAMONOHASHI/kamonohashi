@@ -222,7 +222,8 @@ let api = {
     putById: gen.ApiV1NotebookByIdPut,
     getContainerFilesById: gen.ApiV1NotebookByIdContainer_filesGet,
     postHaltById: gen.ApiV1NotebookByIdHaltPost,
-    getEventsById: gen.ApiV1NotebookByIdEventsGet
+    getEventsById: gen.ApiV1NotebookByIdEventsGet,
+    getEndpointById: gen.ApiV1NotebookByIdEndpointGet
   },
 
   inference: {
