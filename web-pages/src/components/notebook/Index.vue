@@ -117,8 +117,7 @@
         tableData: [],
         statuses: [],
         currentPage: 1,
-        currentPageSize: 10,
-        entryPoint: undefined
+        currentPageSize: 10
       }
     },
     async created () {
@@ -163,8 +162,9 @@
       openCreateDialog () {
         this.$router.push('/notebook/run/')
       },
-      openNotebook (selectedRow) {
-        this.$router.push(selectedRow.endpoints.url)
+      async openNotebook (selectedRow) {
+        let endpoint = await api.notebook.getEndpointById({id: selectedRow.id})
+        this.$router.push(endpoint)
       },
       async search () {
         this.currentPage = 1
