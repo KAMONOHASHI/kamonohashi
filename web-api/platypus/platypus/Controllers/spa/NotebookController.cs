@@ -151,29 +151,29 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonBadRequest("Notebook ID is required.");
             }
-            var history = await notebookHistoryRepository.GetIncludeAllAsync(id.Value);
-            if (history == null)
+            var notebookHistory = await notebookHistoryRepository.GetIncludeAllAsync(id.Value);
+            if (notebookHistory == null)
             {
                 return JsonNotFound($"Notebook ID {id.Value} is not found.");
             }
 
-            var model = new DetailsOutputModel(history);
+            var model = new DetailsOutputModel(notebookHistory);
 
-            var status = history.GetStatus();
+            var status = notebookHistory.GetStatus();
             model.StatusType = status.StatusType;
             if (status.Exist())
             {
                 //コンテナがまだ存在している場合、情報を更新する
-                var details = await clusterManagementLogic.GetContainerEndpointInfoAsync(history.Key, CurrentUserInfo.SelectedTenant.Name, false);
+                var details = await clusterManagementLogic.GetContainerEndpointInfoAsync(notebookHistory.Key, CurrentUserInfo.SelectedTenant.Name, false);
                 model.Status = details.Status.Name;
                 model.StatusType = details.Status.StatusType;
 
                 //ステータスを更新
-                history.Status = details.Status.Key;
-                if (history.StartedAt == null)
+                notebookHistory.Status = details.Status.Key;
+                if (notebookHistory.StartedAt == null)
                 {
-                    history.StartedAt = details.StartedAt;
-                    history.Node = details.Node; //設計上ノードが切り替わることはない
+                    notebookHistory.StartedAt = details.StartedAt;
+                    notebookHistory.Node = details.Node; //設計上ノードが切り替わることはない
                 }
                 unitOfWork.Commit();
 
@@ -188,7 +188,7 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             //Gitの表示用URLを作る
-            model.GitModel.Url = gitLogic.GetTreeUiUrl(history.ModelGitId.Value, history.ModelRepository, history.ModelRepositoryOwner, history.ModelCommitId);
+            model.GitModel.Url = gitLogic.GetTreeUiUrl(notebookHistory.ModelGitId.Value, notebookHistory.ModelRepository, notebookHistory.ModelRepositoryOwner, notebookHistory.ModelCommitId);
             return JsonOK(model);
         }
 
@@ -208,18 +208,18 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonBadRequest("Invalid inputs.");
             }
             //データの存在チェック
-            var history = await notebookHistoryRepository.GetByIdAsync(id.Value);
-            if (history == null)
+            var notebookHistory = await notebookHistoryRepository.GetByIdAsync(id.Value);
+            if (notebookHistory == null)
             {
                 return JsonNotFound($"Notebook ID {id.Value} is not found.");
             }
 
-            history.Name = EditColumnNotEmpty(model.Name, history.Name);
-            history.Memo = EditColumn(model.Memo, history.Memo);
-            history.Favorite = EditColumn(model.Favorite, history.Favorite);
+            notebookHistory.Name = EditColumnNotEmpty(model.Name, notebookHistory.Name);
+            notebookHistory.Memo = EditColumn(model.Memo, notebookHistory.Memo);
+            notebookHistory.Favorite = EditColumn(model.Favorite, notebookHistory.Favorite);
             unitOfWork.Commit();
 
-            return JsonOK(new SimpleOutputModel(history));
+            return JsonOK(new SimpleOutputModel(notebookHistory));
         }
 
         /// <summary>
@@ -499,7 +499,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 指定されたノートブック履歴のコンテナを再起動する
         /// </summary>
-        [HttpPost("{id}/run")]
+        [HttpPost("{id}/rerun")]
         [Filters.PermissionFilter(MenuCode.Notebook)]
         [ProducesResponseType(typeof(SimpleOutputModel), (int)HttpStatusCode.Created)]
         public async Task<IActionResult> Rerun(long? id, [FromBody]RerunInputModel model, [FromServices]INodeRepository nodeRepository)
