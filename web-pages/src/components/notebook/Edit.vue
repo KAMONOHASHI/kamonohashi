@@ -229,7 +229,7 @@
           memo: this.memo,
           favorite: this.favorite
         }
-        await api.training.putById({id: this.notebookId, model: putData})
+        await api.notebook.putById({id: this.notebookId, model: putData})
       },
       async onSubmit () {
         let form = this.$refs.updateForm
