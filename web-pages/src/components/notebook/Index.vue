@@ -24,8 +24,7 @@
       </el-col>
     </el-row>
     <el-row>
-      <!--<el-table class="data-table pl-index-table" :data="tableData" border>-->
-      <el-table class="data-table pl-index-table" :data="tableData" @row-click="openEditDialog" border>
+      <el-table class="data-table pl-index-table" :data="tableData" border>
         <el-table-column width="25px">
           <div slot-scope="scope">
             <i class="el-icon-star-on favorite" v-if="scope.row.favorite"></i>
@@ -53,11 +52,16 @@
               <el-button type="danger" @click="haltNotebook(scope.row)" icon="el-icon-video-pause" >停止</el-button>
             </div>
             <div v-if="scope.row.status === 'Killed'">
-              <el-button type="plain" @click="openRerunDialog(scope.row)" icon="el-icon-refresh-right" >再実行</el-button>
+              <el-button type="plain" @click="openRerunDialog(scope.row)" icon="el-icon-refresh" >再実行</el-button>
             </div>
             <div v-else>
             </div>
             </div>
+        </el-table-column>
+        <el-table-column prop="status" width="120px">
+          <div slot-scope="scope">
+          <el-button type="plain" @click="openEditDialog(scope.row)" icon="el-icon-more" />
+          </div>
         </el-table-column>
       </el-table>
     </el-row>
