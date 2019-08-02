@@ -148,6 +148,7 @@
           </el-button>
           <el-button class="right-step-group" v-if="originId !== undefined" type="primary"
                      @click="reRunNotebook">再実行
+          </el-button>
         </el-row>
       </el-form>
     </el-dialog>
