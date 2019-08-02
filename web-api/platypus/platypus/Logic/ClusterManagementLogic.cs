@@ -967,8 +967,11 @@ namespace Nssol.Platypus.Logic
                 }
             }
 
-            // ユーザの任意追加環境変数をマージする
-            AddUserEnvToInputModel(notebookHistory.OptionDic, inputModel);
+            if (notebookHistory.OptionDic != null)
+            {
+                // ユーザの任意追加環境変数をマージする
+                AddUserEnvToInputModel(notebookHistory.OptionDic, inputModel);
+            }
 
             //使用できるノードを制約に追加
             inputModel.ConstraintList = new Dictionary<string, List<string>>()

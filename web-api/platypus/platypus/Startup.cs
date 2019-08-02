@@ -97,6 +97,7 @@ namespace Nssol.Platypus
             services.AddTransient<ITrainingLogic, TrainingLogic>();
             services.AddTransient<IInferenceLogic, InferenceLogic>();
             services.AddTransient<IPreprocessLogic, PreprocessLogic>();
+            services.AddTransient<INotebookLogic, NotebookLogic>();
             services.AddTransient<IStorageLogic, StorageLogic>();
             services.AddTransient<ITagLogic, TagLogic>();
             services.AddTransient<IGitLogic, GitLogic>();

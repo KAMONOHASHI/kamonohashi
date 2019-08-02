@@ -30,6 +30,7 @@ namespace Nssol.Platypus.Logic
                 DataMenu,
                 DataSetMenu,
                 PreprocessMenu,
+                NotebookMenu,
                 TrainingMenu,
                 InferenceMenu,
 
@@ -538,6 +539,7 @@ namespace Nssol.Platypus.Logic
             DataMenu,
             DataSetMenu,
             PreprocessMenu,
+            NotebookMenu,
             TrainingMenu,
             InferenceMenu,
 

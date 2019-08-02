@@ -10,8 +10,8 @@ data:
     bash /kqi/scripts/common/prepare-git
     bash /kqi/scripts/common/prepare-dataset
   main: |
-	pip install jupyterlab==1.0.4
-	jupyter lab --ip=0.0.0.0 --allow-root --notebook-dir=/kqi/ --no-browser > /kqi/output/.notebook.log 2>&1 &
+    pip install jupyterlab==1.0.4
+    jupyter lab --ip=0.0.0.0 --allow-root --notebook-dir=/kqi/ --no-browser > /kqi/output/.notebook.log 2>&1 &
     bash /kqi/scripts/common/wait-ready
   finish: |
     tail -f /dev/null   
