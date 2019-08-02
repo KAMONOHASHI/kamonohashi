@@ -143,9 +143,11 @@
             Next step
             <i class="el-icon-arrow-right"></i>
           </span>
-          <el-button class="right-step-group" v-if="active===3 || originId !== undefined" type="primary"
+          <el-button class="right-step-group" v-if="active===3" type="primary"
                      @click="runNotebook">起動
           </el-button>
+          <el-button class="right-step-group" v-if="originId !== undefined" type="primary"
+                     @click="reRunNotebook">再実行
         </el-row>
       </el-form>
     </el-dialog>
@@ -197,7 +199,8 @@
         memo: undefined,
         git: undefined,
         options: undefined,
-        active: 0
+        active: 0,
+        expiresin: 0
       }
     },
     async created () {
@@ -227,6 +230,33 @@
                 Gpu: this.gpu,
                 Partition: this.partition,
                 Memo: this.memo
+              }
+              await api.notebook.post({model: param})
+
+              // 成功したら、ダイヤログを閉じて更新
+              this.emitDone()
+              this.error = null
+            } catch (e) {
+              this.error = e
+            }
+          }
+        })
+      },
+      async reRunNotebook () {
+        let form = this.$refs.runForm
+        await form.validate(async (valid) => {
+          if (valid) {
+            try {
+              let options = {}
+              // apiのフォーマットに合わせる(配列 => オブジェクト)
+              this.options.forEach((kvp) => {
+                options[kvp.key] = kvp.value
+              })
+              let param = {
+                Cpu: this.cpu,
+                Memory: this.memory,
+                Gpu: this.gpu,
+                Expiresin: this.expiresin
               }
               await api.notebook.post({model: param})
 
