@@ -206,7 +206,7 @@
       await this.retrieveOriginNotebook()
     },
     methods: {
-      async runTrain () {
+      async runNotebook () {
         let form = this.$refs.runForm
         await form.validate(async (valid) => {
           if (valid) {
