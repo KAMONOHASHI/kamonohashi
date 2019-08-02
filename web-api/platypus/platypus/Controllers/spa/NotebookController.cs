@@ -187,8 +187,11 @@ namespace Nssol.Platypus.Controllers.spa
                 }
             }
 
-            //Gitの表示用URLを作る
-            model.GitModel.Url = gitLogic.GetTreeUiUrl(notebookHistory.ModelGitId.Value, notebookHistory.ModelRepository, notebookHistory.ModelRepositoryOwner, notebookHistory.ModelCommitId);
+            if (notebookHistory.ModelGitId != null)
+            {
+                //Gitの表示用URLを作る
+                model.GitModel.Url = gitLogic.GetTreeUiUrl(notebookHistory.ModelGitId.Value, notebookHistory.ModelRepository, notebookHistory.ModelRepositoryOwner, notebookHistory.ModelCommitId);
+            }
             return JsonOK(model);
         }
 
@@ -540,22 +543,25 @@ namespace Nssol.Platypus.Controllers.spa
                 }
             }
 
-            //gitリポジトリ名が指定されていれば、ブランチ、コミットIDを設定。指定されていなければnull
-            long? gitId = notebookHistory.ModelGitId ?? CurrentUserInfo.SelectedTenant.DefaultGit?.Id;
-            string branch = null;
-            string commitId = null;
-            if (!string.IsNullOrEmpty(notebookHistory.ModelRepository))
+            if (notebookHistory.ModelGitId != null)
             {
-                branch = notebookHistory.ModelBranch ?? "master";
-                commitId = notebookHistory.ModelCommitId;
-                //コミットIDが指定されていなければ、ブランチのHEADからコミットIDを取得する
-                if (string.IsNullOrEmpty(commitId))
+                //gitリポジトリ名が指定されていれば、ブランチ、コミットIDを設定。指定されていなければnull
+                long? gitId = notebookHistory.ModelGitId ?? CurrentUserInfo.SelectedTenant.DefaultGit?.Id;
+                string branch = null;
+                string commitId = null;
+                if (!string.IsNullOrEmpty(notebookHistory.ModelRepository))
                 {
-                    commitId = await gitLogic.GetCommitIdAsync(gitId.Value, notebookHistory.ModelRepository, notebookHistory.ModelRepositoryOwner, branch);
+                    branch = notebookHistory.ModelBranch ?? "master";
+                    commitId = notebookHistory.ModelCommitId;
+                    //コミットIDが指定されていなければ、ブランチのHEADからコミットIDを取得する
                     if (string.IsNullOrEmpty(commitId))
                     {
-                        //コミットIDが特定できなかったらエラー
-                        return JsonNotFound($"The branch {branch} for {gitId.Value}/{notebookHistory.ModelRepositoryOwner}/{notebookHistory.ModelRepository} is not found.");
+                        commitId = await gitLogic.GetCommitIdAsync(gitId.Value, notebookHistory.ModelRepository, notebookHistory.ModelRepositoryOwner, branch);
+                        if (string.IsNullOrEmpty(commitId))
+                        {
+                            //コミットIDが特定できなかったらエラー
+                            return JsonNotFound($"The branch {branch} for {gitId.Value}/{notebookHistory.ModelRepositoryOwner}/{notebookHistory.ModelRepository} is not found.");
+                        }
                     }
                 }
             }
@@ -567,10 +573,6 @@ namespace Nssol.Platypus.Controllers.spa
             notebookHistory.Status = ContainerStatus.Running.Key;
             notebookHistory.ExpiresIn = model.Expiresln;
 
-            if (notebookHistory.OptionDic.ContainsKey("")) //空文字は除外する
-            {
-                notebookHistory.OptionDic.Remove("");
-            }
             notebookHistoryRepository.Update(notebookHistory);
             unitOfWork.Commit();
 
@@ -578,7 +580,8 @@ namespace Nssol.Platypus.Controllers.spa
             if (result.IsSuccess == false)
             {
                 //コンテナの起動に失敗した状態。エラーを出力して、保存したノートブック履歴も削除する。
-                notebookHistoryRepository.Delete(notebookHistory);
+                notebookHistory.Status = ContainerStatus.Killed.Key;
+                notebookHistoryRepository.Update(notebookHistory);
                 unitOfWork.Commit();
 
                 return JsonError(HttpStatusCode.ServiceUnavailable, "Failed to run notebook. The message bellow may be help to resolve: " + result.Error);
