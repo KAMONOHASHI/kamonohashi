@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using Nssol.Platypus.ApiModels.Components;
 using Nssol.Platypus.ApiModels.NotebookApiModels;
 using Nssol.Platypus.Controllers.Util;
 using Nssol.Platypus.DataAccess.Core;
@@ -9,16 +7,15 @@ using Nssol.Platypus.DataAccess.Repositories.Interfaces;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories;
 using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Infrastructure.Infos;
-using Nssol.Platypus.Infrastructure.Options;
 using Nssol.Platypus.Infrastructure.Types;
 using Nssol.Platypus.Logic.Interfaces;
 using Nssol.Platypus.Models.TenantModels;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+
 namespace Nssol.Platypus.Controllers.spa
 {
     [Route("api/v1/notebook")]
@@ -54,7 +51,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// 全ノートブック履歴のIDと名前を取得
         /// </summary>
         [HttpGet("simple")]
-        [Filters.PermissionFilter(MenuCode.Training)] // TODO MenuCode.Notebookに変更
+        [Filters.PermissionFilter(MenuCode.Notebook)]
         [ProducesResponseType(typeof(IEnumerable<SimpleOutputModel>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetAll()
         {
@@ -70,7 +67,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="filter">検索条件</param>
         /// <param name="withTotal">合計件数をレスポンスヘッダ(X-Total-Count)に含めるか。デフォルトはfalse。</param>
         [HttpGet]
-        [Filters.PermissionFilter(MenuCode.Training)] // TODO MenuCode.Notebookに変更
+        [Filters.PermissionFilter(MenuCode.Notebook)]
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetAll([FromQuery]SearchInputModel filter, [FromQuery]int? perPage, [FromQuery] int page = 1, bool withTotal = false)
         {
@@ -101,7 +98,7 @@ namespace Nssol.Platypus.Controllers.spa
             var status = history.GetStatus();
             if (status.Exist())
             {
-                //学習がまだ進行中の場合、情報を更新する
+                //ノートブックコンテナがまだ進行中の場合、情報を更新する
                 var newStatus = await clusterManagementLogic.GetContainerStatusAsync(history.Key, CurrentUserInfo.SelectedTenant.Name, false);
 
                 if (status.Key != newStatus.Key)
@@ -146,7 +143,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="id">ノートブック履歴ID</param>
         [HttpGet("{id}")]
-        [Filters.PermissionFilter(MenuCode.Training)] // TODO MenuCode.Notebookに変更
+        [Filters.PermissionFilter(MenuCode.Notebook)]
         [ProducesResponseType(typeof(DetailsOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetDetail(long? id)
         {
@@ -154,29 +151,29 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonBadRequest("Notebook ID is required.");
             }
-            var history = await notebookHistoryRepository.GetIncludeAllAsync(id.Value);
-            if (history == null)
+            var notebookHistory = await notebookHistoryRepository.GetIncludeAllAsync(id.Value);
+            if (notebookHistory == null)
             {
                 return JsonNotFound($"Notebook ID {id.Value} is not found.");
             }
 
-            var model = new DetailsOutputModel(history);
+            var model = new DetailsOutputModel(notebookHistory);
 
-            var status = history.GetStatus();
+            var status = notebookHistory.GetStatus();
             model.StatusType = status.StatusType;
             if (status.Exist())
             {
                 //コンテナがまだ存在している場合、情報を更新する
-                var details = await clusterManagementLogic.GetContainerEndpointInfoAsync(history.Key, CurrentUserInfo.SelectedTenant.Name, false);
+                var details = await clusterManagementLogic.GetContainerEndpointInfoAsync(notebookHistory.Key, CurrentUserInfo.SelectedTenant.Name, false);
                 model.Status = details.Status.Name;
                 model.StatusType = details.Status.StatusType;
 
                 //ステータスを更新
-                history.Status = details.Status.Key;
-                if (history.StartedAt == null)
+                notebookHistory.Status = details.Status.Key;
+                if (notebookHistory.StartedAt == null)
                 {
-                    history.StartedAt = details.StartedAt;
-                    history.Node = details.Node; //設計上ノードが切り替わることはない
+                    notebookHistory.StartedAt = details.StartedAt;
+                    notebookHistory.Node = details.Node; //設計上ノードが切り替わることはない
                 }
                 unitOfWork.Commit();
 
@@ -191,7 +188,7 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             //Gitの表示用URLを作る
-            model.GitModel.Url = gitLogic.GetTreeUiUrl(history.ModelGitId.Value, history.ModelRepository, history.ModelRepositoryOwner, history.ModelCommitId);
+            model.GitModel.Url = gitLogic.GetTreeUiUrl(notebookHistory.ModelGitId.Value, notebookHistory.ModelRepository, notebookHistory.ModelRepositoryOwner, notebookHistory.ModelCommitId);
             return JsonOK(model);
         }
 
@@ -201,7 +198,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="id">変更対象のノートブック履歴ID</param>
         /// <param name="model">変更内容</param>
         [HttpPut("{id}")]
-        [Filters.PermissionFilter(MenuCode.Training)] // TODO MenuCode.Notebookに変更
+        [Filters.PermissionFilter(MenuCode.Notebook)]
         [ProducesResponseType(typeof(SimpleOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> Edit(long? id, [FromBody]EditInputModel model)
         {
@@ -211,26 +208,26 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonBadRequest("Invalid inputs.");
             }
             //データの存在チェック
-            var history = await notebookHistoryRepository.GetByIdAsync(id.Value);
-            if (history == null)
+            var notebookHistory = await notebookHistoryRepository.GetByIdAsync(id.Value);
+            if (notebookHistory == null)
             {
                 return JsonNotFound($"Notebook ID {id.Value} is not found.");
             }
 
-            history.Name = EditColumnNotEmpty(model.Name, history.Name);
-            history.Memo = EditColumn(model.Memo, history.Memo);
-            history.Favorite = EditColumn(model.Favorite, history.Favorite);
+            notebookHistory.Name = EditColumnNotEmpty(model.Name, notebookHistory.Name);
+            notebookHistory.Memo = EditColumn(model.Memo, notebookHistory.Memo);
+            notebookHistory.Favorite = EditColumn(model.Favorite, notebookHistory.Favorite);
             unitOfWork.Commit();
 
-            return JsonOK(new SimpleOutputModel(history));
+            return JsonOK(new SimpleOutputModel(notebookHistory));
         }
 
         /// <summary>
         /// ノートブック履歴を削除する。
         /// </summary>
-        /// <param name="id">学習履歴ID</param>
+        /// <param name="id">ノートブック履歴ID</param>
         [HttpDelete("{id}")]
-        [Filters.PermissionFilter(MenuCode.Training)] // TODO MenuCode.Notebookに変更
+        [Filters.PermissionFilter(MenuCode.Notebook)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         public async Task<IActionResult> Delete(long? id)
         {
@@ -274,7 +271,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="id">ノートブック履歴ID</param>
         /// <returns>ログファイル</returns>
         [HttpGet("{id}/events")]
-        [Filters.PermissionFilter(MenuCode.Training)] // TODO MenuCode.Notebookに変更
+        [Filters.PermissionFilter(MenuCode.Notebook)]
         [ProducesResponseType(typeof(ContainerEventInfo), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetErrorEventAsync(long id)
         {
@@ -301,10 +298,10 @@ namespace Nssol.Platypus.Controllers.spa
         }
 
         /// <summary>
-        /// 新規に学習を開始する
+        /// 新規にノートブックコンテナを開始する
         /// </summary>
         [HttpPost("run")]
-        [Filters.PermissionFilter(MenuCode.Training)] // TODO MenuCode.Notebookに変更
+        [Filters.PermissionFilter(MenuCode.Notebook)]
         [ProducesResponseType(typeof(SimpleOutputModel), (int)HttpStatusCode.Created)]
         public async Task<IActionResult> Create([FromBody]CreateInputModel model, [FromServices]INodeRepository nodeRepository)
         {
@@ -332,7 +329,6 @@ namespace Nssol.Platypus.Controllers.spa
                 }
             }
 
-
             //gitリポジトリ名が指定されていれば、ブランチ、コミットIDを設定。指定されていなければnull
             long? gitId = model.GitModel.GitId ?? CurrentUserInfo.SelectedTenant.DefaultGit?.Id;
             string branch = null;
@@ -352,7 +348,6 @@ namespace Nssol.Platypus.Controllers.spa
                     }
                 }
             }
-
 
             //コンテナの実行前に、ノートブック履歴を作成する（コンテナの実行に失敗した場合、そのステータスをユーザに表示するため）
             var notebookHistory = new NotebookHistory()
@@ -384,33 +379,31 @@ namespace Nssol.Platypus.Controllers.spa
             notebookHistoryRepository.Add(notebookHistory);
             unitOfWork.Commit();
 
-            // TODO: RunNotebookContainerAsyncの実装
-            //var result = await clusterManagementLogic.RunNotebookContainerAsync(notebookHistory);
-            //if (result.IsSuccess == false)
-            //{
-            //    //コンテナの起動に失敗した状態。エラーを出力して、保存した学習履歴も削除する。
-            //    notebookHistoryRepository.Delete(notebookHistory);
-            //    unitOfWork.Commit();
+            var result = await clusterManagementLogic.RunNotebookContainerAsync(notebookHistory);
+            if (result.IsSuccess == false)
+            {
+                //コンテナの起動に失敗した状態。エラーを出力して、保存したノートブック履歴も削除する。
+                notebookHistoryRepository.Delete(notebookHistory);
+                unitOfWork.Commit();
 
-            //    return JsonError(HttpStatusCode.ServiceUnavailable, "Failed to run notebook. The message bellow may be help to resolve: " + result.Error);
-            //}
+                return JsonError(HttpStatusCode.ServiceUnavailable, "Failed to run notebook. The message bellow may be help to resolve: " + result.Error);
+            }
 
-            ////結果に従い、ノートブック結果を更新する。
-            ////実行には時間がかかりうるので、DBから最新の情報を取ってくる
-            //notebookHistory = await notebookHistoryRepository.GetByIdAsync(notebookHistory.Id);
-            //notebookHistory.Configuration = result.Value.Configuration;
-            //notebookHistory.Status = result.Value.Status.Key;
-            //unitOfWork.Commit();
+            //結果に従い、ノートブック結果を更新する。
+            //実行には時間がかかりうるので、DBから最新の情報を取ってくる
+            notebookHistory = await notebookHistoryRepository.GetByIdAsync(notebookHistory.Id);
+            notebookHistory.Configuration = result.Value.Configuration;
+            notebookHistory.Status = result.Value.Status.Key;
+            unitOfWork.Commit();
 
-            //if (result.Value.Status.Succeed())
-            //{
-            //    return JsonCreated(new SimpleOutputModel(notebookHistory));
-            //}
-            //else
-            //{
-            //    return JsonError(HttpStatusCode.ServiceUnavailable, $"Failed to run notebook. Status={result.Value.Status.Name}. Please contact your server administrator.");
-            //}
-            return JsonError(HttpStatusCode.InternalServerError, "tmp");
+            if (result.Value.Status.Succeed())
+            {
+                return JsonCreated(new SimpleOutputModel(notebookHistory));
+            }
+            else
+            {
+                return JsonError(HttpStatusCode.ServiceUnavailable, $"Failed to run notebook. Status={result.Value.Status.Name}. Please contact your server administrator.");
+            }
         }
 
         /// <summary>
@@ -420,17 +413,17 @@ namespace Nssol.Platypus.Controllers.spa
         /// コンテナの/output/配下から指定ディレクトリパスの直下を検索する
         /// 検索対象ディレクトリが見つからない場合もファイル・ディレクトリが空の結果を返す
         /// </remarks>
-        /// <param name="id">対象の学習履歴ID</param>
+        /// <param name="id">対象のノートブック履歴ID</param>
         /// <param name="path">検索対象ディレクトリ。使用可能文字は「-_1-9a-zA-Z/」</param>
         /// <param name="withUrl">結果にダウンロード用のURLを含めるか</param>
         [HttpGet("{id}/container-files")]
-        [Filters.PermissionFilter(MenuCode.Training)] // TODO MenuCode.Notebookに変更
+        [Filters.PermissionFilter(MenuCode.Notebook)]
         [ProducesResponseType(typeof(StorageListResultInfo), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetUnderDir(long id, [FromQuery] string path = "/", [FromQuery] bool withUrl = false)
         {
             //データの存在チェック
-            var trainingHistory = await notebookHistoryRepository.GetByIdAsync(id);
-            if (trainingHistory == null)
+            var notebookHistory = await notebookHistoryRepository.GetByIdAsync(id);
+            if (notebookHistory == null)
             {
                 return JsonNotFound($"Notebook ID {id} is not found.");
             }
@@ -464,9 +457,9 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// ノートブックコンテナを途中で強制終了させる。
         /// </summary>
-        /// <param name="id">学習履歴ID</param>
+        /// <param name="id">ノートブック履歴ID</param>
         [HttpPost("{id}/halt")]
-        [Filters.PermissionFilter(MenuCode.Training)] // TODO MenuCode.Notebookに変更
+        [Filters.PermissionFilter(MenuCode.Notebook)]
         [ProducesResponseType(typeof(SimpleOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> Halt(long? id)
         {
@@ -476,7 +469,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// ノートブックを終了させる。
         /// </summary>
-        /// <param name="id">Notebook ID</param>
+        /// <param name="id">ノートブック履歴ID</param>
         /// <param name="status">変更後のステータス</param>
         /// <returns></returns>
         private async Task<IActionResult> ExitAsync(long? id, ContainerStatus status)
@@ -490,7 +483,7 @@ namespace Nssol.Platypus.Controllers.spa
             var notebookHistory = await notebookHistoryRepository.GetByIdAsync(id.Value);
             if (notebookHistory == null)
             {
-                return JsonNotFound($"Training ID {id} is not found.");
+                return JsonNotFound($"Notebook ID {id} is not found.");
             }
             if (notebookHistory.GetStatus().Exist() == false)
             {
@@ -502,6 +495,104 @@ namespace Nssol.Platypus.Controllers.spa
 
             return JsonOK(new SimpleOutputModel(notebookHistory));
         }
-    }
 
+        /// <summary>
+        /// 指定されたノートブック履歴のコンテナを再起動する
+        /// </summary>
+        [HttpPost("{id}/rerun")]
+        [Filters.PermissionFilter(MenuCode.Notebook)]
+        [ProducesResponseType(typeof(SimpleOutputModel), (int)HttpStatusCode.Created)]
+        public async Task<IActionResult> Rerun(long? id, [FromBody]RerunInputModel model, [FromServices]INodeRepository nodeRepository)
+        {
+            //データの入力チェック
+            if (!ModelState.IsValid)
+            {
+                return JsonBadRequest("Invalid inputs.");
+            }
+            //データの存在チェック
+            var notebookHistory = await notebookHistoryRepository.GetByIdAsync(id.Value);
+            if (notebookHistory == null)
+            {
+                return JsonNotFound($"Notebook ID {id} is not found.");
+            }
+
+            //データセットが指定されていれば存在チェック
+            if (notebookHistory.DataSetId.HasValue)
+            {
+                var dataSet = await dataSetRepository.GetByIdAsync(notebookHistory.DataSetId.Value);
+                if (dataSet == null)
+                {
+                    return JsonNotFound($"DataSet ID {notebookHistory.DataSetId} is not found.");
+                }
+            }
+            if (string.IsNullOrEmpty(notebookHistory.Partition) == false)
+            {
+                bool existPartition = await nodeRepository.IsEnablePartitionAsync(notebookHistory.Partition, true);
+                if (existPartition == false)
+                {
+                    return JsonNotFound($"There are no enable nodes with Partition {notebookHistory.Partition}.");
+                }
+            }
+
+            //gitリポジトリ名が指定されていれば、ブランチ、コミットIDを設定。指定されていなければnull
+            long? gitId = notebookHistory.ModelGitId ?? CurrentUserInfo.SelectedTenant.DefaultGit?.Id;
+            string branch = null;
+            string commitId = null;
+            if (!string.IsNullOrEmpty(notebookHistory.ModelRepository))
+            {
+                branch = notebookHistory.ModelBranch ?? "master";
+                commitId = notebookHistory.ModelCommitId;
+                //コミットIDが指定されていなければ、ブランチのHEADからコミットIDを取得する
+                if (string.IsNullOrEmpty(commitId))
+                {
+                    commitId = await gitLogic.GetCommitIdAsync(gitId.Value, notebookHistory.ModelRepository, notebookHistory.ModelRepositoryOwner, branch);
+                    if (string.IsNullOrEmpty(commitId))
+                    {
+                        //コミットIDが特定できなかったらエラー
+                        return JsonNotFound($"The branch {branch} for {gitId.Value}/{notebookHistory.ModelRepositoryOwner}/{notebookHistory.ModelRepository} is not found.");
+                    }
+                }
+            }
+
+            //コンテナの実行前に、ノートブック履歴を更新する（コンテナの実行に失敗した場合、そのステータスをユーザに表示するため）
+            notebookHistory.Cpu = model.Cpu.Value;
+            notebookHistory.Memory = model.Memory.Value;
+            notebookHistory.Gpu = model.Gpu.Value;
+            notebookHistory.Status = ContainerStatus.Running.Key;
+            notebookHistory.ExpiresIn = model.Expiresln;
+
+            if (notebookHistory.OptionDic.ContainsKey("")) //空文字は除外する
+            {
+                notebookHistory.OptionDic.Remove("");
+            }
+            notebookHistoryRepository.Update(notebookHistory);
+            unitOfWork.Commit();
+
+            var result = await clusterManagementLogic.RunNotebookContainerAsync(notebookHistory);
+            if (result.IsSuccess == false)
+            {
+                //コンテナの起動に失敗した状態。エラーを出力して、保存したノートブック履歴も削除する。
+                notebookHistoryRepository.Delete(notebookHistory);
+                unitOfWork.Commit();
+
+                return JsonError(HttpStatusCode.ServiceUnavailable, "Failed to run notebook. The message bellow may be help to resolve: " + result.Error);
+            }
+
+            //結果に従い、ノートブック結果を更新する。
+            //実行には時間がかかりうるので、DBから最新の情報を取ってくる
+            notebookHistory = await notebookHistoryRepository.GetByIdAsync(notebookHistory.Id);
+            notebookHistory.Configuration = result.Value.Configuration;
+            notebookHistory.Status = result.Value.Status.Key;
+            unitOfWork.Commit();
+
+            if (result.Value.Status.Succeed())
+            {
+                return JsonCreated(new SimpleOutputModel(notebookHistory));
+            }
+            else
+            {
+                return JsonError(HttpStatusCode.ServiceUnavailable, $"Failed to run notebook. Status={result.Value.Status.Name}. Please contact your server administrator.");
+            }
+        }
+    }
 }

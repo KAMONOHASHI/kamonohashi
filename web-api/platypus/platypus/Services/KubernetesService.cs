@@ -161,13 +161,17 @@ namespace Nssol.Platypus.Services
                     hasService = true;
                     hasConfigMap = true;
                     break;
+                case ContainerType.Notebook:
+                    hasService = true;
+                    hasConfigMap = true;
+                    break;
                 default:
                     hasConfigMap = await ExistConfigMapAsync(containerName + "-scripts", tenantName, token);
                     hasService = (await GetServiceAsync(tenantName, containerName, token)).IsSuccess;
                     break;
             }
 
-            return await DeleteContainerAsync(containerName, tenantName, token,hasService, true, hasConfigMap);
+            return await DeleteContainerAsync(containerName, tenantName, token, hasService, true, hasConfigMap);
         }
 
         /// <summary>

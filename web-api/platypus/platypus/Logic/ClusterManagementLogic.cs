@@ -903,7 +903,6 @@ namespace Nssol.Platypus.Logic
                         ReadOnly = false
                     },
                     // 添付ファイルを保存するディレクトリ
-                    // 実験結果ディレクトリを実験完了時にzip圧縮して添付するために使用
                     new NfsVolumeMountModel()
                     {
                         Name = "nfs-attach",
