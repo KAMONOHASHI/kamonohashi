@@ -301,6 +301,34 @@ namespace Nssol.Platypus.Controllers.spa
         }
 
         /// <summary>
+        /// 指定されたノートブック履歴のエンドポイントを取得します。
+        /// </summary>
+        /// <param name="id">ノートブック履歴ID</param>
+        /// <returns>ノートブックURL</returns>
+        [HttpGet("{id}/endpoint")]
+        [Filters.PermissionFilter(MenuCode.Notebook)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetEndpointAsync(long id)
+        {
+            //データの存在チェック
+            var notebookHistory = await notebookHistoryRepository.GetByIdAsync(id);
+            if (notebookHistory == null)
+            {
+                return JsonNotFound($"Notebook ID {id} is not found.");
+            }
+            //ステータスを確認
+            if (notebookHistory.GetStatus().Exist() == false) 
+            {
+                return JsonBadRequest($"A container for Notebook ID {id} does not exist.");
+            }
+
+            //URLを取得する
+            string url = "";
+
+            return JsonOK(new { Url = url });
+        }
+
+        /// <summary>
         /// 新規にノートブックコンテナを開始する
         /// </summary>
         [HttpPost("run")]
