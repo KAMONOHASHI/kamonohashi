@@ -49,7 +49,6 @@
             <div slot-scope="scope">
             <div v-if="scope.row.status === 'Running'">
               <el-button type="plain" @click="openNotebook(scope.row)" icon="el-icon-document" >ノートブックを開く</el-button>
-              <el-button type="danger" @click="haltNotebook(scope.row)" icon="el-icon-video-pause" >停止</el-button>
             </div>
             <div v-if="scope.row.status === 'Killed'">
               <el-button type="plain" @click="openRerunDialog(scope.row)" icon="el-icon-refresh" >再実行</el-button>
@@ -178,9 +177,6 @@
         this.$router.push('/notebook/' + id + '/shell')
       },
       openRerunDialog (selectedRow) {
-        this.$router.push('/notebook/run/' + selectedRow.id)
-      },
-      haltNotebook (selectedRow) {
         this.$router.push('/notebook/run/' + selectedRow.id)
       }
     }
