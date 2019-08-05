@@ -4,6 +4,7 @@ using Nssol.Platypus.DataAccess.Core;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces;
 using Nssol.Platypus.Infrastructure.Options;
 using Nssol.Platypus.Infrastructure.Types;
+using Nssol.Platypus.Logic.Interfaces;
 using Nssol.Platypus.Models;
 using Nssol.Platypus.ServiceModels.ClusterManagementModels;
 using Nssol.Platypus.Services;
@@ -27,6 +28,7 @@ namespace Nssol.Platypus.Logic.HostedService
         private readonly DockerHubRegistryService dockerHubRegistryService;
         private readonly PrivateDockerRegistryService privateDockerRegistryService;
         private readonly NvidiaGPUCloudRegistryService nvidiaGPUCloudRegistryService;
+        private readonly IStorageLogic storageLogic;
         private readonly ContainerManageOptions containerManageOptions;
 
         /// <summary>
@@ -42,6 +44,7 @@ namespace Nssol.Platypus.Logic.HostedService
             DockerHubRegistryService dockerHubRegistryService,
             PrivateDockerRegistryService privateDockerRegistryService,
             NvidiaGPUCloudRegistryService nvidiaGPUCloudRegistryService,
+            IStorageLogic storageLogic,
             IOptions<ContainerManageOptions> containerManageOptions,
             IOptions<SyncClusterFromDBOptions> SyncClusterFromDBOptions,
             ILogger<SyncClusterFromDBTimer> logger
@@ -57,6 +60,7 @@ namespace Nssol.Platypus.Logic.HostedService
             this.dockerHubRegistryService = dockerHubRegistryService;
             this.privateDockerRegistryService = privateDockerRegistryService;
             this.nvidiaGPUCloudRegistryService = nvidiaGPUCloudRegistryService;
+            this.storageLogic = storageLogic;
             this.containerManageOptions = containerManageOptions.Value;
         }
 
@@ -81,7 +85,7 @@ namespace Nssol.Platypus.Logic.HostedService
         }
 
         /// <summary>
-        /// DB のテナント・レジストリ・ノード情報を Cluster(k8s) へ同期させるメソッドです。
+        /// DB のテナント・レジストリ・ノード情報を Cluster(k8s)・ObjectStorage へ同期させるメソッドです。
         /// </summary>
         protected override void DoWork(object state, int doWorkCount)
         {
@@ -118,6 +122,13 @@ namespace Nssol.Platypus.Logic.HostedService
                     }
                     // テナントの古い ClusterToken を削除
                     tenantRepository.DeleteClusterToken(tenant.Id);
+
+                    // ObjectStorage への同期処理を行う
+                    if (tenant.Storage != null)
+                    {
+                        // ObjectStorage に バケットを作成する
+                        storageLogic.CreateBucketAsync(tenant, tenant.Storage);
+                    }
                 }
                 // テナントの古い ClusterToken 削除を確定する
                 unitOfWork.Commit();
