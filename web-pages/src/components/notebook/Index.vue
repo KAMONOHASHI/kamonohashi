@@ -117,7 +117,8 @@
         tableData: [],
         statuses: [],
         currentPage: 1,
-        currentPageSize: 10
+        currentPageSize: 10,
+        notebookUrl: undefined
       }
     },
     async created () {
@@ -164,7 +165,8 @@
       },
       async openNotebook (selectedRow) {
         let endpoint = await api.notebook.getEndpointById({id: selectedRow.id})
-        this.$router.push(endpoint)
+        this.notebookUrl = endpoint.data.url
+        window.open(this.notebookUrl)
       },
       async search () {
         this.currentPage = 1
