@@ -194,6 +194,12 @@ namespace Nssol.Platypus.Controllers.spa
             return JsonOK(model);
         }
 
+        /// <summary>
+        /// ノートブックのエンドポイントURLを取得する
+        /// </summary>
+        /// <param name="historyId">ノートブック履歴ID</param>
+        /// <param name="endPoints">エンドポイント</param>
+        /// <returns></returns>
         private async Task<string> GetNotebookEndpointUrlAsync(long historyId, IEnumerable<EndPointInfo> endPoints)
         {
             //notebook起動時のログをストレージから取得し、token情報を抜き出す。
@@ -336,15 +342,11 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonNotFound($"Notebook ID {id} is not found.");
             }
-            //ステータスを確認
-            if (notebookHistory.GetStatus().Exist() == false) 
-            {
-                return JsonBadRequest($"A container for Notebook ID {id} does not exist.");
-            }
 
             //URLを取得する
             string url = "";
             var status = notebookHistory.GetStatus();
+            //ステータスを確認
             if (status.Exist())
             {
                 //コンテナがまだ存在している場合、情報を更新する
@@ -364,6 +366,11 @@ namespace Nssol.Platypus.Controllers.spa
                     url = await GetNotebookEndpointUrlAsync(notebookHistory.Id, details.EndPoints);
                 }
             }
+            else
+            {
+                return JsonBadRequest($"A container for Notebook ID {id} does not exist.");
+            }
+
             return JsonOK(new EndPointOutputModel(url));
         }
 
