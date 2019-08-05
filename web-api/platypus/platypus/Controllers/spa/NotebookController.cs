@@ -178,12 +178,11 @@ namespace Nssol.Platypus.Controllers.spa
                 unitOfWork.Commit();
 
                 model.ConditionNote = details.ConditionNote;
+
+                //コンテナが正常動作している場合、notebookのエンドポイントを取得
                 if (details.Status.IsRunning())
                 {
-                    //コンテナが正常に動いているので、エンドポイントを表示する
-                    // TODO: Tokenを取得してJupyterのエンドポイントを作成する(string)
-                    // details.EndpointsからNotebookのものを取得→Tokenを取得→つなぎ合わせてNotebookEndpointに設定
-                    //model.NotebookEndpoint = details.EndPoints;
+                    model.NotebookEndpoint = await GetNotebookEndpointUrlAsync(notebookHistory.Id, details.EndPoints);
                 }
             }
 
@@ -193,6 +192,33 @@ namespace Nssol.Platypus.Controllers.spa
                 model.GitModel.Url = gitLogic.GetTreeUiUrl(notebookHistory.ModelGitId.Value, notebookHistory.ModelRepository, notebookHistory.ModelRepositoryOwner, notebookHistory.ModelCommitId);
             }
             return JsonOK(model);
+        }
+
+        /// <summary>
+        /// ノートブックのエンドポイントURLを取得する
+        /// </summary>
+        /// <param name="historyId">ノートブック履歴ID</param>
+        /// <param name="endPoints">エンドポイント</param>
+        /// <returns></returns>
+        private async Task<string> GetNotebookEndpointUrlAsync(long historyId, IEnumerable<EndPointInfo> endPoints)
+        {
+            //notebook起動時のログをストレージから取得し、token情報を抜き出す。
+            var outputFileName = ".notebook.log";   //値を読み込むファイル名
+            var outputPath = historyId + "/" + outputFileName;
+            var content = await storageLogic.GetFileContentAsync(ResourceType.NotebookContainerOutputFiles, outputPath, outputFileName, true);
+            if (content != null)
+            {
+                // ?token=...という文字列を抜き出す
+                var token = Regex.Match(content, @"\?token=.*").Value;
+
+                // ノードのendpoint情報を取得し、tokenと繋ぎ合わせてmodelに設定
+                var nodeEndPoint = endPoints.Where(name => name.Key == "notebook").FirstOrDefault();
+                if (nodeEndPoint != null)
+                {
+                    return "http://" + nodeEndPoint.Url + token;
+                }
+            }
+            return "";
         }
 
         /// <summary>
@@ -307,7 +333,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <returns>ノートブックURL</returns>
         [HttpGet("{id}/endpoint")]
         [Filters.PermissionFilter(MenuCode.Notebook)]
-        [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(EndPointOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetEndpointAsync(long id)
         {
             //データの存在チェック
@@ -316,16 +342,36 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonNotFound($"Notebook ID {id} is not found.");
             }
+
+            //URLを取得する
+            string url = "";
+            var status = notebookHistory.GetStatus();
             //ステータスを確認
-            if (notebookHistory.GetStatus().Exist() == false) 
+            if (status.Exist())
+            {
+                //コンテナがまだ存在している場合、情報を更新する
+                var details = await clusterManagementLogic.GetContainerEndpointInfoAsync(notebookHistory.Key, CurrentUserInfo.SelectedTenant.Name, false);
+                //ステータスを更新
+                notebookHistory.Status = details.Status.Key;
+                if (notebookHistory.StartedAt == null)
+                {
+                    notebookHistory.StartedAt = details.StartedAt;
+                    notebookHistory.Node = details.Node; //設計上ノードが切り替わることはない
+                }
+                unitOfWork.Commit();
+
+                //コンテナが正常動作している場合、notebookのエンドポイントを取得
+                if (details.Status.IsRunning())
+                {
+                    url = await GetNotebookEndpointUrlAsync(notebookHistory.Id, details.EndPoints);
+                }
+            }
+            else
             {
                 return JsonBadRequest($"A container for Notebook ID {id} does not exist.");
             }
 
-            //URLを取得する
-            string url = "";
-
-            return JsonOK(new { Url = url });
+            return JsonOK(new EndPointOutputModel(url));
         }
 
         /// <summary>
