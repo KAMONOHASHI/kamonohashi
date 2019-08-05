@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Nssol.Platypus.ApiModels.NotebookApiModels
+﻿namespace Nssol.Platypus.ApiModels.NotebookApiModels
 {
     /// <summary>
     /// ノートブックアクセス用URLの出力モデル
