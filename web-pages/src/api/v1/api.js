@@ -213,6 +213,19 @@ let api = {
     getMount: gen.ApiV1TrainingToMountGet
   },
 
+  notebook: {
+    getSimple: gen.ApiV1NotebookSimpleGet,
+    get: gen.ApiV1NotebookGet,
+    post: gen.ApiV1NotebookRunPost,
+    getById: gen.ApiV1NotebookByIdGet,
+    deleteById: gen.ApiV1NotebookByIdDelete,
+    putById: gen.ApiV1NotebookByIdPut,
+    getContainerFilesById: gen.ApiV1NotebookByIdContainer_filesGet,
+    postHaltById: gen.ApiV1NotebookByIdHaltPost,
+    getEventsById: gen.ApiV1NotebookByIdEventsGet,
+    getEndpointById: gen.ApiV1NotebookByIdEndpointGet
+  },
+
   inference: {
     getSimple: gen.ApiV1InferencesSimpleGet,
     get: gen.ApiV1InferencesGet,
