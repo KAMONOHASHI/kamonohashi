@@ -203,7 +203,6 @@
         this.status = data.status === data.statusType
           ? data.status : (data.statusType + ' (' + data.status + ')')
         this.statusType = data.statusType
-        this.entryPoint = data.entryPoint
         this.conditionNote = data.conditionNote
         this.favorite = data.favorite
         if (this.statusType === 'Running' || this.statusType === 'Error') {
@@ -222,6 +221,12 @@
       closeDialog (done) {
         done()
         this.emitCancel()
+      },
+      emitFiles () {
+        this.$emit('files', this.notebookId)
+      },
+      emitShell () {
+        this.$emit('shell', this.notebookId)
       },
       async updateHistory () {
         let putData = {
