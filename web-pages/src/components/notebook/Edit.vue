@@ -87,7 +87,9 @@
                   <div class="el-input" style="padding: 10px 0">
                     <el-button @click="emitShell">Shell起動</el-button>
                   </div>
-                  <pl-display-text-form label="エンドポイント" :value="endpoint"/>
+                  <div>
+                    <el-button type="plain" @click="openNotebook" icon="el-icon-document" >ノートブックを開く</el-button>
+                  </div>
                 </div>
               </el-form-item>
             </div>
@@ -222,6 +224,11 @@
       },
       emitShell () {
         this.$emit('shell', this.notebookId)
+      },
+      async openNotebook () {
+        let endpoint = await api.notebook.getEndpointById({id: this.notebookId})
+        let notebookUrl = endpoint.data.url
+        window.open(notebookUrl)
       },
       async updateHistory () {
         let putData = {
