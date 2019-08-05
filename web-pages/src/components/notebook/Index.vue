@@ -45,7 +45,7 @@
           </div>
         </el-table-column>
         <el-table-column prop="status" label="ステータス" width="120px"/>
-        <el-table-column prop="status" label="Action" width="400px">
+        <el-table-column prop="status" label="Action" width="300px">
             <div slot-scope="scope">
             <div v-if="scope.row.status === 'Running'">
               <el-button type="plain" @click="openNotebook(scope.row)" icon="el-icon-document" >ノートブックを開く</el-button>
