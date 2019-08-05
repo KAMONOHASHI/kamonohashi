@@ -338,6 +338,9 @@ namespace Nssol.Platypus.Services
             bool isContainsBucket = await ContainsBucketAsync(createClient, storageConfig.Bucket);
             if (isContainsBucket)
             {
+                // バケットの存在は確認できたので、直下にディレクトリが存在するか
+                await CreateDirUnderBucketAsync(createClient, storageConfig.Bucket);
+
                 // 既にバケットが存在しているので false を返却する
                 LogError($"bucket already exists : {storageConfig.Bucket}");
                 return false;
@@ -357,16 +360,16 @@ namespace Nssol.Platypus.Services
             }
 
             // ディレクトリとdummyファイルの作成
-            await createDirAsync(storageConfig.Bucket, createClient, ResourceType.Data.ToString());
-            await createDirAsync(storageConfig.Bucket, createClient, ResourceType.TrainingContainerOutputFiles.ToString());
-            await createDirAsync(storageConfig.Bucket, createClient, ResourceType.TrainingContainerAttachedFiles.ToString());
-            await createDirAsync(storageConfig.Bucket, createClient, ResourceType.TrainingHistoryAttachedFiles.ToString());
-            await createDirAsync(storageConfig.Bucket, createClient, ResourceType.PreprocContainerAttachedFiles.ToString());
-            await createDirAsync(storageConfig.Bucket, createClient, ResourceType.InferenceHistoryAttachedFiles.ToString());
-            await createDirAsync(storageConfig.Bucket, createClient, ResourceType.InferenceContainerAttachedFiles.ToString());
-            await createDirAsync(storageConfig.Bucket, createClient, ResourceType.InferenceContainerOutputFiles.ToString());
-            await createDirAsync(storageConfig.Bucket, createClient, ResourceType.NotebookContainerAttachedFiles.ToString());
-            await createDirAsync(storageConfig.Bucket, createClient, ResourceType.NotebookContainerOutputFiles.ToString());
+            await CreateDirAsync(storageConfig.Bucket, createClient, ResourceType.Data.ToString());
+            await CreateDirAsync(storageConfig.Bucket, createClient, ResourceType.TrainingContainerOutputFiles.ToString());
+            await CreateDirAsync(storageConfig.Bucket, createClient, ResourceType.TrainingContainerAttachedFiles.ToString());
+            await CreateDirAsync(storageConfig.Bucket, createClient, ResourceType.TrainingHistoryAttachedFiles.ToString());
+            await CreateDirAsync(storageConfig.Bucket, createClient, ResourceType.PreprocContainerAttachedFiles.ToString());
+            await CreateDirAsync(storageConfig.Bucket, createClient, ResourceType.InferenceHistoryAttachedFiles.ToString());
+            await CreateDirAsync(storageConfig.Bucket, createClient, ResourceType.InferenceContainerAttachedFiles.ToString());
+            await CreateDirAsync(storageConfig.Bucket, createClient, ResourceType.InferenceContainerOutputFiles.ToString());
+            await CreateDirAsync(storageConfig.Bucket, createClient, ResourceType.NotebookContainerAttachedFiles.ToString());
+            await CreateDirAsync(storageConfig.Bucket, createClient, ResourceType.NotebookContainerOutputFiles.ToString());
             return true;
         }
 
@@ -443,7 +446,7 @@ namespace Nssol.Platypus.Services
         /// <param name="bucketName">バケット名</param>
         /// <param name="client">使用するS3Client</param>
         /// <param name="dirName">ディレクトリ名</param>
-        private async Task createDirAsync(string bucketName, AmazonS3Client client, string dirName)
+        private async Task CreateDirAsync(string bucketName, AmazonS3Client client, string dirName)
         {
             // 末尾が/でないとディレクトリにならない
             var key = dirName.EndsWith("/") ? dirName : dirName + "/";
@@ -465,6 +468,68 @@ namespace Nssol.Platypus.Services
             await client.PutObjectAsync(putObjectRequestDummyFile);
 
             LogInformation($"create dir: {key}");
+        }
+
+        /// <summary>
+        /// バケット直下にディレクトリが存在しなければ、ディレクトリを作成する
+        /// </summary>
+        /// <param name="client">使用するS3Client</param>
+        /// <param name="bucketName">バケット名</param>
+        private async Task CreateDirUnderBucketAsync(AmazonS3Client client, string bucketName)
+        {
+            ListObjectsRequest request = new ListObjectsRequest
+            {
+                BucketName = bucketName,
+                MaxKeys = 1000,
+                Prefix = "",
+                Delimiter = "/" // https://dev.classmethod.jp/cloud/aws/amazon-s3-folders/
+            };
+
+            try
+            {
+                LogDebug($"start querying objects under bucket");
+                // ディレクトリ・ファイルの一覧を取得
+                ListObjectsResponse response = await client.ListObjectsAsync(request);
+                if (response.IsTruncated)
+                {
+                    LogWarning("too many output files(should be less than 1000). exceeded files are ignored.");
+                }
+                LogDebug($"storeage response : {response.ToString()}");
+
+                // ディレクトリの存在チェックと作成
+                await CheckAndCreateDir(bucketName, client, response.CommonPrefixes, ResourceType.Data.ToString());
+                await CheckAndCreateDir(bucketName, client, response.CommonPrefixes, ResourceType.TrainingContainerOutputFiles.ToString());
+                await CheckAndCreateDir(bucketName, client, response.CommonPrefixes, ResourceType.TrainingContainerAttachedFiles.ToString());
+                await CheckAndCreateDir(bucketName, client, response.CommonPrefixes, ResourceType.TrainingHistoryAttachedFiles.ToString());
+                await CheckAndCreateDir(bucketName, client, response.CommonPrefixes, ResourceType.PreprocContainerAttachedFiles.ToString());
+                await CheckAndCreateDir(bucketName, client, response.CommonPrefixes, ResourceType.InferenceHistoryAttachedFiles.ToString());
+                await CheckAndCreateDir(bucketName, client, response.CommonPrefixes, ResourceType.InferenceContainerAttachedFiles.ToString());
+                await CheckAndCreateDir(bucketName, client, response.CommonPrefixes, ResourceType.InferenceContainerOutputFiles.ToString());
+                await CheckAndCreateDir(bucketName, client, response.CommonPrefixes, ResourceType.NotebookContainerAttachedFiles.ToString());
+                await CheckAndCreateDir(bucketName, client, response.CommonPrefixes, ResourceType.NotebookContainerOutputFiles.ToString());
+            }
+            catch (Exception e)
+            {
+                LogDebug($"CreateDirUnderBucketAsync error : {e.ToString()}");
+            }
+        }
+
+        /// <summary>
+        /// ディレクトリ一覧に対象ディレクトリが含まれないかチェックし、
+        /// 含まれない場合、ディレクトリを作成する
+        /// </summary>
+        /// <param name="bucketName">バケット名</param>
+        /// <param name="client">使用するS3Client</param>
+        /// <param name="dirNameList">ディレクトリ一覧</param>
+        /// <param name="dirName">対象ディレクトリ名</param>
+        private async Task CheckAndCreateDir(string bucketName, AmazonS3Client client, List<string> dirNameList, string dirName)
+        {
+            // ディレクトリの存在チェック
+            if (!dirNameList.Contains(dirName + "/"))
+            {
+                // ディレクトリとdummyファイルの作成
+                await CreateDirAsync(bucketName, client, dirName);
+            }
         }
 
         /// <summary>
