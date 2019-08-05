@@ -598,6 +598,11 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonNotFound($"Notebook ID {id} is not found.");
             }
+            //ステータスのチェック
+            if (notebookHistory.GetStatus().Exist())
+            {
+                return JsonNotFound($"Notebook ID {id} is already running.");
+            }
 
             //データセットが指定されていれば存在チェック
             if (notebookHistory.DataSetId.HasValue)
