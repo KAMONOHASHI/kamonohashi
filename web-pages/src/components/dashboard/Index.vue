@@ -8,7 +8,7 @@
         </div>
         <div>
           <el-row>
-            <el-col :span="6">
+            <el-col :xs="24" :sm="6">
               <div class="menu-name">
                 <img class="logo" src="/static/images/illust_folder2_bl.png" alt="" width="160" height="135">
                 <br/>
@@ -37,7 +37,7 @@
                 </el-row>
               </router-link>
             </el-col>
-            <el-col :span="6">
+            <el-col :xs="24" :sm="6">
               <div class="menu-name">
                 <img class="logo" src="/static/images/illust_book3.png" alt="" width="160" height="135">
                 <br>
@@ -54,7 +54,7 @@
                 </el-row>
               </router-link>
             </el-col>
-            <el-col :span="6">
+            <el-col :xs="24" :sm="6">
               <div class="menu-name">
                 <img class="logo" src="/static/images/illust_neuralBrain_bl.png" alt="" width="160" height="135">
                 <br>
@@ -70,7 +70,7 @@
                 </el-row>
               </router-link>
             </el-col>
-            <el-col :span="6">
+            <el-col :xs="24" :sm="6">
               <div class="menu-name">
                 <img class="logo" src="/static/images/illust_machineLearning_bl.png" alt="" width="160" height="135">
                 <br>

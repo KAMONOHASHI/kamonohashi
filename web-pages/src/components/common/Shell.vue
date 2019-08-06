@@ -85,6 +85,8 @@
             jobName = (await api.inference.getById({id: this.id})).data.key
           } else if (this.type === 'preprocessing' || this.type === 'preprocessingHistory') {
             jobName = (await api.preprocessings.getHistroyById({id: this.id, dataId: this.dataId})).data.key
+          } else if (this.type === 'notebook') {
+            jobName = (await api.notebook.getById({id: this.id})).data.key
           }
           this.title = `Shell in ${jobName}`
 
