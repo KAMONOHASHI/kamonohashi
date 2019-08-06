@@ -24,7 +24,7 @@
       </el-col>
     </el-row>
     <el-row>
-      <el-table class="data-table pl-index-table" :data="tableData" border>
+      <el-table ref="table" class="data-table pl-index-table" :data="tableData" @row-click="openEditDialog" border>
         <el-table-column width="25px">
           <div slot-scope="scope">
             <i class="el-icon-star-on favorite" v-if="scope.row.favorite"></i>
@@ -46,7 +46,7 @@
         </el-table-column>
         <el-table-column prop="status" label="ステータス" width="120px"/>
         <el-table-column prop="status" label="Action" width="300px">
-            <div slot-scope="scope">
+          <div slot-scope="scope">
             <div v-if="scope.row.status === 'Running'">
               <el-button type="plain" @click="openNotebook(scope.row)" icon="el-icon-document" >ノートブックを開く</el-button>
             </div>
@@ -55,18 +55,12 @@
             </div>
             <div v-else>
             </div>
-            </div>
-        </el-table-column>
-        <el-table-column prop="status" width="120px">
-          <div slot-scope="scope">
-          <el-button type="plain" @click="openEditDialog(scope.row)" icon="el-icon-more" />
           </div>
         </el-table-column>
       </el-table>
     </el-row>
     <el-row>
-      <el-col class=" pagination
-        " :span="10">
+      <el-col class="pagination" :span="10">
         <el-pagination layout="total, sizes, prev, pager, next"
                        :total="total"
                        :current-page="currentPage"
@@ -119,7 +113,8 @@
         statuses: [],
         currentPage: 1,
         currentPageSize: 10,
-        notebookUrl: undefined
+        notebookUrl: undefined,
+        notebookUrlFlg: false
       }
     },
     async created () {
@@ -159,15 +154,19 @@
         this.$router.go(-1)
       },
       openEditDialog (selectedRow) {
-        this.$router.push('/notebook/' + selectedRow.id)
+        if (this.$route.path === '/notebook' && !this.notebookUrlFlg) {
+          this.$router.push('/notebook/' + selectedRow.id)
+        }
       },
       openCreateDialog () {
         this.$router.push('/notebook/run/')
       },
       async openNotebook (selectedRow) {
+        this.notebookUrlFlg = true
         let endpoint = await api.notebook.getEndpointById({id: selectedRow.id})
         this.notebookUrl = endpoint.data.url
         window.open(this.notebookUrl)
+        this.notebookUrlFlg = false
       },
       async search () {
         this.currentPage = 1
