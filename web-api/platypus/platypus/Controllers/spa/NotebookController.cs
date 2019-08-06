@@ -439,7 +439,7 @@ namespace Nssol.Platypus.Controllers.spa
                 Memo = model.Memo,
                 Status = ContainerStatus.Running.Key,
                 StartedAt = DateTime.Now,
-                ExpiresIn = model.Expiresln
+                ExpiresIn = model.ExpiresIn
             };
 
             //gitが指定されているかチェック
@@ -668,7 +668,8 @@ namespace Nssol.Platypus.Controllers.spa
             notebookHistory.Gpu = model.Gpu.Value;
             notebookHistory.Status = ContainerStatus.Running.Key;
             notebookHistory.StartedAt = DateTime.Now;
-            notebookHistory.ExpiresIn = model.Expiresln;
+            notebookHistory.CompletedAt = null;
+            notebookHistory.ExpiresIn = model.ExpiresIn;
 
             notebookHistoryRepository.Update(notebookHistory);
             unitOfWork.Commit();

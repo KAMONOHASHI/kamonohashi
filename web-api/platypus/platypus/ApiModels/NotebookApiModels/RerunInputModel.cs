@@ -29,6 +29,6 @@ namespace Nssol.Platypus.ApiModels.NotebookApiModels
         /// コンテナの生存期間(秒)
         /// </summary>
         [Required]
-        public int? Expiresln { get; set; }
+        public int? ExpiresIn { get; set; }
     }
 }

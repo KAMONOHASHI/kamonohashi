@@ -250,17 +250,11 @@
         await form.validate(async (valid) => {
           if (valid) {
             try {
-              let options = {}
-              // apiのフォーマットに合わせる(配列 => オブジェクト)
-              this.options.forEach((kvp) => {
-                options[kvp.key] = kvp.value
-              })
               let param = {
                   cpu: this.cpu,
                   memory: this.memory,
                   gpu: this.gpu,
-                  expiresIn: this.expiresIn,
-                  name: this.name
+                  expiresIn: this.expiresIn
               }
               await api.notebook.postRerun({id: this.originId, model: param})
 
