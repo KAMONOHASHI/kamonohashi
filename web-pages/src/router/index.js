@@ -228,6 +228,11 @@ let router = new Router({
           path: ':id/shell',
           component: Shell,
           props: true
+        },
+        {
+          path: ':id/log',
+          component: LogViewer,
+          props: true
         }
       ]
     },

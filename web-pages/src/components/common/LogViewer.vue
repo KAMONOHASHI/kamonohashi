@@ -78,6 +78,10 @@
         let historyId = key.split('-')[1] // "preproc-{id}" => ["preproc", "{id}"]
         fileName = `preproc_stdout_stderr_${this.id}_${this.dataId}.log`
         storedPath = `${historyId}/${fileName}`
+      } else if (this.type === 'notebook') {
+        resourceType = 'NotebookContainerAttachedFiles'
+        fileName = `notebook_stdout_stderr_${this.id}.log`
+        storedPath = `${this.id}/${fileName}`
       }
 
       // ログファイルのURLを取得
