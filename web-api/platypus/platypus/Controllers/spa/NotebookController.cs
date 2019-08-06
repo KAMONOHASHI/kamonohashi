@@ -668,6 +668,7 @@ namespace Nssol.Platypus.Controllers.spa
             notebookHistory.Gpu = model.Gpu.Value;
             notebookHistory.Status = ContainerStatus.Running.Key;
             notebookHistory.StartedAt = DateTime.Now;
+            notebookHistory.CompletedAt = null;
             notebookHistory.ExpiresIn = model.Expiresln;
 
             notebookHistoryRepository.Update(notebookHistory);
