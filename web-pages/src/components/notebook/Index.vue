@@ -83,6 +83,7 @@
       @return="back"
       @files="files"
       @shell="shell"
+      @log="log"
     ></router-view>
   </div>
 </template>
@@ -93,7 +94,7 @@
 
   export default {
     name: 'NotebookIndex',
-    title: '学習管理',
+    title: 'ノートブック管理',
     components: {
       'pl-smart-search-input': SmartSearchInput
     },
@@ -177,6 +178,9 @@
       },
       shell (id) {
         this.$router.push('/notebook/' + id + '/shell')
+      },
+      log (id) {
+        this.$router.push('/notebook/' + id + '/log')
       },
       openRerunDialog (selectedRow) {
         this.$router.push('/notebook/run/' + selectedRow.id)

@@ -97,7 +97,11 @@
               <br/>
               <el-button @click="emitFiles">ファイル一覧</el-button>
             </el-form-item>
-           <el-form-item label="メモ">
+            <el-form-item label="ログファイル">
+              <br/>
+              <el-button @click="emitLog" size="mini">ログファイル閲覧</el-button>
+            </el-form-item>
+            <el-form-item label="メモ">
               <el-input
                 type="textarea"
                 :autosize="{ minRows: 2, maxRows: 4}"
@@ -224,6 +228,9 @@
       },
       emitShell () {
         this.$emit('shell', this.notebookId)
+      },
+      emitLog () {
+        this.$emit('log', this.notebookId)
       },
       async openNotebook () {
         let endpoint = await api.notebook.getEndpointById({id: this.notebookId})
