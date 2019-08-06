@@ -405,6 +405,21 @@ namespace Nssol.Platypus.Controllers.spa
                     return JsonNotFound($"There are no enable nodes with Partition {model.Partition}.");
                 }
             }
+            // 環境変数名のチェック
+            if (model.Options != null && model.Options.Count > 0)
+            {
+                foreach (var env in model.Options)
+                {
+                    if (!string.IsNullOrEmpty(env.Key))
+                    {
+                        // フォーマットチェック
+                        if (!Regex.IsMatch(env.Key, "^[-._a-zA-Z][-._a-zA-Z0-9]*$"))
+                        {
+                            return JsonNotFound($"Invalid envName. Please match the format of '^[-._a-zA-Z][-._a-zA-Z0-9]*$'.");
+                        }
+                    }
+                }
+            }
 
             //コンテナの実行前に、ノートブック履歴を作成する（コンテナの実行に失敗した場合、そのステータスをユーザに表示するため）
             var notebookHistory = new NotebookHistory()
