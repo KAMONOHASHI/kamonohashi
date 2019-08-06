@@ -52,6 +52,7 @@
               <el-step title="Step 3" description="option"></el-step>
               <el-step title="Step 4" description="option"></el-step>
             </el-steps>
+            <br>
             <div class="element">
               <el-form v-if="active===0">
                 <el-col :span="18" :offset="3">
@@ -93,12 +94,12 @@
                 </el-col>
               </el-form>
               <el-form v-if="active===2">
-                <el-col :span="12">
+                <el-col :span="10" :offset="2">
                   <el-form-item label="コンテナイメージ" >
                     <pl-container-selector v-model="containerImage"/>
                   </el-form-item>
                 </el-col>
-                <el-col :span="12">
+                <el-col :span="10">
                   <el-form-item label="モデル">
                     <pl-git-selector v-model="git"/>
                   </el-form-item>
