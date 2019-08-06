@@ -40,7 +40,7 @@ namespace Nssol.Platypus.ApiModels.NotebookApiModels
             Gpu = history.Gpu;
             Partition = history.Partition;
 
-            Expiresln = history.ExpiresIn;
+            ExpiresIn = history.ExpiresIn;
 
             foreach (var option in history.GetOptionDic())
             {
@@ -146,7 +146,7 @@ namespace Nssol.Platypus.ApiModels.NotebookApiModels
         /// <summary>
         /// コンテナの生存期間(秒)
         /// </summary>
-        public int? Expiresln { get; set; }
+        public int? ExpiresIn { get; set; }
 
         /// <summary>
         /// 引数 NotebookHistory history の属性 CreatedAt/StartedA/CompletedAt の値に従い、
