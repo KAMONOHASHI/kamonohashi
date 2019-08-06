@@ -10,6 +10,7 @@ using Nssol.Platypus.Infrastructure.Infos;
 using Nssol.Platypus.Infrastructure.Types;
 using Nssol.Platypus.Logic.Interfaces;
 using Nssol.Platypus.Models.TenantModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -437,6 +438,7 @@ namespace Nssol.Platypus.Controllers.spa
                 Partition = model.Partition,
                 Memo = model.Memo,
                 Status = ContainerStatus.Running.Key,
+                StartedAt = DateTime.Now,
                 ExpiresIn = model.Expiresln
             };
 
@@ -665,6 +667,7 @@ namespace Nssol.Platypus.Controllers.spa
             notebookHistory.Memory = model.Memory.Value;
             notebookHistory.Gpu = model.Gpu.Value;
             notebookHistory.Status = ContainerStatus.Running.Key;
+            notebookHistory.StartedAt = DateTime.Now;
             notebookHistory.ExpiresIn = model.Expiresln;
 
             notebookHistoryRepository.Update(notebookHistory);
@@ -675,6 +678,7 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 //コンテナの起動に失敗した状態。エラーを出力して、保存したノートブック履歴も削除する。
                 notebookHistory.Status = ContainerStatus.Killed.Key;
+                notebookHistory.CompletedAt = DateTime.Now;
                 notebookHistoryRepository.Update(notebookHistory);
                 unitOfWork.Commit();
 
