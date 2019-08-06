@@ -45,7 +45,7 @@
               </div>
             </el-form-item>
 
-            <pl-display-text-form label="実行者" :value="createdBy"/>
+            <pl-display-text-form label="作成者" :value="createdBy"/>
             <pl-display-text-form label="開始日時" :value="createdAt"/>
             <pl-display-text-form label="完了日時" :value="completedAt"/>
             <pl-display-text-form label="待機時間" :value="waitingTime"/>
