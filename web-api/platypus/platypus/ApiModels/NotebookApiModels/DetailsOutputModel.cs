@@ -12,6 +12,9 @@ namespace Nssol.Platypus.ApiModels.NotebookApiModels
         public DetailsOutputModel(NotebookHistory history) : base(history)
         {
             Key = history.Key;
+            if (history.DataSet != null) {
+                DataSet = new DataSetApiModels.IndexOutputModel(history.DataSet);
+            }
             Options = new List<KeyValuePair<string, string>>();
             GitModel = new GitCommitOutputModel()
             {
@@ -52,6 +55,11 @@ namespace Nssol.Platypus.ApiModels.NotebookApiModels
         /// コンテナ名になる一意識別文字列
         /// </summary>
         public string Key { get; set; }
+
+        /// <summary>
+        /// データセット
+        /// </summary>
+        public DataSetApiModels.IndexOutputModel DataSet { get; set; }
 
         /// <summary>
         /// ノートブックモデルGit情報

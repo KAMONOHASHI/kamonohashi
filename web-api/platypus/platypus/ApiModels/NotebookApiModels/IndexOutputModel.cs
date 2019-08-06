@@ -9,15 +9,6 @@ namespace Nssol.Platypus.ApiModels.NotebookApiModels
     {
         public IndexOutputModel(NotebookHistory history) : base(history)
         {
-            if (history.DataSet != null)
-            {
-                DataSet = new DataSetApiModels.IndexOutputModel(history.DataSet);
-            }
         }
-
-        /// <summary>
-        /// データセット
-        /// </summary>
-        public DataSetApiModels.IndexOutputModel DataSet { get; set; }
     }
 }
