@@ -47,37 +47,20 @@
         <div v-else>
           <el-row :gutter="20">
             <el-steps :active="active" align-center>
-              <el-step title="Step 1" description="notebook name & dataset"></el-step>
-              <el-step title="Step 2" description="container image & model"></el-step>
-              <el-step title="Step 3" description="resource"></el-step>
+              <el-step title="Step 1" description="notebook name"></el-step>
+              <el-step title="Step 2" description="resource"></el-step>
+              <el-step title="Step 3" description="option"></el-step>
               <el-step title="Step 4" description="option"></el-step>
             </el-steps>
             <div class="element">
               <el-form v-if="active===0">
-                <el-col :span="12">
+                <el-col :span="18" :offset="3">
                   <el-form-item label="ノートブック名" prop="name" class="is-required">
                     <el-input v-model="name"/>
                   </el-form-item>
                 </el-col>
-                <el-col :span="12">
-                  <el-form-item label="データセット" prop="dataSet" >
-                    <pl-dataset-selector v-model="dataSet"/>
-                  </el-form-item>
-                </el-col>
               </el-form>
               <el-form v-if="active===1">
-                <el-col :span="12">
-                  <el-form-item label="コンテナイメージ" required>
-                    <pl-container-selector v-model="containerImage"/>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="12">
-                  <el-form-item label="モデル">
-                    <pl-git-selector v-model="git"/>
-                  </el-form-item>
-                </el-col>
-              </el-form>
-              <el-form v-if="active===2">
                 <el-col :span="18" :offset="3">
                   <el-form-item label="CPU" required>
                     <el-slider
@@ -106,6 +89,23 @@
                       :max="16"
                       show-input>
                     </el-slider>
+                  </el-form-item>
+                </el-col>
+              </el-form>
+              <el-form v-if="active===2">
+                <el-col :span="12">
+                  <el-form-item label="コンテナイメージ" >
+                    <pl-container-selector v-model="containerImage"/>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                  <el-form-item label="モデル">
+                    <pl-git-selector v-model="git"/>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="18" :offset="3">
+                  <el-form-item label="データセット" prop="dataSet" >
+                    <pl-dataset-selector v-model="dataSet"/>
                   </el-form-item>
                 </el-col>
               </el-form>
