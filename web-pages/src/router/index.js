@@ -23,6 +23,7 @@ import PreprocessingHistoryEdit from '@/components/preprocessing/PreprocessingHi
 import NotebookIndex from '@/components/notebook/Index'
 import CreateNotebook from '@/components/notebook/Create.vue'
 import EditNotebook from '@/components/notebook/Edit.vue'
+import NotebookFileIndex from '@/components/notebook/FileIndex.vue'
 
 import TrainingIndex from '@/components/training/Index'
 import CreateJob from '@/components/training/Create.vue'
@@ -216,6 +217,16 @@ let router = new Router({
         {
           path: ':id',
           component: EditNotebook,
+          props: true
+        },
+        {
+          path: ':id/files',
+          component: NotebookFileIndex,
+          props: true
+        },
+        {
+          path: ':id/shell',
+          component: Shell,
           props: true
         }
       ]
