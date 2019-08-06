@@ -163,6 +163,7 @@
   import GitSelector from '@/components/common/GitSelector.vue'
   import DisplayError from '@/components/common/DisplayError'
   import api from '@/api/v1/api'
+
   export default {
     name: 'CreateNotebook',
     components: {
@@ -178,7 +179,7 @@
     },
     data () {
       return {
-          rules: {
+        rules: {
           name: [{required: true, trigger: 'blur', message: '必須項目です'}],
           cpu: [{required: true, message: '必須項目です'}],
           memory: [{required: true, message: '必須項目です'}],
@@ -201,7 +202,7 @@
         git: undefined,
         options: undefined,
         active: 0,
-        expiresin: 0
+        expiresIn: 0
       }
     },
     async created () {
@@ -221,16 +222,17 @@
                 options[kvp.key] = kvp.value
               })
               let param = {
-                Name: this.name,
-                ContainerImage: this.containerImage,
-                DataSetId: this.dataSet ? this.dataSet.id : null,
-                GitModel: this.git,
-                Options: options,
-                Cpu: this.cpu,
-                Memory: this.memory,
-                Gpu: this.gpu,
-                Partition: this.partition,
-                Memo: this.memo
+                name: this.name,
+                containerImage: this.containerImage,
+                dataSetId: this.dataSet ? this.dataSet.id : null,
+                gitModel: this.git,
+                options: options,
+                cpu: this.cpu,
+                memory: this.memory,
+                gpu: this.gpu,
+                partition: this.partition,
+                memo: this.memo,
+                expiresIn: this.expiresIn
               }
               await api.notebook.post({model: param})
 
@@ -254,12 +256,13 @@
                 options[kvp.key] = kvp.value
               })
               let param = {
-                Cpu: this.cpu,
-                Memory: this.memory,
-                Gpu: this.gpu,
-                Expiresin: this.expiresin
+                  cpu: this.cpu,
+                  memory: this.memory,
+                  gpu: this.gpu,
+                  expiresIn: this.expiresIn,
+                  name: this.name
               }
-              await api.notebook.post({model: param})
+              await api.notebook.postRerun({id: this.originId, model: param})
 
               // 成功したら、ダイヤログを閉じて更新
               this.emitDone()

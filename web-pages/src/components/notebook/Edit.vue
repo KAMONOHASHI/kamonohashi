@@ -87,12 +87,9 @@
                   <div class="el-input" style="padding: 10px 0">
                     <el-button @click="emitShell">Shell起動</el-button>
                   </div>
-                  <el-form-item label="エンドポイント">
-                    <div v-for="endpoint in endpoints" :key="endpoint.key" class="el-input">
-                      <span>{{endpoint.key}}</span>
-                      <span>{{endpoint.url}}</span>
-                    </div>
-                  </el-form-item>
+                  <div>
+                    <el-button type="plain" @click="openNotebook" icon="el-icon-document" >ノートブックを開く</el-button>
+                  </div>
                 </div>
               </el-form-item>
             </div>
@@ -162,7 +159,7 @@
         memory: undefined,
         gpu: undefined,
         partition: undefined,
-        endpoints: undefined,
+        endpoint: undefined,
         // スクリプトがこけたときなどに"failed"になる
         status: undefined,
         // コンテナの生死等
@@ -199,7 +196,7 @@
         this.gpu = data.gpu
         this.partition = data.partition
         this.statusDetail = data.statusDetail
-        this.endpoints = data.endpoints
+        this.endpoint = data.notebookEndpoint
         this.status = data.status === data.statusType
           ? data.status : (data.statusType + ' (' + data.status + ')')
         this.statusType = data.statusType
@@ -227,6 +224,11 @@
       },
       emitShell () {
         this.$emit('shell', this.notebookId)
+      },
+      async openNotebook () {
+        let endpoint = await api.notebook.getEndpointById({id: this.notebookId})
+        let notebookUrl = endpoint.data.url
+        window.open(notebookUrl)
       },
       async updateHistory () {
         let putData = {
