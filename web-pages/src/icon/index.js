@@ -2,6 +2,7 @@
 import './pl-data'
 import './pl-dataset'
 import './pl-preprocessing'
+import './pl-notebook'
 import './pl-training'
 import './pl-inference'
 import './pl-tenant-setting'

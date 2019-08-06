@@ -20,6 +20,11 @@ import RunPreprocessing from '@/components/preprocessing/Run'
 import PreprocessingHistory from '@/components/preprocessing/PreprocessingHistory'
 import PreprocessingHistoryEdit from '@/components/preprocessing/PreprocessingHistoryEdit'
 
+import NotebookIndex from '@/components/notebook/Index'
+import CreateNotebook from '@/components/notebook/Create.vue'
+import EditNotebook from '@/components/notebook/Edit.vue'
+import NotebookFileIndex from '@/components/notebook/FileIndex.vue'
+
 import TrainingIndex from '@/components/training/Index'
 import CreateJob from '@/components/training/Create.vue'
 import EditTrain from '@/components/training/Edit.vue'
@@ -195,6 +200,33 @@ let router = new Router({
         {
           path: ':dataId/log',
           component: LogViewer,
+          props: true
+        }
+      ]
+    },
+    {
+      path: '/notebook',
+      name: 'notebook',
+      component: NotebookIndex,
+      children: [
+        {
+          path: 'run/:originId?',
+          component: CreateNotebook,
+          props: true
+        },
+        {
+          path: ':id',
+          component: EditNotebook,
+          props: true
+        },
+        {
+          path: ':id/files',
+          component: NotebookFileIndex,
+          props: true
+        },
+        {
+          path: ':id/shell',
+          component: Shell,
           props: true
         }
       ]
