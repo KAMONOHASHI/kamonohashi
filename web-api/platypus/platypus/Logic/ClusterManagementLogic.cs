@@ -866,7 +866,11 @@ namespace Nssol.Platypus.Logic
                 return Result<ContainerInfo, string>.CreateErrorResult("Access denied. Failed to get token to access the cluster management system.");
             }
 
-            var registryMap = registryLogic.GetCurrentRegistryMap(notebookHistory.ContainerRegistryId.Value);
+            var registryMap = new UserTenantRegistryMap();
+            if (notebookHistory.ContainerRegistryId.HasValue)
+            {
+                registryMap = registryLogic.GetCurrentRegistryMap(notebookHistory.ContainerRegistryId.Value);
+            }
 
             var nodes = GetAccessibleNode();
             if (nodes == null || nodes.Count == 0)
@@ -882,7 +886,7 @@ namespace Nssol.Platypus.Logic
                 TenantName = TenantName,
                 LoginUser = CurrentUserInfo.Alias, //アカウントはエイリアスから指定
                 Name = notebookHistory.Key,
-                ContainerImage = registryMap.Registry.GetImagePath(notebookHistory.ContainerImage, notebookHistory.ContainerTag),
+                ContainerImage = notebookHistory.ContainerRegistryId.HasValue ? registryMap.Registry.GetImagePath(notebookHistory.ContainerImage, notebookHistory.ContainerTag) : $"{notebookHistory.ContainerImage}:{notebookHistory.ContainerTag}",
                 ScriptType = "notebook",
                 Cpu = notebookHistory.Cpu,
                 Memory = notebookHistory.Memory,
@@ -942,7 +946,7 @@ namespace Nssol.Platypus.Logic
                     new PortMappingModel() { Protocol = "TCP", Port = 8888, TargetPort = 8888, Name = "notebook" },
                 },
                 ClusterManagerToken = token,
-                RegistryTokenName = registryMap.RegistryTokenKey,
+                RegistryTokenName = notebookHistory.ContainerRegistryId.HasValue ? registryMap.RegistryTokenKey : null,
                 IsNodePort = true
             };
 

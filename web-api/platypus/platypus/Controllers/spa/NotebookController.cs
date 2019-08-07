@@ -428,9 +428,6 @@ namespace Nssol.Platypus.Controllers.spa
                 DisplayId = -1,
                 Name = model.Name,
                 DataSetId = model.DataSetId,
-                ContainerRegistryId = model.ContainerImage.RegistryId ?? CurrentUserInfo.SelectedTenant.DefaultRegistry?.Id,
-                ContainerImage = model.ContainerImage.Image,
-                ContainerTag = model.ContainerImage.Tag, //latestは運用上使用されていないハズなので、そのまま直接代入
                 OptionDic = model.Options ?? new Dictionary<string, string>(), //オプションはnullの可能性があるので、その時は初期化
                 Cpu = model.Cpu.Value,
                 Memory = model.Memory.Value,
@@ -441,6 +438,21 @@ namespace Nssol.Platypus.Controllers.spa
                 StartedAt = DateTime.Now,
                 ExpiresIn = model.ExpiresIn
             };
+
+            //コンテナが指定されているかチェック
+            if (model.ContainerImage != null)
+            {
+                notebookHistory.ContainerRegistryId = model.ContainerImage.RegistryId ?? CurrentUserInfo.SelectedTenant.DefaultRegistry?.Id;
+                notebookHistory.ContainerImage = model.ContainerImage.Image;
+                notebookHistory.ContainerTag = model.ContainerImage.Tag; //latestは運用上使用されていないハズなので、そのまま直接代入
+            }
+            else
+            {
+                //コンテナイメージの設定がない場合デフォルトのイメージを設定
+                notebookHistory.ContainerRegistryId = null;
+                notebookHistory.ContainerImage = "tensorflow/tensorflow";
+                notebookHistory.ContainerTag = "1.13.1-gpu-py3";
+            }
 
             //gitが指定されているかチェック
             if (model.GitModel != null)

@@ -56,7 +56,6 @@ namespace Nssol.Platypus.Models.TenantModels
         /// <summary>
         /// Dockerレジストリ
         /// </summary>
-        [Required]
         public long? ContainerRegistryId { get; set; }
 
         /// <summary>
