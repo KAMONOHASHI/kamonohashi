@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-dialog class="dialog"
-               title="notebook詳細"
+               title="ノートブック詳細"
                :visible.sync="dialogVisible"
                :before-close="closeDialog"
                :close-on-click-modal="false">
@@ -9,7 +9,7 @@
         <pl-display-error :error="error"/>
         <el-row :gutter="20">
           <el-col :span="12">
-            <pl-display-text-form label="学習ID" :value="id">
+            <pl-display-text-form label="ノートブックID" :value="id">
               <span slot="action">
                 <div class="el-icon-star-on favorite" v-if="favorite" v-on:click="favorite = false"></div>
                 <div class="el-icon-star-off favorite" v-else v-on:click="favorite = true"></div>

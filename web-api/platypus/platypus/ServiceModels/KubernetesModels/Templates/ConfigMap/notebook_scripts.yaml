@@ -10,7 +10,11 @@ data:
     bash /kqi/scripts/common/prepare-git
     bash /kqi/scripts/common/prepare-dataset
   main: |
-    pip install jupyterlab==1.0.4
+    if which pip3 > /dev/null 2>&1; then
+      pip3 install jupyterlab==1.0.4
+    else
+      pip install jupyterlab==1.0.4
+    fi
     jupyter lab --ip=0.0.0.0 --allow-root --notebook-dir=/kqi/ --no-browser > /kqi/output/.notebook.log 2>&1 &
     bash /kqi/scripts/common/wait-ready
   finish: |

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>notebook</h2>
+    <h2>ノートブック管理</h2>
     <el-row type="flex" justify="space-between" :gutter="20">
       <el-col class="pagination" :span="16">
         <el-pagination layout="total, sizes, prev, pager, next"
