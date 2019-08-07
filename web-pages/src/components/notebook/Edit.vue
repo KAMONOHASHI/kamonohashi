@@ -45,7 +45,7 @@
               </div>
             </el-form-item>
             <pl-display-text-form label="作成者" :value="createdBy"/>
-            <pl-display-text-form label="開始日時" :value="createdAt"/>
+            <pl-display-text-form label="開始日時" :value="startedAt"/>
             <pl-display-text-form label="完了日時" :value="completedAt"/>
             <pl-display-text-form label="待機時間" :value="waitingTime"/>
             <pl-display-text-form label="実行時間" :value="executionTime"/>
@@ -154,7 +154,7 @@
         dataSet: undefined,
         gitModel: undefined,
         createdBy: undefined,
-        createdAt: undefined,
+        startedAt: undefined,
         completedAt: undefined,
         memo: undefined,
         options: undefined,
@@ -190,7 +190,7 @@
         this.dataSet = data.dataSet
         this.gitModel = data.gitModel
         this.createdBy = data.createdBy
-        this.createdAt = data.createdAt
+        this.startedAt = data.startedAt
         this.completedAt = data.completedAt
         this.memo = data.memo
         this.options = data.options
@@ -301,4 +301,8 @@
     padding-top: 40px;
   }
 
+  .favorite {
+    font-size: 20px;
+    color: rgb(230, 162, 60);
+  }
 </style>

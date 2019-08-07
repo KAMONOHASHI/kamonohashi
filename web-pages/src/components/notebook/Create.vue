@@ -184,9 +184,7 @@
           name: [{required: true, trigger: 'blur', message: '必須項目です'}],
           cpu: [{required: true, message: '必須項目です'}],
           memory: [{required: true, message: '必須項目です'}],
-          gpu: [{required: true, message: '必須項目です'}],
-          image: [{required: true, trigger: 'blur', message: '必須項目です'}],
-          tag: [{required: true, trigger: 'blur', message: '必須項目です'}]
+          gpu: [{required: true, message: '必須項目です'}]
         },
         dialogVisible: true,
         error: undefined,
