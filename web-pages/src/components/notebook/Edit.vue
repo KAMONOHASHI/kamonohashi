@@ -34,7 +34,7 @@
             </div>
             <el-form-item label="モデル">
               <div class="el-input">
-            <span v-if="gitModel" style="padding-left: 3px">
+            <span v-if="gitModel.url !== null" style="padding-left: 3px">
               <a :href="gitModel.url" target="_blank">
                 {{gitModel.owner}}/{{gitModel.repository}}/{{gitModel.branch}}
               </a>
@@ -80,7 +80,7 @@
             <div v-if="statusType === 'Running'  || statusType === 'Error'">
               <el-form-item label="操作">
                 <div class="el-input">
-                  <pl-delete-button buttonLabel="ジョブ停止" @delete="haltNotebook"/>
+                  <pl-delete-button buttonLabel="ジョブ停止" @delete="haltNotebook" message="停止しますか"/>
                 </div>
                 <div v-if="status === 'Running'">
                   <div class="el-input" style="padding: 10px 0">
