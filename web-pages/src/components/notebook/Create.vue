@@ -47,10 +47,10 @@
         <div v-else>
           <el-row :gutter="20">
             <el-steps :active="active" align-center>
-              <el-step title="Step 1" description="notebook name"></el-step>
-              <el-step title="Step 2" description="resource"></el-step>
-              <el-step title="Step 3" description="option"></el-step>
-              <el-step title="Step 4" description="option"></el-step>
+              <el-step title="Step 1" description="ノートブック名"></el-step>
+              <el-step title="Step 2" description="リソース"></el-step>
+              <el-step title="Step 3" description="任意項目"></el-step>
+              <el-step title="Step 4" description="任意項目"></el-step>
             </el-steps>
             <br>
             <div class="element">
@@ -363,6 +363,9 @@
     :hover {
       color: #409eff;
     }
+  }
+  .el-step__description {
+    font-size: 14px;
   }
 
 </style>
