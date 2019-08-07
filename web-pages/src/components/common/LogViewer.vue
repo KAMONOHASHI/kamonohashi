@@ -1,5 +1,5 @@
 <template>
-  <el-dialog class="dialog el-icon-star-on"
+  <el-dialog class="dialog"
              :title="title"
              :visible="true"
              :before-close="emitCancel"
