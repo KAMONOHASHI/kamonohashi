@@ -26,11 +26,15 @@ namespace Nssol.Platypus.ApiModels.NotebookApiModels
             };
             ContainerImage = new ContainerImageOutputModel()
             {
-                RegistryId = history.ContainerRegistryId.Value,
-                RegistryName = history.ContainerRegistry.Name,
                 Image = history.ContainerImage,
                 Tag = history.ContainerTag
             };
+            if (history.ContainerRegistryId.HasValue)
+            {
+                ContainerImage.RegistryId = history.ContainerRegistryId.Value;
+                ContainerImage.RegistryName = history.ContainerRegistry.Name;
+            }
+
             CompletedAt = history.CompletedAt?.ToFormatedString();
             StartedAt = history.StartedAt?.ToFormatedString();
             Node = history.Node;
