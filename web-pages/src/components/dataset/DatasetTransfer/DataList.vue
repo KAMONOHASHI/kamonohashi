@@ -48,7 +48,7 @@
             </el-col>
 
             <el-col :span="dataSpanSize">{{data.createdAt}}</el-col>
-            <el-col :span="tagSpanSize">
+            <el-col :span="tagSpanSize" style="line-height: normal;">
               <el-tag v-for="(tag, i) in data.tags" :key="i" size="mini" style="margin-right:3px;">
                 {{tag}}
               </el-tag>
@@ -75,9 +75,11 @@
                   <pl-display-text label="メモ" :value="data.memo"/>
                   <el-form-item label="タグ">
                     <br clear="all"/>
-                    <el-tag v-for="(tag, i) in data.tags" :key="i" size="mini" style="margin-right:3px;">
-                      {{tag}}
-                    </el-tag>
+                    <span style="display: block; line-height: normal;">
+                      <el-tag v-for="(tag, i) in data.tags" :key="i" size="mini" style="margin-right:3px;">
+                        {{tag}}
+                      </el-tag>
+                    </span>
                   </el-form-item>
                 </div>
                 <i class="el-icon-info" slot="reference"/>
@@ -294,6 +296,13 @@
     border-radius: 2px 2px 2px 2px;
     margin-top: 8px;
     line-height: 30px;
+  }
+
+  .el-tag--mini {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .color-0 {
