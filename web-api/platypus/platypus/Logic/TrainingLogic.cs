@@ -5,8 +5,6 @@ using Nssol.Platypus.Infrastructure.Types;
 using Nssol.Platypus.Logic.Interfaces;
 using Nssol.Platypus.Models.TenantModels;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Logic
@@ -39,28 +37,31 @@ namespace Nssol.Platypus.Logic
         /// <param name="force">他テナントに対する変更を許可するか</param>
         public async Task ExitAsync(TrainingHistory trainingHistory, ContainerStatus status, bool force)
         {
-            //コンテナの生存確認
+            // コンテナの生存確認
             if (trainingHistory.GetStatus().Exist())
             {
                 var info = await clusterManagementLogic.GetContainerDetailsInfoAsync(trainingHistory.Key, CurrentUserInfo.SelectedTenant.Name, force);
 
+                // コンテナ削除の前に、DBの更新を先に実行
+                await trainingHistoryRepository.UpdateStatusAsync(trainingHistory.Id, status, info.CreatedAt, DateTime.Now, force);
+
+                // 実コンテナ削除の結果は確認せず、DBの更新を先に確定する（コンテナがいないなら、そのまま消しても問題ない想定）
+                unitOfWork.Commit();
+
                 if (info.Status.Exist())
                 {
-                    //再確認してもまだ存在していたら、コンテナ削除
-
+                    // 再確認してもまだ存在していたら、コンテナ削除
                     await clusterManagementLogic.DeleteContainerAsync(
                         ContainerType.Training, trainingHistory.Key, CurrentUserInfo.SelectedTenant.Name, force);
                 }
-
-                await trainingHistoryRepository.UpdateStatusAsync(trainingHistory.Id, status, info.CreatedAt, DateTime.Now, force);
             }
             else
             {
                 await trainingHistoryRepository.UpdateStatusAsync(trainingHistory.Id, status, force);
+                
+                // DBの更新を確定する
+                unitOfWork.Commit();
             }
-
-            //実コンテナ削除の結果は確認せず、DBの更新を確定する（コンテナがいないなら、そのまま消しても問題ない想定）
-            unitOfWork.Commit();
         }
 
         /// <summary>
