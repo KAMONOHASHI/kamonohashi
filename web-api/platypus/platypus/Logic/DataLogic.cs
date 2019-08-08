@@ -2,6 +2,7 @@
 using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Logic.Interfaces;
 using Nssol.Platypus.ApiModels.DataApiModels;
+using Nssol.Platypus.Models.TenantModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -52,6 +53,27 @@ namespace Nssol.Platypus.Logic
             return result;
         }
 
+        /// <summary>
+        /// 指定したIDの全ファイル情報を取得する。
+        /// </summary>
+        /// <param name="data">データ</param>
+        /// <param name="withUrl">結果にダウンロード用のURLを含めるか</param>
+        public IEnumerable<DataFileOutputModel> GetDataFiles(Data data, bool withUrl)
+        {
+            var result = new List<DataFileOutputModel>();
+            
+            foreach (var property in data.DataProperties)
+            {
+                var model = new DataFileOutputModel { Id = data.Id, Key = property.Key, FileId = property.Id, FileName = property.DataFile.FileName };
+
+                if (withUrl)
+                {
+                    model.Url = storageLogic.GetPreSignedUriForGet(ResourceType.Data, property.DataFile.StoredPath, property.DataFile.FileName, true).ToString();
+                }
+                result.Add(model);
+            }
+            return result;
+        }
 
         /// <summary>
         /// 指定されたIDのデータを削除する。
