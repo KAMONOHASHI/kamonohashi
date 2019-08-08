@@ -1,9 +1,4 @@
-﻿using Nssol.Platypus.Models.TenantModels;
-using Nssol.Platypus.Infrastructure;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Text.RegularExpressions;
 
 namespace Nssol.Platypus.ApiModels.TrainingApiModels
 {
@@ -17,7 +12,7 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         {
             this.Id = id;
             this.FileName = fileName;
-            this.FileId = fileId;
+            this.FileId = GetFileId(fileId, fileName);
         }
 
         /// <summary>
@@ -41,5 +36,35 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         /// 削除可能か
         /// </summary>
         public bool IsLocked { get; set; }
+
+        /// <summary>
+        /// ファイルIDを取得する
+        /// </summary>
+        /// <param name="fileId">ファイルID</param>
+        /// <param name="fileName">ファイル名</param>
+        private long GetFileId(long fileId, string fileName)
+        {
+            // ファイルIDが負の場合、ファイル名によってIDを設定する。
+            if (fileId < 0)
+            {
+                // ジョブ結果ファイル
+                if (Regex.IsMatch(fileName, @"(training|inference)_output_\d+.zip"))
+                {
+                    return -1;
+                }
+                // ジョブ結果ログファイル
+                else if (Regex.IsMatch(fileName, @"(training|inference)_stdout_stderr_\d+.log"))
+                {
+                    return -2;
+                }
+                // それ以外のファイル
+                else
+                {
+                    return -99;
+                }
+            }
+            // ファイルIDが負以外の場合、そのまま
+            return fileId;
+        }
     }
 }

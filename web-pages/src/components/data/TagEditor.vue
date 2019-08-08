@@ -10,7 +10,7 @@
       closable
       :disable-transitions="false"
       @close="removeTag(tag)">
-      {{tag}}
+      <span class="tag-ellipsis">{{tag}}</span>
     </el-tag>
     <el-select
       filterable
@@ -99,5 +99,19 @@
     width: 90px;
     margin-left: 10px;
     vertical-align: bottom;
+  }
+
+  .tag-ellipsis {
+    max-width: 98%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+    padding-right: initial;
+  }
+
+  .el-tag {
+    max-width: 100%;
+    display: -webkit-inline-box;
   }
 </style>

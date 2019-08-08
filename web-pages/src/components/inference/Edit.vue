@@ -259,7 +259,7 @@
           type: 'warning'
         })
         .then(() => {
-          this.userCancelJob() // 正常停止（Status=UserCancelled）
+          this.userCancelJob() // 正常停止（Status=UserCanceled）
         })
         .catch(action => {
           if (action === 'cancel') {

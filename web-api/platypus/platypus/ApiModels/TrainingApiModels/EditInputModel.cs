@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Nssol.Platypus.ApiModels.TrainingApiModels
 {
@@ -11,8 +7,7 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         /// <summary>
         /// 識別名
         /// </summary>
-        [Required]
-        [Controllers.Util.CustomValidation(Controllers.Util.CustomValidationType.Alphanumeric)]
+        [MinLength(1)]
         public string Name { get; set; }
 
         /// <summary>

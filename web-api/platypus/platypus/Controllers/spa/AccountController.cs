@@ -178,6 +178,9 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonBadRequest("Invalid inputs.");
             }
 
+            // ユーザ名の前後の空白は除去
+            model.UserName = model.UserName.Trim();
+
             //ユーザ情報からクレームを取得
             Result<List<Claim>, string> signInResult = await loginLogic.SignInAsync(model.UserName, model.Password, model.TenantId);
             if (!signInResult.IsSuccess)

@@ -1,18 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Nssol.Platypus.ApiModels.Components;
+using Nssol.Platypus.ApiModels.DataApiModels;
 using Nssol.Platypus.Controllers.Util;
 using Nssol.Platypus.DataAccess.Core;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories;
 using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Logic.Interfaces;
 using Nssol.Platypus.Models.TenantModels;
-using Nssol.Platypus.ApiModels.Components;
-using Nssol.Platypus.ApiModels.DataApiModels;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Controllers.spa
 {
@@ -182,7 +181,8 @@ namespace Nssol.Platypus.Controllers.spa
             // データの登録
             Data newData = new Data()
             {
-                Name = model.Name,
+                // 名前の前後の空白文字を除去して設定する。
+                Name = model.Name.Trim(),
                 Memo = model.Memo,
             };
 
@@ -229,7 +229,8 @@ namespace Nssol.Platypus.Controllers.spa
                     //名前に空文字は許可しない
                     return JsonBadRequest($"A name of Data is NOT allowed to set empty string.");
                 }
-                data.Name = model.Name;
+                // 名前の前後の空白文字を除去して設定する。
+                data.Name = model.Name.Trim();
             }
             data.Memo = EditColumn(model.Memo, data.Memo);
 

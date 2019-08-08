@@ -121,12 +121,13 @@ def delete(id):
 
 @training.command()
 @click.argument('id', type=int)
+@click.option('-n', '--name', help='A name to update')
 @click.option('-m', '--memo', help='A memo to update')
 @click.option('-fav/-unfav', '--favorite/--un-favorite', default=None, help='A favorite to update')
-def update(id, memo, favorite):
+def update(id, name, memo, favorite):
     """Update training"""
     api = rest.TrainingApi(configuration.get_api_client())
-    model = rest.TrainingApiModelsEditInputModel(memo=memo, favorite=favorite)
+    model = rest.TrainingApiModelsEditInputModel(name=name, memo=memo, favorite=favorite)
     result = api.update_training(id, model=model)
     print('updated', result.id)
 
@@ -154,15 +155,17 @@ def list_files(id):
 
 @training.command('download-files')
 @click.argument('id', type=int)
+@click.option('-f', '--file-id', type=int, multiple=True, help='A file id you want to download  [multiple]')
 @click.option('-d', '--destination', type=click.Path(exists=True, file_okay=False), required=True,
               help='A path to the output files')
-def download_files(id, destination):
+def download_files(id, file_id, destination):
     """Download files of training"""
     api = rest.TrainingApi(configuration.get_api_client())
     result = api.list_training_files(id, with_url=True)
     pool_manager = api.api_client.rest_client.pool_manager
     for x in result:
-        object_storage.download_file(pool_manager, x.url, destination, x.file_name)
+        if not file_id or x.file_id in file_id:
+            object_storage.download_file(pool_manager, x.url, destination, x.file_name)
 
 
 @training.command('download-container-files')
