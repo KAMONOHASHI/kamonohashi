@@ -206,7 +206,7 @@ namespace Nssol.Platypus.Controllers.spa
             //notebook起動時のログをストレージから取得し、token情報を抜き出す。
             var outputFileName = ".notebook.log";   //値を読み込むファイル名
             var outputPath = historyId + "/" + outputFileName;
-            var content = await storageLogic.GetFileContentAsync(ResourceType.NotebookContainerOutputFiles, outputPath, outputFileName, true);
+            var content = await storageLogic.GetFileContentAsync(ResourceType.NotebookContainerAttachedFiles, outputPath, outputFileName, true);
             if (content != null)
             {
                 // ?token=...という文字列を抜き出す
