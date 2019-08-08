@@ -96,7 +96,7 @@
       return {
         searchCondition: {},
         searchConfigs: [
-          {prop: 'id', name: 'notebookID', type: 'number'},
+          {prop: 'id', name: 'ノートブックID', type: 'number'},
           {prop: 'name', name: 'ノートブック名', type: 'text'},
           {prop: 'createdAt', name: '作成日時', type: 'date'},
           {prop: 'createdBy', name: '作成者', type: 'text'},
