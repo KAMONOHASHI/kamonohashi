@@ -17,7 +17,17 @@
         /// 名前
         /// </summary>
         public string Name { get; set; }
-        
+
+        /// <summary>
+        /// 作成日時
+        /// </summary>
+        public string CreatedAt { get; set; }
+
+        /// <summary>
+        /// 作成者
+        /// </summary>
+        public string CreatedBy { get; set; }
+
         /// <summary>
         /// メモ
         /// </summary>

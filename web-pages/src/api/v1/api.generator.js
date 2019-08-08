@@ -3698,6 +3698,8 @@ export const ApiV1NotebookSimpleGetURL = function(parameters = {}) {
      * @param id - IDの検索条件。
 比較文字列＋数値の形式。
      * @param name - 名前
+     * @param createdAt - 作成日時
+     * @param createdBy - 作成者
      * @param memo - メモ
      * @param status - ステータス
      * @param perPage - 表示件数。指定がない場合は上限(1000件)。
@@ -3716,6 +3718,12 @@ export const ApiV1NotebookGet = function(parameters = {}) {
   }
   if (parameters['name'] !== undefined) {
     queryParameters['Name'] = parameters['name']
+  }
+  if (parameters['createdAt'] !== undefined) {
+    queryParameters['CreatedAt'] = parameters['createdAt']
+  }
+  if (parameters['createdBy'] !== undefined) {
+    queryParameters['CreatedBy'] = parameters['createdBy']
   }
   if (parameters['memo'] !== undefined) {
     queryParameters['Memo'] = parameters['memo']
@@ -3754,6 +3762,12 @@ export const ApiV1NotebookGetURL = function(parameters = {}) {
   }
   if (parameters['name'] !== undefined) {
     queryParameters['Name'] = parameters['name']
+  }
+  if (parameters['createdAt'] !== undefined) {
+    queryParameters['CreatedAt'] = parameters['createdAt']
+  }
+  if (parameters['createdBy'] !== undefined) {
+    queryParameters['CreatedBy'] = parameters['createdBy']
   }
   if (parameters['memo'] !== undefined) {
     queryParameters['Memo'] = parameters['memo']

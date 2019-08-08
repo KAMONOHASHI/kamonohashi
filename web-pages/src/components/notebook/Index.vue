@@ -98,7 +98,7 @@
         searchConfigs: [
           {prop: 'id', name: 'notebookID', type: 'number'},
           {prop: 'name', name: 'ノートブック名', type: 'text'},
-          {prop: 'startedAt', name: '作成日時', type: 'date'},
+          {prop: 'createdAt', name: '作成日時', type: 'date'},
           {prop: 'createdBy', name: '作成者', type: 'text'},
           {prop: 'memo', name: 'メモ', type: 'text'},
           {
