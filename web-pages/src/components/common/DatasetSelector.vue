@@ -23,8 +23,8 @@
           :key="item.id"
           :label="item.name"
           :value="item">
-          <span style="float: left">{{ item.name }}</span>
-          <span style="float: right; color: #8492a6; font-size: 13px">{{ item.memo }}</span>
+          <span class="dataset-name">{{ item.name }}</span>
+          <span class="dataset-memo">{{ item.memo }}</span>
         </el-option>
       </el-select>
     </div>
@@ -74,5 +74,21 @@
 <style lang="scss" scoped>
   .el-select {
     width: 100% !important;
+  }
+  .dataset-name {
+    float: left;
+    max-width: 40vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .dataset-memo {
+    float: right;
+    color: #8492a6;
+    font-size: 13px;
+    max-width: 40vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 </style>

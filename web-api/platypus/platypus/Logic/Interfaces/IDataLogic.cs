@@ -1,4 +1,5 @@
 ﻿using Nssol.Platypus.ApiModels.DataApiModels;
+using Nssol.Platypus.Models.TenantModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,13 @@ namespace Nssol.Platypus.Logic.Interfaces
         /// <param name="dataId">データID</param>
         /// <param name="withUrl">結果にダウンロード用のURLを含めるか</param>
         IEnumerable<DataFileOutputModel> GetDataFiles(long dataId, bool withUrl);
+
+        /// <summary>
+        /// 指定したIDの全ファイル情報を取得する。
+        /// </summary>
+        /// <param name="data">データ</param>
+        /// <param name="withUrl">結果にダウンロード用のURLを含めるか</param>
+        IEnumerable<DataFileOutputModel> GetDataFiles(Data data, bool withUrl);
 
         /// <summary>
         /// 指定されたIDのデータを削除する。

@@ -47,11 +47,11 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
         /// </summary>
         public SymmetricSecurityKey GetApiJwtSigningKey()
         {
-            // DB の初期化
-            InitializeDB();
-
             if (signingKey == null)
             {
+                // DB の初期化
+                InitializeDB();
+
                 string apiSecurityTokenPass;
 
                 var settings = GetAll();
