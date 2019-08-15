@@ -155,7 +155,6 @@ namespace Nssol.Platypus.DataAccess.Core
             AddNewRecordForInit(new MenuRoleMap() { Role = researcherRole, MenuCode = Logic.MenuLogic.DataMenu.Code.ToString() });
             AddNewRecordForInit(new MenuRoleMap() { Role = researcherRole, MenuCode = Logic.MenuLogic.DataSetMenu.Code.ToString() });
             AddNewRecordForInit(new MenuRoleMap() { Role = researcherRole, MenuCode = Logic.MenuLogic.PreprocessMenu.Code.ToString() });
-            AddNewRecordForInit(new MenuRoleMap() { Role = researcherRole, MenuCode = Logic.MenuLogic.NotebookMenu.Code.ToString() });
             AddNewRecordForInit(new MenuRoleMap() { Role = researcherRole, MenuCode = Logic.MenuLogic.TrainingMenu.Code.ToString() });
             AddNewRecordForInit(new MenuRoleMap() { Role = researcherRole, MenuCode = Logic.MenuLogic.InferenceMenu.Code.ToString() });
 
