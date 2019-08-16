@@ -36,7 +36,7 @@
         <el-table-column prop="createdAt" label="開始日時" width="100px"/>
         <el-table-column prop="parentName" label="マウントした学習" width="200px"/>
         <el-table-column prop="dataSet.name" label="データセット" width="120px"/>
-        <el-table-column prop="entryPoint" label="実行コマンド" width="auto"/>
+        <el-table-column prop="entryPoint" label="実行コマンド" width="auto" class-name="entry-point-column"/>
         <el-table-column prop="memo" label="メモ" width="auto"/>
         <el-table-column prop="outputValue" label="出力値" width="200px" sortable/>
         <el-table-column width="30px">
@@ -195,5 +195,17 @@
   .favorite {
     color: rgb(230, 162, 60);
   }
+</style>
 
+<style lang="scss">
+  .entry-point-column {
+    display: table-cell;
+  }
+
+  .entry-point-column div.cell {
+    overflow: hidden;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    display: -webkit-box;
+  }
 </style>

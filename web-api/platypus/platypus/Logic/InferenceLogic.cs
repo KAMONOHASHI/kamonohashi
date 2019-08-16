@@ -2,11 +2,12 @@
 using Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories;
 using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Infrastructure.Types;
+using Nssol.Platypus.Logic.Interfaces;
 using Nssol.Platypus.Models.TenantModels;
 using System;
 using System.Threading.Tasks;
 
-namespace Nssol.Platypus.Logic.Interfaces
+namespace Nssol.Platypus.Logic
 {
     public class InferenceLogic : PlatypusLogicBase, IInferenceLogic
     {
@@ -33,27 +34,31 @@ namespace Nssol.Platypus.Logic.Interfaces
         /// <param name="force">他テナントに対する変更を許可するか</param>
         public async Task ExitAsync(InferenceHistory inferenceHistory, ContainerStatus status, bool force)
         {
-            //コンテナの生存確認
+            // コンテナの生存確認
             if (inferenceHistory.GetStatus().Exist())
             {
                 var info = await clusterManagementLogic.GetContainerDetailsInfoAsync(inferenceHistory.Key, CurrentUserInfo.SelectedTenant.Name, force);
 
+                // コンテナ削除の前に、DBの更新を先に実行
+                await inferenceHistoryRepository.UpdateStatusAsync(inferenceHistory.Id, status, info.CreatedAt, DateTime.Now, force);
+
+                // 実コンテナ削除の結果は確認せず、DBの更新を先に確定する（コンテナがいないなら、そのまま消しても問題ない想定）
+                unitOfWork.Commit();
+
                 if (info.Status.Exist())
                 {
-                    //再確認してもまだ存在していたら、コンテナ削除
+                    // 再確認してもまだ存在していたら、コンテナ削除
                     await clusterManagementLogic.DeleteContainerAsync(
                         ContainerType.Training, inferenceHistory.Key, CurrentUserInfo.SelectedTenant.Name, force);
                 }
-
-                await inferenceHistoryRepository.UpdateStatusAsync(inferenceHistory.Id, status, info.CreatedAt, DateTime.Now, force);
             }
             else
             {
                 await inferenceHistoryRepository.UpdateStatusAsync(inferenceHistory.Id, status, force);
-            }
 
-            //実コンテナ削除の結果は確認せず、DBの更新を確定する（コンテナがいないなら、そのまま消しても問題ない想定）
-            unitOfWork.Commit();
+                // DBの更新を確定する
+                unitOfWork.Commit();
+            }
         }
     }
 }

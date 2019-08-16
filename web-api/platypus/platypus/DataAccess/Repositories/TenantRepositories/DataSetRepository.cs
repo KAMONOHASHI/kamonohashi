@@ -53,6 +53,20 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
         }
 
         /// <summary>
+        /// 指定したデータセットIDのデータセット（データセットエントリからデータファイルの外部参照までを含む）を取得します。
+        /// </summary>
+        /// <param name="id">データセットID</param>
+        /// <returns>
+        /// データセットエンティティ
+        /// </returns>
+        public async Task<DataSet> GetDataSetIncludeDataSetEntryAndDataAsync(long id)
+        {
+            return await GetAll().Include(d => d.DataSetEntries).ThenInclude(d => d.Data)
+                .ThenInclude(d => d.DataProperties).ThenInclude(d => d.DataFile)
+                .SingleOrDefaultAsync(x => x.Id == id);
+        }
+
+        /// <summary>
         /// 指定したデータセットのエントリを全て削除する。
         /// </summary>
         public void DeleteAllEntries(long dataSetId)

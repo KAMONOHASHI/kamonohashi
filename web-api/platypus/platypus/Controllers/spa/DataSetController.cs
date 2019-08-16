@@ -151,7 +151,7 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonBadRequest("DataSet ID is required.");
             }
-            var dataSet = await dataSetRepository.GetDataSetIncludeDataSetEntryAsync(id.Value);
+            var dataSet = await dataSetRepository.GetDataSetIncludeDataSetEntryAndDataAsync(id.Value);
             if (dataSet == null)
             {
                 return JsonNotFound($"DataSet Id {id.Value} is not found.");
@@ -169,13 +169,16 @@ namespace Nssol.Platypus.Controllers.spa
                     entities.Add(dataType.Name, new List<ApiModels.DataApiModels.DataFileOutputModel>());
                 }
 
-                //エントリを一つずつ突っ込んでいく。件数次第では遅いかも。
-                foreach (var entry in dataSet.DataSetEntries)
+                //エントリを並列で取得する
+                dataSet.DataSetEntries.AsParallel().ForAll(entry =>
                 {
                     string key = entry.DataType.Name;
-                    var dataFiles = dataLogic.GetDataFiles(entry.DataId, withUrl);
-                    entities[key].AddRange(dataFiles);
-                }
+                    var dataFiles = dataLogic.GetDataFiles(entry.Data, withUrl);
+                    lock (entities)
+                    {
+                        entities[key].AddRange(dataFiles);
+                    }
+                });
 
                 model.SetEntries(entities);
             }

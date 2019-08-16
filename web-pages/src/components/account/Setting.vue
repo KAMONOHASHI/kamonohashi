@@ -407,8 +407,8 @@
 <style lang="scss" scoped>
   .parent-container {
     display: grid;
-    grid-template-rows: 100px 800px;
-    grid-template-columns: 400px 1fr;
+    grid-template-rows: 100px 700px;
+    grid-template-columns: 500px 1fr;
   }
 
   .container {
@@ -428,7 +428,7 @@
 
   .logo {
     text-align: center;
-    margin-left: 56px;
+    margin-left: 106px;
   }
 
   .container-title {
@@ -443,7 +443,7 @@
 
   .button-group {
     text-align: right;
-    padding-top: 200px;
+    padding-top: 150px;
   }
 
   .el-form-item {
