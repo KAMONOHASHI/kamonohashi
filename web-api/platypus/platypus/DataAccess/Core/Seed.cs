@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Nssol.Platypus.DataAccess.Repositories.Interfaces;
 using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Infrastructure.Options;
 using Nssol.Platypus.Infrastructure.Types;
@@ -20,12 +21,16 @@ namespace Nssol.Platypus.DataAccess.Core
         private CommonDbContext dbContext;
 
         private readonly DeployOptions deployOptions;
+        private readonly IRoleRepository roleRepository;
+        private readonly IMenuRepository menuRepository;
         private readonly IObjectStorageService objectStorageService;
         private readonly IClusterManagementService clusterManagementService;
         private readonly ILogger logger;
 
         public Seed(
             CommonDbContext context,
+            IRoleRepository roleRepository,
+            IMenuRepository menuRepository,
             IOptions<DeployOptions> deployOptions,
             IObjectStorageService objectStorageService,
             IClusterManagementService clusterManagementService,
@@ -33,6 +38,8 @@ namespace Nssol.Platypus.DataAccess.Core
             )
         {
             this.dbContext = context;
+            this.roleRepository = roleRepository;
+            this.menuRepository = menuRepository;
             this.deployOptions = deployOptions.Value;
             this.objectStorageService = objectStorageService;
             this.clusterManagementService = clusterManagementService;
@@ -320,6 +327,25 @@ namespace Nssol.Platypus.DataAccess.Core
             {
                 dbContext.Dispose();
                 dbContext = null;
+            }
+        }
+
+        /// <summary>
+        /// v1.1.0用のデータ更新
+        /// "researchers"ロールにノートブック管理のアクセス権を付与する
+        /// </summary>
+        public void UpdateDataForV110()
+        {
+            // "researchers"ロールの存在チェック
+            var roles = roleRepository.GetCommonTenantRolesAsync().Result;
+            if (roles.Any(r => r.Name == "researchers"))
+            {
+                // Notebookの存在チェック
+                var menuRoleMaps = menuRepository.GetAll();
+                if (!menuRoleMaps.Any(m => m.MenuCode == Logic.MenuLogic.NotebookMenu.Code.ToString()))
+                {
+                    AddNewRecordForInit(new MenuRoleMap() { Role = roles.First(r => r.Name == "researchers"), MenuCode = Logic.MenuLogic.NotebookMenu.Code.ToString() });
+                }
             }
         }
     }

@@ -52,6 +52,9 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
                 // DB の初期化
                 InitializeDB();
 
+                // KQIバージョンごとのデータ更新を適応する
+                UpdateDataForEachKQIVersion();
+
                 string apiSecurityTokenPass;
 
                 var settings = GetAll();
@@ -201,6 +204,15 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
                     // 処理失敗でも次に続く
                 }
             }
+        }
+
+        /// <summary>
+        /// KQIバージョンごとのデータ更新を適応する
+        /// </summary>
+        private void UpdateDataForEachKQIVersion()
+        {
+            // v1.1.0用のデータ更新
+            seed.UpdateDataForV110();
         }
 
         /// <summary>
