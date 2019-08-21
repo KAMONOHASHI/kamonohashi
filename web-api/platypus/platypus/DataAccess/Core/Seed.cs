@@ -22,7 +22,8 @@ namespace Nssol.Platypus.DataAccess.Core
 
         private readonly DeployOptions deployOptions;
         private readonly IRoleRepository roleRepository;
-        private readonly IMenuRepository menuRepository;
+        private readonly IGitRepository gitRepository;
+        private readonly IRegistryRepository registryRepository;
         private readonly IObjectStorageService objectStorageService;
         private readonly IClusterManagementService clusterManagementService;
         private readonly ILogger logger;
@@ -30,7 +31,8 @@ namespace Nssol.Platypus.DataAccess.Core
         public Seed(
             CommonDbContext context,
             IRoleRepository roleRepository,
-            IMenuRepository menuRepository,
+            IGitRepository gitRepository,
+            IRegistryRepository registryRepository,
             IOptions<DeployOptions> deployOptions,
             IObjectStorageService objectStorageService,
             IClusterManagementService clusterManagementService,
@@ -39,7 +41,8 @@ namespace Nssol.Platypus.DataAccess.Core
         {
             this.dbContext = context;
             this.roleRepository = roleRepository;
-            this.menuRepository = menuRepository;
+            this.gitRepository = gitRepository;
+            this.registryRepository = registryRepository;
             this.deployOptions = deployOptions.Value;
             this.objectStorageService = objectStorageService;
             this.clusterManagementService = clusterManagementService;
@@ -149,43 +152,10 @@ namespace Nssol.Platypus.DataAccess.Core
 
         private int CreateInitialDB()
         {
-            //ロール作成
-            Role userRole = AddNewRecordForInit(new Role() { Name = "users", DisplayName = "User", SortOrder = 10, IsSystemRole = false });
-            Role researcherRole = AddNewRecordForInit(new Role() { Name = "researchers", DisplayName = "Researcher", SortOrder = 20, IsSystemRole = false });
-            Role managerRole = AddNewRecordForInit(new Role() { Name = "managers", DisplayName = "Manager", SortOrder = 30, IsSystemRole = false });
-            Role adminRole = AddNewRecordForInit(new Role() { Name = "admins", DisplayName = "Admin", SortOrder = 100, IsSystemRole = true });
-
-            //メニュー作成
-            AddNewRecordForInit(new MenuRoleMap() { Role = userRole, MenuCode = Logic.MenuLogic.DataMenu.Code.ToString() });
-            AddNewRecordForInit(new MenuRoleMap() { Role = userRole, MenuCode = Logic.MenuLogic.DataSetMenu.Code.ToString() });
-
-            AddNewRecordForInit(new MenuRoleMap() { Role = researcherRole, MenuCode = Logic.MenuLogic.DataMenu.Code.ToString() });
-            AddNewRecordForInit(new MenuRoleMap() { Role = researcherRole, MenuCode = Logic.MenuLogic.DataSetMenu.Code.ToString() });
-            AddNewRecordForInit(new MenuRoleMap() { Role = researcherRole, MenuCode = Logic.MenuLogic.PreprocessMenu.Code.ToString() });
-            AddNewRecordForInit(new MenuRoleMap() { Role = researcherRole, MenuCode = Logic.MenuLogic.TrainingMenu.Code.ToString() });
-            AddNewRecordForInit(new MenuRoleMap() { Role = researcherRole, MenuCode = Logic.MenuLogic.InferenceMenu.Code.ToString() });
-
-            AddNewRecordForInit(new MenuRoleMap() { Role = managerRole, MenuCode = Logic.MenuLogic.TenantSettingMenu.Code.ToString() });
-            AddNewRecordForInit(new MenuRoleMap() { Role = managerRole, MenuCode = Logic.MenuLogic.TenantRoleMenu.Code.ToString() });
-            AddNewRecordForInit(new MenuRoleMap() { Role = managerRole, MenuCode = Logic.MenuLogic.TenantUserMenu.Code.ToString() });
-            AddNewRecordForInit(new MenuRoleMap() { Role = managerRole, MenuCode = Logic.MenuLogic.TenantMenuAccessMenu.Code.ToString() });
-            AddNewRecordForInit(new MenuRoleMap() { Role = managerRole, MenuCode = Logic.MenuLogic.TenantResourceMenu.Code.ToString() });
-
-            AddNewRecordForInit(new MenuRoleMap() { Role = adminRole, MenuCode = Logic.MenuLogic.TenantMenu.Code.ToString() });
-            AddNewRecordForInit(new MenuRoleMap() { Role = adminRole, MenuCode = Logic.MenuLogic.GitMenu.Code.ToString() });
-            AddNewRecordForInit(new MenuRoleMap() { Role = adminRole, MenuCode = Logic.MenuLogic.RegistryMenu.Code.ToString() });
-            AddNewRecordForInit(new MenuRoleMap() { Role = adminRole, MenuCode = Logic.MenuLogic.StorageMenu.Code.ToString() });
-            AddNewRecordForInit(new MenuRoleMap() { Role = adminRole, MenuCode = Logic.MenuLogic.RoleMenu.Code.ToString() });
-            AddNewRecordForInit(new MenuRoleMap() { Role = adminRole, MenuCode = Logic.MenuLogic.QuotaMenu.Code.ToString() });
-            AddNewRecordForInit(new MenuRoleMap() { Role = adminRole, MenuCode = Logic.MenuLogic.UserMenu.Code.ToString() });
-            AddNewRecordForInit(new MenuRoleMap() { Role = adminRole, MenuCode = Logic.MenuLogic.NodeMenu.Code.ToString() });
-            AddNewRecordForInit(new MenuRoleMap() { Role = adminRole, MenuCode = Logic.MenuLogic.ResourceMenu.Code.ToString() });
-            AddNewRecordForInit(new MenuRoleMap() { Role = adminRole, MenuCode = Logic.MenuLogic.MenuAccessMenu.Code.ToString() });
-
-            //初期Git作成
-            Git git = AddNewRecordForInit(new Git() { Name = "GitHub", RepositoryUrl = "https://github.com", ServiceType = GitServiceType.GitHub, ApiUrl = "https://api.github.com" });
-            //初期レジストリ作成
-            Registry registry = AddNewRecordForInit(new Registry() { Name = "official-docker-hub", Host = "registry.hub.docker.com", PortNo = 80, ServiceType = RegistryServiceType.DockerHub, ApiUrl = "https://registry.hub.docker.com/", RegistryUrl = "https://registry.hub.docker.com/" });
+            // 初期Git情報取得
+            Git git = gitRepository.GetGitAll().First(g => g.Name == "GitHub");
+            // 初期レジストリ情報取得
+            Registry registry = registryRepository.GetRegistryAll().First(r => r.Name == "official-docker-hub");
 
             // 初期ノードの作成
             string[] nodeNames = deployOptions.GpuNodes.Split(',');
@@ -239,8 +209,12 @@ namespace Nssol.Platypus.DataAccess.Core
             AddNewRecordForInit(new UserTenantGitMap() { User = user, TenantGitMap = tenantGitMap });
             AddNewRecordForInit(new UserTenantRegistryMap() { User = user, TenantRegistryMap = tenantRegistryMap });
 
+            // ロール情報取得
+            Role researcherRole = roleRepository.GetCommonTenantRolesAsync().Result.First(r => r.Name == "researchers");
+            Role managerRole = roleRepository.GetCommonTenantRolesAsync().Result.First(r => r.Name == "managers");
+            Role adminRole = roleRepository.GetCommonTenantRolesAsync().Result.First(r => r.Name == "admins");
+            
             // ロール明細の登録
-
             AddNewRecordForInit(new UserRoleMap() { Role = researcherRole, User = user, TenantMap = userTenantMap });
             AddNewRecordForInit(new UserRoleMap() { Role = managerRole, User = user, TenantMap = userTenantMap });
             AddNewRecordForInit(new UserRoleMap() { Role = adminRole, User = user });
@@ -327,25 +301,6 @@ namespace Nssol.Platypus.DataAccess.Core
             {
                 dbContext.Dispose();
                 dbContext = null;
-            }
-        }
-
-        /// <summary>
-        /// v1.1.0用のデータ更新
-        /// "researchers"ロールにノートブック管理のアクセス権を付与する
-        /// </summary>
-        public void UpdateDataForV110()
-        {
-            // "researchers"ロールの存在チェック
-            var roles = roleRepository.GetCommonTenantRolesAsync().Result;
-            if (roles.Any(r => r.Name == "researchers"))
-            {
-                // Notebookの存在チェック
-                var menuRoleMaps = menuRepository.GetAll();
-                if (!menuRoleMaps.Any(m => m.MenuCode == Logic.MenuLogic.NotebookMenu.Code.ToString()))
-                {
-                    AddNewRecordForInit(new MenuRoleMap() { Role = roles.First(r => r.Name == "researchers"), MenuCode = Logic.MenuLogic.NotebookMenu.Code.ToString() });
-                }
             }
         }
     }
