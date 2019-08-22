@@ -197,6 +197,7 @@
   }
 
   .entry-point-column div.cell {
+    /*! autoprefixer: off */
     overflow: hidden;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
