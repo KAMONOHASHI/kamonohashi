@@ -1494,6 +1494,7 @@ namespace Nssol.Platypus.Migrations
             
             // 初期Git作成
             migrationBuilder.Sql("INSERT INTO \"Gits\" (\"Id\", \"CreatedBy\", \"CreatedAt\", \"ModifiedBy\", \"ModifiedAt\", \"Name\", \"ServiceType\", \"ApiUrl\", \"Token\", \"RepositoryUrl\") VALUES( nextval('\"Gits_Id_seq\"'), '" + adminUser + "', '" + now + "', '" + adminUser + "', '" + now + "', 'GitHub', " + (int)GitServiceType.GitHub + ", 'https://api.github.com', null, 'https://github.com');");
+            // 初期Registry作成
             migrationBuilder.Sql("INSERT INTO \"Registries\" (\"Id\", \"CreatedBy\", \"CreatedAt\", \"ModifiedBy\", \"ModifiedAt\", \"Name\", \"Host\", \"PortNo\", \"ServiceType\", \"ProjectName\", \"Password\", \"ApiUrl\", \"RegistryUrl\") VALUES( nextval('\"Registries_Id_seq\"'), '" + adminUser + "', '" + now + "', '" + adminUser + "', '" + now + "', 'official-docker-hub', 'registry.hub.docker.com', 80, " + (int)RegistryServiceType.DockerHub + ", null, null, 'https://registry.hub.docker.com/', 'https://registry.hub.docker.com/');");
         }
 
