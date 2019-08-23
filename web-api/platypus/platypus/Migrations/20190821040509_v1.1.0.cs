@@ -88,7 +88,7 @@ namespace Nssol.Platypus.Migrations
             DateTime now = DateTime.Now;
 
             // MenuRoleMapsにノートブック管理を追加
-            migrationBuilder.Sql("INSERT INTO \"MenuRoleMaps\" (\"Id\", \"CreatedBy\", \"CreatedAt\", \"ModifiedBy\", \"ModifiedAt\", \"MenuCode\", \"RoleId\") SELECT nextval('\"MenuRoleMaps_Id_seq\"'), '" + adminUser + "', '" + now + "', '" + adminUser + "', '" + now + "', '" + Logic.MenuLogic.NotebookMenu.Code.ToString() + "', \"Id\" FROM \"Roles\" WHERE \"Name\" = 'researchers';");
+            migrationBuilder.Sql($"INSERT INTO \"MenuRoleMaps\" (\"Id\", \"CreatedBy\", \"CreatedAt\", \"ModifiedBy\", \"ModifiedAt\", \"MenuCode\", \"RoleId\") SELECT nextval('\"MenuRoleMaps_Id_seq\"'), '{adminUser}', '{now}', '{adminUser}', '{now}', '{Logic.MenuLogic.NotebookMenu.Code.ToString()}', \"Id\" FROM \"Roles\" WHERE \"Name\" = 'researchers';");
 
         }
 
@@ -98,7 +98,7 @@ namespace Nssol.Platypus.Migrations
                 name: "NotebookHistories");
 
             // MenuRoleMapsからノートブック管理のアクセス権を削除する
-            migrationBuilder.Sql("DELETE FROM \"MenuRoleMaps\" WHERE \"MenuCode\" = '" + Logic.MenuLogic.NotebookMenu.Code.ToString() + "';");
+            migrationBuilder.Sql($"DELETE FROM \"MenuRoleMaps\" WHERE \"MenuCode\" = '{Logic.MenuLogic.NotebookMenu.Code.ToString()}';");
         }
     }
 }
