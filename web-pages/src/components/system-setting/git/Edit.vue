@@ -7,27 +7,27 @@
     <el-form ref="createForm" :model="this" :rules="rules">
       <pl-display-error :error="error"/>
       <el-form-item label="名前" prop="name">
-        <el-input v-model="name"/>
+        <el-input v-model="name" :disabled="isNotEditable"/>
       </el-form-item>
       <el-form-item label="リポジトリURL" prop="repositoryUrl">
-        <el-input v-model="repositoryUrl"/>
+        <el-input v-model="repositoryUrl" :disabled="isNotEditable"/>
       </el-form-item>
       <el-form-item label="Git種別" prop="serviceType">
-        <el-select v-model="serviceType" style="width: 100%">
+        <el-select v-model="serviceType" style="width: 100%" :disabled="isNotEditable">
           <el-option v-for="(t, idx) in types" :key="idx" :label="t.name" :value="t.id"/>
         </el-select>
       </el-form-item>
       <el-form-item label="API URL" prop="apiUrl">
-        <el-input v-model="apiUrl"/>
+        <el-input v-model="apiUrl" :disabled="isNotEditable"/>
       </el-form-item>
 
       <el-row :gutter="20" class="footer">
         <el-col :span="12">
-          <pl-delete-button @delete="deleteGit"/>
+          <pl-delete-button @delete="deleteGit" :disabled="isNotEditable"/>
         </el-col>
         <el-col class="right-button-group" :span="12">
           <el-button @click="emitCancel">キャンセル</el-button>
-          <el-button type="primary" @click="updateGit">保存</el-button>
+          <el-button type="primary" @click="updateGit" :disabled="isNotEditable">保存</el-button>
         </el-col>
       </el-row>
     </el-form>
@@ -58,6 +58,7 @@
         repositoryUrl: undefined,
         serviceType: undefined,
         apiUrl: undefined,
+        isNotEditable: false,
         rules: {
           name: [{
             required: true,
@@ -100,6 +101,7 @@
           this.repositoryUrl = result.repositoryUrl
           this.serviceType = result.serviceType
           this.apiUrl = result.apiUrl
+          this.isNotEditable = result.isNotEditable
           this.error = null
         } catch (e) {
           this.error = e

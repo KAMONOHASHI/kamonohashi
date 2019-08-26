@@ -1,7 +1,8 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Nssol.Platypus.Infrastructure;
+using Nssol.Platypus.Infrastructure.Types;
+using System;
 
 namespace Nssol.Platypus.Migrations
 {
@@ -83,6 +84,24 @@ namespace Nssol.Platypus.Migrations
                 table: "NotebookHistories",
                 column: "TenantId");
 
+            migrationBuilder.AddColumn<bool>(
+                name: "IsNotEditable",
+                table: "Roles",
+                nullable: false,
+                defaultValue: false);
+
+            migrationBuilder.AddColumn<bool>(
+                name: "IsNotEditable",
+                table: "Registries",
+                nullable: false,
+                defaultValue: false);
+
+            migrationBuilder.AddColumn<bool>(
+                name: "IsNotEditable",
+                table: "Gits",
+                nullable: false,
+                defaultValue: false);
+
             // 共通変数
             string adminUser = ApplicationConst.DefaultFirstAdminUserName;
             DateTime now = DateTime.Now;
@@ -90,12 +109,34 @@ namespace Nssol.Platypus.Migrations
             // MenuRoleMapsにノートブック管理を追加
             migrationBuilder.Sql($"INSERT INTO \"MenuRoleMaps\" (\"Id\", \"CreatedBy\", \"CreatedAt\", \"ModifiedBy\", \"ModifiedAt\", \"MenuCode\", \"RoleId\") SELECT nextval('\"MenuRoleMaps_Id_seq\"'), '{adminUser}', '{now}', '{adminUser}', '{now}', '{Logic.MenuLogic.NotebookMenu.Code.ToString()}', \"Id\" FROM \"Roles\" WHERE \"Name\" = 'researchers';");
 
+            // 初期ロールの更新（更新対象は削除されていないことが前提）
+            migrationBuilder.Sql("UPDATE \"Roles\" SET \"IsNotEditable\" = true WHERE \"Id\" = 1 OR \"Id\" = 2 OR \"Id\" = 3 OR \"Id\" = 4;");
+
+            // 初期Gitの更新（更新対象は削除されていないことが前提）
+            migrationBuilder.Sql("UPDATE \"Gits\" SET \"IsNotEditable\" = true WHERE \"Id\" = 1;");
+            // 初期レジストリの更新（更新対象は削除されていないことが前提）
+            migrationBuilder.Sql("UPDATE \"Registries\" SET \"IsNotEditable\" = true WHERE \"Id\" = 1;");
+
+            // レジストリにNGCを編集不可で登録
+            migrationBuilder.Sql($"INSERT INTO \"Registries\" (\"Id\", \"CreatedBy\", \"CreatedAt\", \"ModifiedBy\", \"ModifiedAt\", \"Name\", \"Host\", \"PortNo\", \"ServiceType\", \"ProjectName\", \"Password\", \"ApiUrl\", \"RegistryUrl\", \"IsNotEditable\") SELECT nextval('\"Registries_Id_seq\"'), '{adminUser}', '{now}', '{adminUser}', '{now}', 'ngc', 'nvcr.io', 443, {(int)RegistryServiceType.NvidiaGPUCloud}, null, null, 'https://nvcr.io', 'https://nvcr.io', true WHERE NOT EXISTS (SELECT 1 FROM \"Registries\" WHERE \"Name\" = 'ngc');");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
                 name: "NotebookHistories");
+
+            migrationBuilder.DropColumn(
+                name: "IsNotEditable",
+                table: "Roles");
+
+            migrationBuilder.DropColumn(
+                name: "IsNotEditable",
+                table: "Registries");
+
+            migrationBuilder.DropColumn(
+                name: "IsNotEditable",
+                table: "Gits");
 
             // MenuRoleMapsからノートブック管理のアクセス権を削除する
             migrationBuilder.Sql($"DELETE FROM \"MenuRoleMaps\" WHERE \"MenuCode\" = '{Logic.MenuLogic.NotebookMenu.Code.ToString()}';");

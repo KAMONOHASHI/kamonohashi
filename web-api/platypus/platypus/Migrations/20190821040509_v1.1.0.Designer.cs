@@ -34,6 +34,8 @@ namespace Nssol.Platypus.Migrations
                     b.Property<string>("CreatedBy")
                         .IsRequired();
 
+                    b.Property<bool>("IsNotEditable");
+
                     b.Property<DateTime>("ModifiedAt");
 
                     b.Property<string>("ModifiedBy")
@@ -159,6 +161,8 @@ namespace Nssol.Platypus.Migrations
                     b.Property<string>("Host")
                         .IsRequired();
 
+                    b.Property<bool>("IsNotEditable");
+
                     b.Property<DateTime>("ModifiedAt");
 
                     b.Property<string>("ModifiedBy")
@@ -198,6 +202,8 @@ namespace Nssol.Platypus.Migrations
 
                     b.Property<string>("DisplayName")
                         .IsRequired();
+
+                    b.Property<bool>("IsNotEditable");
 
                     b.Property<bool>("IsSystemRole");
 
