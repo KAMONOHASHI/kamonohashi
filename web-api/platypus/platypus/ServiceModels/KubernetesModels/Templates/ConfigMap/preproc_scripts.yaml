@@ -12,6 +12,7 @@ data:
     echo "------------------------- [KAMONOHASHI Main] deploy data into /kqi/input/$DATA_ID . -------------------------"
     mkdir -p /kqi/input/$DATA_ID
     kqi data download-files -d /kqi/input/$DATA_ID $DATA_ID
+    kqi data get -d /kqi/input/meta.json $DATA_ID
   main: |
     bash /kqi/scripts/common/wait-ready
     cd /kqi/git

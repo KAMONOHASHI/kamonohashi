@@ -2,6 +2,8 @@
 
 from __future__ import print_function, absolute_import, with_statement
 
+import logging
+
 import click
 from kamonohashi.op import rest
 
@@ -55,11 +57,21 @@ def list_data(count, id, name, memo, created_at, created_by, tag):
 
 @data.command()
 @click.argument('id', type=int)
-def get(id):
+@click.option('-d', '--destination', type=click.Path(dir_okay=False), help='A file path of the output as a json file')
+def get(id, destination):
     """Get details of data"""
     api = rest.DataApi(configuration.get_api_client())
-    result = api.get_data(id)
-    pprint.pp_dict(util.to_dict(result))
+    if destination is None:
+        result = api.get_data(id)
+        pprint.pp_dict(util.to_dict(result))
+    else:
+        with util.release_conn(api.get_data(id, _preload_content=False)) as result:
+            logging.info('open %s', destination)
+            with open(destination, 'wb') as f:
+                logging.info('begin io %s', destination)
+                f.write(result.data)
+                logging.info('end io %s', destination)
+        print('save', id, 'as', destination)
 
 
 @data.command()
