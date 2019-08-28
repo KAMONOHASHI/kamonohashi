@@ -81,6 +81,11 @@ namespace Nssol.Platypus.Logic.HostedService
                 LogError("ContainerManageOptions の ContainerLabelTensorBoardEnabled が設定されていません。");
                 ret = false;
             }
+            if (string.IsNullOrEmpty(containerManageOptions.ContainerLabelNotebookEnabled))
+            {
+                LogError("ContainerManageOptions の ContainerLabelNotebookEnabled が設定されていません。");
+                ret = false;
+            }
             return ret;
         }
 
@@ -217,13 +222,22 @@ namespace Nssol.Platypus.Logic.HostedService
                     ret = clusterManagementService.SetNodeLabelAsync(node.Name, containerManageOptions.ContainerLabelTensorBoardEnabled, tensorBoardEnabledStr).Result;
                     if (ret)
                     {
-                        LogDebug($"DB のノード情報 [{node.Name}] に対応するパーティションと TensorBoard 可否設定を Cluster(k8s) へ同期させました。");
+                        LogDebug($"DB のノード情報 [{node.Name}] に対応する TensorBoard 可否設定を Cluster(k8s) へ同期させました。");
                     }
                     else
                     {
                         LogError($"DB のノード情報 [{node.Name}] に対応する TensorBoard 可否設定を Cluster(k8s) へ同期させる処理に失敗しました。");
                     }
-                    
+                    string notebookEnabledStr = node.NotebookEnabled ? "true" : "";
+                    ret = clusterManagementService.SetNodeLabelAsync(node.Name, containerManageOptions.ContainerLabelNotebookEnabled, notebookEnabledStr).Result;
+                    if (ret)
+                    {
+                        LogDebug($"DB のノード情報 [{node.Name}] に対応する Notebook 可否設定を Cluster(k8s) へ同期させました。");
+                    }
+                    else
+                    {
+                        LogError($"DB のノード情報 [{node.Name}] に対応する Notebook 可否設定を Cluster(k8s) へ同期させる処理に失敗しました。");
+                    }
                 }
                 LogInfo("DB のテナント・レジストリ・ノード情報を Cluster(k8s) へ同期させる処理は終了しました。");
             }

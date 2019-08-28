@@ -165,7 +165,8 @@ namespace Nssol.Platypus.DataAccess.Core
                 {
                     Name = nodeName,
                     AccessLevel = NodeAccessLevel.Public,
-                    TensorBoardEnabled = true
+                    TensorBoardEnabled = true,
+                    NotebookEnabled = true
                 });
             }
 

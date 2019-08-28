@@ -980,7 +980,8 @@ namespace Nssol.Platypus.Logic
             //使用できるノードを制約に追加
             inputModel.ConstraintList = new Dictionary<string, List<string>>()
             {
-                { containerOptions.ContainerLabelHostName, nodes }
+                { containerOptions.ContainerLabelHostName, nodes },
+                { containerOptions.ContainerLabelNotebookEnabled, new List<string> { "true" } } // notebookの実行が許可されているサーバでのみ実行
             };
 
             if (string.IsNullOrEmpty(notebookHistory.Partition) == false)
@@ -1077,6 +1078,18 @@ namespace Nssol.Platypus.Logic
         {
             string value = enabled ? "true" : "";
             return await this.clusterManagementService.SetNodeLabelAsync(nodeName, containerOptions.ContainerLabelTensorBoardEnabled, value);
+        }
+
+        /// <summary>
+        /// Notebookの実行可否設定を更新する
+        /// </summary>
+        /// <param name="nodeName">ノード名</param>
+        /// <param name="enabled">実行可否</param>
+        /// <returns>更新結果、更新できた場合、true</returns>
+        public async Task<bool> UpdateNotebookEnabledLabelAsync(string nodeName, bool enabled)
+        {
+            string value = enabled ? "true" : "";
+            return await this.clusterManagementService.SetNodeLabelAsync(nodeName, containerOptions.ContainerLabelNotebookEnabled, value);
         }
 
         /// <summary>

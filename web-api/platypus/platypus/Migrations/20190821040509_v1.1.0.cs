@@ -102,6 +102,12 @@ namespace Nssol.Platypus.Migrations
                 nullable: false,
                 defaultValue: false);
 
+            migrationBuilder.AddColumn<bool>(
+                name: "NotebookEnabled",
+                table: "Nodes",
+                nullable: false,
+                defaultValue: false);
+
             // 共通変数
             string adminUser = ApplicationConst.DefaultFirstAdminUserName;
             DateTime now = DateTime.Now;
@@ -137,6 +143,10 @@ namespace Nssol.Platypus.Migrations
             migrationBuilder.DropColumn(
                 name: "IsNotEditable",
                 table: "Gits");
+
+            migrationBuilder.DropColumn(
+                name: "NotebookEnabled",
+                table: "Nodes");
 
             // MenuRoleMapsからノートブック管理のアクセス権を削除する
             migrationBuilder.Sql($"DELETE FROM \"MenuRoleMaps\" WHERE \"MenuCode\" = '{Logic.MenuLogic.NotebookMenu.Code.ToString()}';");

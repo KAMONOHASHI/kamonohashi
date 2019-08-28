@@ -108,6 +108,8 @@ namespace Nssol.Platypus.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
+                    b.Property<bool>("NotebookEnabled");
+
                     b.Property<string>("Partition");
 
                     b.Property<bool>("TensorBoardEnabled");
