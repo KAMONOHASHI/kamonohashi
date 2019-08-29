@@ -36,7 +36,7 @@ namespace Nssol.Platypus.Logic.HostedService
             IUnitOfWork unitOfWork,
             IOptions<ContainerManageOptions> containerManageOptions,
             IOptions<DeleteNotebookContainerTimerOptions> deleteNotebookContainerTimerOptions,
-            ILogger<DeleteTensorBoardContainerTimer> logger
+            ILogger<DeleteNotebookContainerTimer> logger
             ) : base(logger, deleteNotebookContainerTimerOptions.Value)
         {
             // 各 DI オブジェクトの設定
