@@ -40,6 +40,17 @@
                     </el-slider>
                   </el-form-item>
                 </el-col>
+                <el-col :span="18" :offset="3">
+                  <el-form-item label="生存期間(h)" required>
+                    <el-slider
+                      class="el-input"
+                      v-model="expiresIn"
+                      :min="0"
+                      :max="100"
+                      show-input>
+                    </el-slider>
+                  </el-form-item>
+                </el-col>
               </el-form>
             </div>
           </el-row>
@@ -48,7 +59,7 @@
           <el-row :gutter="20">
             <el-steps :active="active" align-center>
               <el-step title="Step 1" description="ノートブック名"></el-step>
-              <el-step title="Step 2" description="リソース"></el-step>
+              <el-step title="Step 2" description="リソース & 生存期間"></el-step>
               <el-step title="Step 3" description="任意項目"></el-step>
               <el-step title="Step 4" description="任意項目"></el-step>
             </el-steps>
@@ -88,6 +99,17 @@
                       v-model="gpu"
                       :min="0"
                       :max="16"
+                      show-input>
+                    </el-slider>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="18" :offset="3">
+                  <el-form-item label="生存期間(h)" required>
+                    <el-slider
+                      class="el-input"
+                      v-model="expiresIn"
+                      :min="0"
+                      :max="100"
                       show-input>
                     </el-slider>
                   </el-form-item>
@@ -184,7 +206,8 @@
           name: [{required: true, trigger: 'blur', message: '必須項目です'}],
           cpu: [{required: true, message: '必須項目です'}],
           memory: [{required: true, message: '必須項目です'}],
-          gpu: [{required: true, message: '必須項目です'}]
+          gpu: [{required: true, message: '必須項目です'}],
+          expiresIn: [{required: true, message: '必須項目です'}]
         },
         dialogVisible: true,
         error: undefined,
@@ -231,7 +254,7 @@
                 gpu: this.gpu,
                 partition: this.partition,
                 memo: this.memo,
-                expiresIn: this.expiresIn
+                expiresIn: this.expiresIn * 60 * 60
               }
               await api.notebook.post({model: param})
 
@@ -253,7 +276,7 @@
                   cpu: this.cpu,
                   memory: this.memory,
                   gpu: this.gpu,
-                  expiresIn: this.expiresIn
+                  expiresIn: this.expiresIn * 60 * 60
               }
               await api.notebook.postRerun({id: this.originId, model: param})
 
@@ -309,6 +332,7 @@
           this.partition = origin.partition
           this.containerImage = origin.containerImage
           this.entryPoint = origin.entryPoint
+          this.expiresIn = origin.expiresIn === 0 ? 0 : (origin.expiresIn / 60 / 60)
           if (origin.parent) {
             this.parent = origin.parent
           }

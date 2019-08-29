@@ -34,7 +34,7 @@
             </div>
             <el-form-item label="モデル">
               <div class="el-input">
-            <span v-if="gitModel.url !== null" style="padding-left: 3px">
+            <span v-if="gitModel && gitModel.url !== null" style="padding-left: 3px">
               <a :href="gitModel.url" target="_blank">
                 {{gitModel.owner}}/{{gitModel.repository}}/{{gitModel.branch}}
               </a>
@@ -49,6 +49,7 @@
             <pl-display-text-form label="完了日時" :value="completedAt"/>
             <pl-display-text-form label="待機時間" :value="waitingTime"/>
             <pl-display-text-form label="実行時間" :value="executionTime"/>
+            <pl-display-text-form label="生存期間(h)" :value="expiresIn"/>
             <el-form-item label="環境変数" v-if="options">
               <div class="el-input">
                 <el-row v-for="option in options" :key="option.key">
@@ -171,7 +172,8 @@
         favorite: false,
         events: [],
         waitingTime: undefined,
-        executionTime: undefined
+        executionTime: undefined,
+        expiresIn: undefined
       }
     },
     async created () {
@@ -210,6 +212,7 @@
         }
         this.waitingTime = data.waitingTime
         this.executionTime = data.executionTime
+        this.expiresIn = data.expiresIn === 0 ? 0 : (data.expiresIn / 60 / 60)
       },
       emitDone () {
         this.$emit('done')

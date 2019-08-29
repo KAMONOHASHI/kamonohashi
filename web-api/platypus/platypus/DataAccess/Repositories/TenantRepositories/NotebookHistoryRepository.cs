@@ -55,6 +55,16 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
         }
 
         /// <summary>
+        /// テナント横断で全データ（外部参照を含む）をすべて取得する。
+        /// ソートはIDの逆順。
+        /// </summary>
+        public async Task<IEnumerable<NotebookHistory>> GetAllIncludeTenantAsync()
+        {
+            return await GetModelAll<NotebookHistory>(true).Include(t => t.Tenant)
+                .OrderByDescending(t => t.Id).ToListAsync();
+        }
+
+        /// <summary>
         /// 検索条件に合致するデータを一件取得する
         /// </summary>
         public NotebookHistory Find(Expression<Func<NotebookHistory, bool>> where, bool force)
