@@ -86,7 +86,7 @@
                     <pl-git-selecter v-model="gitForm"></pl-git-selecter>
                   </el-form-item>
                   <el-form-item class="button-group">
-                    <el-button type="primary" @click="putGitToken">{{$t('update')}}</el-button>
+                    <el-button type="primary" @click="handleGitToken">{{$t('update')}}</el-button>
                   </el-form-item>
                 </el-form>
               </div>
@@ -102,7 +102,7 @@
                     <pl-registry-selecter v-model="registryForm"></pl-registry-selecter>
                   </el-form-item>
                   <el-form-item class="button-group">
-                    <el-button type="primary" @click="putRegistryToken">{{$t('update')}}</el-button>
+                    <el-button type="primary" @click="handleRegistryToken">{{$t('update')}}</el-button>
                   </el-form-item>
                 </el-form>
               </div>
@@ -286,6 +286,26 @@
         })
       },
 
+      async handleRegistryToken () {
+          try {
+            await this.putRegistryToken()
+            this.showSuccessMessage()
+            this.error4 = null
+          } catch (error) {
+            this.error4 = error
+          }
+      },
+
+      async handleGitToken () {
+          try {
+            await this.putGitToken()
+            this.showSuccessMessage()
+            this.error4 = null
+          } catch (error) {
+            this.error4 = error
+          }
+      },
+
       async handleAccessToken () {
         this.$refs['tokenForm'].validate(async (valid) => {
           if (valid) {
@@ -300,6 +320,7 @@
           }
         })
       },
+
       async putRegistryToken () {
         let params = {
           model: {
