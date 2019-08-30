@@ -136,12 +136,6 @@
                   <div class="el-input" style="padding: 10px 0">
                     <el-button @click="emitShell">Shell起動</el-button>
                   </div>
-                  <el-form-item label="エンドポイント">
-                    <div v-for="endpoint in endpoints" :key="endpoint.key" class="el-input">
-                      <span>{{endpoint.key}}</span>
-                      <span>{{endpoint.url}}</span>
-                    </div>
-                  </el-form-item>
                 </div>
               </el-form-item>
             </div>
@@ -231,7 +225,6 @@
         memory: undefined,
         gpu: undefined,
         partition: undefined,
-        endpoints: undefined,
         // スクリプトがこけたときなどに"failed"になる
         status: undefined,
         // コンテナの生死等
@@ -336,7 +329,6 @@
         this.gpu = data.gpu
         this.partition = data.partition
         this.statusDetail = data.statusDetail
-        this.endpoints = data.endpoints
         this.status = data.status === data.statusType
           ? data.status : (data.statusType + ' (' + data.status + ')')
         this.statusType = data.statusType
