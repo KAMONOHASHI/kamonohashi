@@ -71,8 +71,8 @@ namespace Nssol.Platypus.Logic.HostedService
             LogInfo($"テーブル NotebookHistories の生存期間を超えている実行中レコードと、対応する kubernetes 上の実コンテナを削除します。(第 {doWorkCount} 回目)");
             try
             {
-                // テーブル NotebookHistories の全レコードを取得
-                var notebookHistories = notebookHistoryRepository.GetAllIncludeTenantAsync().Result;
+                // テーブル NotebookHistories の'Killed'以外の全レコードを取得
+                var notebookHistories = notebookHistoryRepository.GetAllIncludeTenantAsync().Result.Where(h => h.GetStatus().ToString() != ContainerStatus.Killed.Name);
                 if (notebookHistories.Count() == 0)
                 {
                     // レコードが1件も存在しなければ終了
@@ -81,22 +81,33 @@ namespace Nssol.Platypus.Logic.HostedService
                 }
                 // テーブル NotebookHistories の更新したレコード数をカウントする変数
                 var dbUpdateCount = 0;
-                //  削除した kubernetes 上の実コンテナ数をカウントする変数
+                // 削除した kubernetes 上の実コンテナ数をカウントする変数
                 var deleteContainerCount = 0;
                 foreach (NotebookHistory notebookHistory in notebookHistories)
                 {
+                    // 実コンテナのステータス情報を取得する
+                    var newStatus = clusterManagementService.GetContainerStatusAsync(notebookHistory.Key, notebookHistory.Tenant.Name, kubernetesToken).Result;
+                    if (notebookHistory.GetStatus().Key != newStatus.Key)
+                    {
+                        // ステータス更新があったので、変更処理
+                        notebookHistoryRepository.UpdateStatusAsync(notebookHistory.Id, newStatus, true);
+                    }
+
                     // 実行中コンテナか、生存期間が設定されているかチェック（生存期間が0の場合はコンテナ削除の対象にしない）
                     if (notebookHistory.GetStatus().Exist() && notebookHistory.ExpiresIn != 0)
                     {
                         // 経過時間を取得
                         long elapsedTicks = DateTime.Now.Ticks - (notebookHistory.StartedAt.HasValue ? notebookHistory.StartedAt.Value.Ticks : 0);
                         TimeSpan elapsedSpan = new TimeSpan(elapsedTicks);
-                        // 生存期間内かチェック
+                        // 生存期間を超えているか確認
                         if (elapsedSpan.TotalSeconds > notebookHistory.ExpiresIn)
                         {
+                            // 生存期間を超えている場合、テーブル NotebookHistories のレコードのステータスをKilledに更新
+                            notebookHistoryRepository.UpdateStatusAsync(notebookHistory.Id, ContainerStatus.Killed, DateTime.Now, true);
+                            dbUpdateCount++;
                             try
                             {
-                                // 生存期間を超えている場合、kubernetes 上の実コンテナを削除する
+                                // kubernetes 上の実コンテナを削除する
                                 var destroyResult = clusterManagementService.DeleteContainerAsync(ContainerType.Notebook, notebookHistory.Key, notebookHistory.Tenant.Name, kubernetesToken).Result;
                                 if (destroyResult)
                                 {
@@ -109,9 +120,6 @@ namespace Nssol.Platypus.Logic.HostedService
                                 // 何らかの例外をキャッチしたが ERROR ログを出力して処理を継続
                                 LogError($"kubernetes 上の実コンテナ削除で例外をキャッチしましたが処理を継続します。 例外メッセージ=\"{e.Message}\"");
                             }
-                            // テーブル NotebookHistories のレコードのステータスをKilledに更新
-                            notebookHistoryRepository.UpdateStatusAsync(notebookHistory.Id, ContainerStatus.Killed, DateTime.Now, true);
-                            dbUpdateCount++;
                         }
                     }
                 }
