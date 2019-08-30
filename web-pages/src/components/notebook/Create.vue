@@ -108,7 +108,7 @@
                     <el-slider
                       class="el-input"
                       v-model="expiresIn"
-                      :min="0"
+                      :min="1"
                       :max="100"
                       show-input>
                     </el-slider>
@@ -224,7 +224,7 @@
         git: undefined,
         options: undefined,
         active: 0,
-        expiresIn: 0
+        expiresIn: 8
       }
     },
     async created () {
