@@ -65,7 +65,7 @@
         name: undefined,
         memo: undefined,
         partition: undefined,
-        accessLevel: undefined,
+        accessLevel: 2,
         selectedTenants: [], // Selected tenants which can access this node.
         tenants: [], // Tenants to display on a transfer component.
         titles: ['アクセス拒否', 'アクセス許可'], // The title of the transfer component.
