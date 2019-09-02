@@ -1,5 +1,5 @@
 #!/bin/bash
-
+cd `dirname $0`
 echo -n "現在デプロイされているKAMONOHASHIのバージョン: "; read KQI_VERSION
 
 # 戻す対象のmigration名の指定
