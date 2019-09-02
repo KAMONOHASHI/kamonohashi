@@ -480,10 +480,6 @@ namespace Nssol.Platypus.Logic
                 },
                 EntryPoint = trainHistory.EntryPoint,
 
-                PortMappings = new PortMappingModel[]
-                {
-                    new PortMappingModel() { Protocol = "TCP", Port = 22, TargetPort = 22, Name = "ssh" },
-                },
                 ClusterManagerToken = token,
                 RegistryTokenName = registryMap.RegistryTokenKey,
                 IsNodePort = true
@@ -522,13 +518,11 @@ namespace Nssol.Platypus.Logic
             {
                 return Result<ContainerInfo, string>.CreateErrorResult(outModel.Error);
             }
-            var port = outModel.Value.PortMappings.Find(p => p.Name == "ssh");
             return Result<ContainerInfo, string>.CreateResult(new ContainerInfo()
             {
                 Name = outModel.Value.Name,
                 Status = outModel.Value.Status,
                 Host = outModel.Value.Host,
-                Port = port.NodePort,
                 Configuration = outModel.Value.Configuration
             });
         }
@@ -636,10 +630,6 @@ namespace Nssol.Platypus.Logic
                 },
                 EntryPoint = inferenceHistory.EntryPoint,
 
-                PortMappings = new PortMappingModel[]
-                {
-                    new PortMappingModel() { Protocol = "TCP", Port = 22, TargetPort = 22, Name = "ssh" },
-                },
                 ClusterManagerToken = token,
                 RegistryTokenName = registryMap.RegistryTokenKey,
                 IsNodePort = true
@@ -679,13 +669,11 @@ namespace Nssol.Platypus.Logic
             {
                 return Result<ContainerInfo, string>.CreateErrorResult(outModel.Error);
             }
-            var port = outModel.Value.PortMappings.Find(p => p.Name == "ssh");
             return Result<ContainerInfo, string>.CreateResult(new ContainerInfo()
             {
                 Name = outModel.Value.Name,
                 Status = outModel.Value.Status,
                 Host = outModel.Value.Host,
-                Port = port.NodePort,
                 Configuration = outModel.Value.Configuration
             });
         }

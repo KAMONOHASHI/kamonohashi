@@ -217,25 +217,15 @@ namespace Nssol.Platypus.Controllers.spa
             if (status.Exist())
             {
                 //コンテナがまだ存在している場合、情報を更新する
-                var details = await clusterManagementLogic.GetContainerEndpointInfoAsync(history.Key, CurrentUserInfo.SelectedTenant.Name, false);
+                var details = await clusterManagementLogic.GetContainerDetailsInfoAsync(history.Key, CurrentUserInfo.SelectedTenant.Name, false);
                 model.Status = details.Status.Name;
                 model.StatusType = details.Status.StatusType;
 
                 //ステータスを更新
                 history.Status = details.Status.Key;
-                if (history.StartedAt == null)
-                {
-                    history.StartedAt = details.StartedAt;
-                    history.Node = details.Node; //設計上ノードが切り替わることはない
-                }
                 unitOfWork.Commit();
 
                 model.ConditionNote = details.ConditionNote;
-                if (details.Status.IsRunning())
-                {
-                    //コンテナが正常に動いているので、エンドポイントを表示する
-                    model.Endpoints = details.EndPoints;
-                }
             }
 
             //Gitの表示用URLを作る

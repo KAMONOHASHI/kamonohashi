@@ -128,12 +128,6 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         public string StatusType { get; set; }
 
         /// <summary>
-        /// エンドポイント
-        /// </summary>
-        public IEnumerable<EndPointInfo> Endpoints { get; set; }
-
-
-        /// <summary>
         /// コンテナの状態に対する注釈。何か異常が発生している際は注釈が表示される。
         /// </summary>
         public string ConditionNote { get; set; }
