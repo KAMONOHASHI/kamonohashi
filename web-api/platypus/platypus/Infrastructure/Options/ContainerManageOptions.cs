@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Infrastructure.Options
 {
@@ -46,6 +42,10 @@ namespace Nssol.Platypus.Infrastructure.Options
         /// コンテナのTensorBoard実行可否設定用ラベル
         /// </summary>
         public string ContainerLabelTensorBoardEnabled { get; set; }
+        /// <summary>
+        /// コンテナのNotebook実行可否設定用ラベル
+        /// </summary>
+        public string ContainerLabelNotebookEnabled { get; set; }
         /// <summary>
         /// クラスタのリソース管理サービス(e.g. k8s)のアクセスキー
         /// </summary>

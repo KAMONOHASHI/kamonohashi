@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "@(Model.Name)"
+  namespace: "@(Model.NameSpace)"
+data:
+  prepare: |
+    bash /kqi/scripts/common/show-logo
+    bash /kqi/scripts/common/prepare-kqi-conf
+    bash /kqi/scripts/common/prepare-git
+    bash /kqi/scripts/common/prepare-dataset
+  main: |
+    if which pip3 > /dev/null 2>&1; then
+      pip3 install jupyterlab==1.0.4
+    else
+      pip install jupyterlab==1.0.4
+    fi
+    jupyter lab --ip=0.0.0.0 --allow-root --notebook-dir=/kqi/ --no-browser > /kqi/attach/.notebook.log 2>&1 &
+    bash /kqi/scripts/common/wait-ready
+  finish: |
+    tail -f /dev/null   

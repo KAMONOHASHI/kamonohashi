@@ -30,6 +30,7 @@ namespace Nssol.Platypus.Logic
                 DataMenu,
                 DataSetMenu,
                 PreprocessMenu,
+                NotebookMenu,
                 TrainingMenu,
                 InferenceMenu,
 
@@ -336,6 +337,19 @@ namespace Nssol.Platypus.Logic
             ShowSideMenu = true,
             MenuType = MenuType.Tenant
         };
+        internal static MenuItemInfo NotebookMenu = new MenuItemInfo()
+        {
+            Name = "ノートブック管理",
+            NameEn = "Notebook",
+            Description = "ノートブックジョブに関する各種管理",
+            DescriptionEn = "Managing Notebook Status and Histories",
+            Category = "pl-notebook",
+            Code = MenuCode.Notebook,
+            Url = "/notebook",
+            ShowTopMenu = true,
+            ShowSideMenu = true,
+            MenuType = MenuType.Tenant
+        };
         internal static MenuItemInfo TrainingMenu = new MenuItemInfo()
         {
             Name = "学習管理",
@@ -525,6 +539,7 @@ namespace Nssol.Platypus.Logic
             DataMenu,
             DataSetMenu,
             PreprocessMenu,
+            NotebookMenu,
             TrainingMenu,
             InferenceMenu,
 

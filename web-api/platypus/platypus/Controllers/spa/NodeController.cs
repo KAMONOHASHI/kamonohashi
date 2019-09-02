@@ -1,20 +1,20 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Nssol.Platypus.ApiModels.NodeApiModels;
 using Nssol.Platypus.Controllers.Util;
 using Nssol.Platypus.DataAccess.Core;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces;
+using Nssol.Platypus.Filters;
 using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Infrastructure.Infos;
 using Nssol.Platypus.Infrastructure.Options;
 using Nssol.Platypus.Logic.Interfaces;
 using Nssol.Platypus.Models;
-using Nssol.Platypus.ApiModels.NodeApiModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Nssol.Platypus.Filters;
 
 namespace Nssol.Platypus.Controllers.spa
 {
@@ -145,7 +145,8 @@ namespace Nssol.Platypus.Controllers.spa
                 Memo = model.Memo,
                 Partition = model.Partition,
                 AccessLevel = model.AccessLevel == null ? NodeAccessLevel.Disabled : model.AccessLevel.Value,
-                TensorBoardEnabled = model.TensorBoardEnabled
+                TensorBoardEnabled = model.TensorBoardEnabled,
+                NotebookEnabled = model.NotebookEnabled
             };
 
             if(node.AccessLevel != NodeAccessLevel.Disabled)
@@ -157,6 +158,11 @@ namespace Nssol.Platypus.Controllers.spa
                 if (node.TensorBoardEnabled)
                 {
                     await clusterManagementLogic.UpdateTensorBoardEnabledLabelAsync(node.Name, true);
+                }
+
+                if (node.NotebookEnabled)
+                {
+                    await clusterManagementLogic.UpdateNotebookEnabledLabelAsync(node.Name, true);
                 }
 
                 if (node.AccessLevel == NodeAccessLevel.Private)
@@ -214,6 +220,7 @@ namespace Nssol.Platypus.Controllers.spa
             node.Memo = model.Memo;
             node.Partition = model.Partition;
             node.TensorBoardEnabled = model.TensorBoardEnabled;
+            node.NotebookEnabled = model.NotebookEnabled;
             node.AccessLevel = model.AccessLevel.Value;
             
             if (node.AccessLevel != NodeAccessLevel.Disabled)
@@ -224,6 +231,8 @@ namespace Nssol.Platypus.Controllers.spa
                 await clusterManagementLogic.UpdatePartitionLabelAsync(node.Name, node.Partition);
 
                 await clusterManagementLogic.UpdateTensorBoardEnabledLabelAsync(node.Name, node.TensorBoardEnabled);
+
+                await clusterManagementLogic.UpdateNotebookEnabledLabelAsync(node.Name, node.NotebookEnabled);
 
                 if (node.AccessLevel == NodeAccessLevel.Private)
                 {
@@ -352,6 +361,24 @@ namespace Nssol.Platypus.Controllers.spa
                         }
                     }
 
+                    //Notebook
+                    if (nodeInfo.Labels.ContainsKey(options.Value.ContainerLabelNotebookEnabled) &&
+                        nodeInfo.Labels[options.Value.ContainerLabelNotebookEnabled] == "true")
+                    {
+                        //k8s側にNotebook実行可のラベルがある
+                        if (registeredNode.NotebookEnabled == false)
+                        {
+                            registeredNode.NotebookEnabled = true;
+                        }
+                    }
+                    else
+                    {
+                        //k8s側にNotebook実行可のラベルがない
+                        if (registeredNode.NotebookEnabled)
+                        {
+                            registeredNode.NotebookEnabled = false;
+                        }
+                    }
                     //リストから除外
                     clusterNodes.Remove(nodeInfo);
                 }
@@ -399,6 +426,7 @@ namespace Nssol.Platypus.Controllers.spa
                     return JsonError(HttpStatusCode.ServiceUnavailable, "Failed to update partitions. Please contact your server administrator.");
                 }
                 await clusterManagementLogic.UpdateTensorBoardEnabledLabelAsync(node.Name, node.TensorBoardEnabled);
+                await clusterManagementLogic.UpdateNotebookEnabledLabelAsync(node.Name, node.NotebookEnabled);
             }
 
             return JsonOK(nodes.Select(n => new IndexOutputModel(n)));

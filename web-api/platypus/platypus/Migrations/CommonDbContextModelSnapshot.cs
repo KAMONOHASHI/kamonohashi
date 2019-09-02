@@ -16,7 +16,7 @@ namespace Nssol.Platypus.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
-                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024")
+                .HasAnnotation("ProductVersion", "2.1.8-servicing-32085")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             modelBuilder.Entity("Nssol.Platypus.Models.Git", b =>
@@ -31,6 +31,8 @@ namespace Nssol.Platypus.Migrations
 
                     b.Property<string>("CreatedBy")
                         .IsRequired();
+
+                    b.Property<bool>("IsNotEditable");
 
                     b.Property<DateTime>("ModifiedAt");
 
@@ -104,6 +106,8 @@ namespace Nssol.Platypus.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
+                    b.Property<bool>("NotebookEnabled");
+
                     b.Property<string>("Partition");
 
                     b.Property<bool>("TensorBoardEnabled");
@@ -157,6 +161,8 @@ namespace Nssol.Platypus.Migrations
                     b.Property<string>("Host")
                         .IsRequired();
 
+                    b.Property<bool>("IsNotEditable");
+
                     b.Property<DateTime>("ModifiedAt");
 
                     b.Property<string>("ModifiedBy")
@@ -196,6 +202,8 @@ namespace Nssol.Platypus.Migrations
 
                     b.Property<string>("DisplayName")
                         .IsRequired();
+
+                    b.Property<bool>("IsNotEditable");
 
                     b.Property<bool>("IsSystemRole");
 
@@ -725,6 +733,87 @@ namespace Nssol.Platypus.Migrations
                     b.HasIndex("TenantId");
 
                     b.ToTable("InferenceHistoryAttachedFiles");
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.NotebookHistory", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime?>("CompletedAt");
+
+                    b.Property<string>("Configuration");
+
+                    b.Property<string>("ContainerImage")
+                        .IsRequired();
+
+                    b.Property<long?>("ContainerRegistryId");
+
+                    b.Property<string>("ContainerTag")
+                        .IsRequired();
+
+                    b.Property<int>("Cpu");
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired();
+
+                    b.Property<long?>("DataSetId");
+
+                    b.Property<long?>("DisplayId");
+
+                    b.Property<int?>("ExpiresIn")
+                        .IsRequired();
+
+                    b.Property<bool>("Favorite");
+
+                    b.Property<int>("Gpu");
+
+                    b.Property<string>("Memo");
+
+                    b.Property<int>("Memory");
+
+                    b.Property<string>("ModelBranch");
+
+                    b.Property<string>("ModelCommitId");
+
+                    b.Property<long?>("ModelGitId");
+
+                    b.Property<string>("ModelRepository");
+
+                    b.Property<string>("ModelRepositoryOwner");
+
+                    b.Property<DateTime>("ModifiedAt");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired();
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.Property<string>("Node");
+
+                    b.Property<string>("Options");
+
+                    b.Property<string>("Partition");
+
+                    b.Property<DateTime?>("StartedAt");
+
+                    b.Property<string>("Status")
+                        .IsRequired();
+
+                    b.Property<long>("TenantId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContainerRegistryId");
+
+                    b.HasIndex("DataSetId");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("NotebookHistories");
                 });
 
             modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.Preprocess", b =>
@@ -1467,6 +1556,22 @@ namespace Nssol.Platypus.Migrations
                         .WithMany("InferenceHistoryAttachedFile")
                         .HasForeignKey("InferenceHistoryId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Nssol.Platypus.Models.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.NotebookHistory", b =>
+                {
+                    b.HasOne("Nssol.Platypus.Models.Registry", "ContainerRegistry")
+                        .WithMany()
+                        .HasForeignKey("ContainerRegistryId");
+
+                    b.HasOne("Nssol.Platypus.Models.TenantModels.DataSet", "DataSet")
+                        .WithMany()
+                        .HasForeignKey("DataSetId");
 
                     b.HasOne("Nssol.Platypus.Models.Tenant", "Tenant")
                         .WithMany()

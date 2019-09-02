@@ -1,10 +1,7 @@
 ﻿using Nssol.Platypus.Infrastructure.Types;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Models
 {
@@ -60,6 +57,12 @@ namespace Nssol.Platypus.Models
         /// </summary>
         [Required]
         public string RegistryUrl { get; set; }
+
+        /// <summary>
+        /// 編集不可。
+        /// true：編集不可　false：編集可
+        /// </summary>
+        public bool IsNotEditable { get; set; }
 
         /// <summary>
         /// レジストリパス

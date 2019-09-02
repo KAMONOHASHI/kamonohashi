@@ -170,6 +170,10 @@ namespace Nssol.Platypus.DataAccess
         /// データタグマップ
         /// </summary>
         public virtual DbSet<TrainingHistoryTagMap> TrainingHistoryTagMaps { get; set; }
+        /// <summary>
+        /// ノートブック履歴
+        /// </summary>
+        public virtual DbSet<NotebookHistory> NotebookHistories { get; set; }
 
         #endregion
 

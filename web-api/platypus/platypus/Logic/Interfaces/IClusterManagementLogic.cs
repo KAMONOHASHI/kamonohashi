@@ -2,12 +2,9 @@
 using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Infrastructure.Infos;
 using Nssol.Platypus.Infrastructure.Types;
-using Nssol.Platypus.LogicModels;
 using Nssol.Platypus.Models;
 using Nssol.Platypus.Models.TenantModels;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Logic.Interfaces
@@ -44,6 +41,12 @@ namespace Nssol.Platypus.Logic.Interfaces
         /// </summary>
         /// <returns>作成したコンテナのステータス</returns>
         Task<Result<ContainerInfo, string>> RunInferenceContainerAsync(InferenceHistory inferenceHistory);
+
+        /// <summary>
+        /// 新規にノートブック用コンテナを作成する。
+        /// </summary>
+        /// <returns>作成したコンテナのステータス</returns>
+        Task<Result<ContainerInfo, string>> RunNotebookContainerAsync(NotebookHistory notebookHistory);
 
         /// <summary>
         /// 全コンテナの情報を取得する
@@ -135,6 +138,14 @@ namespace Nssol.Platypus.Logic.Interfaces
         /// <param name="enabled">実行可否</param>
         /// <returns>更新結果、更新できた場合、true</returns>
         Task<bool> UpdateTensorBoardEnabledLabelAsync(string nodeName, bool enabled);
+
+        /// <summary>
+        /// Notebookの実行可否設定を更新する
+        /// </summary>
+        /// <param name="nodeName">ノード名</param>
+        /// <param name="enabled">実行可否</param>
+        /// <returns>更新結果、更新できた場合、true</returns>
+        Task<bool> UpdateNotebookEnabledLabelAsync(string nodeName, bool enabled);
 
         /// <summary>
         /// 指定されたテナントのクォータ設定をクラスタに反映させる。

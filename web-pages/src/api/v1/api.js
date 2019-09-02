@@ -210,7 +210,22 @@ let api = {
     postHaltById: gen.ApiV1TrainingByIdHaltPost,
     postUserCancelById: gen.ApiV1TrainingByIdUserCancelPost,
     getEventsById: gen.ApiV1TrainingByIdEventsGet,
-    getMount: gen.ApiV1TrainingToMountGet
+    getMount: gen.ApiV1TrainingToMountGet,
+  },
+
+  notebook: {
+    getSimple: gen.ApiV1NotebookSimpleGet,
+    get: gen.ApiV1NotebookGet,
+    post: gen.ApiV1NotebookRunPost,
+    getById: gen.ApiV1NotebookByIdGet,
+    deleteById: gen.ApiV1NotebookByIdDelete,
+    putById: gen.ApiV1NotebookByIdPut,
+    getContainerFilesById: gen.ApiV1NotebookByIdContainer_filesGet,
+    postHaltById: gen.ApiV1NotebookByIdHaltPost,
+    getEventsById: gen.ApiV1NotebookByIdEventsGet,
+    getEndpointById: gen.ApiV1NotebookByIdEndpointGet,
+    getFilesById: gen.ApiV1NotebookByIdContainer_filesGet,
+    postRerun: gen.ApiV1NotebookByIdRerunPost
   },
 
   inference: {
