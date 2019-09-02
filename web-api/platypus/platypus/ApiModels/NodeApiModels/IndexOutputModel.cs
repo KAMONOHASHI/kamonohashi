@@ -1,9 +1,5 @@
-﻿using Nssol.Platypus.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Nssol.Platypus.Infrastructure;
+﻿using Nssol.Platypus.Infrastructure;
+using Nssol.Platypus.Models;
 
 namespace Nssol.Platypus.ApiModels.NodeApiModels
 {
@@ -21,6 +17,7 @@ namespace Nssol.Platypus.ApiModels.NodeApiModels
             AccessLevel = node.AccessLevel;
             AccessLevelStr = node.AccessLevel.ToString();
             TensorBoardEnabled = node.TensorBoardEnabled;
+            NotebookEnabled = node.NotebookEnabled;
         }
 
         /// <summary>
@@ -55,5 +52,10 @@ namespace Nssol.Platypus.ApiModels.NodeApiModels
         /// TensorBoardコンテナの実行可否
         /// </summary>
         public bool TensorBoardEnabled { get; set; }
+
+        /// <summary>
+        /// Notebookコンテナの実行可否
+        /// </summary>
+        public bool NotebookEnabled { get; set; }
     }
 }

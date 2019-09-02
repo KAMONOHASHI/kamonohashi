@@ -35,6 +35,10 @@ namespace Nssol.Platypus.Infrastructure
         /// </summary>
         DataSet,
         /// <summary>
+        /// ノートブック管理
+        /// </summary>
+        Notebook,
+        /// <summary>
         /// 前処理管理
         /// </summary>
         Preprocess,

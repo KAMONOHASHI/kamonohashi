@@ -25,7 +25,6 @@ using Nssol.Platypus.Services.Interfaces;
 using Nssol.Platypus.Swagger;
 using Swashbuckle.AspNetCore.Swagger;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Nssol.Platypus
@@ -79,6 +78,7 @@ namespace Nssol.Platypus
             services.Configure<WebSecurityOptions>(Configuration.GetSection("WebSecurityOptions"));
             services.Configure<ObjectStorageOptions>(Configuration.GetSection("ObjectStorageOptions"));
             services.Configure<DeleteTensorBoardContainerTimerOptions>(Configuration.GetSection("DeleteTensorBoardContainerTimerOptions"));
+            services.Configure<DeleteNotebookContainerTimerOptions>(Configuration.GetSection("DeleteNotebookContainerTimerOptions"));
             services.Configure<BackupPostgresTimerOptions>(Configuration.GetSection("BackupPostgresTimerOptions"));
             services.Configure<DBInitRetryOptions>(Configuration.GetSection("DBInitRetryOptions"));
 
@@ -97,6 +97,7 @@ namespace Nssol.Platypus
             services.AddTransient<ITrainingLogic, TrainingLogic>();
             services.AddTransient<IInferenceLogic, InferenceLogic>();
             services.AddTransient<IPreprocessLogic, PreprocessLogic>();
+            services.AddTransient<INotebookLogic, NotebookLogic>();
             services.AddTransient<IStorageLogic, StorageLogic>();
             services.AddTransient<ITagLogic, TagLogic>();
             services.AddTransient<IGitLogic, GitLogic>();
@@ -128,6 +129,7 @@ namespace Nssol.Platypus
             services.AddTransient<ITensorBoardContainerRepository, TensorBoardContainerRepository>();
             services.AddTransient<ITrainingHistoryRepository, TrainingHistoryRepository>();
             services.AddTransient<IInferenceHistoryRepository, InferenceHistoryRepository>();
+            services.AddTransient<INotebookHistoryRepository, NotebookHistoryRepository>();
             services.AddTransient<IRoleRepository, RoleRepository>();
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IMenuRepository, MenuRepository>();
@@ -148,6 +150,7 @@ namespace Nssol.Platypus
 
             // HostedService(Timer類)のDI設定
             services.AddSingleton<DeleteTensorBoardContainerTimer>();
+            services.AddSingleton<DeleteNotebookContainerTimer>();
             services.AddSingleton<BackupPostgresTimer>();
             services.AddSingleton<SyncClusterFromDBTimer>();
 
@@ -306,6 +309,7 @@ namespace Nssol.Platypus
 
             // HostedService(Timer類)の登録
             services.AddHostedService<DeleteTensorBoardContainerTimer>();
+            services.AddHostedService<DeleteNotebookContainerTimer>();
             services.AddHostedService<BackupPostgresTimer>();
             services.AddHostedService<SyncClusterFromDBTimer>();
         }

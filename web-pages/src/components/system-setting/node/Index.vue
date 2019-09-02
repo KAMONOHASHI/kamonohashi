@@ -31,6 +31,11 @@
             {{ getTensorBoardFlag(prop.row.tensorBoardEnabled) }}
           </template>
         </el-table-column>
+        <el-table-column prop="notebookEnabled" label="Notebook" width="200px">
+          <template slot-scope="prop">
+            {{ getNotebookFlag(prop.row.notebookEnabled) }}
+          </template>
+        </el-table-column>
         <el-table-column prop="memo" label="メモ" width="auto"/>
       </el-table>
     </el-row>
@@ -87,6 +92,9 @@
         await this.retrieveData()
       },
       getTensorBoardFlag (enabled) {
+        return enabled ? 'OK' : 'NG'
+      },
+      getNotebookFlag (enabled) {
         return enabled ? 'OK' : 'NG'
       },
       openCreateDialog () {

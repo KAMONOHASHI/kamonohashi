@@ -6,10 +6,7 @@ using Nssol.Platypus.DataAccess.Core;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces;
 using Nssol.Platypus.Filters;
 using Nssol.Platypus.Infrastructure;
-using Nssol.Platypus.Infrastructure.Infos;
-using Nssol.Platypus.Logic.Interfaces;
 using Nssol.Platypus.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -136,6 +133,15 @@ namespace Nssol.Platypus.Controllers.spa
                 //ロールの種類は変更できない
                 return JsonBadRequest("Invalid inputs. The role type is not allowed to change.");
             }
+            //データの編集可否チェック
+            if (role.IsNotEditable)
+            {
+                //名称と表示名の変更は許可しない。ソート順の変更のみ許可する。
+                if (role.Name != model.Name || role.DisplayName != model.DisplayName)
+                {
+                    return JsonBadRequest($"Role ID {id.Value} is not editable. Only the sort order is allowed to edit.");
+                }
+            }
 
             role.Name = model.Name;
             role.DisplayName = model.DisplayName;
@@ -175,6 +181,11 @@ namespace Nssol.Platypus.Controllers.spa
             if (role == null)
             {
                 return JsonNotFound($"Role ID {id.Value} is not found.");
+            }
+            //データの編集可否チェック
+            if (role.IsNotEditable)
+            {
+                return JsonBadRequest($"Role ID {id.Value} is not allowed to delete.");
             }
 
             await roleRepository.DeleteAsync(id.Value, unitOfWork);
@@ -288,6 +299,16 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonNotFound($"Role ID {id.Value} is not found.");
             }
+            //データの編集可否チェック
+            if (role.IsNotEditable)
+            {
+                //名称と表示名の変更は許可しない。ソート順の変更のみ許可する。
+                if (role.Name != model.Name || role.DisplayName != model.DisplayName)
+                {
+                    return JsonBadRequest($"Role ID {id.Value} is not editable. Only the sort order is allowed to edit.");
+                }
+            }
+
             //システムロール、共通テナントロール、他のテナントのテナントロールは編集不可
             if (role.IsSystemRole == true || role.TenantId == null || role.TenantId != CurrentUserInfo.SelectedTenant.Id)
             {
@@ -324,6 +345,11 @@ namespace Nssol.Platypus.Controllers.spa
             if (role == null)
             {
                 return JsonNotFound($"Role ID {id.Value} is not found.");
+            }
+            //データの編集可否チェック
+            if (role.IsNotEditable)
+            {
+                return JsonBadRequest($"Role ID {id.Value} is not allowed to delete.");
             }
 
             //システムロール、共通テナントロール、他のテナントのテナントロールは削除不可

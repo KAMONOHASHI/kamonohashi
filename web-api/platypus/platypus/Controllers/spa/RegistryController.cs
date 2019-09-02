@@ -1,19 +1,19 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Nssol.Platypus.ApiModels.RegistryApiModels;
 using Nssol.Platypus.Controllers.Util;
+using Nssol.Platypus.DataAccess.Core;
+using Nssol.Platypus.DataAccess.Repositories.Interfaces;
+using Nssol.Platypus.Infrastructure;
+using Nssol.Platypus.Infrastructure.Infos;
+using Nssol.Platypus.Infrastructure.Types;
 using Nssol.Platypus.Logic.Interfaces;
+using Nssol.Platypus.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Nssol.Platypus.Infrastructure;
 using System.Net;
-using Nssol.Platypus.DataAccess.Repositories.Interfaces;
-using Nssol.Platypus.DataAccess.Core;
-using Nssol.Platypus.ApiModels.RegistryApiModels;
-using Nssol.Platypus.Models;
-using Nssol.Platypus.Infrastructure.Infos;
-using Nssol.Platypus.Infrastructure.Types;
+using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Controllers.spa
 {
@@ -151,6 +151,11 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonNotFound($"Registry ID {id.Value} is not found.");
             }
+            //データの編集可否チェック
+            if (registry.IsNotEditable)
+            {
+                return JsonBadRequest($"Registry ID {id.Value} is not allowed to edit.");
+            }
 
             //同じ名前のレジストリは登録できないので、自分の他に同名の物がいないか、確認する
             var otherRegistry = registryRepository.GetRegistryAll().FirstOrDefault(r => r.Name == model.Name && r.Id != id);
@@ -193,6 +198,11 @@ namespace Nssol.Platypus.Controllers.spa
             if (registry == null)
             {
                 return JsonNotFound($"Registry ID {id.Value} is not found.");
+            }
+            //データの編集可否チェック
+            if (registry.IsNotEditable)
+            {
+                return JsonBadRequest($"Registry ID {id.Value} is not allowed to delete.");
             }
 
             //このレジストリを登録しているテナントがいた場合、削除はできない
