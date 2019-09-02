@@ -705,7 +705,6 @@ namespace Nssol.Platypus.Logic
             //ユーザ入力値検証の都合でどうせ決め打ちしないといけないので、ロジック層で作ってしまう
             string tenantId = CurrentUserInfo.SelectedTenant.Id.ToString("0000");
             string containerName = $"tensorboard-{tenantId}-{trainingHistory.Id}-{DateTime.Now.ToString("yyyyMMddHHmmssffffff")}";
-            var registryMap = registryLogic.GetCurrentRegistryMap(trainingHistory.ContainerRegistryId.Value);
 
             string token = await GetUserAccessTokenAsync();
             if(token == null)
@@ -769,7 +768,6 @@ namespace Nssol.Platypus.Logic
                     new PortMappingModel() { Protocol = "TCP", Port = 6006, TargetPort = 6006, Name = "tensorboard" }
                 },
                 ClusterManagerToken = token,
-                RegistryTokenName = registryMap.RegistryTokenKey,
                 IsNodePort = true //ランダムポート指定。アクセス先ポートが動的に決まるようになる。
             };
 
