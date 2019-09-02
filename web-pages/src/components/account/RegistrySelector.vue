@@ -68,6 +68,11 @@
       tokenChange (password) {
         this.registryForm.password = password
         this.value = this.registryForm
+        for (let i = 0; i < this.registryForms.registries.length; i++) {
+          if (this.registryForm.registryId === this.registryForms.registries[i].id) {
+            this.registryForms.registries[i].password = this.registryForm.password
+          }
+        }
         this.$emit('input', this.value)
       }
     }

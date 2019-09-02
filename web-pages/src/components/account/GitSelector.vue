@@ -69,6 +69,11 @@
       tokenChange (token) {
         this.gitForm.token = token
         this.value = this.gitForm
+        for (let i = 0; i < this.gitForms.gits.length; i++) {
+          if (this.gitForm.gitId === this.gitForms.gits[i].id) {
+            this.gitForms.gits[i].token = this.gitForm.token
+          }
+        }
         this.$emit('input', this.value)
       }
     }
