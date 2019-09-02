@@ -1,11 +1,12 @@
 #!/bin/bash
 
-echo -n "デプロイされているKAMONOHASHIのバージョン: "; read KQI_VERSION
+echo -n "現在デプロイされているKAMONOHASHIのバージョン: "; read KQI_VERSION
 
 # 戻す対象のmigration名の指定
 git clone https://github.com/KAMONOHASHI/kamonohashi -b $KQI_VERSION --depth 1 /var/lib/kamonohashi/src/$KQI_VERSION
-echo "DBに適用されているMigrationファイル一覧"
+echo "-----DBに適用されているMigrationファイル一覧-----"
 ls -1 /var/lib/kamonohashi/src/$KQI_VERSION/web-api/platypus/platypus/Migrations/ | sed s/.cs// | grep -v "Designer" | grep -v "CommonDbContextModelSnapshot"
+echo "-------------------------------------------------"
 echo -n "上記一覧より、戻したい時点のMigrationファイルを指定してください: "; read MIGRATION
 
 # デプロイされているKAMONOHASHIのクリーン
@@ -32,4 +33,12 @@ done
 sed -e s/\"KQI_NODE\"/$KQI_NODE/ -e s/\"KQI_VERSION\"/$KQI_VERSION/ -e s/\"MIGRATION\"/$MIGRATION/ rollback.yml | kubectl delete -f -
 sed -e s/\"KQI_NODE\"/$KQI_NODE/ postgres.yml | kubectl delete -f -
 
-echo "切り戻し処理終了"
+echo "切り戻し処理完了"
+
+echo -e "デプロイ作業を行います。"
+echo "-----過去のバージョン一覧-----"
+ls -1 /var/lib/kamonohashi/deploy-tools/old/
+echo "------------------------------"
+echo -n "上記一覧より、デプロイしたいバージョンを指定してください: "; read DEPLOY_KQI_VERSION
+/var/lib/kamonohashi/deploy-tools/old/$DEPLOY_KQI_VERSION/kamonohashi/deploy-kqi.sh deploy
+echo "KAMONOHASHI $DEPLOY_KQI_VERSION デプロイ完了"
