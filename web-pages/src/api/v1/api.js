@@ -208,7 +208,7 @@ let api = {
     putTensorboardById: gen.ApiV1TrainingByIdTensorboardPut,
     deleteTensorboardById: gen.ApiV1TrainingByIdTensorboardDelete,
     postHaltById: gen.ApiV1TrainingByIdHaltPost,
-    postUserCancelById: gen.ApiV1TrainingByIdUserCancelPost,
+    postUserCancelById: gen.ApiV1TrainingByIdUser_cancelPost,
     getEventsById: gen.ApiV1TrainingByIdEventsGet,
     getMount: gen.ApiV1TrainingToMountGet,
   },
@@ -241,7 +241,7 @@ let api = {
     getContainerFilesById: gen.ApiV1InferencesByIdContainer_filesGet,
     deleteByIdFilesByFileId: gen.ApiV1InferencesByIdFilesByFileIdDelete,
     postHaltById: gen.ApiV1InferencesByIdHaltPost,
-    postUserCancelById: gen.ApiV1InferencesByIdUserCancelPost,
+    postUserCancelById: gen.ApiV1InferencesByIdUser_cancelPost,
     getEventsById: gen.ApiV1InferencesByIdEventsGet
   },
 
