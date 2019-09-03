@@ -2942,13 +2942,13 @@ export const ApiV1InferencesByIdHaltPostURL = function(parameters = {}) {
 /**
 * 推論を途中で強制終了させる。
 ユーザ自身がジョブを停止させた場合。
-* request: ApiV1InferencesByIdUserCancelPost
-* url: ApiV1InferencesByIdUserCancelPostURL
-* method: ApiV1InferencesByIdUserCancelPost_TYPE
-* raw_url: ApiV1InferencesByIdUserCancelPost_RAW_URL
+* request: ApiV1InferencesByIdUser_cancelPost
+* url: ApiV1InferencesByIdUser_cancelPostURL
+* method: ApiV1InferencesByIdUser_cancelPost_TYPE
+* raw_url: ApiV1InferencesByIdUser_cancelPost_RAW_URL
      * @param id - 推論履歴ID
 */
-export const ApiV1InferencesByIdUserCancelPost = function(parameters = {}) {
+export const ApiV1InferencesByIdUser_cancelPost = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v1/inferences/{id}/user-cancel'
@@ -2966,13 +2966,13 @@ export const ApiV1InferencesByIdUserCancelPost = function(parameters = {}) {
   }
   return request('post', domain + path, body, queryParameters, form, config)
 }
-export const ApiV1InferencesByIdUserCancelPost_RAW_URL = function() {
+export const ApiV1InferencesByIdUser_cancelPost_RAW_URL = function() {
   return '/api/v1/inferences/{id}/user-cancel'
 }
-export const ApiV1InferencesByIdUserCancelPost_TYPE = function() {
+export const ApiV1InferencesByIdUser_cancelPost_TYPE = function() {
   return 'post'
 }
-export const ApiV1InferencesByIdUserCancelPostURL = function(parameters = {}) {
+export const ApiV1InferencesByIdUser_cancelPostURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v1/inferences/{id}/user-cancel'
@@ -7969,13 +7969,13 @@ export const ApiV1TrainingByIdHaltPostURL = function(parameters = {}) {
 /**
 * 学習を途中で強制終了させる。
 ユーザ自身がジョブを停止させた場合。
-* request: ApiV1TrainingByIdUserCancelPost
-* url: ApiV1TrainingByIdUserCancelPostURL
-* method: ApiV1TrainingByIdUserCancelPost_TYPE
-* raw_url: ApiV1TrainingByIdUserCancelPost_RAW_URL
+* request: ApiV1TrainingByIdUser_cancelPost
+* url: ApiV1TrainingByIdUser_cancelPostURL
+* method: ApiV1TrainingByIdUser_cancelPost_TYPE
+* raw_url: ApiV1TrainingByIdUser_cancelPost_RAW_URL
      * @param id - 学習履歴ID
 */
-export const ApiV1TrainingByIdUserCancelPost = function(parameters = {}) {
+export const ApiV1TrainingByIdUser_cancelPost = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v1/training/{id}/user-cancel'
@@ -7993,13 +7993,13 @@ export const ApiV1TrainingByIdUserCancelPost = function(parameters = {}) {
   }
   return request('post', domain + path, body, queryParameters, form, config)
 }
-export const ApiV1TrainingByIdUserCancelPost_RAW_URL = function() {
+export const ApiV1TrainingByIdUser_cancelPost_RAW_URL = function() {
   return '/api/v1/training/{id}/user-cancel'
 }
-export const ApiV1TrainingByIdUserCancelPost_TYPE = function() {
+export const ApiV1TrainingByIdUser_cancelPost_TYPE = function() {
   return 'post'
 }
-export const ApiV1TrainingByIdUserCancelPostURL = function(parameters = {}) {
+export const ApiV1TrainingByIdUser_cancelPostURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v1/training/{id}/user-cancel'
