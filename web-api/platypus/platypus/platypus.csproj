@@ -88,6 +88,9 @@
     <None Update="ServiceModels\KubernetesModels\Templates\ConfigMap\inference_scripts.yaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="ServiceModels\KubernetesModels\Templates\ConfigMap\notebook_scripts.yaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="ServiceModels\KubernetesModels\Templates\ConfigMap\preproc_scripts.yaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
