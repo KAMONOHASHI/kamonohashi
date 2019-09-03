@@ -134,6 +134,8 @@ namespace Nssol.Platypus.Controllers.spa
             data = data
                 .SearchLong(d => d.Id, filter.Id)
                 .SearchString(d => d.Name, filter.Name)
+                .SearchTime(d => d.CreatedAt, filter.CreatedAt)
+                .SearchString(d => d.CreatedBy, filter.CreatedBy)
                 .SearchString(d => d.Memo, filter.Memo)
                 .SearchString(d => d.GetStatus().ToString(), filter.Status);
             return data;
