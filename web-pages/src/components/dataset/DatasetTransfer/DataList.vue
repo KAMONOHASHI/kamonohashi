@@ -92,6 +92,7 @@
     </Container>
     <div class="footer" :class="'color-' + viewInfo.colorIndex">
       <el-pagination
+        ref="pagination"
         style="position: relative; top: 6px; "
         layout="total,prev,next,jumper"
         :page-size="viewInfo.currentPageSize"
@@ -141,6 +142,13 @@
     created () {
       this.bind()
       this.$forceUpdate()
+    },
+    beforeUpdate () {
+      for (let i = 0; i < this.$refs.pagination.$children.length; i++) {
+        if (this.$refs.pagination.$children[i].$el.className === 'el-pagination__jump') {
+          this.$refs.pagination.$children[i].$el.lastChild.textContent = '／' + this.getTotalPages(this.viewInfo) + 'ページ目へ'
+        }
+      }
     },
     watch: {
       async width () {
@@ -252,8 +260,14 @@
       },
       emitPaging (entryName, page, searchCondition) {
         this.$emit('paging', {entryName, page, searchCondition})
+      },
+      getTotalPages () {
+        if (this.viewInfo.filteredTotal !== undefined && this.viewInfo.filteredTotal !== 0 && this.viewInfo.filteredTotal > this.viewInfo.currentPageSize) {
+          return Math.ceil(this.viewInfo.filteredTotal / this.viewInfo.currentPageSize)
+        } else {
+          return 1
+        }
       }
-
     }
   }
 </script>
