@@ -186,7 +186,7 @@ namespace Nssol.Platypus.Controllers.spa
             var data = trainingHistoryRepository.GetAllIncludeDataSetWithOrdering();
 
             // ステータスを限定する
-            data = data.Where(t => t.GetStatus().ToString() == "Completed" || t.GetStatus().ToString() == "UserCanceled");
+            data = data.Where(t => t.GetStatus().ToString() == ContainerStatus.Completed.Name || t.GetStatus().ToString() == ContainerStatus.UserCanceled.Name);
 
             // SQLが多重実行されることを防ぐため、ToListで即時発行させたうえで、結果を生成
             return JsonOK(data.ToList().Select(history => GetUpdatedIndexOutputModelAsync(history).Result));
