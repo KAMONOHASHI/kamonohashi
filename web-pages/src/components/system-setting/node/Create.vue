@@ -32,6 +32,12 @@
                    inactive-text="実行しない"
                    active-text="実行する"/>
       </el-form-item>
+      <el-form-item label="Notebook 実行可否">
+        <el-switch v-model="notebookEnabled"
+                   style="width: 100%;"
+                   inactive-text="実行しない"
+                   active-text="実行する"/>
+      </el-form-item>
       <el-row class="right-button-group footer">
         <el-button @click="emitCancel">キャンセル</el-button>
         <el-button type="primary" @click="createNode">登録</el-button>
@@ -59,11 +65,12 @@
         name: undefined,
         memo: undefined,
         partition: undefined,
-        accessLevel: undefined,
+        accessLevel: 2,
         selectedTenants: [], // Selected tenants which can access this node.
         tenants: [], // Tenants to display on a transfer component.
         titles: ['アクセス拒否', 'アクセス許可'], // The title of the transfer component.
         tensorBoardEnabled: undefined,
+        notebookEnabled: undefined,
         rules: {
           name: [{
             required: true,
@@ -86,7 +93,8 @@
                   partition: this.partition,
                   accessLevel: this.accessLevel,
                   assignedTenantIds: this.accessLevel === 1 ? this.selectedTenants : [],
-                  tensorBoardEnabled: this.tensorBoardEnabled
+                  tensorBoardEnabled: this.tensorBoardEnabled,
+                  notebookEnabled: this.notebookEnabled
                 }
                 await api.nodes.admin.post({model: params})
                 this.emitDone()

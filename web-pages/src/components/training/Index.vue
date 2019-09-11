@@ -13,6 +13,7 @@
         />
       </el-col>
       <el-col class="right-top-button" :span="8">
+        <el-button v-if="multipleSelection.length!==0" @click="showConfirm">一括削除</el-button>
         <el-button @click="openCreateDialog()" icon="el-icon-edit-outline" type="primary" plain>
           新規実行
         </el-button>
@@ -24,7 +25,9 @@
       </el-col>
     </el-row>
     <el-row>
-      <el-table class="data-table pl-index-table" :data="tableData" @row-click="openEditDialog" border>
+      <el-table class="data-table pl-index-table" :data="tableData" @row-click="openEditDialog"
+                @selection-change="handleSelectionChange" border>
+        <el-table-column type="selection" width="55px"></el-table-column>
         <el-table-column width="25px">
           <div slot-scope="scope">
             <i class="el-icon-star-on favorite" v-if="scope.row.favorite"></i>
@@ -34,7 +37,7 @@
         <el-table-column prop="name" label="学習名" width="120px"/>
         <el-table-column prop="createdAt" label="開始日時" width="200px"/>
         <el-table-column prop="dataSet.name" label="データセット" width="120px"/>
-        <el-table-column prop="entryPoint" label="実行コマンド" width="auto"/>
+        <el-table-column prop="entryPoint" label="実行コマンド" width="auto" class-name="entry-point-column"/>
         <el-table-column prop="memo" label="メモ" width="auto"/>
         <el-table-column width="25px">
           <div slot-scope="scope">
@@ -98,7 +101,7 @@
             prop: 'status',
             name: 'ステータス',
             type: 'select',
-            option: {items: ['None', 'Pending', 'Succeeded', 'Running', 'Completed', 'Failed', 'Killed', 'Invalid', 'Forbidden', 'Multiple', 'Empty', 'Error']}
+            option: {items: ['None', 'Pending', 'Succeeded', 'Running', 'Completed', 'UserCanceled', 'Failed', 'Killed', 'Invalid', 'Forbidden', 'Multiple', 'Empty', 'Error']}
           }
         ],
         total: 0,
@@ -106,7 +109,8 @@
         statuses: [],
         currentPage: 1,
         currentPageSize: 10,
-        entryPoint: undefined
+        entryPoint: undefined,
+        multipleSelection: []
       }
     },
     async created () {
@@ -122,6 +126,10 @@
         let response = await api.training.get(params)
         this.tableData = response.data
         this.total = parseInt(response.headers['x-total-count'])
+      },
+      // checkboxの要素変更
+      handleSelectionChange (val) {
+        this.multipleSelection = val
       },
       // ページのサイズ(表示件数)変更
       async handleSizeChange (size) {
@@ -154,6 +162,38 @@
       async search () {
         this.currentPage = 1
         await this.retrieveData()
+      },
+      async showConfirm () {
+        let confirmMessage = '学習履歴を ' + this.multipleSelection.length + ' 件削除しますか。'
+        await this.$confirm(confirmMessage, 'Warning', {
+          distinguishCancelAndClose: true,
+          confirmButtonText: 'はい',
+          cancelButtonText: 'キャンセル',
+          type: 'warning'
+        })
+        .then(() => {
+          this.deleteJob() // 削除を実施
+        })
+        .catch(() => {
+          // キャンセル時はなにもしないので例外を無視
+        })
+      },
+      async deleteJob () {
+        let successCount = 0
+        for (let i = 0; i < this.multipleSelection.length; i++) {
+          try {
+            await api.training.deleteById({id: this.multipleSelection[i].id})
+            successCount++
+            this.error = null
+          } catch (e) {
+            this.error = e
+          }
+        }
+        await this.$notify.info({
+          type: 'info',
+          message: '学習履歴を削除しました。(成功：' + successCount + ' 件、 失敗：' + (this.multipleSelection.length - successCount) + ' 件)'
+        })
+        this.currentChange(1)
       },
       copyCreate (parentId) {
         this.$router.push('/training/run/' + parentId)
@@ -189,5 +229,18 @@
   .favorite {
     color: rgb(230, 162, 60);
   }
+</style>
 
+<style lang="scss">
+  .entry-point-column {
+    display: table-cell;
+  }
+
+  .entry-point-column div.cell {
+    /*! autoprefixer: off */
+    overflow: hidden;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    display: -webkit-box;
+  }
 </style>

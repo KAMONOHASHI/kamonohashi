@@ -112,6 +112,10 @@ namespace Nssol.Platypus.Controllers.spa
                 //パスワードに空文字は許可しない
                 return JsonBadRequest($"Password is NOT allowed to set empty string.");
             }
+
+            // 名前の前後の空白は除去
+            model.Name = model.Name.Trim();
+
             //データの存在チェック
             User user = userRepository.GetUser(model.Name);
             if (user != null)

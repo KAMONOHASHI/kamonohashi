@@ -135,6 +135,10 @@ namespace Nssol.Platypus.Logic
                 {
                     return CommonDiLogic.DynamicDi<PrivateDockerRegistryService>();
                 }
+                else if (registry.ServiceType == RegistryServiceType.NvidiaGPUCloud)
+                {
+                    return CommonDiLogic.DynamicDi<NvidiaGPUCloudRegistryService>();
+                }
             }
             return null;
         }

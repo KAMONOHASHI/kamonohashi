@@ -8,10 +8,10 @@
     <el-form ref="updateForm" :model="form" :rules="rules">
       <pl-display-error :error="error"/>
       <el-form-item label="ロール名" prop="name">
-        <el-input v-model="form.name" :disabled="!isCustomRole"/>
+        <el-input v-model="form.name" :disabled="!isCustomRole || isNotEditable"/>
       </el-form-item>
       <el-form-item label="表示名" prop="displayName">
-        <el-input v-model="form.displayName" :disabled="!isCustomRole"/>
+        <el-input v-model="form.displayName" :disabled="!isCustomRole || isNotEditable"/>
       </el-form-item>
       <el-form-item label="ソート順" prop="sortOrder">
         <br/>
@@ -23,7 +23,7 @@
           <el-button @click="handleUpdate" class="pull-right btn-update" type="primary" icon="el-icon-edit-outline">保存
           </el-button>
           <el-button @click="handleCancel" class="pull-right btn-cancel" icon="el-icon-close">キャンセル</el-button>
-          <pl-delete-button class="pull-left btn-update" @delete="handleDelete"/>
+          <pl-delete-button class="pull-left btn-update" @delete="handleDelete" :disabled="isNotEditable"/>
         </el-col>
       </el-row>
       <el-row v-else>
@@ -37,14 +37,12 @@
 
 <script>
   import DisplayError from '@/components/common/DisplayError'
-  import DisplayTextForm from '@/components/common/DisplayTextForm'
   import DeleteButton from '@/components/common/DeleteButton.vue'
   import api from '@/api/v1/api'
 
   export default {
     name: 'ManageRoleEdit',
     components: {
-      'pl-display-text-form': DisplayTextForm,
       'pl-display-error': DisplayError,
       'pl-delete-button': DeleteButton
     },
@@ -56,6 +54,7 @@
         dialogVisible: true,
         error: null,
         isCustomRole: false,
+        isNotEditable: false,
         form: {
           name: '',
           displayName: '',
@@ -82,6 +81,7 @@
           this.form.sortOrder = data.sortOrder
           this.error = null
           this.isCustomRole = data.tenantId != null
+          this.isNotEditable = data.isNotEditable
         } catch (e) {
           this.error = e
         }

@@ -48,7 +48,7 @@
             </el-col>
 
             <el-col :span="dataSpanSize">{{data.createdAt}}</el-col>
-            <el-col :span="tagSpanSize">
+            <el-col :span="tagSpanSize" style="line-height: normal;">
               <el-tag v-for="(tag, i) in data.tags" :key="i" size="mini" style="margin-right:3px;">
                 {{tag}}
               </el-tag>
@@ -75,9 +75,11 @@
                   <pl-display-text label="メモ" :value="data.memo"/>
                   <el-form-item label="タグ">
                     <br clear="all"/>
-                    <el-tag v-for="(tag, i) in data.tags" :key="i" size="mini" style="margin-right:3px;">
-                      {{tag}}
-                    </el-tag>
+                    <span style="display: block; line-height: normal;">
+                      <el-tag v-for="(tag, i) in data.tags" :key="i" size="mini" style="margin-right:3px;">
+                        {{tag}}
+                      </el-tag>
+                    </span>
                   </el-form-item>
                 </div>
                 <i class="el-icon-info" slot="reference"/>
@@ -90,6 +92,7 @@
     </Container>
     <div class="footer" :class="'color-' + viewInfo.colorIndex">
       <el-pagination
+        ref="pagination"
         style="position: relative; top: 6px; "
         layout="total,prev,next,jumper"
         :page-size="viewInfo.currentPageSize"
@@ -139,6 +142,13 @@
     created () {
       this.bind()
       this.$forceUpdate()
+    },
+    beforeUpdate () {
+      for (let i = 0; i < this.$refs.pagination.$children.length; i++) {
+        if (this.$refs.pagination.$children[i].$el.className === 'el-pagination__jump') {
+          this.$refs.pagination.$children[i].$el.lastChild.textContent = '／' + this.getTotalPages(this.viewInfo) + 'ページ目へ'
+        }
+      }
     },
     watch: {
       async width () {
@@ -250,8 +260,14 @@
       },
       emitPaging (entryName, page, searchCondition) {
         this.$emit('paging', {entryName, page, searchCondition})
+      },
+      getTotalPages () {
+        if (this.viewInfo.filteredTotal !== undefined && this.viewInfo.filteredTotal !== 0 && this.viewInfo.filteredTotal > this.viewInfo.currentPageSize) {
+          return Math.ceil(this.viewInfo.filteredTotal / this.viewInfo.currentPageSize)
+        } else {
+          return 1
+        }
       }
-
     }
   }
 </script>
@@ -294,6 +310,13 @@
     border-radius: 2px 2px 2px 2px;
     margin-top: 8px;
     line-height: 30px;
+  }
+
+  .el-tag--mini {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .color-0 {

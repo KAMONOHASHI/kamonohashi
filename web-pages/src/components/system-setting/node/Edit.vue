@@ -32,6 +32,12 @@
                    inactive-text="実行しない"
                    active-text="実行する"/>
       </el-form-item>
+      <el-form-item label="Notebook">
+        <el-switch v-model="notebookEnabled"
+                   style="width: 100%;"
+                   inactive-text="実行しない"
+                   active-text="実行する"/>
+      </el-form-item>
       <el-row :gutter="20" class="footer">
         <el-col :span="12">
           <pl-delete-button @delete="deleteNode"/>
@@ -72,6 +78,7 @@
         tenants: [], // Tenants to display on a transfer component.
         titles: ['アクセス拒否', 'アクセス許可'], // The title of the transfer component.
         tensorBoardEnabled: undefined,
+        notebookEnabled: undefined,
         rules: {
           name: [{
             required: true,
@@ -98,7 +105,8 @@
                   partition: this.partition,
                   accessLevel: this.accessLevel,
                   assignedTenantIds: this.accessLevel === 1 ? this.selectedTenants : [],
-                  tensorBoardEnabled: this.tensorBoardEnabled
+                  tensorBoardEnabled: this.tensorBoardEnabled,
+                  notebookEnabled: this.notebookEnabled
                 }
               }
               await api.nodes.admin.put(params)
@@ -120,6 +128,7 @@
           return t.id
         }) : []
         this.tensorBoardEnabled = result.tensorBoardEnabled
+        this.notebookEnabled = result.notebookEnabled
 
         // retrieve tenant to set up a transfer list.
         let allTenants = (await api.tenant.admin.get()).data

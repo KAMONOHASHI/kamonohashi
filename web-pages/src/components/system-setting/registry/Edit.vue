@@ -7,13 +7,13 @@
     <el-form ref="createForm" :model="this" :rules="rules">
       <pl-display-error :error="error"/>
       <el-form-item label="レジストリ名" prop="name">
-        <el-input v-model="name"/>
+        <el-input v-model="name" :disabled="isNotEditable"/>
       </el-form-item>
 
       <h3>レジストリ情報</h3>
       <div style="padding-left: 30px; padding-right: 10px;">
         <el-form-item label="種別" prop="serviceType">
-          <el-select v-model="serviceType" style="width: 100%;">
+          <el-select v-model="serviceType" style="width: 100%;" :disabled="isNotEditable">
             <el-option
               v-for="service in serviceTypes"
               :key="service.id"
@@ -24,24 +24,24 @@
         <el-row>
           <el-col :span="16">
             <el-form-item label="ホスト名" prop="host">
-              <el-input v-model="host"/>
+              <el-input v-model="host" :disabled="isNotEditable"/>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="ポート" prop="portNo">
-              <el-input-number v-model="portNo" :min="1" :max="65535" controls-position="right" style="width: 100%;"/>
+              <el-input-number v-model="portNo" :min="1" :max="65535" controls-position="right" style="width: 100%;" :disabled="isNotEditable"/>
             </el-form-item>
           </el-col>
         </el-row>
         <el-form-item label="API URL" prop="apiUrl">
-          <el-input v-model="apiUrl"/>
+          <el-input v-model="apiUrl" :disabled="isNotEditable"/>
         </el-form-item>
         <el-form-item label="URL" prop="registryUrl">
-          <el-input v-model="registryUrl"/>
+          <el-input v-model="registryUrl" :disabled="isNotEditable"/>
         </el-form-item>
         <div v-if="serviceType === 2">
           <el-form-item label="プロジェクト名" prop="projectName">
-            <el-input v-model="projectName"/>
+            <el-input v-model="projectName" :disabled="isNotEditable"/>
           </el-form-item>
         </div>
         <div v-else></div>
@@ -50,11 +50,11 @@
 
       <el-row :gutter="20" class="footer">
         <el-col :span="12">
-          <pl-delete-button @delete="deleteRegistry"/>
+          <pl-delete-button @delete="deleteRegistry" :disabled="isNotEditable"/>
         </el-col>
         <el-col class="right-button-group" :span="12">
           <el-button @click="emitCancel">キャンセル</el-button>
-          <el-button type="primary" @click="updateRegistry">保存</el-button>
+          <el-button type="primary" @click="updateRegistry" :disabled="isNotEditable">保存</el-button>
         </el-col>
       </el-row>
     </el-form>
@@ -88,6 +88,7 @@
         registryUrl: undefined,
         apiUrl: undefined,
         serviceTypes: Array, // /api/v1/admin/registry/types の結果
+        isNotEditable: false,
         rules: {
           name: [{required: true, message: '必須項目です'}],
           host: [{required: true, message: '必須項目です'}],
@@ -140,6 +141,7 @@
         this.apiUrl = result.apiUrl
         this.projectName = result.projectName
         this.serviceType = result.serviceType
+        this.isNotEditable = result.isNotEditable
       },
       async deleteRegistry () {
         try {

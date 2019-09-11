@@ -218,3 +218,132 @@ class InferenceApi(object):
             _preload_content=params.get('_preload_content', True),
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
+
+    def list_inference(self, **kwargs):  # noqa: E501
+        """list_inference  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async_req=True
+        >>> thread = api.list_inference(async_req=True)
+        >>> result = thread.get()
+
+        :param async_req bool
+        :param str id:
+        :param str name:
+        :param str started_at:
+        :param str data_set:
+        :param str memo:
+        :param str status:
+        :param str entry_point:
+        :param str parent_name:
+        :param int per_page:
+        :param int page:
+        :param bool with_total:
+        :return: list[InferenceApiModelsInferenceIndexOutputModel]
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async_req'):
+            return self.list_inference_with_http_info(**kwargs)  # noqa: E501
+        else:
+            (data) = self.list_inference_with_http_info(**kwargs)  # noqa: E501
+            return data
+
+    def list_inference_with_http_info(self, **kwargs):  # noqa: E501
+        """list_inference  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async_req=True
+        >>> thread = api.list_inference_with_http_info(async_req=True)
+        >>> result = thread.get()
+
+        :param async_req bool
+        :param str id:
+        :param str name:
+        :param str started_at:
+        :param str data_set:
+        :param str memo:
+        :param str status:
+        :param str entry_point:
+        :param str parent_name:
+        :param int per_page:
+        :param int page:
+        :param bool with_total:
+        :return: list[InferenceApiModelsInferenceIndexOutputModel]
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['id', 'name', 'started_at', 'data_set', 'memo', 'status', 'entry_point', 'parent_name', 'per_page', 'page', 'with_total']  # noqa: E501
+        all_params.append('async_req')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method list_inference" % key
+                )
+            params[key] = val
+        del params['kwargs']
+
+        collection_formats = {}
+
+        path_params = {}
+
+        query_params = []
+        if 'id' in params:
+            query_params.append(('Id', params['id']))  # noqa: E501
+        if 'name' in params:
+            query_params.append(('Name', params['name']))  # noqa: E501
+        if 'started_at' in params:
+            query_params.append(('StartedAt', params['started_at']))  # noqa: E501
+        if 'data_set' in params:
+            query_params.append(('DataSet', params['data_set']))  # noqa: E501
+        if 'memo' in params:
+            query_params.append(('Memo', params['memo']))  # noqa: E501
+        if 'status' in params:
+            query_params.append(('Status', params['status']))  # noqa: E501
+        if 'entry_point' in params:
+            query_params.append(('EntryPoint', params['entry_point']))  # noqa: E501
+        if 'parent_name' in params:
+            query_params.append(('ParentName', params['parent_name']))  # noqa: E501
+        if 'per_page' in params:
+            query_params.append(('perPage', params['per_page']))  # noqa: E501
+        if 'page' in params:
+            query_params.append(('page', params['page']))  # noqa: E501
+        if 'with_total' in params:
+            query_params.append(('withTotal', params['with_total']))  # noqa: E501
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = ['api_key']  # noqa: E501
+
+        return self.api_client.call_api(
+            '/api/v1/inferences', 'GET',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='list[InferenceApiModelsInferenceIndexOutputModel]',  # noqa: E501
+            auth_settings=auth_settings,
+            async_req=params.get('async_req'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)

@@ -162,8 +162,8 @@ namespace Nssol.Platypus.ApiModels.ResourceApiModels
 
         public void Add(ContainerDetailsOutputModel model)
         {
-            AssignedCpu += model.Cpu;
-            AssignedMemory += model.Memory;
+            AssignedCpu = Util.SumOfFloat(AssignedCpu, model.Cpu);
+            AssignedMemory = Util.SumOfFloat(AssignedMemory, model.Memory);
             AssignedGpu += model.Gpu;
             ContainerResourceList.Add(model);
         }
@@ -173,8 +173,8 @@ namespace Nssol.Platypus.ApiModels.ResourceApiModels
         /// </summary>
         public void IncrementData(ContainerDetailsOutputModel model)
         {
-            AssignedCpu += model.Cpu;
-            AssignedMemory += model.Memory;
+            AssignedCpu = Util.SumOfFloat(AssignedCpu, model.Cpu);
+            AssignedMemory = Util.SumOfFloat(AssignedMemory, model.Memory);
             AssignedGpu += model.Gpu;
         }
     }

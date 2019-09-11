@@ -126,7 +126,7 @@
             <div v-if="statusType === 'Running'  || statusType === 'Error'">
               <el-form-item label="操作">
                 <div class="el-input">
-                  <pl-delete-button buttonLabel="ジョブ停止" @delete="haltJob" message="ジョブを停止しますか"/>
+                  <pl-delete-button buttonLabel="ジョブ停止" @delete="showConfirm" message="ジョブを停止しますか"/>
                 </div>
                 <div v-if="status === 'Running'">
                   <div class="el-input" style="padding: 10px 0">
@@ -177,8 +177,6 @@
   import DeleteButton from '@/components/common/DeleteButton.vue'
   import FileManager from '@/components/common/FileManager.vue'
   import DataSetDetails from '@/components/common/DatasetDetails.vue'
-  import ContainerSelector from '@/components/common/ContainerSelector.vue'
-  import TrainingHistorySelector from '@/components/common/TrainingHistorySelector.vue'
   import TrainingHistoryDetails from '@/components/common/TrainingHistoryDetails.vue'
   import api from '@/api/v1/api'
 
@@ -190,8 +188,6 @@
       'pl-display-error': DisplayError,
       'pl-file-manager': FileManager,
       'pl-dataset-details': DataSetDetails,
-      'pl-container-selector': ContainerSelector,
-      'pl-training-history-selector': TrainingHistorySelector,
       'pl-training-history-details': TrainingHistoryDetails
     },
     props: {
@@ -254,9 +250,35 @@
         this.loading = false
         this.$store.commit('setLoading', true)
       },
+      async showConfirm () {
+        let confirmMessage = '正常停止しますか、異常停止しますか。'
+        await this.$confirm(confirmMessage, 'Warning', {
+          distinguishCancelAndClose: true,
+          confirmButtonText: '正常停止',
+          cancelButtonText: '異常停止',
+          type: 'warning'
+        })
+        .then(() => {
+          this.userCancelJob() // 正常停止（Status=UserCanceled）
+        })
+        .catch(action => {
+          if (action === 'cancel') {
+            this.haltJob() // 異常停止（Status=Killed）
+          }
+        })
+      },
       async haltJob () {
         try {
           await api.inference.postHaltById({id: this.id})
+          await this.getDetail()
+          this.error = null
+        } catch (e) {
+          this.error = e
+        }
+      },
+      async userCancelJob () {
+        try {
+          await api.inference.postUserCancelById({id: this.id})
           await this.getDetail()
           this.error = null
         } catch (e) {

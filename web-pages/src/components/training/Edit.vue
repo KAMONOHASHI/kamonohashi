@@ -130,18 +130,12 @@
             <div v-if="statusType === 'Running'  || statusType === 'Error'">
               <el-form-item label="操作">
                 <div class="el-input">
-                  <pl-delete-button buttonLabel="ジョブ停止" @delete="haltJob" message="ジョブを停止しますか"/>
+                  <pl-delete-button buttonLabel="ジョブ停止" @delete="showConfirm" message="ジョブを停止しますか"/>
                 </div>
                 <div v-if="status === 'Running'">
                   <div class="el-input" style="padding: 10px 0">
                     <el-button @click="emitShell">Shell起動</el-button>
                   </div>
-                  <el-form-item label="エンドポイント">
-                    <div v-for="endpoint in endpoints" :key="endpoint.key" class="el-input">
-                      <span>{{endpoint.key}}</span>
-                      <span>{{endpoint.url}}</span>
-                    </div>
-                  </el-form-item>
                 </div>
               </el-form-item>
             </div>
@@ -188,8 +182,6 @@
   import DeleteButton from '@/components/common/DeleteButton.vue'
   import FileManager from '@/components/common/FileManager.vue'
   import DataSetDetails from '@/components/common/DatasetDetails.vue'
-  import ContainerSelector from '@/components/common/ContainerSelector.vue'
-  import TrainingHistorySelector from '@/components/common/TrainingHistorySelector.vue'
   import TrainingHistoryDetails from '@/components/common/TrainingHistoryDetails.vue'
   import TensorBoardHandler from '@/components/training/TensorboardHandler.vue'
   import api from '@/api/v1/api'
@@ -202,8 +194,6 @@
       'pl-display-error': DisplayError,
       'pl-file-manager': FileManager,
       'pl-dataset-details': DataSetDetails,
-      'pl-container-selector': ContainerSelector,
-      'pl-training-history-selector': TrainingHistorySelector,
       'pl-training-history-details': TrainingHistoryDetails,
       'pl-tensorboard-handler': TensorBoardHandler
     },
@@ -235,7 +225,6 @@
         memory: undefined,
         gpu: undefined,
         partition: undefined,
-        endpoints: undefined,
         // スクリプトがこけたときなどに"failed"になる
         status: undefined,
         // コンテナの生死等
@@ -260,9 +249,35 @@
       }
     },
     methods: {
+      async showConfirm () {
+        let confirmMessage = '正常停止しますか、異常停止しますか。'
+        await this.$confirm(confirmMessage, 'Warning', {
+          distinguishCancelAndClose: true,
+          confirmButtonText: '正常停止',
+          cancelButtonText: '異常停止',
+          type: 'warning'
+        })
+        .then(() => {
+          this.userCancelJob() // 正常停止（Status=UserCanceled）
+        })
+        .catch(action => {
+          if (action === 'cancel') {
+            this.haltJob() // 異常停止（Status=Killed）
+          }
+        })
+      },
       async haltJob () {
         try {
           await api.training.postHaltById({id: this.trainingId})
+          await this.getDetail()
+          this.error = null
+        } catch (e) {
+          this.error = e
+        }
+      },
+      async userCancelJob () {
+        try {
+          await api.training.postUserCancelById({id: this.trainingId})
           await this.getDetail()
           this.error = null
         } catch (e) {
@@ -314,7 +329,6 @@
         this.gpu = data.gpu
         this.partition = data.partition
         this.statusDetail = data.statusDetail
-        this.endpoints = data.endpoints
         this.status = data.status === data.statusType
           ? data.status : (data.statusType + ' (' + data.status + ')')
         this.statusType = data.statusType
@@ -388,12 +402,12 @@
       },
       async emitInferenceCreate () {
         let data = (await api.training.getById({id: this.trainingId})).data
-        if (data.status === 'Completed') {
+        if (data.status === 'Completed' || data.status === 'UserCanceled') {
           this.$router.push('/inference/create/' + this.trainingId + '?origin=train')
         } else {
           this.$notify.info({
             title: 'Information',
-            message: '完了済みの学習のみ推論を実行できます。'
+            message: 'ステータスがCompletedまたはUserCanceledの学習のみ推論を実行できます。'
           })
         }
       },

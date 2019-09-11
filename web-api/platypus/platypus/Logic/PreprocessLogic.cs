@@ -1,11 +1,9 @@
 ﻿using Nssol.Platypus.DataAccess.Core;
-using Nssol.Platypus.DataAccess.Repositories.Interfaces;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories;
 using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Infrastructure.Types;
 using Nssol.Platypus.Logic.Interfaces;
 using Nssol.Platypus.Models.TenantModels;
-using System;
 using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Logic
@@ -45,15 +43,7 @@ namespace Nssol.Platypus.Logic
         /// <param name="force">他テナントに対する変更を許可するか</param>
         public async Task<bool> DeleteAsync(PreprocessHistory preprocessHistory, bool force)
         {
-            var status = ContainerStatus.Convert(preprocessHistory.Status);
-            if (status.Exist())
-            {
-                //コンテナが動いていれば、停止する
-                await clusterManagementLogic.DeleteContainerAsync(
-                    ContainerType.Preprocessing, preprocessHistory.Name, CurrentUserInfo.SelectedTenant.Name, force);
-            }
-
-            // 前処理結果の削除
+            // 前処理結果を削除
             bool result = true;
             foreach (var outputDataId in preprocessHistoryRepository.GetPreprocessOutputs(preprocessHistory.Id))
             {
@@ -66,6 +56,14 @@ namespace Nssol.Platypus.Logic
 
             // 結果に関わらずコミット
             unitOfWork.Commit();
+
+            var status = ContainerStatus.Convert(preprocessHistory.Status);
+            if (status.Exist())
+            {
+                //コンテナが動いていれば、停止する
+                await clusterManagementLogic.DeleteContainerAsync(
+                    ContainerType.Preprocessing, preprocessHistory.Name, CurrentUserInfo.SelectedTenant.Name, force);
+            }
 
             return result;
         }

@@ -32,25 +32,30 @@ class TrainingApiModelsEditInputModel(object):
     """
     swagger_types = {
         'favorite': 'bool',
-        'memo': 'str'
+        'memo': 'str',
+        'name': 'str'
     }
 
     attribute_map = {
         'favorite': 'favorite',
-        'memo': 'memo'
+        'memo': 'memo',
+        'name': 'name'
     }
 
-    def __init__(self, favorite=None, memo=None):  # noqa: E501
+    def __init__(self, favorite=None, memo=None, name=None):  # noqa: E501
         """TrainingApiModelsEditInputModel - a model defined in Swagger"""  # noqa: E501
 
         self._favorite = None
         self._memo = None
+        self._name = None
         self.discriminator = None
 
         if favorite is not None:
             self.favorite = favorite
         if memo is not None:
             self.memo = memo
+        if name is not None:
+            self.name = name
 
     @property
     def favorite(self):
@@ -93,6 +98,29 @@ class TrainingApiModelsEditInputModel(object):
         """
 
         self._memo = memo
+
+    @property
+    def name(self):
+        """Gets the name of this TrainingApiModelsEditInputModel.  # noqa: E501
+
+
+        :return: The name of this TrainingApiModelsEditInputModel.  # noqa: E501
+        :rtype: str
+        """
+        return self._name
+
+    @name.setter
+    def name(self, name):
+        """Sets the name of this TrainingApiModelsEditInputModel.
+
+
+        :param name: The name of this TrainingApiModelsEditInputModel.  # noqa: E501
+        :type: str
+        """
+        if name is not None and len(name) < 1:
+            raise ValueError("Invalid value for `name`, length must be greater than or equal to `1`")  # noqa: E501
+
+        self._name = name
 
     def to_dict(self):
         """Returns the model properties as a dict"""

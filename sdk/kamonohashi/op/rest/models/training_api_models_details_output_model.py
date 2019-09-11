@@ -19,7 +19,6 @@ import six
 from kamonohashi.op.rest.models.components_container_image_output_model import ComponentsContainerImageOutputModel  # noqa: F401,E501
 from kamonohashi.op.rest.models.components_git_commit_output_model import ComponentsGitCommitOutputModel  # noqa: F401,E501
 from kamonohashi.op.rest.models.data_set_api_models_index_output_model import DataSetApiModelsIndexOutputModel  # noqa: F401,E501
-from kamonohashi.op.rest.models.infos_end_point_info import InfosEndPointInfo  # noqa: F401,E501
 from kamonohashi.op.rest.models.system_collections_generic_key_value_pair import SystemCollectionsGenericKeyValuePair  # noqa: F401,E501
 from kamonohashi.op.rest.models.training_api_models_simple_output_model import TrainingApiModelsSimpleOutputModel  # noqa: F401,E501
 
@@ -46,7 +45,6 @@ class TrainingApiModelsDetailsOutputModel(object):
         'created_by': 'str',
         'data_set': 'DataSetApiModelsIndexOutputModel',
         'display_id': 'int',
-        'endpoints': 'list[InfosEndPointInfo]',
         'entry_point': 'str',
         'execution_time': 'str',
         'favorite': 'bool',
@@ -80,7 +78,6 @@ class TrainingApiModelsDetailsOutputModel(object):
         'created_by': 'createdBy',
         'data_set': 'dataSet',
         'display_id': 'displayId',
-        'endpoints': 'endpoints',
         'entry_point': 'entryPoint',
         'execution_time': 'executionTime',
         'favorite': 'favorite',
@@ -105,7 +102,7 @@ class TrainingApiModelsDetailsOutputModel(object):
         'waiting_time': 'waitingTime'
     }
 
-    def __init__(self, completed_at=None, condition_note=None, container_image=None, cpu=None, created_at=None, created_by=None, data_set=None, display_id=None, endpoints=None, entry_point=None, execution_time=None, favorite=None, full_name=None, git_model=None, gpu=None, id=None, key=None, log_summary=None, memo=None, memory=None, modified_at=None, modified_by=None, name=None, node=None, options=None, parent=None, partition=None, started_at=None, status=None, status_type=None, waiting_time=None):  # noqa: E501
+    def __init__(self, completed_at=None, condition_note=None, container_image=None, cpu=None, created_at=None, created_by=None, data_set=None, display_id=None, entry_point=None, execution_time=None, favorite=None, full_name=None, git_model=None, gpu=None, id=None, key=None, log_summary=None, memo=None, memory=None, modified_at=None, modified_by=None, name=None, node=None, options=None, parent=None, partition=None, started_at=None, status=None, status_type=None, waiting_time=None):  # noqa: E501
         """TrainingApiModelsDetailsOutputModel - a model defined in Swagger"""  # noqa: E501
 
         self._completed_at = None
@@ -116,7 +113,6 @@ class TrainingApiModelsDetailsOutputModel(object):
         self._created_by = None
         self._data_set = None
         self._display_id = None
-        self._endpoints = None
         self._entry_point = None
         self._execution_time = None
         self._favorite = None
@@ -157,8 +153,6 @@ class TrainingApiModelsDetailsOutputModel(object):
             self.data_set = data_set
         if display_id is not None:
             self.display_id = display_id
-        if endpoints is not None:
-            self.endpoints = endpoints
         if entry_point is not None:
             self.entry_point = entry_point
         if execution_time is not None:
@@ -371,27 +365,6 @@ class TrainingApiModelsDetailsOutputModel(object):
         """
 
         self._display_id = display_id
-
-    @property
-    def endpoints(self):
-        """Gets the endpoints of this TrainingApiModelsDetailsOutputModel.  # noqa: E501
-
-
-        :return: The endpoints of this TrainingApiModelsDetailsOutputModel.  # noqa: E501
-        :rtype: list[InfosEndPointInfo]
-        """
-        return self._endpoints
-
-    @endpoints.setter
-    def endpoints(self, endpoints):
-        """Sets the endpoints of this TrainingApiModelsDetailsOutputModel.
-
-
-        :param endpoints: The endpoints of this TrainingApiModelsDetailsOutputModel.  # noqa: E501
-        :type: list[InfosEndPointInfo]
-        """
-
-        self._endpoints = endpoints
 
     @property
     def entry_point(self):

@@ -5,7 +5,7 @@ readonly SCRIPT_DIR=$(cd $(dirname $0); pwd)
 readonly REPO_ROOT_DIR="$SCRIPT_DIR/../.."
 
 show_help() {
-    echo "available args: prepare, deploy, clean, help, scale, remove-node" 1>&2
+    echo "available args: prepare, deploy, clean, help, scale, remove-node, upgrade" 1>&2
     exit 1
 }
 
@@ -55,7 +55,7 @@ deploy(){
 scale(){
     ask_ssh_conf
     make_extra_arg
-    ansible-playbook -i conf/inventory -e "$EXTRA_ARG" -e @conf/vars.yml kubespray/scale.yml -b 
+    ansible-playbook -i conf/inventory -e "$EXTRA_ARG" -e @conf/vars.yml scale-cluster.yml -b 
 }
 
 run_test(){

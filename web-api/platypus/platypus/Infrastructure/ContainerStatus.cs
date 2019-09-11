@@ -41,6 +41,11 @@ namespace Nssol.Platypus.Infrastructure
         public static ContainerStatus Completed = new ContainerStatus("KQI-Completed", ContainerStatusType.Closed, "Completed");
         /// <summary>
         /// コンテナを手動で削除した。
+        /// KQIのUIからユーザ操作によって停止された場合。
+        /// </summary>
+        public static ContainerStatus UserCanceled = new ContainerStatus("KQI-UserCanceled", ContainerStatusType.Closed, "UserCanceled");
+        /// <summary>
+        /// コンテナを手動で削除した。
         /// </summary>
         public static ContainerStatus Killed = new ContainerStatus("KQI-Killed", ContainerStatusType.Failed, "Killed");
         /// <summary>
@@ -205,6 +210,7 @@ namespace Nssol.Platypus.Infrastructure
                 { Running.Key, Running },
                 { Completed.Key, Completed },
                 { Killed.Key, Killed },
+                { UserCanceled.Key, UserCanceled },
                 { Failed.Key, Failed },
                 { Invalid.Key, Invalid },
                 { Forbidden.Key, Forbidden },

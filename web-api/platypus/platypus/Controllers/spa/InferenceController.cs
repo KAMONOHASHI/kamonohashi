@@ -217,25 +217,15 @@ namespace Nssol.Platypus.Controllers.spa
             if (status.Exist())
             {
                 //コンテナがまだ存在している場合、情報を更新する
-                var details = await clusterManagementLogic.GetContainerEndpointInfoAsync(history.Key, CurrentUserInfo.SelectedTenant.Name, false);
+                var details = await clusterManagementLogic.GetContainerDetailsInfoAsync(history.Key, CurrentUserInfo.SelectedTenant.Name, false);
                 model.Status = details.Status.Name;
                 model.StatusType = details.Status.StatusType;
 
                 //ステータスを更新
                 history.Status = details.Status.Key;
-                if (history.StartedAt == null)
-                {
-                    history.StartedAt = details.StartedAt;
-                    history.Node = details.Node; //設計上ノードが切り替わることはない
-                }
                 unitOfWork.Commit();
 
                 model.ConditionNote = details.ConditionNote;
-                if (details.Status.IsRunning())
-                {
-                    //コンテナが正常に動いているので、エンドポイントを表示する
-                    model.Endpoints = details.EndPoints;
-                }
             }
 
             //Gitの表示用URLを作る
@@ -312,15 +302,20 @@ namespace Nssol.Platypus.Controllers.spa
                 }
             }
 
-            //同じ名前のコンテナは実行できないので、確認する
-            var currentStatus = await clusterManagementLogic.GetContainerStatusAsync(model.Name, CurrentUserInfo.SelectedTenant.Name, false);
-            if (currentStatus.Exist())
+            // 環境変数名のチェック
+            if (model.Options != null && model.Options.Count > 0)
             {
-                if (currentStatus.IsError())
+                foreach (var env in model.Options)
                 {
-                    return JsonConflict($"Failed to check cluster status. Please contact your server administrator.");
+                    if (!string.IsNullOrEmpty(env.Key))
+                    {
+                        // フォーマットチェック
+                        if (!Regex.IsMatch(env.Key, "^[-._a-zA-Z][-._a-zA-Z0-9]*$"))
+                        {
+                            return JsonNotFound($"Invalid envName. Please match the format of '^[-._a-zA-Z][-._a-zA-Z0-9]*$'.");
+                        }
+                    }
                 }
-                return JsonConflict($"Container {model.Name} already exists: status {currentStatus}");
             }
 
             long? gitId = model.GitModel.GitId ?? CurrentUserInfo.SelectedTenant.DefaultGit?.Id;
@@ -422,14 +417,8 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonNotFound($"Inference ID {id.Value} is not found.");
             }
-            //推論名の入力チェック
-            if (string.IsNullOrWhiteSpace(model.Name))
-            {
-                //推論名に空文字は許可しない
-                return JsonBadRequest($"A name of inference is NOT allowed to set empty string.");
-            }
 
-            history.Name = EditColumn(model.Name, history.Name);
+            history.Name = EditColumnNotEmpty(model.Name, history.Name);
             history.Memo = EditColumn(model.Memo, history.Memo);
             history.Favorite = EditColumn(model.Favorite, history.Favorite);
             unitOfWork.Commit();
@@ -619,6 +608,19 @@ namespace Nssol.Platypus.Controllers.spa
         public async Task<IActionResult> Halt(long? id)
         {
             return await ExitAsync(id, ContainerStatus.Killed);
+        }
+
+        /// <summary>
+        /// 推論を途中で強制終了させる。
+        /// ユーザ自身がジョブを停止させた場合。
+        /// </summary>
+        /// <param name="id">推論履歴ID</param>
+        [HttpPost("{id}/user-cancel")]
+        [Filters.PermissionFilter(MenuCode.Inference)]
+        [ProducesResponseType(typeof(InferenceSimpleOutputModel), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> UserCancel(long? id)
+        {
+            return await ExitAsync(id, ContainerStatus.UserCanceled);
         }
 
         /// <summary>

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Nssol.Platypus.Infrastructure
+﻿namespace Nssol.Platypus.Infrastructure
 {
     /// <summary>
     /// オブジェクトストレージにファイルを格納する際のリソース種別の列挙値
@@ -30,5 +25,9 @@ namespace Nssol.Platypus.Infrastructure
         InferenceContainerAttachedFiles,
         /// <summary>推論ジョブのコンテナ出力ファイル結果</summary>
         InferenceContainerOutputFiles,
+        /// <summary>コンテナが添付したノートブック履歴添付ファイル</summary>
+        NotebookContainerAttachedFiles,
+        /// <summary>ノートブックのコンテナ出力ファイル結果</summary>
+        NotebookContainerOutputFiles,
     }
 }

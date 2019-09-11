@@ -8,10 +8,10 @@
     <el-form ref="updateForm" :model="form" :rules="rules">
       <pl-display-error :error="error"/>
       <el-form-item label="ロール名" prop="name">
-        <el-input v-model="form.name"/>
+        <el-input v-model="form.name" :disabled="isNotEditable"/>
       </el-form-item>
       <el-form-item label="表示名" prop="displayName">
-        <el-input v-model="form.displayName"/>
+        <el-input v-model="form.displayName" :disabled="isNotEditable"/>
       </el-form-item>
       <el-form-item label="種別" prop="isSystemRole">
         <el-input v-if="tenantName" v-model="tenantName" :disabled="true"/>
@@ -32,7 +32,7 @@
       </el-form-item>
       <el-row :gutter="20" class="footer">
         <el-col :span="12">
-          <pl-delete-button @delete="handleDelete"/>
+          <pl-delete-button @delete="handleDelete" :disabled="isNotEditable"/>
         </el-col>
         <el-col class="right-button-group" :span="12">
           <el-button @click="handleCancel">キャンセル</el-button>
@@ -45,14 +45,12 @@
 
 <script>
   import DisplayError from '@/components/common/DisplayError'
-  import DisplayTextForm from '@/components/common/DisplayTextForm'
   import DeleteButton from '@/components/common/DeleteButton.vue'
   import api from '@/api/v1/api'
 
   export default {
-    name: 'DataSetCreate',
+    name: 'RoleEdit',
     components: {
-      'pl-display-text-form': DisplayTextForm,
       'pl-display-error': DisplayError,
       'pl-delete-button': DeleteButton
     },
@@ -64,6 +62,7 @@
         dialogVisible: true,
         tenantName: null,
         error: null,
+        isNotEditable: false,
         roleTypes: [
           {label: 'テナント(共通)', value: false},
           {label: 'システム', value: true}
@@ -96,6 +95,7 @@
           this.form.isSystemRole = data.isSystemRole
           this.form.sortOrder = data.sortOrder
           this.error = null
+          this.isNotEditable = data.isNotEditable
           if (data.tenantName) {
             this.tenantName = 'テナント(カスタム) / ' + data.tenantName
           }

@@ -45,10 +45,10 @@
           </template>
         </el-table-column>
         <el-table-column label="テナント" width="auto">
-          <template slot-scope="scope">
-            <span v-for="(t, index) in scope.row.tenants" :key="index" v-if="scope.row.showTenants">
+          <template slot-scope="scope" v-if="scope.row.showTenants">
+            <span v-for="(t, index) in scope.row.tenants" :key="index">
               <span class="tenant" v-bind:class="{'tenant-default':t.default}">
-              {{t.displayName}}
+                {{t.displayName}}
               </span>
             </span>
           </template>

@@ -389,6 +389,50 @@ namespace Nssol.Platypus.Controllers.spa
 
                 return new Tuple<ContainerType, TenantModelBase>(ContainerType.Preprocessing, container);
             }
+            else if (containerName.StartsWith("notebook"))
+            {
+                //ノートブックコンテナ
+                var container = commonDiLogic.DynamicDi<INotebookHistoryRepository>().Find(t => t.Key == containerName, force);
+                if (container == null)
+                {
+                    // 存在しないハズのコンテナが生き残っている
+                    LogWarning($"Find unknown container: {containerName}");
+                    return new Tuple<ContainerType, TenantModelBase>(ContainerType.Unknown, null);
+                }
+                else if (container.GetStatus().Exist() == false)
+                {
+                    // 既に終了しているハズのジョブのコンテナ＝何かの理由でコンテナだけ消せなかった
+                    // ジョブ側には何の影響も与えたくないので、未知のコンテナとして削除する
+                    LogWarning($"Find exited container: {containerName}");
+                    return new Tuple<ContainerType, TenantModelBase>(ContainerType.Unknown, null);
+                }
+                else
+                {
+                    return new Tuple<ContainerType, TenantModelBase>(ContainerType.Notebook, container);
+                }
+            }
+            else if (containerName.StartsWith("inference"))
+            {
+                //推論コンテナ
+                var container = commonDiLogic.DynamicDi<IInferenceHistoryRepository>().Find(t => t.Key == containerName, force);
+                if (container == null)
+                {
+                    // 存在しないハズのコンテナが生き残っている
+                    LogWarning($"Find unknown container: {containerName}");
+                    return new Tuple<ContainerType, TenantModelBase>(ContainerType.Unknown, null);
+                }
+                else if (container.GetStatus().Exist() == false)
+                {
+                    // 既に終了しているハズのジョブのコンテナ＝何かの理由でコンテナだけ消せなかった
+                    // ジョブ側には何の影響も与えたくないので、未知のコンテナとして削除する
+                    LogWarning($"Find exited container: {containerName}");
+                    return new Tuple<ContainerType, TenantModelBase>(ContainerType.Unknown, null);
+                }
+                else
+                {
+                    return new Tuple<ContainerType, TenantModelBase>(ContainerType.Inferencing, container);
+                }
+            }
             else
             {
                 //学習コンテナ
@@ -438,9 +482,19 @@ namespace Nssol.Platypus.Controllers.spa
                     await trainingLogicForTensorBoard.DeleteTensorBoardAsync(container.Item2 as TensorBoardContainer, force);
                     break;
                 case ContainerType.Training:
-                    //コンテナを強制終了させる
+                    //学習コンテナを強制終了させる
                     var trainingLogicForTraining = commonDiLogic.DynamicDi<ITrainingLogic>();
                     await trainingLogicForTraining.ExitAsync(container.Item2 as TrainingHistory, ContainerStatus.Killed, force);
+                    break;
+                case ContainerType.Inferencing:
+                    //推論コンテナを強制終了させる
+                    var inferenceLogic = commonDiLogic.DynamicDi<IInferenceLogic>();
+                    await inferenceLogic.ExitAsync(container.Item2 as InferenceHistory, ContainerStatus.Killed, force);
+                    break;
+                case ContainerType.Notebook:
+                    //ノートブックコンテナを強制終了させる
+                    var notebookLogic = commonDiLogic.DynamicDi<INotebookLogic>();
+                    await notebookLogic.ExitAsync(container.Item2 as NotebookHistory, ContainerStatus.Killed, force);
                     break;
                 case ContainerType.Preprocessing:
                     //前処理コンテナを強制終了させる

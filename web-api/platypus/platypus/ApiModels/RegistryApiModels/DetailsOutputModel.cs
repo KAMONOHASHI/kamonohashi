@@ -1,12 +1,4 @@
-﻿using Newtonsoft.Json;
-using Nssol.Platypus.Infrastructure.Infos;
-using Nssol.Platypus.Infrastructure;
-using Nssol.Platypus.Models;
-using Nssol.Platypus.ApiModels.Components;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Nssol.Platypus.Models;
 
 namespace Nssol.Platypus.ApiModels.RegistryApiModels
 {
@@ -18,8 +10,9 @@ namespace Nssol.Platypus.ApiModels.RegistryApiModels
             PortNo = registry.PortNo;
             ApiUrl = registry.ApiUrl;
             RegistryUrl = registry.RegistryUrl;
+            IsNotEditable = registry.IsNotEditable;
         }
-        
+
         /// <summary>
         /// Registryホストサーバ名
         /// </summary>
@@ -39,5 +32,13 @@ namespace Nssol.Platypus.ApiModels.RegistryApiModels
         /// Registry Url
         /// </summary>
         public string RegistryUrl { get; set; }
+
+        /// <summary>
+        /// 編集不可
+        /// </summary>
+        /// <remarks>
+        /// true：編集不可　false：編集可
+        /// </remarks>
+        public bool IsNotEditable { get; set; }
     }
 }

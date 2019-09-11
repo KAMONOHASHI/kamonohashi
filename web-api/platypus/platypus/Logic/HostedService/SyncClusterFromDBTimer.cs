@@ -4,6 +4,7 @@ using Nssol.Platypus.DataAccess.Core;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces;
 using Nssol.Platypus.Infrastructure.Options;
 using Nssol.Platypus.Infrastructure.Types;
+using Nssol.Platypus.Logic.Interfaces;
 using Nssol.Platypus.Models;
 using Nssol.Platypus.ServiceModels.ClusterManagementModels;
 using Nssol.Platypus.Services;
@@ -26,6 +27,8 @@ namespace Nssol.Platypus.Logic.HostedService
         private readonly GitLabRegistryService gitLabRegistryService;
         private readonly DockerHubRegistryService dockerHubRegistryService;
         private readonly PrivateDockerRegistryService privateDockerRegistryService;
+        private readonly NvidiaGPUCloudRegistryService nvidiaGPUCloudRegistryService;
+        private readonly IStorageLogic storageLogic;
         private readonly ContainerManageOptions containerManageOptions;
 
         /// <summary>
@@ -40,6 +43,8 @@ namespace Nssol.Platypus.Logic.HostedService
             GitLabRegistryService gitLabRegistryService,
             DockerHubRegistryService dockerHubRegistryService,
             PrivateDockerRegistryService privateDockerRegistryService,
+            NvidiaGPUCloudRegistryService nvidiaGPUCloudRegistryService,
+            IStorageLogic storageLogic,
             IOptions<ContainerManageOptions> containerManageOptions,
             IOptions<SyncClusterFromDBOptions> SyncClusterFromDBOptions,
             ILogger<SyncClusterFromDBTimer> logger
@@ -54,6 +59,8 @@ namespace Nssol.Platypus.Logic.HostedService
             this.gitLabRegistryService = gitLabRegistryService;
             this.dockerHubRegistryService = dockerHubRegistryService;
             this.privateDockerRegistryService = privateDockerRegistryService;
+            this.nvidiaGPUCloudRegistryService = nvidiaGPUCloudRegistryService;
+            this.storageLogic = storageLogic;
             this.containerManageOptions = containerManageOptions.Value;
         }
 
@@ -74,11 +81,16 @@ namespace Nssol.Platypus.Logic.HostedService
                 LogError("ContainerManageOptions の ContainerLabelTensorBoardEnabled が設定されていません。");
                 ret = false;
             }
+            if (string.IsNullOrEmpty(containerManageOptions.ContainerLabelNotebookEnabled))
+            {
+                LogError("ContainerManageOptions の ContainerLabelNotebookEnabled が設定されていません。");
+                ret = false;
+            }
             return ret;
         }
 
         /// <summary>
-        /// DB のテナント・レジストリ・ノード情報を Cluster(k8s) へ同期させるメソッドです。
+        /// DB のテナント・レジストリ・ノード情報を Cluster(k8s)・ObjectStorage へ同期させるメソッドです。
         /// </summary>
         protected override void DoWork(object state, int doWorkCount)
         {
@@ -115,6 +127,13 @@ namespace Nssol.Platypus.Logic.HostedService
                     }
                     // テナントの古い ClusterToken を削除
                     tenantRepository.DeleteClusterToken(tenant.Id);
+
+                    // ObjectStorage への同期処理を行う
+                    if (tenant.Storage != null)
+                    {
+                        // ObjectStorage に バケットを作成する
+                        storageLogic.CreateBucketAsync(tenant, tenant.Storage);
+                    }
                 }
                 // テナントの古い ClusterToken 削除を確定する
                 unitOfWork.Commit();
@@ -147,7 +166,7 @@ namespace Nssol.Platypus.Logic.HostedService
                         continue;
                     }
                     // RegistryService の取得
-                    IRegistryService registryService = getRegistryService(registry);
+                    IRegistryService registryService = GetRegistryService(registry);
                     if (registryService == null)
                     {
                         LogError($"DB のレジストリ情報 [{mapInfo}] に対応する RegistryService を取得できませんでした。");
@@ -203,13 +222,22 @@ namespace Nssol.Platypus.Logic.HostedService
                     ret = clusterManagementService.SetNodeLabelAsync(node.Name, containerManageOptions.ContainerLabelTensorBoardEnabled, tensorBoardEnabledStr).Result;
                     if (ret)
                     {
-                        LogDebug($"DB のノード情報 [{node.Name}] に対応するパーティションと TensorBoard 可否設定を Cluster(k8s) へ同期させました。");
+                        LogDebug($"DB のノード情報 [{node.Name}] に対応する TensorBoard 可否設定を Cluster(k8s) へ同期させました。");
                     }
                     else
                     {
                         LogError($"DB のノード情報 [{node.Name}] に対応する TensorBoard 可否設定を Cluster(k8s) へ同期させる処理に失敗しました。");
                     }
-                    
+                    string notebookEnabledStr = node.NotebookEnabled ? "true" : "";
+                    ret = clusterManagementService.SetNodeLabelAsync(node.Name, containerManageOptions.ContainerLabelNotebookEnabled, notebookEnabledStr).Result;
+                    if (ret)
+                    {
+                        LogDebug($"DB のノード情報 [{node.Name}] に対応する Notebook 可否設定を Cluster(k8s) へ同期させました。");
+                    }
+                    else
+                    {
+                        LogError($"DB のノード情報 [{node.Name}] に対応する Notebook 可否設定を Cluster(k8s) へ同期させる処理に失敗しました。");
+                    }
                 }
                 LogInfo("DB のテナント・レジストリ・ノード情報を Cluster(k8s) へ同期させる処理は終了しました。");
             }
@@ -225,7 +253,7 @@ namespace Nssol.Platypus.Logic.HostedService
         /// 本来は <see cref="CommonDiLogic.DynamicDi{T}"/> を通して返却する予定だったが、
         /// Controller 経由で DI していないので null を返却してしまうので代用のメソッドを作成した。
         /// </summary>
-        private IRegistryService getRegistryService(Registry registry)
+        private IRegistryService GetRegistryService(Registry registry)
         {
             if (registry.ServiceType == RegistryServiceType.GitLab)
             {
@@ -238,6 +266,10 @@ namespace Nssol.Platypus.Logic.HostedService
             else if (registry.ServiceType == RegistryServiceType.PrivateDockerRegistry)
             {
                 return privateDockerRegistryService;
+            }
+            else if (registry.ServiceType == RegistryServiceType.NvidiaGPUCloud)
+            {
+                return nvidiaGPUCloudRegistryService;
             }
             // 将来的に RegistryServiceType が増えたら追加実装すること。
             return null;

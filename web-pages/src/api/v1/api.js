@@ -208,7 +208,24 @@ let api = {
     putTensorboardById: gen.ApiV1TrainingByIdTensorboardPut,
     deleteTensorboardById: gen.ApiV1TrainingByIdTensorboardDelete,
     postHaltById: gen.ApiV1TrainingByIdHaltPost,
-    getEventsById: gen.ApiV1TrainingByIdEventsGet
+    postUserCancelById: gen.ApiV1TrainingByIdUser_cancelPost,
+    getEventsById: gen.ApiV1TrainingByIdEventsGet,
+    getMount: gen.ApiV1TrainingMountGet
+  },
+
+  notebook: {
+    getSimple: gen.ApiV1NotebookSimpleGet,
+    get: gen.ApiV1NotebookGet,
+    post: gen.ApiV1NotebookRunPost,
+    getById: gen.ApiV1NotebookByIdGet,
+    deleteById: gen.ApiV1NotebookByIdDelete,
+    putById: gen.ApiV1NotebookByIdPut,
+    getContainerFilesById: gen.ApiV1NotebookByIdContainer_filesGet,
+    postHaltById: gen.ApiV1NotebookByIdHaltPost,
+    getEventsById: gen.ApiV1NotebookByIdEventsGet,
+    getEndpointById: gen.ApiV1NotebookByIdEndpointGet,
+    getFilesById: gen.ApiV1NotebookByIdContainer_filesGet,
+    postRerun: gen.ApiV1NotebookByIdRerunPost
   },
 
   inference: {
@@ -224,6 +241,7 @@ let api = {
     getContainerFilesById: gen.ApiV1InferencesByIdContainer_filesGet,
     deleteByIdFilesByFileId: gen.ApiV1InferencesByIdFilesByFileIdDelete,
     postHaltById: gen.ApiV1InferencesByIdHaltPost,
+    postUserCancelById: gen.ApiV1InferencesByIdUser_cancelPost,
     getEventsById: gen.ApiV1InferencesByIdEventsGet
   },
 

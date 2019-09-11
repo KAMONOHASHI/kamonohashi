@@ -1,12 +1,4 @@
-﻿using Newtonsoft.Json;
-using Nssol.Platypus.Infrastructure.Infos;
-using Nssol.Platypus.Infrastructure;
-using Nssol.Platypus.Models;
-using Nssol.Platypus.ApiModels.Components;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Nssol.Platypus.Models;
 
 namespace Nssol.Platypus.ApiModels.RoleApiModels
 {
@@ -14,6 +6,7 @@ namespace Nssol.Platypus.ApiModels.RoleApiModels
     {
         public DetailsOutputModel(Role role) : base(role)
         {
+            IsNotEditable = role.IsNotEditable;
         }
 
         /// <summary>
@@ -23,5 +16,13 @@ namespace Nssol.Platypus.ApiModels.RoleApiModels
         /// <see cref="IndexOutputModel.IsSystemRole"/>がTrueの場合は、必ずNULL
         /// </remarks>
         public string TenantName { get; set; }
+
+        /// <summary>
+        /// 編集不可
+        /// </summary>
+        /// <remarks>
+        /// true：編集不可　false：編集可
+        /// </remarks>
+        public bool IsNotEditable { get; set; }
     }
 }

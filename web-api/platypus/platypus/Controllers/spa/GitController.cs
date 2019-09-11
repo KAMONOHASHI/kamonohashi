@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Nssol.Platypus.ApiModels.GitApiModels;
 using Nssol.Platypus.Controllers.Util;
@@ -14,6 +9,11 @@ using Nssol.Platypus.Infrastructure.Infos;
 using Nssol.Platypus.Infrastructure.Types;
 using Nssol.Platypus.Logic.Interfaces;
 using Nssol.Platypus.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Controllers.spa
 {
@@ -71,7 +71,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="id">GitエンドポイントID</param>
         [HttpGet("/api/v1/admin/git/endpoints/{id}")]
         [Filters.PermissionFilter(MenuCode.Git, MenuCode.Training, MenuCode.Preprocess)]
-        [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(DetailsOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetDetails(long? id)
         {
             if (id == null)
@@ -85,7 +85,7 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonNotFound($"Git Id {id.Value} is not found.");
             }
 
-            var model = new IndexOutputModel(git);
+            var model = new DetailsOutputModel(git);
 
             return JsonOK(model);
         }
@@ -139,6 +139,11 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonNotFound($"Git ID {id.Value} is not found.");
             }
+            //データの編集可否チェック
+            if (git.IsNotEditable)
+            {
+                return JsonBadRequest($"Git ID {id.Value} is not allowed to edit.");
+            }
 
             git.Name = model.Name;
             git.ServiceType = model.ServiceType.Value;
@@ -170,6 +175,11 @@ namespace Nssol.Platypus.Controllers.spa
             if (git == null)
             {
                 return JsonNotFound($"Git ID {id.Value} is not found.");
+            }
+            //データの編集可否チェック
+            if (git.IsNotEditable)
+            {
+                return JsonBadRequest($"Git ID {id.Value} is not allowed to delete.");
             }
 
             //このGitを登録しているテナントがいた場合、削除はできない

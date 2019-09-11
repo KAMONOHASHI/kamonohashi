@@ -480,10 +480,6 @@ namespace Nssol.Platypus.Logic
                 },
                 EntryPoint = trainHistory.EntryPoint,
 
-                PortMappings = new PortMappingModel[]
-                {
-                    new PortMappingModel() { Protocol = "TCP", Port = 22, TargetPort = 22, Name = "ssh" },
-                },
                 ClusterManagerToken = token,
                 RegistryTokenName = registryMap.RegistryTokenKey,
                 IsNodePort = true
@@ -522,13 +518,11 @@ namespace Nssol.Platypus.Logic
             {
                 return Result<ContainerInfo, string>.CreateErrorResult(outModel.Error);
             }
-            var port = outModel.Value.PortMappings.Find(p => p.Name == "ssh");
             return Result<ContainerInfo, string>.CreateResult(new ContainerInfo()
             {
                 Name = outModel.Value.Name,
                 Status = outModel.Value.Status,
                 Host = outModel.Value.Host,
-                Port = port.NodePort,
                 Configuration = outModel.Value.Configuration
             });
         }
@@ -636,10 +630,6 @@ namespace Nssol.Platypus.Logic
                 },
                 EntryPoint = inferenceHistory.EntryPoint,
 
-                PortMappings = new PortMappingModel[]
-                {
-                    new PortMappingModel() { Protocol = "TCP", Port = 22, TargetPort = 22, Name = "ssh" },
-                },
                 ClusterManagerToken = token,
                 RegistryTokenName = registryMap.RegistryTokenKey,
                 IsNodePort = true
@@ -679,13 +669,11 @@ namespace Nssol.Platypus.Logic
             {
                 return Result<ContainerInfo, string>.CreateErrorResult(outModel.Error);
             }
-            var port = outModel.Value.PortMappings.Find(p => p.Name == "ssh");
             return Result<ContainerInfo, string>.CreateResult(new ContainerInfo()
             {
                 Name = outModel.Value.Name,
                 Status = outModel.Value.Status,
                 Host = outModel.Value.Host,
-                Port = port.NodePort,
                 Configuration = outModel.Value.Configuration
             });
         }
@@ -705,7 +693,6 @@ namespace Nssol.Platypus.Logic
             //ユーザ入力値検証の都合でどうせ決め打ちしないといけないので、ロジック層で作ってしまう
             string tenantId = CurrentUserInfo.SelectedTenant.Id.ToString("0000");
             string containerName = $"tensorboard-{tenantId}-{trainingHistory.Id}-{DateTime.Now.ToString("yyyyMMddHHmmssffffff")}";
-            var registryMap = registryLogic.GetCurrentRegistryMap(trainingHistory.ContainerRegistryId.Value);
 
             string token = await GetUserAccessTokenAsync();
             if(token == null)
@@ -769,7 +756,6 @@ namespace Nssol.Platypus.Logic
                     new PortMappingModel() { Protocol = "TCP", Port = 6006, TargetPort = 6006, Name = "tensorboard" }
                 },
                 ClusterManagerToken = token,
-                RegistryTokenName = registryMap.RegistryTokenKey,
                 IsNodePort = true //ランダムポート指定。アクセス先ポートが動的に決まるようになる。
             };
 
@@ -850,6 +836,163 @@ namespace Nssol.Platypus.Logic
         }
         #endregion
 
+        #region Notebookコンテナ管理
+
+        /// <summary>
+        /// 新規にノートブック用コンテナを作成する。
+        /// </summary>
+        /// <param name="notebookHistory">対象のノートブック履歴</param>
+        /// <returns>作成したコンテナのステータス</returns>
+        public async Task<Result<ContainerInfo, string>> RunNotebookContainerAsync(NotebookHistory notebookHistory)
+        {
+            string token = await GetUserAccessTokenAsync();
+            if (token == null)
+            {
+                //トークンがない場合、結果はnull
+                return Result<ContainerInfo, string>.CreateErrorResult("Access denied. Failed to get token to access the cluster management system.");
+            }
+
+            var registryMap = new UserTenantRegistryMap();
+            if (notebookHistory.ContainerRegistryId.HasValue)
+            {
+                registryMap = registryLogic.GetCurrentRegistryMap(notebookHistory.ContainerRegistryId.Value);
+            }
+
+            var nodes = GetAccessibleNode();
+            if (nodes == null || nodes.Count == 0)
+            {
+                //デプロイ可能なノードがゼロなら、エラー扱い
+                return Result<ContainerInfo, string>.CreateErrorResult("Access denied.　There is no node this tenant can use.");
+            }
+
+            //コンテナを起動するために必要な設定値をインスタンス化
+            var inputModel = new RunContainerInputModel()
+            {
+                ID = notebookHistory.Id,
+                TenantName = TenantName,
+                LoginUser = CurrentUserInfo.Alias, //アカウントはエイリアスから指定
+                Name = notebookHistory.Key,
+                ContainerImage = notebookHistory.ContainerRegistryId.HasValue ? registryMap.Registry.GetImagePath(notebookHistory.ContainerImage, notebookHistory.ContainerTag) : $"{notebookHistory.ContainerImage}:{notebookHistory.ContainerTag}",
+                ScriptType = "notebook",
+                Cpu = notebookHistory.Cpu,
+                Memory = notebookHistory.Memory,
+                Gpu = notebookHistory.Gpu,
+                KqiImage = "kamonohashi/cli:" + versionLogic.GetVersion(),
+                KqiToken = loginLogic.GenerateToken().AccessToken,
+                LogPath = "/kqi/attach/notebook_stdout_stderr_${NOTEBOOK_ID}.log",
+                NfsVolumeMounts = new List<NfsVolumeMountModel>()
+                {
+                    // 結果保存するディレクトリ
+                    new NfsVolumeMountModel()
+                    {
+                        Name = "nfs-output",
+                        MountPath = "/kqi/output",
+                        SubPath = notebookHistory.Id.ToString(),
+                        Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
+                        ServerPath = CurrentUserInfo.SelectedTenant.NotebookContainerOutputNfsPath,
+                        ReadOnly = false
+                    },
+                    // 添付ファイルを保存するディレクトリ
+                    new NfsVolumeMountModel()
+                    {
+                        Name = "nfs-attach",
+                        MountPath = "/kqi/attach",
+                        SubPath = notebookHistory.Id.ToString(),
+                        Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
+                        ServerPath = CurrentUserInfo.SelectedTenant.NotebookContainerAttachedNfsPath,
+                        ReadOnly = false
+                    }
+                },
+                ContainerSharedPath = new Dictionary<string, string>()
+                {
+                    { "tmp", "/kqi/tmp/" },
+                    { "input", "/kqi/input/" },
+                    { "git", "/kqi/git/" }
+                },
+                EnvList = new Dictionary<string, string>()
+                {
+                    { "NOTEBOOK_ID", notebookHistory.Id.ToString()},
+                    { "COMMIT_ID", notebookHistory.ModelCommitId},
+                    { "KQI_SERVER", containerOptions.WebServerUrl },
+                    { "KQI_TOKEN", loginLogic.GenerateToken().AccessToken },
+                    { "http_proxy", containerOptions.Proxy },
+                    { "https_proxy", containerOptions.Proxy },
+                    { "no_proxy", containerOptions.NoProxy },
+                    { "HTTP_PROXY", containerOptions.Proxy },
+                    { "HTTPS_PROXY", containerOptions.Proxy },
+                    { "NO_PROXY", containerOptions.NoProxy },
+                    { "COLUMNS", containerOptions.ShellColumns },
+                    { "PYTHONUNBUFFERED", "true" }, // python実行時の標準出力・エラーのバッファリングをなくす
+                    { "LC_ALL", "C.UTF-8"},  // python実行時のエラー回避
+                    { "LANG", "C.UTF-8"}  // python実行時のエラー回避
+                },
+
+                PortMappings = new PortMappingModel[]
+                {
+                    new PortMappingModel() { Protocol = "TCP", Port = 8888, TargetPort = 8888, Name = "notebook" },
+                },
+                ClusterManagerToken = token,
+                RegistryTokenName = notebookHistory.ContainerRegistryId.HasValue ? registryMap.RegistryTokenKey : null,
+                IsNodePort = true
+            };
+
+            // データセットの未指定も許可するため、その判定
+            if (notebookHistory.DataSetId != null)
+            {
+                inputModel.EnvList.Add("DATASET_ID", notebookHistory.DataSetId.ToString());
+            }
+
+            // Gitの未指定も許可するため、その判定
+            if (notebookHistory.ModelGitId != null)
+            {
+                long gitId = notebookHistory.ModelGitId == -1 ?
+                    CurrentUserInfo.SelectedTenant.DefaultGitId.Value : notebookHistory.ModelGitId.Value;
+
+                var gitEndpoint = gitLogic.GetPullUrl(gitId, notebookHistory.ModelRepository, notebookHistory.ModelRepositoryOwner);
+                if (gitEndpoint != null)
+                {
+                    inputModel.EnvList.Add("MODEL_REPOSITORY", gitEndpoint.FullUrl);
+                    inputModel.EnvList.Add("MODEL_REPOSITORY_URL", gitEndpoint.Url);
+                    inputModel.EnvList.Add("MODEL_REPOSITORY_TOKEN", gitEndpoint.Token);
+                }
+            }
+
+            if (notebookHistory.OptionDic != null)
+            {
+                // ユーザの任意追加環境変数をマージする
+                AddUserEnvToInputModel(notebookHistory.OptionDic, inputModel);
+            }
+
+            //使用できるノードを制約に追加
+            inputModel.ConstraintList = new Dictionary<string, List<string>>()
+            {
+                { containerOptions.ContainerLabelHostName, nodes },
+                { containerOptions.ContainerLabelNotebookEnabled, new List<string> { "true" } } // notebookの実行が許可されているサーバでのみ実行
+            };
+
+            if (string.IsNullOrEmpty(notebookHistory.Partition) == false)
+            {
+                // パーティション指定があれば追加
+                inputModel.ConstraintList.Add(containerOptions.ContainerLabelPartition, new List<string> { notebookHistory.Partition });
+            }
+
+            var outModel = await clusterManagementService.RunContainerAsync(inputModel);
+            if (outModel.IsSuccess == false)
+            {
+                return Result<ContainerInfo, string>.CreateErrorResult(outModel.Error);
+            }
+            var port = outModel.Value.PortMappings.Find(p => p.Name == "notebook");
+            return Result<ContainerInfo, string>.CreateResult(new ContainerInfo()
+            {
+                Name = outModel.Value.Name,
+                Status = outModel.Value.Status,
+                Host = outModel.Value.Host,
+                Port = port.NodePort,
+                Configuration = outModel.Value.Configuration
+            });
+        }
+        #endregion
+
         /// <summary>
         /// ユーザの任意追加環境変数をマージする
         /// </summary>
@@ -921,6 +1064,18 @@ namespace Nssol.Platypus.Logic
         {
             string value = enabled ? "true" : "";
             return await this.clusterManagementService.SetNodeLabelAsync(nodeName, containerOptions.ContainerLabelTensorBoardEnabled, value);
+        }
+
+        /// <summary>
+        /// Notebookの実行可否設定を更新する
+        /// </summary>
+        /// <param name="nodeName">ノード名</param>
+        /// <param name="enabled">実行可否</param>
+        /// <returns>更新結果、更新できた場合、true</returns>
+        public async Task<bool> UpdateNotebookEnabledLabelAsync(string nodeName, bool enabled)
+        {
+            string value = enabled ? "true" : "";
+            return await this.clusterManagementService.SetNodeLabelAsync(nodeName, containerOptions.ContainerLabelNotebookEnabled, value);
         }
 
         /// <summary>

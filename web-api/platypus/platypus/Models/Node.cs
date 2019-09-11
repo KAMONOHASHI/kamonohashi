@@ -1,9 +1,5 @@
 ﻿using Nssol.Platypus.Infrastructure;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Models
 {
@@ -40,6 +36,11 @@ namespace Nssol.Platypus.Models
         /// TensorBoardの起動を許可するか
         /// </summary>
         public bool TensorBoardEnabled { get; set; }
+
+        /// <summary>
+        /// Notebookの起動を許可するか
+        /// </summary>
+        public bool NotebookEnabled { get; set; }
 
         /// <summary>
         /// 利用可能か。

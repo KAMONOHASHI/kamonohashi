@@ -248,7 +248,6 @@ main(){
   case $1 in
     deploy) deploy ;;
     clean) clean ;;
-    version) show_version ;;
     help) show_help ;;
     *) show_help ;;
   esac

@@ -27,6 +27,13 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories
         Task<DataSet> GetDataSetIncludeDataSetEntryAsync(long id);
 
         /// <summary>
+        /// 指定したデータセットIDのデータセット（データセットエントリからデータファイルの外部参照までを含む）を取得します。
+        /// </summary>
+        /// <param name="id">データセットID</param>
+        /// <returns>データセットエンティティ</returns>
+        Task<DataSet> GetDataSetIncludeDataSetEntryAndDataAsync(long id);
+
+        /// <summary>
         /// 指定したデータセットのエントリを全て削除する。
         /// </summary>
         void DeleteAllEntries(long dataSetId);

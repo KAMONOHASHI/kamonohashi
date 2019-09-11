@@ -17,7 +17,8 @@
   ],
   "plugins": [
     "transform-vue-jsx",
-    "transform-runtime"
+    "transform-runtime",
+    "transform-es2015-modules-commonjs"
   ],
   "env": {
     "test": {

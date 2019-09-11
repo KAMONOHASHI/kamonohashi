@@ -1,10 +1,6 @@
-﻿using Nssol.Platypus.ApiModels.Components;
-using Nssol.Platypus.Infrastructure;
-using System;
+﻿using Nssol.Platypus.Infrastructure;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Nssol.Platypus.ApiModels.NodeApiModels
 {
@@ -49,5 +45,10 @@ namespace Nssol.Platypus.ApiModels.NodeApiModels
         /// TensorBoardコンテナの実行可否
         /// </summary>
         public bool TensorBoardEnabled { get; set; }
+
+        /// <summary>
+        /// Notebookコンテナの実行可否
+        /// </summary>
+        public bool NotebookEnabled { get; set; }
     }
 }

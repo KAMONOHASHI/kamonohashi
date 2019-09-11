@@ -221,5 +221,15 @@ namespace Nssol.Platypus.Infrastructure
             }
             return result.ToString();
         }
+
+        /// <summary>
+        /// 2つのfloat型の和を求める。
+        /// </summary>
+        /// <param name="fp1">float型の値1</param>
+        /// <param name="fp2">float型の値2</param>
+        public static float SumOfFloat(float fp1, float fp2)
+        {
+            return (float)((decimal)fp1 + (decimal)fp2);
+        }
     }
 }
