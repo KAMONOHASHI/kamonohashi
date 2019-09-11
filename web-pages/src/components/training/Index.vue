@@ -13,7 +13,7 @@
         />
       </el-col>
       <el-col class="right-top-button" :span="8">
-        <el-button @click="showConfirm">一括削除</el-button>
+        <el-button v-if="multipleSelection.length!==0" @click="showConfirm">一括削除</el-button>
         <el-button @click="openCreateDialog()" icon="el-icon-edit-outline" type="primary" plain>
           新規実行
         </el-button>
@@ -164,26 +164,19 @@
         await this.retrieveData()
       },
       async showConfirm () {
-        if (this.multipleSelection.length === 0) {
-          await this.$notify.info({
-            type: 'info',
-            message: '削除対象の学習履歴は選択されていません。'
-          })
-        } else {
-          let confirmMessage = '学習履歴を ' + this.multipleSelection.length + ' 件削除しますか。'
-          await this.$confirm(confirmMessage, 'Warning', {
-            distinguishCancelAndClose: true,
-            confirmButtonText: 'はい',
-            cancelButtonText: 'キャンセル',
-            type: 'warning'
-          })
-          .then(() => {
-            this.deleteJob() // 削除を実施
-          })
-          .catch(() => {
-            // キャンセル時はなにもしないので例外を無視
-          })
-        }
+        let confirmMessage = '学習履歴を ' + this.multipleSelection.length + ' 件削除しますか。'
+        await this.$confirm(confirmMessage, 'Warning', {
+          distinguishCancelAndClose: true,
+          confirmButtonText: 'はい',
+          cancelButtonText: 'キャンセル',
+          type: 'warning'
+        })
+        .then(() => {
+          this.deleteJob() // 削除を実施
+        })
+        .catch(() => {
+          // キャンセル時はなにもしないので例外を無視
+        })
       },
       async deleteJob () {
         let successCount = 0
