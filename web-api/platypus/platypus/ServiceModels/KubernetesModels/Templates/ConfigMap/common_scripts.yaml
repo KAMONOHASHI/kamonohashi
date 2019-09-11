@@ -53,8 +53,14 @@ data:
     git remote -v
   prepare-dataset: |
     echo "------------------------- [KAMONOHASHI Prepare] deploy dataset $DATASET_ID into /kqi/input . -------------------------"
-    kqi dataset download-files -d /kqi/input $DATASET_ID
-    kqi dataset get -d /kqi/input/meta.json $DATASET_ID
+    kqi dataset download-files -d /kqi/input $DATASET_ID && kqi dataset get -d /kqi/input/meta.json $DATASET_ID
+    if [ $? -ne 0 ]; then
+        echo "dataset download-files failed"
+        case @(Model.ScriptType) in 
+            "training" ) kqi training halt $TRAINING_ID ;;
+            "inference" ) kqi inference halt $INFERENCE_ID ;;
+        esac
+    fi
   notify-finish:
     echo $1 > /kqi/tmp/result_exit_code
   wait-ready: |
