@@ -1,7 +1,6 @@
 ﻿using Nssol.Platypus.ApiModels.Components;
 using Nssol.Platypus.ApiModels.TrainingApiModels;
 using Nssol.Platypus.Infrastructure;
-using Nssol.Platypus.Infrastructure.Infos;
 using Nssol.Platypus.Models.TenantModels;
 using System.Collections.Generic;
 
@@ -40,6 +39,8 @@ namespace Nssol.Platypus.ApiModels.InferenceApiModels
             Memory = history.Memory;
             Gpu = history.Gpu;
             Partition = history.Partition;
+
+            Zip = history.Zip;
 
             foreach (var option in history.GetOptionDic())
             {
@@ -124,6 +125,12 @@ namespace Nssol.Platypus.ApiModels.InferenceApiModels
         /// コンテナの状態に対する注釈。何か異常が発生している際は注釈が表示される。
         /// </summary>
         public string ConditionNote { get; set; }
+
+        /// <summary>
+        /// zip圧縮するか否か。
+        /// true：zip圧縮する　false：zip圧縮しない
+        /// </summary>
+        public bool Zip { get; set; }
     }
 
 }

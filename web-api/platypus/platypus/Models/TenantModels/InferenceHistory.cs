@@ -154,6 +154,12 @@ namespace Nssol.Platypus.Models.TenantModels
         public bool Favorite { get; set; }
 
         /// <summary>
+        /// zip圧縮するか否か。
+        /// true：zip圧縮する　false：zip圧縮しない
+        /// </summary>
+        public bool Zip { get; set; }
+
+        /// <summary>
         /// データセット
         /// </summary>
         [ForeignKey(nameof(DataSetId))]

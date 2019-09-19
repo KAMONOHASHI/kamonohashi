@@ -354,7 +354,8 @@ namespace Nssol.Platypus.Controllers.spa
                 Memory = model.Memory.Value,
                 Gpu = model.Gpu.Value,
                 Partition = model.Partition,
-                Status = ContainerStatus.Running.Key
+                Status = ContainerStatus.Running.Key,
+                Zip = model.Zip
             };
             if (trainingHistory.OptionDic.ContainsKey("")) //空文字は除外する
             {
