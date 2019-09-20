@@ -111,6 +111,7 @@ namespace Nssol.Platypus
             // 切替のため型指定でDI設定
             services.AddTransient<GitHubService>();
             services.AddTransient<GitLabService>();
+            services.AddTransient<GitLabComService>();
             services.AddTransient<DockerHubRegistryService>();
             services.AddTransient<GitLabRegistryService>();
             services.AddTransient<PrivateDockerRegistryService>();

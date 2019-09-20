@@ -1,16 +1,14 @@
-﻿using Nssol.Platypus.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Newtonsoft.Json;
 using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Models;
 using Nssol.Platypus.ServiceModels.Git;
-using System.Net.Http;
-using Microsoft.AspNetCore.WebUtilities;
-using Newtonsoft.Json;
 using Nssol.Platypus.ServiceModels.Git.GitLabModels;
-using System.Text.RegularExpressions;
+using Nssol.Platypus.Services.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Services
 {
@@ -29,7 +27,7 @@ namespace Nssol.Platypus.Services
         /// 特に範囲は限定せず、<see cref="Git.Token"/>の権限で参照可能なすべてのリポジトリが対象となる。
         /// </summary>
         /// <returns>リポジトリ一覧</returns>
-        public async Task<Result<IEnumerable<RepositoryModel>, string>> GetAllRepositoriesAsync(UserTenantGitMap gitMap)
+        public async virtual Task<Result<IEnumerable<RepositoryModel>, string>> GetAllRepositoriesAsync(UserTenantGitMap gitMap)
         {
             var response = await SendGetFullPageRequestsAsync<GetRepositoryModel>("/api/v4/projects", gitMap, new Dictionary<string, string>());
             
@@ -59,7 +57,7 @@ namespace Nssol.Platypus.Services
         /// なので、この変換を行うためのAPI呼び出しが必要。
         /// ちなみに、逆にWebUIを参照する際はオーナー名が必要という仕様。
         /// </remarks>
-        private async Task<Result<string, string>> GetProjectIdAsync(UserTenantGitMap gitMap, string repositoryName, string owner)
+        protected async virtual Task<Result<string, string>> GetProjectIdAsync(UserTenantGitMap gitMap, string repositoryName, string owner)
         {
             //検索上限が100件だが、リポジトリ名でフィルタ（部分一致）をかけて検索するので、そこまでの件数にはならない想定
             RequestParam param = CreateRequestParam(gitMap);
@@ -276,7 +274,7 @@ namespace Nssol.Platypus.Services
         /// <summary>
         /// 共通で使うパラメータを生成
         /// </summary>
-        private RequestParam CreateRequestParam(UserTenantGitMap gitMap)
+        protected RequestParam CreateRequestParam(UserTenantGitMap gitMap)
         {
             return new RequestParam()
             {
