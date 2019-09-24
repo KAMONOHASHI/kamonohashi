@@ -9,16 +9,18 @@
       <el-form-item label="名前" prop="name">
         <el-input v-model="name" :disabled="isNotEditable"/>
       </el-form-item>
-      <el-form-item label="リポジトリURL" prop="repositoryUrl">
-        <el-input v-model="repositoryUrl" :disabled="isNotEditable"/>
-      </el-form-item>
       <el-form-item label="Git種別" prop="serviceType">
         <el-select v-model="serviceType" style="width: 100%" :disabled="isNotEditable">
           <el-option v-for="(t, idx) in types" :key="idx" :label="t.name" :value="t.id"/>
         </el-select>
       </el-form-item>
+      <el-form-item label="リポジトリURL" prop="repositoryUrl">
+        <el-input v-model="repositoryUrl" :disabled="isNotEditable" @change="handleChange"/>
+      </el-form-item>
       <el-form-item label="API URL" prop="apiUrl">
-        <el-input v-model="apiUrl" :disabled="isNotEditable"/>
+        <el-switch v-model="editApiUrl"
+                   :disabled="isNotEditable"/>
+        <el-input v-model="apiUrl" :disabled="isNotEditable || !editApiUrl"/>
       </el-form-item>
 
       <el-row :gutter="20" class="footer">
@@ -58,6 +60,7 @@
         repositoryUrl: undefined,
         serviceType: undefined,
         apiUrl: undefined,
+        editApiUrl: false,
         isNotEditable: false,
         rules: {
           name: [{
@@ -102,6 +105,7 @@
           this.serviceType = result.serviceType
           this.apiUrl = result.apiUrl
           this.isNotEditable = result.isNotEditable
+          this.editApiUrl = result.repositoryUrl !== result.apiUrl
           this.error = null
         } catch (e) {
           this.error = e
@@ -137,6 +141,11 @@
           this.error = undefined
         } catch (e) {
           this.error = e
+        }
+      },
+      handleChange () {
+        if (!this.editApiUrl) {
+          this.apiUrl = this.repositoryUrl
         }
       },
       closeDialog (done) {
