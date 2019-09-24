@@ -176,6 +176,7 @@ def download_container_files(id, destination, source):
     pool_manager = api.api_client.rest_client.pool_manager
 
     def download_entries(path):
+        path = path.replace('\\', '/')
         result = api.list_training_container_files(id, path=path, with_url=True)
         for x in result.files:
             if os.path.isabs(path):
