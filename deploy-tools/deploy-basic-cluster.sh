@@ -1,6 +1,6 @@
 #!/bin/bash
 
-readonly HELP_URL="https://kamonohashi.ai/docs/beforequickstart/install"
+readonly HELP_URL="https://kamonohashi.ai/docs/install-and-update"
 readonly SCRIPT_DIR=$(cd $(dirname $0); pwd)
 
 # 関数定義
