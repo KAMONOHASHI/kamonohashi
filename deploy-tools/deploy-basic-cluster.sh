@@ -131,7 +131,7 @@ get_ip(){
   if [ -z "$IP_BY_DNS" ]; then
     # 名前解決した結果からループバックを除き先頭のIPを選択
     # hostコマンドはhostsを見ない。getentは/etc/nsswitch.confに従って解決する
-    local IP=$(getent hosts $1 | awk '{print $1}' | grep -v 127* | head -1)
+    local IP=$(getent hosts $1 | awk '{print $1}' | grep -v 127.* | head -1)
   else
     local IP=$IP_BY_DNS
   fi
