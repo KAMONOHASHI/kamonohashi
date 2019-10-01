@@ -41,7 +41,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// 接続中のテナントに有効なパーティションの一覧を取得する。
         /// </summary>
         [HttpGet("tenant/partitions")]
-        [Filters.PermissionFilter(MenuCode.Node, MenuCode.Training, MenuCode.Preprocess)]
+        [Filters.PermissionFilter(MenuCode.Training, MenuCode.Preprocess, MenuCode.Inference, MenuCode.Notebook)]
         [ProducesResponseType(typeof(IEnumerable<string>), (int)HttpStatusCode.OK)]
         public IActionResult GetPartitions([FromServices] INodeRepository nodeRepository)
         {
@@ -55,7 +55,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// パーティションの一覧を取得する。
         /// </summary>
         [HttpGet("admin/partitions")]
-        [Filters.PermissionFilter(MenuCode.Node, MenuCode.Training, MenuCode.Preprocess)]
+        [Filters.PermissionFilter(MenuCode.Node)]
         [ProducesResponseType(typeof(IEnumerable<string>), (int)HttpStatusCode.OK)]
         public IActionResult GetPartitionsForAdmin([FromServices] INodeRepository nodeRepository)
         {
@@ -69,7 +69,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// クォータ設定を取得する。
         /// </summary>
         [HttpGet("admin/quotas")]
-        [Filters.PermissionFilter(MenuCode.Quota, MenuCode.Node)]
+        [Filters.PermissionFilter(MenuCode.Quota)]
         [ProducesResponseType(typeof(IEnumerable<QuotaOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetQuotas([FromServices] ITenantRepository tenantRepository)
         {
@@ -84,7 +84,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// 0が指定された場合、上限なしを示す。また、指定のなかったテナントは更新しない。
         /// </remarks>
         [HttpPost("admin/quotas")]
-        [Filters.PermissionFilter(MenuCode.Quota, MenuCode.Node)]
+        [Filters.PermissionFilter(MenuCode.Quota)]
         [ProducesResponseType(typeof(IEnumerable<QuotaOutputModel>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> EditQuotas([FromBody] IEnumerable<QuotaInputModel> models, [FromServices] ITenantRepository tenantRepository)
         {

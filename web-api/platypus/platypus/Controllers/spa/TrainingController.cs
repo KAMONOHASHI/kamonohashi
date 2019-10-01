@@ -179,7 +179,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// マウントする学習履歴を取得
         /// </summary>
         [HttpGet("mount")]
-        [Filters.PermissionFilter(MenuCode.Training)]
+        [Filters.PermissionFilter(MenuCode.Training, MenuCode.Inference)]
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetTrainingToMount()
         {
@@ -197,7 +197,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="id">学習履歴ID</param>
         [HttpGet("{id}")]
-        [Filters.PermissionFilter(MenuCode.Training)]
+        [Filters.PermissionFilter(MenuCode.Training, MenuCode.Inference)]
         [ProducesResponseType(typeof(DetailsOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetDetail(long? id)
         {

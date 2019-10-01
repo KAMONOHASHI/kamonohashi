@@ -131,7 +131,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="id">データID</param>
         [HttpGet("{id}")]
-        [Filters.PermissionFilter(MenuCode.Data, MenuCode.DataSet, MenuCode.Preprocess)]
+        [Filters.PermissionFilter(MenuCode.Data, MenuCode.Preprocess)]
         [ProducesResponseType(typeof(DetailsOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetDetail(long? id)
         {
@@ -304,7 +304,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="id">対象データID</param>
         /// <param name="name">対象ファイル名</param>
         [HttpGet("{id}/files/{name}")]
-        [Filters.PermissionFilter(MenuCode.Data, MenuCode.DataSet, MenuCode.Preprocess)]
+        [Filters.PermissionFilter(MenuCode.Data)]
         [ProducesResponseType(typeof(DataFileOutputModel), (int)HttpStatusCode.OK)]
         public IActionResult GetFileUrl(long id, string name)
         {
@@ -325,7 +325,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="withUrl">結果にダウンロード用のURLを含めるか</param>
         /// <param name="id">対象データID</param>
         [HttpGet("{id}/files")]
-        [Filters.PermissionFilter(MenuCode.Data, MenuCode.DataSet, MenuCode.Preprocess)]
+        [Filters.PermissionFilter(MenuCode.Data, MenuCode.Preprocess)]
         [ProducesResponseType(typeof(IEnumerable<DataFileOutputModel>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetFiles([FromRoute] long id, [FromQuery] bool withUrl)
         {
