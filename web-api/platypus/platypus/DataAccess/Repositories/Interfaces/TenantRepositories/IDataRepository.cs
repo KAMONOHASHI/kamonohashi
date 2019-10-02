@@ -50,5 +50,10 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories
         /// 紐づいているファイルもすべて削除する。
         /// </summary>
         void DeleteData(Data data);
+
+        /// <summary>
+        /// 指定されたIDのファイルを削除する。
+        /// </summary>
+        void DeleteFile(Data data, long fileId);
     }
 }

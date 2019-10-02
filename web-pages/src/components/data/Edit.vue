@@ -33,7 +33,10 @@
         <div v-if="allFiles.length  === 0">
         </div>
         <div v-else-if="allFiles.length === 1">
-          <pl-file-manager :uploadedFiles="allFiles" type="Data"/>
+          <pl-file-manager :uploadedFiles="allFiles"
+                           type="Data"
+                           @delete="deleteFile"
+                           :deletable="true"/>
         </div>
         <div v-else>
           <el-button type="primary" @click="toggleFeatures" class="toggle-features">{{ featuresOpen ? 'Hide Files' :
@@ -41,7 +44,10 @@
             }}
           </el-button>
           <div v-if="featuresOpen" class="features">
-            <pl-file-manager :uploadedFiles="allFiles" type="Data"/>
+            <pl-file-manager :uploadedFiles="allFiles"
+                             type="Data"
+                             @delete="deleteFile"
+                             :deletable="true"/>
           </div>
         </div>
         <pl-file-manager ref="uploadFile" type="Data"/>
@@ -182,6 +188,15 @@
         try {
           await api.data.deleteById({id: this.id})
           this.emitDone()
+          this.error = null
+        } catch (e) {
+          this.error = e
+        }
+      },
+      async deleteFile (fileId) {
+        try {
+          await api.data.deleteFilesById({id: this.id, fileId: fileId})
+          this.retrieveData()
           this.error = null
         } catch (e) {
           this.error = e

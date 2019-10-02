@@ -1316,6 +1316,57 @@ export const ApiV1DataByIdFilesPostURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * 指定されたIDのファイルを削除する
+ * request: ApiV1DataByIdFilesByFileIdDelete
+ * url: ApiV1DataByIdFilesByFileIdDeleteURL
+ * method: ApiV1DataByIdFilesByFileIdDelete_TYPE
+ * raw_url: ApiV1DataByIdFilesByFileIdDelete_RAW_URL
+ * @param id - 対象のデータID
+ * @param fileId - 削除するファイルのID
+ */
+export const ApiV1DataByIdFilesByFileIdDelete = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v1/data/{id}/files/{fileId}'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  path = path.replace('{fileId}', `${parameters['fileId']}`)
+  if (parameters['fileId'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: fileId'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('delete', domain + path, body, queryParameters, form, config)
+}
+export const ApiV1DataByIdFilesByFileIdDelete_RAW_URL = function() {
+  return '/api/v1/data/{id}/files/{fileId}'
+}
+export const ApiV1DataByIdFilesByFileIdDelete_TYPE = function() {
+  return 'delete'
+}
+export const ApiV1DataByIdFilesByFileIdDeleteURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v1/data/{id}/files/{fileId}'
+  path = path.replace('{id}', `${parameters['id']}`)
+  path = path.replace('{fileId}', `${parameters['fileId']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * 選択中のテナントに登録されているタグを表示する
  * request: ApiV1DataDatatagsGet
  * url: ApiV1DataDatatagsGetURL

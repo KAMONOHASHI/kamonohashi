@@ -143,5 +143,23 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
 
             Delete(data);
         }
+
+        /// <summary>
+        /// 指定されたIDのファイルを削除する。
+        /// </summary>
+        public void DeleteFile(Data data, long fileId)
+        {
+            foreach (var file in data.DataProperties)
+            {
+                if (file.Id == fileId)
+                {
+                    if (file.DataFile != null)
+                    {
+                        DeleteModel<DataFile>(file.DataFile);
+                    }
+                    DeleteModel<DataProperty>(file);
+                }
+            }
+        }
     }
 }
