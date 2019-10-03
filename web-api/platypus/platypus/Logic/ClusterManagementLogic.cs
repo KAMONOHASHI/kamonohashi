@@ -715,7 +715,7 @@ namespace Nssol.Platypus.Logic
                 TenantName = TenantName,
                 LoginUser = CurrentUserInfo.Alias, //アカウントはエイリアスから指定
                 Name = containerName,
-                ContainerImage = "tensorflow/tensorflow",
+                ContainerImage = "tensorflow/tensorflow:1.13.2",    // tensorboardで利用するイメージはtensorflow/tensorflow:1.13.2で固定
                 ScriptType = "tensorboard",
                 Cpu = 1,
                 Memory = 1, //メモリは1GBで仮決め
