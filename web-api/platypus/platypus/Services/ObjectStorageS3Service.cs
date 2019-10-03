@@ -701,6 +701,8 @@ namespace Nssol.Platypus.Services
 
                 LogDebug($"start querying objects under bucket");
 
+                const int MaxRequestCount = 10; // 1ディレクトリに含まれるファイル数の上限は、10*1,000=100,000件とする
+                var requestCount = 0;
                 ListObjectsV2Response response = new ListObjectsV2Response();
                 do
                 {
@@ -719,8 +721,9 @@ namespace Nssol.Platypus.Services
                     
                     // 次の一覧取得の開始位置であるオブジェクトを設定する
                     request.ContinuationToken = response.NextContinuationToken;
+                    requestCount++;
                 }
-                while (response.IsTruncated); // 一覧に続きがある場合再度問い合わせる
+                while (response.IsTruncated && requestCount < MaxRequestCount); // 一覧に続きがある場合再度問い合わせる
 
                 var result = new StorageListResultInfo(dirs, files, exceeded);
 
