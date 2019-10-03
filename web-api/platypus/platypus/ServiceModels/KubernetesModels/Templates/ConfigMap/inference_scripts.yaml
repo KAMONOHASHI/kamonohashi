@@ -23,7 +23,7 @@ data:
     then
         echo "------------------------- [KAMONOHASHI Finish] zip /kqi/output  -------------------------"
         zip -r /kqi/tmp/@Raw(Model.ScriptType)_output_${INFERENCE_ID}.zip /kqi/output && mv /kqi/tmp/@Raw(Model.ScriptType)_output_${INFERENCE_ID}.zip /kqi/attach
-        bash /kqi/scripts/common/notify-finish $?
+        echo $1 > /kqi/tmp/result_exit_code
     fi
       
     if [ $(cat /kqi/tmp/result_exit_code) -eq 0 ]
