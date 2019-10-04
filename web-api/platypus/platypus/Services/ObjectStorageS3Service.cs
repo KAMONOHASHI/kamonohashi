@@ -701,7 +701,7 @@ namespace Nssol.Platypus.Services
 
                 LogDebug($"start querying objects under bucket");
 
-                const int MaxRequestCount = 10; // 1ディレクトリに含まれるファイル数の上限は、10*1,000=100,000件とする
+                const int MaxRequestCount = 10; // 1ディレクトリに含まれるファイル数の上限は、10*1,000=10,000件とする
                 var requestCount = 0;
                 ListObjectsV2Response response = new ListObjectsV2Response();
                 do
