@@ -31,10 +31,10 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories
         Task<NotebookHistory> GetIncludeAllAsync(long id);
 
         /// <summary>
-        /// テナント横断で全データ（外部参照を含む）をすべて取得する。
+        /// テナント横断で全データ（外部参照を含む）をすべて取得する。（取得結果はキャッシュされない）
         /// ソートはIDの逆順。
         /// </summary>
-        Task<IEnumerable<NotebookHistory>> GetAllIncludeTenantAsync();
+        Task<IEnumerable<NotebookHistory>> GetAllIncludeTenantAsNoTrackingAsync();
 
         /// <summary>
         /// 検索条件に合致するデータを一件取得する
