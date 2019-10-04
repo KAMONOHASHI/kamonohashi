@@ -10,8 +10,8 @@ using Nssol.Platypus.DataAccess;
 namespace Nssol.Platypus.Migrations
 {
     [DbContext(typeof(CommonDbContext))]
-    [Migration("20190911075454_v1.1.2")]
-    partial class v112
+    [Migration("20190911075454_v1.1.3")]
+    partial class v113
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -645,6 +645,8 @@ namespace Nssol.Platypus.Migrations
 
                     b.Property<int>("Gpu");
 
+                    b.Property<bool>("Zip");
+
                     b.Property<string>("LogSummary");
 
                     b.Property<string>("Memo");
@@ -1061,6 +1063,8 @@ namespace Nssol.Platypus.Migrations
                     b.Property<bool>("Favorite");
 
                     b.Property<int>("Gpu");
+
+                    b.Property<bool>("Zip");
 
                     b.Property<string>("LogSummary");
 

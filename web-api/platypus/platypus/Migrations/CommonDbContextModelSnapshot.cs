@@ -643,6 +643,8 @@ namespace Nssol.Platypus.Migrations
 
                     b.Property<int>("Gpu");
 
+                    b.Property<bool>("Zip");
+
                     b.Property<string>("LogSummary");
 
                     b.Property<string>("Memo");
@@ -1059,6 +1061,8 @@ namespace Nssol.Platypus.Migrations
                     b.Property<bool>("Favorite");
 
                     b.Property<int>("Gpu");
+
+                    b.Property<bool>("Zip");
 
                     b.Property<string>("LogSummary");
 

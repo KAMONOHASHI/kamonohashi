@@ -61,6 +61,13 @@
                 <pl-dynamic-multi-input v-model="options"/>
               </el-form-item>
 
+              <el-form-item label="結果Zip圧縮">
+                <el-switch v-model="zip"
+                          style="width: 100%;"
+                          inactive-text="圧縮しない"
+                          active-text="圧縮する"/>
+              </el-form-item>
+
               <el-form-item label="パーティション" prop="partition">
                 <pl-string-selector v-if="partitions"
                                     v-model="partition"
@@ -160,6 +167,12 @@
                   <el-form-item label="環境変数">
                     <pl-dynamic-multi-input v-model="options"/>
                   </el-form-item>
+                  <el-form-item label="結果Zip圧縮">
+                    <el-switch v-model="zip"
+                              style="width: 100%;"
+                              inactive-text="圧縮しない"
+                              active-text="圧縮する"/>
+                  </el-form-item>
                   <el-form-item label="パーティション" prop="partition">
                     <pl-string-selector
                       v-if="partitions"
@@ -234,7 +247,8 @@
           repository: [{required: true, trigger: 'blur', message: '必須項目です'}],
           branch: [{required: true, trigger: 'blur', message: '必須項目です'}],
           image: [{required: true, trigger: 'blur', message: '必須項目です'}],
-          tag: [{required: true, trigger: 'blur', message: '必須項目です'}]
+          tag: [{required: true, trigger: 'blur', message: '必須項目です'}],
+          zip: [{required: true, message: '必須項目です'}]
         },
         dialogVisible: true,
         error: undefined,
@@ -252,6 +266,7 @@
         git: undefined,
         options: undefined,
         entryPoint: undefined,
+        zip: true,
         active: 0
       }
     },
@@ -283,7 +298,8 @@
                 Memory: this.memory,
                 Gpu: this.gpu,
                 Partition: this.partition,
-                Memo: this.memo
+                Memo: this.memo,
+                Zip: this.zip
               }
               await api.training.post({model: param})
 
@@ -312,6 +328,7 @@
           this.partition = origin.partition
           this.containerImage = origin.containerImage
           this.entryPoint = origin.entryPoint
+          this.zip = origin.zip
           if (origin.parent) {
             this.parent = origin.parent
           }

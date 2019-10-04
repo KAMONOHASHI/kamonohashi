@@ -2,10 +2,13 @@
 
 from __future__ import print_function, absolute_import, with_statement
 
+import os.path
+
 import click
 from kamonohashi.op import rest
 
 from kamonohashi.cli import configuration
+from kamonohashi.cli import object_storage
 from kamonohashi.cli import pprint
 
 
@@ -50,6 +53,31 @@ def list_inference(count, id, name, started_at, data_set, memo, status, entry_po
 
     pprint.pp_table(['id', 'name', 'started_at', 'dataset', 'memo', 'value', 'status'],
                     [[x.id, x.name, x.created_at, x.data_set.name, x.memo, x.output_value, x.status] for x in result[:count]])
+
+
+@inference.command('download-container-files')
+@click.argument('id', type=int)
+@click.option('-d', '--destination', type=click.Path(exists=True, file_okay=False), required=True,
+              help='A path to the output files')
+@click.option('-s', '--source', help='A path to the source root in the container')
+def download_container_files(id, destination, source):
+    """Download files in a container"""
+    api = rest.InferenceApi(configuration.get_api_client())
+    pool_manager = api.api_client.rest_client.pool_manager
+
+    def download_entries(path):
+        result = api.list_inference_container_files(id, path=path, with_url=True)
+        for x in result.files:
+            if os.path.isabs(path):
+                _, tail = os.path.splitdrive(path)
+                object_storage.download_file(pool_manager, x.url, destination + tail, x.file_name)
+            else:
+                object_storage.download_file(pool_manager, x.url, os.path.join(destination, path), x.file_name)
+        for x in result.dirs:
+            download_entries(os.path.join(path, x.dir_name))
+
+    source = source if source is not None else '/'
+    download_entries(source)
 
 
 @inference.command()
