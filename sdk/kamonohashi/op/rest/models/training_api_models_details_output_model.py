@@ -66,7 +66,8 @@ class TrainingApiModelsDetailsOutputModel(object):
         'started_at': 'str',
         'status': 'str',
         'status_type': 'str',
-        'waiting_time': 'str'
+        'waiting_time': 'str',
+        'zip': 'bool'
     }
 
     attribute_map = {
@@ -99,10 +100,11 @@ class TrainingApiModelsDetailsOutputModel(object):
         'started_at': 'startedAt',
         'status': 'status',
         'status_type': 'statusType',
-        'waiting_time': 'waitingTime'
+        'waiting_time': 'waitingTime',
+        'zip': 'zip'
     }
 
-    def __init__(self, completed_at=None, condition_note=None, container_image=None, cpu=None, created_at=None, created_by=None, data_set=None, display_id=None, entry_point=None, execution_time=None, favorite=None, full_name=None, git_model=None, gpu=None, id=None, key=None, log_summary=None, memo=None, memory=None, modified_at=None, modified_by=None, name=None, node=None, options=None, parent=None, partition=None, started_at=None, status=None, status_type=None, waiting_time=None):  # noqa: E501
+    def __init__(self, completed_at=None, condition_note=None, container_image=None, cpu=None, created_at=None, created_by=None, data_set=None, display_id=None, entry_point=None, execution_time=None, favorite=None, full_name=None, git_model=None, gpu=None, id=None, key=None, log_summary=None, memo=None, memory=None, modified_at=None, modified_by=None, name=None, node=None, options=None, parent=None, partition=None, started_at=None, status=None, status_type=None, waiting_time=None, zip=None):  # noqa: E501
         """TrainingApiModelsDetailsOutputModel - a model defined in Swagger"""  # noqa: E501
 
         self._completed_at = None
@@ -135,6 +137,7 @@ class TrainingApiModelsDetailsOutputModel(object):
         self._status = None
         self._status_type = None
         self._waiting_time = None
+        self._zip = None
         self.discriminator = None
 
         if completed_at is not None:
@@ -197,6 +200,8 @@ class TrainingApiModelsDetailsOutputModel(object):
             self.status_type = status_type
         if waiting_time is not None:
             self.waiting_time = waiting_time
+        if zip is not None:
+            self.zip = zip
 
     @property
     def completed_at(self):
@@ -827,6 +832,27 @@ class TrainingApiModelsDetailsOutputModel(object):
         """
 
         self._waiting_time = waiting_time
+
+    @property
+    def zip(self):
+        """Gets the zip of this TrainingApiModelsDetailsOutputModel.  # noqa: E501
+
+
+        :return: The zip of this TrainingApiModelsDetailsOutputModel.  # noqa: E501
+        :rtype: bool
+        """
+        return self._zip
+
+    @zip.setter
+    def zip(self, zip):
+        """Sets the zip of this TrainingApiModelsDetailsOutputModel.
+
+
+        :param zip: The zip of this TrainingApiModelsDetailsOutputModel.  # noqa: E501
+        :type: bool
+        """
+
+        self._zip = zip
 
     def to_dict(self):
         """Returns the model properties as a dict"""
