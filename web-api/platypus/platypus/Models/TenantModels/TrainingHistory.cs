@@ -1,12 +1,9 @@
 ﻿using Newtonsoft.Json;
-using Nssol.Platypus.Controllers.Util;
 using Nssol.Platypus.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Models.TenantModels
 {
@@ -155,6 +152,12 @@ namespace Nssol.Platypus.Models.TenantModels
         /// お気に入り
         /// </summary>
         public bool Favorite { get; set; }
+
+        /// <summary>
+        /// zip圧縮するか否か。
+        /// true：zip圧縮する　false：zip圧縮しない
+        /// </summary>
+        public bool Zip { get; set; }
 
         /// <summary>
         /// データセット

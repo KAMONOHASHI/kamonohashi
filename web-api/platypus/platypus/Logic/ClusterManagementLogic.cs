@@ -476,7 +476,8 @@ namespace Nssol.Platypus.Logic
                     { "COLUMNS", containerOptions.ShellColumns },
                     { "PYTHONUNBUFFERED", "true" }, // python実行時の標準出力・エラーのバッファリングをなくす
                     { "LC_ALL", "C.UTF-8"},  // python実行時のエラー回避
-                    { "LANG", "C.UTF-8"}  // python実行時のエラー回避
+                    { "LANG", "C.UTF-8"},  // python実行時のエラー回避
+                    { "ZIP_FILE_CREATED", trainHistory.Zip.ToString() }  // 結果をzip圧縮するか否か
                 },
                 EntryPoint = trainHistory.EntryPoint,
 
@@ -626,7 +627,8 @@ namespace Nssol.Platypus.Logic
                     { "COLUMNS", containerOptions.ShellColumns },
                     { "PYTHONUNBUFFERED", "true" }, // python実行時の標準出力・エラーのバッファリングをなくす
                     { "LC_ALL", "C.UTF-8"},  // python実行時のエラー回避
-                    { "LANG", "C.UTF-8"}  // python実行時のエラー回避
+                    { "LANG", "C.UTF-8"},  // python実行時のエラー回避
+                    { "ZIP_FILE_CREATED", inferenceHistory.Zip.ToString() }  // 結果をzip圧縮するか否か
                 },
                 EntryPoint = inferenceHistory.EntryPoint,
 
@@ -715,7 +717,7 @@ namespace Nssol.Platypus.Logic
                 TenantName = TenantName,
                 LoginUser = CurrentUserInfo.Alias, //アカウントはエイリアスから指定
                 Name = containerName,
-                ContainerImage = "tensorflow/tensorflow",
+                ContainerImage = "tensorflow/tensorflow:1.13.2",    // tensorboardで利用するイメージはtensorflow/tensorflow:1.13.2で固定
                 ScriptType = "tensorboard",
                 Cpu = 1,
                 Memory = 1, //メモリは1GBで仮決め

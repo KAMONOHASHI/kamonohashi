@@ -65,5 +65,11 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         /// メモ
         /// </summary>
         public string Memo { get; set; }
+
+        /// <summary>
+        /// zip圧縮するか否か。
+        /// true：zip圧縮する　false：zip圧縮しない
+        /// </summary>
+        public bool Zip { get; set; }
     }
 }

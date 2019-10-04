@@ -1,12 +1,8 @@
-﻿using Newtonsoft.Json;
-using Nssol.Platypus.Infrastructure.Infos;
+﻿using Nssol.Platypus.ApiModels.Components;
 using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Models.TenantModels;
-using Nssol.Platypus.ApiModels.Components;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Globalization;
 
 namespace Nssol.Platypus.ApiModels.TrainingApiModels
@@ -44,6 +40,8 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
             Memory = history.Memory;
             Gpu = history.Gpu;
             Partition = history.Partition;
+
+            Zip = history.Zip;
 
             foreach (var option in history.GetOptionDic())
             {
@@ -142,6 +140,12 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         /// 実行時間
         /// </summary>
         public string ExecutionTime { get; set;  }
+
+        /// <summary>
+        /// zip圧縮するか否か。
+        /// true：zip圧縮する　false：zip圧縮しない
+        /// </summary>
+        public bool Zip { get; set; }
 
         /// <summary>
         /// 引数 TrainingHistory history の属性 CreatedAt/StartedA/CompletedAt の値に従い、
