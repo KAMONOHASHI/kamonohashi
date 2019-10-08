@@ -96,6 +96,7 @@
         serviceTypes: Array, // /api/v1/admin/registry/types の結果
         editApiUrl: false,
         editRegistryUrl: false,
+        defaultProtocol: 'https://',
         isNotEditable: false,
         rules: {
           name: [{required: true, message: '必須項目です'}],
@@ -150,8 +151,8 @@
         this.projectName = result.projectName
         this.serviceType = result.serviceType
         this.isNotEditable = result.isNotEditable
-        this.editApiUrl = 'https://' + result.host !== result.apiUrl
-        this.editRegistryUrl = result.apiUrl + ':' + result.portNo !== result.registryUrl
+        this.editApiUrl = this.defaultProtocol + result.host !== result.apiUrl
+        this.editRegistryUrl = this.defaultProtocol + result.host + ':' + result.portNo !== result.registryUrl
       },
       async deleteRegistry () {
         try {
@@ -164,14 +165,14 @@
       handleChange () {
         if (!this.editApiUrl) {
           if (this.host) {
-            this.apiUrl = 'https://' + this.host
+            this.apiUrl = this.defaultProtocol + this.host
           } else {
             this.apiUrl = ''
           }
         }
         if (!this.editRegistryUrl) {
-          if (this.apiUrl && this.portNo) {
-            this.registryUrl = this.apiUrl + ':' + this.portNo
+          if (this.host && this.portNo) {
+            this.registryUrl = this.defaultProtocol + this.host + ':' + this.portNo
           } else {
             this.registryUrl = ''
           }

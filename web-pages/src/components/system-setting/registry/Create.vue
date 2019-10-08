@@ -83,6 +83,7 @@
         serviceTypes: Array, // /api/v1/admin/registry/types の結果
         editApiUrl: false,
         editRegistryUrl: false,
+        defaultProtocol: 'https://',
         rules: {
           name: [{required: true, message: '必須項目です'}],
           host: [{required: true, message: '必須項目です'}],
@@ -128,14 +129,14 @@
       handleChange () {
         if (!this.editApiUrl) {
           if (this.host) {
-            this.apiUrl = 'https://' + this.host
+            this.apiUrl = this.defaultProtocol + this.host
           } else {
             this.apiUrl = ''
           }
         }
         if (!this.editRegistryUrl) {
-          if (this.apiUrl && this.portNo) {
-            this.registryUrl = this.apiUrl + ':' + this.portNo
+          if (this.host && this.portNo) {
+            this.registryUrl = this.defaultProtocol + this.host + ':' + this.portNo
           } else {
             this.registryUrl = ''
           }
