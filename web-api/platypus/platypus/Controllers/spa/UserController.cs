@@ -278,7 +278,7 @@ namespace Nssol.Platypus.Controllers.spa
                 if(currentTenant != null)
                 {
                     //ロールが変更されている可能性があるので、更新処理を行う
-                    //一度テナントから外す（Registryとの紐づけは消さずに残す）
+                    //一度テナントから外す
                     userRepository.DetachTenant(id.Value, tenantInput.Id.Value, true);
                     //候補から外す
                     currentTenants.Remove(currentTenant);

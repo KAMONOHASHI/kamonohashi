@@ -318,8 +318,8 @@ namespace Nssol.Platypus.DataAccess.Repositories
                     if (utrMapCount == 0)
                     {
                         LogDebug($"UserTenantGitMap エントリの新規追加 : UserId={user.Id}, TenantGitMapId={GitMap.Id}, TenantId={tenantId}, GitId={GitMap.GitId}");
-                        AddModel<UserTenantGitMap>(utrMap);
                     }
+                    AddModel<UserTenantGitMap>(utrMap);
                 }
 
                 //続いてレジストリの登録
@@ -366,6 +366,10 @@ namespace Nssol.Platypus.DataAccess.Repositories
             //レジストリとの紐づけ情報を削除
             var registryMapIds = FindModelAll<TenantRegistryMap>(map => map.TenantId == tenantId).Select(map => map.Id);
             DeleteModelAll<UserTenantRegistryMap>(map => map.UserId == userId && registryMapIds.Contains(map.TenantRegistryMapId));
+
+            //Gitとの紐づけ情報を削除
+            var gitMapIds = FindModelAll<TenantGitMap>(map => map.TenantId == tenantId).Select(map => map.Id);
+            DeleteModelAll<UserTenantGitMap>(map => map.UserId == userId && gitMapIds.Contains(map.TenantGitMapId));
 
             UserTenantMap tenantMap = FindModel<UserTenantMap>(map => map.UserId == userId && map.TenantId == tenantId);
             
