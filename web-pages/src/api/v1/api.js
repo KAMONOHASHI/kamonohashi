@@ -130,6 +130,7 @@ let api = {
     getFilesByKey: gen.ApiV1DataByIdFilesByNameGet,
     getFilesById: gen.ApiV1DataByIdFilesGet,
     putFilesById: gen.ApiV1DataByIdFilesPost,
+    deleteFilesById: gen.ApiV1DataByIdFilesByFileIdDelete,
     getDataTags: gen.ApiV1DataDatatagsGet
   },
 
