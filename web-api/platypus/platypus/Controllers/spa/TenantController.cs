@@ -57,7 +57,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// テナント一覧を取得
         /// </summary>
         [HttpGet]
-        [PermissionFilter(MenuCode.Tenant, MenuCode.Role, MenuCode.User, MenuCode.Quota, MenuCode.Node, MenuCode.Resource)]
+        [PermissionFilter(MenuCode.Tenant, MenuCode.User, MenuCode.Node)]
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetAll()
         {
@@ -71,7 +71,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="id">テナントID</param>
         [HttpGet("{id}")]
-        [PermissionFilter(MenuCode.Tenant, MenuCode.Role, MenuCode.User, MenuCode.Quota, MenuCode.Node, MenuCode.Resource)]
+        [PermissionFilter(MenuCode.Tenant)]
         [ProducesResponseType(typeof(DetailsOutputModel), (int)HttpStatusCode.OK)]
         public IActionResult GetDetails(long? id)
         {
@@ -207,7 +207,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// テナントを削除する。(他のユーザが未ログイン状態の時間帯で実施するのが望ましい)
         /// </summary>
         [HttpDelete("{id}")]
-        [PermissionFilter(MenuCode.Resource, MenuCode.Role, MenuCode.Tenant, MenuCode.User)]
+        [PermissionFilter(MenuCode.Tenant)]
         [ProducesResponseType(typeof(DeleteOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> DeleteTenantAsync(long id, [FromBody] DeleteInputModel model)
         {
@@ -470,7 +470,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// 指定したテナントに所属するメンバーリストを取得する
         /// </summary>
         [HttpGet("{id}/members")]
-        [PermissionFilter(MenuCode.Tenant, MenuCode.Role, MenuCode.User, MenuCode.Quota, MenuCode.Node, MenuCode.Resource)]
+        [PermissionFilter(MenuCode.Tenant)]
         [ProducesResponseType(typeof(IEnumerable<MemberOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetMembers(long id)
         {

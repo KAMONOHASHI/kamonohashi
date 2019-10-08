@@ -40,7 +40,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// 全ノード一覧を取得
         /// </summary>
         [HttpGet]
-        [PermissionFilter(MenuCode.Node, MenuCode.Resource, MenuCode.Quota)]
+        [PermissionFilter(MenuCode.Node)]
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetAll([FromQuery] string name, [FromQuery]int? perPage, [FromQuery] int page = 1, bool withTotal = false)
         {
@@ -73,7 +73,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// ノードアクセスレベルの一覧を取得する
         /// </summary>
         [HttpGet("/api/v1/admin/node-access-levels")]
-        [PermissionFilter(MenuCode.Node, MenuCode.Resource, MenuCode.Quota)]
+        [PermissionFilter(MenuCode.Node)]
         [ProducesResponseType(typeof(IEnumerable<EnumInfo>), (int)HttpStatusCode.OK)]
         public IActionResult GetAllTypes()
         {
@@ -88,7 +88,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="id">ノードID</param>
         /// <param name="nodeTenantMapRepository">DI用</param>
         [HttpGet("{id}")]
-        [PermissionFilter(MenuCode.Node, MenuCode.Resource, MenuCode.Quota)]
+        [PermissionFilter(MenuCode.Node)]
         [ProducesResponseType(typeof(DetailsOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetDetail(long? id, [FromServices] INodeTenantMapRepository nodeTenantMapRepository)
         {
