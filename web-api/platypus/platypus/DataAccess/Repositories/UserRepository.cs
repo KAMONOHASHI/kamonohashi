@@ -309,14 +309,14 @@ namespace Nssol.Platypus.DataAccess.Repositories
                     utrMap.GitToken = existMap.GitToken;
                 }
                     
-                // UserTenantGitMap において userId と TenantGitMapId のペアが存在しなければエントリ新規追加
-                var utrMapCount = GetModelAll<UserTenantGitMap>().Where(m => m.UserId == user.Id && m.TenantGitMapId == GitMap.Id).Count();
-                if (utrMapCount == 0)
-                {
-                    LogDebug($"UserTenantGitMap エントリの新規追加 : UserId={user.Id}, TenantGitMapId={GitMap.Id}, TenantId={tenantId}, GitId={GitMap.GitId}");
+                    // UserTenantGitMap において userId と TenantGitMapId のペアが存在しなければエントリ新規追加
+                    var utrMapCount = GetModelAll<UserTenantGitMap>().Where(m => m.UserId == user.Id && m.TenantGitMapId == GitMap.Id).Count();
+                    if (utrMapCount == 0)
+                    {
+                        LogDebug($"UserTenantGitMap エントリの新規追加 : UserId={user.Id}, TenantGitMapId={GitMap.Id}, TenantId={tenantId}, GitId={GitMap.GitId}");
+                    }
                     AddModel<UserTenantGitMap>(utrMap);
                 }
-            }
 
             //続いてレジストリの登録
             //レジストリ登録はクラスタ管理サービスへも影響するので、作成したMapを全て返す
@@ -360,6 +360,10 @@ namespace Nssol.Platypus.DataAccess.Repositories
             //レジストリとの紐づけ情報を削除
             var registryMapIds = FindModelAll<TenantRegistryMap>(map => map.TenantId == tenantId).Select(map => map.Id);
             DeleteModelAll<UserTenantRegistryMap>(map => map.UserId == userId && registryMapIds.Contains(map.TenantRegistryMapId));
+
+            //Gitとの紐づけ情報を削除
+            var gitMapIds = FindModelAll<TenantGitMap>(map => map.TenantId == tenantId).Select(map => map.Id);
+            DeleteModelAll<UserTenantGitMap>(map => map.UserId == userId && gitMapIds.Contains(map.TenantGitMapId));
 
             UserTenantMap tenantMap = FindModel<UserTenantMap>(map => map.UserId == userId && map.TenantId == tenantId);
             

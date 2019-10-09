@@ -1,13 +1,10 @@
-﻿using Nssol.Platypus.Infrastructure;
+﻿using Amazon.S3;
+using Amazon.S3.Model;
+using Nssol.Platypus.Infrastructure;
+using Nssol.Platypus.ServiceModels;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using Nssol.Platypus.ServiceModels;
-using System.Collections.Specialized;
-using Amazon.S3;
-using Amazon.S3.Model;
 
 namespace Nssol.Platypus.Services.Interfaces
 {
@@ -95,10 +92,9 @@ namespace Nssol.Platypus.Services.Interfaces
 
         /// <summary>
         /// バケットにあるファイルの一覧取得。minio NFSに書き込まれた学習結果を一覧で取得するために使用。
-        /// 1000件までしか取得しない
         /// </summary>
         /// <param name="searchDirPath"> 検索対象ディレクトリ </param>
-        /// <returns> StorageListResultInfo  </returns>
+        /// <returns>StorageListResultInfo (直下のディレクトリ一覧, 直下のオブジェクト一覧)  </returns>
         Task<Result<StorageListResultInfo, string>> GetUnderDirAsync(string searchDirPath);
     }
 }

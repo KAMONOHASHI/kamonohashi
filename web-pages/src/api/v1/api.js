@@ -130,6 +130,7 @@ let api = {
     getFilesByKey: gen.ApiV1DataByIdFilesByNameGet,
     getFilesById: gen.ApiV1DataByIdFilesGet,
     putFilesById: gen.ApiV1DataByIdFilesPost,
+    deleteFilesById: gen.ApiV1DataByIdFilesByFileIdDelete,
     getDataTags: gen.ApiV1DataDatatagsGet
   },
 
@@ -264,7 +265,7 @@ let api = {
       post: gen.ApiV1AdminTenantsPost,
       getById: gen.ApiV1AdminTenantsByIdGet,
       put: gen.ApiV1AdminTenantsByIdPut,
-      getMenbers: gen.ApiV1AdminTenantsByIdMembersGet,
+      getMembers: gen.ApiV1AdminTenantsByIdMembersGet,
       delete: gen.ApiV1AdminTenantsByIdDelete
     }
   },

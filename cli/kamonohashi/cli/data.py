@@ -153,3 +153,13 @@ def upload_files(id, file):
         upload_info = object_storage.upload_file(api.api_client, x, 'Data')
         model = rest.ComponentsAddFileInputModel(file_name=upload_info.file_name, stored_path=upload_info.stored_path)
         api.add_data_file(id, model=model)
+
+
+@data.command('delete-file')
+@click.argument('id', type=int)
+@click.option('-f', '--file-id', type=int, required=True, help='A file id you want to delete')
+def delete_file(id, file_id):
+    """Delete a file of data"""
+    api = rest.DataApi(configuration.get_api_client())
+    api.delete_data_file(id, file_id)
+    print('deleted', file_id)

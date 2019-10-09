@@ -45,7 +45,8 @@ class TrainingApiModelsCreateInputModel(object):
         'name': 'str',
         'options': 'dict(str, str)',
         'parent_id': 'int',
-        'partition': 'str'
+        'partition': 'str',
+        'zip': 'bool'
     }
 
     attribute_map = {
@@ -60,10 +61,11 @@ class TrainingApiModelsCreateInputModel(object):
         'name': 'name',
         'options': 'options',
         'parent_id': 'parentId',
-        'partition': 'partition'
+        'partition': 'partition',
+        'zip': 'zip'
     }
 
-    def __init__(self, container_image=None, cpu=None, data_set_id=None, entry_point=None, git_model=None, gpu=None, memo=None, memory=None, name=None, options=None, parent_id=None, partition=None):  # noqa: E501
+    def __init__(self, container_image=None, cpu=None, data_set_id=None, entry_point=None, git_model=None, gpu=None, memo=None, memory=None, name=None, options=None, parent_id=None, partition=None, zip=None):  # noqa: E501
         """TrainingApiModelsCreateInputModel - a model defined in Swagger"""  # noqa: E501
 
         self._container_image = None
@@ -78,6 +80,7 @@ class TrainingApiModelsCreateInputModel(object):
         self._options = None
         self._parent_id = None
         self._partition = None
+        self._zip = None
         self.discriminator = None
 
         self.container_image = container_image
@@ -96,6 +99,8 @@ class TrainingApiModelsCreateInputModel(object):
             self.parent_id = parent_id
         if partition is not None:
             self.partition = partition
+        if zip is not None:
+            self.zip = zip
 
     @property
     def container_image(self):
@@ -366,6 +371,27 @@ class TrainingApiModelsCreateInputModel(object):
         """
 
         self._partition = partition
+
+    @property
+    def zip(self):
+        """Gets the zip of this TrainingApiModelsCreateInputModel.  # noqa: E501
+
+
+        :return: The zip of this TrainingApiModelsCreateInputModel.  # noqa: E501
+        :rtype: bool
+        """
+        return self._zip
+
+    @zip.setter
+    def zip(self, zip):
+        """Sets the zip of this TrainingApiModelsCreateInputModel.
+
+
+        :param zip: The zip of this TrainingApiModelsCreateInputModel.  # noqa: E501
+        :type: bool
+        """
+
+        self._zip = zip
 
     def to_dict(self):
         """Returns the model properties as a dict"""

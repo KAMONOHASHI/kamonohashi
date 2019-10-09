@@ -43,7 +43,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// 登録済みのGitエンドポイント一覧を取得
         /// </summary>
         [HttpGet("/api/v1/admin/git/endpoints")]
-        [Filters.PermissionFilter(MenuCode.Git, MenuCode.Training, MenuCode.Preprocess)]
+        [Filters.PermissionFilter(MenuCode.Git, MenuCode.Tenant)]
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetAll()
         {
@@ -56,7 +56,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// Git種別一覧を取得
         /// </summary>
         [HttpGet("/api/v1/admin/git/types")]
-        [Filters.PermissionFilter(MenuCode.Git, MenuCode.Training, MenuCode.Preprocess)]
+        [Filters.PermissionFilter(MenuCode.Git)]
         [ProducesResponseType(typeof(IEnumerable<EnumInfo>), (int)HttpStatusCode.OK)]
         public IActionResult GetAllTypes()
         {
@@ -70,7 +70,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="id">GitエンドポイントID</param>
         [HttpGet("/api/v1/admin/git/endpoints/{id}")]
-        [Filters.PermissionFilter(MenuCode.Git, MenuCode.Training, MenuCode.Preprocess)]
+        [Filters.PermissionFilter(MenuCode.Git)]
         [ProducesResponseType(typeof(DetailsOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetDetails(long? id)
         {
@@ -207,7 +207,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// 全てのリポジトリを取得する
         /// </summary>
         [HttpGet("{gitId}/repos")]
-        [Filters.PermissionFilter(MenuCode.Git, MenuCode.Training, MenuCode.Preprocess)]
+        [Filters.PermissionFilter(MenuCode.Training, MenuCode.Preprocess, MenuCode.Inference, MenuCode.Notebook)]
         [ProducesResponseType(typeof(IEnumerable<ServiceModels.Git.RepositoryModel>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetAllRepository([FromRoute] long gitId)
         {
@@ -232,7 +232,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="repositoryName">リポジトリ名</param>
         /// <param name="owner">オーナー名</param>
         [HttpGet("{gitId}/repos/{owner}/{repositoryName}/branches")]
-        [Filters.PermissionFilter(MenuCode.Git, MenuCode.Training, MenuCode.Preprocess)]
+        [Filters.PermissionFilter(MenuCode.Training, MenuCode.Preprocess, MenuCode.Inference, MenuCode.Notebook)]
         [ProducesResponseType(typeof(IEnumerable<ServiceModels.Git.BranchModel>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetAllBranchAsync([FromRoute] long gitId, [FromRoute] string owner, [FromRoute] string repositoryName)
         {
@@ -261,7 +261,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="owner">オーナー名</param>
         /// <param name="branch">ブランチ名</param>
         [HttpGet("{gitId}/repos/{owner}/{repositoryName}/commits")]
-        [Filters.PermissionFilter(MenuCode.Git, MenuCode.Training, MenuCode.Preprocess)]
+        [Filters.PermissionFilter(MenuCode.Training, MenuCode.Preprocess, MenuCode.Inference, MenuCode.Notebook)]
         [ProducesResponseType(typeof(IEnumerable<ServiceModels.Git.CommitModel>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetAllCommitAsync([FromRoute] long gitId, [FromRoute] string owner, [FromRoute] string repositoryName, string branch)
         {
@@ -287,7 +287,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// 製品版のSwaggerからは削除する。
         /// </summary>
         [HttpGet("{gitId}/repos/{*segments}")]
-        [Filters.PermissionFilter(MenuCode.Git, MenuCode.Training, MenuCode.Preprocess)]
+        [Filters.PermissionFilter(MenuCode.Training, MenuCode.Preprocess, MenuCode.Inference, MenuCode.Notebook)]
         public async Task<IActionResult> AllocatieRoute([FromRoute] long gitId, [FromRoute] string segments, [FromQuery] string branch)
         {
             string[] segmentsArray = segments.Split('/');

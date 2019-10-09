@@ -131,7 +131,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="id">データID</param>
         [HttpGet("{id}")]
-        [Filters.PermissionFilter(MenuCode.Data, MenuCode.DataSet, MenuCode.Preprocess)]
+        [Filters.PermissionFilter(MenuCode.Data, MenuCode.Preprocess)]
         [ProducesResponseType(typeof(DetailsOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetDetail(long? id)
         {
@@ -304,7 +304,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="id">対象データID</param>
         /// <param name="name">対象ファイル名</param>
         [HttpGet("{id}/files/{name}")]
-        [Filters.PermissionFilter(MenuCode.Data, MenuCode.DataSet, MenuCode.Preprocess)]
+        [Filters.PermissionFilter(MenuCode.Data)]
         [ProducesResponseType(typeof(DataFileOutputModel), (int)HttpStatusCode.OK)]
         public IActionResult GetFileUrl(long id, string name)
         {
@@ -325,7 +325,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="withUrl">結果にダウンロード用のURLを含めるか</param>
         /// <param name="id">対象データID</param>
         [HttpGet("{id}/files")]
-        [Filters.PermissionFilter(MenuCode.Data, MenuCode.DataSet, MenuCode.Preprocess)]
+        [Filters.PermissionFilter(MenuCode.Data, MenuCode.Preprocess)]
         [ProducesResponseType(typeof(IEnumerable<DataFileOutputModel>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetFiles([FromRoute] long id, [FromQuery] bool withUrl)
         {
@@ -381,6 +381,61 @@ namespace Nssol.Platypus.Controllers.spa
             unitOfWork.Commit();
 
             return JsonCreated(new DataFileOutputModel { Id = id, Key = property.Key, FileId = property.Id, FileName = model.FileName });
+        }
+
+        /// <summary>
+        /// 指定されたIDのファイルを削除する
+        /// </summary>
+        /// <param name="id">対象のデータID</param>
+        /// <param name="fileId">削除するファイルのID</param>
+        /// <param name="dataSetRepository">DI用</param>
+        [HttpDelete("{id}/files/{fileId}")]
+        [Filters.PermissionFilter(MenuCode.Data)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        public async Task<IActionResult> DeleteFile(long? id, long? fileId, [FromServices] IDataSetRepository dataSetRepository)
+        {
+            if (id == null)
+            {
+                //IDが指定されていなければエラー
+                return JsonBadRequest("Invalid inputs.");
+            }
+            if (fileId == null)
+            {
+                return JsonBadRequest("File ID is required.");
+            }
+            if (fileId.Value < 0)
+            {
+                return JsonBadRequest("The file is locked. You can NOT delete the file.");
+            }
+            //Dataとそれに紐づくSectionimageをDBから取得
+            var data = await dataRepository.GetDataIncludeAllAsync(id.Value);
+            if (data == null)
+            {
+                return JsonNotFound($"Data ID {id.Value} is not found.");
+            }
+
+            var checkResult = await CheckDataIsLocked(data, dataSetRepository);
+            if (checkResult != null)
+            {
+                return checkResult;
+            }
+
+            // ファイルの存在チェック
+            var file= data.DataProperties.FirstOrDefault(d => d.Id == fileId);
+
+            if (file == null)
+            {
+                return JsonNotFound($"File ID {fileId.Value} is not found.");
+            }
+
+            // 削除処理
+            dataRepository.DeleteFile(data, fileId.Value);
+            await storageLogic.DeleteFileAsync(ResourceType.Data, file.DataFile.StoredPath);
+
+            // 結果に関わらずコミット
+            unitOfWork.Commit();
+
+            return JsonNoContent();
         }
 
         /// <summary>

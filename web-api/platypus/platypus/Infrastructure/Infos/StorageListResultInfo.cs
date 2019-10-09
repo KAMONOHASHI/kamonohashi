@@ -1,8 +1,5 @@
 ﻿using Nssol.Platypus.Infrastructure.Infos;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Infrastructure
 {
@@ -21,7 +18,6 @@ namespace Nssol.Platypus.Infrastructure
         public List<StorageFileInfo> Files { get; }
         /// <summary>
         /// ディレクトリ直下に1000件の結果があった場合true
-        /// 1000件以上は省略される。ユーザー利用規約として1000件以上作らないようにする
         /// </summary>
         public bool Exceeded { get; }
 

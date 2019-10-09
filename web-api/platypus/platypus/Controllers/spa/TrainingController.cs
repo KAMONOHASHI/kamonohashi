@@ -179,7 +179,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// マウントする学習履歴を取得
         /// </summary>
         [HttpGet("mount")]
-        [Filters.PermissionFilter(MenuCode.Training)]
+        [Filters.PermissionFilter(MenuCode.Training, MenuCode.Inference)]
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetTrainingToMount()
         {
@@ -197,7 +197,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="id">学習履歴ID</param>
         [HttpGet("{id}")]
-        [Filters.PermissionFilter(MenuCode.Training)]
+        [Filters.PermissionFilter(MenuCode.Training, MenuCode.Inference)]
         [ProducesResponseType(typeof(DetailsOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetDetail(long? id)
         {
@@ -354,7 +354,8 @@ namespace Nssol.Platypus.Controllers.spa
                 Memory = model.Memory.Value,
                 Gpu = model.Gpu.Value,
                 Partition = model.Partition,
-                Status = ContainerStatus.Running.Key
+                Status = ContainerStatus.Running.Key,
+                Zip = model.Zip
             };
             if (trainingHistory.OptionDic.ContainsKey("")) //空文字は除外する
             {
@@ -488,10 +489,6 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonNotFound($"Training ID {id} is not found.");
             }
 
-            if (!Regex.IsMatch(path, "[-_1-9a-zA-Z/]+")) {
-                return JsonBadRequest("Invalid path. allowed characters are -_1-9a-zA-Z/");
-            }
-
             // 検索path文字列の先頭・末尾が/でない場合はつける
             if (!path.StartsWith("/")) {
                 path = "/" + path;
@@ -499,12 +496,17 @@ namespace Nssol.Platypus.Controllers.spa
             if (!path.EndsWith("/")) {
                 path = path + "/";
             }
+
+            // windowsから実行された場合、区切り文字が"\\"として送られてくるので"/"に置換する
+            path = path.Replace("\\", "/");
+
             var rootDir = $"{id}" + path;
 
             var result = await storageLogic.GetUnderDirAsync(ResourceType.TrainingContainerOutputFiles, rootDir);
 
-            if (withUrl) {
-              result.Value.Files.ForEach(x => x.Url = storageLogic.GetPreSignedUriForGetFromKey(x.Key, x.FileName, true).ToString());
+            if (withUrl)
+            {
+                result.Value.Files.ForEach(x => x.Url = storageLogic.GetPreSignedUriForGetFromKey(x.Key, x.FileName, true).ToString());
             }
              
 
