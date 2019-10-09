@@ -9,7 +9,6 @@ using Nssol.Platypus.Services;
 using Nssol.Platypus.Services.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Logic
@@ -214,6 +213,10 @@ namespace Nssol.Platypus.Logic
                 else if (git.ServiceType == GitServiceType.GitHub)
                 {
                     return CommonDiLogic.DynamicDi<GitHubService>();
+                }
+                else if (git.ServiceType == GitServiceType.GitLabCom)
+                {
+                    return CommonDiLogic.DynamicDi<GitLabComService>();
                 }
             }
             return null;

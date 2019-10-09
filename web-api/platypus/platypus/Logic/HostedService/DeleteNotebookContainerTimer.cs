@@ -72,7 +72,7 @@ namespace Nssol.Platypus.Logic.HostedService
             try
             {
                 // テーブル NotebookHistories の'Killed'以外の全レコードを取得
-                var notebookHistories = notebookHistoryRepository.GetAllIncludeTenantAsync().Result.Where(h => h.GetStatus().ToString() != ContainerStatus.Killed.Name);
+                var notebookHistories = notebookHistoryRepository.GetAllIncludeTenantAsNoTrackingAsync().Result.Where(h => h.GetStatus().ToString() != ContainerStatus.Killed.Name);
                 if (notebookHistories.Count() == 0)
                 {
                     // レコードが1件も存在しなければ終了

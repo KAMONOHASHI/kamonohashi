@@ -24,20 +24,26 @@
         <el-row>
           <el-col :span="16">
             <el-form-item label="ホスト名" prop="host">
-              <el-input v-model="host" :disabled="isNotEditable"/>
+              <el-input v-model="host" :disabled="isNotEditable" @change="handleChange"/>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="ポート" prop="portNo">
-              <el-input-number v-model="portNo" :min="1" :max="65535" controls-position="right" style="width: 100%;" :disabled="isNotEditable"/>
+              <el-input-number v-model="portNo" :min="1" :max="65535"
+                               controls-position="right" style="width: 100%;"
+                               :disabled="isNotEditable" @change="handleChange"/>
             </el-form-item>
           </el-col>
         </el-row>
         <el-form-item label="API URL" prop="apiUrl">
-          <el-input v-model="apiUrl" :disabled="isNotEditable"/>
+          <el-switch v-model="editApiUrl"
+                     :disabled="isNotEditable"/>
+          <el-input v-model="apiUrl" :disabled="isNotEditable || !editApiUrl" @change="handleChange"/>
         </el-form-item>
         <el-form-item label="URL" prop="registryUrl">
-          <el-input v-model="registryUrl" :disabled="isNotEditable"/>
+          <el-switch v-model="editRegistryUrl"
+                     :disabled="isNotEditable"/>
+          <el-input v-model="registryUrl" :disabled="isNotEditable || !editRegistryUrl"/>
         </el-form-item>
         <div v-if="serviceType === 2">
           <el-form-item label="プロジェクト名" prop="projectName">
@@ -67,6 +73,8 @@
   import DisplayError from '@/components/common/DisplayError'
   import api from '@/api/v1/api'
 
+  const defaultProtocol = 'https://'
+
   export default {
     name: 'RegistryEdit',
     components: {
@@ -88,6 +96,8 @@
         registryUrl: undefined,
         apiUrl: undefined,
         serviceTypes: Array, // /api/v1/admin/registry/types の結果
+        editApiUrl: false,
+        editRegistryUrl: false,
         isNotEditable: false,
         rules: {
           name: [{required: true, message: '必須項目です'}],
@@ -142,6 +152,8 @@
         this.projectName = result.projectName
         this.serviceType = result.serviceType
         this.isNotEditable = result.isNotEditable
+        this.editApiUrl = defaultProtocol + result.host !== result.apiUrl
+        this.editRegistryUrl = defaultProtocol + result.host + ':' + result.portNo !== result.registryUrl
       },
       async deleteRegistry () {
         try {
@@ -149,6 +161,22 @@
           this.emitDone()
         } catch (e) {
           this.error = e
+        }
+      },
+      handleChange () {
+        if (!this.editApiUrl) {
+          if (this.host) {
+            this.apiUrl = defaultProtocol + this.host
+          } else {
+            this.apiUrl = ''
+          }
+        }
+        if (!this.editRegistryUrl) {
+          if (this.host && this.portNo) {
+            this.registryUrl = defaultProtocol + this.host + ':' + this.portNo
+          } else {
+            this.registryUrl = ''
+          }
         }
       },
       emitDone () {

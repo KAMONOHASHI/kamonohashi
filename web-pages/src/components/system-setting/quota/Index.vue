@@ -13,18 +13,18 @@
         <el-table-column prop="tenantName" label="テナント" width="auto"/>
         <el-table-column prop="cpu" label="CPU" width="auto">
           <template slot-scope="scope">
-            <el-input-number v-model="scope.row.cpu" size="small" :min="0" controls-position="right"/>
+            <el-input-number v-model="scope.row.cpu" size="small" :min="0" :max="200" controls-position="right"/>
           </template>
         </el-table-column>
         <el-table-column prop="memory" label="Memory" width="auto">
           <template slot-scope="scope">
-            <el-input-number v-model="scope.row.memory" :min="0" size="small" controls-position="right"/>
+            <el-input-number v-model="scope.row.memory" :min="0" :max="200" size="small" controls-position="right"/>
             GB
           </template>
         </el-table-column>
         <el-table-column prop="gpu" label="GPU" width="auto">
           <template slot-scope="scope">
-            <el-input-number v-model="scope.row.gpu" :min="0" size="small" controls-position="right"/>
+            <el-input-number v-model="scope.row.gpu" :min="0" :max="16" size="small" controls-position="right"/>
           </template>
         </el-table-column>
       </el-table>

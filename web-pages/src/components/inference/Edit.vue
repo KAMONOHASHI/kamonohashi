@@ -139,6 +139,16 @@
               <br/>
               <el-button @click="emitFiles">ファイル一覧</el-button>
             </el-form-item>
+            <el-form-item  label="一括ダウンロードコマンド" v-if="zip === false">
+                  <el-input v-model="downloadFilesCommand" :readonly="true"/>
+            </el-form-item >
+            <el-form-item label="結果Zip圧縮">
+              <el-switch v-model="zip"
+                          style="width: 100%;"
+                          inactive-text="圧縮しない"
+                          active-text="圧縮する"
+                          disabled/>
+            </el-form-item>
 
             <el-form-item label="添付ファイル">
               <br/>
@@ -222,9 +232,10 @@
         status: undefined,
         // コンテナの生死等
         statusType: undefined,
+        zip: true,
         conditionNote: '',
-        events: []
-
+        events: [],
+        downloadFilesCommand: ''
       }
     },
     async created () {
@@ -316,6 +327,8 @@
         this.entryPoint = data.entryPoint
         this.conditionNote = data.conditionNote
         this.favorite = data.favorite
+        this.zip = data.zip
+        this.downloadFilesCommand = 'kqi inference download-container-files ' + this.id + ' -d ./'
         if (this.statusType === 'Running' || this.statusType === 'Error') {
           this.events = (await api.inference.getEventsById({id: data.id})).data
         }

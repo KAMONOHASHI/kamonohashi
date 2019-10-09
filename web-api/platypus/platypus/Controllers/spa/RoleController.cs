@@ -35,7 +35,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// 全ロール一覧を取得
         /// </summary>
         [HttpGet("/api/v1/admin/roles")]
-        [PermissionFilter(MenuCode.Role, MenuCode.Tenant, MenuCode.User)]
+        [PermissionFilter(MenuCode.Role, MenuCode.User, MenuCode.Menu)]
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetAllForAdmin()
         {
@@ -50,7 +50,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="id">ロールID</param>
         /// <param name="tenantRepository">DI用</param>
         [HttpGet("/api/v1/admin/roles/{id}")]
-        [PermissionFilter(MenuCode.Role, MenuCode.Tenant, MenuCode.User)]
+        [PermissionFilter(MenuCode.Role)]
         [ProducesResponseType(typeof(DetailsOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetDetailForAdmin(long? id, [FromServices] ITenantRepository tenantRepository)
         {
@@ -227,7 +227,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="id">ロールID</param>
         [HttpGet("{id}")]
-        [PermissionFilter(MenuCode.TenantRole, MenuCode.TenantUser)] //テナントユーザ画面からも参照する
+        [PermissionFilter(MenuCode.TenantRole)]
         [ProducesResponseType(typeof(DetailsOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetDetailForTenant(long? id)
         {

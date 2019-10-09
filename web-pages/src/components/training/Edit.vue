@@ -139,14 +139,24 @@
                 </div>
               </el-form-item>
             </div>
-            <el-form-item label="コンテナ出力ファイル">
-              <br/>
-              <el-button @click="emitFiles">ファイル一覧</el-button>
-            </el-form-item>
             <el-form-item label="TensorBoard">
               <pl-tensorboard-handler :trainingHistoryId="Number(trainingId)" :visible="dialogVisible"/>
             </el-form-item>
 
+            <el-form-item label="コンテナ出力ファイル">
+              <br/>
+              <el-button @click="emitFiles">ファイル一覧</el-button>
+            </el-form-item>
+            <el-form-item  label="一括ダウンロードコマンド" v-if="zip === false">
+                  <el-input v-model="downloadFilesCommand" :readonly="true"/>
+            </el-form-item >
+            <el-form-item label="結果Zip圧縮">
+              <el-switch v-model="zip"
+                          style="width: 100%;"
+                          inactive-text="圧縮しない"
+                          active-text="圧縮する"
+                          disabled/>
+            </el-form-item>
             <el-form-item label="添付ファイル">
               <br/>
               <el-button @click="emitLog" size="mini">ログファイル閲覧</el-button>
@@ -231,9 +241,11 @@
         statusType: undefined,
         conditionNote: '',
         favorite: false,
+        zip: true,
         events: [],
         waitingTime: undefined,
-        executionTime: undefined
+        executionTime: undefined,
+        downloadFilesCommand: ''
       }
     },
     async created () {
@@ -335,6 +347,8 @@
         this.entryPoint = data.entryPoint
         this.conditionNote = data.conditionNote
         this.favorite = data.favorite
+        this.zip = data.zip
+        this.downloadFilesCommand = 'kqi training download-container-files ' + this.trainingId + ' -d ./'
         if (this.statusType === 'Running' || this.statusType === 'Error') {
           this.events = (await api.training.getEventsById({id: data.id})).data
         }

@@ -45,7 +45,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// 管理者向けにユーザの一覧を取得する。
         /// </summary>
         [HttpGet]
-        [PermissionFilter(MenuCode.Tenant, MenuCode.Role, MenuCode.User)]
+        [PermissionFilter(MenuCode.User)]
         [ProducesResponseType(typeof(IEnumerable<IndexForAdminOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetAllUsersForAdmin()
         {
@@ -60,7 +60,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// 管理者向けに指定したユーザの情報を取得する。
         /// </summary>
         [HttpGet("{id}")]
-        [PermissionFilter(MenuCode.Tenant, MenuCode.Role, MenuCode.User)]
+        [PermissionFilter(MenuCode.User)]
         [ProducesResponseType(typeof(IndexForAdminOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetUserForAdmin(long? id)
         {
@@ -278,7 +278,7 @@ namespace Nssol.Platypus.Controllers.spa
                 if(currentTenant != null)
                 {
                     //ロールが変更されている可能性があるので、更新処理を行う
-                    //一度テナントから外す（Registryとの紐づけは消さずに残す）
+                    //一度テナントから外す
                     userRepository.DetachTenant(id.Value, tenantInput.Id.Value, true);
                     //候補から外す
                     currentTenants.Remove(currentTenant);

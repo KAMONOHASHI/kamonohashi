@@ -679,14 +679,13 @@ namespace Nssol.Platypus.Services
         /// <summary>
         /// ディレクトリ直下のディレクトリ・オブジェクト一覧取得。
         /// minio NFSに書き込まれた学習結果を一覧で取得するために使用。
-        /// 1000件までしか取得しない仕様
         /// </summary>
         /// <param name="searchDirPath"> 検索対象ディレクトリ </param>
         /// <returns>StorageListResultInfo (直下のディレクトリ一覧, 直下のオブジェクト一覧)  </returns>
         public async Task<Result<StorageListResultInfo, string>> GetUnderDirAsync(string searchDirPath)
         {
 
-            ListObjectsRequest request = new ListObjectsRequest
+            ListObjectsV2Request request = new ListObjectsV2Request
             {
                 BucketName = bucket,
                 MaxKeys = 1000,
@@ -696,17 +695,36 @@ namespace Nssol.Platypus.Services
 
             try
             {
-                LogDebug($"start querying objects under bucket");
-                ListObjectsResponse response = await client.ListObjectsAsync(request);
+                List<StorageDirInfo> dirs = new List<StorageDirInfo>();
+                List<StorageFileInfo> files = new List<StorageFileInfo>();
+                bool exceeded = false;
 
-                if (response.IsTruncated)
+                LogDebug($"start querying objects under bucket");
+
+                const int MaxRequestCount = 10; // 1ディレクトリに含まれるファイル数の上限は、10*1,000=10,000件とする
+                var requestCount = 0;
+                ListObjectsV2Response response = new ListObjectsV2Response();
+                do
                 {
-                    LogWarning("too many output files(should be less than 1000). exceeded files are ignored.");
+                    // ディレクトリ直下のディレクトリ・オブジェクト一覧を取得する
+                    response = await client.ListObjectsV2Async(request);
+
+                    if (response.IsTruncated)
+                    {
+                        LogWarning("more than 1000 output files exist. get continuously.");
+                        exceeded = response.IsTruncated;
+                    }
+                    LogDebug($"storeage response : {response.ToString()}");
+
+                    dirs.AddRange(response.CommonPrefixes.Select(x => new StorageDirInfo(x)).ToList());
+                    files.AddRange(response.S3Objects.Select(x => new StorageFileInfo(x.Key, x.LastModified, x.Size)).ToList());
+                    
+                    // 次の一覧取得の開始位置であるオブジェクトを設定する
+                    request.ContinuationToken = response.NextContinuationToken;
+                    requestCount++;
                 }
-                LogDebug($"storeage response : {response.ToString()}");
-                var dirs = response.CommonPrefixes.Select(x => new StorageDirInfo(x)).ToList();
-                var files = response.S3Objects.Select(x => new StorageFileInfo(x.Key, x.LastModified, x.Size)).ToList();
-                var exceeded = response.IsTruncated;
+                while (response.IsTruncated && requestCount < MaxRequestCount); // 一覧に続きがある場合再度問い合わせる
+
                 var result = new StorageListResultInfo(dirs, files, exceeded);
 
                 return Result<StorageListResultInfo, string>.CreateResult(result);

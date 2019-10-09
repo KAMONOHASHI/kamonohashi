@@ -10,13 +10,10 @@
       <el-table class="git-table pl-index-table" :data="tableData" @row-click="openEditDialog" border>
         <el-table-column prop="id" label="ID" width="100px"/>
         <el-table-column prop="name" label="リポジトリ名" width="auto"/>
-        <el-table-column prop="repositoryUrl" label="リポジトリURL" width="auto">
-        </el-table-column>
+        <el-table-column prop="repositoryUrl" label="リポジトリURL" width="auto"/>
         <el-table-column prop="serviceType" label="種別" width="auto">
           <template slot-scope="scope">
-            <span v-if="scope.row.serviceType===1">GitHub</span>
-            <span v-else-if="scope.row.serviceType===2">GitLab</span>
-            <span v-else>{{ serviceType }}</span>
+            {{ displayNameOfServiceType(scope.row.serviceType) }}
           </template>
         </el-table-column>
         <el-table-column prop="apiUrl" label="API URL" width="auto">
@@ -44,8 +41,15 @@
     },
     methods: {
       async retrieveData () {
+        // serviceTypeIdと表示名の一覧取得
+        this.serviceTypes = (await api.git.admin.getTypes()).data
         let response = await api.git.admin.getEndpoints()
         this.tableData = response.data
+      },
+      // ServiceTypeの数値から表示名に変換
+      displayNameOfServiceType (serviceTypeId) {
+        let serviceType = this.serviceTypes.find(s => s.id === serviceTypeId)
+        return serviceType.name
       },
       openCreateDialog () {
         this.$router.push('git/create')
