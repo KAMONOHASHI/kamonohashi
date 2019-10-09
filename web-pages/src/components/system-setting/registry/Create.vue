@@ -64,6 +64,8 @@
   import api from '@/api/v1/api'
   import DisplayError from '@/components/common/DisplayError'
 
+  const defaultProtocol = 'https://'
+
   export default {
     name: 'RegistryCreate',
     components: {
@@ -83,7 +85,6 @@
         serviceTypes: Array, // /api/v1/admin/registry/types の結果
         editApiUrl: false,
         editRegistryUrl: false,
-        defaultProtocol: 'https://',
         rules: {
           name: [{required: true, message: '必須項目です'}],
           host: [{required: true, message: '必須項目です'}],
@@ -129,14 +130,14 @@
       handleChange () {
         if (!this.editApiUrl) {
           if (this.host) {
-            this.apiUrl = this.defaultProtocol + this.host
+            this.apiUrl = defaultProtocol + this.host
           } else {
             this.apiUrl = ''
           }
         }
         if (!this.editRegistryUrl) {
           if (this.host && this.portNo) {
-            this.registryUrl = this.defaultProtocol + this.host + ':' + this.portNo
+            this.registryUrl = defaultProtocol + this.host + ':' + this.portNo
           } else {
             this.registryUrl = ''
           }

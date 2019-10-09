@@ -73,6 +73,8 @@
   import DisplayError from '@/components/common/DisplayError'
   import api from '@/api/v1/api'
 
+  const defaultProtocol = 'https://'
+
   export default {
     name: 'RegistryEdit',
     components: {
@@ -96,7 +98,6 @@
         serviceTypes: Array, // /api/v1/admin/registry/types の結果
         editApiUrl: false,
         editRegistryUrl: false,
-        defaultProtocol: 'https://',
         isNotEditable: false,
         rules: {
           name: [{required: true, message: '必須項目です'}],
@@ -151,8 +152,8 @@
         this.projectName = result.projectName
         this.serviceType = result.serviceType
         this.isNotEditable = result.isNotEditable
-        this.editApiUrl = this.defaultProtocol + result.host !== result.apiUrl
-        this.editRegistryUrl = this.defaultProtocol + result.host + ':' + result.portNo !== result.registryUrl
+        this.editApiUrl = defaultProtocol + result.host !== result.apiUrl
+        this.editRegistryUrl = defaultProtocol + result.host + ':' + result.portNo !== result.registryUrl
       },
       async deleteRegistry () {
         try {
@@ -165,14 +166,14 @@
       handleChange () {
         if (!this.editApiUrl) {
           if (this.host) {
-            this.apiUrl = this.defaultProtocol + this.host
+            this.apiUrl = defaultProtocol + this.host
           } else {
             this.apiUrl = ''
           }
         }
         if (!this.editRegistryUrl) {
           if (this.host && this.portNo) {
-            this.registryUrl = this.defaultProtocol + this.host + ':' + this.portNo
+            this.registryUrl = defaultProtocol + this.host + ':' + this.portNo
           } else {
             this.registryUrl = ''
           }
