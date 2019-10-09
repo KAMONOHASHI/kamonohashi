@@ -51,10 +51,6 @@ data:
     git checkout $COMMIT_ID
     git submodule update --init
     git remote -v
-  prepare-dataset: |
-    echo "------------------------- [KAMONOHASHI Prepare] deploy dataset $DATASET_ID into /kqi/input . -------------------------"
-    kqi dataset download-files -d /kqi/input $DATASET_ID
-    kqi dataset get -d /kqi/input/meta.json $DATASET_ID
   notify-finish:
     echo $1 > /kqi/tmp/result_exit_code
   wait-ready: |

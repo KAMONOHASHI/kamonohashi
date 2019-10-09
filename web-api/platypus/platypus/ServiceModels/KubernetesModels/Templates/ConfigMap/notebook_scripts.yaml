@@ -8,7 +8,14 @@ data:
     bash /kqi/scripts/common/show-logo
     bash /kqi/scripts/common/prepare-kqi-conf
     bash /kqi/scripts/common/prepare-git
-    bash /kqi/scripts/common/prepare-dataset
+    
+    if [ -n "$DATASET_ID" ]; then
+        echo "------------------------- [KAMONOHASHI Prepare] deploy dataset $DATASET_ID into /kqi/input . -------------------------"
+        kqi dataset download-files -d /kqi/input $DATASET_ID && kqi dataset get -d /kqi/input/meta.json $DATASET_ID
+        if [ $? -ne 0 ]; then
+            echo "dataset download-files failed"
+        fi
+    fi
   main: |
     if which pip3 > /dev/null 2>&1; then
       pip3 install jupyterlab==1.0.4
