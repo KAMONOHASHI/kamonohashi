@@ -233,7 +233,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="registryId">レジストリID</param>
         /// <returns>イメージ名のリスト</returns>
         [HttpGet("/api/v1/registries/{registryId}/images")]
-        [Filters.PermissionFilter(MenuCode.Registry, MenuCode.Training, MenuCode.Preprocess)]
+        [Filters.PermissionFilter(MenuCode.Training, MenuCode.Preprocess, MenuCode.Inference, MenuCode.Notebook)]
         [ProducesResponseType(typeof(IEnumerable<string>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetImages([FromRoute] long? registryId)
         {
@@ -264,7 +264,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="image">イメージ名</param>
         /// <returns>タグ名のリスト</returns>
         [HttpGet("/api/v1/registries/{registryId}/images/{image}/tags")]
-        [Filters.PermissionFilter(MenuCode.Registry, MenuCode.Training, MenuCode.Preprocess)]
+        [Filters.PermissionFilter(MenuCode.Training, MenuCode.Preprocess, MenuCode.Inference, MenuCode.Notebook)]
         [ProducesResponseType(typeof(IEnumerable<string>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetTagsAsync([FromRoute] long? registryId, [FromRoute] string image)
         {
@@ -293,7 +293,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// 製品版のSwaggerからは削除する。
         /// </summary>
         [HttpGet("/api/v1/registries/{registryId}/images/{*segments}")]
-        [Filters.PermissionFilter(MenuCode.Git, MenuCode.Training, MenuCode.Preprocess)]
+        [Filters.PermissionFilter(MenuCode.Training, MenuCode.Preprocess, MenuCode.Inference, MenuCode.Notebook)]
         public async Task<IActionResult> AllocatieRoute([FromRoute] long? registryId, [FromRoute] string segments)
         {
             string[] segmentsArray = segments.Split('/');

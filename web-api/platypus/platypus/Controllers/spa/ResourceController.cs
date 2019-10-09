@@ -212,7 +212,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// コンテナ種別一覧を取得
         /// </summary>
         [HttpGet("container-types")]
-        [Filters.PermissionFilter(MenuCode.Git, MenuCode.Training, MenuCode.Preprocess)]
+        [Filters.PermissionFilter(MenuCode.Resource)]
         [ProducesResponseType(typeof(IEnumerable<EnumInfo>), (int)HttpStatusCode.OK)]
         public IActionResult GetAllTypes()
         {

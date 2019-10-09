@@ -47,7 +47,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="filter">検索条件</param>
         /// <param name="withTotal">合計件数をレスポンスヘッダ(X-Total-Count)に含めるか。デフォルトはfalse。</param>
         [HttpGet]
-        [Filters.PermissionFilter(MenuCode.DataSet, MenuCode.Training)]
+        [Filters.PermissionFilter(MenuCode.DataSet, MenuCode.Training, MenuCode.Inference, MenuCode.Notebook)]
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetAll([FromQuery]SearchInputModel filter, [FromQuery]int? perPage, [FromQuery] int page = 1, bool withTotal = false)
         {
@@ -95,7 +95,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="id">データセットID</param>
         [HttpGet("{id}")]
-        [Filters.PermissionFilter(MenuCode.DataSet, MenuCode.Training)]
+        [Filters.PermissionFilter(MenuCode.DataSet, MenuCode.Training, MenuCode.Inference, MenuCode.Notebook)]
         [ProducesResponseType(typeof(DetailsOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetDetail(long? id)
         {
@@ -143,7 +143,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="id">データセットID</param>
         /// <param name="withUrl">結果にダウンロード用のURLを含めるか</param>
         [HttpGet("{id}/files")]
-        [Filters.PermissionFilter(MenuCode.DataSet, MenuCode.Training)]
+        [Filters.PermissionFilter(MenuCode.DataSet, MenuCode.Training, MenuCode.Inference, MenuCode.Notebook)]
         [ProducesResponseType(typeof(DataFileOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetDataFiles([FromRoute] long? id, [FromQuery] bool withUrl)
         {
@@ -384,7 +384,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// 全データ種別を取得する
         /// </summary>
         [HttpGet("/api/v1/datatypes")]
-        [Filters.PermissionFilter(MenuCode.DataSet, MenuCode.Training)]
+        [Filters.PermissionFilter(MenuCode.DataSet)]
         [ProducesResponseType(typeof(IEnumerable<DataTypeOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetDataTypes()
         {

@@ -43,7 +43,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// 登録済みのStorageエンドポイント一覧を取得
         /// </summary>
         [HttpGet("/api/v1/admin/storage/endpoints")]
-        [Filters.PermissionFilter(MenuCode.Storage, MenuCode.Training, MenuCode.Preprocess)]
+        [Filters.PermissionFilter(MenuCode.Storage, MenuCode.Tenant)]
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetAll()
         {
@@ -57,7 +57,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="id">StorageエンドポイントID</param>
         [HttpGet("/api/v1/admin/storage/endpoints/{id}")]
-        [Filters.PermissionFilter(MenuCode.Storage, MenuCode.Training, MenuCode.Preprocess)]
+        [Filters.PermissionFilter(MenuCode.Storage)]
         [ProducesResponseType(typeof(DetailsOutputModel), (int)HttpStatusCode.OK)]
         public IActionResult GetDetails(long? id)
         {
@@ -81,7 +81,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// 新規にStorageエンドポイントを登録する
         /// </summary>
         [HttpPost("/api/v1/admin/storage/endpoints")]
-        [Filters.PermissionFilter(MenuCode.Storage, MenuCode.Training)]
+        [Filters.PermissionFilter(MenuCode.Storage)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.Created)]
         public IActionResult Create([FromBody]CreateInputModel model)
         {
@@ -114,7 +114,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// Storageエンドポイント情報の編集
         /// </summary>
         [HttpPut("/api/v1/admin/storage/endpoints/{id}")]
-        [Filters.PermissionFilter(MenuCode.Storage, MenuCode.Training)]
+        [Filters.PermissionFilter(MenuCode.Storage)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> Edit(long? id, [FromBody]CreateInputModel model) //EditとCreateで項目が同じなので、入力モデルを使いまわし
         {
@@ -157,7 +157,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// Storageエンドポイント情報の削除
         /// </summary>
         [HttpDelete("/api/v1/admin/storage/endpoints/{id}")]
-        [Filters.PermissionFilter(MenuCode.Storage, MenuCode.Training)]
+        [Filters.PermissionFilter(MenuCode.Storage)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         public async Task<IActionResult> Delete(long? id)
         {
