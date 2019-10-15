@@ -151,11 +151,10 @@
                   <el-input v-model="downloadFilesCommand" :readonly="true"/>
             </el-form-item >
             <el-form-item label="結果Zip圧縮">
-              <el-switch v-model="zip"
-                          style="width: 100%;"
-                          inactive-text="圧縮しない"
-                          active-text="圧縮する"
-                          disabled/>
+              <div class="el-input">
+                <span v-if="zip">圧縮する</span>
+                <span v-else>圧縮しない</span>
+              </div>
             </el-form-item>
             <el-form-item label="添付ファイル">
               <br/>
