@@ -51,6 +51,14 @@
                     </el-slider>
                   </el-form-item>
                 </el-col>
+                <el-col :span="18" :offset="3">
+                  <el-form-item label="データセット" prop="dataSet" >
+                    <pl-dataset-selector v-model="dataSet"/>
+                  </el-form-item>
+                  <el-form-item label="マウントする学習" prop="parentIds">
+                    <pl-training-history-multiple-selector v-model="parentIds"/>
+                  </el-form-item>
+                </el-col>
               </el-form>
             </div>
           </el-row>
@@ -130,6 +138,9 @@
                   <el-form-item label="データセット" prop="dataSet" >
                     <pl-dataset-selector v-model="dataSet"/>
                   </el-form-item>
+                  <el-form-item label="マウントする学習" prop="parentIds">
+                    <pl-training-history-multiple-selector v-model="parentIds"/>
+                  </el-form-item>
                 </el-col>
               </el-form>
               <el-form v-if="active===3">
@@ -180,6 +191,7 @@
 
 <script>
   import DataSetSelector from '@/components/common/DatasetSelector.vue'
+  import TrainingHistoryMultipleSelector from '@/components/common/TrainingHistoryMultipleSelector.vue'
   import DynamicMultiInputField from '@/components/common/DynamicMultiInputField.vue'
   import ContainerSelector from '@/components/common/ContainerSelector.vue'
   import StringSelector from '@/components/common/StringSelector.vue'
@@ -191,6 +203,7 @@
     name: 'CreateNotebook',
     components: {
       'pl-dataset-selector': DataSetSelector,
+      'pl-training-history-multiple-selector': TrainingHistoryMultipleSelector,
       'pl-string-selector': StringSelector,
       'pl-container-selector': ContainerSelector,
       'pl-git-selector': GitSelector,
@@ -219,6 +232,7 @@
         memory: undefined,
         gpu: undefined,
         dataSet: undefined,
+        parentIds: [],
         containerImage: undefined,
         memo: undefined,
         git: undefined,
@@ -243,10 +257,12 @@
               this.options.forEach((kvp) => {
                 options[kvp.key] = kvp.value
               })
+
               let param = {
                 name: this.name,
                 containerImage: this.containerImage,
                 dataSetId: this.dataSet ? this.dataSet.id : null,
+                parentIds: this.parentIds,
                 gitModel: this.git,
                 options: options,
                 cpu: this.cpu,
@@ -273,6 +289,8 @@
           if (valid) {
             try {
               let param = {
+                  dataSetId: this.dataSet ? this.dataSet.id : null,
+                  parentIds: this.parentIds,
                   cpu: this.cpu,
                   memory: this.memory,
                   gpu: this.gpu,
@@ -333,8 +351,8 @@
           this.containerImage = origin.containerImage
           this.entryPoint = origin.entryPoint
           this.expiresIn = origin.expiresIn === 0 ? 0 : (origin.expiresIn / 60 / 60)
-          if (origin.parent) {
-            this.parent = origin.parent
+          for (let i = 0; i < origin.parents.length; i++) {
+            this.parentIds.push(origin.parents[i].id)
           }
         }
       }
