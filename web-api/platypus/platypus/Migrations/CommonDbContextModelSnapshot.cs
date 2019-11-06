@@ -643,8 +643,6 @@ namespace Nssol.Platypus.Migrations
 
                     b.Property<int>("Gpu");
 
-                    b.Property<bool>("Zip");
-
                     b.Property<string>("LogSummary");
 
                     b.Property<string>("Memo");
@@ -687,6 +685,8 @@ namespace Nssol.Platypus.Migrations
                         .IsRequired();
 
                     b.Property<long>("TenantId");
+
+                    b.Property<bool>("Zip");
 
                     b.HasKey("Id");
 
@@ -816,6 +816,39 @@ namespace Nssol.Platypus.Migrations
                     b.HasIndex("TenantId");
 
                     b.ToTable("NotebookHistories");
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.NotebookHistoryParentTrainingMap", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired();
+
+                    b.Property<DateTime>("ModifiedAt");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired();
+
+                    b.Property<long>("NotebookHistoryId");
+
+                    b.Property<long>("ParentId");
+
+                    b.Property<long>("TenantId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NotebookHistoryId");
+
+                    b.HasIndex("ParentId");
+
+                    b.HasIndex("TenantId", "NotebookHistoryId", "ParentId")
+                        .IsUnique();
+
+                    b.ToTable("NotebookHistoryParentTrainingMaps");
                 });
 
             modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.Preprocess", b =>
@@ -1062,8 +1095,6 @@ namespace Nssol.Platypus.Migrations
 
                     b.Property<int>("Gpu");
 
-                    b.Property<bool>("Zip");
-
                     b.Property<string>("LogSummary");
 
                     b.Property<string>("Memo");
@@ -1105,6 +1136,8 @@ namespace Nssol.Platypus.Migrations
                         .IsRequired();
 
                     b.Property<long>("TenantId");
+
+                    b.Property<bool>("Zip");
 
                     b.HasKey("Id");
 
@@ -1576,6 +1609,24 @@ namespace Nssol.Platypus.Migrations
                     b.HasOne("Nssol.Platypus.Models.TenantModels.DataSet", "DataSet")
                         .WithMany()
                         .HasForeignKey("DataSetId");
+
+                    b.HasOne("Nssol.Platypus.Models.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.NotebookHistoryParentTrainingMap", b =>
+                {
+                    b.HasOne("Nssol.Platypus.Models.TenantModels.NotebookHistory", "NotebookHistory")
+                        .WithMany("ParentTrainingMaps")
+                        .HasForeignKey("NotebookHistoryId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Nssol.Platypus.Models.TenantModels.TrainingHistory", "Parent")
+                        .WithMany()
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Nssol.Platypus.Models.Tenant", "Tenant")
                         .WithMany()

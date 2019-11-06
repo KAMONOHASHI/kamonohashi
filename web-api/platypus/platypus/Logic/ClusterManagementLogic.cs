@@ -944,6 +944,23 @@ namespace Nssol.Platypus.Logic
                 inputModel.EnvList.Add("DATASET_ID", notebookHistory.DataSetId.ToString());
             }
 
+            // 親を指定した場合は親の出力結果を/kqi/parentにマウント
+            if (notebookHistory.ParentTrainingMaps != null)
+            {
+                foreach (var parentTrainingMap in notebookHistory.ParentTrainingMaps)
+                {
+                    inputModel.NfsVolumeMounts.Add(new NfsVolumeMountModel()
+                    {
+                        Name = "nfs-parent-" + parentTrainingMap.ParentId.ToString(),
+                        MountPath = "/kqi/parent/" + parentTrainingMap.ParentId.ToString(),
+                        SubPath = parentTrainingMap.ParentId.ToString(),
+                        Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
+                        ServerPath = CurrentUserInfo.SelectedTenant.TrainingContainerOutputNfsPath,
+                        ReadOnly = true
+                    });
+                }
+            }
+
             // Gitの未指定も許可するため、その判定
             if (notebookHistory.ModelGitId != null)
             {

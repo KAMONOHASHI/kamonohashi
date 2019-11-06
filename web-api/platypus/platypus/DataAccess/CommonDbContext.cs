@@ -174,6 +174,10 @@ namespace Nssol.Platypus.DataAccess
         /// ノートブック履歴
         /// </summary>
         public virtual DbSet<NotebookHistory> NotebookHistories { get; set; }
+        /// <summary>
+        /// ノートブック履歴と親学習履歴の中間テーブル
+        /// </summary>
+        public virtual DbSet<NotebookHistoryParentTrainingMap> NotebookHistoryParentTrainingMaps { get; set; }
 
         #endregion
 
@@ -240,6 +244,9 @@ namespace Nssol.Platypus.DataAccess
                     .IsUnique();
             modelBuilder.Entity<UserTenantRegistryMap>()
                     .HasIndex(e => new { e.UserId, e.TenantRegistryMapId })
+                    .IsUnique();
+            modelBuilder.Entity<NotebookHistoryParentTrainingMap>()
+                    .HasIndex(e => new { e.TenantId, e.NotebookHistoryId, e.ParentId })
                     .IsUnique();
 
             // DeleteBehaviorの指定
