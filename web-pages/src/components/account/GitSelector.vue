@@ -15,7 +15,7 @@
     <br/>
     <pl-display-text-form label="Gitサーバ" :value="gitForm.name"/>
     <el-form-item label="トークン">
-      <el-input @change="tokenChange" v-model="gitForm.token" type="password"/>
+      <el-input @change="tokenChange" v-model="gitForm.token" type="password" show-password/>
     </el-form-item>
   </div>
 </template>
