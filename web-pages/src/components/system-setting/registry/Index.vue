@@ -14,7 +14,11 @@
         <el-table-column prop="id" label="ID" width="100px"/>
         <el-table-column prop="name" label="レジストリ名" width="auto"/>
         <el-table-column prop="registryPath" label="レジストリパス" width="auto"/>
-        <el-table-column prop="userName" label="レジストリアクセスユーザ" width="auto"/>
+        <el-table-column prop="projectName" label="GitLabプロジェクト名" width="auto">
+          <template slot-scope="prop">
+            {{ displayNameOfProjectName(prop.row.serviceType, prop.row.projectName) }}
+          </template>
+        </el-table-column>
         <el-table-column prop="serviceType" label="レジストリ種別" width="auto">
           <template slot-scope="prop">
             {{ displayNameOfServiceType(prop.row.serviceType) }}
@@ -52,6 +56,9 @@
       displayNameOfServiceType (serviceTypeId) {
         let serviceType = this.serviceTypes.find(s => s.id === serviceTypeId)
         return serviceType.name
+      },
+      displayNameOfProjectName (serviceTypeId, projectName) {
+        return this.displayNameOfServiceType(serviceTypeId) == 'GitLab' ? projectName : ''
       },
       openCreateDialog () {
         this.$router.push('/registry/create')
