@@ -58,7 +58,7 @@
         return serviceType.name
       },
       displayNameOfProjectName (serviceTypeId, projectName) {
-        return this.displayNameOfServiceType(serviceTypeId) == 'GitLab' ? projectName : ''
+        return this.displayNameOfServiceType(serviceTypeId) === 'GitLab' ? projectName : ''
       },
       openCreateDialog () {
         this.$router.push('/registry/create')
