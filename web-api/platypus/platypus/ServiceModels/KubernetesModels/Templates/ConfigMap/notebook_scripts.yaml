@@ -25,4 +25,7 @@ data:
     jupyter lab --ip=0.0.0.0 --allow-root --notebook-dir=/kqi/ --no-browser > /kqi/attach/.notebook.log 2>&1 &
     bash /kqi/scripts/common/wait-ready
   finish: |
-    tail -f /dev/null   
+    bash /kqi/scripts/common/prepare-kqi-conf
+    sleep $EXPIRES_IN
+    echo "------------------------- [KAMONOHASHI Finish] -------------------------"
+    kqi notebook halt $NOTEBOOK_ID
