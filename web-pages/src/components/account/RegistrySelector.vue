@@ -15,7 +15,7 @@
     <br/>
     <pl-display-text-form label="ユーザ名/リポジトリ" :value="registryForm.userName"/>
     <el-form-item label="パスワード">
-      <el-input @change="tokenChange" v-model="registryForm.password" type="password"/>
+      <el-input @change="tokenChange" v-model="registryForm.password" type="password" show-password/>
     </el-form-item>
   </div>
 </template>
