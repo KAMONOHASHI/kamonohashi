@@ -45,7 +45,7 @@
                     <el-slider
                       class="el-input"
                       v-model="expiresIn"
-                      :min="0"
+                      :min="1"
                       :max="100"
                       show-input>
                     </el-slider>
