@@ -1022,12 +1022,6 @@ namespace Nssol.Platypus.Logic
                     notEditableEnvList.Add("MODEL_REPOSITORY_URL", gitEndpoint.Url);
                     notEditableEnvList.Add("MODEL_REPOSITORY_TOKEN", gitEndpoint.Token);
                 }
-                else
-                {
-                    notEditableEnvList.Add("MODEL_REPOSITORY", "");
-                    notEditableEnvList.Add("MODEL_REPOSITORY_URL", "");
-                    notEditableEnvList.Add("MODEL_REPOSITORY_TOKEN", "");
-                }
             }
 
             if (string.IsNullOrEmpty(notebookHistory.Options) == false)
@@ -1078,7 +1072,7 @@ namespace Nssol.Platypus.Logic
         /// <param name="envList">追加先の環境変数</param>
         private static void AddEnvListToInputModel(Dictionary<string, string> optionDic, Dictionary<string, string> envList)
         {
-            if (optionDic.Count > 0)
+            if (optionDic != null)
             {
                 foreach (var env in optionDic)
                 {
@@ -1086,14 +1080,7 @@ namespace Nssol.Platypus.Logic
 
                     string value = env.Value ?? ""; //nullは空文字と見なす
 
-                    if (envList.ContainsKey(env.Key))
-                    {
-                        envList[env.Key] = value; //あれば新しい値で上書き
-                    }
-                    else
-                    {
-                        envList.Add(env.Key, value); //なければ追加
-                    }
+                    envList[env.Key] = value; // あれば新しい値で上書き、なければ追加
                 }
             }
         }
