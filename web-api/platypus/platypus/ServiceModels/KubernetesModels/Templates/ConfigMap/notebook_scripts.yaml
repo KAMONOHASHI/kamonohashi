@@ -7,7 +7,10 @@ data:
   prepare: |
     bash /kqi/scripts/common/show-logo
     bash /kqi/scripts/common/prepare-kqi-conf
-    bash /kqi/scripts/common/prepare-git
+
+    if [ -n "$MODEL_REPOSITORY" ] || [ -n "$MODEL_REPOSITORY_URL" ] || [ -n "$COMMIT_ID" ]; then
+        bash /kqi/scripts/common/prepare-git
+    fi
     
     if [ -n "$DATASET_ID" ]; then
         echo "------------------------- [KAMONOHASHI Prepare] deploy dataset $DATASET_ID into /kqi/input . -------------------------"
