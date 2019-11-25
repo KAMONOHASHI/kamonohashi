@@ -20,6 +20,7 @@ from kamonohashi.op.rest.api.account_api import AccountApi
 from kamonohashi.op.rest.api.data_api import DataApi
 from kamonohashi.op.rest.api.data_set_api import DataSetApi
 from kamonohashi.op.rest.api.inference_api import InferenceApi
+from kamonohashi.op.rest.api.notebook_api import NotebookApi
 from kamonohashi.op.rest.api.preprocessing_api import PreprocessingApi
 from kamonohashi.op.rest.api.storage_api import StorageApi
 from kamonohashi.op.rest.api.training_api import TrainingApi
@@ -57,6 +58,7 @@ from kamonohashi.op.rest.models.inference_api_models_inference_simple_output_mod
 from kamonohashi.op.rest.models.infos_role_info import InfosRoleInfo
 from kamonohashi.op.rest.models.infos_storage_file_info import InfosStorageFileInfo
 from kamonohashi.op.rest.models.infos_tenant_info import InfosTenantInfo
+from kamonohashi.op.rest.models.notebook_api_models_simple_output_model import NotebookApiModelsSimpleOutputModel
 from kamonohashi.op.rest.models.preprocessing_api_models_add_output_data_input_model import PreprocessingApiModelsAddOutputDataInputModel
 from kamonohashi.op.rest.models.preprocessing_api_models_create_input_model import PreprocessingApiModelsCreateInputModel
 from kamonohashi.op.rest.models.preprocessing_api_models_details_output_model import PreprocessingApiModelsDetailsOutputModel

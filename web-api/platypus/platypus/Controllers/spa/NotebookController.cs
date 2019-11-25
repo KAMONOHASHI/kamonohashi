@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Nssol.Platypus.ApiModels.NotebookApiModels;
 using Nssol.Platypus.Controllers.Util;
 using Nssol.Platypus.DataAccess.Core;
@@ -7,6 +8,7 @@ using Nssol.Platypus.DataAccess.Repositories.Interfaces;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories;
 using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Infrastructure.Infos;
+using Nssol.Platypus.Infrastructure.Options;
 using Nssol.Platypus.Infrastructure.Types;
 using Nssol.Platypus.Logic.Interfaces;
 using Nssol.Platypus.Models.TenantModels;
@@ -145,10 +147,11 @@ namespace Nssol.Platypus.Controllers.spa
         /// 指定されたIDのノートブック履歴の詳細情報を取得。
         /// </summary>
         /// <param name="id">ノートブック履歴ID</param>
+        /// <param name="options">DI用</param>
         [HttpGet("{id}")]
         [Filters.PermissionFilter(MenuCode.Notebook)]
         [ProducesResponseType(typeof(DetailsOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetDetail(long? id)
+        public async Task<IActionResult> GetDetail(long? id, [FromServices] IOptions<ContainerManageOptions> options)
         {
             if (id == null)
             {
@@ -185,7 +188,7 @@ namespace Nssol.Platypus.Controllers.spa
                 //コンテナが正常動作している場合、notebookのエンドポイントを取得
                 if (details.Status.IsRunning())
                 {
-                    model.NotebookEndpoint = await GetNotebookEndpointUrlAsync(notebookHistory.Id, details.EndPoints);
+                    model.NotebookEndpoint = await GetNotebookEndpointUrlAsync(notebookHistory.Id, details.EndPoints, options.Value.WebEndPoint);
                 }
             }
 
@@ -202,8 +205,9 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="historyId">ノートブック履歴ID</param>
         /// <param name="endPoints">エンドポイント</param>
+        /// <param name="webEndpoint">Webエンドポイント</param>
         /// <returns></returns>
-        private async Task<string> GetNotebookEndpointUrlAsync(long historyId, IEnumerable<EndPointInfo> endPoints)
+        private async Task<string> GetNotebookEndpointUrlAsync(long historyId, IEnumerable<EndPointInfo> endPoints, string webEndpoint = null)
         {
             //notebook起動時のログをストレージから取得し、token情報を抜き出す。
             var outputFileName = ".notebook.log";   //値を読み込むファイル名
@@ -218,7 +222,9 @@ namespace Nssol.Platypus.Controllers.spa
                 var nodeEndPoint = endPoints.Where(name => name.Key == "notebook").FirstOrDefault();
                 if (nodeEndPoint != null)
                 {
-                    return "http://" + nodeEndPoint.Url + token;
+                    // リバプロなどでノードのホスト名ではなく、共通のエンドポイントを使える場合は、そちらを使用する
+                    string host = string.IsNullOrEmpty(webEndpoint) ? nodeEndPoint.Host : webEndpoint;
+                    return new UriBuilder("http", host, (int)nodeEndPoint.Port).ToString() + token;
                 }
             }
             return "";
@@ -337,11 +343,12 @@ namespace Nssol.Platypus.Controllers.spa
         /// 指定されたノートブック履歴のエンドポイントを取得します。
         /// </summary>
         /// <param name="id">ノートブック履歴ID</param>
+        /// <param name="options">DI用</param>
         /// <returns>ノートブックURL</returns>
         [HttpGet("{id}/endpoint")]
         [Filters.PermissionFilter(MenuCode.Notebook)]
         [ProducesResponseType(typeof(EndPointOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetEndpointAsync(long id)
+        public async Task<IActionResult> GetEndpointAsync(long id, [FromServices] IOptions<ContainerManageOptions> options)
         {
             //データの存在チェック
             var notebookHistory = await notebookHistoryRepository.GetByIdAsync(id);
@@ -370,7 +377,7 @@ namespace Nssol.Platypus.Controllers.spa
                 //コンテナが正常動作している場合、notebookのエンドポイントを取得
                 if (details.Status.IsRunning())
                 {
-                    url = await GetNotebookEndpointUrlAsync(notebookHistory.Id, details.EndPoints);
+                    url = await GetNotebookEndpointUrlAsync(notebookHistory.Id, details.EndPoints, options.Value.WebEndPoint);
                 }
             }
             else
