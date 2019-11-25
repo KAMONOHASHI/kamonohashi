@@ -33,6 +33,11 @@ namespace Nssol.Platypus.Services.Interfaces
         Task<bool> DeleteBucketAsync(StorageConfigModel storageConfig);
 
         /// <summary>
+        /// prefix で指定するフォルダ階層以下のオブジェクトを全て削除する。トップなら "" を prefix として指定する。
+        /// </summary>
+        Task DeleteObjectsAsync(StorageConfigModel config, string prefix);
+
+        /// <summary>
         /// 指定した接続情報でCORS設定を取得する。
         /// </summary>
         Task<string> GetCorsConfigurationAsync(StorageConfigModel storageConfig);

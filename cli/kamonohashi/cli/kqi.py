@@ -18,6 +18,7 @@ from kamonohashi.cli import data_set
 from kamonohashi.cli import inference
 from kamonohashi.cli import preprocessing
 from kamonohashi.cli import training
+from kamonohashi.cli import notebook
 
 name = 'kamonohashi-cli'
 version = pkg_resources.get_distribution(name).version
@@ -55,6 +56,7 @@ kqi.add_command(data.data)
 kqi.add_command(inference.inference)
 kqi.add_command(training.training)
 kqi.add_command(preprocessing.preprocessing)
+kqi.add_command(notebook.notebook)
 
 
 def kqi_main():

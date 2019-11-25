@@ -35,6 +35,14 @@ namespace Nssol.Platypus.Logic.Interfaces
         Task<bool> DeleteBucketAsync(Tenant tenant, Storage storage);
 
         /// <summary>
+        /// 指定したリソース種別と履歴データIDに対応するフォルダ階層以下の結果データを削除する。
+        /// </summary>
+        /// <remarks> type/historyId で指定するフォルダ階層以下のオブジェクトを全て削除する</remarks>
+        /// <param name="type">リソース種別</param>
+        /// <param name="historyId">履歴データID</param>
+        Task DeleteResultsAsync(ResourceType type, long historyId);
+
+        /// <summary>
         /// 指定したファイルを削除する。
         /// </summary>
         Task DeleteFileAsync(ResourceType type, string fileName);

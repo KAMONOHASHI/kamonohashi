@@ -253,6 +253,33 @@ namespace Nssol.Platypus.Logic
                 tags += " -t " + tag;
             }
 
+            // 上書き可の環境変数
+            var editableEnvList = new Dictionary<string, string>()
+            {
+                { "http_proxy", containerOptions.Proxy },
+                { "https_proxy", containerOptions.Proxy },
+                { "no_proxy", containerOptions.NoProxy },
+                { "HTTP_PROXY", containerOptions.Proxy },
+                { "HTTPS_PROXY", containerOptions.Proxy },
+                { "NO_PROXY", containerOptions.NoProxy },
+                { "COLUMNS", containerOptions.ShellColumns }
+            };
+
+            // 上書き不可の環境変数
+            var notEditableEnvList = new Dictionary<string, string>()
+            {
+                { "DATA_ID", preprocessHistory.InputDataId.ToString()},
+                { "DATA_NAME", preprocessHistory.InputData.Name },
+                { "PREPROCESSING_ID", preprocessHistory.PreprocessId.ToString()},
+                { "TAGS", tags },
+                { "COMMIT_ID", preprocessHistory.Preprocess.RepositoryCommitId},
+                { "KQI_SERVER", containerOptions.WebServerUrl },
+                { "KQI_TOKEN", loginLogic.GenerateToken().AccessToken },
+                { "PYTHONUNBUFFERED", "true" }, // python実行時の標準出力・エラーのバッファリングをなくす
+                { "LC_ALL", "C.UTF-8"},  // python実行時のエラー回避
+                { "LANG", "C.UTF-8"}  // python実行時のエラー回避
+            };
+
             //コンテナを起動するために必要な設定値をインスタンス化
             var inputModel = new RunContainerInputModel()
             {
@@ -289,26 +316,10 @@ namespace Nssol.Platypus.Logic
                     { "git", "/kqi/git/" },
                     { "output", "/kqi/output/" }
                 },
-                EnvList = new Dictionary<string, string>()
-                {
-                    { "DATA_ID", preprocessHistory.InputDataId.ToString()},
-                    { "DATA_NAME", preprocessHistory.InputData.Name },
-                    { "PREPROCESSING_ID", preprocessHistory.PreprocessId.ToString()},
-                    { "TAGS", tags },
-                    { "COMMIT_ID", preprocessHistory.Preprocess.RepositoryCommitId},
-                    { "KQI_SERVER", containerOptions.WebServerUrl },
-                    { "KQI_TOKEN", loginLogic.GenerateToken().AccessToken },
-                    { "http_proxy", containerOptions.Proxy },
-                    { "https_proxy", containerOptions.Proxy },
-                    { "no_proxy", containerOptions.NoProxy },
-                    { "HTTP_PROXY", containerOptions.Proxy },
-                    { "HTTPS_PROXY", containerOptions.Proxy },
-                    { "NO_PROXY", containerOptions.NoProxy },
-                    { "COLUMNS", containerOptions.ShellColumns },
-                    { "PYTHONUNBUFFERED", "true" }, // python実行時の標準出力・エラーのバッファリングをなくす
-                    { "LC_ALL", "C.UTF-8"},  // python実行時のエラー回避
-                    { "LANG", "C.UTF-8"}  // python実行時のエラー回避
-                },
+
+                PrepareAndFinishContainerEnvList = editableEnvList, // 上書き可の環境変数を設定
+                MainContainerEnvList = editableEnvList, // 上書き可の環境変数を設定
+
                 EntryPoint = preprocessHistory.Preprocess.EntryPoint,
 
                 ClusterManagerToken = token,
@@ -325,9 +336,9 @@ namespace Nssol.Platypus.Logic
                 var gitEndpoint = gitLogic.GetPullUrl(preprocessHistory.Preprocess.RepositoryGitId.Value, preprocessHistory.Preprocess.RepositoryName, preprocessHistory.Preprocess.RepositoryOwner);
                 if (gitEndpoint != null)
                 {
-                    inputModel.EnvList.Add("MODEL_REPOSITORY", gitEndpoint.FullUrl);
-                    inputModel.EnvList.Add("MODEL_REPOSITORY_URL", gitEndpoint.Url);
-                    inputModel.EnvList.Add("MODEL_REPOSITORY_TOKEN", gitEndpoint.Token);
+                    notEditableEnvList.Add("MODEL_REPOSITORY", gitEndpoint.FullUrl);
+                    notEditableEnvList.Add("MODEL_REPOSITORY_URL", gitEndpoint.Url);
+                    notEditableEnvList.Add("MODEL_REPOSITORY_TOKEN", gitEndpoint.Token);
                 }
                 else
                 {
@@ -337,7 +348,11 @@ namespace Nssol.Platypus.Logic
             }
 
             // ユーザの任意追加環境変数をマージする
-            AddUserEnvToInputModel(preprocessHistory.OptionDic, inputModel);
+            AddEnvListToInputModel(preprocessHistory.OptionDic, inputModel.MainContainerEnvList);
+
+            // 上書き不可の追加環境変数をマージする
+            AddEnvListToInputModel(notEditableEnvList, inputModel.PrepareAndFinishContainerEnvList);
+            AddEnvListToInputModel(notEditableEnvList, inputModel.MainContainerEnvList);
 
             // 使用できるノードを取得する
             var nodes = GetAccessibleNode();
@@ -411,6 +426,36 @@ namespace Nssol.Platypus.Logic
                 return Result<ContainerInfo, string>.CreateErrorResult("Access denied.　There is no node this tenant can use.");
             }
 
+            // 上書き可の環境変数
+            var editableEnvList = new Dictionary<string, string>()
+            {
+                { "http_proxy", containerOptions.Proxy },
+                { "https_proxy", containerOptions.Proxy },
+                { "no_proxy", containerOptions.NoProxy },
+                { "HTTP_PROXY", containerOptions.Proxy },
+                { "HTTPS_PROXY", containerOptions.Proxy },
+                { "NO_PROXY", containerOptions.NoProxy },
+                { "COLUMNS", containerOptions.ShellColumns }
+            };
+
+            // 上書き不可の環境変数
+            var notEditableEnvList = new Dictionary<string, string>()
+            {
+                { "DATASET_ID", trainHistory.DataSetId.ToString()},
+                { "TRAINING_ID", trainHistory.Id.ToString()},
+                { "PARENT_ID", trainHistory.ParentId?.ToString()},
+                { "MODEL_REPOSITORY", gitEndpoint.FullUrl},
+                { "MODEL_REPOSITORY_URL", gitEndpoint.Url},
+                { "MODEL_REPOSITORY_TOKEN", gitEndpoint.Token},
+                { "COMMIT_ID", trainHistory.ModelCommitId},
+                { "KQI_SERVER", containerOptions.WebServerUrl },
+                { "KQI_TOKEN", loginLogic.GenerateToken().AccessToken },
+                { "PYTHONUNBUFFERED", "true" }, // python実行時の標準出力・エラーのバッファリングをなくす
+                { "LC_ALL", "C.UTF-8"},  // python実行時のエラー回避
+                { "LANG", "C.UTF-8"},  // python実行時のエラー回避
+                { "ZIP_FILE_CREATED", trainHistory.Zip.ToString() }  // 結果をzip圧縮するか否か
+            };
+
             //コンテナを起動するために必要な設定値をインスタンス化
             var inputModel = new RunContainerInputModel()
             {
@@ -456,29 +501,10 @@ namespace Nssol.Platypus.Logic
                     { "input", "/kqi/input/" },
                     { "git", "/kqi/git/" }
                 },
-                EnvList = new Dictionary<string, string>()
-                {
-                    { "DATASET_ID", trainHistory.DataSetId.ToString()},
-                    { "TRAINING_ID", trainHistory.Id.ToString()},
-                    { "PARENT_ID", trainHistory.ParentId?.ToString()},
-                    { "MODEL_REPOSITORY", gitEndpoint.FullUrl},
-                    { "MODEL_REPOSITORY_URL", gitEndpoint.Url},
-                    { "MODEL_REPOSITORY_TOKEN", gitEndpoint.Token},
-                    { "COMMIT_ID", trainHistory.ModelCommitId},
-                    { "KQI_SERVER", containerOptions.WebServerUrl },
-                    { "KQI_TOKEN", loginLogic.GenerateToken().AccessToken },
-                    { "http_proxy", containerOptions.Proxy },
-                    { "https_proxy", containerOptions.Proxy },
-                    { "no_proxy", containerOptions.NoProxy },
-                    { "HTTP_PROXY", containerOptions.Proxy },
-                    { "HTTPS_PROXY", containerOptions.Proxy },
-                    { "NO_PROXY", containerOptions.NoProxy },
-                    { "COLUMNS", containerOptions.ShellColumns },
-                    { "PYTHONUNBUFFERED", "true" }, // python実行時の標準出力・エラーのバッファリングをなくす
-                    { "LC_ALL", "C.UTF-8"},  // python実行時のエラー回避
-                    { "LANG", "C.UTF-8"},  // python実行時のエラー回避
-                    { "ZIP_FILE_CREATED", trainHistory.Zip.ToString() }  // 結果をzip圧縮するか否か
-                },
+
+                PrepareAndFinishContainerEnvList = editableEnvList, // 上書き可の環境変数を設定
+                MainContainerEnvList = editableEnvList, // 上書き可の環境変数を設定
+
                 EntryPoint = trainHistory.EntryPoint,
 
                 ClusterManagerToken = token,
@@ -500,7 +526,11 @@ namespace Nssol.Platypus.Logic
             }
 
             // ユーザの任意追加環境変数をマージする
-            AddUserEnvToInputModel(trainHistory.OptionDic, inputModel);
+            AddEnvListToInputModel(trainHistory.OptionDic, inputModel.MainContainerEnvList);
+
+            // 上書き不可の追加環境変数をマージする
+            AddEnvListToInputModel(notEditableEnvList, inputModel.PrepareAndFinishContainerEnvList);
+            AddEnvListToInputModel(notEditableEnvList, inputModel.MainContainerEnvList);
 
             //使用できるノードを制約に追加
             inputModel.ConstraintList = new Dictionary<string, List<string>>()
@@ -561,7 +591,36 @@ namespace Nssol.Platypus.Logic
                 return Result<ContainerInfo, string>.CreateErrorResult("Access denied.　There is no node this tenant can use.");
             }
 
-           
+            // 上書き可の環境変数
+            var editableEnvList = new Dictionary<string, string>()
+            {
+                { "http_proxy", containerOptions.Proxy },
+                { "https_proxy", containerOptions.Proxy },
+                { "no_proxy", containerOptions.NoProxy },
+                { "HTTP_PROXY", containerOptions.Proxy },
+                { "HTTPS_PROXY", containerOptions.Proxy },
+                { "NO_PROXY", containerOptions.NoProxy },
+                { "COLUMNS", containerOptions.ShellColumns }
+            };
+
+            // 上書き不可の環境変数
+            var notEditableEnvList = new Dictionary<string, string>()
+            {
+                { "DATASET_ID", inferenceHistory.DataSetId.ToString()},
+                { "INFERENCE_ID", inferenceHistory.Id.ToString()},
+                { "PARENT_ID", inferenceHistory.ParentId?.ToString()},
+                { "MODEL_REPOSITORY", gitEndpoint.FullUrl},
+                { "MODEL_REPOSITORY_URL", gitEndpoint.Url},
+                { "MODEL_REPOSITORY_TOKEN", gitEndpoint.Token},
+                { "COMMIT_ID", inferenceHistory.ModelCommitId},
+                { "KQI_SERVER", containerOptions.WebServerUrl },
+                { "KQI_TOKEN", loginLogic.GenerateToken().AccessToken },
+                { "PYTHONUNBUFFERED", "true" }, // python実行時の標準出力・エラーのバッファリングをなくす
+                { "LC_ALL", "C.UTF-8"},  // python実行時のエラー回避
+                { "LANG", "C.UTF-8"},  // python実行時のエラー回避
+                { "ZIP_FILE_CREATED", inferenceHistory.Zip.ToString() }  // 結果をzip圧縮するか否か
+            };
+
             //コンテナを起動するために必要な設定値をインスタンス化
             var inputModel = new RunContainerInputModel()
             {
@@ -607,29 +666,10 @@ namespace Nssol.Platypus.Logic
                     { "input", "/kqi/input/" },
                     { "git", "/kqi/git/" }
                 },
-                EnvList = new Dictionary<string, string>()
-                {
-                    { "DATASET_ID", inferenceHistory.DataSetId.ToString()},
-                    { "INFERENCE_ID", inferenceHistory.Id.ToString()},
-                    { "PARENT_ID", inferenceHistory.ParentId?.ToString()},
-                    { "MODEL_REPOSITORY", gitEndpoint.FullUrl},
-                    { "MODEL_REPOSITORY_URL", gitEndpoint.Url},
-                    { "MODEL_REPOSITORY_TOKEN", gitEndpoint.Token},
-                    { "COMMIT_ID", inferenceHistory.ModelCommitId},
-                    { "KQI_SERVER", containerOptions.WebServerUrl },
-                    { "KQI_TOKEN", loginLogic.GenerateToken().AccessToken },
-                    { "http_proxy", containerOptions.Proxy },
-                    { "https_proxy", containerOptions.Proxy },
-                    { "no_proxy", containerOptions.NoProxy },
-                    { "HTTP_PROXY", containerOptions.Proxy },
-                    { "HTTPS_PROXY", containerOptions.Proxy },
-                    { "NO_PROXY", containerOptions.NoProxy },
-                    { "COLUMNS", containerOptions.ShellColumns },
-                    { "PYTHONUNBUFFERED", "true" }, // python実行時の標準出力・エラーのバッファリングをなくす
-                    { "LC_ALL", "C.UTF-8"},  // python実行時のエラー回避
-                    { "LANG", "C.UTF-8"},  // python実行時のエラー回避
-                    { "ZIP_FILE_CREATED", inferenceHistory.Zip.ToString() }  // 結果をzip圧縮するか否か
-                },
+
+                PrepareAndFinishContainerEnvList = editableEnvList, // 上書き可の環境変数を設定
+                MainContainerEnvList = editableEnvList, // 上書き可の環境変数を設定
+
                 EntryPoint = inferenceHistory.EntryPoint,
 
                 ClusterManagerToken = token,
@@ -652,7 +692,11 @@ namespace Nssol.Platypus.Logic
             }
 
             // ユーザの任意追加環境変数をマージする
-            AddUserEnvToInputModel(inferenceHistory.OptionDic, inputModel);
+            AddEnvListToInputModel(inferenceHistory.OptionDic, inputModel.MainContainerEnvList);
+
+            // 上書き不可の追加環境変数をマージする
+            AddEnvListToInputModel(notEditableEnvList, inputModel.PrepareAndFinishContainerEnvList);
+            AddEnvListToInputModel(notEditableEnvList, inputModel.MainContainerEnvList);
 
             //使用できるノードを制約に追加
             inputModel.ConstraintList = new Dictionary<string, List<string>>()
@@ -710,6 +754,22 @@ namespace Nssol.Platypus.Logic
                 return new ContainerInfo() { Status = ContainerStatus.Forbidden };
             }
 
+            // 上書き不可の環境変数
+            var notEditableEnvList = new Dictionary<string, string>()
+            {
+                { "KQI_SERVER", containerOptions.WebServerUrl },
+                { "KQI_TOKEN", loginLogic.GenerateToken().AccessToken },
+                { "http_proxy", containerOptions.Proxy },
+                { "https_proxy", containerOptions.Proxy },
+                { "no_proxy", containerOptions.NoProxy },
+                { "HTTP_PROXY", containerOptions.Proxy },
+                { "HTTPS_PROXY", containerOptions.Proxy },
+                { "NO_PROXY", containerOptions.NoProxy },
+                { "PYTHONUNBUFFERED", "true" }, // python実行時の標準出力・エラーのバッファリングをなくす
+                { "LC_ALL", "C.UTF-8"}, // python実行時のエラー回避
+                { "LANG", "C.UTF-8"}  // python実行時のエラー回避
+            };
+
             //コンテナを起動するために必要な設定値をインスタンス化
             var inputModel = new RunContainerInputModel()
             {
@@ -735,20 +795,10 @@ namespace Nssol.Platypus.Logic
                         ServerPath = CurrentUserInfo.SelectedTenant.TrainingContainerOutputNfsPath
                     }
                 },
-                EnvList = new Dictionary<string, string>()
-                {
-                    { "KQI_SERVER", containerOptions.WebServerUrl },
-                    { "KQI_TOKEN", loginLogic.GenerateToken().AccessToken },
-                    { "http_proxy", containerOptions.Proxy },
-                    { "https_proxy", containerOptions.Proxy },
-                    { "no_proxy", containerOptions.NoProxy },
-                    { "HTTP_PROXY", containerOptions.Proxy },
-                    { "HTTPS_PROXY", containerOptions.Proxy },
-                    { "NO_PROXY", containerOptions.NoProxy },
-                    { "PYTHONUNBUFFERED", "true" }, // python実行時の標準出力・エラーのバッファリングをなくす
-                    { "LC_ALL", "C.UTF-8"}, // python実行時のエラー回避
-                    { "LANG", "C.UTF-8"}  // python実行時のエラー回避
-                },
+
+                PrepareAndFinishContainerEnvList = notEditableEnvList, // 上書き不可の環境変数を設定
+                MainContainerEnvList = notEditableEnvList, // 上書き不可の環境変数を設定
+
                 ConstraintList = new Dictionary<string, List<string>>() {
                     { containerOptions.ContainerLabelHostName, nodes }, //使用できるノードを取得し、制約に追加
                     { containerOptions.ContainerLabelTensorBoardEnabled, new List<string> { "true" } } // tensorboardの実行が許可されているサーバでのみ実行,
@@ -867,6 +917,31 @@ namespace Nssol.Platypus.Logic
                 return Result<ContainerInfo, string>.CreateErrorResult("Access denied.　There is no node this tenant can use.");
             }
 
+            // 上書き可の環境変数
+            var editableEnvList = new Dictionary<string, string>()
+            {
+                { "http_proxy", containerOptions.Proxy },
+                { "https_proxy", containerOptions.Proxy },
+                { "no_proxy", containerOptions.NoProxy },
+                { "HTTP_PROXY", containerOptions.Proxy },
+                { "HTTPS_PROXY", containerOptions.Proxy },
+                { "NO_PROXY", containerOptions.NoProxy },
+                { "COLUMNS", containerOptions.ShellColumns }
+            };
+
+            // 上書き不可の環境変数
+            var notEditableEnvList = new Dictionary<string, string>()
+            {
+                { "NOTEBOOK_ID", notebookHistory.Id.ToString()},
+                { "COMMIT_ID", notebookHistory.ModelCommitId},
+                { "KQI_SERVER", containerOptions.WebServerUrl },
+                { "KQI_TOKEN", loginLogic.GenerateToken().AccessToken },
+                { "PYTHONUNBUFFERED", "true" }, // python実行時の標準出力・エラーのバッファリングをなくす
+                { "LC_ALL", "C.UTF-8"},  // python実行時のエラー回避
+                { "LANG", "C.UTF-8"},  // python実行時のエラー回避
+                { "EXPIRES_IN", notebookHistory.ExpiresIn != 0 ? notebookHistory.ExpiresIn.ToString() : "infinity"}  // コンテナ生存期間
+            };
+
             //コンテナを起動するために必要な設定値をインスタンス化
             var inputModel = new RunContainerInputModel()
             {
@@ -911,23 +986,10 @@ namespace Nssol.Platypus.Logic
                     { "input", "/kqi/input/" },
                     { "git", "/kqi/git/" }
                 },
-                EnvList = new Dictionary<string, string>()
-                {
-                    { "NOTEBOOK_ID", notebookHistory.Id.ToString()},
-                    { "COMMIT_ID", notebookHistory.ModelCommitId},
-                    { "KQI_SERVER", containerOptions.WebServerUrl },
-                    { "KQI_TOKEN", loginLogic.GenerateToken().AccessToken },
-                    { "http_proxy", containerOptions.Proxy },
-                    { "https_proxy", containerOptions.Proxy },
-                    { "no_proxy", containerOptions.NoProxy },
-                    { "HTTP_PROXY", containerOptions.Proxy },
-                    { "HTTPS_PROXY", containerOptions.Proxy },
-                    { "NO_PROXY", containerOptions.NoProxy },
-                    { "COLUMNS", containerOptions.ShellColumns },
-                    { "PYTHONUNBUFFERED", "true" }, // python実行時の標準出力・エラーのバッファリングをなくす
-                    { "LC_ALL", "C.UTF-8"},  // python実行時のエラー回避
-                    { "LANG", "C.UTF-8"}  // python実行時のエラー回避
-                },
+
+                PrepareAndFinishContainerEnvList = editableEnvList, // 上書き可の環境変数を設定
+                MainContainerEnvList = editableEnvList, // 上書き可の環境変数を設定
+
 
                 PortMappings = new PortMappingModel[]
                 {
@@ -941,7 +1003,11 @@ namespace Nssol.Platypus.Logic
             // データセットの未指定も許可するため、その判定
             if (notebookHistory.DataSetId != null)
             {
-                inputModel.EnvList.Add("DATASET_ID", notebookHistory.DataSetId.ToString());
+                notEditableEnvList.Add("DATASET_ID", notebookHistory.DataSetId.ToString());
+            }
+            else
+            {
+                notEditableEnvList.Add("DATASET_ID", "");
             }
 
             // Gitの未指定も許可するため、その判定
@@ -953,17 +1019,22 @@ namespace Nssol.Platypus.Logic
                 var gitEndpoint = gitLogic.GetPullUrl(gitId, notebookHistory.ModelRepository, notebookHistory.ModelRepositoryOwner);
                 if (gitEndpoint != null)
                 {
-                    inputModel.EnvList.Add("MODEL_REPOSITORY", gitEndpoint.FullUrl);
-                    inputModel.EnvList.Add("MODEL_REPOSITORY_URL", gitEndpoint.Url);
-                    inputModel.EnvList.Add("MODEL_REPOSITORY_TOKEN", gitEndpoint.Token);
+                    notEditableEnvList.Add("MODEL_REPOSITORY", gitEndpoint.FullUrl);
+                    notEditableEnvList.Add("MODEL_REPOSITORY_URL", gitEndpoint.Url);
+                    notEditableEnvList.Add("MODEL_REPOSITORY_TOKEN", gitEndpoint.Token);
                 }
             }
 
-            if (notebookHistory.OptionDic != null)
+            if (string.IsNullOrEmpty(notebookHistory.Options) == false)
             {
                 // ユーザの任意追加環境変数をマージする
-                AddUserEnvToInputModel(notebookHistory.OptionDic, inputModel);
+                AddEnvListToInputModel(notebookHistory.GetOptionDic(), inputModel.MainContainerEnvList);
             }
+
+            // 上書き不可の追加環境変数をマージする
+            AddEnvListToInputModel(notEditableEnvList, inputModel.PrepareAndFinishContainerEnvList);
+            AddEnvListToInputModel(notEditableEnvList, inputModel.MainContainerEnvList);
+
 
             //使用できるノードを制約に追加
             inputModel.ConstraintList = new Dictionary<string, List<string>>()
@@ -996,26 +1067,21 @@ namespace Nssol.Platypus.Logic
         #endregion
 
         /// <summary>
-        /// ユーザの任意追加環境変数をマージする
+        /// 追加環境変数をマージする
         /// </summary>
-        private static void AddUserEnvToInputModel(Dictionary<string, string> optionDic, RunContainerInputModel inputModel)
+        /// <param name="optionDic">追加対象の環境変数</param>
+        /// <param name="envList">追加先の環境変数</param>
+        private static void AddEnvListToInputModel(Dictionary<string, string> optionDic, Dictionary<string, string> envList)
         {
-            if (optionDic.Count > 0)
+            if (optionDic != null)
             {
                 foreach (var env in optionDic)
                 {
-                    // ユーザー指定環境変数とappsettingsの環境変数を結合
+                    // 設定済み環境変数に追加対象の環境変数をマージする
 
                     string value = env.Value ?? ""; //nullは空文字と見なす
 
-                    if (inputModel.EnvList.ContainsKey(env.Key))
-                    {
-                        inputModel.EnvList[env.Key] = value; //あればユーザ指定の値で上書き
-                    }
-                    else
-                    {
-                        inputModel.EnvList.Add(env.Key, value); //なければ追加
-                    }
+                    envList[env.Key] = value; // あれば新しい値で上書き、なければ追加
                 }
             }
         }

@@ -713,6 +713,10 @@ namespace Nssol.Platypus.Controllers.spa
             inferenceHistoryRepository.Delete(inferenceHistory);
             unitOfWork.Commit();
 
+            // ストレージ内の推論データを削除する
+            await storageLogic.DeleteResultsAsync(ResourceType.InferenceContainerAttachedFiles, inferenceHistory.Id);
+            await storageLogic.DeleteResultsAsync(ResourceType.InferenceContainerOutputFiles, inferenceHistory.Id);
+
             return JsonNoContent();
         }
 

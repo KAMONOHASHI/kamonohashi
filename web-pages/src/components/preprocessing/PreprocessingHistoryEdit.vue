@@ -43,7 +43,7 @@
       <el-row>
         <el-col class="button-group">
           <el-button @click="handleCancel" class="pull-right btn-cancel" icon="el-icon-close">キャンセル</el-button>
-          <pl-delete-button class="pull-left btn-update" @delete="handleRemove"/>
+          <pl-delete-button class="pull-left btn-update" @delete="handleRemove" message="削除しますか（出力データ数が多い場合、処理に時間がかかります）"/>
         </el-col>
       </el-row>
     </el-form>
