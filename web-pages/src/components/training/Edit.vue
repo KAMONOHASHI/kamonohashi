@@ -173,7 +173,7 @@
 
         <el-row :gutter="20" class="footer">
           <el-col :span="12">
-            <pl-delete-button @delete="deleteJob"/>
+            <pl-delete-button @delete="deleteJob" message="削除しますか（出力データ数が多い場合、処理に時間がかかります）"/>
           </el-col>
           <el-col class="right-button-group" :span="12">
             <el-button @click="emitCancel">キャンセル</el-button>
