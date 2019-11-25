@@ -404,7 +404,7 @@ namespace Nssol.Platypus.Services
             try
             {
                 // バケットの削除は全てのオブジェクトを削除して実施
-                await deleteObjectsAsync(deleteClient, storageConfig.Bucket, "");
+                await DeleteObjectsAsync(deleteClient, storageConfig.Bucket, "");
                 await deleteClient.DeleteBucketAsync(storageConfig.Bucket);
             }
             catch (AmazonS3Exception e)
@@ -417,27 +417,71 @@ namespace Nssol.Platypus.Services
         }
 
         /// <summary>
+        /// prefix で指定するフォルダ階層を含む配下のオブジェクトを全て削除する。トップなら "" を prefix として指定する。
+        /// 接続情報は<see cref="Initialize(StorageConfigModel)"/>で指定したものではなく、引数で指定したものを使う。
+        /// </summary>
+        public async Task DeleteObjectsAsync(StorageConfigModel config, string prefix)
+        {
+            var deleteClient = GenerateConfig(config);
+
+            // prefix で指定するフォルダ階層以下のオブジェクトを全て削除する。
+            await DeleteObjectsAsync(deleteClient, config.Bucket, prefix);
+
+            // prefix で指定するフォルダオブジェクトを削除する。
+            await deleteClient.DeleteObjectAsync(config.Bucket, prefix);
+        }
+
+        /// <summary>
         /// prefix で指定するフォルダ階層以下のオブジェクトを全て削除する。トップなら "" を prefix として指定する。
         /// </summary>
-        private async Task deleteObjectsAsync(AmazonS3Client aClient, string bucketName, string prefix)
+        /// <remarks>
+        /// オブジェクト名によっては削除できずに例外が発生するが、処理を継続し、削除できるオブジェクトのみ削除する。
+        /// </remarks>
+        private async Task DeleteObjectsAsync(AmazonS3Client aClient, string bucketName, string prefix)
         {
-            ListObjectsRequest req = new ListObjectsRequest()
+            ListObjectsV2Request req = new ListObjectsV2Request()
             {
                 BucketName = bucketName,
                 Prefix = prefix,
                 Delimiter = "/"
             };
-            ListObjectsResponse res = await aClient.ListObjectsAsync(req);
-            // フォルダは再帰的に処理
-            foreach (string dirName in res.CommonPrefixes)
+
+            ListObjectsV2Response res = new ListObjectsV2Response();            
+            do
             {
-                await deleteObjectsAsync(aClient, bucketName, dirName);
+                // ディレクトリ直下のディレクトリ・オブジェクト一覧を取得する
+                res = await aClient.ListObjectsV2Async(req);
+
+                // フォルダは再帰的に処理
+                foreach (string dirName in res.CommonPrefixes)
+                {
+                    await DeleteObjectsAsync(aClient, bucketName, dirName);
+                }
+                // オブジェクト(ファイル)は削除
+                foreach (S3Object file in res.S3Objects)
+                {
+                    try
+                    {
+                        await aClient.DeleteObjectAsync(bucketName, file.Key);
+                    }
+                    catch (Exception e)
+                    {
+                        // オブジェクトの削除に失敗した場合でも、処理を継続させる。
+                        // 削除できないオブジェクト名は以下参照。
+                        // https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/dev/UsingMetadata.html
+                        LogError($"deletion of file '{file.Key}' failed. processing will continue. message=\"{e.Message}\"");
+                    }
+                }
+
+                if (res.IsTruncated)
+                {
+                    LogWarning($"more than 1000 objects under '{req.Prefix}' exist. get and delete continuously.");
+                }
+
+                // 次の一覧取得の開始位置であるオブジェクトを設定する
+                req.ContinuationToken = res.NextContinuationToken;
             }
-            // オブジェクト(ファイル)は削除
-            foreach (S3Object file in res.S3Objects)
-            {
-                await aClient.DeleteObjectAsync(bucketName, file.Key);
-            }
+            while (res.IsTruncated); // 一覧に続きがある場合再度問い合わせる
         }
 
         /// <summary>

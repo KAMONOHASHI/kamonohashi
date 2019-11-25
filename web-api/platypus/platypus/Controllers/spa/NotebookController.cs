@@ -300,6 +300,10 @@ namespace Nssol.Platypus.Controllers.spa
             notebookHistoryRepository.Delete(notebookHistory);
             unitOfWork.Commit();
 
+            // ストレージ内のノートブックデータを削除する
+            await storageLogic.DeleteResultsAsync(ResourceType.NotebookContainerAttachedFiles, notebookHistory.Id);
+            await storageLogic.DeleteResultsAsync(ResourceType.NotebookContainerOutputFiles, notebookHistory.Id);
+
             return JsonNoContent();
         }
 

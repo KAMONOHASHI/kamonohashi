@@ -85,6 +85,19 @@ namespace Nssol.Platypus.Logic
         }
 
         /// <summary>
+        /// 指定したリソース種別と履歴データIDに対応するフォルダ階層以下の結果データを削除する。
+        /// </summary>
+        /// <remarks> type/historyId で指定するフォルダ階層以下のオブジェクトを全て削除する</remarks>
+        /// <param name="type">リソース種別</param>
+        /// <param name="historyId">履歴データID</param>
+        public async Task DeleteResultsAsync(ResourceType type, long historyId)
+        {
+            var prefix = type.ToString() + "/" + historyId.ToString();
+
+            await objectStorageService.DeleteObjectsAsync(config, prefix);
+        }
+
+        /// <summary>
         /// 指定したファイルを削除する。
         /// </summary>
         public async Task DeleteFileAsync(ResourceType type, string fileName)

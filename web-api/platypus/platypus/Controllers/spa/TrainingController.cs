@@ -837,6 +837,10 @@ namespace Nssol.Platypus.Controllers.spa
             trainingHistoryRepository.Delete(trainingHistory);
             unitOfWork.Commit();
 
+            // ストレージ内の学習データを削除する
+            await storageLogic.DeleteResultsAsync(ResourceType.TrainingContainerAttachedFiles, trainingHistory.Id);
+            await storageLogic.DeleteResultsAsync(ResourceType.TrainingContainerOutputFiles, trainingHistory.Id);
+
             return JsonNoContent();
         }
     }
