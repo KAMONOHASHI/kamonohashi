@@ -305,10 +305,10 @@ namespace Nssol.Platypus.DataAccess.Repositories
                         UserId = user.Id
                     };
 
-                    //既に同じGitと紐づいていたら、その認証情報を使いまわす
+                    //認証情報が空欄のものをはじく
                     var existMap = GetModelAll<UserTenantGitMap>().Include(m => m.TenantGitMap)
-                        .Where(m => m.UserId == user.Id && m.TenantGitMap.GitId == GitMap.GitId).FirstOrDefault();
-                    if (existMap != null)
+                        .Where(m => m.UserId == user.Id && m.TenantGitMap.GitId == GitMap.GitId && !String.IsNullOrEmpty(m.GitToken)).FirstOrDefault();
+                    if (!String.IsNullOrEmpty(existMap.GitToken))
                     {
                         utrMap.GitToken = existMap.GitToken;
                     }
