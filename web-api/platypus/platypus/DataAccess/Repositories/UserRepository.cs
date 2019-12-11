@@ -308,7 +308,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
                     //認証情報が空欄のものをはじく
                     var existMap = GetModelAll<UserTenantGitMap>().Include(m => m.TenantGitMap)
                         .Where(m => m.UserId == user.Id && m.TenantGitMap.GitId == GitMap.GitId && !String.IsNullOrEmpty(m.GitToken)).FirstOrDefault();
-                    if (!String.IsNullOrEmpty(existMap.GitToken))
+                    if (existMap != null && !String.IsNullOrEmpty(existMap.GitToken))
                     {
                         utrMap.GitToken = existMap.GitToken;
                     }
@@ -337,10 +337,10 @@ namespace Nssol.Platypus.DataAccess.Repositories
                         UserId = user.Id
                     };
 
-                    //既に同じレジストリと紐づいていたら、その認証情報を使いまわす
+                    //認証情報が空欄のものをはじく
                     var existMap = GetModelAll<UserTenantRegistryMap>().Include(m => m.TenantRegistryMap)
-                        .Where(m => m.UserId == user.Id && m.TenantRegistryMap.RegistryId == registryMap.RegistryId).FirstOrDefault();
-                    if (existMap != null)
+                        .Where(m => m.UserId == user.Id && m.TenantRegistryMap.RegistryId == registryMap.RegistryId && !String.IsNullOrEmpty(m.RegistryPassword)).FirstOrDefault();
+                    if (existMap != null && !String.IsNullOrEmpty(existMap.RegistryPassword))
                     {
                         utrMap.RegistryUserName = existMap.RegistryUserName;
                         utrMap.RegistryPassword = existMap.RegistryPassword;

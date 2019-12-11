@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces;
+using System;
 
 namespace Nssol.Platypus.DataAccess.Repositories
 {
@@ -80,10 +81,10 @@ namespace Nssol.Platypus.DataAccess.Repositories
                         UserId = userMap.UserId,
                     };
 
-                    //既に同じレジストリと紐づいていたら、その認証情報を使いまわす
+                    //認証情報が空欄のものをはじく
                     var existMap = GetModelAll<UserTenantRegistryMap>().Include(m => m.TenantRegistryMap)
-                        .Where(m => m.UserId == userMap.UserId && m.TenantRegistryMap.RegistryId == registry.Id).FirstOrDefault();
-                    if (existMap != null)
+                        .Where(m => m.UserId == userMap.UserId && m.TenantRegistryMap.RegistryId == registry.Id && !String.IsNullOrEmpty(m.RegistryPassword)).FirstOrDefault();
+                    if (existMap != null && !String.IsNullOrEmpty(existMap.RegistryPassword))
                     {
                         utrMap.RegistryUserName = existMap.RegistryUserName;
                         utrMap.RegistryPassword = existMap.RegistryPassword;
