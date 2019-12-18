@@ -18,6 +18,26 @@
             <el-form-item label="ノートブック名" prop="name">
               <el-input v-model="name"/>
             </el-form-item>
+            <div v-if="parents && parents.length > 0">
+              <el-form-item label="マウントした学習">
+                <div v-for="parent in parents" :key="parent.id">
+                  <el-popover
+                    ref="parentDetail"
+                    title="マウントした学習詳細"
+                    trigger="hover"
+                    width="350"
+                    placement="right">
+                    <pl-training-history-details
+                      :id="parent.id"
+                      :name="parent.name"
+                      :status="parent.status"
+                      :memo="parent.memo"
+                    />
+                    <el-button class="el-input" slot="reference" @click="showParent(parent.id)">{{parent.fullName}}</el-button>
+                  </el-popover>
+                </div>
+              </el-form-item>
+            </div>
             <div v-if="dataSet">
               <el-form-item label="データセット">
                 <el-popover
@@ -130,6 +150,7 @@
   import DisplayError from '@/components/common/DisplayError'
   import DeleteButton from '@/components/common/DeleteButton.vue'
   import DataSetDetails from '@/components/common/DatasetDetails.vue'
+  import TrainingHistoryDetails from '@/components/common/TrainingHistoryDetails.vue'
   import api from '@/api/v1/api'
   export default {
     name: 'EditNotebook',
@@ -137,7 +158,8 @@
       'pl-delete-button': DeleteButton,
       'pl-display-text-form': DisplayTextForm,
       'pl-display-error': DisplayError,
-      'pl-dataset-details': DataSetDetails
+      'pl-dataset-details': DataSetDetails,
+      'pl-training-history-details': TrainingHistoryDetails
     },
     props: {
       id: String
@@ -153,6 +175,7 @@
         containerUrl: undefined, // コンテナの表示用URL
         name: undefined,
         dataSet: undefined,
+        parents: [],
         gitModel: undefined,
         createdBy: undefined,
         startedAt: undefined,
@@ -190,6 +213,7 @@
         this.name = data.name
         this.notebookId = data.id
         this.dataSet = data.dataSet
+        this.parents = data.parents
         this.gitModel = data.gitModel
         this.createdBy = data.createdBy
         this.startedAt = data.startedAt
@@ -224,6 +248,11 @@
       closeDialog (done) {
         done()
         this.emitCancel()
+      },
+      // 親ジョブ履歴の表示
+      showParent (parentId) {
+        // 表示内容の変更は、beforeUpdated内で行う
+        this.$router.push('/training/' + parentId)
       },
       redirectEditDataSet () {
         this.$router.push('/dataset/' + this.dataSet.id)

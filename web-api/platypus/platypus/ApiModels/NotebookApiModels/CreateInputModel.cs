@@ -4,6 +4,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Nssol.Platypus.ApiModels.NotebookApiModels
 {
+    /// <summary>
+    /// ノートブック新規実行モデル
+    /// </summary>
     public class CreateInputModel
     {
         /// <summary>
@@ -22,6 +25,11 @@ namespace Nssol.Platypus.ApiModels.NotebookApiModels
         /// データセットID
         /// </summary>
         public long? DataSetId { get; set; }
+
+        /// <summary>
+        /// 親学習履歴ID
+        /// </summary>
+        public IEnumerable<long> ParentIds { get; set; }
 
         /// <summary>
         /// ノートブックモデルGit情報
