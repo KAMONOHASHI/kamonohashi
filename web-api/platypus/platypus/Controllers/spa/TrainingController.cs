@@ -177,8 +177,8 @@ namespace Nssol.Platypus.Controllers.spa
 
         /// <summary>
         /// マウントする学習履歴を取得
-        /// <param name="filter">検索条件</param>
         /// </summary>
+        /// <param name="filter">検索条件</param>
         [HttpGet("mount")]
         [Filters.PermissionFilter(MenuCode.Training, MenuCode.Inference)]
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]

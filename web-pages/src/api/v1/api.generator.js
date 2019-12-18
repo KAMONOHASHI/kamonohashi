@@ -7360,14 +7360,13 @@ export const ApiV1TrainingGetURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
-* マウントする学習履歴を取得
-<param name="filter">検索条件</param>
-* request: ApiV1TrainingMountGet
-* url: ApiV1TrainingMountGetURL
-* method: ApiV1TrainingMountGet_TYPE
-* raw_url: ApiV1TrainingMountGet_RAW_URL
-     * @param status - ステータス
-*/
+ * マウントする学習履歴を取得
+ * request: ApiV1TrainingMountGet
+ * url: ApiV1TrainingMountGetURL
+ * method: ApiV1TrainingMountGet_TYPE
+ * raw_url: ApiV1TrainingMountGet_RAW_URL
+ * @param status - ステータス
+ */
 export const ApiV1TrainingMountGet = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
