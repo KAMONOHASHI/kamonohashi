@@ -10,8 +10,8 @@ using Nssol.Platypus.DataAccess;
 namespace Nssol.Platypus.Migrations
 {
     [DbContext(typeof(CommonDbContext))]
-    [Migration("20191113041648_v1.2.0")]
-    partial class v120
+    [Migration("20191113041648_v1.1.5")]
+    partial class v115
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
