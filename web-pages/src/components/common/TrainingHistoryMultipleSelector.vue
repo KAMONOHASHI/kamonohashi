@@ -42,7 +42,8 @@
     },
     methods: {
       async getTrainingHistories () {
-        this.trainingHistories = (await api.training.getSimple()).data
+        let params = {'status': ['Completed', 'UserCanceled', 'Killed']}
+        this.trainingHistories = (await api.training.getMount(params)).data
       },
       async onChange (parentIds) {
         this.$emit('input', parentIds)
