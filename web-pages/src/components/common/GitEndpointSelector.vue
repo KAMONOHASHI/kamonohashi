@@ -77,6 +77,8 @@
       async init () {
         if (this.tenantId) {
           this.list = (await api.git.tenant.getEndpoints({id: this.tenantId})).data
+        } else {
+          this.list = (await api.git.admin.getEndpoints()).data
         }
       },
       async handleChange (v) {

@@ -53,8 +53,8 @@
   import api from '@/api/v1/api'
   import DisplayError from '@/components/common/DisplayError'
   import DisplayTextForm from '@/components/common/DisplayTextForm.vue'
-  import GitEndpointSelector from '@/components/tenant-manage/tenant/GitEndpointSelector.vue'
-  import RegistryEndpointSelector from '@/components/tenant-manage/tenant/RegistryEndpointSelector.vue'
+  import GitEndpointSelector from '@/components/common/GitEndpointSelector.vue'
+  import RegistryEndpointSelector from '@/components/common/RegistryEndpointSelector.vue'
 
   export default {
     name: 'TenantSetting',

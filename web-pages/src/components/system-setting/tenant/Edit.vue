@@ -58,8 +58,8 @@
 <script>
   import api from '@/api/v1/api'
   import DisplayError from '@/components/common/DisplayError'
-  import GitEndpointSelector from '@/components/system-setting/tenant/GitEndpointSelector.vue'
-  import RegistryEndpointSelector from '@/components/system-setting/tenant/RegistryEndpointSelector.vue'
+  import GitEndpointSelector from '@/components/common/GitEndpointSelector.vue'
+  import RegistryEndpointSelector from '@/components/common/RegistryEndpointSelector.vue'
   import StorageEndpointSelector from '@/components/system-setting/tenant/StorageEndpointSelector.vue'
   import DisplayTextForm from '@/components/common/DisplayTextForm.vue'
   import DeleteTenantButton from '@/components/system-setting/tenant/DeleteTenantButton.vue'
