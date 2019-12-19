@@ -118,6 +118,7 @@
           if (valid) {
             try {
               await this.putTenant()
+              this.showSuccessMessage()
               this.init()
               this.error = null
             } catch (e) {
