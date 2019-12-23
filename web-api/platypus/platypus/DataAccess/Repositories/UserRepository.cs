@@ -183,7 +183,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
                 Name = userName,
                 ServiceType = AuthServiceType.Ldap
             };
-            AttachSandbox(user, true);
+            AttachSandbox(user);
             Add(user);
         }
 
@@ -191,8 +191,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// ユーザにサンドボックステナントを紐づける
         /// </summary>
         /// <param name="user">対象ユーザ</param>
-        /// <param name="isCreate">ユーザ新規作成時であればtrue</param>
-        public void AttachSandbox(User user, bool isCreate)
+        public void AttachSandbox(User user)
         {
             var tenant = tenantRepository.GetFromTenantName(ApplicationConst.DefaultFirstTenantName);
 
@@ -212,7 +211,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
                 attachedRoles.Add(roles.First());
             }
 
-            AttachTenant(user, tenant.Id, attachedRoles, isCreate);
+            AttachTenant(user, tenant.Id, attachedRoles);
             user.DefaultTenantId = tenant.Id;
         }
 
@@ -259,9 +258,8 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// <param name="user">対象ユーザ</param>
         /// <param name="tenantId">対象テナントID</param>
         /// <param name="roles">テナントロール</param>
-        /// <param name="isCreate">ユーザ新規作成時であればtrue</param>
         /// <exception cref="ArgumentException"><paramref name="roles"/>にシステムロールが含まれていたり、別テナント用のロールが含まれていた場合</exception>
-        public IEnumerable<UserTenantRegistryMap> AttachTenant(User user, long tenantId, IEnumerable<Role> roles, bool isCreate)
+        public IEnumerable<UserTenantRegistryMap> AttachTenant(User user, long tenantId, IEnumerable<Role> roles)
         {
             var tenantMap = new UserTenantMap()
             {
@@ -292,67 +290,63 @@ namespace Nssol.Platypus.DataAccess.Repositories
                 }
             }
 
-            if (isCreate == false) //新規作成時はIDが0の状態なので、判定しない
+            //まずはGitの登録
+            //テナントに紐づいているすべてのGitを取得
+            var GitMaps = FindModelAll<TenantGitMap>(m => m.TenantId == tenantId).Include(m => m.Git);
+            foreach (var GitMap in GitMaps)
             {
-                //まずはGitの登録
-                //テナントに紐づいているすべてのGitを取得
-                var GitMaps = FindModelAll<TenantGitMap>(m => m.TenantId == tenantId).Include(m => m.Git);
-                foreach (var GitMap in GitMaps)
+                UserTenantGitMap utrMap = new UserTenantGitMap()
                 {
-                    UserTenantGitMap utrMap = new UserTenantGitMap()
-                    {
-                        TenantGitMap = GitMap,
-                        UserId = user.Id
-                    };
+                    TenantGitMap = GitMap,
+                    UserId = user.Id
+                };
 
-                    // 既存の認証情報存在チェック
-                    var existMap = GetModelAll<UserTenantGitMap>()
-                        .Where(m => m.UserId == user.Id && m.TenantGitMapId == GitMap.Id).FirstOrDefault();
-                    if (existMap != null)
-                    {
-                        // 既存の認証情報が存在する場合、再設定する
-                        utrMap.GitToken = existMap.GitToken;
-                    }
-                    else
-                    {
-                        // UserTenantGitMap において userId と TenantGitMapId のペアが存在しなければ、エントリ新規追加のためログに出力する
-                        LogDebug($"UserTenantGitMap エントリの新規追加 : UserId={user.Id}, TenantGitMapId={GitMap.Id}, TenantId={tenantId}, GitId={GitMap.GitId}");
-                    }
-
-                    AddModel<UserTenantGitMap>(utrMap);
+                // 既存の認証情報存在チェック
+                var existMap = GetModelAll<UserTenantGitMap>()
+                    .Where(m => m.UserId == user.Id && m.TenantGitMapId == GitMap.Id).FirstOrDefault();
+                if (existMap != null)
+                {
+                    // 既存の認証情報が存在する場合、再設定する
+                    utrMap.GitToken = existMap.GitToken;
+                }
+                else
+                {
+                    // UserTenantGitMap において userId と TenantGitMapId のペアが存在しなければ、エントリ新規追加のためログに出力する
+                    LogDebug($"UserTenantGitMap エントリの新規追加 : UserId={user.Id}, TenantGitMapId={GitMap.Id}, TenantId={tenantId}, GitId={GitMap.GitId}");
                 }
 
-                //続いてレジストリの登録
-                //レジストリ登録はクラスタ管理サービスへも影響するので、作成したMapを全て返す
-
-                List<UserTenantRegistryMap> maps = new List<UserTenantRegistryMap>();
-
-                //テナントに紐づいているすべてのレジストリを取得
-                var registryMaps = FindModelAll<TenantRegistryMap>(m => m.TenantId == tenantId).Include(m => m.Registry);
-                foreach (var registryMap in registryMaps)
-                {
-                    UserTenantRegistryMap utrMap = new UserTenantRegistryMap()
-                    {
-                        TenantRegistryMap = registryMap,
-                        UserId = user.Id
-                    };
-
-                    // 既存の認証情報存在チェック
-                    var existMap = GetModelAll<UserTenantRegistryMap>()
-                        .Where(m => m.UserId == user.Id && m.TenantRegistryMapId == registryMap.Id).FirstOrDefault();
-                    if (existMap != null)
-                    {
-                        // 既存の認証情報が存在する場合、再設定する
-                        utrMap.RegistryUserName = existMap.RegistryUserName;
-                        utrMap.RegistryPassword = existMap.RegistryPassword;
-                    }
-
-                    AddModel<UserTenantRegistryMap>(utrMap);
-                    maps.Add(utrMap);
-                }
-                return maps;
+                AddModel<UserTenantGitMap>(utrMap);
             }
-            return null;
+
+            //続いてレジストリの登録
+            //レジストリ登録はクラスタ管理サービスへも影響するので、作成したMapを全て返す
+
+            List<UserTenantRegistryMap> maps = new List<UserTenantRegistryMap>();
+
+            //テナントに紐づいているすべてのレジストリを取得
+            var registryMaps = FindModelAll<TenantRegistryMap>(m => m.TenantId == tenantId).Include(m => m.Registry);
+            foreach (var registryMap in registryMaps)
+            {
+                UserTenantRegistryMap utrMap = new UserTenantRegistryMap()
+                {
+                    TenantRegistryMap = registryMap,
+                    UserId = user.Id
+                };
+
+                // 既存の認証情報存在チェック
+                var existMap = GetModelAll<UserTenantRegistryMap>()
+                    .Where(m => m.UserId == user.Id && m.TenantRegistryMapId == registryMap.Id).FirstOrDefault();
+                if (existMap != null)
+                {
+                    // 既存の認証情報が存在する場合、再設定する
+                    utrMap.RegistryUserName = existMap.RegistryUserName;
+                    utrMap.RegistryPassword = existMap.RegistryPassword;
+                }
+
+                AddModel<UserTenantRegistryMap>(utrMap);
+                maps.Add(utrMap);
+            }
+            return maps;
         }
 
         /// <summary>

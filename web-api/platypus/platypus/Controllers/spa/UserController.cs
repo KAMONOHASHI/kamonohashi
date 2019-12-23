@@ -10,7 +10,6 @@ using Nssol.Platypus.Infrastructure.Infos;
 using Nssol.Platypus.Infrastructure.Types;
 using Nssol.Platypus.Logic.Interfaces;
 using Nssol.Platypus.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -151,36 +150,19 @@ namespace Nssol.Platypus.Controllers.spa
                 Tenant tenant = tenantRepository.Get(tenantInput.Id.Value);
                 if (tenant == null)
                 {
-                    //指定したテナントが存在しなかったら失敗
-                    return JsonNotFound($"Tenant ID {tenantInput.Id} is not found.");
-                }
-            }
-
-            userRepository.AddUser(user);
-            unitOfWork.Commit();
-
-            // 一旦コミットしてユーザIDを確定し、テナントなどの関連 map を生成
-            User createdUser = userRepository.GetUser(model.Name);
-            foreach (var tenantInput in model.Tenants)
-            {
-                // テナント(存在は確認済みだが念のためにチェック)
-                Tenant tenant = tenantRepository.Get(tenantInput.Id.Value);
-                if (tenant == null)
-                {
-                    //指定したテナントが存在しなかったら失敗
-                    userRepository.DeleteUser(createdUser);
-                    unitOfWork.Commit();
+                    // 指定したテナントが存在しなかったら失敗
                     return JsonNotFound($"Tenant ID {tenantInput.Id} is not found.");
                 }
                 // 関連 map の作成
-                var addTenantErrorResult = await AddTenantAsync(createdUser, tenant, tenantInput.Roles, false); // 最後は false を渡すこと
+                var addTenantErrorResult = await AddTenantAsync(user, tenant, tenantInput.Roles);
                 if (addTenantErrorResult != null)
                 {
-                    userRepository.DeleteUser(createdUser);
-                    unitOfWork.Commit();
                     return addTenantErrorResult;
                 }
             }
+
+            // ユーザの登録
+            userRepository.AddUser(user);
             unitOfWork.Commit();
 
             return JsonCreated(CraeteIndexOutputModel(user));
@@ -284,7 +266,7 @@ namespace Nssol.Platypus.Controllers.spa
                     currentTenants.Remove(currentTenant);
                 }
 
-                var addTenantErrorResult = await AddTenantAsync(user, tenant, tenantInput.Roles, false);
+                var addTenantErrorResult = await AddTenantAsync(user, tenant, tenantInput.Roles);
                 if (addTenantErrorResult != null)
                 {
                     //ロールバックされるので、不整合は起こらない
@@ -373,7 +355,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// 指定したユーザをテナントに新規登録する。
         /// 途中でエラーが発生した場合、そのエラー結果が返る。NULLなら成功。
         /// </summary>
-        private async Task<IActionResult> AddTenantAsync(User user, Tenant tenant, IEnumerable<long> tenantRoleIds, bool isCreate)
+        private async Task<IActionResult> AddTenantAsync(User user, Tenant tenant, IEnumerable<long> tenantRoleIds)
         {
             //ロールについての存在＆入力チェック
             var roles = new List<Role>();
@@ -396,7 +378,7 @@ namespace Nssol.Platypus.Controllers.spa
                 }
             }
 
-            var maps = userRepository.AttachTenant(user, tenant.Id, roles, isCreate);
+            var maps = userRepository.AttachTenant(user, tenant.Id, roles);
             if(maps != null)
             {
                 foreach (var map in maps)
@@ -542,7 +524,7 @@ namespace Nssol.Platypus.Controllers.spa
                 if (newDefaultTenant == null)
                 {
                     //付け替え先がないので、止む無くSandboxに新規紐づけする
-                    userRepository.AttachSandbox(user, false);
+                    userRepository.AttachSandbox(user);
                 }
                 else
                 {

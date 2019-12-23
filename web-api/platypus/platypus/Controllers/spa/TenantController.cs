@@ -265,7 +265,7 @@ namespace Nssol.Platypus.Controllers.spa
                     else
                     {
                         // サンドボックステナントを DefaultTenant とする
-                        userRepository.AttachSandbox(user, false);
+                        userRepository.AttachSandbox(user);
                     }
                 }
                 // 更新したユーザ ID を結果データとして返却
