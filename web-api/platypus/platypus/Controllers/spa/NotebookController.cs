@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Nssol.Platypus.ApiModels.NotebookApiModels;
 using Nssol.Platypus.Controllers.Util;
 using Nssol.Platypus.DataAccess.Core;
@@ -7,6 +8,7 @@ using Nssol.Platypus.DataAccess.Repositories.Interfaces;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories;
 using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Infrastructure.Infos;
+using Nssol.Platypus.Infrastructure.Options;
 using Nssol.Platypus.Infrastructure.Types;
 using Nssol.Platypus.Logic.Interfaces;
 using Nssol.Platypus.Models.TenantModels;
@@ -19,18 +21,27 @@ using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Controllers.spa
 {
+    /// <summary>
+    /// Notebookを扱うためのAPI集
+    /// </summary>
     [Route("api/v1/notebook")]
     public class NotebookController : PlatypusApiControllerBase
     {
         private readonly INotebookHistoryRepository notebookHistoryRepository;
+        private readonly ITrainingHistoryRepository trainingHistoryRepository;
         private readonly IDataSetRepository dataSetRepository;
         private readonly INotebookLogic notebookLogic;
         private readonly IStorageLogic storageLogic;
         private readonly IGitLogic gitLogic;
         private readonly IClusterManagementLogic clusterManagementLogic;
         private readonly IUnitOfWork unitOfWork;
+
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
         public NotebookController(
             INotebookHistoryRepository notebookHistoryRepository,
+            ITrainingHistoryRepository trainingHistoryRepository,
             IDataSetRepository dataSetRepository,
             INotebookLogic notebookLogic,
             IStorageLogic storageLogic,
@@ -40,6 +51,7 @@ namespace Nssol.Platypus.Controllers.spa
             IHttpContextAccessor accessor) : base(accessor)
         {
             this.notebookHistoryRepository = notebookHistoryRepository;
+            this.trainingHistoryRepository = trainingHistoryRepository;
             this.dataSetRepository = dataSetRepository;
             this.notebookLogic = notebookLogic;
             this.storageLogic = storageLogic;
@@ -92,6 +104,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// ステータスを更新して、出力モデルに変換する
         /// </summary>
+        /// <param name="history">ノートブック履歴</param>
         private async Task<IndexOutputModel> GetUpdatedIndexOutputModelAsync(NotebookHistory history)
         {
             var model = new IndexOutputModel(history);
@@ -117,6 +130,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// データ件数を取得する
         /// </summary>
+        /// <param name="filter">検索条件</param>
         private int GetTotalCount(SearchInputModel filter)
         {
             IQueryable<NotebookHistory> histories;
@@ -128,6 +142,8 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 検索条件の追加
         /// </summary>
+        /// <param name="sourceData">加工前の検索結果</param>
+        /// <param name="filter">検索条件</param>
         private static IQueryable<NotebookHistory> Search(IQueryable<NotebookHistory> sourceData, SearchInputModel filter)
         {
             IQueryable<NotebookHistory> data = sourceData;
@@ -145,10 +161,11 @@ namespace Nssol.Platypus.Controllers.spa
         /// 指定されたIDのノートブック履歴の詳細情報を取得。
         /// </summary>
         /// <param name="id">ノートブック履歴ID</param>
+        /// <param name="options">DI用</param>
         [HttpGet("{id}")]
         [Filters.PermissionFilter(MenuCode.Notebook)]
         [ProducesResponseType(typeof(DetailsOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetDetail(long? id)
+        public async Task<IActionResult> GetDetail(long? id, [FromServices] IOptions<ContainerManageOptions> options)
         {
             if (id == null)
             {
@@ -185,7 +202,7 @@ namespace Nssol.Platypus.Controllers.spa
                 //コンテナが正常動作している場合、notebookのエンドポイントを取得
                 if (details.Status.IsRunning())
                 {
-                    model.NotebookEndpoint = await GetNotebookEndpointUrlAsync(notebookHistory.Id, details.EndPoints);
+                    model.NotebookEndpoint = await GetNotebookEndpointUrlAsync(notebookHistory.Id, details.EndPoints, options.Value.WebEndPoint);
                 }
             }
 
@@ -202,8 +219,9 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="historyId">ノートブック履歴ID</param>
         /// <param name="endPoints">エンドポイント</param>
+        /// <param name="webEndpoint">Webエンドポイント</param>
         /// <returns></returns>
-        private async Task<string> GetNotebookEndpointUrlAsync(long historyId, IEnumerable<EndPointInfo> endPoints)
+        private async Task<string> GetNotebookEndpointUrlAsync(long historyId, IEnumerable<EndPointInfo> endPoints, string webEndpoint = null)
         {
             //notebook起動時のログをストレージから取得し、token情報を抜き出す。
             var outputFileName = ".notebook.log";   //値を読み込むファイル名
@@ -218,7 +236,9 @@ namespace Nssol.Platypus.Controllers.spa
                 var nodeEndPoint = endPoints.Where(name => name.Key == "notebook").FirstOrDefault();
                 if (nodeEndPoint != null)
                 {
-                    return "http://" + nodeEndPoint.Url + token;
+                    // リバプロなどでノードのホスト名ではなく、共通のエンドポイントを使える場合は、そちらを使用する
+                    string host = string.IsNullOrEmpty(webEndpoint) ? nodeEndPoint.Host : webEndpoint;
+                    return new UriBuilder("http", host, (int)nodeEndPoint.Port).ToString() + token;
                 }
             }
             return "";
@@ -294,6 +314,10 @@ namespace Nssol.Platypus.Controllers.spa
             notebookHistoryRepository.Delete(notebookHistory);
             unitOfWork.Commit();
 
+            // ストレージ内のノートブックデータを削除する
+            await storageLogic.DeleteResultsAsync(ResourceType.NotebookContainerAttachedFiles, notebookHistory.Id);
+            await storageLogic.DeleteResultsAsync(ResourceType.NotebookContainerOutputFiles, notebookHistory.Id);
+
             return JsonNoContent();
         }
 
@@ -333,11 +357,12 @@ namespace Nssol.Platypus.Controllers.spa
         /// 指定されたノートブック履歴のエンドポイントを取得します。
         /// </summary>
         /// <param name="id">ノートブック履歴ID</param>
+        /// <param name="options">DI用</param>
         /// <returns>ノートブックURL</returns>
         [HttpGet("{id}/endpoint")]
         [Filters.PermissionFilter(MenuCode.Notebook)]
         [ProducesResponseType(typeof(EndPointOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetEndpointAsync(long id)
+        public async Task<IActionResult> GetEndpointAsync(long id, [FromServices] IOptions<ContainerManageOptions> options)
         {
             //データの存在チェック
             var notebookHistory = await notebookHistoryRepository.GetByIdAsync(id);
@@ -366,7 +391,7 @@ namespace Nssol.Platypus.Controllers.spa
                 //コンテナが正常動作している場合、notebookのエンドポイントを取得
                 if (details.Status.IsRunning())
                 {
-                    url = await GetNotebookEndpointUrlAsync(notebookHistory.Id, details.EndPoints);
+                    url = await GetNotebookEndpointUrlAsync(notebookHistory.Id, details.EndPoints, options.Value.WebEndPoint);
                 }
             }
             else
@@ -380,6 +405,8 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 新規にノートブックコンテナを開始する
         /// </summary>
+        /// <param name="model">新規実行内容</param>
+        /// <param name="nodeRepository">DI用</param>
         [HttpPost("run")]
         [Filters.PermissionFilter(MenuCode.Notebook)]
         [ProducesResponseType(typeof(SimpleOutputModel), (int)HttpStatusCode.Created)]
@@ -489,6 +516,27 @@ namespace Nssol.Platypus.Controllers.spa
             if (notebookHistory.OptionDic.ContainsKey("")) //空文字は除外する
             {
                 notebookHistory.OptionDic.Remove("");
+            }
+            // 親学習が指定されていれば存在チェック
+            if (model.ParentIds != null)
+            {
+                var maps = new List<NotebookHistoryParentTrainingMap>();
+
+                foreach (var parentId in model.ParentIds)
+                {
+                    var parent = await trainingHistoryRepository.GetByIdAsync(parentId);
+                    if (parent == null)
+                    {
+                        return JsonNotFound($"Training ID {parentId} is not found.");
+                    }
+                    // ノートブック履歴に親学習を紐づける
+                    var map = notebookHistoryRepository.AttachParentToNotebookAsync(notebookHistory, parent);
+                    if (map != null)
+                    {
+                        maps.Add(map);
+                    }
+                }
+                notebookHistory.ParentTrainingMaps = maps;
             }
             notebookHistoryRepository.Add(notebookHistory);
             unitOfWork.Commit();
@@ -613,6 +661,9 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 指定されたノートブック履歴のコンテナを再起動する
         /// </summary>
+        /// <param name="id">ノートブック履歴ID</param>
+        /// <param name="model">再起動内容</param>
+        /// <param name="nodeRepository">DI用</param>
         [HttpPost("{id}/rerun")]
         [Filters.PermissionFilter(MenuCode.Notebook)]
         [ProducesResponseType(typeof(SimpleOutputModel), (int)HttpStatusCode.Created)]
@@ -624,7 +675,7 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonBadRequest("Invalid inputs.");
             }
             //データの存在チェック
-            var notebookHistory = await notebookHistoryRepository.GetByIdAsync(id.Value);
+            var notebookHistory = await notebookHistoryRepository.GetIncludeAllAsync(id.Value);
             if (notebookHistory == null)
             {
                 return JsonNotFound($"Notebook ID {id} is not found.");
@@ -636,12 +687,12 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             //データセットが指定されていれば存在チェック
-            if (notebookHistory.DataSetId.HasValue)
+            if (model.DataSetId.HasValue)
             {
-                var dataSet = await dataSetRepository.GetByIdAsync(notebookHistory.DataSetId.Value);
+                var dataSet = await dataSetRepository.GetByIdAsync(model.DataSetId.Value);
                 if (dataSet == null)
                 {
-                    return JsonNotFound($"DataSet ID {notebookHistory.DataSetId} is not found.");
+                    return JsonNotFound($"DataSet ID {model.DataSetId} is not found.");
                 }
             }
             if (string.IsNullOrEmpty(notebookHistory.Partition) == false)
@@ -676,7 +727,33 @@ namespace Nssol.Platypus.Controllers.spa
                 }
             }
 
+            // 現状のノートブック履歴IDに紐づいている親学習をすべて外す。
+            notebookHistoryRepository.DetachParentToNotebookAsync(notebookHistory);
+
+            // 親学習が指定されていれば存在チェック
+            if (model.ParentIds != null)
+            {
+                var maps = new List<NotebookHistoryParentTrainingMap>();
+
+                foreach (var parentId in model.ParentIds)
+                {
+                    var parent = await trainingHistoryRepository.GetByIdAsync(parentId);
+                    if (parent == null)
+                    {
+                        return JsonNotFound($"Training ID {parentId} is not found.");
+                    }
+                    // ノートブック履歴に親学習を紐づける
+                    var map = notebookHistoryRepository.AttachParentToNotebookAsync(notebookHistory, parent);
+                    if (map != null)
+                    {
+                        maps.Add(map);
+                    }
+                }
+                notebookHistory.ParentTrainingMaps = maps;
+            }
+
             //コンテナの実行前に、ノートブック履歴を更新する（コンテナの実行に失敗した場合、そのステータスをユーザに表示するため）
+            notebookHistory.DataSetId = model.DataSetId;
             notebookHistory.Cpu = model.Cpu.Value;
             notebookHistory.Memory = model.Memory.Value;
             notebookHistory.Gpu = model.Gpu.Value;
@@ -688,7 +765,7 @@ namespace Nssol.Platypus.Controllers.spa
             notebookHistoryRepository.Update(notebookHistory);
             unitOfWork.Commit();
 
-            var result = await clusterManagementLogic.RunNotebookContainerAsync(notebookHistory);
+            var result = await clusterManagementLogic.RunNotebookContainerAsync(notebookHistory); // TODO:暫定的に親学習はnull
             if (result.IsSuccess == false)
             {
                 //コンテナの起動に失敗した状態。エラーを出力して、保存したノートブック履歴も削除する。

@@ -39,6 +39,8 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories
         /// <summary>
         /// 検索条件に合致するデータを一件取得する
         /// </summary>
+        /// <param name="where">検索条件</param>
+        /// <param name="force">選択中のテナント以外も対象とするか</param>
         NotebookHistory Find(Expression<Func<NotebookHistory, bool>> where, bool force);
 
         /// <summary>
@@ -59,5 +61,18 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories
         /// <param name="completedAt">停止日時</param>
         /// <param name="force">他テナントに対する変更を許可するか</param>
         Task UpdateStatusAsync(long id, ContainerStatus status, DateTime completedAt, bool force);
+
+        /// <summary>
+        /// ノートブック履歴IDに親学習履歴IDを紐づける
+        /// </summary>
+        /// <param name="notebookHistory">ノートブック履歴</param>
+        /// <param name="parent">親学習履歴</param>
+        NotebookHistoryParentTrainingMap AttachParentToNotebookAsync(NotebookHistory notebookHistory, TrainingHistory parent);
+
+        /// <summary>
+        /// ノートブック履歴IDに紐づいている親学習履歴IDを解除する
+        /// </summary>
+        /// <param name="notebookHistory">ノートブック履歴</param>
+        void DetachParentToNotebookAsync(NotebookHistory notebookHistory);
     }
 }

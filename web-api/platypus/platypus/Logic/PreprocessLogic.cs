@@ -16,6 +16,7 @@ namespace Nssol.Platypus.Logic
     {
         private IPreprocessHistoryRepository preprocessHistoryRepository;
         private IDataLogic dataLogic;
+        private IStorageLogic storageLogic;
         private readonly IClusterManagementLogic clusterManagementLogic;
         private IUnitOfWork unitOfWork;
 
@@ -25,12 +26,14 @@ namespace Nssol.Platypus.Logic
         public PreprocessLogic(
             IPreprocessHistoryRepository preprocessHistoryRepository,
             IDataLogic dataLogic,
+            IStorageLogic storageLogic,
             IClusterManagementLogic clusterManagementLogic,
             IUnitOfWork unitOfWork,
             ICommonDiLogic commonDiLogic) : base(commonDiLogic)
         {
             this.preprocessHistoryRepository = preprocessHistoryRepository;
             this.dataLogic = dataLogic;
+            this.storageLogic = storageLogic;
             this.clusterManagementLogic = clusterManagementLogic;
             this.unitOfWork = unitOfWork;
         }
@@ -64,6 +67,9 @@ namespace Nssol.Platypus.Logic
                 await clusterManagementLogic.DeleteContainerAsync(
                     ContainerType.Preprocessing, preprocessHistory.Name, CurrentUserInfo.SelectedTenant.Name, force);
             }
+
+            // ストレージ内の前処理データを削除する
+            await storageLogic.DeleteResultsAsync(ResourceType.PreprocContainerAttachedFiles, preprocessHistory.Id);
 
             return result;
         }

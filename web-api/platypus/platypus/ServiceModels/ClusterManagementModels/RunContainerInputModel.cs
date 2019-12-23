@@ -53,9 +53,14 @@ namespace Nssol.Platypus.ServiceModels.ClusterManagementModels
         public int Gpu { get; set; }
 
         /// <summary>
-        /// コンテナ内の環境変数にセットする変数名と値（複数可）のペア
+        /// Prepare と Fininsh コンテナ内の環境変数にセットする変数名と値（複数可）のペア
         /// </summary>
-        public Dictionary<string, string> EnvList { get; set; }
+        public Dictionary<string, string> PrepareAndFinishContainerEnvList { get; set; }
+
+        /// <summary>
+        /// Main コンテナ内の環境変数にセットする変数名と値（複数可）のペア
+        /// </summary>
+        public Dictionary<string, string> MainContainerEnvList { get; set; }
 
         /// <summary>
         /// 制約のリスト

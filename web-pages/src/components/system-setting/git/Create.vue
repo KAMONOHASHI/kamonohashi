@@ -9,16 +9,17 @@
       <el-form-item label="名前" prop="name">
         <el-input v-model="name"/>
       </el-form-item>
-      <el-form-item label="リポジトリURL" prop="repositoryUrl">
-        <el-input v-model="repositoryUrl"/>
-      </el-form-item>
       <el-form-item label="Git種別" prop="serviceType">
         <el-select v-model="serviceType" style="width: 100%">
           <el-option v-for="(t, idx) in types" :key="idx" :label="t.name" :value="t.id"/>
         </el-select>
       </el-form-item>
+      <el-form-item label="リポジトリURL" prop="repositoryUrl">
+        <el-input v-model="repositoryUrl" @change="handleChange"/>
+      </el-form-item>
       <el-form-item label="API URL" prop="apiUrl">
-        <el-input v-model="apiUrl"/>
+        <el-switch v-model="editApiUrl"/>
+        <el-input v-model="apiUrl" :disabled="!editApiUrl"/>
       </el-form-item>
 
       <el-row class="right-button-group footer">
@@ -46,6 +47,7 @@
         repositoryUrl: undefined,
         serviceType: undefined,
         apiUrl: undefined,
+        editApiUrl: false,
         rules: {
           name: [{
             required: true,
@@ -104,6 +106,11 @@
             }
           }
         })
+      },
+      handleChange () {
+        if (!this.editApiUrl) {
+          this.apiUrl = this.repositoryUrl
+        }
       },
       closeDialog (done) {
         done()

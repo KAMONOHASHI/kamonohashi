@@ -2,6 +2,9 @@
 
 namespace Nssol.Platypus.ApiModels.NotebookApiModels
 {
+    /// <summary>
+    /// ノートブック履歴の編集モデル
+    /// </summary>
     public class EditInputModel
     {
         /// <summary>

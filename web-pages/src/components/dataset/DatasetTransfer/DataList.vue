@@ -62,6 +62,9 @@
             <el-col :span="infoSpanSize" style="text-align: center;">
               <el-popover placement="right" width="500" trigger="hover">
                 <div class="popover">
+                  <div class="right-button-group">
+                    <el-button @click="showData(data)">データ編集</el-button>
+                  </div>
                   <el-row>
                     <el-col :span="15">
                       <pl-display-text label="ID" :value="data.id"/>
@@ -248,6 +251,9 @@
       handleCheck (data) {
         this.$forceUpdate()
       },
+      async showData (data) {
+        this.$router.push('/data/' + data.id)
+      },
       // addとremoveはドラッグ, moveはドロップダウンから呼ばれる
       emitAdd (info) {
         this.$emit('add', info)
@@ -432,4 +438,8 @@
     padding-right: 10px;
   }
 
+  .right-button-group {
+    padding-top: 0px;
+    text-align: right;
+  }
 </style>

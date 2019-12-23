@@ -202,6 +202,40 @@ namespace Nssol.Platypus.Controllers.spa
         }
         #endregion
 
+        #region 接続テナント設定
+        /// <summary>
+        /// テナント管理者が選択可能な登録済みのGitエンドポイント一覧を取得
+        /// </summary>
+        /// <param name="id">テナントID</param>
+        [HttpGet("/api/v1/tenant/{id}/git/endpoints")]
+        [Filters.PermissionFilter(MenuCode.TenantSetting)]
+        [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
+        public IActionResult GetAllForTenant(long? id)
+        {
+            if (id == null)
+            {
+                return JsonBadRequest("Tenant ID is required.");
+            }
+
+            Tenant tenant = tenantRepository.Get(id.Value);
+            if (tenant == null)
+            {
+                return JsonNotFound($"Tenant Id {id.Value} is not found.");
+            }
+
+            // 編集不可の全Git情報を取得
+            var gitNotEditableEndpoints = gitRepository.GetGitAll().Where(g => g.IsNotEditable == true);
+
+            // 指定したテナントに紐づく全Git情報を取得
+            var gitEndpointsForTenant = gitRepository.GetGitAll(id.Value);
+
+            // 重複を除き結合する
+            var gitEndpoints = gitNotEditableEndpoints.Union(gitEndpointsForTenant).OrderBy(g => g.Id);
+
+            return JsonOK(gitEndpoints.Select(g => new IndexOutputModel(g)));
+        }
+        #endregion
+
         #region Gitリポジトリアクセス
         /// <summary>
         /// 全てのリポジトリを取得する

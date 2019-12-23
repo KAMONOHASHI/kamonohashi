@@ -76,7 +76,8 @@
     },
     methods: {
       async getTrainingHistoriesToMount () {
-        this.trainingHistoriesToMount = (await api.training.getMount()).data
+        let params = {'status': ['Completed', 'UserCanceled']}
+        this.trainingHistoriesToMount = (await api.training.getMount(params)).data
       },
       async onChange (parent) {
         if (parent.id) {

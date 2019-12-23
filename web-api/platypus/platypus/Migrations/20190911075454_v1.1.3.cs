@@ -1,4 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Nssol.Platypus.Infrastructure;
+using Nssol.Platypus.Infrastructure.Types;
+using System;
 using System.Text;
 
 namespace Nssol.Platypus.Migrations
@@ -43,6 +46,14 @@ namespace Nssol.Platypus.Migrations
             query.AppendLine("	);");
 
             migrationBuilder.Sql(query.ToString());
+
+            // 共通変数
+            string adminUser = ApplicationConst.DefaultFirstAdminUserName;
+            DateTime now = DateTime.Now;
+
+            // GitにGitLab.comを編集不可で登録
+            migrationBuilder.Sql($"INSERT INTO \"Gits\" (\"Id\", \"CreatedBy\", \"CreatedAt\", \"ModifiedBy\", \"ModifiedAt\", \"Name\", \"ServiceType\", \"ApiUrl\", \"Token\", \"RepositoryUrl\", \"IsNotEditable\") SELECT nextval('\"Gits_Id_seq\"'), '{adminUser}', '{now}', '{adminUser}', '{now}', 'GitLab.com', {(int)GitServiceType.GitLabCom}, 'https://gitlab.com', null, 'https://gitlab.com', true;");
+
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -54,6 +65,9 @@ namespace Nssol.Platypus.Migrations
             migrationBuilder.DropColumn(
                 name: "Zip",
                 table: "InferenceHistories");
+
+            // Gitから ServiceTypeがGitLabCom 且つ 編集不可 のレコードを削除
+            migrationBuilder.Sql($"DELETE FROM \"Gits\" WHERE \"ServiceType\" = {(int)GitServiceType.GitLabCom} AND \"IsNotEditable\" = true;");
         }
     }
 }

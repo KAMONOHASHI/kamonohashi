@@ -34,7 +34,7 @@ namespace Nssol.Platypus.Logic
                 TrainingMenu,
                 InferenceMenu,
 
-                //TenantSettingMenu,
+                TenantSettingMenu,
                 //TenantRoleMenu,
                 TenantUserMenu,
                 //TenantMenuAccessMenu,
@@ -549,7 +549,7 @@ namespace Nssol.Platypus.Logic
                 Category = "pl-tenant-setting",
                 Children = new List<MenuItemInfo>()
                 {
-                    //TenantSettingMenu,
+                    TenantSettingMenu,
                     //TenantRoleMenu,
                     TenantUserMenu,
                     //TenantMenuAccessMenu,

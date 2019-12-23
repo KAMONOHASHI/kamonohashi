@@ -164,7 +164,7 @@
         await this.retrieveData()
       },
       async showConfirm () {
-        let confirmMessage = '学習履歴を ' + this.multipleSelection.length + ' 件削除しますか。'
+        let confirmMessage = '学習履歴を ' + this.multipleSelection.length + ' 件削除しますか（出力データ数が多い場合、処理に時間がかかります）'
         await this.$confirm(confirmMessage, 'Warning', {
           distinguishCancelAndClose: true,
           confirmButtonText: 'はい',

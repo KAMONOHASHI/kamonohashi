@@ -7,14 +7,36 @@ using System.Globalization;
 
 namespace Nssol.Platypus.ApiModels.NotebookApiModels
 {
+    /// <summary>
+    /// ノートブック履歴の詳細情報モデル
+    /// </summary>
     public class DetailsOutputModel : IndexOutputModel
     {
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="history">ノートブック履歴</param>
         public DetailsOutputModel(NotebookHistory history) : base(history)
         {
             Key = history.Key;
             if (history.DataSet != null) {
                 DataSet = new DataSetApiModels.IndexOutputModel(history.DataSet);
             }
+
+            if (history.ParentTrainingMaps != null)
+            {
+                Parents = new List<TrainingApiModels.IndexOutputModel>();
+                foreach (var parentTrainingMaps in history.ParentTrainingMaps)
+                {
+                    var parent = new TrainingApiModels.IndexOutputModel(parentTrainingMaps.Parent);
+                    Parents.Add(parent);
+                }
+                Parents.Sort(delegate(TrainingApiModels.IndexOutputModel parent1, TrainingApiModels.IndexOutputModel parent2) 
+                {
+                    return parent1.Id.CompareTo(parent2.Id);
+                });
+            }
+
             Options = new List<KeyValuePair<string, string>>();
             GitModel = new GitCommitOutputModel()
             {
@@ -64,6 +86,11 @@ namespace Nssol.Platypus.ApiModels.NotebookApiModels
         /// データセット
         /// </summary>
         public DataSetApiModels.IndexOutputModel DataSet { get; set; }
+
+        /// <summary>
+        /// 親学習履歴
+        /// </summary>
+        public List<TrainingApiModels.IndexOutputModel> Parents { get; set; }
 
         /// <summary>
         /// ノートブックモデルGit情報

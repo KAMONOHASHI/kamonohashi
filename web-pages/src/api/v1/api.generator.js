@@ -2121,6 +2121,51 @@ export const ApiV1AdminGitEndpointsByIdDeleteURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * テナント管理者が選択可能な登録済みのGitエンドポイント一覧を取得
+ * request: ApiV1TenantByIdGitEndpointsGet
+ * url: ApiV1TenantByIdGitEndpointsGetURL
+ * method: ApiV1TenantByIdGitEndpointsGet_TYPE
+ * raw_url: ApiV1TenantByIdGitEndpointsGet_RAW_URL
+ * @param id - テナントID
+ */
+export const ApiV1TenantByIdGitEndpointsGet = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v1/tenant/{id}/git/endpoints'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV1TenantByIdGitEndpointsGet_RAW_URL = function() {
+  return '/api/v1/tenant/{id}/git/endpoints'
+}
+export const ApiV1TenantByIdGitEndpointsGet_TYPE = function() {
+  return 'get'
+}
+export const ApiV1TenantByIdGitEndpointsGetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v1/tenant/{id}/git/endpoints'
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * 全てのリポジトリを取得する
  * request: ApiV1GitByGitIdReposGet
  * url: ApiV1GitByGitIdReposGetURL
@@ -4078,7 +4123,7 @@ export const ApiV1NotebookByIdEndpointGetURL = function(parameters = {}) {
  * url: ApiV1NotebookRunPostURL
  * method: ApiV1NotebookRunPost_TYPE
  * raw_url: ApiV1NotebookRunPost_RAW_URL
- * @param model - 
+ * @param model - 新規実行内容
  */
 export const ApiV1NotebookRunPost = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -4226,8 +4271,8 @@ export const ApiV1NotebookByIdHaltPostURL = function(parameters = {}) {
  * url: ApiV1NotebookByIdRerunPostURL
  * method: ApiV1NotebookByIdRerunPost_TYPE
  * raw_url: ApiV1NotebookByIdRerunPost_RAW_URL
- * @param id - 
- * @param model - 
+ * @param id - ノートブック履歴ID
+ * @param model - 再起動内容
  */
 export const ApiV1NotebookByIdRerunPost = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -5363,6 +5408,51 @@ export const ApiV1AdminRegistryEndpointsByIdDeleteURL = function(parameters = {}
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v1/admin/registry/endpoints/{id}'
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * テナント管理者が選択可能な登録済みのDockerレジストリ エンドポイント一覧を取得
+ * request: ApiV1TenantByIdRegistryEndpointsGet
+ * url: ApiV1TenantByIdRegistryEndpointsGetURL
+ * method: ApiV1TenantByIdRegistryEndpointsGet_TYPE
+ * raw_url: ApiV1TenantByIdRegistryEndpointsGet_RAW_URL
+ * @param id - テナントID
+ */
+export const ApiV1TenantByIdRegistryEndpointsGet = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v1/tenant/{id}/registry/endpoints'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV1TenantByIdRegistryEndpointsGet_RAW_URL = function() {
+  return '/api/v1/tenant/{id}/registry/endpoints'
+}
+export const ApiV1TenantByIdRegistryEndpointsGet_TYPE = function() {
+  return 'get'
+}
+export const ApiV1TenantByIdRegistryEndpointsGetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v1/tenant/{id}/registry/endpoints'
   path = path.replace('{id}', `${parameters['id']}`)
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -7365,6 +7455,7 @@ export const ApiV1TrainingGetURL = function(parameters = {}) {
  * url: ApiV1TrainingMountGetURL
  * method: ApiV1TrainingMountGet_TYPE
  * raw_url: ApiV1TrainingMountGet_RAW_URL
+ * @param status - ステータス
  */
 export const ApiV1TrainingMountGet = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -7373,6 +7464,9 @@ export const ApiV1TrainingMountGet = function(parameters = {}) {
   let body
   let queryParameters = {}
   let form = {}
+  if (parameters['status'] !== undefined) {
+    queryParameters['Status'] = parameters['status']
+  }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]
@@ -7390,6 +7484,9 @@ export const ApiV1TrainingMountGetURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v1/training/mount'
+  if (parameters['status'] !== undefined) {
+    queryParameters['Status'] = parameters['status']
+  }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]

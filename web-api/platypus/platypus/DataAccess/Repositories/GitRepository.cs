@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Nssol.Platypus.DataAccess.Core;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces;
 using Nssol.Platypus.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -80,10 +81,10 @@ namespace Nssol.Platypus.DataAccess.Repositories
                         UserId = userMap.UserId,
                     };
 
-                    //既に同じGitと紐づいていたら、その認証情報を使いまわす
+                    //認証情報が空欄のものをはじく
                     var existMap = GetModelAll<UserTenantGitMap>().Include(m => m.TenantGitMap)
-                        .Where(m => m.UserId == userMap.UserId && m.TenantGitMap.GitId == git.Id).FirstOrDefault();
-                    if (existMap != null)
+                        .Where(m => m.UserId == userMap.UserId && m.TenantGitMap.GitId == git.Id && !String.IsNullOrEmpty(m.GitToken)).FirstOrDefault();
+                    if (existMap != null && !String.IsNullOrEmpty(existMap.GitToken))
                     {
                         utgMap.GitToken = existMap.GitToken;
                     }
