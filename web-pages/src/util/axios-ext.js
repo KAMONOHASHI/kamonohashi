@@ -120,9 +120,7 @@ export function axiosErrorHandlingInterceptors ($axios, errorCallback) {
             typeof error.response.data === 'object' &&
             'title' in error.response.data) {
             if (!error.config.apiDisabledError) {
-              let title = error.response.data.title
-              let detail = error.response.data.detail
-              let msg = (detail) ? title + '<br />' + detail : title
+              let msg = error.response.data.title
               vue.$notify.error({title: 'エラーが発生しました', dangerouslyUseHTMLString: true, message: msg})
             } else {
               if (status === 500) { // internal server error

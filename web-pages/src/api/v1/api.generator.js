@@ -4123,7 +4123,7 @@ export const ApiV1NotebookByIdEndpointGetURL = function(parameters = {}) {
  * url: ApiV1NotebookRunPostURL
  * method: ApiV1NotebookRunPost_TYPE
  * raw_url: ApiV1NotebookRunPost_RAW_URL
- * @param model - 
+ * @param model - 新規実行内容
  */
 export const ApiV1NotebookRunPost = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -4271,8 +4271,8 @@ export const ApiV1NotebookByIdHaltPostURL = function(parameters = {}) {
  * url: ApiV1NotebookByIdRerunPostURL
  * method: ApiV1NotebookByIdRerunPost_TYPE
  * raw_url: ApiV1NotebookByIdRerunPost_RAW_URL
- * @param id - 
- * @param model - 
+ * @param id - ノートブック履歴ID
+ * @param model - 再起動内容
  */
 export const ApiV1NotebookByIdRerunPost = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -7455,6 +7455,7 @@ export const ApiV1TrainingGetURL = function(parameters = {}) {
  * url: ApiV1TrainingMountGetURL
  * method: ApiV1TrainingMountGet_TYPE
  * raw_url: ApiV1TrainingMountGet_RAW_URL
+ * @param status - ステータス
  */
 export const ApiV1TrainingMountGet = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -7463,6 +7464,9 @@ export const ApiV1TrainingMountGet = function(parameters = {}) {
   let body
   let queryParameters = {}
   let form = {}
+  if (parameters['status'] !== undefined) {
+    queryParameters['Status'] = parameters['status']
+  }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]
@@ -7480,6 +7484,9 @@ export const ApiV1TrainingMountGetURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v1/training/mount'
+  if (parameters['status'] !== undefined) {
+    queryParameters['Status'] = parameters['status']
+  }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]

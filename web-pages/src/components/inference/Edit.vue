@@ -143,11 +143,10 @@
                   <el-input v-model="downloadFilesCommand" :readonly="true"/>
             </el-form-item >
             <el-form-item label="結果Zip圧縮">
-              <el-switch v-model="zip"
-                          style="width: 100%;"
-                          inactive-text="圧縮しない"
-                          active-text="圧縮する"
-                          disabled/>
+              <div class="el-input">
+                <span v-if="zip">圧縮する</span>
+                <span v-else>圧縮しない</span>
+              </div>
             </el-form-item>
 
             <el-form-item label="添付ファイル">
@@ -167,7 +166,7 @@
 
         <el-row :gutter="20" class="footer">
           <el-col :span="12">
-            <pl-delete-button @delete="deleteInferenceJob"/>
+            <pl-delete-button @delete="deleteInferenceJob" message="削除しますか（出力データ数が多い場合、処理に時間がかかります）"/>
           </el-col>
           <el-col class="right-button-group" :span="12">
             <el-button @click="emitCancel">キャンセル</el-button>

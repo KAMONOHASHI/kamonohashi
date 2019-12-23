@@ -402,11 +402,7 @@ namespace Nssol.Platypus.Controllers.spa
                 foreach (var map in maps)
                 {
                     //レジストリを登録
-                    var registryResult = await clusterManagementLogic.RegistRegistryToTenantAsync(tenant.Name, map);
-                    if (registryResult == false)
-                    {
-                        return JsonError(HttpStatusCode.ServiceUnavailable, "Couldn't map the tenant and the registry in a cluster management service. Please contact a user administrator.");
-                    }
+                    await clusterManagementLogic.RegistRegistryToTenantAsync(tenant.Name, map);
                 }
             }
 

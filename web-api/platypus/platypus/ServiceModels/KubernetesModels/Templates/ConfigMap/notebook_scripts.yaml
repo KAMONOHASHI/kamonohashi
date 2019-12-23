@@ -7,7 +7,10 @@ data:
   prepare: |
     bash /kqi/scripts/common/show-logo
     bash /kqi/scripts/common/prepare-kqi-conf
-    bash /kqi/scripts/common/prepare-git
+
+    if [ -n "$MODEL_REPOSITORY" ] || [ -n "$MODEL_REPOSITORY_URL" ] || [ -n "$COMMIT_ID" ]; then
+        bash /kqi/scripts/common/prepare-git
+    fi
     
     if [ -n "$DATASET_ID" ]; then
         echo "------------------------- [KAMONOHASHI Prepare] deploy dataset $DATASET_ID into /kqi/input . -------------------------"
@@ -25,4 +28,7 @@ data:
     jupyter lab --ip=0.0.0.0 --allow-root --notebook-dir=/kqi/ --no-browser > /kqi/attach/.notebook.log 2>&1 &
     bash /kqi/scripts/common/wait-ready
   finish: |
-    tail -f /dev/null   
+    bash /kqi/scripts/common/prepare-kqi-conf
+    sleep $EXPIRES_IN
+    echo "------------------------- [KAMONOHASHI Finish] -------------------------"
+    kqi notebook halt $NOTEBOOK_ID

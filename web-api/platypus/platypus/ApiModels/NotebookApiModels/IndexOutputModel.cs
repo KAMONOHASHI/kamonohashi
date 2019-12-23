@@ -7,6 +7,10 @@ namespace Nssol.Platypus.ApiModels.NotebookApiModels
     /// </summary>
     public class IndexOutputModel : SimpleOutputModel
     {
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="history">ノートブック履歴</param>
         public IndexOutputModel(NotebookHistory history) : base(history)
         {
         }
