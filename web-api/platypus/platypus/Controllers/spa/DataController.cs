@@ -208,7 +208,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPut("{id}")]
         [Filters.PermissionFilter(MenuCode.Data)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> EditData(long? id, [FromBody]EditInputModel model)
+        public async Task<IActionResult> EditData(long? id, [FromBody]EditInputModel model, [FromServices] ITagRepository tagRepository)
         {
             //データの入力チェック
             if (!ModelState.IsValid || !id.HasValue)
@@ -249,7 +249,13 @@ namespace Nssol.Platypus.Controllers.spa
                 }
             }
 
-            // DBへのコミット
+            // DBへの編集内容を一旦確定させるためコミット
+            unitOfWork.Commit();
+
+            // 未使用タグ削除
+            tagRepository.DeleteUnUsedTags();
+
+            // DBへタグ削除結果のコミット
             unitOfWork.Commit();
 
             return JsonOK(new IndexOutputModel(data));
@@ -446,7 +452,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpDelete("{id}")]
         [Filters.PermissionFilter(MenuCode.Data)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        public async Task<IActionResult> DeleteDataAsync(long? id, [FromServices] IDataSetRepository dataSetRepository)
+        public async Task<IActionResult> DeleteDataAsync(long? id, [FromServices] IDataSetRepository dataSetRepository, ITagRepository tagRepository)
         {
             if (id == null)
             {
@@ -469,7 +475,13 @@ namespace Nssol.Platypus.Controllers.spa
             // 削除処理
             bool result = await dataLogic.DeleteDataAsync(id.Value);
 
-            // 結果に関わらずコミット
+            // DBへの編集内容を一旦確定させるためコミット
+            unitOfWork.Commit();
+
+            // 未使用タグ削除
+            tagRepository.DeleteUnUsedTags();
+
+            // DBへタグ削除結果のコミット
             unitOfWork.Commit();
 
             if (result)
