@@ -205,6 +205,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="id">変更対象のデータID</param>
         /// <param name="model">変更内容</param>
+        /// <param name="tagRepository">Di用</param>
         [HttpPut("{id}")]
         [Filters.PermissionFilter(MenuCode.Data)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.OK)]
@@ -449,10 +450,11 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="id">データID</param>
         /// <param name="dataSetRepository">Di用</param>
+        /// <param name="tagRepository">Di用</param>
         [HttpDelete("{id}")]
         [Filters.PermissionFilter(MenuCode.Data)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        public async Task<IActionResult> DeleteDataAsync(long? id, [FromServices] IDataSetRepository dataSetRepository, ITagRepository tagRepository)
+        public async Task<IActionResult> DeleteDataAsync(long? id, [FromServices] IDataSetRepository dataSetRepository, [FromServices] ITagRepository tagRepository)
         {
             if (id == null)
             {
