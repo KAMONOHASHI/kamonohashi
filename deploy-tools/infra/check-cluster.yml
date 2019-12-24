@@ -1,0 +1,107 @@
+- name: check all server
+  hosts: all
+  tasks:
+    - name: get current time
+      shell: date +"%Y%m%d%H%M"
+      register: current_time
+      changed_when: false
+
+    - name: check current time
+      assert:
+        fail_msg: "Synchronize time on each machine. This machine current time: {{ current_time.stdout }}"
+        success_msg: "This machine current time: {{ current_time.stdout }}"
+        that:
+          - current_time.stdout|int <= local_current_time|int + 1
+          - current_time.stdout|int >= local_current_time|int - 1
+
+    - name: check os
+      assert:
+        fail_msg: "Only on Ubuntu 16.04 or later"
+        success_msg: "{{ ansible_distribution }} {{ ansible_distribution_version }}"
+        that:
+          - ansible_distribution == 'Ubuntu'
+          - ansible_distribution_version|float >= 16.04
+
+- name: check kqi node
+  hosts: kqi-node
+  tasks:
+    - name: check CPU core
+      assert:
+        fail_msg: "CPU requires 4 core or more. CPU core: {{ ansible_processor_cores }}"
+        success_msg: "CPU core: {{ ansible_processor_cores }}"
+        that:
+          - ansible_processor_cores >= 4
+
+    - name: check memory
+      assert:
+        fail_msg: "Memory requires 8 GB or more. Memory: {{ ansible_memory_mb.real.total }}"
+        success_msg: "Memory: {{ ansible_memory_mb.real.total }}"
+        that:
+          - ansible_memory_mb.real.total >= 8 * 1024
+
+    - name: get /var/lib available
+      shell: df /var/lib | grep -v Filesystem | awk '{print $4}'
+      register: var_lib_available
+      changed_when: false
+
+    - name: check /var/lib available
+      assert:
+        fail_msg: "/var/lib requires 10 GB or more. /var/lib available: {{ var_lib_available.stdout }}"
+        success_msg: "/var/lib available: {{ var_lib_available.stdout }}"
+        that:
+          - var_lib_available.stdout|int >= 10 * 1024 * 1024
+
+- name: check kubernetes master
+  hosts: kube-master
+  tasks:
+    - name: check CPU core
+      assert:
+        fail_msg: "CPU requires 2 core or more. CPU core: {{ ansible_processor_cores }}"
+        success_msg: "CPU core: {{ ansible_processor_cores }}"
+        that:
+          - ansible_processor_cores >= 2
+
+    - name: check memory
+      assert:
+        fail_msg: "Memory requires 2 GB or more. Memory: {{ ansible_memory_mb.real.total }}"
+        success_msg: "Memory: {{ ansible_memory_mb.real.total }}"
+        that:
+          - ansible_memory_mb.real.total >= 2 * 1024
+
+- name: check object storage
+  hosts: object-storage
+  tasks:
+    - name: check CPU core
+      assert:
+        fail_msg: "CPU requires 1 core or more. CPU core: {{ ansible_processor_cores }}"
+        success_msg: "CPU core: {{ ansible_processor_cores }}"
+        that:
+          - ansible_processor_cores >= 1
+
+    - name: check memory
+      assert:
+        fail_msg: "Memory requires 2 GB or more. Memory: {{ ansible_memory_mb.real.total }}"
+        success_msg: "Memory: {{ ansible_memory_mb.real.total }}"
+        that:
+          - ansible_memory_mb.real.total >= 2 * 1024
+
+- name: check gpu node
+  hosts: gpu-node
+  tasks:
+    - name: nvidia-smi works correctly
+      shell: "test $(nvidia-smi -L | wc -l) -gt 0"
+      changed_when: false
+
+    - name: check CPU core
+      assert:
+        fail_msg: "CPU requires 2 core or more. CPU core: {{ ansible_processor_cores }}"
+        success_msg: "CPU core: {{ ansible_processor_cores }}"
+        that:
+          - ansible_processor_cores >= 2
+
+    - name: check memory
+      assert:
+        fail_msg: "Memory requires 2 GB or more. Memory: {{ ansible_memory_mb.real.total }}"
+        success_msg: "Memory: {{ ansible_memory_mb.real.total }}"
+        that:
+          - ansible_memory_mb.real.total >= 2 * 1024
