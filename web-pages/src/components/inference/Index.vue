@@ -13,7 +13,7 @@
         />
       </el-col>
       <el-col class="right-top-button" :span="8">
-        <el-button v-if="multipleSelection.length!==0" @click="showConfirm">一括削除</el-button>
+        <el-button v-if="multipleSelection.length !== 0" @click="showConfirm">一括削除</el-button>
         <el-button @click="openCreateDialog()" icon="el-icon-edit-outline" type="primary" plain>
           新規実行
         </el-button>
@@ -113,7 +113,6 @@
         total: 0,
         currentPage: 1,
         currentPageSize: 10,
-        entryPoint: undefined,
         multipleSelection: [],
         tableData: []
       }
