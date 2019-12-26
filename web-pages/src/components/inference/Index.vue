@@ -13,6 +13,7 @@
         />
       </el-col>
       <el-col class="right-top-button" :span="8">
+        <el-button v-if="multipleSelection.length !== 0" @click="showConfirm">一括削除</el-button>
         <el-button @click="openCreateDialog()" icon="el-icon-edit-outline" type="primary" plain>
           新規実行
         </el-button>
@@ -25,7 +26,8 @@
     </el-row>
 
     <el-row>
-      <el-table class="data-table pl-index-table" :data="tableData" @row-click="openEditDialog" border>
+      <el-table class="data-table pl-index-table" :data="tableData" @row-click="openEditDialog" @selection-change="handleSelectionChange" border>
+        <el-table-column type="selection" width="55px"></el-table-column>
         <el-table-column width="25px">
           <div slot-scope="scope">
             <i class="el-icon-star-on favorite" v-if="scope.row.favorite"></i>
@@ -111,7 +113,7 @@
         total: 0,
         currentPage: 1,
         currentPageSize: 10,
-
+        multipleSelection: [],
         tableData: []
       }
     },
@@ -155,6 +157,10 @@
       log (id) {
         this.$router.push('/inference/' + id + '/log')
       },
+      // checkboxの要素変更
+      handleSelectionChange (val) {
+        this.multipleSelection = val
+      },
       // ページのサイズ(表示件数)変更
       async handleSizeChange (size) {
         this.currentPageSize = size
@@ -172,6 +178,38 @@
       async search () {
         this.currentPage = 1
         await this.retrieveData()
+      },
+      async showConfirm () {
+        let confirmMessage = '推論履歴を ' + this.multipleSelection.length + ' 件削除しますか（出力データ数が多い場合、処理に時間がかかります）'
+        await this.$confirm(confirmMessage, 'Warning', {
+          distinguishCancelAndClose: true,
+          confirmButtonText: 'はい',
+          cancelButtonText: 'キャンセル',
+          type: 'warning'
+        })
+        .then(() => {
+          this.deleteInferenceJob() // 削除を実施
+        })
+        .catch(() => {
+          // キャンセル時はなにもしないので例外を無視
+        })
+      },
+      async deleteInferenceJob () {
+        let successCount = 0
+        for (let i = 0; i < this.multipleSelection.length; i++) {
+          try {
+            await api.inference.deleteById({id: this.multipleSelection[i].id})
+            successCount++
+            this.error = null
+          } catch (e) {
+            this.error = e
+          }
+        }
+        await this.$notify.info({
+          type: 'info',
+          message: '推論履歴を削除しました。(成功：' + successCount + ' 件、 失敗：' + (this.multipleSelection.length - successCount) + ' 件)'
+        })
+        this.currentChange(1)
       }
     }
   }
