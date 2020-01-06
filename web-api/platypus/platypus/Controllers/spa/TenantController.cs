@@ -71,7 +71,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="id">テナントID</param>
         [HttpGet("{id}")]
-        [PermissionFilter(MenuCode.Tenant)]
+        [PermissionFilter(MenuCode.Tenant, MenuCode.TenantSetting)]
         [ProducesResponseType(typeof(DetailsOutputModel), (int)HttpStatusCode.OK)]
         public IActionResult GetDetails(long? id)
         {
@@ -265,7 +265,7 @@ namespace Nssol.Platypus.Controllers.spa
                     else
                     {
                         // サンドボックステナントを DefaultTenant とする
-                        userRepository.AttachSandbox(user, false);
+                        userRepository.AttachSandbox(user);
                     }
                 }
                 // 更新したユーザ ID を結果データとして返却
@@ -325,7 +325,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// テナント情報の編集
         /// </summary>
         [HttpPut("{id}")]
-        [PermissionFilter(MenuCode.Tenant)]
+        [PermissionFilter(MenuCode.Tenant, MenuCode.TenantSetting)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> Edit(long? id, [FromBody]EditInputModel model)
         {

@@ -98,37 +98,13 @@ namespace Nssol.Platypus.Logic
                 if(user == null)
                 {
                     //ログインに成功したが、ユーザ存在しない（＝LDAPの新規ログイン＝ユーザを作成する）
-                    AddLdapUser(userName);
+                    userRepository.AddLdapUser(userName);
+                    unitOfWork.Commit(userName);
                 }
 
                 claims = result.Value;
             }
             return await AuthorizeAsync(userName, claims, tenantId);
-        }
-
-        private void AddLdapUser(string userName)
-        {
-            var tenant = tenantRepository.GetFromTenantName(ApplicationConst.DefaultFirstTenantName);
-            var user = new User()
-            {
-                Name = userName,
-                ServiceType = AuthServiceType.Ldap,
-                DefaultTenantId = tenant.Id
-            };
-            userRepository.AddUser(user);
-            // 一旦、コミット
-            unitOfWork.Commit(userName);
-            // UserID が確定されたエントリを再取得
-            var createdUser = userRepository.GetUser(userName);
-
-            // Entity Framework のモデルを正しく定義すれば、一旦のコミットは不要
-            // 将来的にはモデルを正しく定義して一括コミットにするべき
-
-            // sandbox への attach
-            // ClustermanagerLogic の RegistRegistryToTenantAsync() は呼び出さない
-            //  （デフォルトの Registry のパスワードが設定されていない状態だがら）
-            userRepository.AttachSandbox(createdUser, false);
-            unitOfWork.Commit(userName);
         }
 
         /// <summary>

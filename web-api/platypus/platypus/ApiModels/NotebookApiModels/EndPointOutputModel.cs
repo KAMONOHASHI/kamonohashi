@@ -5,6 +5,10 @@
     /// </summary>
     public class EndPointOutputModel
     {
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="url">エンドポイントURL</param>
         public EndPointOutputModel(string url)
         {
             Url = url;

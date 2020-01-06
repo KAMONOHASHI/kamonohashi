@@ -49,9 +49,11 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
         /// <param name="id">ノートブック履歴ID</param>
         public async Task<NotebookHistory> GetIncludeAllAsync(long id)
         {
-            return await FindAll(t => t.Id == id).Include(t => t.DataSet)
-                .Include(t => t.ContainerRegistry)
-                .SingleOrDefaultAsync();
+            return await FindAll(t => t.Id == id)
+                            .Include(t => t.DataSet)
+                            .Include(t => t.ContainerRegistry)
+                            .Include(t => t.ParentTrainingMaps).ThenInclude(map => map.Parent).ThenInclude(p => p.DataSet)
+                            .SingleOrDefaultAsync();
         }
 
         /// <summary>
@@ -67,6 +69,8 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
         /// <summary>
         /// 検索条件に合致するデータを一件取得する
         /// </summary>
+        /// <param name="where">検索条件</param>
+        /// <param name="force">選択中のテナント以外も対象とするか</param>
         public NotebookHistory Find(Expression<Func<NotebookHistory, bool>> where, bool force)
         {
             return FindModel<NotebookHistory>(where, force);
@@ -122,6 +126,38 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
         public override void Delete(NotebookHistory entity)
         {
             base.Delete(entity);
+        }
+
+        /// <summary>
+        /// ノートブック履歴IDに親学習履歴IDを紐づける
+        /// </summary>
+        /// <param name="notebookHistory">ノートブック履歴</param>
+        /// <param name="parent">親学習履歴</param>
+        public NotebookHistoryParentTrainingMap AttachParentToNotebookAsync(NotebookHistory notebookHistory, TrainingHistory parent)
+        {
+            if (parent == null)
+            {
+                //指定がなければ何もしない
+                return null;
+            }
+
+            NotebookHistoryParentTrainingMap map = new NotebookHistoryParentTrainingMap()
+            {
+                NotebookHistoryId = notebookHistory.Id,
+                ParentId = parent.Id
+            };
+
+            AddModel(map);
+            return map;
+        }
+
+        /// <summary>
+        /// ノートブック履歴IDに紐づいている親学習履歴IDを解除する
+        /// </summary>
+        /// <param name="notebookHistory">ノートブック履歴</param>
+        public void DetachParentToNotebookAsync(NotebookHistory notebookHistory)
+        {
+            DeleteModelAll<NotebookHistoryParentTrainingMap>(map => map.NotebookHistoryId == notebookHistory.Id);
         }
     }
 }
