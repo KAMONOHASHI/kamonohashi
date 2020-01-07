@@ -58,6 +58,22 @@ ask_ssh_conf(){
 
 ask_admin_conf(){
   echo -en "\e[33mKAMONOHASHIのadminパスワード(8文字以上): \e[m"; read -s PASSWORD  
+  echo "" # read -sは改行しないので改行 
+  echo -en "\e[33m確認のためadminパスワードをもう一度入力してください: \e[m"; read -s PASSWORD_2
+  echo "" # read -sは改行しないので改行 
+}
+
+check_admin_password(){
+  if [ $PASSWORD != $PASSWORD_2 ]; then
+    echo "ERROR: KAMONOHASHIのadminパスワードと再入力パスワードが一致しません。"
+    exit 1
+  elif [ ${#PASSWORD} -lt 8 ]; then
+    echo "ERROR: KAMONOHASHIのadminパスワードは8文字以上を入力してください。"
+    exit 1
+  elif expr $PASSWORD : "[0-9]*" > /dev/null; then
+    echo "ERROR: KAMONOHASHIのadminパスワードは数字のみの設定はできません。"
+    exit 1
+  fi
 }
 
 ask_proxy_conf(){
@@ -211,6 +227,7 @@ deploy(){
   fi
   
   ask_conf
+  check_admin_password
   generate_conf
 
   export http_proxy=$HTTP_PROXY
