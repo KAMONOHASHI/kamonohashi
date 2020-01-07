@@ -1,0 +1,5 @@
+- name: check memory
+  assert:
+    fail_msg: "insufficient memory: at minimum {{ memory }}GB memory is required"
+    that:
+      - ansible_memory_mb.real.total >= {{ memory }} * 1024

@@ -1,0 +1,2 @@
+- include_tasks: cpu.yml
+- include_tasks: memory.yml

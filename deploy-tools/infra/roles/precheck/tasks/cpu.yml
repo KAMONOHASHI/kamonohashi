@@ -1,0 +1,5 @@
+- name: check CPU core
+  assert:
+    fail_msg: "insufficient CPU: at minimum {{ cpu }} core is required"
+    that:
+      - ansible_processor_cores >= {{ cpu }}
