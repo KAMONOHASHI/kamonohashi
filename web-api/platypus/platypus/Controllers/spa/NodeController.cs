@@ -172,12 +172,23 @@ namespace Nssol.Platypus.Controllers.spa
                     {
                         foreach (long tenantId in model.AssignedTenantIds)
                         {
-                            if (tenantRepository.Get(tenantId) == null)
+                            Tenant tenant = tenantRepository.Get(tenantId);
+                            if (tenant == null)
                             {
                                 return JsonNotFound($"Tenant ID {tenantId} is not found.");
                             }
+                            await clusterManagementLogic.UpdateTenantEnabledLabelAsync(node.Name, tenant.Name, true);
                         }
                         nodeRepository.AssignTenants(node, model.AssignedTenantIds, true);
+                    }
+                }
+                else
+                {
+                    // アクセスレベルが "Public" の場合、全てのテナントをアサイン
+                    var tenants = tenantRepository.GetAllTenants();
+                    foreach (Tenant tenant in tenants)
+                    {
+                        await clusterManagementLogic.UpdateTenantEnabledLabelAsync(node.Name, tenant.Name, true);
                     }
                 }
             }
@@ -241,18 +252,45 @@ namespace Nssol.Platypus.Controllers.spa
                     //まずは全てのアサイン情報を削除する
                     nodeRepository.ResetAssinedTenants(node.Id);
 
+                    // 全てのアサイン情報を削除する
+                    var tenants = tenantRepository.GetAllTenants();
+                    foreach (Tenant tenant in tenants)
+                    {
+                        await clusterManagementLogic.UpdateTenantEnabledLabelAsync(node.Name, tenant.Name, false);
+                    }
+
                     //アサイン
                     if (model.AssignedTenantIds != null)
                     {
                         foreach (long tenantId in model.AssignedTenantIds)
                         {
-                            if (tenantRepository.Get(tenantId) == null)
+                            Tenant tenant = tenantRepository.Get(tenantId);
+                            if (tenant == null)
                             {
                                 return JsonNotFound($"Tenant ID {tenantId} is not found.");
                             }
+                            await clusterManagementLogic.UpdateTenantEnabledLabelAsync(node.Name, tenant.Name, true);
                         }
                         nodeRepository.AssignTenants(node, model.AssignedTenantIds, false);
                     }
+                }
+                else
+                {
+                    // アクセスレベルが "Public" の場合、全てのテナントをアサイン
+                    var tenants = tenantRepository.GetAllTenants();
+                    foreach (Tenant tenant in tenants)
+                    {
+                        await clusterManagementLogic.UpdateTenantEnabledLabelAsync(node.Name, tenant.Name, true);
+                    }
+                }
+            }
+            else
+            {
+                // 全てのアサイン情報を削除する
+                var tenants = tenantRepository.GetAllTenants();
+                foreach (Tenant tenant in tenants)
+                {
+                    await clusterManagementLogic.UpdateTenantEnabledLabelAsync(node.Name, tenant.Name, false);
                 }
             }
 
@@ -267,7 +305,8 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpDelete("{id}")]
         [PermissionFilter(MenuCode.Node)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        public async Task<IActionResult> Delete(long? id)
+        public async Task<IActionResult> Delete(long? id,
+            [FromServices] ITenantRepository tenantRepository)
         {
             //データの入力チェック
             if (id == null)
@@ -286,6 +325,13 @@ namespace Nssol.Platypus.Controllers.spa
                 //パーティションが設定されていたら、消す
                 //既にノードが外されている場合を考慮し、もし失敗しても気にせず削除処理を続ける
                 await clusterManagementLogic.UpdatePartitionLabelAsync(node.Name, "");
+            }
+
+            // 全てのアサイン情報を削除する
+            var tenants = tenantRepository.GetAllTenants();
+            foreach (Tenant tenant in tenants)
+            {
+                await clusterManagementLogic.UpdateTenantEnabledLabelAsync(node.Name, tenant.Name, false);
             }
 
             nodeRepository.ResetAssinedTenants(node.Id);
