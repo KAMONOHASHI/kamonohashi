@@ -42,6 +42,8 @@ import ManageRoleEdit from '@/components/tenant-manage/role/Edit'
 import ManageUserIndex from '@/components/tenant-manage/user/Index'
 import ManageUserEdit from '@/components/tenant-manage/user/Edit'
 
+import ManageTenantSetting from '@/components/tenant-manage/tenant/Setting'
+
 import TenantIndex from '@/components/system-setting/tenant/Index'
 import TenantCreate from '@/components/system-setting/tenant/Create'
 import TenantEdit from '@/components/system-setting/tenant/Edit'
@@ -299,6 +301,11 @@ let router = new Router({
           props: true
         }
       ]
+    },
+    {
+      path: '/manage/tenant',
+      name: 'ManageTenant',
+      component: ManageTenantSetting
     },
     {
       path: '/manage/role',

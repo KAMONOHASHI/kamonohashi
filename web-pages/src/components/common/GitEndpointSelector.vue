@@ -35,7 +35,7 @@
 
   export default {
     name: 'GitEndpointSelector',
-    props: ['value', 'defaultId'],
+    props: ['value', 'defaultId', 'tenantId'],
     data () {
       return {
         list: []
@@ -43,6 +43,11 @@
     },
     async created () {
       await this.init()
+    },
+    watch: {
+      async tenantId () {
+        await this.init()
+      }
     },
     computed: {
       selectedList: function () { // 現在フォーム内で選択中のGit
@@ -70,7 +75,11 @@
     },
     methods: {
       async init () {
-        this.list = (await api.git.admin.getEndpoints()).data
+        if (this.tenantId) {
+          this.list = (await api.git.tenant.getEndpoints({id: this.tenantId})).data
+        } else {
+          this.list = (await api.git.admin.getEndpoints()).data
+        }
       },
       async handleChange (v) {
         this.$emit('input', v)

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Nssol.Platypus.ApiModels.NotebookApiModels
 {
@@ -7,6 +8,16 @@ namespace Nssol.Platypus.ApiModels.NotebookApiModels
     /// </summary>
     public class RerunInputModel
     {
+        /// <summary>
+        /// データセットID
+        /// </summary>
+        public long? DataSetId { get; set; }
+
+        /// <summary>
+        /// 親学習履歴ID
+        /// </summary>
+        public IEnumerable<long> ParentIds { get; set; }
+        
         /// <summary>
         /// CPUコア数
         /// </summary>

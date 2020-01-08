@@ -3,7 +3,6 @@ using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Nssol.Platypus.DataAccess.Repositories.Interfaces
@@ -57,8 +56,7 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces
         /// ユーザにサンドボックステナントを紐づける
         /// </summary>
         /// <param name="user">対象ユーザ</param>
-        /// <param name="isCreate">ユーザ新規作成時であればtrue</param>
-        void AttachSandbox(User user, bool isCreate);
+        void AttachSandbox(User user);
 
         /// <summary>
         /// ユーザを削除する
@@ -87,9 +85,8 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces
         /// <param name="user">対象ユーザ</param>
         /// <param name="tenantId">対象テナントID</param>
         /// <param name="roles">テナントロール</param>
-        /// <param name="isCreate">ユーザ新規作成時であればtrue</param>
         /// <exception cref="ArgumentException"><paramref name="roles"/>にシステムロールが含まれていたり、別テナント用のロールが含まれていた場合</exception>
-        IEnumerable<UserTenantRegistryMap> AttachTenant(User user, long tenantId, IEnumerable<Role> roles, bool isCreate);
+        IEnumerable<UserTenantRegistryMap> AttachTenant(User user, long tenantId, IEnumerable<Role> roles);
 
         /// <summary>
         /// ユーザをテナントから外す。

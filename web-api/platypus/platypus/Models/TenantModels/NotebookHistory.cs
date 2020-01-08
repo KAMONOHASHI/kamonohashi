@@ -172,6 +172,11 @@ namespace Nssol.Platypus.Models.TenantModels
         public virtual Registry ContainerRegistry { get; set; }
 
         /// <summary>
+        /// 親学習履歴のマッピング
+        /// </summary>
+        public virtual ICollection<NotebookHistoryParentTrainingMap> ParentTrainingMaps { get; set; }
+
+        /// <summary>
         /// コンテナ起動時に使用する名前
         /// </summary>
         public string Key
@@ -191,6 +196,10 @@ namespace Nssol.Platypus.Models.TenantModels
             return $"{Id}:{Name}";
         }
 
+        /// <summary>
+        /// 環境変数のディクショナリ表現
+        /// </summary>
+        /// <returns>環境変数</returns>
         public Dictionary<string, string> GetOptionDic()
         {
             if(Options == null)
@@ -201,6 +210,10 @@ namespace Nssol.Platypus.Models.TenantModels
             return OptionDic;
         }
 
+        /// <summary>
+        /// コンテナステータスの取得
+        /// </summary>
+        /// <returns>コンテナのステータス詳細</returns>
         public ContainerStatus GetStatus()
         {
             return ContainerStatus.Convert(Status);
