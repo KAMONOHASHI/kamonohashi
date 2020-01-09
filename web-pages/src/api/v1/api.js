@@ -73,7 +73,6 @@ let api = {
       put: gen.ApiV1AdminNodesByIdPut,
       delete: gen.ApiV1AdminNodesByIdDelete,
       postSyncFromDb: gen.ApiV1AdminNodesSync_cluster_from_dbPost,
-      postSyncFromCluster: gen.ApiV1AdminNodesSync_db_from_clusterPost,
       getAccessLevel: gen.ApiV1AdminNode_access_levelsGet
     }
   },
