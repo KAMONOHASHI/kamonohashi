@@ -306,7 +306,26 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonNotFound($"Node ID {id.Value} is not found.");
             }
 
-            if(string.IsNullOrEmpty(node.Partition) != false)
+            // 削除対象のノードでコンテナ稼働中の場合、削除しない
+            var response = await clusterManagementLogic.GetAllContainerDetailsInfosAsync();
+            if (response.IsSuccess)
+            {
+                int runningCount = 0;
+                foreach (var container in response.Value)
+                {
+                    // ステータスによらず、全て稼働中と見做す
+                    if (node.Name.Equals(container.NodeName))
+                    {
+                        runningCount++;
+                    }
+                }
+                if (runningCount > 0)
+                {
+                    return JsonConflict($"Running containers exists deleting node. node name=[{node.Name}], running container count=[{runningCount}]");
+                }
+            }
+
+            if (string.IsNullOrEmpty(node.Partition) != false)
             {
                 //パーティションが設定されていたら、消す
                 //既にノードが外されている場合を考慮し、もし失敗しても気にせず削除処理を続ける
