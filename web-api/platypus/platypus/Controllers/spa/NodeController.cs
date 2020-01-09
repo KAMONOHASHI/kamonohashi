@@ -233,7 +233,15 @@ namespace Nssol.Platypus.Controllers.spa
             node.TensorBoardEnabled = model.TensorBoardEnabled;
             node.NotebookEnabled = model.NotebookEnabled;
             node.AccessLevel = model.AccessLevel.Value;
-            
+
+            // まずは全てのアサイン情報を削除する
+            nodeRepository.ResetAssinedTenants(node.Id);
+            var tenants = tenantRepository.GetAllTenants();
+            foreach (Tenant tenant in tenants)
+            {
+                await clusterManagementLogic.UpdateTenantEnabledLabelAsync(node.Name, tenant.Name, false);
+            }
+
             if (node.AccessLevel != NodeAccessLevel.Disabled)
             {
                 //アクセスレベルがDisable以外であれば、k8sとの同期を行う
@@ -247,19 +255,7 @@ namespace Nssol.Platypus.Controllers.spa
 
                 if (node.AccessLevel == NodeAccessLevel.Private)
                 {
-                    //テナントをアサイン
-
-                    //まずは全てのアサイン情報を削除する
-                    nodeRepository.ResetAssinedTenants(node.Id);
-
-                    // 全てのアサイン情報を削除する
-                    var tenants = tenantRepository.GetAllTenants();
-                    foreach (Tenant tenant in tenants)
-                    {
-                        await clusterManagementLogic.UpdateTenantEnabledLabelAsync(node.Name, tenant.Name, false);
-                    }
-
-                    //アサイン
+                    // テナントをアサイン
                     if (model.AssignedTenantIds != null)
                     {
                         foreach (long tenantId in model.AssignedTenantIds)
@@ -277,20 +273,10 @@ namespace Nssol.Platypus.Controllers.spa
                 else
                 {
                     // アクセスレベルが "Public" の場合、全てのテナントをアサイン
-                    var tenants = tenantRepository.GetAllTenants();
                     foreach (Tenant tenant in tenants)
                     {
                         await clusterManagementLogic.UpdateTenantEnabledLabelAsync(node.Name, tenant.Name, true);
                     }
-                }
-            }
-            else
-            {
-                // 全てのアサイン情報を削除する
-                var tenants = tenantRepository.GetAllTenants();
-                foreach (Tenant tenant in tenants)
-                {
-                    await clusterManagementLogic.UpdateTenantEnabledLabelAsync(node.Name, tenant.Name, false);
                 }
             }
 
@@ -459,7 +445,8 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPost("sync-cluster-from-db")]
         [PermissionFilter(MenuCode.Node)]
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> SyncPartitionToCluster([FromServices] INodeRepository nodeRepository)
+        public async Task<IActionResult> SyncPartitionToCluster([FromServices] INodeRepository nodeRepository,
+            [FromServices] ITenantRepository tenantRepository)
         {
             //DB側の情報を取得
             var nodes = nodeRepository.GetAll();
@@ -473,6 +460,36 @@ namespace Nssol.Platypus.Controllers.spa
                 }
                 await clusterManagementLogic.UpdateTensorBoardEnabledLabelAsync(node.Name, node.TensorBoardEnabled);
                 await clusterManagementLogic.UpdateNotebookEnabledLabelAsync(node.Name, node.NotebookEnabled);
+
+                // まずは全てのアサイン情報を削除する
+                var tenants = tenantRepository.GetAllTenants();
+                foreach (Tenant tenant in tenants)
+                {
+                    await clusterManagementLogic.UpdateTenantEnabledLabelAsync(node.Name, tenant.Name, false);
+                }
+
+                // アクセスレベルが "Disable" 以外であれば、k8sとの同期を行う
+                if (node.AccessLevel != NodeAccessLevel.Disabled)
+                {
+                    // アクセスレベルが "Private" の場合、可能なテナント一覧を取得する
+                    if (node.AccessLevel == NodeAccessLevel.Private)
+                    {
+                        tenants = nodeRepository.GetAssignedTenants(node.Id);
+                    }
+
+                    // テナント情報をアサインする
+                    if (tenants != null)
+                    {
+                        foreach (Tenant tenant in tenants)
+                        {
+                            bool ret = clusterManagementLogic.UpdateTenantEnabledLabelAsync(node.Name, tenant.Name, true).Result;
+                            if (!ret)
+                            {
+                                LogError($"ノード [{node.Name}] にテナント [{tenant.Name}] のアクセス許可を Cluster(k8s) へ同期させる処理に失敗しました。");
+                            }
+                        }
+                    }
+                }
             }
 
             return JsonOK(nodes.Select(n => new IndexOutputModel(n)));
