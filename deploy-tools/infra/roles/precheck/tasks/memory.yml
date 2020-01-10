@@ -1,5 +1,5 @@
 - name: check memory
   assert:
-    fail_msg: "insufficient memory: at minimum {{ memory }}GB memory is required"
+    fail_msg: "{{ memory }}GB 以上のメモリが必要です。"
     that:
       - ansible_memory_mb.real.total >= {{ memory }} * 1024

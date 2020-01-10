@@ -8,15 +8,14 @@
 
     - name: check current time
       assert:
-        fail_msg: "large time difference between servers: check NTP synchronization"
-        success_msg: "This machine current time: {{ current_time.stdout }}"
+        fail_msg: "サーバ間の時刻に差があります。各サーバの時刻を揃えてください。"
         that:
           - current_time.stdout|int <= local_current_time|int + 1
           - current_time.stdout|int >= local_current_time|int - 1
 
     - name: check os
       assert:
-        fail_msg: "Only on Ubuntu 16.04 or later"
+        fail_msg: "OSは Ubuntu 16.04 以上を使用してください。"
         success_msg: "{{ ansible_distribution }} {{ ansible_distribution_version }}"
         that:
           - ansible_distribution == 'Ubuntu'
@@ -38,7 +37,7 @@
 
     - name: check /var/lib available
       assert:
-        fail_msg: "insufficient space in /var/lib: at minimum 10GB empty is required"
+        fail_msg: "/var/lib 配下には 10GB 以上の空き容量が必要です。"
         that:
           - var_lib_available.stdout|int >= 10 * 1024 * 1024
 
