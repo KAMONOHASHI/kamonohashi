@@ -50,29 +50,51 @@ ask_node_conf(){
 
 ask_ssh_conf(){
   echo -en "\e[33mSSHユーザー名: \e[m"; read SSH_USER
+  ask_ssh_password
+  ask_sudo_password
+}
+
+ask_ssh_password(){
   echo -en "\e[33mSSHパスワード(キーを使用する場合は未入力でEnter): \e[m"; read -s SSH_PASS
   echo "" # read -sは改行しないので改行 
+  if [ $SSH_PASS ]; then
+    echo -en "\e[33m確認のためSSHパスワードをもう一度入力してください: \e[m"; read -s SSH_PASS_2
+    echo "" # read -sは改行しないので改行 
+    if [[ $SSH_PASS != $SSH_PASS_2 ]]; then
+      echo "ERROR: SSHパスワードと再入力パスワードが一致しません。"
+      ask_ssh_password
+    fi
+  fi
+}
+
+ask_sudo_password(){
   echo -en "\e[33mSUDOパスワード(不要なら未入力でEnter): \e[m"; read -s SUDO_PASS
   echo "" # read -sは改行しないので改行 
+  if [ $SUDO_PASS ]; then
+    echo -en "\e[33m確認のためSUDOパスワードをもう一度入力してください: \e[m"; read -s SUDO_PASS_2
+    echo "" # read -sは改行しないので改行 
+    if [[ $SUDO_PASS != $SUDO_PASS_2 ]]; then
+      echo "ERROR: SUDOパスワードと再入力パスワードが一致しません。"
+      ask_sudo_password
+    fi
+  fi
 }
 
 ask_admin_conf(){
-  echo -en "\e[33mKAMONOHASHIのadminパスワード(8文字以上): \e[m"; read -s PASSWORD  
-  echo "" # read -sは改行しないので改行 
+  echo -en "\e[33mKAMONOHASHIのadminパスワード(8文字以上): \e[m"; read -s PASSWORD
+  echo "" # read -sは改行しないので改行
   echo -en "\e[33m確認のためadminパスワードをもう一度入力してください: \e[m"; read -s PASSWORD_2
-  echo "" # read -sは改行しないので改行 
-}
+  echo "" # read -sは改行しないので改行
 
-check_admin_password(){
-  if [ $PASSWORD != $PASSWORD_2 ]; then
+  if [[ $PASSWORD != $PASSWORD_2 ]]; then
     echo "ERROR: KAMONOHASHIのadminパスワードと再入力パスワードが一致しません。"
-    exit 1
+    ask_admin_conf
   elif [ ${#PASSWORD} -lt 8 ]; then
     echo "ERROR: KAMONOHASHIのadminパスワードは8文字以上を入力してください。"
-    exit 1
+    ask_admin_conf
   elif expr $PASSWORD : "[0-9]*" > /dev/null; then
     echo "ERROR: KAMONOHASHIのadminパスワードは数字のみの設定はできません。"
-    exit 1
+    ask_admin_conf
   fi
 }
 
@@ -227,7 +249,6 @@ deploy(){
   fi
   
   ask_conf
-  check_admin_password
   generate_conf
 
   export http_proxy=$HTTP_PROXY
