@@ -328,7 +328,7 @@ namespace Nssol.Platypus.Migrations
                         .IsRequired()
                         .HasMaxLength(128);
 
-                    b.Property<bool>("NotebookIndefinitePeriod");
+                    b.Property<bool>("AvailableInfiniteTimeNotebook");
 
                     b.Property<string>("StorageBucket");
 

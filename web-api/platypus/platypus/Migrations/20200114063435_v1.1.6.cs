@@ -7,7 +7,7 @@ namespace Nssol.Platypus.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<bool>(
-                name: "NotebookIndefinitePeriod",
+                name: "AvailableInfiniteTimeNotebook",
                 table: "Tenants",
                 nullable: false,
                 defaultValue: false);
@@ -16,7 +16,7 @@ namespace Nssol.Platypus.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "NotebookIndefinitePeriod",
+                name: "AvailableInfiniteTimeNotebook",
                 table: "Tenants");
         }
     }
