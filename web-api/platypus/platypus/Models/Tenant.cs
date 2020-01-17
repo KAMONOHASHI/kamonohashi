@@ -153,7 +153,7 @@ namespace Nssol.Platypus.Models
         /// ノートブック無期限起動許可フラグ。
         /// Trueの場合、ノートブックの生存期間設定なし（無期限）起動を許可する。
         /// </summary>
-        public bool NotebookIndefinitely { get; set; }
+        public bool NotebookIndefinitePeriod { get; set; }
 
         /// <summary>
         /// ストレージ
