@@ -40,6 +40,14 @@
                                        v-on:changeDefaultId="form.defaultRegistryId = $event"/>
       </div>
 
+      <h3>ノートブック生存期間無制限</h3>
+      <div class="margin"><br>
+        <el-switch v-model="form.availableInfiniteTimeNotebook"
+                   style="width: 100%;"
+                   inactive-text="NG"
+                   active-text="OK"/>
+      </div>
+
       <el-row :gutter="20" class="footer">
         <el-col :span="8">
           <pl-delete-button @delete="deleteTenant" v-bind:tenant-name="form.name"/>
@@ -89,7 +97,8 @@
           defaultGitId: null,
           registryIds: [],
           defaultRegistryId: null,
-          storageId: null
+          storageId: null,
+          availableInfiniteTimeNotebook: false
         },
 
         rules: {
@@ -125,6 +134,7 @@
             this.form.storageId = model.storageId
             this.form.defaultRegistryId = model.defaultRegistryId
             this.form.registryIds = model.registryIds
+            this.form.availableInfiniteTimeNotebook = model.availableInfiniteTimeNotebook
             this.error = null
           } catch (e) {
             this.error = e
@@ -154,7 +164,8 @@
             defaultGitId: this.form.defaultGitId,
             storageId: this.form.storageId,
             defaultRegistryId: this.form.defaultRegistryId,
-            registryIds: this.form.registryIds
+            registryIds: this.form.registryIds,
+            availableInfiniteTimeNotebook: this.form.availableInfiniteTimeNotebook
           }
         }
         await api.tenant.admin.put(param)

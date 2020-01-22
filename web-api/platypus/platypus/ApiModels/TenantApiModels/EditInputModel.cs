@@ -41,5 +41,10 @@ namespace Nssol.Platypus.ApiModels.TenantApiModels
         /// </summary>
         [Required]
         public long? StorageId { get; set; }
+
+        /// <summary>
+        /// AvailableInfiniteTimeNotebook
+        /// </summary>
+        public bool AvailableInfiniteTimeNotebook { get; set; }
     }
 }

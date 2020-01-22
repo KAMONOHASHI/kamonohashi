@@ -17,6 +17,14 @@
                 <el-input v-model="form.displayName"/>
               </el-form-item>
           </div>
+
+          <h3>ノートブック生存期間無期限</h3>
+          <div class="margin"><br>
+            <el-switch v-model="form.availableInfiniteTimeNotebook"
+                       style="width: 100%;"
+                       inactive-text="NG"
+                       active-text="OK"/>
+          </div>
         </el-col>
 
         <el-col class="container detail">
@@ -77,7 +85,8 @@
           defaultGitId: null,
           registryIds: [],
           defaultRegistryId: null,
-          storageId: null
+          storageId: null,
+          availableInfiniteTimeNotebook: false
         },
         rules: {
           displayName: [{required: true, trigger: 'blur', message: '必須項目です'}],
@@ -107,6 +116,7 @@
           this.form.storageId = model.storageId
           this.form.defaultRegistryId = model.defaultRegistryId
           this.form.registryIds = model.registryIds
+          this.form.availableInfiniteTimeNotebook = model.availableInfiniteTimeNotebook
           this.error = null
         } catch (e) {
           this.error = e
@@ -136,7 +146,8 @@
             defaultGitId: this.form.defaultGitId,
             storageId: this.form.storageId,
             defaultRegistryId: this.form.defaultRegistryId,
-            registryIds: this.form.registryIds
+            registryIds: this.form.registryIds,
+            availableInfiniteTimeNotebook: this.form.availableInfiniteTimeNotebook
           }
         }
         await api.tenant.admin.put(param)

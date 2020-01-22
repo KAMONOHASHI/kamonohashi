@@ -236,7 +236,7 @@
         }
         this.waitingTime = data.waitingTime
         this.executionTime = data.executionTime
-        this.expiresIn = data.expiresIn === 0 ? 0 : (data.expiresIn / 60 / 60)
+        this.expiresIn = data.expiresIn === 0 ? '無期限' : (data.expiresIn / 60 / 60)
       },
       emitDone () {
         this.$emit('done')

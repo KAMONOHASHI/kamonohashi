@@ -15,12 +15,14 @@ namespace Nssol.Platypus.ApiModels.TenantApiModels
         public DetailsOutputModel(Tenant tenant) : base(tenant)
         {
             StorageId = tenant.StorageId;
-            
+
             DefaultGitId = tenant.DefaultGitId;
             GitIds = tenant.GitMaps.Select(map => map.GitId);
 
             DefaultRegistryId = tenant.DefaultRegistryId;
             RegistryIds = tenant.RegistryMaps.Select(map => map.RegistryId);
+
+            AvailableInfiniteTimeNotebook = tenant.AvailableInfiniteTimeNotebook;
         }
 
         /// <summary>
@@ -47,5 +49,10 @@ namespace Nssol.Platypus.ApiModels.TenantApiModels
         /// Storage ID。
         /// </summary>
         public long? StorageId { get; set; }
+
+        /// <summary>
+        /// AvailableInfiniteTimeNotebook
+        /// </summary>
+        public bool AvailableInfiniteTimeNotebook { get; set; }
     }
 }

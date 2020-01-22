@@ -4315,6 +4315,46 @@ export const ApiV1NotebookByIdRerunPostURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+* 選択中のテナントの無期限利用可否フラグを取得する
+<param name="tenantRepository">DI用</param>
+* request: ApiV1NotebookTenantNotebookGet
+* url: ApiV1NotebookTenantNotebookGetURL
+* method: ApiV1NotebookTenantNotebookGet_TYPE
+* raw_url: ApiV1NotebookTenantNotebookGet_RAW_URL
+*/
+export const ApiV1NotebookTenantNotebookGet = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v1/notebook/tenant/notebook'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV1NotebookTenantNotebookGet_RAW_URL = function() {
+  return '/api/v1/notebook/tenant/notebook'
+}
+export const ApiV1NotebookTenantNotebookGet_TYPE = function() {
+  return 'get'
+}
+export const ApiV1NotebookTenantNotebookGetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v1/notebook/tenant/notebook'
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
 * 指定された条件でページングされた状態で、全前処理を取得
 * request: ApiV1PreprocessingsGet
 * url: ApiV1PreprocessingsGetURL

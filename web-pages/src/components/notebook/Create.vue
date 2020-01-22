@@ -41,6 +41,7 @@
                   </el-form-item>
                 </el-col>
                 <el-col :span="18" :offset="3">
+                  <div v-show = "infiniteFlag === false">
                   <el-form-item label="生存期間(h)" required>
                     <el-slider
                       class="el-input"
@@ -50,6 +51,15 @@
                       show-input>
                     </el-slider>
                   </el-form-item>
+                </div>
+                <div v-if = "availableInfiniteTimeNotebook === true">
+                  <el-form-item label="ノートブック生存期間無期限">
+                    <el-switch v-model="infiniteFlag"
+                             style="width: 100%;"
+                             inactive-text="OFF"
+                             active-text="ON"/>
+                  </el-form-item>
+                </div>
                 </el-col>
                 <el-col :span="18" :offset="3">
                   <el-form-item label="データセット" prop="dataSet" >
@@ -112,6 +122,7 @@
                   </el-form-item>
                 </el-col>
                 <el-col :span="18" :offset="3">
+                <div v-show = "infiniteFlag === false">
                   <el-form-item label="生存期間(h)" required>
                     <el-slider
                       class="el-input"
@@ -121,6 +132,15 @@
                       show-input>
                     </el-slider>
                   </el-form-item>
+                </div>
+                <div v-if = "availableInfiniteTimeNotebook === true">
+                  <el-form-item label="ノートブック生存期間無期限">
+                    <el-switch v-model="infiniteFlag"
+                             style="width: 100%;"
+                             inactive-text="OFF"
+                             active-text="ON"/>
+                  </el-form-item>
+                </div>
                 </el-col>
               </el-form>
               <el-form v-if="active===2">
@@ -238,12 +258,16 @@
         git: undefined,
         options: undefined,
         active: 0,
-        expiresIn: 8
+        expiresIn: 8,
+        availableInfiniteTimeNotebook: false,
+        infiniteFlag: false
       }
     },
     async created () {
       let result = await (api.cluster.getPartitions())
       this.partitions = result.data
+      let [model] = api.f.data(await api.notebook.getTenantNotebook())
+      this.availableInfiniteTimeNotebook = model.availableInfiniteTimeNotebook
       await this.retrieveOriginNotebook()
     },
     methods: {
@@ -257,6 +281,10 @@
               this.options.forEach((kvp) => {
                 options[kvp.key] = kvp.value
               })
+
+              if (this.infiniteFlag === true) {
+                this.expiresIn = 0
+              }
 
               let param = {
                 name: this.name,
@@ -288,6 +316,9 @@
         await form.validate(async (valid) => {
           if (valid) {
             try {
+              if (this.infiniteFlag === true) {
+                this.expiresIn = 0
+              }
               let param = {
                   dataSetId: this.dataSet ? this.dataSet.id : null,
                   parentIds: this.parentIds,
@@ -331,6 +362,8 @@
       async retrieveOriginNotebook () {
         if (this.originId >= 0) {
           this.origin = (await api.notebook.getById({id: this.originId})).data
+          let [model] = api.f.data(await api.notebook.getTenantNotebook())
+          this.availableInfiniteTimeNotebook = model.availableInfiniteTimeNotebook
           this.copyFromOrigin()
         }
       },
@@ -351,6 +384,13 @@
           this.containerImage = origin.containerImage
           this.entryPoint = origin.entryPoint
           this.expiresIn = origin.expiresIn === 0 ? 0 : (origin.expiresIn / 60 / 60)
+          if (this.expiresIn === 0) {
+            if (this.availableInfiniteTimeNotebook === true) {
+              this.infiniteFlag = true
+            } else {
+              this.expiresIn = 8
+            }
+          }
           for (let i = 0; i < origin.parents.length; i++) {
             this.parentIds.push(origin.parents[i].id)
           }

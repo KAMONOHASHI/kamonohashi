@@ -41,6 +41,14 @@
                                        v-on:changeDefaultId="form.defaultRegistryId = $event"/>
       </div>
 
+      <h3>ノートブック生存期間無期限</h3>
+      <div class="margin"><br>
+        <el-switch v-model="form.availableInfiniteTimeNotebook"
+                   style="width: 100%;"
+                   inactive-text="NG"
+                   active-text="OK"/>
+      </div>
+
       <el-row>
         <el-col class="button-group">
           <el-button @click="closeDialog">キャンセル</el-button>

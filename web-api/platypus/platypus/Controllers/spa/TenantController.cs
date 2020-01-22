@@ -127,7 +127,8 @@ namespace Nssol.Platypus.Controllers.spa
                 Name = model.TenantName,
                 DisplayName = model.DisplayName,
                 StorageBucket = model.TenantName,
-                StorageId = model.StorageId
+                StorageId = model.StorageId,
+                AvailableInfiniteTimeNotebook = model.AvailableInfiniteTimeNotebook
             };
 
             Git git = null;
@@ -366,6 +367,7 @@ namespace Nssol.Platypus.Controllers.spa
 
             tenant.DisplayName = model.DisplayName;
             tenant.StorageId = model.StorageId;
+            tenant.AvailableInfiniteTimeNotebook = model.AvailableInfiniteTimeNotebook;
 
             //コンテナ管理サービス作業
             //テナントを登録

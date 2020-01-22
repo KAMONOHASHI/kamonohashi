@@ -11,6 +11,7 @@ using Nssol.Platypus.Infrastructure.Infos;
 using Nssol.Platypus.Infrastructure.Options;
 using Nssol.Platypus.Infrastructure.Types;
 using Nssol.Platypus.Logic.Interfaces;
+using Nssol.Platypus.Models;
 using Nssol.Platypus.Models.TenantModels;
 using System;
 using System.Collections.Generic;
@@ -792,6 +793,26 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonError(HttpStatusCode.ServiceUnavailable, $"Failed to run notebook. Status={result.Value.Status.Name}. Please contact your server administrator.");
             }
+        }
+
+        /// <summary>
+        /// 選択中のテナントの情報を取得する
+        /// <param name="tenantRepository">DI用</param>
+        /// </summary>
+        [HttpGet("tenant/notebook")]
+        [Filters.PermissionFilter(MenuCode.Notebook)]
+        [ProducesResponseType(typeof(DetailsOutputModel), (int)HttpStatusCode.OK)]
+        public IActionResult GetAvailableInfiniteTimeNotebook([FromServices]ITenantRepository tenantRepository)
+        {
+            Tenant tenant = tenantRepository.Get(CurrentUserInfo.SelectedTenant.Id);
+            if (tenant == null)
+            {
+                return JsonNotFound($"Tenant Id {CurrentUserInfo.SelectedTenant.Id} is not found.");
+            }
+
+            var model = new Nssol.Platypus.ApiModels.TenantApiModels.DetailsOutputModel(tenant);
+
+            return JsonOK(model);
         }
     }
 }
