@@ -162,12 +162,7 @@
       async deleteTenant () {
         try {
           let params = {
-            id: this.id,
-            model: {
-              data: {
-                ignoreMinioBucketDeletion: true
-              }
-            }
+            id: this.id
           }
           await api.tenant.admin.delete(params)
           this.emitDone()

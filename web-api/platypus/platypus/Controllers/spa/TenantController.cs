@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Nssol.Platypus.ApiModels.TenantApiModels;
 using Nssol.Platypus.Controllers.Util;
 using Nssol.Platypus.DataAccess.Core;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces;
 using Nssol.Platypus.Filters;
 using Nssol.Platypus.Infrastructure;
-using Nssol.Platypus.Infrastructure.Infos;
+using Nssol.Platypus.Infrastructure.Options;
 using Nssol.Platypus.Logic.Interfaces;
 using Nssol.Platypus.Models;
 using System;
@@ -16,6 +17,9 @@ using System.Net;
 using System.Threading.Tasks;
 namespace Nssol.Platypus.Controllers.spa
 {
+    /// <summary>
+    /// テナント管理を扱うためのAPI集
+    /// </summary>
     [Route("api/v1/admin/tenants")]
     public class TenantController : PlatypusApiControllerBase
     {
@@ -27,6 +31,7 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly ICommonDiLogic commonDiLogic;
         private readonly IStorageLogic storageLogic;
         private readonly IClusterManagementLogic clusterManagementLogic;
+        private readonly ContainerManageOptions containerManageOptions;
         private readonly IUnitOfWork unitOfWork;
 
         public TenantController(
@@ -38,6 +43,7 @@ namespace Nssol.Platypus.Controllers.spa
             ICommonDiLogic commonDiLogic,
             IStorageLogic storageLogic,
             IClusterManagementLogic clusterManagementLogic,
+            IOptions<ContainerManageOptions> containerManageOptions,
             IUnitOfWork unitOfWork,
             IHttpContextAccessor accessor) : base(accessor)
         {
@@ -49,6 +55,7 @@ namespace Nssol.Platypus.Controllers.spa
             this.commonDiLogic = commonDiLogic;
             this.storageLogic = storageLogic;
             this.clusterManagementLogic = clusterManagementLogic;
+            this.containerManageOptions = containerManageOptions.Value;
             this.unitOfWork = unitOfWork;
         }
 
@@ -103,6 +110,12 @@ namespace Nssol.Platypus.Controllers.spa
             if (!ModelState.IsValid)
             {
                 return JsonBadRequest("Invalid inputs.");
+            }
+
+            if (model.TenantName.StartsWith(containerManageOptions.KqiNamespacePrefix) || model.TenantName.StartsWith(containerManageOptions.KubernetesNamespacePrefix))
+            {
+                // KqiNamespacePrefix または KubernetesNamespacePrefix で始まるテナント名は許可しないためエラー
+                return JsonBadRequest($"Invalid inputs. 'TenantName' cannot start with '{ containerManageOptions.KqiNamespacePrefix }' or '{ containerManageOptions.KubernetesNamespacePrefix }'.");
             }
 
             Tenant tenant = tenantRepository.GetFromTenantName(model.TenantName);
@@ -206,14 +219,12 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// テナントを削除する。(他のユーザが未ログイン状態の時間帯で実施するのが望ましい)
         /// </summary>
+        /// <param name="id">テナントID</param>
         [HttpDelete("{id}")]
         [PermissionFilter(MenuCode.Tenant)]
-        [ProducesResponseType(typeof(DeleteOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> DeleteTenantAsync(long id, [FromBody] DeleteInputModel model)
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        public async Task<IActionResult> DeleteTenantAsync(long id)
         {
-            // 返却データ
-            DeleteOutputModel result = new DeleteOutputModel();
-
             // 入力モデル・データのチェック
             if (!ModelState.IsValid)
                 return JsonBadRequest($"Invalid inputs: illegal input model");
@@ -268,35 +279,6 @@ namespace Nssol.Platypus.Controllers.spa
                         userRepository.AttachSandbox(user);
                     }
                 }
-                // 更新したユーザ ID を結果データとして返却
-                result.UpdateUserIdList.Add(user.Id);
-            }
-
-            // バケットの削除
-            // DeleteInputModel の IgnoreMinioBucketDeletion が false なら削除
-            // ファイル数が膨大な時は、このロジックで削除しないこと
-            if (model.IgnoreMinioBucketDeletion != null && !model.IgnoreMinioBucketDeletion.Value)
-            {
-                var storage = tenantRepository.GetStorage(tenant.StorageId.Value);
-                if (storage == null)
-                    return JsonNotFound($"Illegal state: not found storage id [{tenant.StorageId}].");
-                try
-                {
-                    await storageLogic.DeleteBucketAsync(tenant, storage);
-                }
-                catch (Exception e)
-                {
-                    // 例外発生時はメッセージを警告として格納し処理の中断は行わない
-                    var msg = $"StorageLogic#DeleteBucketAsync() throws exception: msg=[{e.Message}].";
-                    LogWarning(msg);
-                    result.StorageWarnMsg = msg;
-                }
-            }
-            else
-            {
-                var msg = $"Not deleted minio bucket. You should delete bucket minio [{tenant.Name}] by manual operation.";
-                LogWarning(msg);
-                result.StorageWarnMsg = $"Not deleted minio bucket. You should delete bucket minio [{tenant.Name}] by manual operation.";
             }
 
             // k8s の名前空間の抹消(削除)
@@ -306,7 +288,6 @@ namespace Nssol.Platypus.Controllers.spa
                 // 削除に失敗したならメッセージを警告として格納し処理の中断は行わない
                 var msg = $"Couldn't delete cluster master namespace [{tenant.Name}]. Please check the configuration to the connect cluster manager service.";
                 LogWarning(msg);
-                result.KubernetesWarnMsg = msg;
             }
 
             // テナントの削除（関連するDBのエントリも自動削除）
@@ -317,8 +298,17 @@ namespace Nssol.Platypus.Controllers.spa
             tenantRepository.Refresh();
             roleRepository.Refresh();
 
+            // バケット(テナントのデータ)削除用のコンテナを起動する。
+            var resultContainer = await clusterManagementLogic.RunDeletingTenantDataContainerAsync(tenant);
+            if (resultContainer == null || resultContainer.Status.Succeed() == false)
+            {
+                // コンテナ起動に失敗した場合エラーログを出力し、処理の中断は行わない。
+                var msg = $"Failed to run container for delete minio bucket. You should delete bucket minio [{tenant.Name}] by manual operation.";
+                LogError(msg);
+            }
+
             // 結果の返却
-            return JsonOK(result);
+            return JsonNoContent();
         }
 
         /// <summary>
@@ -465,34 +455,5 @@ namespace Nssol.Platypus.Controllers.spa
             return JsonOK(new IndexOutputModel(tenant));
         }
         #endregion
-
-        /// <summary>
-        /// 指定したテナントに所属するメンバーリストを取得する
-        /// </summary>
-        [HttpGet("{id}/members")]
-        [PermissionFilter(MenuCode.Tenant)]
-        [ProducesResponseType(typeof(IEnumerable<MemberOutputModel>), (int)HttpStatusCode.OK)]
-        public IActionResult GetMembers(long id)
-        {
-            Tenant tenant = tenantRepository.Get(id);
-            if (tenant == null)
-            {
-                return JsonNotFound($"Tenant Id {id} is not found.");
-            }
-
-            var users = userRepository.GetUsers(tenant.Id);
-
-            var result = new List<MemberOutputModel>();
-            foreach (var user in users)
-            {
-                var userModel = new MemberOutputModel(user)
-                {
-                    TenantRoles = roleRepository.GetTenantRoles(user.Id, tenant.Id).Select(r => new RoleInfo(r))
-                };
-                result.Add(userModel);
-            }
-
-            return JsonOK(result);
-        }
     }
 }

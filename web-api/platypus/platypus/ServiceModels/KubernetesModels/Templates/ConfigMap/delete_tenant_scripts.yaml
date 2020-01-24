@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "@(Model.Name)"
+  namespace: "@(Model.NameSpace)"
+data:
+  prepare: 
+  main: |
+    bash /kqi/scripts/common/wait-ready
+    echo "------------------------- [KAMONOHASHI Main] delete bucket ${KQI_TENANT_NAME} -------------------------"
+    echo "deleting bucket [${KQI_TENANT_NAME}]"
+    cd /kqi/tenant
+    rm -rf ${KQI_TENANT_NAME}
+    echo "bucket [${KQI_TENANT_NAME}] deletion completed."
+    bash /kqi/scripts/common/notify-finish $?
+  finish: |
+    bash /kqi/scripts/common/prepare-kqi-conf
+    bash /kqi/scripts/common/wait-finish

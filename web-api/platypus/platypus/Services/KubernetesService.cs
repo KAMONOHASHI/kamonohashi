@@ -10,7 +10,6 @@ using Nssol.Platypus.Models;
 using Nssol.Platypus.ServiceModels.ClusterManagementModels;
 using Nssol.Platypus.ServiceModels.KubernetesModels;
 using Nssol.Platypus.Services.Interfaces;
-using RazorLight;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -18,7 +17,6 @@ using System.Linq;
 using System.Net;
 using System.Net.WebSockets;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -163,6 +161,10 @@ namespace Nssol.Platypus.Services
                     break;
                 case ContainerType.Notebook:
                     hasService = true;
+                    hasConfigMap = true;
+                    break;
+                case ContainerType.DeleteTenant:
+                    hasService = false;
                     hasConfigMap = true;
                     break;
                 default:
@@ -446,9 +448,10 @@ namespace Nssol.Platypus.Services
             {
                 var result = ConvertResult<GetPodsOutputModel>(response);
 
-                //KqiNamespacePrefixで始まるテナントとkube-から始まるテナントはシステム管理のため、除外する
+                // KqiNamespacePrefix で始まるテナントと KubernetesNamespacePrefix から始まるテナントはシステム管理のため、除外する
+                // ただし、 KqiAdminNamespace はテナントデータ削除用コンテナで使用するため含める
                 return Result<IEnumerable<ContainerDetailsInfo>, ContainerStatus>.CreateResult(
-                    result.Items.Where(item => item.Metadata.Namespace.StartsWith(containerOptions.KqiNamespacePrefix) == false && item.Metadata.Namespace.StartsWith("kube-") == false)
+                    result.Items.Where(item => (item.Metadata.Namespace == containerOptions.KqiAdminNamespace) || (item.Metadata.Namespace.StartsWith(containerOptions.KqiNamespacePrefix) == false && item.Metadata.Namespace.StartsWith(containerOptions.KubernetesNamespacePrefix) == false))
                     .Select(i => ConvertModel(i)));
             }
             else

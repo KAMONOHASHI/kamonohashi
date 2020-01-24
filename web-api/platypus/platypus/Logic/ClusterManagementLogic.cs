@@ -1083,6 +1083,109 @@ namespace Nssol.Platypus.Logic
         }
         #endregion
 
+        #region テナントデータ削除用コンテナ管理
+        /// <summary>
+        /// 新規にバケット(テナントデータ)削除用のコンテナを作成する。
+        /// </summary>
+        /// <param name="tenant">対象のテナント</param>
+        /// <returns>作成したコンテナのステータス</returns>
+        public async Task<ContainerInfo> RunDeletingTenantDataContainerAsync(Tenant tenant)
+        {
+            //コンテナ名は自動生成
+            //使用できる文字など、命名規約はコンテナ管理サービス側によるが、
+            //ユーザ入力値検証の都合でどうせ決め打ちしないといけないので、ロジック層で作ってしまう
+            string containerName = $"delete-tenant-{tenant.Name}-{DateTime.Now.ToString("yyyyMMddHHmmssffffff")}";
+
+            // KQI管理者権限用の認証トークンを取得する。
+            string adminToken = await RegistKQIAdminNameSpaceAsync();
+            if (adminToken == null)
+            {
+                //トークンがない場合、結果はnull
+                return new ContainerInfo() { Status = ContainerStatus.Forbidden };
+            }
+
+            // アクセスレベルがPublicのノードを取得
+            var nodes = GetPublicNode();
+            if (nodes == null || nodes.Count == 0)
+            {
+                //デプロイ可能なノードがゼロなら、エラー扱い
+                return new ContainerInfo() { Status = ContainerStatus.Forbidden };
+            }
+
+            // 上書き不可の環境変数
+            var notEditableEnvList = new Dictionary<string, string>()
+            {
+                { "KQI_TENANT_NAME", tenant.Name }, // 削除対象のテナント名(バケット名)
+                { "KQI_SERVER", containerOptions.WebServerUrl },
+                { "KQI_TOKEN", loginLogic.GenerateToken().AccessToken },
+                { "http_proxy", containerOptions.Proxy },
+                { "https_proxy", containerOptions.Proxy },
+                { "no_proxy", containerOptions.NoProxy },
+                { "HTTP_PROXY", containerOptions.Proxy },
+                { "HTTPS_PROXY", containerOptions.Proxy },
+                { "NO_PROXY", containerOptions.NoProxy },
+                { "PYTHONUNBUFFERED", "true" }, // python実行時の標準出力・エラーのバッファリングをなくす
+                { "LC_ALL", "C.UTF-8"}, // python実行時のエラー回避
+                { "LANG", "C.UTF-8"}  // python実行時のエラー回避
+            };
+
+            //コンテナを起動するために必要な設定値をインスタンス化
+            var inputModel = new RunContainerInputModel()
+            {
+                ID = tenant.Id,
+                TenantName = containerOptions.KqiAdminNamespace, // Namespaceに使用される名前は、KqiAdminNamespace とする。
+                LoginUser = CurrentUserInfo.Alias, //アカウントはエイリアスから指定
+                Name = containerName,
+                ContainerImage = "kamonohashi/cli:" + versionLogic.GetVersion(),
+                ScriptType = "delete_tenant",
+                Cpu = 1,
+                Memory = 1, //メモリは仮決め
+                Gpu = 0,
+                KqiImage = "kamonohashi/cli:" + versionLogic.GetVersion(),
+                KqiToken = loginLogic.GenerateToken().AccessToken,
+                NfsVolumeMounts = new List<NfsVolumeMountModel>()
+                {
+                    // 結果が保存されているディレクトリ
+                    new NfsVolumeMountModel()
+                    {
+                        Name = "nfs-tenant",
+                        MountPath = "/kqi/tenant",
+                        SubPath = "",
+                        Server = tenant.Storage.NfsServer,
+                        ServerPath = tenant.Storage.NfsRoot, // バケットすべてをマウントするので注意すること。
+                        ReadOnly = false
+                    }
+                },
+                ContainerSharedPath = new Dictionary<string, string>()
+                {
+                    { "tmp", "/kqi/tmp/" }
+                },
+
+                PrepareAndFinishContainerEnvList = notEditableEnvList, // 上書き不可の環境変数を設定
+                MainContainerEnvList = notEditableEnvList, // 上書き不可の環境変数を設定
+
+                ConstraintList = new Dictionary<string, List<string>>() {
+                    { containerOptions.ContainerLabelHostName, nodes } //使用できるノードを取得し、制約に追加
+                },
+                ClusterManagerToken = adminToken,
+                IsNodePort = true //ランダムポート指定。アクセス先ポートが動的に決まるようになる。
+            };
+
+            var outModel = await clusterManagementService.RunContainerAsync(inputModel);
+            if (outModel.IsSuccess == false)
+            {
+                return new ContainerInfo() { Status = ContainerStatus.Failed };
+            }
+            return new ContainerInfo()
+            {
+                Name = containerName,
+                Status = outModel.Value.Status,
+                Host = outModel.Value.Host,
+                Configuration = outModel.Value.Configuration
+            };
+        }
+        #endregion
+
         /// <summary>
         /// 追加環境変数をマージする
         /// </summary>
@@ -1220,6 +1323,29 @@ namespace Nssol.Platypus.Logic
         }
 
         /// <summary>
+        /// KQI管理者用の名前空間にユーザを登録し、認証トークンを取得する。
+        /// 既にある場合は何もしない。
+        /// </summary>
+        private async Task<string> RegistKQIAdminNameSpaceAsync()
+        {
+            // KQI管理者用名前空間を作成する
+            if ((await clusterManagementService.RegistTenantAsync(containerOptions.KqiAdminNamespace)) == false)
+            {
+                return null;
+            }
+
+            // ユーザ個人のクラスタ管理サービスへの認証トークンが存在するかチェックする
+            string userToken = await GetUserAccessTokenAsync();
+            if (userToken == null)
+            {
+                return null;
+            }
+
+            // KQI管理者用名前空間にユーザを登録と認証トークンを取得する
+            return await clusterManagementService.RegistUserAsync(containerOptions.KqiAdminNamespace, CurrentUserInfo.Alias);
+        }
+
+        /// <summary>
         /// ログイン中のユーザ＆テナントに対する、クラスタ管理サービスにアクセスするためのトークンを取得する。
         /// 存在しない場合、新規に作成する。
         /// </summary>
@@ -1273,6 +1399,14 @@ namespace Nssol.Platypus.Logic
         private List<string> GetAccessibleNode()
         {
             return nodeRepository.GetAccessibleNodes(CurrentUserInfo.SelectedTenant.Id).Select(n => n.Name).ToList();
+        }
+
+        /// <summary>
+        /// アクセスレベルがPublicのノード一覧を取得する
+        /// </summary>
+        private List<string> GetPublicNode()
+        {
+            return nodeRepository.GetAll().Where(n => n.AccessLevel == NodeAccessLevel.Public).Select(n => n.Name).ToList();
         }
         #endregion
 

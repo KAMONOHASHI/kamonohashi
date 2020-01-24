@@ -5823,8 +5823,8 @@ export const ApiV1AdminResourceContainersByTenantIdByNameGetURL = function(param
  * url: ApiV1AdminResourceContainersByTenantIdByNameDeleteURL
  * method: ApiV1AdminResourceContainersByTenantIdByNameDelete_TYPE
  * raw_url: ApiV1AdminResourceContainersByTenantIdByNameDelete_RAW_URL
- * @param tenantId - 
- * @param name - 
+ * @param tenantId - テナントID
+ * @param name - コンテナ名
  */
 export const ApiV1AdminResourceContainersByTenantIdByNameDelete = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -7207,8 +7207,7 @@ export const ApiV1AdminTenantsByIdPutURL = function(parameters = {}) {
  * url: ApiV1AdminTenantsByIdDeleteURL
  * method: ApiV1AdminTenantsByIdDelete_TYPE
  * raw_url: ApiV1AdminTenantsByIdDelete_RAW_URL
- * @param id - 
- * @param model - 
+ * @param id - テナントID
  */
 export const ApiV1AdminTenantsByIdDelete = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -7220,9 +7219,6 @@ export const ApiV1AdminTenantsByIdDelete = function(parameters = {}) {
   path = path.replace('{id}', `${parameters['id']}`)
   if (parameters['id'] === undefined) {
     return Promise.reject(new Error('Missing required  parameter: id'))
-  }
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -7241,51 +7237,6 @@ export const ApiV1AdminTenantsByIdDeleteURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v1/admin/tenants/{id}'
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
- * 指定したテナントに所属するメンバーリストを取得する
- * request: ApiV1AdminTenantsByIdMembersGet
- * url: ApiV1AdminTenantsByIdMembersGetURL
- * method: ApiV1AdminTenantsByIdMembersGet_TYPE
- * raw_url: ApiV1AdminTenantsByIdMembersGet_RAW_URL
- * @param id - 
- */
-export const ApiV1AdminTenantsByIdMembersGet = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/api/v1/admin/tenants/{id}/members'
-  let body
-  let queryParameters = {}
-  let form = {}
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters['id'] === undefined) {
-    return Promise.reject(new Error('Missing required  parameter: id'))
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('get', domain + path, body, queryParameters, form, config)
-}
-export const ApiV1AdminTenantsByIdMembersGet_RAW_URL = function() {
-  return '/api/v1/admin/tenants/{id}/members'
-}
-export const ApiV1AdminTenantsByIdMembersGet_TYPE = function() {
-  return 'get'
-}
-export const ApiV1AdminTenantsByIdMembersGetURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/api/v1/admin/tenants/{id}/members'
   path = path.replace('{id}', `${parameters['id']}`)
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
