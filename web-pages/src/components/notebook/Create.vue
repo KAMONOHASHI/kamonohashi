@@ -41,6 +41,14 @@
                   </el-form-item>
                 </el-col>
                 <el-col :span="18" :offset="3">
+                <div v-if = "availableInfiniteTimeNotebook === true">
+                  <el-form-item label="生存期間無期限">
+                    <el-switch v-model="infiniteFlag"
+                             style="width: 100%;"
+                             inactive-text="OFF"
+                             active-text="ON"/>
+                  </el-form-item>
+                </div>
                   <div v-show = "infiniteFlag === false">
                   <el-form-item label="生存期間(h)" required>
                     <el-slider
@@ -50,14 +58,6 @@
                       :max="100"
                       show-input>
                     </el-slider>
-                  </el-form-item>
-                </div>
-                <div v-if = "availableInfiniteTimeNotebook === true">
-                  <el-form-item label="ノートブック生存期間無期限">
-                    <el-switch v-model="infiniteFlag"
-                             style="width: 100%;"
-                             inactive-text="OFF"
-                             active-text="ON"/>
                   </el-form-item>
                 </div>
                 </el-col>
@@ -122,6 +122,14 @@
                   </el-form-item>
                 </el-col>
                 <el-col :span="18" :offset="3">
+                <div v-if = "availableInfiniteTimeNotebook === true">
+                  <el-form-item label="生存期間無期限">
+                    <el-switch v-model="infiniteFlag"
+                             style="width: 100%;"
+                             inactive-text="OFF"
+                             active-text="ON"/>
+                  </el-form-item>
+                </div>
                 <div v-show = "infiniteFlag === false">
                   <el-form-item label="生存期間(h)" required>
                     <el-slider
@@ -131,14 +139,6 @@
                       :max="100"
                       show-input>
                     </el-slider>
-                  </el-form-item>
-                </div>
-                <div v-if = "availableInfiniteTimeNotebook === true">
-                  <el-form-item label="ノートブック生存期間無期限">
-                    <el-switch v-model="infiniteFlag"
-                             style="width: 100%;"
-                             inactive-text="OFF"
-                             active-text="ON"/>
                   </el-form-item>
                 </div>
                 </el-col>
@@ -266,8 +266,7 @@
     async created () {
       let result = await (api.cluster.getPartitions())
       this.partitions = result.data
-      let [model] = api.f.data(await api.notebook.getTenantNotebook())
-      this.availableInfiniteTimeNotebook = model.availableInfiniteTimeNotebook
+      this.availableInfiniteTimeNotebook = (await api.notebook.getAvailableInfiniteTime()).data
       await this.retrieveOriginNotebook()
     },
     methods: {
@@ -362,8 +361,6 @@
       async retrieveOriginNotebook () {
         if (this.originId >= 0) {
           this.origin = (await api.notebook.getById({id: this.originId})).data
-          let [model] = api.f.data(await api.notebook.getTenantNotebook())
-          this.availableInfiniteTimeNotebook = model.availableInfiniteTimeNotebook
           this.copyFromOrigin()
         }
       },
@@ -383,13 +380,15 @@
           this.partition = origin.partition
           this.containerImage = origin.containerImage
           this.entryPoint = origin.entryPoint
-          this.expiresIn = origin.expiresIn === 0 ? 0 : (origin.expiresIn / 60 / 60)
-          if (this.expiresIn === 0) {
+          if (origin.expiresIn === 0) {
             if (this.availableInfiniteTimeNotebook === true) {
               this.infiniteFlag = true
+              this.expiresIn = 8
             } else {
               this.expiresIn = 8
             }
+          } else {
+            this.expiresIn = origin.expiresIn / 60 / 60
           }
           for (let i = 0; i < origin.parents.length; i++) {
             this.parentIds.push(origin.parents[i].id)

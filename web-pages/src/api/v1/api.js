@@ -233,7 +233,7 @@ let api = {
     getEndpointById: gen.ApiV1NotebookByIdEndpointGet,
     getFilesById: gen.ApiV1NotebookByIdContainer_filesGet,
     postRerun: gen.ApiV1NotebookByIdRerunPost,
-    getTenantNotebook: gen.ApiV1NotebookTenantNotebookGet
+    getAvailableInfiniteTime: gen.ApiV1NotebookAvailable_infinite_timeGet
   },
 
   inference: {

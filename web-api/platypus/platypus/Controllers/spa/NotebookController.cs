@@ -408,10 +408,11 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="model">新規実行内容</param>
         /// <param name="nodeRepository">DI用</param>
+        /// <param name="tenantRepository">DI用</param>
         [HttpPost("run")]
         [Filters.PermissionFilter(MenuCode.Notebook)]
         [ProducesResponseType(typeof(SimpleOutputModel), (int)HttpStatusCode.Created)]
-        public async Task<IActionResult> Create([FromBody]CreateInputModel model, [FromServices]INodeRepository nodeRepository)
+        public async Task<IActionResult> Create([FromBody]CreateInputModel model, [FromServices]INodeRepository nodeRepository, [FromBody]ITenantRepository tenantRepository)
         {
             //データの入力チェック
             if (!ModelState.IsValid)
@@ -428,6 +429,14 @@ namespace Nssol.Platypus.Controllers.spa
                     return JsonNotFound($"DataSet ID {model.DataSetId} is not found.");
                 }
             }
+
+            // ノートブック無期限フラグのチェック
+            Tenant tenant = tenantRepository.Get(CurrentUserInfo.SelectedTenant.Id);
+            if (tenant.AvailableInfiniteTimeNotebook == false && model.ExpiresIn == 0)
+            {
+                return JsonBadRequest($"Tenant [{tenant.DisplayName}] is not allowed to run infinite time.");
+            }
+
             if (string.IsNullOrEmpty(model.Partition) == false)
             {
                 bool existPartition = await nodeRepository.IsEnablePartitionAsync(model.Partition, true);
@@ -665,10 +674,11 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="id">ノートブック履歴ID</param>
         /// <param name="model">再起動内容</param>
         /// <param name="nodeRepository">DI用</param>
+        /// <param name="tenantRepository">DI用</param>
         [HttpPost("{id}/rerun")]
         [Filters.PermissionFilter(MenuCode.Notebook)]
         [ProducesResponseType(typeof(SimpleOutputModel), (int)HttpStatusCode.Created)]
-        public async Task<IActionResult> Rerun(long? id, [FromBody]RerunInputModel model, [FromServices]INodeRepository nodeRepository)
+        public async Task<IActionResult> Rerun(long? id, [FromBody]RerunInputModel model, [FromServices]INodeRepository nodeRepository, [FromServices]ITenantRepository tenantRepository)
         {
             //データの入力チェック
             if (!ModelState.IsValid)
@@ -696,6 +706,14 @@ namespace Nssol.Platypus.Controllers.spa
                     return JsonNotFound($"DataSet ID {model.DataSetId} is not found.");
                 }
             }
+
+            // ノートブック無期限フラグのチェック
+            Tenant tenant = tenantRepository.Get(CurrentUserInfo.SelectedTenant.Id);
+            if (tenant.AvailableInfiniteTimeNotebook == false && model.ExpiresIn == 0)
+            {
+                return JsonBadRequest($"Tenant [{tenant.DisplayName}] is not allowed to run infinite time.");
+            }
+
             if (string.IsNullOrEmpty(notebookHistory.Partition) == false)
             {
                 bool existPartition = await nodeRepository.IsEnablePartitionAsync(notebookHistory.Partition, true);
@@ -766,7 +784,7 @@ namespace Nssol.Platypus.Controllers.spa
             notebookHistoryRepository.Update(notebookHistory);
             unitOfWork.Commit();
 
-            var result = await clusterManagementLogic.RunNotebookContainerAsync(notebookHistory); // TODO:暫定的に親学習はnull
+            var result = await clusterManagementLogic.RunNotebookContainerAsync(notebookHistory);
             if (result.IsSuccess == false)
             {
                 //コンテナの起動に失敗した状態。エラーを出力して、保存したノートブック履歴も削除する。
@@ -796,23 +814,22 @@ namespace Nssol.Platypus.Controllers.spa
         }
 
         /// <summary>
-        /// 選択中のテナントの情報を取得する
-        /// <param name="tenantRepository">DI用</param>
+        /// 選択中のテナントのノートブック無期限利用可否フラグを取得する
         /// </summary>
-        [HttpGet("tenant/notebook")]
+        /// <param name="tenantRepository">DI用</param>
+        [HttpGet("available-infinite-time")]
         [Filters.PermissionFilter(MenuCode.Notebook)]
-        [ProducesResponseType(typeof(DetailsOutputModel), (int)HttpStatusCode.OK)]
-        public IActionResult GetAvailableInfiniteTimeNotebook([FromServices]ITenantRepository tenantRepository)
+        [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
+        public IActionResult GetAvailableInfiniteTime([FromServices]ITenantRepository tenantRepository)
         {
             Tenant tenant = tenantRepository.Get(CurrentUserInfo.SelectedTenant.Id);
             if (tenant == null)
             {
                 return JsonNotFound($"Tenant Id {CurrentUserInfo.SelectedTenant.Id} is not found.");
             }
+            bool availableinfinitetime = tenant.AvailableInfiniteTimeNotebook;
 
-            var model = new Nssol.Platypus.ApiModels.TenantApiModels.DetailsOutputModel(tenant);
-
-            return JsonOK(model);
+            return JsonOK(availableinfinitetime);
         }
     }
 }

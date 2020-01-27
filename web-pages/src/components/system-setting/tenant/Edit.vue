@@ -40,7 +40,7 @@
                                        v-on:changeDefaultId="form.defaultRegistryId = $event"/>
       </div>
 
-      <h3>ノートブック生存期間無制限</h3>
+      <h3>ノートブック生存期間無期限</h3>
       <div class="margin"><br>
         <el-switch v-model="form.availableInfiniteTimeNotebook"
                    style="width: 100%;"
