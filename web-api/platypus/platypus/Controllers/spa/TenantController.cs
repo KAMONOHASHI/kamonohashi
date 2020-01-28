@@ -222,9 +222,12 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="id">テナントID</param>
         [HttpDelete("{id}")]
         [PermissionFilter(MenuCode.Tenant)]
-        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType(typeof(DeleteOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> DeleteTenantAsync(long id)
         {
+            // 返却データ
+            DeleteOutputModel result = new DeleteOutputModel();
+
             // 入力モデル・データのチェック
             if (!ModelState.IsValid)
                 return JsonBadRequest($"Invalid inputs: illegal input model");
@@ -305,10 +308,11 @@ namespace Nssol.Platypus.Controllers.spa
                 // コンテナ起動に失敗した場合エラーログを出力し、処理の中断は行わない。
                 var msg = $"Failed to run container for delete minio bucket. You should delete bucket minio [{tenant.Name}] by manual operation.";
                 LogError(msg);
+                result.ContainerWarnMsg = msg;
             }
 
             // 結果の返却
-            return JsonNoContent();
+            return JsonOK(result);
         }
 
         /// <summary>

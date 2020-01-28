@@ -164,8 +164,13 @@
           let params = {
             id: this.id
           }
-          await api.tenant.admin.delete(params)
-          this.emitDone()
+          let msg = (await api.tenant.admin.delete(params)).data.containerWarnMsg
+          if (msg) {
+            // コンテナ起動に失敗した場合、警告メッセージを表示する
+            this.emitError(msg)
+          } else {
+            this.emitDone()
+          }
         } catch (e) {
           this.error = e
         }
@@ -178,6 +183,9 @@
       },
       emitDone () {
         this.$emit('done')
+      },
+      emitError (msg) {
+        this.$emit('error', msg)
       }
     }
   }

@@ -6,13 +6,13 @@ metadata:
 data:
   prepare: 
   main: |
-    bash /kqi/scripts/common/wait-ready
     echo "------------------------- [KAMONOHASHI Main] delete bucket ${KQI_TENANT_NAME} -------------------------"
     echo "deleting bucket [${KQI_TENANT_NAME}]"
     cd /kqi/tenant
     rm -rf ${KQI_TENANT_NAME}
-    echo "bucket [${KQI_TENANT_NAME}] deletion completed."
-    bash /kqi/scripts/common/notify-finish $?
-  finish: |
-    bash /kqi/scripts/common/prepare-kqi-conf
-    bash /kqi/scripts/common/wait-finish
+    if [ $? -ne 0 ]; then
+        echo "Bucket deletion failed. You should delete bucket [${KQI_TENANT_NAME}] by manual operation."
+    else
+        echo "Bucket [${KQI_TENANT_NAME}] deletion completed."
+    fi
+  finish:
