@@ -1092,8 +1092,6 @@ namespace Nssol.Platypus.Logic
         public async Task<ContainerInfo> RunDeletingTenantDataContainerAsync(Tenant tenant)
         {
             //コンテナ名は自動生成
-            //使用できる文字など、命名規約はコンテナ管理サービス側によるが、
-            //ユーザ入力値検証の都合でどうせ決め打ちしないといけないので、ロジック層で作ってしまう
             string containerName = $"delete-tenant-{tenant.Name}-{DateTime.Now.ToString("yyyyMMddHHmmssffffff")}";
 
             // KQI管理者権限用の認証トークンを取得する。
@@ -1104,8 +1102,8 @@ namespace Nssol.Platypus.Logic
                 return new ContainerInfo() { Status = ContainerStatus.Forbidden };
             }
 
-            // アクセスレベルがPublicのノードを取得
-            var nodes = GetPublicNode();
+            // アクセスレベルがPublicとPrivateのノードを取得
+            var nodes = GetPublicAndPrivateNode();
             if (nodes == null || nodes.Count == 0)
             {
                 //デプロイ可能なノードがゼロなら、エラー扱い
@@ -1402,11 +1400,11 @@ namespace Nssol.Platypus.Logic
         }
 
         /// <summary>
-        /// アクセスレベルがPublicのノード一覧を取得する
+        /// アクセスレベルがPublicとPrivateのノード一覧を取得する
         /// </summary>
-        private List<string> GetPublicNode()
+        private List<string> GetPublicAndPrivateNode()
         {
-            return nodeRepository.GetAll().Where(n => n.AccessLevel == NodeAccessLevel.Public).Select(n => n.Name).ToList();
+            return nodeRepository.GetAll().Where(n => n.AccessLevel == NodeAccessLevel.Public || n.AccessLevel == NodeAccessLevel.Private).Select(n => n.Name).ToList();
         }
         #endregion
 
