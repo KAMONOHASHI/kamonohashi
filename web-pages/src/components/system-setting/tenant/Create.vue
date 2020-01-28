@@ -18,6 +18,12 @@
         <el-form-item label="表示名" prop="displayName">
           <el-input v-model="form.displayName"/>
         </el-form-item>
+        <el-form-item label="ノートブック無期限実行許可" required>
+          <el-switch v-model="form.availableInfiniteTimeNotebook"
+                     style="width: 100%;"
+                     inactive-text="NG"
+                     active-text="OK"/>
+        </el-form-item>
       </div>
 
       <h3>ストレージ情報</h3>
@@ -39,14 +45,6 @@
         <pl-registry-endpoint-selector v-model="form.registryIds"
                                        v-bind:defaultId="form.defaultRegistryId"
                                        v-on:changeDefaultId="form.defaultRegistryId = $event"/>
-      </div>
-
-      <h3>ノートブック生存期間無期限</h3>
-      <div class="margin"><br>
-        <el-switch v-model="form.availableInfiniteTimeNotebook"
-                   style="width: 100%;"
-                   inactive-text="NG"
-                   active-text="OK"/>
       </div>
 
       <el-row>

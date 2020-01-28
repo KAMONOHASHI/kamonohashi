@@ -41,7 +41,7 @@
                   </el-form-item>
                 </el-col>
                 <el-col :span="18" :offset="3">
-                <div v-if = "availableInfiniteTimeNotebook === true">
+                <div v-if="availableInfiniteTimeNotebook === true">
                   <el-form-item label="生存期間無期限">
                     <el-switch v-model="infiniteFlag"
                              style="width: 100%;"
@@ -49,7 +49,7 @@
                              active-text="ON"/>
                   </el-form-item>
                 </div>
-                  <div v-show = "infiniteFlag === false">
+                  <div v-show="infiniteFlag === false">
                   <el-form-item label="生存期間(h)" required>
                     <el-slider
                       class="el-input"
@@ -122,7 +122,7 @@
                   </el-form-item>
                 </el-col>
                 <el-col :span="18" :offset="3">
-                <div v-if = "availableInfiniteTimeNotebook === true">
+                <div v-if="availableInfiniteTimeNotebook === true">
                   <el-form-item label="生存期間無期限">
                     <el-switch v-model="infiniteFlag"
                              style="width: 100%;"
@@ -130,7 +130,7 @@
                              active-text="ON"/>
                   </el-form-item>
                 </div>
-                <div v-show = "infiniteFlag === false">
+                <div v-show="infiniteFlag === false">
                   <el-form-item label="生存期間(h)" required>
                     <el-slider
                       class="el-input"

@@ -412,7 +412,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPost("run")]
         [Filters.PermissionFilter(MenuCode.Notebook)]
         [ProducesResponseType(typeof(SimpleOutputModel), (int)HttpStatusCode.Created)]
-        public async Task<IActionResult> Create([FromBody]CreateInputModel model, [FromServices]INodeRepository nodeRepository, [FromBody]ITenantRepository tenantRepository)
+        public async Task<IActionResult> Create([FromBody]CreateInputModel model, [FromServices]INodeRepository nodeRepository, [FromServices]ITenantRepository tenantRepository)
         {
             //データの入力チェック
             if (!ModelState.IsValid)
