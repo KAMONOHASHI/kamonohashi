@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Nssol.Platypus.ApiModels.TenantApiModels
+﻿namespace Nssol.Platypus.ApiModels.TenantApiModels
 {
     public class DeleteOutputModel
     {
