@@ -230,19 +230,32 @@ namespace Nssol.Platypus.Controllers.spa
 
             // 入力モデル・データのチェック
             if (!ModelState.IsValid)
+            {
                 return JsonBadRequest($"Invalid inputs: illegal input model");
+            }
             // 引数 id のエントリーが存在しない
             Tenant tenant = tenantRepository.Get(id);
             if (tenant == null)
+            {
                 return JsonNotFound($"Invalid inputs: not found tanant id [{id}].");
+            }
 
+            // "sandbox"テナントは削除させない
+            if (tenant.Name == ApplicationConst.DefaultFirstTenantName)
+            {
+                return JsonBadRequest($"Tenant [{ApplicationConst.DefaultFirstTenantName}] is not allowed to delete.");
+            }
             // 自分自身の接続中のテナントが対象なら削除不可
             if (CurrentUserInfo.SelectedTenant.Id == id)
+            {
                 return JsonConflict($"Illegal state: CurrentUserInfo.SelectedTenant.Id is [{id}].");
+            }
             // 削除対象のテナントでコンテナ稼働中の場合は削除しない
             var containers = await clusterManagementLogic.GetAllContainerDetailsInfosAsync();
             if (!containers.IsSuccess)
+            {
                 JsonError(HttpStatusCode.ServiceUnavailable, $"ClusterManagementLogic#GetAllContainerDetailsInfosAsync() retusns error. tenantName=[{tenant.Name}]");
+            }
             else if (containers.Value.Count() > 0)
             {
                 var runningCount = 0; // Where().Count() で個数を一括取得できるが、ステータスを確認するかもしれないので foreach 文とした。
@@ -250,11 +263,15 @@ namespace Nssol.Platypus.Controllers.spa
                 {
                     // ステータスによらず、全て稼働中と見做す
                     if (c.TenantName.Equals(tenant.Name))
+                    {
                         runningCount += 1;
+                    }
                 }
 
                 if (runningCount > 0)
+                {
                     return JsonConflict($"Running containers exists deleting tenant. tenant name=[{tenant.Name}], running container count=[{runningCount}]");
+                }
                 containers.Value.Where(x => x.TenantName.Equals(tenant.Name));
             }
 
