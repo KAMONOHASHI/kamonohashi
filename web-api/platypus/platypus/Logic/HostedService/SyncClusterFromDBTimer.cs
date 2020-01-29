@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using Nssol.Platypus.DataAccess.Core;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces;
+using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Infrastructure.Options;
 using Nssol.Platypus.Infrastructure.Types;
 using Nssol.Platypus.Logic.Interfaces;
@@ -10,6 +11,7 @@ using Nssol.Platypus.ServiceModels.ClusterManagementModels;
 using Nssol.Platypus.Services;
 using Nssol.Platypus.Services.Interfaces;
 using System;
+using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Logic.HostedService
 {
@@ -28,6 +30,7 @@ namespace Nssol.Platypus.Logic.HostedService
         private readonly DockerHubRegistryService dockerHubRegistryService;
         private readonly PrivateDockerRegistryService privateDockerRegistryService;
         private readonly NvidiaGPUCloudRegistryService nvidiaGPUCloudRegistryService;
+        private readonly IClusterManagementLogic clusterManagementLogic;
         private readonly IStorageLogic storageLogic;
         private readonly ContainerManageOptions containerManageOptions;
 
@@ -44,6 +47,7 @@ namespace Nssol.Platypus.Logic.HostedService
             DockerHubRegistryService dockerHubRegistryService,
             PrivateDockerRegistryService privateDockerRegistryService,
             NvidiaGPUCloudRegistryService nvidiaGPUCloudRegistryService,
+            IClusterManagementLogic clusterManagementLogic,
             IStorageLogic storageLogic,
             IOptions<ContainerManageOptions> containerManageOptions,
             IOptions<SyncClusterFromDBOptions> SyncClusterFromDBOptions,
@@ -60,6 +64,7 @@ namespace Nssol.Platypus.Logic.HostedService
             this.dockerHubRegistryService = dockerHubRegistryService;
             this.privateDockerRegistryService = privateDockerRegistryService;
             this.nvidiaGPUCloudRegistryService = nvidiaGPUCloudRegistryService;
+            this.clusterManagementLogic = clusterManagementLogic;
             this.storageLogic = storageLogic;
             this.containerManageOptions = containerManageOptions.Value;
         }
@@ -212,14 +217,13 @@ namespace Nssol.Platypus.Logic.HostedService
                 var nodes = nodeRepository.GetAll();
                 foreach (Node node in nodes)
                 {
-                    bool ret = clusterManagementService.SetNodeLabelAsync(node.Name, containerManageOptions.ContainerLabelPartition, node.Partition).Result;
+                    bool ret = clusterManagementLogic.UpdatePartitionLabelAsync(node.Name, node.Partition).Result;
                     if (!ret)
                     {
                         LogError($"DB のノード情報 [{node.Name}] に対応するパーティションを Cluster(k8s) へ同期させる処理に失敗しました。");
                         continue;
                     }
-                    string tensorBoardEnabledStr = node.TensorBoardEnabled ? "true" : "";
-                    ret = clusterManagementService.SetNodeLabelAsync(node.Name, containerManageOptions.ContainerLabelTensorBoardEnabled, tensorBoardEnabledStr).Result;
+                    ret = clusterManagementLogic.UpdateTensorBoardEnabledLabelAsync(node.Name, node.TensorBoardEnabled).Result;
                     if (ret)
                     {
                         LogDebug($"DB のノード情報 [{node.Name}] に対応する TensorBoard 可否設定を Cluster(k8s) へ同期させました。");
@@ -228,8 +232,7 @@ namespace Nssol.Platypus.Logic.HostedService
                     {
                         LogError($"DB のノード情報 [{node.Name}] に対応する TensorBoard 可否設定を Cluster(k8s) へ同期させる処理に失敗しました。");
                     }
-                    string notebookEnabledStr = node.NotebookEnabled ? "true" : "";
-                    ret = clusterManagementService.SetNodeLabelAsync(node.Name, containerManageOptions.ContainerLabelNotebookEnabled, notebookEnabledStr).Result;
+                    ret = clusterManagementLogic.UpdateNotebookEnabledLabelAsync(node.Name, node.NotebookEnabled).Result;
                     if (ret)
                     {
                         LogDebug($"DB のノード情報 [{node.Name}] に対応する Notebook 可否設定を Cluster(k8s) へ同期させました。");
@@ -237,6 +240,17 @@ namespace Nssol.Platypus.Logic.HostedService
                     else
                     {
                         LogError($"DB のノード情報 [{node.Name}] に対応する Notebook 可否設定を Cluster(k8s) へ同期させる処理に失敗しました。");
+                    }
+
+                    // テナントの実行可否設定を Cluster(k8s) へ同期する
+                    int failedCount = SyncTenantEnabledLabel(node).Result;
+                    if (failedCount == 0)
+                    {
+                        LogInfo($"DB のノード [{node.Name}] に対するテナントの実行可否設定情報を Cluster(k8s) へ同期させる処理は終了しました。");
+                    }
+                    else
+                    {
+                        LogError($"DB のノード [{node.Name}] に対するテナントの実行可否設定情報 {failedCount} 件の Cluster(k8s) へ同期させる処理に失敗しました。");
                     }
                 }
                 LogInfo("DB のテナント・レジストリ・ノード情報を Cluster(k8s) へ同期させる処理は終了しました。");
@@ -273,6 +287,51 @@ namespace Nssol.Platypus.Logic.HostedService
             }
             // 将来的に RegistryServiceType が増えたら追加実装すること。
             return null;
+        }
+
+        /// <summary>
+        /// ノードにテナントの実行可否設定を Cluster(k8s) へ同期する
+        /// </summary>
+        /// <param name="node">同期させるノード情報</param>
+        /// <returns>同期処理に失敗した回数</returns>
+        private async Task<int> SyncTenantEnabledLabel(Node node)
+        {
+            // 失敗した回数
+            int failedCount = 0;
+
+            // まずは全てのアサイン情報を削除する
+            var tenants = tenantRepository.GetAllTenants();
+            foreach (Tenant tenant in tenants)
+            {
+                await clusterManagementLogic.UpdateTenantEnabledLabelAsync(node.Name, tenant.Name, false);
+            }
+
+            // アクセスレベルが "Disable" 以外であれば、k8sとの同期を行う
+            if (node.AccessLevel != NodeAccessLevel.Disabled)
+            {
+                // アクセスレベルが "Private" の場合、可能なテナント一覧を取得する
+                if (node.AccessLevel == NodeAccessLevel.Private)
+                {
+                    tenants = nodeRepository.GetAssignedTenants(node.Id);
+                }
+
+                // テナント情報をアサインする
+                if (tenants != null)
+                {
+                    foreach (Tenant tenant in tenants)
+                    {
+                        bool ret = clusterManagementLogic.UpdateTenantEnabledLabelAsync(node.Name, tenant.Name, true).Result;
+                        if (!ret)
+                        {
+                            LogError($"ノード [{node.Name}] にテナント [{tenant.Name}] のアクセス許可を Cluster(k8s) へ同期させる処理に失敗しました。");
+                            // 失敗数を更新する
+                            failedCount++;
+                        }
+                    }
+                }
+            }
+
+            return failedCount;
         }
     }
 }
