@@ -127,7 +127,7 @@ namespace Nssol.Platypus.Controllers.spa
             if (model.DefaultGitId != null && model.GitIds.Contains(model.DefaultGitId.Value) == false)
             {
                 //デフォルトGitがGit一覧の中になかったらエラー
-                return JsonConflict($"Default Gity ID {model.DefaultGitId.Value} does NOT exist in selected gits.");
+                return JsonConflict($"Default Git ID {model.DefaultGitId.Value} does NOT exist in selected gits.");
             }
             if (model.DefaultRegistryId != null && model.RegistryIds.Contains(model.DefaultRegistryId.Value) == false)
             {
@@ -229,6 +229,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// テナントを削除する。(他のユーザが未ログイン状態の時間帯で実施するのが望ましい)
         /// </summary>
         /// <param name="id">テナントID</param>
+        /// <param name="nodeRepository">DI用</param>
         [HttpDelete("{id}")]
         [PermissionFilter(MenuCode.Tenant)]
         [ProducesResponseType(typeof(DeleteOutputModel), (int)HttpStatusCode.OK)]
@@ -338,9 +339,9 @@ namespace Nssol.Platypus.Controllers.spa
             var resultContainer = await clusterManagementLogic.RunDeletingTenantDataContainerAsync(tenant);
             if (resultContainer == null || resultContainer.Status.Succeed() == false)
             {
-                // コンテナ起動に失敗した場合エラーログを出力し、処理の中断は行わない。
+                // コンテナ起動に失敗した場合警告としてメッセージを格納し処理の中断は行わない。
                 var msg = $"Failed to run container for delete minio bucket. You should delete bucket minio [{tenant.Name}] by manual operation.";
-                LogError(msg);
+                LogWarning(msg);
                 result.ContainerWarnMsg = msg;
             }
 
