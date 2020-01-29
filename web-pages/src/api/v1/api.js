@@ -73,7 +73,6 @@ let api = {
       put: gen.ApiV1AdminNodesByIdPut,
       delete: gen.ApiV1AdminNodesByIdDelete,
       postSyncFromDb: gen.ApiV1AdminNodesSync_cluster_from_dbPost,
-      postSyncFromCluster: gen.ApiV1AdminNodesSync_db_from_clusterPost,
       getAccessLevel: gen.ApiV1AdminNode_access_levelsGet
     }
   },
@@ -232,7 +231,8 @@ let api = {
     getEventsById: gen.ApiV1NotebookByIdEventsGet,
     getEndpointById: gen.ApiV1NotebookByIdEndpointGet,
     getFilesById: gen.ApiV1NotebookByIdContainer_filesGet,
-    postRerun: gen.ApiV1NotebookByIdRerunPost
+    postRerun: gen.ApiV1NotebookByIdRerunPost,
+    getAvailableInfiniteTime: gen.ApiV1NotebookAvailable_infinite_timeGet
   },
 
   inference: {

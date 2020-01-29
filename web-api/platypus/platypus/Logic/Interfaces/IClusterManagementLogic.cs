@@ -159,6 +159,16 @@ namespace Nssol.Platypus.Logic.Interfaces
         Task<bool> UpdateNotebookEnabledLabelAsync(string nodeName, bool enabled);
 
         /// <summary>
+        /// テナントの実行可否設定を更新する
+        /// </summary>
+        /// <param name="nodeName">ノード名</param>
+        /// <param name="tenantName">テナント名</param>
+        /// <param name="enabled">実行可否</param>
+        /// <returns>更新結果、更新できた場合、true</returns>
+        Task<bool> UpdateTenantEnabledLabelAsync(string nodeName, string tenantName, bool enabled);
+
+
+        /// <summary>
         /// 指定されたテナントのクォータ設定をクラスタに反映させる。
         /// </summary>
         /// <returns>更新結果、更新できた場合、true</returns>

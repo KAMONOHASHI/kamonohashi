@@ -3669,45 +3669,6 @@ export const ApiV1AdminNodesByIdDeleteURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
- * ノード情報をClusterからDBへ同期させる。
- * request: ApiV1AdminNodesSync_db_from_clusterPost
- * url: ApiV1AdminNodesSync_db_from_clusterPostURL
- * method: ApiV1AdminNodesSync_db_from_clusterPost_TYPE
- * raw_url: ApiV1AdminNodesSync_db_from_clusterPost_RAW_URL
- */
-export const ApiV1AdminNodesSync_db_from_clusterPost = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/api/v1/admin/nodes/sync-db-from-cluster'
-  let body
-  let queryParameters = {}
-  let form = {}
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('post', domain + path, body, queryParameters, form, config)
-}
-export const ApiV1AdminNodesSync_db_from_clusterPost_RAW_URL = function() {
-  return '/api/v1/admin/nodes/sync-db-from-cluster'
-}
-export const ApiV1AdminNodesSync_db_from_clusterPost_TYPE = function() {
-  return 'post'
-}
-export const ApiV1AdminNodesSync_db_from_clusterPostURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/api/v1/admin/nodes/sync-db-from-cluster'
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
  * ノード情報をDBからClusterへ同期させる
  * request: ApiV1AdminNodesSync_cluster_from_dbPost
  * url: ApiV1AdminNodesSync_cluster_from_dbPostURL
@@ -4306,6 +4267,45 @@ export const ApiV1NotebookByIdRerunPostURL = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v1/notebook/{id}/rerun'
   path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 選択中のテナントのノートブック無期限利用可否フラグを取得する
+ * request: ApiV1NotebookAvailable_infinite_timeGet
+ * url: ApiV1NotebookAvailable_infinite_timeGetURL
+ * method: ApiV1NotebookAvailable_infinite_timeGet_TYPE
+ * raw_url: ApiV1NotebookAvailable_infinite_timeGet_RAW_URL
+ */
+export const ApiV1NotebookAvailable_infinite_timeGet = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v1/notebook/available-infinite-time'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV1NotebookAvailable_infinite_timeGet_RAW_URL = function() {
+  return '/api/v1/notebook/available-infinite-time'
+}
+export const ApiV1NotebookAvailable_infinite_timeGet_TYPE = function() {
+  return 'get'
+}
+export const ApiV1NotebookAvailable_infinite_timeGetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v1/notebook/available-infinite-time'
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]

@@ -366,7 +366,7 @@ namespace Nssol.Platypus.Logic
                 // 制約に追加
                 inputModel.ConstraintList = new Dictionary<string, List<string>>()
                 {
-                    { containerOptions.ContainerLabelHostName, nodes }
+                    { TenantName, new List<string> { "true" } } // tenantNameの許可がされているサーバでのみ実行
                 };
             }
 
@@ -535,7 +535,7 @@ namespace Nssol.Platypus.Logic
             //使用できるノードを制約に追加
             inputModel.ConstraintList = new Dictionary<string, List<string>>()
             {
-                { containerOptions.ContainerLabelHostName, nodes }
+                { TenantName, new List<string> { "true" } } // tenantNameの許可がされているサーバでのみ実行
             };
 
             if (string.IsNullOrEmpty(trainHistory.Partition) == false)
@@ -701,7 +701,7 @@ namespace Nssol.Platypus.Logic
             //使用できるノードを制約に追加
             inputModel.ConstraintList = new Dictionary<string, List<string>>()
             {
-                { containerOptions.ContainerLabelHostName, nodes }
+                { TenantName, new List<string> { "true" } } // tenantNameの許可がされているサーバでのみ実行
             };
 
             if (string.IsNullOrEmpty(inferenceHistory.Partition) == false)
@@ -800,7 +800,7 @@ namespace Nssol.Platypus.Logic
                 MainContainerEnvList = notEditableEnvList, // 上書き不可の環境変数を設定
 
                 ConstraintList = new Dictionary<string, List<string>>() {
-                    { containerOptions.ContainerLabelHostName, nodes }, //使用できるノードを取得し、制約に追加
+                    { TenantName, new List<string> { "true" } }, // tenantNameの許可がされているサーバでのみ実行
                     { containerOptions.ContainerLabelTensorBoardEnabled, new List<string> { "true" } } // tensorboardの実行が許可されているサーバでのみ実行,
                 },
                 PortMappings = new PortMappingModel[]
@@ -1056,7 +1056,7 @@ namespace Nssol.Platypus.Logic
             //使用できるノードを制約に追加
             inputModel.ConstraintList = new Dictionary<string, List<string>>()
             {
-                { containerOptions.ContainerLabelHostName, nodes },
+                { TenantName, new List<string> { "true" } }, // tenantNameの許可がされているサーバでのみ実行
                 { containerOptions.ContainerLabelNotebookEnabled, new List<string> { "true" } } // notebookの実行が許可されているサーバでのみ実行
             };
 
@@ -1262,6 +1262,19 @@ namespace Nssol.Platypus.Logic
         {
             string value = enabled ? "true" : "";
             return await this.clusterManagementService.SetNodeLabelAsync(nodeName, containerOptions.ContainerLabelNotebookEnabled, value);
+        }
+
+        /// <summary>
+        /// テナントの実行可否設定を更新する
+        /// </summary>
+        /// <param name="nodeName">ノード名</param>
+        /// <param name="tenantName">テナント名</param>
+        /// <param name="enabled">実行可否</param>
+        /// <returns>更新結果、更新できた場合、true</returns>
+        public async Task<bool> UpdateTenantEnabledLabelAsync(string nodeName, string tenantName, bool enabled)
+        {
+            string value = enabled ? "true" : "";
+            return await this.clusterManagementService.SetNodeLabelAsync(nodeName, tenantName, value);
         }
 
         /// <summary>

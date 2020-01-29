@@ -104,7 +104,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPost]
         [PermissionFilter(MenuCode.Tenant)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.Created)]
-        public async Task<IActionResult> CreateForTenant([FromBody]CreateInputModel model)
+        public async Task<IActionResult> CreateForTenant([FromBody]CreateInputModel model, [FromServices] INodeRepository nodeRepository)
         {
             //データの入力チェック
             if (!ModelState.IsValid)
@@ -140,7 +140,8 @@ namespace Nssol.Platypus.Controllers.spa
                 Name = model.TenantName,
                 DisplayName = model.DisplayName,
                 StorageBucket = model.TenantName,
-                StorageId = model.StorageId
+                StorageId = model.StorageId,
+                AvailableInfiniteTimeNotebook = model.AvailableInfiniteTimeNotebook
             };
 
             Git git = null;
@@ -204,6 +205,14 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonError(HttpStatusCode.ServiceUnavailable, "Couldn't create cluster master namespace. Please check the configuration to the connect cluster manager service.");
             }
+
+            // アクセスレベルが "Public" のノードにアサイン
+            var nodes = nodeRepository.GetAll().Where(n => n.AccessLevel == NodeAccessLevel.Public);
+            foreach (Node node in nodes)
+            {
+                await clusterManagementLogic.UpdateTenantEnabledLabelAsync(node.Name, tenant.Name, true);
+            }
+
             //初期データ投入処理
             commonDiLogic.InitializeTenant(tenant);
 
@@ -223,7 +232,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpDelete("{id}")]
         [PermissionFilter(MenuCode.Tenant)]
         [ProducesResponseType(typeof(DeleteOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> DeleteTenantAsync(long id)
+        public async Task<IActionResult> DeleteTenantAsync(long id, [FromServices] INodeRepository nodeRepository)
         {
             // 返却データ
             DeleteOutputModel result = new DeleteOutputModel();
@@ -310,6 +319,13 @@ namespace Nssol.Platypus.Controllers.spa
                 LogWarning(msg);
             }
 
+            // 全てのアサイン情報を削除する
+            var nodes = nodeRepository.GetAll();
+            foreach (Node node in nodes)
+            {
+                await clusterManagementLogic.UpdateTenantEnabledLabelAsync(node.Name, tenant.Name, false);
+            }
+
             // テナントの削除（関連するDBのエントリも自動削除）
             tenantRepository.DeleteTenant(tenant);
 
@@ -377,6 +393,7 @@ namespace Nssol.Platypus.Controllers.spa
 
             tenant.DisplayName = model.DisplayName;
             tenant.StorageId = model.StorageId;
+            tenant.AvailableInfiniteTimeNotebook = model.AvailableInfiniteTimeNotebook;
 
             //コンテナ管理サービス作業
             //テナントを登録
