@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Nssol.Platypus.ApiModels.NodeApiModels;
 using Nssol.Platypus.Controllers.Util;
 using Nssol.Platypus.DataAccess.Core;
@@ -24,16 +25,19 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly INodeRepository nodeRepository;
         private readonly IUnitOfWork unitOfWork;
         private readonly IClusterManagementLogic clusterManagementLogic;
+        private readonly ContainerManageOptions containerManageOptions;
 
         public NodeController(
             INodeRepository nodeRepository,
             IUnitOfWork unitOfWork,
             IClusterManagementLogic clusterManagementLogic,
+            IOptions<ContainerManageOptions> containerManageOptions,
             IHttpContextAccessor accessor) : base(accessor)
         {
             this.nodeRepository = nodeRepository;
             this.unitOfWork = unitOfWork;
             this.clusterManagementLogic = clusterManagementLogic;
+            this.containerManageOptions = containerManageOptions.Value;
         }
 
         /// <summary>
@@ -165,6 +169,9 @@ namespace Nssol.Platypus.Controllers.spa
                     await clusterManagementLogic.UpdateNotebookEnabledLabelAsync(node.Name, true);
                 }
 
+                // KQI管理者用名前空間の実行を許可する
+                await clusterManagementLogic.UpdateTenantEnabledLabelAsync(node.Name, containerManageOptions.KqiAdminNamespace, true);
+
                 if (node.AccessLevel == NodeAccessLevel.Private)
                 {
                     //テナントをアサイン
@@ -253,6 +260,9 @@ namespace Nssol.Platypus.Controllers.spa
 
                 await clusterManagementLogic.UpdateNotebookEnabledLabelAsync(node.Name, node.NotebookEnabled);
 
+                // KQI管理者用名前空間の実行を許可する
+                await clusterManagementLogic.UpdateTenantEnabledLabelAsync(node.Name, containerManageOptions.KqiAdminNamespace, true);
+
                 if (node.AccessLevel == NodeAccessLevel.Private)
                 {
                     // テナントをアサイン
@@ -278,6 +288,11 @@ namespace Nssol.Platypus.Controllers.spa
                         await clusterManagementLogic.UpdateTenantEnabledLabelAsync(node.Name, tenant.Name, true);
                     }
                 }
+            }
+            else
+            {
+                // アクセスレベルが "Disable" の場合、KQI管理者用名前空間の実行を拒否する
+                await clusterManagementLogic.UpdateTenantEnabledLabelAsync(node.Name, containerManageOptions.KqiAdminNamespace, false);
             }
 
             unitOfWork.Commit();
@@ -339,6 +354,9 @@ namespace Nssol.Platypus.Controllers.spa
                 await clusterManagementLogic.UpdateTenantEnabledLabelAsync(node.Name, tenant.Name, false);
             }
 
+            // KQI管理者用名前空間のアサイン情報を削除する
+            await clusterManagementLogic.UpdateTenantEnabledLabelAsync(node.Name, containerManageOptions.KqiAdminNamespace, false);
+
             nodeRepository.ResetAssinedTenants(node.Id);
             nodeRepository.Delete(node);
             unitOfWork.Commit();
@@ -375,9 +393,12 @@ namespace Nssol.Platypus.Controllers.spa
                     await clusterManagementLogic.UpdateTenantEnabledLabelAsync(node.Name, tenant.Name, false);
                 }
 
-                // アクセスレベルが "Disable" 以外であれば、k8sとの同期を行う
+                // アクセスレベルが "Disable" 以外であれば、アクセス可能なテナント情報の同期を行う
                 if (node.AccessLevel != NodeAccessLevel.Disabled)
                 {
+                    // KQI管理者用名前空間の実行を許可する
+                    await clusterManagementLogic.UpdateTenantEnabledLabelAsync(node.Name, containerManageOptions.KqiAdminNamespace, true);
+
                     // アクセスレベルが "Private" の場合、可能なテナント一覧を取得する
                     if (node.AccessLevel == NodeAccessLevel.Private)
                     {
@@ -396,6 +417,11 @@ namespace Nssol.Platypus.Controllers.spa
                             }
                         }
                     }
+                }
+                else
+                {
+                    // アクセスレベルが "Disable" の場合、KQI管理者用名前空間の実行を拒否する
+                    await clusterManagementLogic.UpdateTenantEnabledLabelAsync(node.Name, containerManageOptions.KqiAdminNamespace, false);
                 }
             }
 

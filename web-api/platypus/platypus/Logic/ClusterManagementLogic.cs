@@ -801,7 +801,7 @@ namespace Nssol.Platypus.Logic
 
                 ConstraintList = new Dictionary<string, List<string>>() {
                     { TenantName, new List<string> { "true" } }, // tenantNameの許可がされているサーバでのみ実行
-                    { containerOptions.ContainerLabelTensorBoardEnabled, new List<string> { "true" } } // tensorboardの実行が許可されているサーバでのみ実行,
+                    { containerOptions.ContainerLabelTensorBoardEnabled, new List<string> { "true" } } // tensorboardの実行が許可されているサーバでのみ実行
                 },
                 PortMappings = new PortMappingModel[]
                 {
@@ -1163,7 +1163,8 @@ namespace Nssol.Platypus.Logic
                 MainContainerEnvList = notEditableEnvList, // 上書き不可の環境変数を設定
 
                 ConstraintList = new Dictionary<string, List<string>>() {
-                    { containerOptions.ContainerLabelHostName, nodes } //使用できるノードを取得し、制約に追加
+                    // KQI管理者用名前空間の実行が許可されているサーバ（アクセスレベルが "Public" と "Private"）でのみ実行
+                    { containerOptions.KqiAdminNamespace, new List<string> { "true" } }
                 },
                 ClusterManagerToken = adminToken,
                 IsNodePort = true //ランダムポート指定。アクセス先ポートが動的に決まるようになる。
