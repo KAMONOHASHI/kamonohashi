@@ -3,10 +3,8 @@
     name: nvidia-docker
     state: absent
 
-- name: Add nvidia docker Apt signing key, uses whichever key is at the URL
-  apt_key:
-    url: https://nvidia.github.io/nvidia-docker/gpgkey
-    state: present
+- name: Add or update nvidia docker Apt signing key, uses whichever key is at the URL
+  shell: curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -
 
 - name: add nvidia docker apt repo
   get_url:

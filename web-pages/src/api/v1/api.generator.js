@@ -4276,6 +4276,45 @@ export const ApiV1NotebookByIdRerunPostURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * 選択中のテナントのノートブック無期限利用可否フラグを取得する
+ * request: ApiV1NotebookAvailable_infinite_timeGet
+ * url: ApiV1NotebookAvailable_infinite_timeGetURL
+ * method: ApiV1NotebookAvailable_infinite_timeGet_TYPE
+ * raw_url: ApiV1NotebookAvailable_infinite_timeGet_RAW_URL
+ */
+export const ApiV1NotebookAvailable_infinite_timeGet = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v1/notebook/available-infinite-time'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV1NotebookAvailable_infinite_timeGet_RAW_URL = function() {
+  return '/api/v1/notebook/available-infinite-time'
+}
+export const ApiV1NotebookAvailable_infinite_timeGet_TYPE = function() {
+  return 'get'
+}
+export const ApiV1NotebookAvailable_infinite_timeGetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v1/notebook/available-infinite-time'
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
 * 指定された条件でページングされた状態で、全前処理を取得
 * request: ApiV1PreprocessingsGet
 * url: ApiV1PreprocessingsGetURL

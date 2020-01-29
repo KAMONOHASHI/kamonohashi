@@ -18,6 +18,12 @@
         <el-form-item label="表示名" prop="displayName">
           <el-input v-model="form.displayName"/>
         </el-form-item>
+        <el-form-item label="ノートブック無期限実行" required>
+          <el-switch v-model="form.availableInfiniteTimeNotebook"
+                     style="width: 100%;"
+                     inactive-text="禁止"
+                     active-text="許可"/>
+        </el-form-item>
       </div>
 
       <h3>ストレージ情報</h3>

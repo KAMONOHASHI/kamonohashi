@@ -152,7 +152,6 @@
             this.selectedRegistryId = result.defaultRegistryId
             this.model.registryId = result.defaultRegistryId
           }
-          this.getImages() // 新規・コピーどちらの場合も初期値は決まっているので、イメージを取ってくる
         } finally {
           this.listLoading = false
         }
