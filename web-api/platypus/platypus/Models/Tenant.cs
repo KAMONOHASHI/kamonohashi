@@ -150,6 +150,12 @@ namespace Nssol.Platypus.Models
         public int? LimitGpu { get; set; }
 
         /// <summary>
+        /// ノートブック無期限利用可否フラグ。
+        /// Trueの場合、ノートブックの生存期間設定なし（無期限）起動を許可する。
+        /// </summary>
+        public bool AvailableInfiniteTimeNotebook { get; set; }
+
+        /// <summary>
         /// ストレージ
         /// </summary>
         [ForeignKey(nameof(StorageId))]
