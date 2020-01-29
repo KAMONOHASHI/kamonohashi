@@ -16,11 +16,11 @@
               <el-form-item label="表示名" prop="displayName">
                 <el-input v-model="form.displayName"/>
               </el-form-item>
-              <el-form-item label="ノートブック無期限実行許可" required>
+              <el-form-item label="ノートブック無期限実行" required>
                 <el-switch v-model="form.availableInfiniteTimeNotebook"
                            style="width: 100%;"
-                           inactive-text="NG"
-                           active-text="OK"/>
+                           inactive-text="禁止"
+                           active-text="許可"/>
               </el-form-item>
           </div>
         </el-col>

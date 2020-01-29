@@ -70,8 +70,8 @@
             <pl-display-text-form label="待機時間" :value="waitingTime"/>
             <pl-display-text-form label="実行時間" :value="executionTime"/>
 
-            <pl-display-text-form label="生存期間(h)" :value="expiresIn" v-if="expiresIn !== 0"/>
-            <pl-display-text-form label="生存期間" value="無期限" v-else/>
+            <pl-display-text-form label="起動期間(h)" :value="expiresIn" v-if="expiresIn !== 0"/>
+            <pl-display-text-form label="起動期間" value="無期限" v-else/>
 
             <el-form-item label="環境変数" v-if="options">
               <div class="el-input">

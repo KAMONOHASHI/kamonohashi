@@ -41,16 +41,16 @@
                   </el-form-item>
                 </el-col>
                 <el-col :span="18" :offset="3">
-                <div v-if="availableInfiniteTimeNotebook === true">
-                  <el-form-item label="生存期間無期限">
-                    <el-switch v-model="infiniteFlag"
-                             style="width: 100%;"
-                             inactive-text="OFF"
-                             active-text="ON"/>
-                  </el-form-item>
-                </div>
-                  <div v-show="infiniteFlag === false">
-                  <el-form-item label="生存期間(h)" required>
+                  <div v-if="availableInfiniteTimeNotebook === true">
+                    <el-form-item label="起動期間設定">
+                      <el-switch v-model="withExpiresInSetting"
+                                 style="width: 100%;"
+                                 inactive-text="OFF"
+                                 active-text="ON"/>
+                    </el-form-item>
+                  </div>
+                  <div v-show="withExpiresInSetting === true">
+                  <el-form-item label="起動期間(h)" required>
                     <el-slider
                       class="el-input"
                       v-model="expiresIn"
@@ -77,7 +77,7 @@
           <el-row :gutter="20">
             <el-steps :active="active" align-center>
               <el-step title="Step 1" description="ノートブック名"></el-step>
-              <el-step title="Step 2" description="リソース & 生存期間"></el-step>
+              <el-step title="Step 2" description="リソース & 起動期間"></el-step>
               <el-step title="Step 3" description="任意項目"></el-step>
               <el-step title="Step 4" description="任意項目"></el-step>
             </el-steps>
@@ -122,25 +122,25 @@
                   </el-form-item>
                 </el-col>
                 <el-col :span="18" :offset="3">
-                <div v-if="availableInfiniteTimeNotebook === true">
-                  <el-form-item label="生存期間無期限">
-                    <el-switch v-model="infiniteFlag"
-                             style="width: 100%;"
-                             inactive-text="OFF"
-                             active-text="ON"/>
-                  </el-form-item>
-                </div>
-                <div v-show="infiniteFlag === false">
-                  <el-form-item label="生存期間(h)" required>
-                    <el-slider
-                      class="el-input"
-                      v-model="expiresIn"
-                      :min="1"
-                      :max="100"
-                      show-input>
-                    </el-slider>
-                  </el-form-item>
-                </div>
+                  <div v-if="availableInfiniteTimeNotebook === true">
+                    <el-form-item label="起動期間設定">
+                      <el-switch v-model="withExpiresInSetting"
+                                 style="width: 100%;"
+                                 inactive-text="OFF"
+                                 active-text="ON"/>
+                    </el-form-item>
+                  </div>
+                  <div v-show="withExpiresInSetting === true">
+                    <el-form-item label="起動期間(h)" required>
+                      <el-slider
+                        class="el-input"
+                        v-model="expiresIn"
+                        :min="1"
+                        :max="100"
+                        show-input>
+                      </el-slider>
+                    </el-form-item>
+                  </div>
                 </el-col>
               </el-form>
               <el-form v-if="active===2">
@@ -260,7 +260,7 @@
         active: 0,
         expiresIn: 8,
         availableInfiniteTimeNotebook: false,
-        infiniteFlag: false
+        withExpiresInSetting: true
       }
     },
     async created () {
@@ -281,7 +281,7 @@
                 options[kvp.key] = kvp.value
               })
 
-              if (this.infiniteFlag === true) {
+              if (this.withExpiresInSetting === false) {
                 this.expiresIn = 0
               }
 
@@ -315,7 +315,7 @@
         await form.validate(async (valid) => {
           if (valid) {
             try {
-              if (this.infiniteFlag === true) {
+              if (this.withExpiresInSetting === false) {
                 this.expiresIn = 0
               }
               let param = {
@@ -382,11 +382,9 @@
           this.entryPoint = origin.entryPoint
           if (origin.expiresIn === 0) {
             if (this.availableInfiniteTimeNotebook === true) {
-              this.infiniteFlag = true
-              this.expiresIn = 8
-            } else {
-              this.expiresIn = 8
+              this.withExpiresInSetting = false
             }
+            this.expiresIn = 8
           } else {
             this.expiresIn = origin.expiresIn / 60 / 60
           }
