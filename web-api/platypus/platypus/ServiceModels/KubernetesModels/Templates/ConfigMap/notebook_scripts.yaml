@@ -25,7 +25,16 @@ data:
     else
       pip install jupyterlab==1.0.4
     fi
-    jupyter lab --ip=0.0.0.0 --allow-root --notebook-dir=/kqi/ --no-browser > /kqi/attach/.notebook.log 2>&1 &
+    if [ ! -L /kqi/output/input ]; then
+      ln -s /kqi/input/ /kqi/output/input
+    fi
+    if [ ! -L /kqi/output/git ]; then
+      ln -s /kqi/git/ /kqi/output/git
+    fi
+    if [ ! -L /kqi/output/parent ]; then
+      ln -s /kqi/parent/ /kqi/output/parent
+    fi
+    jupyter lab --ip=0.0.0.0 --allow-root --notebook-dir=/kqi/output --no-browser > /kqi/attach/.notebook.log 2>&1 &
     bash /kqi/scripts/common/wait-ready
   finish: |
     bash /kqi/scripts/common/prepare-kqi-conf

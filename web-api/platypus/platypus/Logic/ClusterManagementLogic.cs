@@ -984,7 +984,8 @@ namespace Nssol.Platypus.Logic
                 {
                     { "tmp", "/kqi/tmp/" },
                     { "input", "/kqi/input/" },
-                    { "git", "/kqi/git/" }
+                    { "git", "/kqi/git/" },
+                    { "parent", "/kqi/parent/" }
                 },
 
                 PrepareAndFinishContainerEnvList = editableEnvList, // 上書き可の環境変数を設定
