@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "@(Model.Name)"
+  namespace: "@(Model.NameSpace)"
+data:
+  prepare: 
+  main: |
+    echo "------------------------- [KAMONOHASHI Main] delete bucket ${KQI_TENANT_NAME} -------------------------"
+    echo "deleting bucket [${KQI_TENANT_NAME}]"
+    cd /kqi/tenant
+    rm -rf ${KQI_TENANT_NAME}
+    if [ $? -ne 0 ]; then
+        echo "Bucket deletion failed. You should delete bucket [${KQI_TENANT_NAME}] by manual operation."
+    else
+        echo "Bucket [${KQI_TENANT_NAME}] deletion completed."
+    fi
+  finish:

@@ -17,7 +17,7 @@
       </el-table>
     </el-row>
 
-    <router-view @done="done()" @cancel="closeDialog"></router-view>
+    <router-view @done="done" @error="error" @cancel="closeDialog"></router-view>
   </div>
 </template>
 
@@ -52,6 +52,11 @@
         this.retrieveData()
         this.closeDialog()
         this.showSuccessMessage()
+      },
+      error (msg) {
+        this.retrieveData()
+        this.closeDialog()
+        this.$notify.error(msg)
       },
 
       async openEditDialog (row) {

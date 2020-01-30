@@ -271,7 +271,6 @@ let api = {
       post: gen.ApiV1AdminTenantsPost,
       getById: gen.ApiV1AdminTenantsByIdGet,
       put: gen.ApiV1AdminTenantsByIdPut,
-      getMembers: gen.ApiV1AdminTenantsByIdMembersGet,
       delete: gen.ApiV1AdminTenantsByIdDelete
     }
   },

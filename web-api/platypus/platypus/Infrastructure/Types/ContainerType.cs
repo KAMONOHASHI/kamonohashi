@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Nssol.Platypus.Infrastructure.Types
+﻿namespace Nssol.Platypus.Infrastructure.Types
 {
     /// <summary>
     /// コンテナ種別
@@ -33,7 +28,10 @@ namespace Nssol.Platypus.Infrastructure.Types
         /// <summary>
         /// ノートブック実行用
         /// </summary>
-        Notebook = 5
-
+        Notebook = 5,
+        /// <summary>
+        /// テナント削除実行用
+        /// </summary>
+        DeleteTenant = 6
     }
 }

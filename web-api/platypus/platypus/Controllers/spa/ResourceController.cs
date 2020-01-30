@@ -1,24 +1,29 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Nssol.Platypus.ApiModels.ResourceApiModels;
+using Nssol.Platypus.Controllers.Util;
+using Nssol.Platypus.DataAccess.Repositories.Interfaces;
+using Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories;
+using Nssol.Platypus.Filters;
+using Nssol.Platypus.Infrastructure;
+using Nssol.Platypus.Infrastructure.Infos;
+using Nssol.Platypus.Infrastructure.Options;
+using Nssol.Platypus.Infrastructure.Types;
+using Nssol.Platypus.Logic.Interfaces;
+using Nssol.Platypus.Models;
+using Nssol.Platypus.Models.TenantModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Nssol.Platypus.Controllers.Util;
-using Nssol.Platypus.Logic.Interfaces;
-using Swashbuckle.AspNetCore.SwaggerGen;
-using Nssol.Platypus.Filters;
-using Nssol.Platypus.Infrastructure;
-using Nssol.Platypus.DataAccess.Repositories.Interfaces;
-using Nssol.Platypus.ApiModels.ResourceApiModels;
-using Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories;
-using Nssol.Platypus.Infrastructure.Infos;
-using Nssol.Platypus.Models.TenantModels;
-using Nssol.Platypus.Infrastructure.Types;
 
 namespace Nssol.Platypus.Controllers.spa
 {
+    /// <summary>
+    /// リソース管理を扱うためのAPI集
+    /// </summary>
     [Route("api/v1/admin/resource")]
     public class ResourceController : PlatypusApiControllerBase
     {
@@ -27,23 +32,27 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly IUserRepository userRepository;
         private readonly ICommonDiLogic commonDiLogic;
         private readonly IClusterManagementLogic clusterManagementLogic;
+        private readonly ContainerManageOptions containerManageOptions;
 
         public ResourceController(
-          ITenantRepository tenantRepository,
-          IUserRepository userRepository,
-          ICommonDiLogic commonDiLogic,
-          IClusterManagementLogic clusterManagementLogic,
-          IHttpContextAccessor accessor) : base(accessor)
+            ITenantRepository tenantRepository,
+            IUserRepository userRepository,
+            ICommonDiLogic commonDiLogic,
+            IClusterManagementLogic clusterManagementLogic,
+            IOptions<ContainerManageOptions> containerManageOptions,
+            IHttpContextAccessor accessor) : base(accessor)
         {
             this.tenantRepository = tenantRepository;
             this.userRepository = userRepository;
             this.commonDiLogic = commonDiLogic;
             this.clusterManagementLogic = clusterManagementLogic;
+            this.containerManageOptions = containerManageOptions.Value;
         }
 
         /// <summary>
         /// ノード単位のリソースデータを取得する
         /// </summary>
+        /// <param name="nodeRepository">DI用</param>
         /// <returns>リソースデータ</returns>
         [HttpGet("nodes")]
         [PermissionFilter(MenuCode.Resource)]
@@ -147,7 +156,7 @@ namespace Nssol.Platypus.Controllers.spa
                     {
                         //正体不明のテナントに紐づいたコンテナ
 
-                        var unknownModel = new TenantResourceOutputModel(container.TenantName);
+                        var unknownModel = new TenantResourceOutputModel(container.TenantName, containerManageOptions);
                         unknownModel.Add(new ContainerDetailsOutputModel(container)
                         {
                             CreatedBy = userRepository.GetUserName(container.CreatedBy)
@@ -195,10 +204,19 @@ namespace Nssol.Platypus.Controllers.spa
             var tenant = tenantRepository.GetFromTenantName(info.TenantName);
             if(tenant == null)
             {
-                //知らないテナントのコンテナが起動している
-                LogError($"There is a container for the unknown tenant {model.TenantName}");
-                model.TenantName = "Unknown:" + model.TenantName;
-                model.TenantId = -1;
+                if (info.TenantName == containerManageOptions.KqiAdminNamespace)
+                {
+                    // KqiAdminNamespace の場合、KQI管理者用とする。
+                    model.TenantName = containerManageOptions.KqiAdminNamespace;
+                    model.TenantId = 0;
+                }
+                else
+                {
+                    //知らないテナントのコンテナが起動している
+                    LogError($"There is a container for the unknown tenant {model.TenantName}");
+                    model.TenantName = "Unknown:" + model.TenantName;
+                    model.TenantId = -1;
+                }
             }
             else
             {
@@ -211,6 +229,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// コンテナ種別一覧を取得
         /// </summary>
+        /// <returns>コンテナ種別一覧</returns>
         [HttpGet("container-types")]
         [Filters.PermissionFilter(MenuCode.Resource)]
         [ProducesResponseType(typeof(IEnumerable<EnumInfo>), (int)HttpStatusCode.OK)]
@@ -238,7 +257,7 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonBadRequest("Name is required.");
             }
             //データの存在チェック
-            var tenant = tenantRepository.Get(tenantId);
+            var tenant = GetTenant(tenantId);
             if (tenant == null)
             {
                 return JsonNotFound($"Tenant ID {tenantId} is not found.");
@@ -278,7 +297,7 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonBadRequest("Name is required.");
             }
             //データの存在チェック
-            var tenant = tenantRepository.Get(tenantId);
+            var tenant = GetTenant(tenantId);
             if (tenant == null)
             {
                 return JsonNotFound($"Tenant ID {tenantId} is not found.");
@@ -313,7 +332,7 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonBadRequest("Name is required.");
             }
             //データの存在チェック
-            var tenant = tenantRepository.Get(tenantId);
+            var tenant = GetTenant(tenantId);
             if (tenant == null)
             {
                 return JsonNotFound($"Tenant ID {tenantId} is not found.");
@@ -334,13 +353,15 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 指定コンテナを削除する
         /// </summary>
+        /// <param name="tenantId">テナントID</param>
+        /// <param name="name">コンテナ名</param>
         [HttpDelete("containers/{tenantId}/{name}")]
         [PermissionFilter(MenuCode.Resource)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        public async Task<IActionResult> DeleteResourceByContainerId([FromRoute] long tenantId, [FromRoute] string name, [FromServices] ITrainingLogic trainingLogic)
+        public async Task<IActionResult> DeleteResourceByContainerId([FromRoute] long tenantId, [FromRoute] string name)
         {
-            //データの存在チェック
-            var tenant = tenantRepository.Get(tenantId);
+            // データの存在チェック
+            var tenant = GetTenant(tenantId);
             if (tenant == null)
             {
                 return JsonNotFound($"Tenant ID {tenantId} is not found.");
@@ -350,9 +371,35 @@ namespace Nssol.Platypus.Controllers.spa
         }
 
         /// <summary>
+        /// 指定されたIDからテナントを取得する。
+        /// ただし、IDが "0" の場合は、KQI管理者用テナントを返す。
+        /// </summary>
+        /// <param name="tenantId">テナントID</param>
+        /// <returns>テナント情報</returns>
+        private Tenant GetTenant(long tenantId)
+        {
+            if (tenantId == 0)
+            {
+                // IDが "0" の場合、KQI管理者用とする。(テナント実体は存在しないが、k8sの名前空間として使用している)
+                return new Tenant()
+                {
+                    Id = tenantId,
+                    Name = containerManageOptions.KqiAdminNamespace,
+                    DisplayName = containerManageOptions.KqiAdminNamespace
+                };
+            }
+            else
+            {
+                return tenantRepository.Get(tenantId);
+            }
+        }
+
+        /// <summary>
         /// コンテナ名からコンテナ種別と対応するインスタンスを取得する
         /// </summary>
-        /// <returns></returns>
+        /// <param name="containerName">コンテナ名</param>
+        /// <param name="force">Admin権限で実行するか</param>
+        /// <returns>コンテナ種別と対応するインスタンス</returns>
         private Tuple<ContainerType, TenantModelBase> CheckContainerType(string containerName, bool force)
         {
             //今はprefixだけで判断する
@@ -433,7 +480,7 @@ namespace Nssol.Platypus.Controllers.spa
                     return new Tuple<ContainerType, TenantModelBase>(ContainerType.Inferencing, container);
                 }
             }
-            else
+            else if (containerName.StartsWith("training"))
             {
                 //学習コンテナ
                 var container = commonDiLogic.DynamicDi<ITrainingHistoryRepository>().Find(t => t.Key == containerName, force);
@@ -453,6 +500,20 @@ namespace Nssol.Platypus.Controllers.spa
                 else
                 {
                     return new Tuple<ContainerType, TenantModelBase>(ContainerType.Training, container);
+                }
+            }
+            else
+            {
+                // DBに登録していないテナントデータ削除用（管理者用）コンテナ
+                if (containerName.StartsWith("delete-tenant"))
+                {
+                    return new Tuple<ContainerType, TenantModelBase>(ContainerType.DeleteTenant, null);
+                }
+                else
+                {
+                    // 存在しないハズのコンテナが残っている
+                    LogWarning($"Find unknown container: {containerName}");
+                    return new Tuple<ContainerType, TenantModelBase>(ContainerType.Unknown, null);
                 }
             }
         }
@@ -503,6 +564,11 @@ namespace Nssol.Platypus.Controllers.spa
                     var preprocessLogic = commonDiLogic.DynamicDi<IPreprocessLogic>();
                     await preprocessLogic.DeleteAsync(container.Item2 as PreprocessHistory, force);
                     break;
+                case ContainerType.DeleteTenant:
+                    //テナントデータ削除用コンテナを強制終了させる
+                    await clusterManagementLogic.DeleteContainerAsync(ContainerType.DeleteTenant, name, tenant.Name, force);
+                    break;
+
                 default:
                     //正体不明コンテナを削除する
                     var result = await clusterManagementLogic.DeleteContainerAsync(ContainerType.Unknown, name, tenant.Name, force);

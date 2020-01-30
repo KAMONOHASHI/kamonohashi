@@ -242,6 +242,16 @@ namespace Nssol.Platypus.Logic.HostedService
                         LogError($"DB のノード情報 [{node.Name}] に対応する Notebook 可否設定を Cluster(k8s) へ同期させる処理に失敗しました。");
                     }
 
+                    // KQI管理者用名前空間の実行可否設定を Cluster(k8s) へ同期する
+                    ret = SyncKqiAdminEnabledLabel(node).Result;
+                    if (ret)
+                    {
+                        LogDebug($"DB のノード [{node.Name}] に対応する KQI管理者用名前空間 [{containerManageOptions.KqiAdminNamespace}] のアクセス可否設定を Cluster(k8s) へ同期させました。");
+                    }
+                    else
+                    {
+                        LogError($"DB のノード [{node.Name}] に対応する KQI管理者用名前空間 [{containerManageOptions.KqiAdminNamespace}] のアクセス可否設定を Cluster(k8s) へ同期させる処理に失敗しました。");
+                    }
                     // テナントの実行可否設定を Cluster(k8s) へ同期する
                     int failedCount = SyncTenantEnabledLabel(node).Result;
                     if (failedCount == 0)
@@ -287,6 +297,25 @@ namespace Nssol.Platypus.Logic.HostedService
             }
             // 将来的に RegistryServiceType が増えたら追加実装すること。
             return null;
+        }
+
+        /// <summary>
+        /// ノードにKQI管理者用名前空間の実行可否設定を Cluster(k8s) へ同期する
+        /// </summary>
+        /// <param name="node">同期させるノード情報</param>
+        /// <returns>同期処理の成否</returns>
+        private async Task<bool> SyncKqiAdminEnabledLabel(Node node)
+        {
+            if (node.AccessLevel != NodeAccessLevel.Disabled)
+            {
+                // アクセスレベルが "Public" または "Private" の場合、KQI管理者用名前空間の実行を許可する
+                return await clusterManagementLogic.UpdateTenantEnabledLabelAsync(node.Name, containerManageOptions.KqiAdminNamespace, true);
+            }
+            else
+            {
+                // アクセスレベルが "Disable" の場合、KQI管理者用名前空間の実行を拒否する
+                return await clusterManagementLogic.UpdateTenantEnabledLabelAsync(node.Name, containerManageOptions.KqiAdminNamespace, false);
+            }
         }
 
         /// <summary>

@@ -94,6 +94,9 @@
     <None Update="ServiceModels\KubernetesModels\Templates\ConfigMap\preproc_scripts.yaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="ServiceModels\KubernetesModels\Templates\ConfigMap\delete_tenant_scripts.yaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="ServiceModels\KubernetesModels\Templates\ConfigMap\tensorboard_scripts.yaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
