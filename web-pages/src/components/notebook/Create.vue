@@ -41,7 +41,16 @@
                   </el-form-item>
                 </el-col>
                 <el-col :span="18" :offset="3">
-                  <el-form-item label="生存期間(h)" required>
+                  <div v-if="availableInfiniteTimeNotebook === true">
+                    <el-form-item label="起動期間設定">
+                      <el-switch v-model="withExpiresInSetting"
+                                 style="width: 100%;"
+                                 inactive-text="OFF"
+                                 active-text="ON"/>
+                    </el-form-item>
+                  </div>
+                  <div v-show="withExpiresInSetting === true">
+                  <el-form-item label="起動期間(h)" required>
                     <el-slider
                       class="el-input"
                       v-model="expiresIn"
@@ -50,6 +59,7 @@
                       show-input>
                     </el-slider>
                   </el-form-item>
+                </div>
                 </el-col>
                 <el-col :span="18" :offset="3">
                   <el-form-item label="データセット" prop="dataSet" >
@@ -67,7 +77,7 @@
           <el-row :gutter="20">
             <el-steps :active="active" align-center>
               <el-step title="Step 1" description="ノートブック名"></el-step>
-              <el-step title="Step 2" description="リソース & 生存期間"></el-step>
+              <el-step title="Step 2" description="リソース & 起動期間"></el-step>
               <el-step title="Step 3" description="任意項目"></el-step>
               <el-step title="Step 4" description="任意項目"></el-step>
             </el-steps>
@@ -112,15 +122,25 @@
                   </el-form-item>
                 </el-col>
                 <el-col :span="18" :offset="3">
-                  <el-form-item label="生存期間(h)" required>
-                    <el-slider
-                      class="el-input"
-                      v-model="expiresIn"
-                      :min="1"
-                      :max="100"
-                      show-input>
-                    </el-slider>
-                  </el-form-item>
+                  <div v-if="availableInfiniteTimeNotebook === true">
+                    <el-form-item label="起動期間設定">
+                      <el-switch v-model="withExpiresInSetting"
+                                 style="width: 100%;"
+                                 inactive-text="OFF"
+                                 active-text="ON"/>
+                    </el-form-item>
+                  </div>
+                  <div v-show="withExpiresInSetting === true">
+                    <el-form-item label="起動期間(h)" required>
+                      <el-slider
+                        class="el-input"
+                        v-model="expiresIn"
+                        :min="1"
+                        :max="100"
+                        show-input>
+                      </el-slider>
+                    </el-form-item>
+                  </div>
                 </el-col>
               </el-form>
               <el-form v-if="active===2">
@@ -238,12 +258,15 @@
         git: undefined,
         options: undefined,
         active: 0,
-        expiresIn: 8
+        expiresIn: 8,
+        availableInfiniteTimeNotebook: false,
+        withExpiresInSetting: true
       }
     },
     async created () {
       let result = await (api.cluster.getPartitions())
       this.partitions = result.data
+      this.availableInfiniteTimeNotebook = (await api.notebook.getAvailableInfiniteTime()).data
       await this.retrieveOriginNotebook()
     },
     methods: {
@@ -257,6 +280,10 @@
               this.options.forEach((kvp) => {
                 options[kvp.key] = kvp.value
               })
+
+              if (this.withExpiresInSetting === false) {
+                this.expiresIn = 0
+              }
 
               let param = {
                 name: this.name,
@@ -288,6 +315,9 @@
         await form.validate(async (valid) => {
           if (valid) {
             try {
+              if (this.withExpiresInSetting === false) {
+                this.expiresIn = 0
+              }
               let param = {
                   dataSetId: this.dataSet ? this.dataSet.id : null,
                   parentIds: this.parentIds,
@@ -350,7 +380,14 @@
           this.partition = origin.partition
           this.containerImage = origin.containerImage
           this.entryPoint = origin.entryPoint
-          this.expiresIn = origin.expiresIn === 0 ? 0 : (origin.expiresIn / 60 / 60)
+          if (origin.expiresIn === 0) {
+            if (this.availableInfiniteTimeNotebook === true) {
+              this.withExpiresInSetting = false
+            }
+            this.expiresIn = 8
+          } else {
+            this.expiresIn = origin.expiresIn / 60 / 60
+          }
           for (let i = 0; i < origin.parents.length; i++) {
             this.parentIds.push(origin.parents[i].id)
           }
