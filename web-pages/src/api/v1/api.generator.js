@@ -2122,23 +2122,18 @@ export const ApiV1AdminGitEndpointsByIdDeleteURL = function(parameters = {}) {
 }
 /**
  * テナント管理者が選択可能な登録済みのGitエンドポイント一覧を取得
- * request: ApiV1TenantByIdGitEndpointsGet
- * url: ApiV1TenantByIdGitEndpointsGetURL
- * method: ApiV1TenantByIdGitEndpointsGet_TYPE
- * raw_url: ApiV1TenantByIdGitEndpointsGet_RAW_URL
- * @param id - テナントID
+ * request: ApiV1TenantGitEndpointsGet
+ * url: ApiV1TenantGitEndpointsGetURL
+ * method: ApiV1TenantGitEndpointsGet_TYPE
+ * raw_url: ApiV1TenantGitEndpointsGet_RAW_URL
  */
-export const ApiV1TenantByIdGitEndpointsGet = function(parameters = {}) {
+export const ApiV1TenantGitEndpointsGet = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
-  let path = '/api/v1/tenant/{id}/git/endpoints'
+  let path = '/api/v1/tenant/git/endpoints'
   let body
   let queryParameters = {}
   let form = {}
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters['id'] === undefined) {
-    return Promise.reject(new Error('Missing required  parameter: id'))
-  }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]
@@ -2146,17 +2141,16 @@ export const ApiV1TenantByIdGitEndpointsGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV1TenantByIdGitEndpointsGet_RAW_URL = function() {
-  return '/api/v1/tenant/{id}/git/endpoints'
+export const ApiV1TenantGitEndpointsGet_RAW_URL = function() {
+  return '/api/v1/tenant/git/endpoints'
 }
-export const ApiV1TenantByIdGitEndpointsGet_TYPE = function() {
+export const ApiV1TenantGitEndpointsGet_TYPE = function() {
   return 'get'
 }
-export const ApiV1TenantByIdGitEndpointsGetURL = function(parameters = {}) {
+export const ApiV1TenantGitEndpointsGetURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/api/v1/tenant/{id}/git/endpoints'
-  path = path.replace('{id}', `${parameters['id']}`)
+  let path = '/api/v1/tenant/git/endpoints'
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]
@@ -5419,23 +5413,18 @@ export const ApiV1AdminRegistryEndpointsByIdDeleteURL = function(parameters = {}
 }
 /**
  * テナント管理者が選択可能な登録済みのDockerレジストリ エンドポイント一覧を取得
- * request: ApiV1TenantByIdRegistryEndpointsGet
- * url: ApiV1TenantByIdRegistryEndpointsGetURL
- * method: ApiV1TenantByIdRegistryEndpointsGet_TYPE
- * raw_url: ApiV1TenantByIdRegistryEndpointsGet_RAW_URL
- * @param id - テナントID
+ * request: ApiV1TenantRegistryEndpointsGet
+ * url: ApiV1TenantRegistryEndpointsGetURL
+ * method: ApiV1TenantRegistryEndpointsGet_TYPE
+ * raw_url: ApiV1TenantRegistryEndpointsGet_RAW_URL
  */
-export const ApiV1TenantByIdRegistryEndpointsGet = function(parameters = {}) {
+export const ApiV1TenantRegistryEndpointsGet = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
-  let path = '/api/v1/tenant/{id}/registry/endpoints'
+  let path = '/api/v1/tenant/registry/endpoints'
   let body
   let queryParameters = {}
   let form = {}
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters['id'] === undefined) {
-    return Promise.reject(new Error('Missing required  parameter: id'))
-  }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]
@@ -5443,17 +5432,16 @@ export const ApiV1TenantByIdRegistryEndpointsGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV1TenantByIdRegistryEndpointsGet_RAW_URL = function() {
-  return '/api/v1/tenant/{id}/registry/endpoints'
+export const ApiV1TenantRegistryEndpointsGet_RAW_URL = function() {
+  return '/api/v1/tenant/registry/endpoints'
 }
-export const ApiV1TenantByIdRegistryEndpointsGet_TYPE = function() {
+export const ApiV1TenantRegistryEndpointsGet_TYPE = function() {
   return 'get'
 }
-export const ApiV1TenantByIdRegistryEndpointsGetURL = function(parameters = {}) {
+export const ApiV1TenantRegistryEndpointsGetURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/api/v1/tenant/{id}/registry/endpoints'
-  path = path.replace('{id}', `${parameters['id']}`)
+  let path = '/api/v1/tenant/registry/endpoints'
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]
@@ -7070,7 +7058,7 @@ export const ApiV1AdminTenantsGetURL = function(parameters = {}) {
  * url: ApiV1AdminTenantsPostURL
  * method: ApiV1AdminTenantsPost_TYPE
  * raw_url: ApiV1AdminTenantsPost_RAW_URL
- * @param model - 
+ * @param model - 登録内容
  */
 export const ApiV1AdminTenantsPost = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -7158,8 +7146,8 @@ export const ApiV1AdminTenantsByIdGetURL = function(parameters = {}) {
  * url: ApiV1AdminTenantsByIdPutURL
  * method: ApiV1AdminTenantsByIdPut_TYPE
  * raw_url: ApiV1AdminTenantsByIdPut_RAW_URL
- * @param id - 
- * @param model - 
+ * @param id - テナントID
+ * @param model - 変更内容
  */
 export const ApiV1AdminTenantsByIdPut = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -7238,6 +7226,88 @@ export const ApiV1AdminTenantsByIdDeleteURL = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v1/admin/tenants/{id}'
   path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 接続中のテナントの情報を取得。
+ * request: ApiV1TenantGet
+ * url: ApiV1TenantGetURL
+ * method: ApiV1TenantGet_TYPE
+ * raw_url: ApiV1TenantGet_RAW_URL
+ */
+export const ApiV1TenantGet = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v1/tenant'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV1TenantGet_RAW_URL = function() {
+  return '/api/v1/tenant'
+}
+export const ApiV1TenantGet_TYPE = function() {
+  return 'get'
+}
+export const ApiV1TenantGetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v1/tenant'
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 接続中のテナントの情報の編集
+ * request: ApiV1TenantPut
+ * url: ApiV1TenantPutURL
+ * method: ApiV1TenantPut_TYPE
+ * raw_url: ApiV1TenantPut_RAW_URL
+ * @param model - 変更内容
+ */
+export const ApiV1TenantPut = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v1/tenant'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['model'] !== undefined) {
+    body = parameters['model']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('put', domain + path, body, queryParameters, form, config)
+}
+export const ApiV1TenantPut_RAW_URL = function() {
+  return '/api/v1/tenant'
+}
+export const ApiV1TenantPut_TYPE = function() {
+  return 'put'
+}
+export const ApiV1TenantPutURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v1/tenant'
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]

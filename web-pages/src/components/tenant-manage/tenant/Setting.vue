@@ -101,12 +101,8 @@
     methods: {
       async init () {
         try {
-          let data = (await api.account.get()).data
-          let params = {
-              id: data.selectedTenant.id
-          }
-          let [model] = api.f.data(await api.tenant.admin.getById(params))
-          this.form.id = data.selectedTenant.id
+          let [model] = api.f.data(await api.tenant.get())
+          this.form.id = model.id
           this.form.name = model.name
           this.form.displayName = model.displayName
           this.form.gitIds = model.gitIds
@@ -137,7 +133,6 @@
       },
       async putTenant () {
         let param = {
-          id: this.form.id,
           model: {
             displayName: this.form.displayName,
             gitIds: this.form.gitIds,
@@ -148,7 +143,7 @@
             availableInfiniteTimeNotebook: this.form.availableInfiniteTimeNotebook
           }
         }
-        await api.tenant.admin.put(param)
+        await api.tenant.put(param)
       }
     }
   }
