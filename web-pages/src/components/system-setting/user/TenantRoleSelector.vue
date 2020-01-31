@@ -61,9 +61,7 @@
         showSystem: false, // システムロールを表示するか
 
         tenants: [], // 選択されているテナント
-        tenantRoles: [],
-        isSystemRole: false,
-        sortOrder: 0
+        tenantRoles: []
       }
     },
     async created () {
@@ -90,18 +88,14 @@
           this.tenantRoles[0].default = true
         }
 
-        // テナント追加時にデフォルトロール(昇順ソートで最初のロール)を設定
+        // テナント追加時のデフォルトロール設定
         if (this.tenantRoles.length > 0) {
           if (this.tenantRoles[this.tenantRoles.length - 1].roles.length === 0) {
-            let minSortOrder = this.roleTypes.filter(rt => rt.isSystemRole === false)[0].sortOrder
-              for (let i = 0; i < this.roleTypes.length; i++) {
-                // システムロールは除外
-                if (this.roleTypes[i].isSystemRole === false && minSortOrder > this.roleTypes[i].sortOrder) {
-                  minSortOrder = Math.min(minSortOrder, this.roleTypes[i].sortOrder)
-              }
+            // テナントロールで一番最初のロールをデフォルトとして設定する
+            if (this.roleTypes.filter(rt => rt.isSystemRole === false).length > 0) {
+              this.tenantRoles[this.tenantRoles.length - 1].$roles.push(this.roleTypes.filter(rt => rt.isSystemRole === false)[0].id)
+              this.tenantRoles[this.tenantRoles.length - 1].roles = this.roleTypes.filter(rt => rt.isSystemRole === false)
             }
-            this.tenantRoles[this.tenantRoles.length - 1].$roles.push(this.roleTypes.filter(rt => rt.sortOrder === minSortOrder && rt.isSystemRole === false)[0].id)
-            this.tenantRoles[this.tenantRoles.length - 1].roles = this.roleTypes.filter(rt => rt.sortOrder === minSortOrder && rt.isSystemRole === false)
           }
         }
         this.emitInput()
