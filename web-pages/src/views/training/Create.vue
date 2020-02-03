@@ -36,36 +36,7 @@
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="CPU" required>
-                <el-slider
-                  v-model="cpu"
-                  class="el-input"
-                  :min="1"
-                  :max="200"
-                  show-input
-                >
-                </el-slider>
-              </el-form-item>
-              <el-form-item label="メモリ(GB)" required>
-                <el-slider
-                  v-model="memory"
-                  class="el-input"
-                  :min="1"
-                  :max="200"
-                  show-input
-                >
-                </el-slider>
-              </el-form-item>
-              <el-form-item label="GPU" required>
-                <el-slider
-                  v-model="gpu"
-                  class="el-input"
-                  :min="0"
-                  :max="16"
-                  show-input
-                >
-                </el-slider>
-              </el-form-item>
+              <kqi-resource-selector v-model="resource"></kqi-resource-selector>
               <el-form-item label="環境変数">
                 <pl-dynamic-multi-input v-model="options" />
               </el-form-item>
@@ -166,37 +137,9 @@
               </el-form>
               <el-form v-if="active === 2">
                 <el-col :span="18" :offset="3">
-                  <el-form-item label="CPU" required>
-                    <el-slider
-                      v-model="cpu"
-                      class="el-input"
-                      :min="1"
-                      :max="200"
-                      show-input
-                    >
-                    </el-slider>
-                  </el-form-item>
-
-                  <el-form-item label="メモリ(GB)" required>
-                    <el-slider
-                      v-model="memory"
-                      class="el-input"
-                      :min="1"
-                      :max="200"
-                      show-input
-                    >
-                    </el-slider>
-                  </el-form-item>
-                  <el-form-item label="GPU" required>
-                    <el-slider
-                      v-model="gpu"
-                      class="el-input"
-                      :min="0"
-                      :max="16"
-                      show-input
-                    >
-                    </el-slider>
-                  </el-form-item>
+                  <kqi-resource-selector
+                    v-model="resource"
+                  ></kqi-resource-selector>
                 </el-col>
               </el-form>
               <el-form v-if="active === 3">
@@ -273,6 +216,7 @@ import StringSelector from '@/components/common/StringSelector.vue'
 import GitSelector from '@/components/common/GitSelector.vue'
 import DisplayError from '@/components/common/DisplayError'
 import api from '@/api/v1/api'
+import KqiResourceSelector from '@/components/KqiResourceSelector'
 
 export default {
   name: 'CreateTrain',
@@ -284,6 +228,7 @@ export default {
     'pl-git-selector': GitSelector,
     'pl-dynamic-multi-input': DynamicMultiInputField,
     'pl-display-error': DisplayError,
+    'kqi-resource-selector': KqiResourceSelector,
   },
   props: {
     originId: String,
@@ -307,6 +252,11 @@ export default {
         tag: [{ required: true, trigger: 'blur', message: '必須項目です' }],
         zip: [{ required: true, message: '必須項目です' }],
       },
+      resource: {
+        cpu: 1,
+        memory: 1,
+        gpu: 0,
+      },
       dialogVisible: true,
       error: undefined,
       origin: undefined, // コピー元のオブジェクトはorigin、コピー先の親ジョブオブジェクトはparentとしてそれぞれ格納
@@ -314,9 +264,6 @@ export default {
       partition: undefined,
       parent: undefined,
       name: undefined,
-      cpu: undefined,
-      memory: undefined,
-      gpu: undefined,
       dataSet: undefined,
       containerImage: undefined,
       memo: undefined,
@@ -351,9 +298,9 @@ export default {
               GitModel: this.git,
               EntryPoint: this.entryPoint,
               Options: options,
-              Cpu: this.cpu,
-              Memory: this.memory,
-              Gpu: this.gpu,
+              Cpu: this.resource.cpu,
+              Memory: this.resource.memory,
+              Gpu: this.resource.gpu,
               Partition: this.partition,
               Memo: this.memo,
               Zip: this.zip,
@@ -379,9 +326,9 @@ export default {
         this.git = origin.gitModel
         this.options = origin.options
         this.memo = origin.memo
-        this.cpu = origin.cpu
-        this.memory = origin.memory
-        this.gpu = origin.gpu
+        this.resource.cpu = origin.cpu
+        this.resource.memory = origin.memory
+        this.resource.gpu = origin.gpu
         this.partition = origin.partition
         this.containerImage = origin.containerImage
         this.entryPoint = origin.entryPoint
