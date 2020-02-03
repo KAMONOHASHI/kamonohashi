@@ -2,18 +2,25 @@
   <span>
     <el-input
       ref="saveTagInput"
-      placeholder="Please input"
       v-model="value"
+      placeholder="Please input"
       size="mini"
       style="width:auto;"
-      @blur="handleBlur" />
+      @blur="handleBlur"
+    />
 
-    <el-popover trigger="manual" v-model="show">
-      <el-table :data="selectData" :show-header="false" @current-change="handleCommand">
+    <el-popover v-model="show" trigger="manual">
+      <el-table
+        :data="selectData"
+        :show-header="false"
+        @current-change="handleCommand"
+      >
         <el-table-column prop="label" width="150" />
         <el-table-column prop="name" width="100" align="right">
           <template slot-scope="scope">
-            <span style="color:grey;font-size:85%;">{{ scope.row.detail }}</span>
+            <span style="color:grey;font-size:85%;">{{
+              scope.row.detail
+            }}</span>
           </template>
         </el-table-column>
       </el-table>
@@ -25,7 +32,7 @@
 export default {
   name: 'SmartSearchInputSelect',
   props: ['tag'],
-  data () {
+  data() {
     return {
       value: '',
       show: true,
@@ -33,23 +40,24 @@ export default {
         { label: 'テスト1', detail: '詳細１', value: '1' },
         { label: 'テスト2', detail: '詳細２', value: '2' },
         { label: 'テスト3', detail: '詳細３', value: '3' },
-        { label: 'テスト4', detail: '詳細４', value: '4' }
-      ]
+        { label: 'テスト4', detail: '詳細４', value: '4' },
+      ],
     }
   },
-  created () {
+  created() {
+    /* eslint-disable */
     this.$nextTick(_ => {
-      // console.log('tag', this.tag)
-      this.value = this.getValue()
-      this.selectData = this.getSelectData()
-      this.$refs.saveTagInput.$refs.input.focus()
+      this.value = this.getValue();
+      this.selectData = this.getSelectData();
+      this.$refs.saveTagInput.$refs.input.focus();
       this.$nextTick(_ => {
-        this.$refs.saveTagInput.$refs.input.select()
-      })
-    })
+        this.$refs.saveTagInput.$refs.input.select();
+      });
+    });
+    /* eslint-enable */
   },
   methods: {
-    handleCommand (row) {
+    handleCommand(row) {
       this.show = false
       this.value = row.label
       let value = row.value
@@ -58,7 +66,7 @@ export default {
       this.emitDone(value, display, suffix)
     },
 
-    handleBlur () {
+    handleBlur() {
       setTimeout(() => {
         if (this.value === '') {
           this.emitCancel()
@@ -66,7 +74,7 @@ export default {
       }, 300)
     },
 
-    getValue () {
+    getValue() {
       if (this.tag.display) {
         return this.tag.display
       }
@@ -76,7 +84,7 @@ export default {
       return ''
     },
 
-    getSelectData () {
+    getSelectData() {
       if (this.tag.config.option.items) {
         let items = this.tag.config.option.items
         let ret = []
@@ -92,16 +100,14 @@ export default {
       return this.selectData
     },
 
-    emitDone (value, display, suffix) {
+    emitDone(value, display, suffix) {
       this.$emit('done', { value, display, suffix })
     },
-    emitCancel () {
+    emitCancel() {
       this.$emit('cancel')
-    }
-  }
+    },
+  },
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

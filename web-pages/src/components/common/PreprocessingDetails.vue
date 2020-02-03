@@ -1,8 +1,8 @@
 <template>
   <div>
-    <pl-display-text-form label="前処理ID" :value="preprocessing.id"/>
-    <pl-display-text-form label="前処理名" :value="preprocessing.name"/>
-    <pl-display-text-form label="メモ" :value="preprocessing.memo"/>
+    <pl-display-text-form label="前処理ID" :value="preprocessing.id" />
+    <pl-display-text-form label="前処理名" :value="preprocessing.name" />
+    <pl-display-text-form label="メモ" :value="preprocessing.memo" />
   </div>
 </template>
 
@@ -12,13 +12,12 @@ import DisplayTextForm from '@/components/common/DisplayTextForm.vue'
 export default {
   name: 'PreprocessingDetails',
   components: {
-    'pl-display-text-form': DisplayTextForm
+    'pl-display-text-form': DisplayTextForm,
   },
   props: {
-    preprocessing: Object
-  }
+    preprocessing: Object,
+  },
 }
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

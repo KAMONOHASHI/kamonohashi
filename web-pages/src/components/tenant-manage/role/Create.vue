@@ -1,9 +1,11 @@
 <template>
-  <el-dialog class="dialog"
-             title="ロール作成"
-             :visible.sync="dialogVisible"
-             :before-close="handleCancel"
-             :close-on-click-modal="false">
+  <el-dialog
+    class="dialog"
+    title="ロール作成"
+    :visible.sync="dialogVisible"
+    :before-close="handleCancel"
+    :close-on-click-modal="false"
+  >
     <el-form ref="createForm" :model="form" :rules="rules">
       <pl-display-error :error="error" />
       <el-form-item label="ロール名" prop="name">
@@ -32,32 +34,34 @@ import DisplayError from '@/components/common/DisplayError'
 export default {
   name: 'ManageRoleCreate',
   components: {
-    'pl-display-error': DisplayError
+    'pl-display-error': DisplayError,
   },
-  data () {
+  data() {
     return {
       dialogVisible: true,
       error: null,
-      roleTypes: [
-        { label: 'テナント', value: false }
-      ],
+      roleTypes: [{ label: 'テナント', value: false }],
       form: {
         name: '',
         displayName: '',
-        sortOrder: 0
+        sortOrder: 0,
       },
       rules: {
-        name: [{required: true, trigger: 'blur', message: '必須項目です'}],
-        displayName: [{required: true, trigger: 'blur', message: '必須項目です'}],
-        sortOrder: [{required: true, trigger: 'blur', message: '必須項目です'}]
-      }
+        name: [{ required: true, trigger: 'blur', message: '必須項目です' }],
+        displayName: [
+          { required: true, trigger: 'blur', message: '必須項目です' },
+        ],
+        sortOrder: [
+          { required: true, trigger: 'blur', message: '必須項目です' },
+        ],
+      },
     }
   },
 
   methods: {
-    async handleCreate () {
+    async handleCreate() {
       let form = this.$refs.createForm
-      await form.validate(async (valid) => {
+      await form.validate(async valid => {
         if (valid) {
           try {
             await this.postRole()
@@ -70,39 +74,39 @@ export default {
       })
     },
 
-    async postRole () {
+    async postRole() {
       let params = {
         model: {
           name: this.form.name,
           displayName: this.form.displayName,
-          sortOrder: this.form.sortOrder
-        }
+          sortOrder: this.form.sortOrder,
+        },
       }
       await api.role.tenant.post(params)
     },
 
-    handleCancel () {
+    handleCancel() {
       this.emitCancel()
     },
 
-    emitDone () {
+    emitDone() {
       this.showSuccessMessage()
       this.$emit('done')
     },
 
-    emitCancel () {
+    emitCancel() {
       this.$emit('cancel')
-    }
-  }
+    },
+  },
 }
 </script>
 
 <style lang="scss" scoped>
-  .dialog /deep/ label {
-    font-weight: bold !important
-  }
-  .right-button-group {
-    padding-top: 25px;
-    text-align: right;
-  }
+.dialog /deep/ label {
+  font-weight: bold !important;
+}
+.right-button-group {
+  padding-top: 25px;
+  text-align: right;
+}
 </style>

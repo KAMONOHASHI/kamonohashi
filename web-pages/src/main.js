@@ -6,6 +6,7 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import router from './router'
 import store from './store'
+import { sync } from 'vuex-router-sync'
 import componentExt from './util/component-ext'
 import VueI18n from 'vue-i18n'
 import lineClamp from 'vue-line-clamp'
@@ -16,14 +17,16 @@ import './icon'
 Vue.config.productionTip = false
 
 Vue.use(VueI18n)
-const i18n = new VueI18n({locale: 'ja', messages: message})
+const i18n = new VueI18n({ locale: 'ja', messages: message })
 
-Vue.use(ElementUI, {i18n: (key, value) => i18n.t(key, value)})
+Vue.use(ElementUI, { i18n: (key, value) => i18n.t(key, value) })
 Vue.use(lineClamp, {})
 
 Vue.mixin(componentExt)
 
 Vue.component('icon', Icon)
+
+sync(store, router)
 
 /* eslint-disable no-new */
 new Vue({
@@ -31,6 +34,6 @@ new Vue({
   el: '#app',
   router,
   i18n,
-  components: {App},
-  template: '<App/>'
+  components: { App },
+  template: '<App/>',
 })

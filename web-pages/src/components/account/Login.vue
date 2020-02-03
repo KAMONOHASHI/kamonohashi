@@ -3,29 +3,42 @@
     <p>
       <el-row>
         <el-col class="image">
-          <img class="logo" src="../../../static/images/logo_A.png" alt="">
+          <img class="logo" src="@/assets/logo_A.png" alt="" />
         </el-col>
       </el-row>
 
       <el-row>
         <el-col class="error-message">
-          <pl-display-error :error="error"/>
+          <pl-display-error :error="error" />
         </el-col>
       </el-row>
 
       <el-row>
-        <el-form :label-position="labelPosition" ref="loginForm" :rules="rules" :model="form"
-                 @submit.native.prevent="handleLogin">
+        <el-form
+          ref="loginForm"
+          :label-position="labelPosition"
+          :rules="rules"
+          :model="form"
+          @submit.native.prevent="handleLogin"
+        >
           <el-form-item prop="user" label-width="100px">
-            <el-input v-model="form.user" :placeholder="$t('user')">
-            </el-input>
+            <el-input v-model="form.user" :placeholder="$t('user')"> </el-input>
           </el-form-item>
           <el-form-item prop="password" label-width="100px">
-            <el-input v-model="form.password" type="password" :placeholder="$t('password')">
+            <el-input
+              v-model="form.password"
+              type="password"
+              :placeholder="$t('password')"
+            >
             </el-input>
           </el-form-item>
           <el-form-item class="button-group">
-            <el-button style="width: 100%" type="primary" native-type="submit">{{ $t('login') }}</el-button>
+            <el-button
+              style="width: 100%"
+              type="primary"
+              native-type="submit"
+              >{{ $t('login') }}</el-button
+            >
           </el-form-item>
         </el-form>
       </el-row>
@@ -34,140 +47,151 @@
 </template>
 
 <script>
-  import api from '@/api/v1/api'
-  import DisplayError from '@/components/common/DisplayError'
-  import Util from '@/util/util'
+import api from '@/api/v1/api'
+import DisplayError from '@/components/common/DisplayError'
+import Util from '@/util/util'
 
-  export default {
-    name: 'AccountLogin',
-    title () {
-      return this.$t('title')
-    },
-    components: {
-      'pl-display-error': DisplayError
-    },
-    data () {
-      let err = ''
-      if (this.$route.query.timeout) {
-        err = this.$t('sessionTimeout')
-      }
-      return {
-        error: err,
-        form: {
-          user: '',
-          password: ''
-        },
-        rules: this.createRule(),
-        returnUrl: this.$route.query.return_url,
-        labelPosition: 'top'
-      }
-    },
-    async created () {
-    },
-    methods: {
-      async handleLogin () {
-        this.$refs['loginForm'].validate(async (valid) => {
-          if (valid) {
-            try {
-              let params = {
-                $config: {apiDisabledError: true},
-                model: {
-                  userName: this.form.user,
-                  password: this.form.password
-                }
-              }
-              let res = await api.account.postLogin(params)
-              let data = res.data
-              this.error = null
-              this.$emit('login', data.userName, data.tenantId, data.token, this.returnUrl || '/')
-            } catch (error) {
-              this.handleLogout()
-              this.error = error
-            }
-          } else {
-            return false
-          }
-        })
-      },
-      async handleLogout () {
-        this.deleteToken()
-        this.$store.commit('setLogin', {name: '', tenant: ''})
-        this.$router.push('/login')
-      },
-      createRule () {
-        return {
-          user: [{required: true, trigger: 'blur', message: this.$t('required')}],
-          password: [{required: true, trigger: 'blur', message: this.$t('required')}]
-        }
-      },
-      deleteToken () {
-        Util.deleteCookie('.Platypus.Auth')
-      }
-    },
-    i18n: {
-      messages: {
-        en: {
-          title: 'Login',
-          user: 'User',
-          login: 'Login',
-          password: 'Password',
-          required: 'required',
-          sessionTimeout: 'Session timeout occurred. please retry login.'
-        },
-        ja: {
-          title: 'ログイン',
-          user: 'ユーザ名',
-          login: 'ログイン',
-          password: 'パスワード',
-          required: '必須です',
-          sessionTimeout: '認証エラー：ログインしてください。'
-        }
-      }
+export default {
+  name: 'AccountLogin',
+  title() {
+    return this.$t('title')
+  },
+  components: {
+    'pl-display-error': DisplayError,
+  },
+  data() {
+    let err = ''
+    if (this.$route.query.timeout) {
+      err = this.$t('sessionTimeout')
     }
-  }
+    return {
+      error: err,
+      form: {
+        user: '',
+        password: '',
+      },
+      rules: this.createRule(),
+      returnUrl: this.$route.query.return_url,
+      labelPosition: 'top',
+    }
+  },
+  async created() {},
+  methods: {
+    async handleLogin() {
+      this.$refs['loginForm'].validate(async valid => {
+        if (valid) {
+          try {
+            let params = {
+              $config: { apiDisabledError: true },
+              model: {
+                userName: this.form.user,
+                password: this.form.password,
+              },
+            }
+            let res = await api.account.postLogin(params)
+            let data = res.data
+            this.error = null
+            this.$emit(
+              'login',
+              data.userName,
+              data.tenantId,
+              data.token,
+              this.returnUrl || '/',
+            )
+          } catch (error) {
+            this.handleLogout()
+            this.error = error
+          }
+        } else {
+          return false
+        }
+      })
+    },
+    async handleLogout() {
+      this.deleteToken()
+      this.$store.commit('setLogin', { name: '', tenant: '' })
+      this.$router.push('/login')
+    },
+    createRule() {
+      return {
+        user: [
+          { required: true, trigger: 'blur', message: this.$t('required') },
+        ],
+        password: [
+          { required: true, trigger: 'blur', message: this.$t('required') },
+        ],
+      }
+    },
+    deleteToken() {
+      Util.deleteCookie('.Platypus.Auth')
+    },
+  },
+  i18n: {
+    messages: {
+      en: {
+        title: 'Login',
+        user: 'User',
+        login: 'Login',
+        password: 'Password',
+        required: 'required',
+        sessionTimeout: 'Session timeout occurred. please retry login.',
+      },
+      ja: {
+        title: 'ログイン',
+        user: 'ユーザ名',
+        login: 'ログイン',
+        password: 'パスワード',
+        required: '必須です',
+        sessionTimeout: '認証エラー：ログインしてください。',
+      },
+    },
+  },
+}
 </script>
 
 <style lang="scss" scoped>
-  .parent {
-    position: relative;
-    height: 600px;
-  }
+.parent {
+  position: relative;
+  height: 600px;
+}
 
-  .parent p {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    -ms-transform: translate(-50%, -50%);
-    -webkit-transform: translate(-50%, -50%);
-    transform: translate(-50%, -50%);
-    width: 500px;
-    text-align: left;
-  }
+.parent p {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  width: 500px;
+  text-align: left;
+}
 
-  .image {
-    text-align: center;
-    padding-bottom: 30px;
-  }
+.image {
+  text-align: center;
+  padding-bottom: 30px;
+}
 
-  .error-message {
-    text-align: center;
-    padding-bottom: 30px;
-  }
+.error-message {
+  text-align: center;
+  padding-bottom: 30px;
+}
 
-  .button-group {
-    text-align: center;
-    padding-top: 10px;
-  }
+.button-group {
+  text-align: center;
+  padding-top: 10px;
+}
 
-  .el-button--primary {
-    background-color: #1abfd5;
-    border-color: #1abfd5;
-    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2); /*影*/
-    -webkit-tap-highlight-color: transparent;
-    transition: .3s ease-out; /*変化を緩やかに*/
-  }
+.el-button--primary {
+  background-color: #1abfd5;
+  border-color: #1abfd5;
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12),
+    0 3px 1px -2px rgba(0, 0, 0, 0.2); /*影*/
+  -webkit-tap-highlight-color: transparent;
+  transition: 0.3s ease-out; /*変化を緩やかに*/
+}
 
-  .el-button--primary:hover {
-    box-shadow: 0 3px 3px 0 rgba(0, 0, 0, 0.14), 0 1px 7px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -1px rgba(0, 0, 0, 0.2); /*浮き上がるように*/
-  }
+.el-button--primary:hover {
+  box-shadow: 0 3px 3px 0 rgba(0, 0, 0, 0.14), 0 1px 7px 0 rgba(0, 0, 0, 0.12),
+    0 3px 1px -1px rgba(0, 0, 0, 0.2); /*浮き上がるように*/
+}
 </style>
