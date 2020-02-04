@@ -80,6 +80,7 @@ export default {
       isNotEditable: false,
       editApiUrl: false,
       rules: {
+        name: [formRule],
         repositoryUrl: [formRule],
         serviceType: [formRule],
         apiUrl: [formRule],
