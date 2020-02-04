@@ -9,199 +9,128 @@
     >
       <el-form ref="runForm" :rules="rules" :model="this">
         <pl-display-error :error="error" />
-        <div v-if="originId !== undefined">
-          <el-row :gutter="20">
-            <el-col :span="12">
-              <el-form-item label="学習名" prop="name">
-                <el-input v-model="name" />
-              </el-form-item>
-              <el-form-item label="親学習" prop="parent">
-                <pl-training-history-selector v-model="parent" />
-              </el-form-item>
-              <el-form-item label="データセット" prop="dataSet">
-                <pl-dataset-selector v-model="dataSet" />
-              </el-form-item>
-              <el-form-item label="実行コマンド" prop="entryPoint">
-                <el-input
-                  v-model="entryPoint"
-                  type="textarea"
-                  :autosize="{ minRows: 2 }"
-                />
-              </el-form-item>
-              <el-form-item label="コンテナイメージ" required>
-                <pl-container-selector v-model="containerImage" />
-              </el-form-item>
-              <el-form-item label="モデル" required>
-                <pl-git-selector v-model="git" />
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <kqi-resource-selector v-model="resource"></kqi-resource-selector>
-              <el-form-item label="環境変数">
-                <pl-dynamic-multi-input v-model="options" />
-              </el-form-item>
-
-              <el-form-item label="結果Zip圧縮">
-                <el-switch
-                  v-model="zip"
-                  style="width: 100%;"
-                  inactive-text="圧縮しない"
-                  active-text="圧縮する"
-                />
-              </el-form-item>
-
-              <el-form-item label="パーティション" prop="partition">
-                <pl-string-selector
-                  v-if="partitions"
-                  v-model="partition"
-                  :value-list="partitions"
-                />
-              </el-form-item>
-
-              <el-form-item label="メモ">
-                <el-input
-                  v-model="memo"
-                  type="textarea"
-                  :autosize="{ minRows: 2, maxRows: 4 }"
+        <el-row :gutter="20">
+          <el-steps :active="active" align-center>
+            <el-step
+              title="Step 1"
+              description="training name & dataset"
+            ></el-step>
+            <el-step
+              title="Step 2"
+              description="container image & model"
+            ></el-step>
+            <el-step title="Step 3" description="resource"></el-step>
+            <el-step title="Step 4" description="option"></el-step>
+          </el-steps>
+          <div class="element">
+            <el-form v-if="active === 0">
+              <el-col :span="12">
+                <el-form-item label="学習名" prop="name" class="is-required">
+                  <el-input v-model="name" />
+                </el-form-item>
+                <el-form-item label="親学習" prop="parent">
+                  <pl-training-history-selector v-model="parent" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item
+                  label="データセット"
+                  prop="dataSet"
+                  class="is-required"
                 >
-                </el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row class="right-button-group footer">
-            <el-button @click="emitCancel">キャンセル</el-button>
-            <el-button
-              v-if="(originId !== undefined) | (active === 3)"
-              type="primary"
-              @click="runTrain"
-              >実行
-            </el-button>
-          </el-row>
-        </div>
-        <div v-else>
-          <el-row :gutter="20">
-            <el-steps :active="active" align-center>
-              <el-step
-                title="Step 1"
-                description="training name & dataset"
-              ></el-step>
-              <el-step
-                title="Step 2"
-                description="container image & model"
-              ></el-step>
-              <el-step title="Step 3" description="resource"></el-step>
-              <el-step title="Step 4" description="option"></el-step>
-            </el-steps>
-            <div class="element">
-              <el-form v-if="active === 0">
-                <el-col :span="12">
-                  <el-form-item label="学習名" prop="name" class="is-required">
-                    <el-input v-model="name" />
-                  </el-form-item>
-                  <el-form-item label="親学習" prop="parent">
-                    <pl-training-history-selector v-model="parent" />
-                  </el-form-item>
-                </el-col>
-                <el-col :span="12">
-                  <el-form-item
-                    label="データセット"
-                    prop="dataSet"
-                    class="is-required"
+                  <pl-dataset-selector v-model="dataSet" />
+                </el-form-item>
+              </el-col>
+            </el-form>
+            <el-form v-if="active === 1">
+              <el-col :span="12">
+                <el-form-item label="コンテナイメージ" required>
+                  <pl-container-selector v-model="containerImage" />
+                </el-form-item>
+                <el-form-item label="モデル" required>
+                  <pl-git-selector v-model="git" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item
+                  label="実行コマンド"
+                  prop="entryPoint"
+                  class="is-required"
+                >
+                  <el-input
+                    v-model="entryPoint"
+                    type="textarea"
+                    :autosize="{ minRows: 2 }"
+                  />
+                </el-form-item>
+              </el-col>
+            </el-form>
+            <el-form v-if="active === 2">
+              <el-col :span="18" :offset="3">
+                <kqi-resource-selector
+                  v-model="resource"
+                ></kqi-resource-selector>
+              </el-col>
+            </el-form>
+            <el-form v-if="active === 3">
+              <el-col>
+                <el-form-item label="環境変数">
+                  <pl-dynamic-multi-input v-model="options" />
+                </el-form-item>
+                <el-form-item label="結果Zip圧縮">
+                  <el-switch
+                    v-model="zip"
+                    style="width: 100%;"
+                    inactive-text="圧縮しない"
+                    active-text="圧縮する"
+                  />
+                </el-form-item>
+                <el-form-item label="パーティション" prop="partition">
+                  <pl-string-selector
+                    v-if="partitions"
+                    v-model="partition"
+                    :value-list="partitions"
+                  />
+                </el-form-item>
+                <el-form-item label="メモ">
+                  <el-input
+                    v-model="memo"
+                    type="textarea"
+                    :autosize="{ minRows: 2, maxRows: 4 }"
                   >
-                    <pl-dataset-selector v-model="dataSet" />
-                  </el-form-item>
-                </el-col>
-              </el-form>
-              <el-form v-if="active === 1">
-                <el-col :span="12">
-                  <el-form-item label="コンテナイメージ" required>
-                    <pl-container-selector v-model="containerImage" />
-                  </el-form-item>
-                  <el-form-item label="モデル" required>
-                    <pl-git-selector v-model="git" />
-                  </el-form-item>
-                </el-col>
-                <el-col :span="12">
-                  <el-form-item
-                    label="実行コマンド"
-                    prop="entryPoint"
-                    class="is-required"
-                  >
-                    <el-input
-                      v-model="entryPoint"
-                      type="textarea"
-                      :autosize="{ minRows: 2 }"
-                    />
-                  </el-form-item>
-                </el-col>
-              </el-form>
-              <el-form v-if="active === 2">
-                <el-col :span="18" :offset="3">
-                  <kqi-resource-selector
-                    v-model="resource"
-                  ></kqi-resource-selector>
-                </el-col>
-              </el-form>
-              <el-form v-if="active === 3">
-                <el-col>
-                  <el-form-item label="環境変数">
-                    <pl-dynamic-multi-input v-model="options" />
-                  </el-form-item>
-                  <el-form-item label="結果Zip圧縮">
-                    <el-switch
-                      v-model="zip"
-                      style="width: 100%;"
-                      inactive-text="圧縮しない"
-                      active-text="圧縮する"
-                    />
-                  </el-form-item>
-                  <el-form-item label="パーティション" prop="partition">
-                    <pl-string-selector
-                      v-if="partitions"
-                      v-model="partition"
-                      :value-list="partitions"
-                    />
-                  </el-form-item>
-                  <el-form-item label="メモ">
-                    <el-input
-                      v-model="memo"
-                      type="textarea"
-                      :autosize="{ minRows: 2, maxRows: 4 }"
-                    >
-                    </el-input>
-                  </el-form-item>
-                </el-col>
-              </el-form>
-            </div>
-          </el-row>
-          <el-row class="step">
-            <span
-              v-if="active >= 1"
-              class="left-step-group"
-              style="margin-top: 12px;"
-              @click="previous"
-            >
-              <i class="el-icon-arrow-left"></i>
-              Previous step
-            </span>
-            <span
-              v-if="active <= 2"
-              class="right-step-group"
-              style="margin-top: 12px;"
-              @click="next"
-            >
-              Next step
-              <i class="el-icon-arrow-right"></i>
-            </span>
-            <el-button
-              v-if="(originId !== undefined) | (active === 3)"
-              class="right-step-group"
-              type="primary"
-              @click="runTrain"
-              >実行
-            </el-button>
-          </el-row>
-        </div>
+                  </el-input>
+                </el-form-item>
+              </el-col>
+            </el-form>
+          </div>
+        </el-row>
+        <el-row class="step">
+          <span
+            v-if="active >= 1"
+            class="left-step-group"
+            style="margin-top: 12px;"
+            @click="previous"
+          >
+            <i class="el-icon-arrow-left"></i>
+            Previous step
+          </span>
+          <span
+            v-if="active <= 2"
+            class="right-step-group"
+            style="margin-top: 12px;"
+            @click="next"
+          >
+            Next step
+            <i class="el-icon-arrow-right"></i>
+          </span>
+          <el-button
+            v-if="active === 3"
+            class="right-step-group"
+            type="primary"
+            @click="runTrain"
+            >実行
+          </el-button>
+        </el-row>
       </el-form>
     </el-dialog>
   </div>
@@ -230,9 +159,6 @@ export default {
     'pl-dynamic-multi-input': DynamicMultiInputField,
     'pl-display-error': DisplayError,
     'kqi-resource-selector': KqiResourceSelector,
-  },
-  props: {
-    originId: String,
   },
 
   data() {
@@ -280,7 +206,6 @@ export default {
   },
   async created() {
     await this.fetchPartitions()
-    // await this.retrieveParentTrain()
   },
   methods: {
     ...mapActions(['fetchPartitions', 'post']),
@@ -343,13 +268,6 @@ export default {
       }
     },
 
-    // async retrieveParentTrain() {
-    //   // 親が指定されていれば親のジョブ情報取得
-    //   if (this.originId >= 0) {
-    //     this.origin = (await api.training.getById({ id: this.originId })).data
-    //     this.copyFromOrigin()
-    //   }
-    // },
     emitCancel() {
       this.$emit('cancel')
     },
