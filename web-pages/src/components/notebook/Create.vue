@@ -7,7 +7,97 @@
                :close-on-click-modal="false">
       <el-form ref="runForm" :rules="rules" :model="this">
         <pl-display-error :error="error"/>
-        <div v-if="originId !== undefined">
+        <div v-if="copyFlag === true">
+          <el-row :gutter="20">
+            <div class="element">
+              <el-form v-if="active===0">
+                <el-col :span="12">
+                  <el-form-item label="ノートブック名" prop="name" required>
+                    <el-input v-model="name"/>
+                  </el-form-item>
+                  <el-form-item label="データセット" prop="dataSet" >
+                    <pl-dataset-selector v-model="dataSet"/>
+                  </el-form-item>
+                  <el-form-item label="マウントする学習" prop="parentIds">
+                    <pl-training-history-multiple-selector v-model="parentIds"/>
+                  </el-form-item>
+                  <el-form-item label="コンテナイメージ" >
+                    <pl-container-selector v-model="containerImage"/>
+                  </el-form-item>
+                  <el-form-item label="モデル">
+                    <pl-git-selector v-model="git"/>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                  <el-form-item label="CPU" required>
+                    <el-slider
+                      class="el-input"
+                      v-model="cpu"
+                      :min="1"
+                      :max="200"
+                      show-input>
+                    </el-slider>
+                  </el-form-item>
+                  <el-form-item label="メモリ(GB)" required>
+                    <el-slider
+                      class="el-input"
+                      v-model="memory"
+                      :min="1"
+                      :max="200"
+                      show-input>
+                    </el-slider>
+                  </el-form-item>
+                  <el-form-item label="GPU" required>
+                    <el-slider
+                      class="el-input"
+                      v-model="gpu"
+                      :min="0"
+                      :max="16"
+                      show-input>
+                    </el-slider>
+                  </el-form-item>
+                  <div v-if="availableInfiniteTimeNotebook === true">
+                    <el-form-item label="起動期間設定">
+                      <el-switch v-model="withExpiresInSetting"
+                                 style="width: 100%;"
+                                 inactive-text="OFF"
+                                 active-text="ON"/>
+                    </el-form-item>
+                  </div>
+                  <div v-show="withExpiresInSetting === true">
+                    <el-form-item label="起動期間(h)" required>
+                      <el-slider
+                        class="el-input"
+                        v-model="expiresIn"
+                        :min="1"
+                        :max="100"
+                        show-input>
+                      </el-slider>
+                    </el-form-item>
+                  </div>
+                  <el-form-item label="環境変数">
+                    <pl-dynamic-multi-input v-model="options"/>
+                  </el-form-item>
+                  <el-form-item label="パーティション" prop="partition">
+                    <pl-string-selector
+                      v-if="partitions"
+                      v-model="partition"
+                      :valueList="partitions"
+                    />
+                  </el-form-item>
+                  <el-form-item label="メモ">
+                    <el-input
+                      type="textarea"
+                      :autosize="{ minRows: 2, maxRows: 4}"
+                      v-model="memo">
+                    </el-input>
+                  </el-form-item>
+                </el-col>
+              </el-form>
+            </div>
+          </el-row>
+        </div>
+        <div v-if="originId !== undefined && copyFlag === false">
           <el-row :gutter="20">
             <div class="element">
               <el-form v-if="active===0">
@@ -73,7 +163,7 @@
             </div>
           </el-row>
         </div>
-        <div v-else>
+        <div v-else-if="originId === undefined">
           <el-row :gutter="20">
             <el-steps :active="active" align-center>
               <el-step title="Step 1" description="ノートブック名"></el-step>
@@ -197,10 +287,10 @@
             Next step
             <i class="el-icon-arrow-right"></i>
           </span>
-          <el-button class="right-step-group" v-if="active===3" type="primary"
+          <el-button class="right-step-group" v-if="active===3 || copyFlag === true" type="primary"
                      @click="runNotebook">起動
           </el-button>
-          <el-button class="right-step-group" v-if="originId !== undefined" type="primary"
+          <el-button class="right-step-group" v-if="originId !== undefined && copyFlag === false" type="primary"
                      @click="reRunNotebook">再実行
           </el-button>
         </el-row>
@@ -260,13 +350,17 @@
         active: 0,
         expiresIn: 8,
         availableInfiniteTimeNotebook: false,
-        withExpiresInSetting: true
+        withExpiresInSetting: true,
+        copyFlag: false
       }
     },
     async created () {
       let result = await (api.cluster.getPartitions())
       this.partitions = result.data
       this.availableInfiniteTimeNotebook = (await api.notebook.getAvailableInfiniteTime()).data
+      if (Object.keys(this.$route.query).length !== 0) {
+        this.copyFlag = this.$route.query.run.indexOf('copy') !== -1
+      }
       await this.retrieveOriginNotebook()
     },
     methods: {
@@ -369,16 +463,20 @@
 
         if (origin) {
           this.name = origin.name
-          this.container = origin.containerImage
+          if (origin.containerImage.registryId !== null) {
+            this.container = origin.containerImage
+            this.containerImage = origin.containerImage
+          }
+          if (origin.gitModel.gitId !== null) {
+            this.git = origin.gitModel
+          }
           this.dataSet = origin.dataSet
-          this.git = origin.gitModel
           this.options = origin.options
           this.memo = origin.memo
           this.cpu = origin.cpu
           this.memory = origin.memory
           this.gpu = origin.gpu
           this.partition = origin.partition
-          this.containerImage = origin.containerImage
           this.entryPoint = origin.entryPoint
           if (origin.expiresIn === 0) {
             if (this.availableInfiniteTimeNotebook === true) {

@@ -5,6 +5,12 @@
                :visible.sync="dialogVisible"
                :before-close="closeDialog"
                :close-on-click-modal="false">
+      <el-row type="flex" justify="end">
+        <el-col :span="24" class="right-button-group">
+          <el-button @click="emitCopyCreate">コピー実行</el-button>
+        </el-col>
+      </el-row>
+
       <el-form :model="this" :rules="rules" ref="updateForm">
         <pl-display-error :error="error"/>
         <el-row :gutter="20">
@@ -268,6 +274,9 @@
       },
       emitLog () {
         this.$emit('log', this.notebookId)
+      },
+      emitCopyCreate () {
+        this.$emit('copyCreate', this.notebookId)
       },
       async openNotebook () {
         let endpoint = await api.notebook.getEndpointById({id: this.notebookId})

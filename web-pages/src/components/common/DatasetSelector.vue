@@ -7,7 +7,7 @@
       trigger="hover"
       width="350"
       placement="right">
-      <pl-dataset-details :dataSet="dataSet"/>
+      <pl-dataset-details :dataSet="dataSet" v-if="dataSet"/>
     </el-popover>
     <div class="el-input">
       <el-select

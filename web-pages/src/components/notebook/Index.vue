@@ -78,6 +78,7 @@
       @files="files"
       @shell="shell"
       @log="log"
+      @copyCreate="copyCreateDialog"
     ></router-view>
   </div>
 </template>
@@ -183,6 +184,9 @@
       },
       openRerunDialog (selectedRow) {
         this.$router.push('/notebook/run/' + selectedRow.id)
+      },
+      copyCreateDialog (originId) {
+        this.$router.push('/notebook/run/' + originId + '?run=copy')
       }
     }
   }
