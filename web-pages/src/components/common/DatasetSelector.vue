@@ -60,7 +60,11 @@
       },
       onChange (dataSet) {
         this.dataSet = dataSet
-        this.$emit('input', dataSet)
+        if (dataSet) {
+          this.$emit('input', dataSet)
+        } else {
+          this.$emit('input', undefined)
+        }
       }
     },
     watch: {

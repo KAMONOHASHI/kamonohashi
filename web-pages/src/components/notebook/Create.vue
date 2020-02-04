@@ -15,11 +15,11 @@
                   <el-form-item label="ノートブック名" prop="name" required>
                     <el-input v-model="name"/>
                   </el-form-item>
-                  <el-form-item label="データセット" prop="dataSet" >
-                    <pl-dataset-selector v-model="dataSet"/>
-                  </el-form-item>
                   <el-form-item label="マウントする学習" prop="parentIds">
                     <pl-training-history-multiple-selector v-model="parentIds"/>
+                  </el-form-item>
+                  <el-form-item label="データセット" prop="dataSet" >
+                    <pl-dataset-selector v-model="dataSet"/>
                   </el-form-item>
                   <el-form-item label="コンテナイメージ" >
                     <pl-container-selector v-model="containerImage"/>
@@ -97,7 +97,7 @@
             </div>
           </el-row>
         </div>
-        <div v-if="originId !== undefined && copyFlag === false">
+        <div v-else-if="originId !== undefined && copyFlag === false">
           <el-row :gutter="20">
             <div class="element">
               <el-form v-if="active===0">
@@ -152,18 +152,18 @@
                 </div>
                 </el-col>
                 <el-col :span="18" :offset="3">
-                  <el-form-item label="データセット" prop="dataSet" >
-                    <pl-dataset-selector v-model="dataSet"/>
-                  </el-form-item>
                   <el-form-item label="マウントする学習" prop="parentIds">
                     <pl-training-history-multiple-selector v-model="parentIds"/>
+                  </el-form-item>
+                  <el-form-item label="データセット" prop="dataSet" >
+                    <pl-dataset-selector v-model="dataSet"/>
                   </el-form-item>
                 </el-col>
               </el-form>
             </div>
           </el-row>
         </div>
-        <div v-else-if="originId === undefined">
+        <div v-else>
           <el-row :gutter="20">
             <el-steps :active="active" align-center>
               <el-step title="Step 1" description="ノートブック名"></el-step>
@@ -245,11 +245,11 @@
                   </el-form-item>
                 </el-col>
                 <el-col :span="18" :offset="3">
-                  <el-form-item label="データセット" prop="dataSet" >
-                    <pl-dataset-selector v-model="dataSet"/>
-                  </el-form-item>
                   <el-form-item label="マウントする学習" prop="parentIds">
                     <pl-training-history-multiple-selector v-model="parentIds"/>
+                  </el-form-item>
+                  <el-form-item label="データセット" prop="dataSet" >
+                    <pl-dataset-selector v-model="dataSet"/>
                   </el-form-item>
                 </el-col>
               </el-form>
@@ -287,12 +287,15 @@
             Next step
             <i class="el-icon-arrow-right"></i>
           </span>
-          <el-button class="right-step-group" v-if="active===3 || copyFlag === true" type="primary"
-                     @click="runNotebook">起動
-          </el-button>
-          <el-button class="right-step-group" v-if="originId !== undefined && copyFlag === false" type="primary"
-                     @click="reRunNotebook">再実行
-          </el-button>
+          <span class="right-step-group" v-else>
+            <el-button @click="emitCancel" v-if="originId !== undefined">キャンセル</el-button>
+            <el-button v-if="active===3 || copyFlag === true" type="primary"
+                      @click="runNotebook">起動
+            </el-button>
+            <el-button v-if="originId !== undefined && copyFlag === false" type="primary"
+                      @click="reRunNotebook">再実行
+            </el-button>
+          </span>
         </el-row>
       </el-form>
     </el-dialog>
@@ -477,7 +480,6 @@
           this.memory = origin.memory
           this.gpu = origin.gpu
           this.partition = origin.partition
-          this.entryPoint = origin.entryPoint
           if (origin.expiresIn === 0) {
             if (this.availableInfiniteTimeNotebook === true) {
               this.withExpiresInSetting = false
