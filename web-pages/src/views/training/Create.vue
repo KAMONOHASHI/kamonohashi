@@ -215,8 +215,9 @@ import ContainerSelector from '@/components/common/ContainerSelector.vue'
 import StringSelector from '@/components/common/StringSelector.vue'
 import GitSelector from '@/components/common/GitSelector.vue'
 import DisplayError from '@/components/common/DisplayError'
-import api from '@/api/v1/api'
 import KqiResourceSelector from '@/components/KqiResourceSelector'
+import { createNamespacedHelpers } from 'vuex'
+const { mapGetters, mapActions } = createNamespacedHelpers('training')
 
 export default {
   name: 'CreateTrain',
@@ -233,6 +234,7 @@ export default {
   props: {
     originId: String,
   },
+
   data() {
     return {
       rules: {
@@ -260,7 +262,6 @@ export default {
       dialogVisible: true,
       error: undefined,
       origin: undefined, // コピー元のオブジェクトはorigin、コピー先の親ジョブオブジェクトはparentとしてそれぞれ格納
-      partitions: undefined,
       partition: undefined,
       parent: undefined,
       name: undefined,
@@ -274,12 +275,15 @@ export default {
       active: 0,
     }
   },
+  computed: {
+    ...mapGetters(['partitions']),
+  },
   async created() {
-    let result = await api.cluster.getPartitions()
-    this.partitions = result.data
-    await this.retrieveParentTrain()
+    await this.fetchPartitions()
+    // await this.retrieveParentTrain()
   },
   methods: {
+    ...mapActions(['fetchPartitions', 'post']),
     async runTrain() {
       let form = this.$refs.runForm
       await form.validate(async valid => {
@@ -290,7 +294,7 @@ export default {
             this.options.forEach(kvp => {
               options[kvp.key] = kvp.value
             })
-            let param = {
+            let params = {
               Name: this.name,
               ContainerImage: this.containerImage,
               DataSetId: this.dataSet ? this.dataSet.id : null,
@@ -305,7 +309,7 @@ export default {
               Memo: this.memo,
               Zip: this.zip,
             }
-            await api.training.post({ model: param })
+            await this.post(params)
 
             // 成功したら、ダイヤログを閉じて更新
             this.emitDone()
@@ -339,13 +343,13 @@ export default {
       }
     },
 
-    async retrieveParentTrain() {
-      // 親が指定されていれば親のジョブ情報取得
-      if (this.originId >= 0) {
-        this.origin = (await api.training.getById({ id: this.originId })).data
-        this.copyFromOrigin()
-      }
-    },
+    // async retrieveParentTrain() {
+    //   // 親が指定されていれば親のジョブ情報取得
+    //   if (this.originId >= 0) {
+    //     this.origin = (await api.training.getById({ id: this.originId })).data
+    //     this.copyFromOrigin()
+    //   }
+    // },
     emitCancel() {
       this.$emit('cancel')
     },

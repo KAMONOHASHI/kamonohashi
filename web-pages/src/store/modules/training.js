@@ -5,6 +5,8 @@ const state = {
   histories: [],
   total: 0,
   selections: [],
+  detail: {},
+  partitions: [],
 }
 
 // getters
@@ -18,6 +20,12 @@ const getters = {
   selections(state) {
     return state.selections
   },
+  detail(state) {
+    return state.detail
+  },
+  partitions(state) {
+    return state.partitions
+  },
 }
 
 // actions
@@ -28,6 +36,22 @@ const actions = {
     let total = response.headers['x-total-count']
     commit('setHistories', { histories })
     commit('setTotal', parseInt(total))
+  },
+
+  async fetchDetail({ commit, rootState }) {
+    let detail = (await api.training.getById({ id: rootState.route.params.id }))
+      .data
+    commit('setDetail', { detail })
+  },
+
+  async fetchPartitions({ commit }) {
+    let partitions = (await api.cluster.getPartitions()).data
+    commit('setPartitions', { partitions })
+  },
+
+  // eslint-disable-next-line no-unused-vars
+  async post({ rootState }, params) {
+    return await api.training.post({ model: params })
   },
 
   // eslint-disable-next-line no-unused-vars
@@ -46,6 +70,12 @@ const mutations = {
   },
   setSelections(state, selections) {
     state.selections = selections
+  },
+  setDetail(state, { detail }) {
+    state.detail = detail
+  },
+  setPartitions(state, { partitions }) {
+    state.partitions = partitions
   },
 }
 
