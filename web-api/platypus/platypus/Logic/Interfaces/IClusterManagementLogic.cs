@@ -20,6 +20,7 @@ namespace Nssol.Platypus.Logic.Interfaces
         /// <summary>
         /// 新規に前処理用コンテナを作成する。
         /// </summary>
+        /// <param name="preprocessHistory">対象の前処理履歴</param>
         /// <returns>作成したコンテナのステータス</returns>
         Task<Result<ContainerInfo, string>> RunPreprocessingContainerAsync(PreprocessHistory preprocessHistory);
 
@@ -33,20 +34,30 @@ namespace Nssol.Platypus.Logic.Interfaces
         /// <summary>
         /// 新規に画像認識の訓練用コンテナを作成する。
         /// </summary>
+        /// <param name="trainHistory">対象の学習履歴</param>
         /// <returns>作成したコンテナのステータス</returns>
         Task<Result<ContainerInfo, string>> RunTrainContainerAsync(TrainingHistory trainHistory);
 
         /// <summary>
         /// 新規に画像認識の推論用コンテナを作成する。
         /// </summary>
+        /// <param name="inferenceHistory">対象の推論履歴</param>
         /// <returns>作成したコンテナのステータス</returns>
         Task<Result<ContainerInfo, string>> RunInferenceContainerAsync(InferenceHistory inferenceHistory);
 
         /// <summary>
         /// 新規にノートブック用コンテナを作成する。
         /// </summary>
+        /// <param name="notebookHistory">対象のノートブック履歴</param>
         /// <returns>作成したコンテナのステータス</returns>
         Task<Result<ContainerInfo, string>> RunNotebookContainerAsync(NotebookHistory notebookHistory);
+
+        /// <summary>
+        /// 新規にバケット(テナントデータ)削除用のコンテナを作成する。
+        /// </summary>
+        /// <param name="tenant">対象のテナント</param>
+        /// <returns>作成したコンテナのステータス</returns>
+        Task<ContainerInfo> RunDeletingTenantDataContainerAsync(Tenant tenant);
 
         /// <summary>
         /// 全コンテナの情報を取得する
@@ -146,6 +157,16 @@ namespace Nssol.Platypus.Logic.Interfaces
         /// <param name="enabled">実行可否</param>
         /// <returns>更新結果、更新できた場合、true</returns>
         Task<bool> UpdateNotebookEnabledLabelAsync(string nodeName, bool enabled);
+
+        /// <summary>
+        /// テナントの実行可否設定を更新する
+        /// </summary>
+        /// <param name="nodeName">ノード名</param>
+        /// <param name="tenantName">テナント名</param>
+        /// <param name="enabled">実行可否</param>
+        /// <returns>更新結果、更新できた場合、true</returns>
+        Task<bool> UpdateTenantEnabledLabelAsync(string nodeName, string tenantName, bool enabled);
+
 
         /// <summary>
         /// 指定されたテナントのクォータ設定をクラスタに反映させる。

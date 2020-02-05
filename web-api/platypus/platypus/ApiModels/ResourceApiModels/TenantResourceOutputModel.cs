@@ -1,14 +1,19 @@
 ﻿using Nssol.Platypus.Infrastructure;
+using Nssol.Platypus.Infrastructure.Options;
 using Nssol.Platypus.Models;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Nssol.Platypus.ApiModels.ResourceApiModels
 {
+    /// <summary>
+    /// テナント単位のリソース情報出力モデル
+    /// </summary>
     public class TenantResourceOutputModel
     {
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="tenant">テナント情報</param>
         public TenantResourceOutputModel(Tenant tenant)
         {
             Id = tenant.Id;
@@ -23,11 +28,22 @@ namespace Nssol.Platypus.ApiModels.ResourceApiModels
         /// <summary>
         /// DBにないテナントに対応する出力モデルを作成する
         /// </summary>
-        public TenantResourceOutputModel(string tenantName)
+        public TenantResourceOutputModel(string tenantName, ContainerManageOptions containerManageOptions)
         {
-            Id = -1;
-            Name = tenantName;
-            DisplayName = "Unknown:" + tenantName;
+            if (tenantName == containerManageOptions.KqiAdminNamespace)
+            {
+                // KQI管理者用。(テナント実体は存在しないが、k8sの名前空間として使用している)
+                Id = 0;
+                Name = containerManageOptions.KqiAdminNamespace;
+                DisplayName = containerManageOptions.KqiAdminNamespace;
+            }
+            else
+            {
+                // 正体不明テナント
+                Id = -1;
+                Name = tenantName;
+                DisplayName = "Unknown:" + tenantName;
+            }
 
             ContainerResourceList = new List<ContainerDetailsOutputModel>();
         }

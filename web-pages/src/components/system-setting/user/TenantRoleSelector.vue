@@ -87,6 +87,17 @@
         if (this.tenantRoles.length >= 1 && this.tenantRoles.every(tr => tr.default === false)) {
           this.tenantRoles[0].default = true
         }
+
+        // テナント追加時のデフォルトロール設定
+        if (this.tenantRoles.length > 0) {
+          if (this.tenantRoles[this.tenantRoles.length - 1].roles.length === 0) {
+            // テナントロールで一番最初のロールをデフォルトとして設定する
+            if (this.roleTypes.filter(rt => rt.isSystemRole === false).length > 0) {
+              this.tenantRoles[this.tenantRoles.length - 1].$roles.push(this.roleTypes.filter(rt => rt.isSystemRole === false)[0].id)
+              this.tenantRoles[this.tenantRoles.length - 1].roles = this.roleTypes.filter(rt => rt.isSystemRole === false)
+            }
+          }
+        }
         this.emitInput()
       },
       async handleRoleChange (row) {
