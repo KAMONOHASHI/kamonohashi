@@ -28,19 +28,19 @@ data:
     if [ ! -L /kqi/output/input ]; then
         ln -s /kqi/input/ /kqi/output/input
         if [ $? -ne 0 ]; then
-            echo "You change the name of '/kqi/output/input' or delete it, and please run again."
+            echo "You need to change the name of '/kqi/output/input' or delete it. After that, please run again."
         fi
     fi
     if [ ! -L /kqi/output/git ]; then
         ln -s /kqi/git/ /kqi/output/git
         if [ $? -ne 0 ]; then
-            echo "You change the name of '/kqi/output/git' or delete it, and please run again."
+            echo "You need to change the name of '/kqi/output/git' or delete it. After that, please run again."
         fi
     fi
     if [ ! -L /kqi/output/parent ]; then
         ln -s /kqi/parent/ /kqi/output/parent
         if [ $? -ne 0 ]; then
-            echo "You change the name of '/kqi/output/parent' or delete it, and please run again."
+            echo "You need to change the name of '/kqi/output/parent' or delete it. After that, please run again."
         fi
     fi
     jupyter lab --ip=0.0.0.0 --allow-root --notebook-dir=/kqi/output --no-browser > /kqi/attach/.notebook.log 2>&1 &
