@@ -21,11 +21,29 @@ data:
     fi
   main: |
     if which pip3 > /dev/null 2>&1; then
-      pip3 install jupyterlab==1.0.4
+        pip3 install jupyterlab==1.0.4
     else
-      pip install jupyterlab==1.0.4
+        pip install jupyterlab==1.0.4
     fi
-    jupyter lab --ip=0.0.0.0 --allow-root --notebook-dir=/kqi/ --no-browser > /kqi/attach/.notebook.log 2>&1 &
+    if [ ! -L /kqi/output/input ]; then
+        ln -s /kqi/input/ /kqi/output/input
+        if [ $? -ne 0 ]; then
+            echo "You change the name of '/kqi/output/input' or delete it, and please run again."
+        fi
+    fi
+    if [ ! -L /kqi/output/git ]; then
+        ln -s /kqi/git/ /kqi/output/git
+        if [ $? -ne 0 ]; then
+            echo "You change the name of '/kqi/output/git' or delete it, and please run again."
+        fi
+    fi
+    if [ ! -L /kqi/output/parent ]; then
+        ln -s /kqi/parent/ /kqi/output/parent
+        if [ $? -ne 0 ]; then
+            echo "You change the name of '/kqi/output/parent' or delete it, and please run again."
+        fi
+    fi
+    jupyter lab --ip=0.0.0.0 --allow-root --notebook-dir=/kqi/output --no-browser > /kqi/attach/.notebook.log 2>&1 &
     bash /kqi/scripts/common/wait-ready
   finish: |
     bash /kqi/scripts/common/prepare-kqi-conf
