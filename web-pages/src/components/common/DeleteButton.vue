@@ -8,48 +8,52 @@
 <!--}-->
 <!--events: {  delete: 削除確認に「はい」を選択時に発火}-->
 <template>
-<span>
-  <el-button type="danger" @click="showConfirm" :size="size" :disabled="disabled">
-    <span v-if="buttonLabel">{{buttonLabel}}</span>
-    <span v-else class="el-icon-delete"/>
-  </el-button>
-</span>
+  <span>
+    <el-button
+      type="danger"
+      :size="size"
+      :disabled="disabled"
+      @click="showConfirm"
+    >
+      <span v-if="buttonLabel">{{ buttonLabel }}</span>
+      <span v-else class="el-icon-delete" />
+    </el-button>
+  </span>
 </template>
 
 <script>
-
-  export default {
-    name: 'DeleteButton',
-    props: {
-      buttonLabel: String,
-      size: String,
-      message: String,
-      disabled: Boolean
-    },
-    methods: {
-      async showConfirm () {
-        let confirmMessage = this.message ? this.message : '削除しますか'
-        try {
-          await this.$confirm(confirmMessage, 'Warning', {
-            confirmButtonText: 'はい',
-            cancelButtonText: 'キャンセル',
-            type: 'warning'
-          })
-          this.$emit('delete')
-        } catch (e) {
-          // キャンセル時はなにもしないので例外を無視
-        }
+export default {
+  name: 'DeleteButton',
+  props: {
+    buttonLabel: String,
+    size: String,
+    message: String,
+    disabled: Boolean,
+  },
+  methods: {
+    async showConfirm() {
+      let confirmMessage = this.message ? this.message : '削除しますか'
+      try {
+        await this.$confirm(confirmMessage, 'Warning', {
+          confirmButtonText: 'はい',
+          cancelButtonText: 'キャンセル',
+          type: 'warning',
+        })
+        this.$emit('delete')
+      } catch (e) {
+        // キャンセル時はなにもしないので例外を無視
       }
-    }
-  }
+    },
+  },
+}
 </script>
 
 <style lang="scss" scoped>
-  .cancel-button {
-    text-align: left;
-  }
+.cancel-button {
+  text-align: left;
+}
 
-  .ok-button {
-    text-align: right;
-  }
+.ok-button {
+  text-align: right;
+}
 </style>

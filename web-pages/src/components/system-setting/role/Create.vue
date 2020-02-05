@@ -1,9 +1,11 @@
 <template>
-  <el-dialog class="dialog"
-             title="ロール作成"
-             :visible.sync="dialogVisible"
-             :before-close="handleCancel"
-             :close-on-click-modal="false">
+  <el-dialog
+    class="dialog"
+    title="ロール作成"
+    :visible.sync="dialogVisible"
+    :before-close="handleCancel"
+    :close-on-click-modal="false"
+  >
     <el-form ref="createForm" :model="form" :rules="rules">
       <pl-display-error :error="error" />
       <el-form-item label="ロール名" prop="name">
@@ -13,18 +15,28 @@
         <el-input v-model="form.displayName" />
       </el-form-item>
       <el-form-item label="種別" prop="isSystemRole">
-        <el-select v-model="form.isSystemRole" placeholder="Select" style="width:100%;" :clearable="true">
+        <el-select
+          v-model="form.isSystemRole"
+          placeholder="Select"
+          style="width:100%;"
+          :clearable="true"
+        >
           <el-option
             v-for="item in roleTypes"
             :key="item.value"
             :label="item.label"
-            :value="item.value">
+            :value="item.value"
+          >
           </el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="ソート順" prop="sortOrder">
         <br />
-        <el-input-number v-model="form.sortOrder" controls-position="right" style="vertical-align: middle;"/>
+        <el-input-number
+          v-model="form.sortOrder"
+          controls-position="right"
+          style="vertical-align: middle;"
+        />
         並び順。小さいほど前に表示される。一意性は不要。
       </el-form-item>
       <el-row class="right-button-group footer">
@@ -42,35 +54,41 @@ import DisplayError from '@/components/common/DisplayError'
 export default {
   name: 'RoleCreate',
   components: {
-    'pl-display-error': DisplayError
+    'pl-display-error': DisplayError,
   },
-  data () {
+  data() {
     return {
       dialogVisible: true,
       error: null,
       roleTypes: [
         { label: 'テナント', value: false },
-        { label: 'システム', value: true }
+        { label: 'システム', value: true },
       ],
       form: {
         name: '',
         displayName: '',
         isSystemRole: false,
-        sortOrder: 0
+        sortOrder: 0,
       },
       rules: {
-        name: [{required: true, trigger: 'blur', message: '必須項目です'}],
-        displayName: [{required: true, trigger: 'blur', message: '必須項目です'}],
-        isSystemRole: [{required: true, trigger: 'blur', message: '必須項目です'}],
-        sortOrder: [{required: true, trigger: 'blur', message: '必須項目です'}]
-      }
+        name: [{ required: true, trigger: 'blur', message: '必須項目です' }],
+        displayName: [
+          { required: true, trigger: 'blur', message: '必須項目です' },
+        ],
+        isSystemRole: [
+          { required: true, trigger: 'blur', message: '必須項目です' },
+        ],
+        sortOrder: [
+          { required: true, trigger: 'blur', message: '必須項目です' },
+        ],
+      },
     }
   },
 
   methods: {
-    async handleCreate () {
+    async handleCreate() {
       let form = this.$refs.createForm
-      await form.validate(async (valid) => {
+      await form.validate(async valid => {
         if (valid) {
           try {
             await this.postRole()
@@ -83,40 +101,40 @@ export default {
       })
     },
 
-    async postRole () {
+    async postRole() {
       let params = {
         model: {
           name: this.form.name,
           displayName: this.form.displayName,
           isSystemRole: this.form.isSystemRole,
-          sortOrder: this.form.sortOrder
-        }
+          sortOrder: this.form.sortOrder,
+        },
       }
       await api.role.admin.post(params)
     },
 
-    handleCancel () {
+    handleCancel() {
       this.emitCancel()
     },
 
-    emitDone () {
+    emitDone() {
       this.showSuccessMessage()
       this.$emit('done')
     },
 
-    emitCancel () {
+    emitCancel() {
       this.$emit('cancel')
-    }
-  }
+    },
+  },
 }
 </script>
 
 <style lang="scss" scoped>
-  .dialog /deep/ label {
-    font-weight: bold !important
-  }
-  .right-button-group {
-    padding-top: 25px;
-    text-align: right;
-  }
+.dialog /deep/ label {
+  font-weight: bold !important;
+}
+.right-button-group {
+  padding-top: 25px;
+  text-align: right;
+}
 </style>

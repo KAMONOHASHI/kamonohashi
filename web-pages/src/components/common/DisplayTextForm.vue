@@ -7,10 +7,10 @@
 <!--slots: {  action: 値に加えて、何か表示要素を追加したいときに使う,}-->
 <template>
   <div class="pl-form">
-    <label class="el-form-item__label">{{label}}</label>
+    <label class="el-form-item__label">{{ label }}</label>
     <div class="pl-form-item-value">
       <span v-if="isShow">
-        {{value}}
+        {{ value }}
       </span>
       <span v-else>
         --
@@ -21,30 +21,29 @@
 </template>
 
 <script>
-  export default {
-    props: ['label', 'value'],
+export default {
+  props: ['label', 'value'],
 
-    computed: {
-      isShow () {
-        if (this.value === null) return false
-        if (this.value === undefined) return false
-        return true
-      }
-    }
-  }
+  computed: {
+    isShow() {
+      if (this.value === null) return false
+      if (this.value === undefined) return false
+      return true
+    },
+  },
+}
 </script>
 
 <style lang="scss" scoped>
-  .pl-form-item-value {
-    display: inline-block;
-    width: 100%;
-    height: 40px;
-    padding-left: 3px;
-    word-wrap: break-word;
-  }
+.pl-form-item-value {
+  display: inline-block;
+  width: 100%;
+  height: 40px;
+  padding-left: 3px;
+  word-wrap: break-word;
+}
 
-  .pl-form {
-    margin-bottom: 12px;
-  }
-
+.pl-form {
+  margin-bottom: 12px;
+}
 </style>

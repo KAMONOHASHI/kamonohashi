@@ -7,16 +7,23 @@
       placeholder="Please input"
       size="mini"
       format="yyyy-MM-dd"
+      style="width: 150px"
       @change="handleChange"
       @blur="handleBlur"
-      style="width: 150px" />
+    />
 
-    <el-popover trigger="manual" v-model="show">
-      <el-table :data="tableData" :show-header="false" @current-change="handleCommand">
+    <el-popover v-model="show" trigger="manual">
+      <el-table
+        :data="tableData"
+        :show-header="false"
+        @current-change="handleCommand"
+      >
         <el-table-column prop="name" width="100" />
         <el-table-column prop="name" width="100" align="right">
           <template slot-scope="scope">
-            <span style="color:grey;font-size:85%;">{{ scope.row.detail }}</span>
+            <span style="color:grey;font-size:85%;">{{
+              scope.row.detail
+            }}</span>
           </template>
         </el-table-column>
       </el-table>
@@ -28,34 +35,36 @@
 export default {
   name: 'SmartSearchInputDate',
   props: ['tag'],
-  data () {
+  data() {
     return {
       value: undefined,
       show: false,
-      tableData: [ // e.g) 2018/10/1を選択した場合
+      tableData: [
+        // e.g) 2018/10/1を選択した場合
         { name: 'のみ', detail: '', symbol: '=' }, // =2018/10/1
         { name: '以降', detail: '', symbol: '>=', days: 0 }, // >=2018/10/1
         { name: '以前', detail: '', symbol: '<', days: 1 }, // <2018/10/2
         { name: 'より後', detail: '', symbol: '>=', days: 1 }, // >=2018/10/2
-        { name: 'より前', detail: '', symbol: '<', days: 0 } // <2018/10/1
-      ]
+        { name: 'より前', detail: '', symbol: '<', days: 0 }, // <2018/10/1
+      ],
     }
   },
-  created () {
+  created() {
+    /* eslint-disable */
     this.$nextTick(_ => {
-      this.value = this.getValue()
+      this.value = this.getValue();
       setTimeout(() => {
-        this.$refs.saveTagInput.focus()
-      }, 600)
-    })
+        this.$refs.saveTagInput.focus();
+      }, 600);
+    });
+    /* eslint-enable */
   },
   methods: {
-
-    handleChange () {
+    handleChange() {
       this.show = true
     },
 
-    handleCommand (row) {
+    handleCommand(row) {
       if (this.value) {
         this.show = false
         let value = row.symbol + this.getNowYMD(this.value, row.days)
@@ -67,7 +76,7 @@ export default {
       }
     },
 
-    handleBlur () {
+    handleBlur() {
       setTimeout(() => {
         if (!this.value) {
           this.emitCancel()
@@ -75,7 +84,7 @@ export default {
       }, 300)
     },
 
-    getNowYMD (date, days) {
+    getNowYMD(date, days) {
       let dt = new Date(date.valueOf())
       if (days) {
         dt.setDate(dt.getDate() + days)
@@ -92,7 +101,7 @@ export default {
       return result
     },
 
-    getValue () {
+    getValue() {
       if (this.tag.display) {
         return this.tag.display
       }
@@ -102,16 +111,14 @@ export default {
       return ''
     },
 
-    emitDone (value, display, suffix) {
+    emitDone(value, display, suffix) {
       this.$emit('done', { value, display, suffix })
     },
-    emitCancel () {
+    emitCancel() {
       this.$emit('cancel')
-    }
-  }
+    },
+  },
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

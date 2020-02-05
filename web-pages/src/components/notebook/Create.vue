@@ -311,7 +311,6 @@
   import GitSelector from '@/components/common/GitSelector.vue'
   import DisplayError from '@/components/common/DisplayError'
   import api from '@/api/v1/api'
-
   export default {
     name: 'CreateNotebook',
     components: {
@@ -377,11 +376,9 @@
               this.options.forEach((kvp) => {
                 options[kvp.key] = kvp.value
               })
-
               if (this.withExpiresInSetting === false) {
                 this.expiresIn = 0
               }
-
               let param = {
                 name: this.name,
                 containerImage: this.containerImage,
@@ -397,7 +394,6 @@
                 expiresIn: this.expiresIn * 60 * 60
               }
               await api.notebook.post({model: param})
-
               // 成功したら、ダイヤログを閉じて更新
               this.emitDone()
               this.error = null
@@ -424,7 +420,6 @@
                   expiresIn: this.expiresIn * 60 * 60
               }
               await api.notebook.postRerun({id: this.originId, model: param})
-
               // 成功したら、ダイヤログを閉じて更新
               this.emitDone()
               this.error = null
@@ -463,7 +458,6 @@
       },
       copyFromOrigin () {
         let origin = this.origin
-
         if (origin) {
           this.name = origin.name
           if (origin.containerImage.registryId !== null) {
@@ -501,39 +495,31 @@
   .right-button-group {
     text-align: right;
   }
-
   .dialog /deep/ label {
     font-weight: bold !important
   }
-
   .dialog /deep/ .el-dialog__title {
     font-size: 24px
   }
-
   .footer {
     padding-top: 40px;
   }
-
     .left-step-group {
     text-align: left;
     float: left;
     z-index: 2;
   }
-
   .right-step-group {
     text-align: right;
     float: right;
     z-index: 2;
   }
-
   .right-button-group {
     text-align: right;
   }
-
   .footer {
     padding-top: 40px;
   }
-
   .step {
     padding-top: 20px;
     cursor: pointer;
@@ -544,5 +530,4 @@
   .el-step__description {
     font-size: 14px;
   }
-
 </style>

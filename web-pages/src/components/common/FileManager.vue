@@ -12,54 +12,55 @@
   <div class="el-input">
     <div v-if="uploadedFiles && uploadedFiles.length > 0">
       <div v-for="(uploadedFile, index) in uploadedFiles" :key="index">
-        <pl-download class="uploadedFile"
-                     :downloadUrl="uploadedFile.url"
-                     :fileName="uploadedFile.fileName"
+        <pl-download
+          class="uploadedFile"
+          :download-url="uploadedFile.url"
+          :file-name="uploadedFile.fileName"
         />
         <!-- 将来消せないものにはその情報がAPIから渡ってくるので、v-ifはそれに合わせて変更する -->
-        <pl-delete-button v-if="uploadedFile.fileId > 0 && deletable" @delete="$emit('delete', uploadedFile.fileId)"
-                          size="mini"/>
+        <pl-delete-button
+          v-if="uploadedFile.fileId > 0 && deletable"
+          size="mini"
+          @delete="$emit('delete', uploadedFile.fileId)"
+        />
       </div>
       <!-- アップロード済みファイルがあるので、それを表示 -->
     </div>
     <div v-else>
-      <pl-upload-form title="File" ref="uploadForm" :type="type"/>
+      <pl-upload-form ref="uploadForm" title="File" :type="type" />
     </div>
   </div>
 </template>
 
 <script>
+import DownloadButton from '@/components/common/DownloadButton.vue'
+import DeleteButton from '@/components/common/DeleteButton.vue'
+import UploadForm from '@/components/common/UploadForm.vue'
 
-  import DownloadButton from '@/components/common/DownloadButton.vue'
-  import DeleteButton from '@/components/common/DeleteButton.vue'
-  import UploadForm from '@/components/common/UploadForm.vue'
-
-  export default {
-    name: 'FileManager',
-    components: {
-      'pl-download': DownloadButton,
-      'pl-upload-form': UploadForm,
-      'pl-delete-button': DeleteButton
-    },
-    props: {
-      uploadedFiles: Array,
-      type: String,
-      deletable: Boolean
-    },
-    methods: {
-      async uploadFile () {
-        if (this.$refs.uploadForm) {
-          let fileInfo = await this.$refs.uploadForm.uploadFile()
-          return fileInfo
-        }
-      },
-      isFileSelected () {
-        return this.$refs.uploadForm.isFileSelected()
+export default {
+  name: 'FileManager',
+  components: {
+    'pl-download': DownloadButton,
+    'pl-upload-form': UploadForm,
+    'pl-delete-button': DeleteButton,
+  },
+  props: {
+    uploadedFiles: Array,
+    type: String,
+    deletable: Boolean,
+  },
+  methods: {
+    async uploadFile() {
+      if (this.$refs.uploadForm) {
+        let fileInfo = await this.$refs.uploadForm.uploadFile()
+        return fileInfo
       }
-    }
-  }
+    },
+    isFileSelected() {
+      return this.$refs.uploadForm.isFileSelected()
+    },
+  },
+}
 </script>
 
-<style lang="scss" scoped>
-
-</style>
+<style lang="scss" scoped></style>

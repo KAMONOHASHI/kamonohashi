@@ -8,12 +8,13 @@
     <div>
       <!-- disabledで表示有無を切り替える -->
       <el-popover
-        :disabled="!(parent && parent.id>-1)"
         ref="detail"
+        :disabled="!(parent && parent.id > -1)"
         title="親学習詳細"
         trigger="hover"
         width="350"
-        placement="right">
+        placement="right"
+      >
         <pl-training-history-details
           :id="parent.id"
           :name="parent.name"
@@ -24,18 +25,20 @@
     </div>
     <div class="el-input">
       <el-select
+        v-model="parent"
         v-popover:detail
-        @change="onChange"
         filterable
         value-key="id"
-        v-model="parent"
         remote
-        :clearable="true">
+        :clearable="true"
+        @change="onChange"
+      >
         <el-option
           v-for="item in trainingHistories"
           :key="item.id"
           :label="item.fullName"
-          :value="item">
+          :value="item"
+        >
         </el-option>
       </el-select>
     </div>
@@ -43,70 +46,70 @@
 </template>
 
 <script>
-  import TrainingHistoryDetails from '@/components/common/TrainingHistoryDetails.vue'
-  import api from '@/api/v1/api'
+import TrainingHistoryDetails from '@/components/common/TrainingHistoryDetails.vue'
+import api from '@/api/v1/api'
 
-  export default {
-    components: {
-      'pl-training-history-details': TrainingHistoryDetails
-    },
-    props: {
-      value: Object
-    },
-    data () {
-      return {
-        trainingHistories: [],
-        parent: this.value === undefined || this.value === null
+export default {
+  components: {
+    'pl-training-history-details': TrainingHistoryDetails,
+  },
+  props: {
+    value: Object,
+  },
+  data() {
+    return {
+      trainingHistories: [],
+      parent:
+        this.value === undefined || this.value === null
           ? {
-            id: undefined,
-            name: undefined,
-            status: undefined,
-            memo: undefined
-          }
+              id: undefined,
+              name: undefined,
+              status: undefined,
+              memo: undefined,
+            }
           : {
-            id: this.value.id,
-            name: this.value.name,
-            status: this.value.status,
-            memo: this.value.memo
-          }
-      }
-    },
-    async created () {
-      await this.getTrainingHistories()
-    },
-    methods: {
-      async getTrainingHistories () {
-        this.trainingHistories = (await api.training.getSimple()).data
-      },
-      async onChange (parent) {
-        if (parent.id) {
-          this.parent = (await api.training.getById({id: parent.id})).data
-          this.$emit('input', this.parent)
-        } else {
-          // 空文字選択のときは選択解除のために初期化する
-          this.parent = {
-            id: undefined,
-            name: undefined,
-            status: undefined,
-            memo: undefined
-          }
-          this.$emit('input', undefined)
-        }
-      }
-    },
-    watch: {
-      value: function getData () {
-        if (this.value !== undefined) {
-          this.parent = this.value
-        }
-      }
-
+              id: this.value.id,
+              name: this.value.name,
+              status: this.value.status,
+              memo: this.value.memo,
+            },
     }
-  }
+  },
+  watch: {
+    value: function getData() {
+      if (this.value !== undefined) {
+        this.parent = this.value
+      }
+    },
+  },
+  async created() {
+    await this.getTrainingHistories()
+  },
+  methods: {
+    async getTrainingHistories() {
+      this.trainingHistories = (await api.training.getSimple()).data
+    },
+    async onChange(parent) {
+      if (parent.id) {
+        this.parent = (await api.training.getById({ id: parent.id })).data
+        this.$emit('input', this.parent)
+      } else {
+        // 空文字選択のときは選択解除のために初期化する
+        this.parent = {
+          id: undefined,
+          name: undefined,
+          status: undefined,
+          memo: undefined,
+        }
+        this.$emit('input', undefined)
+      }
+    },
+  },
+}
 </script>
 
 <style lang="scss" scoped>
-  .el-select {
-    width: 100% !important;
-  }
+.el-select {
+  width: 100% !important;
+}
 </style>

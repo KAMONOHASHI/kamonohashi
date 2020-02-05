@@ -25,11 +25,6 @@ import CreateNotebook from '@/components/notebook/Create.vue'
 import EditNotebook from '@/components/notebook/Edit.vue'
 import NotebookFileIndex from '@/components/notebook/FileIndex.vue'
 
-import TrainingIndex from '@/components/training/Index'
-import CreateJob from '@/components/training/Create.vue'
-import EditTrain from '@/components/training/Edit.vue'
-import FileIndex from '@/components/training/FileIndex.vue'
-
 import InferenceIndex from '@/components/inference/Index'
 import CreateInference from '@/components/inference/Create'
 import EditInference from '@/components/inference/Edit'
@@ -47,10 +42,6 @@ import ManageTenantSetting from '@/components/tenant-manage/tenant/Setting'
 import TenantIndex from '@/components/system-setting/tenant/Index'
 import TenantCreate from '@/components/system-setting/tenant/Create'
 import TenantEdit from '@/components/system-setting/tenant/Edit'
-
-import GitIndex from '@/components/system-setting/git/Index'
-import GitCreate from '@/components/system-setting/git/Create'
-import GitEdit from '@/components/system-setting/git/Edit'
 
 import RegistryIndex from '@/components/system-setting/registry/Index'
 import RegistryCreate from '@/components/system-setting/registry/Create'
@@ -89,24 +80,29 @@ import Error from '@/components/error/Error'
 import ManageResourceIndex from '@/components/tenant-manage/resource/Index'
 import VersionIndex from '@/components/version/Index'
 
+import training from '@/router/training'
+import git from '@/router/git'
+
 Vue.use(Router)
 
 let router = new Router({
   routes: [
+    ...training,
+    ...git,
     {
       path: '/login',
       name: 'Login',
-      component: AccountLogin
+      component: AccountLogin,
     },
     {
       path: '/setting',
       name: 'Setting',
-      component: AccountSetting
+      component: AccountSetting,
     },
     {
       path: '/',
       name: 'DashBoard',
-      component: DashBoardIndex
+      component: DashBoardIndex,
     },
     {
       path: '/data',
@@ -115,19 +111,19 @@ let router = new Router({
       children: [
         {
           path: 'create',
-          component: CreateData
+          component: CreateData,
         },
         {
           path: ':id',
           component: EditData,
-          props: true
+          props: true,
         },
         {
           path: ':id/preprocessing',
           component: PreprocessData,
-          props: true
-        }
-      ]
+          props: true,
+        },
+      ],
     },
     {
       path: '/dataset',
@@ -137,14 +133,14 @@ let router = new Router({
         {
           path: 'create/:parentId?',
           component: CreateDataSet,
-          props: true
+          props: true,
         },
         {
           path: ':id',
           component: EditDataSet,
-          props: true
-        }
-      ]
+          props: true,
+        },
+      ],
     },
     {
       path: '/preprocessing',
@@ -153,35 +149,34 @@ let router = new Router({
       children: [
         {
           path: 'create',
-          component: CreatePreprocessing
+          component: CreatePreprocessing,
         },
         {
           path: 'create/:originId?',
           component: CreatePreprocessing,
-          props: true
+          props: true,
         },
         {
           path: ':id/edit',
           component: EditPreprocessing,
-          props: true
+          props: true,
         },
         {
           path: 'run',
           component: RunPreprocessing,
-          props: true
+          props: true,
         },
         {
           path: ':id/:dataId',
           component: PreprocessingHistoryEdit,
-          props: true
+          props: true,
         },
         {
           path: ':id/:dataId/shell',
           component: Shell,
-          props: true
-        }
-      ]
-
+          props: true,
+        },
+      ],
     },
     {
       path: '/preprocessingHistory/:id',
@@ -192,19 +187,19 @@ let router = new Router({
         {
           path: ':dataId',
           component: PreprocessingHistoryEdit,
-          props: true
+          props: true,
         },
         {
           path: ':dataId/shell',
           component: Shell,
-          props: true
+          props: true,
         },
         {
           path: ':dataId/log',
           component: LogViewer,
-          props: true
-        }
-      ]
+          props: true,
+        },
+      ],
     },
     {
       path: '/notebook',
@@ -214,61 +209,29 @@ let router = new Router({
         {
           path: 'run/:originId?',
           component: CreateNotebook,
-          props: true
+          props: true,
         },
         {
           path: ':id',
           component: EditNotebook,
-          props: true
+          props: true,
         },
         {
           path: ':id/files',
           component: NotebookFileIndex,
-          props: true
+          props: true,
         },
         {
           path: ':id/shell',
           component: Shell,
-          props: true
+          props: true,
         },
         {
           path: ':id/log',
           component: LogViewer,
-          props: true
-        }
-      ]
-    },
-    {
-      path: '/training',
-      name: 'training',
-      component: TrainingIndex,
-      children: [
-        {
-          path: 'run/:originId?',
-          component: CreateJob,
-          props: true
+          props: true,
         },
-        {
-          path: ':id',
-          component: EditTrain,
-          props: true
-        },
-        {
-          path: ':id/files',
-          component: FileIndex,
-          props: true
-        },
-        {
-          path: ':id/shell',
-          component: Shell,
-          props: true
-        },
-        {
-          path: ':id/log',
-          component: LogViewer,
-          props: true
-        }
-      ]
+      ],
     },
     {
       path: '/inference',
@@ -278,34 +241,34 @@ let router = new Router({
         {
           path: 'create/:originId?',
           component: CreateInference,
-          props: true
+          props: true,
         },
         {
           path: ':id',
           component: EditInference,
-          props: true
+          props: true,
         },
         {
           path: ':id/files',
           component: FileIndexInference,
-          props: true
+          props: true,
         },
         {
           path: ':id/shell',
           component: Shell,
-          props: true
+          props: true,
         },
         {
           path: ':id/log',
           component: LogViewer,
-          props: true
-        }
-      ]
+          props: true,
+        },
+      ],
     },
     {
       path: '/manage/tenant',
       name: 'ManageTenant',
-      component: ManageTenantSetting
+      component: ManageTenantSetting,
     },
     {
       path: '/manage/role',
@@ -314,14 +277,14 @@ let router = new Router({
       children: [
         {
           path: 'create',
-          component: ManageRoleCreate
+          component: ManageRoleCreate,
         },
         {
           path: ':id',
           component: ManageRoleEdit,
-          props: true
-        }
-      ]
+          props: true,
+        },
+      ],
     },
     {
       path: '/manage/user',
@@ -331,19 +294,19 @@ let router = new Router({
         {
           path: ':id',
           component: ManageUserEdit,
-          props: true
-        }
-      ]
+          props: true,
+        },
+      ],
     },
     {
       path: '/manage/menu',
       name: 'ManageMenu',
-      component: ManageMenuIndex
+      component: ManageMenuIndex,
     },
     {
       path: '/manage/resource',
       name: 'ManageResource',
-      component: ManageResourceIndex
+      component: ManageResourceIndex,
     },
     {
       path: '/tenant',
@@ -352,30 +315,14 @@ let router = new Router({
       children: [
         {
           path: 'create',
-          component: TenantCreate
+          component: TenantCreate,
         },
         {
           path: ':id',
           component: TenantEdit,
-          props: true
-        }
-      ]
-    },
-    {
-      path: '/git',
-      name: 'Git',
-      component: GitIndex,
-      children: [
-        {
-          path: 'create',
-          component: GitCreate
+          props: true,
         },
-        {
-          path: ':id',
-          component: GitEdit,
-          props: true
-        }
-      ]
+      ],
     },
     {
       path: '/registry',
@@ -384,14 +331,14 @@ let router = new Router({
       children: [
         {
           path: 'create',
-          component: RegistryCreate
+          component: RegistryCreate,
         },
         {
           path: ':id',
           component: RegistryEdit,
-          props: true
-        }
-      ]
+          props: true,
+        },
+      ],
     },
     {
       path: '/storage',
@@ -400,14 +347,14 @@ let router = new Router({
       children: [
         {
           path: 'create',
-          component: StorageCreate
+          component: StorageCreate,
         },
         {
           path: ':id',
           component: StorageEdit,
-          props: true
-        }
-      ]
+          props: true,
+        },
+      ],
     },
     {
       path: '/role',
@@ -416,19 +363,19 @@ let router = new Router({
       children: [
         {
           path: 'create',
-          component: RoleCreate
+          component: RoleCreate,
         },
         {
           path: ':id',
           component: RoleEdit,
-          props: true
-        }
-      ]
+          props: true,
+        },
+      ],
     },
     {
       path: '/quota',
       name: 'Quota',
-      component: QuotaIndex
+      component: QuotaIndex,
     },
     {
       path: '/node',
@@ -437,14 +384,14 @@ let router = new Router({
       children: [
         {
           path: 'create',
-          component: NodeCreate
+          component: NodeCreate,
         },
         {
           path: ':id',
           component: NodeEdit,
-          props: true
-        }
-      ]
+          props: true,
+        },
+      ],
     },
     {
       path: '/user',
@@ -453,19 +400,19 @@ let router = new Router({
       children: [
         {
           path: 'create',
-          component: UserCreate
+          component: UserCreate,
         },
         {
           path: ':id',
           component: UserEdit,
-          props: true
-        }
-      ]
+          props: true,
+        },
+      ],
     },
     {
       path: '/menu',
       name: 'Menu',
-      component: MenuIndex
+      component: MenuIndex,
     },
     {
       path: '/cluster-resource',
@@ -479,9 +426,9 @@ let router = new Router({
             {
               path: ':id/:name',
               component: ClusterResourceEdit,
-              props: true
-            }
-          ]
+              props: true,
+            },
+          ],
         },
         {
           path: 'tenant',
@@ -490,9 +437,9 @@ let router = new Router({
             {
               path: ':id/:name',
               component: ClusterResourceEdit,
-              props: true
-            }
-          ]
+              props: true,
+            },
+          ],
         },
         {
           path: 'container-list',
@@ -501,25 +448,25 @@ let router = new Router({
             {
               path: ':id/:name',
               component: ClusterResourceEdit,
-              props: true
-            }
-          ]
-        }
-      ]
+              props: true,
+            },
+          ],
+        },
+      ],
     },
     {
       path: '/error',
       name: 'error',
-      component: Error
+      component: Error,
     },
     {
       path: '/version',
       name: 'Version',
-      component: VersionIndex
-    }
-  ]
+      component: VersionIndex,
+    },
+  ],
 })
-
+/* eslint-disable */
 router.beforeEach((to, from, next) => {
   if (!to.matched.length) {
     next('/error?url=' + to.path)
@@ -533,5 +480,6 @@ router.afterEach((to, from) => {
   let vue = new Vue()
   vue.$notify.closeAll()
 })
+/* eslint-enable */
 
-export {router as default}
+export { router as default }

@@ -5,16 +5,17 @@ import jalang from 'element-ui/lib/locale/lang/ja'
 // ここでは element ui の言語翻訳がおかしいものの修正を行う。
 
 let ja = {
-  ...jalang
+  ...jalang,
 }
 ja.el.pagination.total = '合計 {total} 件' // 総計 → 合計に変更
 
 let en = {
-  ...enlang
+  ...enlang,
 }
 
 let message = {
-  ja, en
+  ja,
+  en,
 }
 
-export {message as default}
+export { message as default }

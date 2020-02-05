@@ -8,42 +8,41 @@
 <!--input(label:string): 選択された文字列-->
 <!--}-->
 <template>
-  <el-select class="el-input" @change="$emit('input',partition)" filterable v-model="partition" :clearable="true">
-    <el-option
-      v-for="item in items"
-      :key="item"
-      :label="item"
-      :value="item">
+  <el-select
+    v-model="partition"
+    class="el-input"
+    filterable
+    :clearable="true"
+    @change="$emit('input', partition)"
+  >
+    <el-option v-for="item in items" :key="item" :label="item" :value="item">
     </el-option>
   </el-select>
 </template>
 
 <script>
-  export default {
-    name: 'StringSelector',
-    props: {
-      valueList: Array,
-      value: String
-    },
-    data () {
-      return {
-        items: [],
-        partition: this.value === undefined || this.value === null
-          ? ''
-          : this.value
-      }
-    },
-    created () {
-      this.items = this.valueList
-    },
-    watch: {
-      value: function getData () {
-        this.partition = this.value
-      }
+export default {
+  name: 'StringSelector',
+  props: {
+    valueList: Array,
+    value: String,
+  },
+  data() {
+    return {
+      items: [],
+      partition:
+        this.value === undefined || this.value === null ? '' : this.value,
     }
-
-  }
+  },
+  watch: {
+    value: function getData() {
+      this.partition = this.value
+    },
+  },
+  created() {
+    this.items = this.valueList
+  },
+}
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

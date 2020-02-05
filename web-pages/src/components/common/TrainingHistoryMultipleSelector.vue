@@ -7,17 +7,19 @@
     <div class="el-input">
       <el-select
         v-popover:detail
-        @change="onChange"
         filterable
         multiple
         :value="value"
         remote
-        :clearable="true">
+        :clearable="true"
+        @change="onChange"
+      >
         <el-option
           v-for="item in trainingHistories"
           :key="item.id"
           :label="item.fullName"
-          :value="item.id">
+          :value="item.id"
+        >
         </el-option>
       </el-select>
     </div>
@@ -25,35 +27,35 @@
 </template>
 
 <script>
-  import api from '@/api/v1/api'
+import api from '@/api/v1/api'
 
-  export default {
-    props: {
-      value: Array
-    },
-    data () {
-      return {
-        trainingHistories: [],
-        parentIds: []
-      }
-    },
-    async created () {
-      await this.getTrainingHistories()
-    },
-    methods: {
-      async getTrainingHistories () {
-        let params = {'status': ['Completed', 'UserCanceled', 'Killed']}
-        this.trainingHistories = (await api.training.getMount(params)).data
-      },
-      async onChange (parentIds) {
-        this.$emit('input', parentIds)
-      }
+export default {
+  props: {
+    value: Array,
+  },
+  data() {
+    return {
+      trainingHistories: [],
+      parentIds: [],
     }
-  }
+  },
+  async created() {
+    await this.getTrainingHistories()
+  },
+  methods: {
+    async getTrainingHistories() {
+      let params = { status: ['Completed', 'UserCanceled', 'Killed'] }
+      this.trainingHistories = (await api.training.getMount(params)).data
+    },
+    async onChange(parentIds) {
+      this.$emit('input', parentIds)
+    },
+  },
+}
 </script>
 
 <style lang="scss" scoped>
-  .el-select {
-    width: 100% !important;
-  }
+.el-select {
+  width: 100% !important;
+}
 </style>

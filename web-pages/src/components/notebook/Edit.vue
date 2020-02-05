@@ -17,12 +17,20 @@
           <el-col :span="12">
             <pl-display-text-form label="ノートブックID" :value="id">
               <span slot="action">
-                <div class="el-icon-star-on favorite" v-if="favorite" v-on:click="favorite = false"></div>
-                <div class="el-icon-star-off favorite" v-else v-on:click="favorite = true"></div>
+                <div
+                  v-if="favorite"
+                  class="el-icon-star-on favorite"
+                  @click="favorite = false"
+                ></div>
+                <div
+                  v-else
+                  class="el-icon-star-off favorite"
+                  @click="favorite = true"
+                ></div>
               </span>
             </pl-display-text-form>
             <el-form-item label="ノートブック名" prop="name">
-              <el-input v-model="name"/>
+              <el-input v-model="name" />
             </el-form-item>
             <div v-if="parents && parents.length > 0">
               <el-form-item label="マウントした学習">
@@ -32,14 +40,20 @@
                     title="マウントした学習詳細"
                     trigger="hover"
                     width="350"
-                    placement="right">
+                    placement="right"
+                  >
                     <pl-training-history-details
                       :id="parent.id"
                       :name="parent.name"
                       :status="parent.status"
                       :memo="parent.memo"
                     />
-                    <el-button class="el-input" slot="reference" @click="showParent(parent.id)">{{parent.fullName}}</el-button>
+                    <el-button
+                      slot="reference"
+                      class="el-input"
+                      @click="showParent(parent.id)"
+                      >{{ parent.fullName }}</el-button
+                    >
                   </el-popover>
                 </div>
               </el-form-item>
@@ -51,90 +65,112 @@
                   title="データセット詳細"
                   trigger="hover"
                   width="350"
-                  placement="right">
-                  <pl-dataset-details :dataSet="dataSet"/>
+                  placement="right"
+                >
+                  <pl-dataset-details :data-set="dataSet" />
                 </el-popover>
-                <el-button class="el-input" @click="redirectEditDataSet" v-popover:dataSetDetail>{{dataSet.name}}
+                <el-button
+                  v-popover:dataSetDetail
+                  class="el-input"
+                  @click="redirectEditDataSet"
+                  >{{ dataSet.name }}
                 </el-button>
               </el-form-item>
             </div>
             <el-form-item label="モデル">
               <div class="el-input">
-            <span v-if="gitModel && gitModel.url !== null" style="padding-left: 3px">
-              <a :href="gitModel.url" target="_blank">
-                {{gitModel.owner}}/{{gitModel.repository}}/{{gitModel.branch}}
-              </a>
-            </span>
+                <span
+                  v-if="gitModel && gitModel.url !== null"
+                  style="padding-left: 3px"
+                >
+                  <a :href="gitModel.url" target="_blank">
+                    {{ gitModel.owner }}/{{ gitModel.repository }}/{{
+                      gitModel.branch
+                    }}
+                  </a>
+                </span>
                 <span v-else>
-              None
-            </span>
+                  None
+                </span>
               </div>
             </el-form-item>
-            <pl-display-text-form label="作成者" :value="createdBy"/>
-            <pl-display-text-form label="開始日時" :value="startedAt"/>
-            <pl-display-text-form label="完了日時" :value="completedAt"/>
-            <pl-display-text-form label="待機時間" :value="waitingTime"/>
-            <pl-display-text-form label="実行時間" :value="executionTime"/>
-
-            <pl-display-text-form label="起動期間(h)" :value="expiresIn" v-if="expiresIn !== 0"/>
-            <pl-display-text-form label="起動期間" value="無期限" v-else/>
-
-            <el-form-item label="環境変数" v-if="options">
+            <pl-display-text-form label="作成者" :value="createdBy" />
+            <pl-display-text-form label="開始日時" :value="startedAt" />
+            <pl-display-text-form label="完了日時" :value="completedAt" />
+            <pl-display-text-form label="待機時間" :value="waitingTime" />
+            <pl-display-text-form label="実行時間" :value="executionTime" />
+            <pl-display-text-form label="生存期間(h)" :value="expiresIn" />
+            <el-form-item v-if="options" label="環境変数">
               <div class="el-input">
                 <el-row v-for="option in options" :key="option.key">
-                  <el-col :span="8" :offset="1">{{option.key}}</el-col>
-                  <el-col :span="12">{{option.value}}</el-col>
+                  <el-col :span="8" :offset="1">{{ option.key }}</el-col>
+                  <el-col :span="12">{{ option.value }}</el-col>
                 </el-row>
               </div>
             </el-form-item>
-            <pl-display-text-form label="コンテナイメージ" :value="containerUrl"/>
+            <pl-display-text-form
+              label="コンテナイメージ"
+              :value="containerUrl"
+            />
           </el-col>
-          <el-col :span=12>
-            <pl-display-text-form label="CPU" :value="cpu"/>
-            <pl-display-text-form label="メモリ(GB)" :value="memory"/>
-            <pl-display-text-form label="GPU" :value="gpu"/>
-            <pl-display-text-form label="パーティション" :value="partition"/>
-            <pl-display-text-form label="ステータス" :value="status"/>
-            <div class="k8s-event" v-if="conditionNote !== `` ">{{conditionNote}}</div>
-            <div class="k8s-event" v-if="events.length">
+          <el-col :span="12">
+            <pl-display-text-form label="CPU" :value="cpu" />
+            <pl-display-text-form label="メモリ(GB)" :value="memory" />
+            <pl-display-text-form label="GPU" :value="gpu" />
+            <pl-display-text-form label="パーティション" :value="partition" />
+            <pl-display-text-form label="ステータス" :value="status" />
+            <div v-if="conditionNote !== ``" class="k8s-event">
+              {{ conditionNote }}
+            </div>
+            <div v-if="events.length" class="k8s-event">
               <el-collapse accordion>
                 <el-collapse-item title="ステータス詳細ログ">
                   <div v-for="(event, index) in events" :key="index">
-                    <div v-if="event.isError">
-                      message:{{ event.message}}
-                    </div>
+                    <div v-if="event.isError">message:{{ event.message }}</div>
                   </div>
                 </el-collapse-item>
               </el-collapse>
             </div>
-            <div v-if="statusType === 'Running'  || statusType === 'Error'">
+            <div v-if="statusType === 'Running' || statusType === 'Error'">
               <el-form-item label="操作">
                 <div class="el-input">
-                  <pl-delete-button buttonLabel="ジョブ停止" @delete="haltNotebook" message="停止しますか"/>
+                  <pl-delete-button
+                    button-label="ジョブ停止"
+                    message="停止しますか"
+                    @delete="haltNotebook"
+                  />
                 </div>
                 <div v-if="status === 'Running'">
                   <div class="el-input" style="padding: 10px 0">
                     <el-button @click="emitShell">Shell起動</el-button>
                   </div>
                   <div>
-                    <el-button type="plain" @click="openNotebook" icon="el-icon-document" >ノートブックを開く</el-button>
+                    <el-button
+                      type="plain"
+                      icon="el-icon-document"
+                      @click="openNotebook"
+                      >ノートブックを開く</el-button
+                    >
                   </div>
                 </div>
               </el-form-item>
             </div>
             <el-form-item label="コンテナ出力ファイル">
-              <br/>
+              <br />
               <el-button @click="emitFiles">ファイル一覧</el-button>
             </el-form-item>
             <el-form-item label="ログファイル">
-              <br/>
-              <el-button @click="emitLog" size="mini">ログファイル閲覧</el-button>
+              <br />
+              <el-button size="mini" @click="emitLog"
+                >ログファイル閲覧</el-button
+              >
             </el-form-item>
             <el-form-item label="メモ">
               <el-input
+                v-model="memo"
                 type="textarea"
-                :autosize="{ minRows: 2, maxRows: 4}"
-                v-model="memo">
+                :autosize="{ minRows: 2, maxRows: 4 }"
+              >
               </el-input>
             </el-form-item>
           </el-col>
@@ -142,7 +178,10 @@
 
         <el-row :gutter="20" class="footer">
           <el-col :span="12">
-            <pl-delete-button @delete="deleteNotebook" message="削除しますか（出力データ数が多い場合、処理に時間がかかります）"/>
+            <pl-delete-button
+              message="削除しますか（出力データ数が多い場合、処理に時間がかかります）"
+              @delete="deleteNotebook"
+            />
           </el-col>
           <el-col class="right-button-group" :span="12">
             <el-button @click="emitCancel">キャンセル</el-button>
@@ -155,62 +194,103 @@
 </template>
 
 <script>
-  import DisplayTextForm from '@/components/common/DisplayTextForm.vue'
-  import DisplayError from '@/components/common/DisplayError'
-  import DeleteButton from '@/components/common/DeleteButton.vue'
-  import DataSetDetails from '@/components/common/DatasetDetails.vue'
-  import TrainingHistoryDetails from '@/components/common/TrainingHistoryDetails.vue'
-  import api from '@/api/v1/api'
-  export default {
-    name: 'EditNotebook',
-    components: {
-      'pl-delete-button': DeleteButton,
-      'pl-display-text-form': DisplayTextForm,
-      'pl-display-error': DisplayError,
-      'pl-dataset-details': DataSetDetails,
-      'pl-training-history-details': TrainingHistoryDetails
+import DisplayTextForm from '@/components/common/DisplayTextForm.vue'
+import DisplayError from '@/components/common/DisplayError'
+import DeleteButton from '@/components/common/DeleteButton.vue'
+import DataSetDetails from '@/components/common/DatasetDetails.vue'
+import TrainingHistoryDetails from '@/components/common/TrainingHistoryDetails.vue'
+import api from '@/api/v1/api'
+export default {
+  name: 'EditNotebook',
+  components: {
+    'pl-delete-button': DeleteButton,
+    'pl-display-text-form': DisplayTextForm,
+    'pl-display-error': DisplayError,
+    'pl-dataset-details': DataSetDetails,
+    'pl-training-history-details': TrainingHistoryDetails,
+  },
+  props: {
+    id: String,
+  },
+  data() {
+    return {
+      rules: {
+        name: [{ required: true, trigger: 'blur', message: '必須項目です' }],
+      },
+      notebookId: undefined,
+      dialogVisible: true,
+      error: undefined,
+      containerUrl: undefined, // コンテナの表示用URL
+      name: undefined,
+      dataSet: undefined,
+      parents: [],
+      gitModel: undefined,
+      createdBy: undefined,
+      startedAt: undefined,
+      completedAt: undefined,
+      memo: undefined,
+      options: undefined,
+      cpu: undefined,
+      memory: undefined,
+      gpu: undefined,
+      partition: undefined,
+      endpoint: undefined,
+      // スクリプトがこけたときなどに"failed"になる
+      status: undefined,
+      // コンテナの生死等
+      statusType: undefined,
+      conditionNote: '',
+      favorite: false,
+      events: [],
+      waitingTime: undefined,
+      executionTime: undefined,
+      expiresIn: undefined,
+    }
+  },
+  async created() {
+    this.notebookId = this.id
+    await this.getDetail()
+  },
+  methods: {
+    async getDetail() {
+      let data = (await api.notebook.getById({ id: this.notebookId })).data
+      this.setTrainDetails(data)
+      this.containerUrl = data.containerImage.url
     },
-    props: {
-      id: String
-    },
-    data () {
-      return {
-        rules: {
-          name: [{required: true, trigger: 'blur', message: '必須項目です'}]
-        },
-        notebookId: undefined,
-        dialogVisible: true,
-        error: undefined,
-        containerUrl: undefined, // コンテナの表示用URL
-        name: undefined,
-        dataSet: undefined,
-        parents: [],
-        gitModel: undefined,
-        createdBy: undefined,
-        startedAt: undefined,
-        completedAt: undefined,
-        memo: undefined,
-        options: undefined,
-        cpu: undefined,
-        memory: undefined,
-        gpu: undefined,
-        partition: undefined,
-        endpoint: undefined,
-        // スクリプトがこけたときなどに"failed"になる
-        status: undefined,
-        // コンテナの生死等
-        statusType: undefined,
-        conditionNote: '',
-        favorite: false,
-        events: [],
-        waitingTime: undefined,
-        executionTime: undefined,
-        expiresIn: undefined
+    async setTrainDetails(data) {
+      this.name = data.name
+      this.notebookId = data.id
+      this.dataSet = data.dataSet
+      this.parents = data.parents
+      this.gitModel = data.gitModel
+      this.createdBy = data.createdBy
+      this.startedAt = data.startedAt
+      this.completedAt = data.completedAt
+      this.memo = data.memo
+      this.options = data.options
+      this.cpu = data.cpu
+      this.memory = data.memory
+      this.gpu = data.gpu
+      this.partition = data.partition
+      this.statusDetail = data.statusDetail
+      this.endpoint = data.notebookEndpoint
+      this.status =
+        data.status === data.statusType
+          ? data.status
+          : data.statusType + ' (' + data.status + ')'
+      this.statusType = data.statusType
+      this.conditionNote = data.conditionNote
+      this.favorite = data.favorite
+      if (this.statusType === 'Running' || this.statusType === 'Error') {
+        this.events = (await api.notebook.getEventsById({ id: data.id })).data
       }
+      this.waitingTime = data.waitingTime
+      this.executionTime = data.executionTime
+      this.expiresIn = data.expiresIn === 0 ? 0 : data.expiresIn / 60 / 60
     },
-    async created () {
-      this.notebookId = this.id
-      await this.getDetail()
+    emitDone() {
+      this.$emit('done')
+      this.dialogVisible = false
     },
     methods: {
       async getDetail () {
@@ -293,8 +373,7 @@
       },
       async onSubmit () {
         let form = this.$refs.updateForm
-
-        await form.validate(async (valid) => {
+          await form.validate(async valid => {
           if (valid) {
             try {
               await this.updateHistory()
@@ -306,47 +385,48 @@
           }
         })
       },
-      async haltNotebook () {
+      async haltNotebook() {
         try {
-          await api.notebook.postHaltById({id: this.notebookId})
+          await api.notebook.postHaltById({ id: this.notebookId })
           await this.getDetail()
           this.error = null
         } catch (e) {
           this.error = e
         }
       },
-      async deleteNotebook () {
+      async deleteNotebook() {
         try {
-          await api.notebook.deleteById({id: this.notebookId})
+          await api.notebook.deleteById({ id: this.notebookId })
           this.emitDone()
           this.error = null
         } catch (e) {
           this.error = e
         }
-      }
-    }
+      },
+    },
   }
+}
 </script>
 
 <style lang="scss" scoped>
-  .right-button-group {
-    text-align: right;
-  }
+.right-button-group {
+  text-align: right;
+}
 
-  .dialog /deep/ label {
-    font-weight: bold !important
-  }
+.dialog /deep/ label {
+  font-weight: bold !important;
+}
 
-  .dialog /deep/ .el-dialog__title {
-    font-size: 24px
-  }
+.dialog /deep/ .el-dialog__title {
+  font-size: 24px;
+}
 
-  .footer {
-    padding-top: 40px;
-  }
+.footer {
+  padding-top: 40px;
+}
 
-  .favorite {
-    font-size: 20px;
-    color: rgb(230, 162, 60);
-  }
+.favorite {
+  font-size: 20px;
+  color: rgb(230, 162, 60);
+}
 </style>
