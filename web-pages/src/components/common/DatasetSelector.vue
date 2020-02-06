@@ -7,7 +7,7 @@
       trigger="hover"
       width="350"
       placement="right">
-      <pl-dataset-details :dataSet="dataSet"/>
+      <pl-dataset-details :dataSet="dataSet" v-if="dataSet"/>
     </el-popover>
     <div class="el-input">
       <el-select
@@ -60,7 +60,11 @@
       },
       onChange (dataSet) {
         this.dataSet = dataSet
-        this.$emit('input', dataSet)
+        if (dataSet) {
+          this.$emit('input', dataSet)
+        } else {
+          this.$emit('input', undefined)
+        }
       }
     },
     watch: {

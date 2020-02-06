@@ -16,6 +16,12 @@
               <el-form-item label="表示名" prop="displayName">
                 <el-input v-model="form.displayName"/>
               </el-form-item>
+              <el-form-item label="ノートブック無期限実行" required>
+                <el-switch v-model="form.availableInfiniteTimeNotebook"
+                           style="width: 100%;"
+                           inactive-text="禁止"
+                           active-text="許可"/>
+              </el-form-item>
           </div>
         </el-col>
 
@@ -23,17 +29,17 @@
           <h3>Git情報</h3>
           <div class="margin">
               <pl-git-endpoint-selector v-model="form.gitIds"
-                                      v-bind:defaultId="form.defaultGitId"
-                                      v-bind:tenantId="form.id"
-                                      v-on:changeDefaultId="form.defaultGitId = $event"/>
+                                        v-bind:defaultId="form.defaultGitId"
+                                        v-bind:tenantId="getTenantId"
+                                        v-on:changeDefaultId="form.defaultGitId = $event"/>
           </div>
 
           <h3>Docker Registry 情報</h3>
           <div class="margin">
               <pl-registry-endpoint-selector v-model="form.registryIds"
-                                          v-bind:defaultId="form.defaultRegistryId"
-                                          v-bind:tenantId="form.id"
-                                          v-on:changeDefaultId="form.defaultRegistryId = $event"/>
+                                             v-bind:defaultId="form.defaultRegistryId"
+                                             v-bind:tenantId="getTenantId"
+                                             v-on:changeDefaultId="form.defaultRegistryId = $event"/>
           </div>
 
           <el-row :gutter="20">
@@ -77,7 +83,8 @@
           defaultGitId: null,
           registryIds: [],
           defaultRegistryId: null,
-          storageId: null
+          storageId: null,
+          availableInfiniteTimeNotebook: false
         },
         rules: {
           displayName: [{required: true, trigger: 'blur', message: '必須項目です'}],
@@ -94,12 +101,8 @@
     methods: {
       async init () {
         try {
-          let data = (await api.account.get()).data
-          let params = {
-              id: data.selectedTenant.id
-          }
-          let [model] = api.f.data(await api.tenant.admin.getById(params))
-          this.form.id = data.selectedTenant.id
+          let [model] = api.f.data(await api.tenant.get())
+          this.form.id = model.id
           this.form.name = model.name
           this.form.displayName = model.displayName
           this.form.gitIds = model.gitIds
@@ -107,6 +110,7 @@
           this.form.storageId = model.storageId
           this.form.defaultRegistryId = model.defaultRegistryId
           this.form.registryIds = model.registryIds
+          this.form.availableInfiniteTimeNotebook = model.availableInfiniteTimeNotebook
           this.error = null
         } catch (e) {
           this.error = e
@@ -129,17 +133,22 @@
       },
       async putTenant () {
         let param = {
-          id: this.form.id,
           model: {
             displayName: this.form.displayName,
             gitIds: this.form.gitIds,
             defaultGitId: this.form.defaultGitId,
             storageId: this.form.storageId,
             defaultRegistryId: this.form.defaultRegistryId,
-            registryIds: this.form.registryIds
+            registryIds: this.form.registryIds,
+            availableInfiniteTimeNotebook: this.form.availableInfiniteTimeNotebook
           }
         }
-        await api.tenant.admin.put(param)
+        await api.tenant.put(param)
+      },
+      getTenantId () {
+        // 接続中テナントのIDを取得する
+        let data = api.account.get().data
+        return data.selectedTenant.id
       }
     }
   }

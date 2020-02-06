@@ -5,6 +5,12 @@
                :visible.sync="dialogVisible"
                :before-close="closeDialog"
                :close-on-click-modal="false">
+      <el-row type="flex" justify="end">
+        <el-col :span="24" class="right-button-group">
+          <el-button @click="emitCopyCreate">コピー実行</el-button>
+        </el-col>
+      </el-row>
+
       <el-form :model="this" :rules="rules" ref="updateForm">
         <pl-display-error :error="error"/>
         <el-row :gutter="20">
@@ -69,7 +75,10 @@
             <pl-display-text-form label="完了日時" :value="completedAt"/>
             <pl-display-text-form label="待機時間" :value="waitingTime"/>
             <pl-display-text-form label="実行時間" :value="executionTime"/>
-            <pl-display-text-form label="生存期間(h)" :value="expiresIn"/>
+
+            <pl-display-text-form label="起動期間(h)" :value="expiresIn" v-if="expiresIn !== 0"/>
+            <pl-display-text-form label="起動期間" value="無期限" v-else/>
+
             <el-form-item label="環境変数" v-if="options">
               <div class="el-input">
                 <el-row v-for="option in options" :key="option.key">
@@ -265,6 +274,9 @@
       },
       emitLog () {
         this.$emit('log', this.notebookId)
+      },
+      emitCopyCreate () {
+        this.$emit('copyCreate', this.notebookId)
       },
       async openNotebook () {
         let endpoint = await api.notebook.getEndpointById({id: this.notebookId})

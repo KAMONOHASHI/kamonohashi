@@ -17,23 +17,23 @@ namespace Nssol.Platypus.ApiModels.TenantApiModels
         /// <summary>
         /// Git ID。
         /// </summary>
-        [Required]
         public long? DefaultGitId { get; set; }
 
         /// <summary>
         /// Git IDs
         /// </summary>
+        [Required]
         public IEnumerable<long> GitIds { get; set; }
 
         /// <summary>
         /// Registry ID。
         /// </summary>
-        [Required]
         public long? DefaultRegistryId { get; set; }
 
         /// <summary>
         /// Registry IDs
         /// </summary>
+        [Required]
         public IEnumerable<long> RegistryIds { get; set; }
 
         /// <summary>
@@ -41,5 +41,10 @@ namespace Nssol.Platypus.ApiModels.TenantApiModels
         /// </summary>
         [Required]
         public long? StorageId { get; set; }
+
+        /// <summary>
+        /// ノートブック無期限利用可否フラグ
+        /// </summary>
+        public bool AvailableInfiniteTimeNotebook { get; set; }
     }
 }

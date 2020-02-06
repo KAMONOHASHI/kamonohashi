@@ -69,9 +69,19 @@ namespace Nssol.Platypus.Infrastructure.Options
         public string TensorBoardImage { get; set; }
 
         /// <summary>
+        /// Kubernetesシステム用のNamespaceプレフィックス
+        /// </summary>
+        public string KubernetesNamespacePrefix { get; set; }
+
+        /// <summary>
         /// Kqiシステム用のNamespaceプレフィックス
         /// </summary>
         public string KqiNamespacePrefix { get; set; }
+
+        /// <summary>
+        /// Kqiシステム管理者用のNamespace
+        /// </summary>
+        public string KqiAdminNamespace { get; set; }
 
         /// <summary>
         /// データを取得するためのREST APIのベースURL。

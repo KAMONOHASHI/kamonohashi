@@ -73,7 +73,6 @@ let api = {
       put: gen.ApiV1AdminNodesByIdPut,
       delete: gen.ApiV1AdminNodesByIdDelete,
       postSyncFromDb: gen.ApiV1AdminNodesSync_cluster_from_dbPost,
-      postSyncFromCluster: gen.ApiV1AdminNodesSync_db_from_clusterPost,
       getAccessLevel: gen.ApiV1AdminNode_access_levelsGet
     }
   },
@@ -87,7 +86,7 @@ let api = {
       deleteById: gen.ApiV1AdminRegistryEndpointsByIdDelete
     },
     tenant: {
-      getEndpoints: gen.ApiV1TenantByIdRegistryEndpointsGet
+      getEndpoints: gen.ApiV1TenantRegistryEndpointsGet
     },
     getImages: gen.ApiV1RegistriesByRegistryIdImagesGet,
     getTags: gen.ApiV1RegistriesByRegistryIdImagesByImageTagsGet
@@ -158,7 +157,7 @@ let api = {
       getTypes: gen.ApiV1AdminGitTypesGet
     },
     tenant: {
-      getEndpoints: gen.ApiV1TenantByIdGitEndpointsGet
+      getEndpoints: gen.ApiV1TenantGitEndpointsGet
     },
     getRepos: gen.ApiV1GitByGitIdReposGet,
     getBranches: gen.ApiV1GitByGitIdReposByOwnerByRepositoryNameBranchesGet,
@@ -232,7 +231,8 @@ let api = {
     getEventsById: gen.ApiV1NotebookByIdEventsGet,
     getEndpointById: gen.ApiV1NotebookByIdEndpointGet,
     getFilesById: gen.ApiV1NotebookByIdContainer_filesGet,
-    postRerun: gen.ApiV1NotebookByIdRerunPost
+    postRerun: gen.ApiV1NotebookByIdRerunPost,
+    getAvailableInfiniteTime: gen.ApiV1NotebookAvailable_infinite_timeGet
   },
 
   inference: {
@@ -271,9 +271,10 @@ let api = {
       post: gen.ApiV1AdminTenantsPost,
       getById: gen.ApiV1AdminTenantsByIdGet,
       put: gen.ApiV1AdminTenantsByIdPut,
-      getMembers: gen.ApiV1AdminTenantsByIdMembersGet,
       delete: gen.ApiV1AdminTenantsByIdDelete
-    }
+    },
+    get: gen.ApiV1TenantGet,
+    put: gen.ApiV1TenantPut
   },
 
   user: {

@@ -17,6 +17,12 @@
         <el-form-item label="表示名" prop="displayName">
           <el-input v-model="form.displayName"/>
         </el-form-item>
+        <el-form-item label="ノートブック無期限実行" required>
+          <el-switch v-model="form.availableInfiniteTimeNotebook"
+                     style="width: 100%;"
+                     inactive-text="禁止"
+                     active-text="許可"/>
+        </el-form-item>
       </div>
 
       <h3>ストレージ情報</h3>
@@ -89,7 +95,8 @@
           defaultGitId: null,
           registryIds: [],
           defaultRegistryId: null,
-          storageId: null
+          storageId: null,
+          availableInfiniteTimeNotebook: false
         },
 
         rules: {
@@ -125,6 +132,7 @@
             this.form.storageId = model.storageId
             this.form.defaultRegistryId = model.defaultRegistryId
             this.form.registryIds = model.registryIds
+            this.form.availableInfiniteTimeNotebook = model.availableInfiniteTimeNotebook
             this.error = null
           } catch (e) {
             this.error = e
@@ -154,7 +162,8 @@
             defaultGitId: this.form.defaultGitId,
             storageId: this.form.storageId,
             defaultRegistryId: this.form.defaultRegistryId,
-            registryIds: this.form.registryIds
+            registryIds: this.form.registryIds,
+            availableInfiniteTimeNotebook: this.form.availableInfiniteTimeNotebook
           }
         }
         await api.tenant.admin.put(param)
@@ -162,15 +171,15 @@
       async deleteTenant () {
         try {
           let params = {
-            id: this.id,
-            model: {
-              data: {
-                ignoreMinioBucketDeletion: true
-              }
-            }
+            id: this.id
           }
-          await api.tenant.admin.delete(params)
-          this.emitDone()
+          let msg = (await api.tenant.admin.delete(params)).data.containerWarnMsg
+          if (msg) {
+            // コンテナ起動に失敗した場合、警告メッセージを表示する
+            this.emitError(msg)
+          } else {
+            this.emitDone()
+          }
         } catch (e) {
           this.error = e
         }
@@ -183,6 +192,9 @@
       },
       emitDone () {
         this.$emit('done')
+      },
+      emitError (msg) {
+        this.$emit('error', msg)
       }
     }
   }
