@@ -29,17 +29,17 @@
           <h3>Git情報</h3>
           <div class="margin">
               <pl-git-endpoint-selector v-model="form.gitIds"
-                                      v-bind:defaultId="form.defaultGitId"
-                                      v-bind:tenantId="form.id"
-                                      v-on:changeDefaultId="form.defaultGitId = $event"/>
+                                        v-bind:defaultId="form.defaultGitId"
+                                        v-bind:tenantId="getTenantId"
+                                        v-on:changeDefaultId="form.defaultGitId = $event"/>
           </div>
 
           <h3>Docker Registry 情報</h3>
           <div class="margin">
               <pl-registry-endpoint-selector v-model="form.registryIds"
-                                          v-bind:defaultId="form.defaultRegistryId"
-                                          v-bind:tenantId="form.id"
-                                          v-on:changeDefaultId="form.defaultRegistryId = $event"/>
+                                             v-bind:defaultId="form.defaultRegistryId"
+                                             v-bind:tenantId="getTenantId"
+                                             v-on:changeDefaultId="form.defaultRegistryId = $event"/>
           </div>
 
           <el-row :gutter="20">
@@ -101,12 +101,8 @@
     methods: {
       async init () {
         try {
-          let data = (await api.account.get()).data
-          let params = {
-              id: data.selectedTenant.id
-          }
-          let [model] = api.f.data(await api.tenant.admin.getById(params))
-          this.form.id = data.selectedTenant.id
+          let [model] = api.f.data(await api.tenant.get())
+          this.form.id = model.id
           this.form.name = model.name
           this.form.displayName = model.displayName
           this.form.gitIds = model.gitIds
@@ -137,7 +133,6 @@
       },
       async putTenant () {
         let param = {
-          id: this.form.id,
           model: {
             displayName: this.form.displayName,
             gitIds: this.form.gitIds,
@@ -148,7 +143,12 @@
             availableInfiniteTimeNotebook: this.form.availableInfiniteTimeNotebook
           }
         }
-        await api.tenant.admin.put(param)
+        await api.tenant.put(param)
+      },
+      getTenantId () {
+        // 接続中テナントのIDを取得する
+        let data = api.account.get().data
+        return data.selectedTenant.id
       }
     }
   }

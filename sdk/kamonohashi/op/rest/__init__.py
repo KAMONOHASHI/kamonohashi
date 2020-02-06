@@ -23,6 +23,7 @@ from kamonohashi.op.rest.api.inference_api import InferenceApi
 from kamonohashi.op.rest.api.notebook_api import NotebookApi
 from kamonohashi.op.rest.api.preprocessing_api import PreprocessingApi
 from kamonohashi.op.rest.api.storage_api import StorageApi
+from kamonohashi.op.rest.api.tenant_api import TenantApi
 from kamonohashi.op.rest.api.training_api import TrainingApi
 
 # import ApiClient
@@ -71,6 +72,11 @@ from kamonohashi.op.rest.models.storage_list_result_info import StorageListResul
 from kamonohashi.op.rest.models.storage_logic_models_complete_multiple_part_upload_input_model import StorageLogicModelsCompleteMultiplePartUploadInputModel
 from kamonohashi.op.rest.models.storage_logic_models_multi_part_upload_model import StorageLogicModelsMultiPartUploadModel
 from kamonohashi.op.rest.models.system_collections_generic_key_value_pair import SystemCollectionsGenericKeyValuePair
+from kamonohashi.op.rest.models.tenant_api_models_create_input_model import TenantApiModelsCreateInputModel
+from kamonohashi.op.rest.models.tenant_api_models_delete_output_model import TenantApiModelsDeleteOutputModel
+from kamonohashi.op.rest.models.tenant_api_models_details_output_model import TenantApiModelsDetailsOutputModel
+from kamonohashi.op.rest.models.tenant_api_models_edit_input_model import TenantApiModelsEditInputModel
+from kamonohashi.op.rest.models.tenant_api_models_index_output_model import TenantApiModelsIndexOutputModel
 from kamonohashi.op.rest.models.training_api_models_attached_file_output_model import TrainingApiModelsAttachedFileOutputModel
 from kamonohashi.op.rest.models.training_api_models_create_input_model import TrainingApiModelsCreateInputModel
 from kamonohashi.op.rest.models.training_api_models_details_output_model import TrainingApiModelsDetailsOutputModel
