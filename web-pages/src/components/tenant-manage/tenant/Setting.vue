@@ -29,17 +29,17 @@
           <h3>Git情報</h3>
           <div class="margin">
               <pl-git-endpoint-selector v-model="form.gitIds"
-                                      v-bind:defaultId="form.defaultGitId"
-                                      v-bind:tenantId="form.id"
-                                      v-on:changeDefaultId="form.defaultGitId = $event"/>
+                                        v-bind:defaultId="form.defaultGitId"
+                                        v-bind:tenantId="getTenantId"
+                                        v-on:changeDefaultId="form.defaultGitId = $event"/>
           </div>
 
           <h3>Docker Registry 情報</h3>
           <div class="margin">
               <pl-registry-endpoint-selector v-model="form.registryIds"
-                                          v-bind:defaultId="form.defaultRegistryId"
-                                          v-bind:tenantId="form.id"
-                                          v-on:changeDefaultId="form.defaultRegistryId = $event"/>
+                                             v-bind:defaultId="form.defaultRegistryId"
+                                             v-bind:tenantId="getTenantId"
+                                             v-on:changeDefaultId="form.defaultRegistryId = $event"/>
           </div>
 
           <el-row :gutter="20">
@@ -144,6 +144,11 @@
           }
         }
         await api.tenant.put(param)
+      },
+      getTenantId () {
+        // 接続中テナントのIDを取得する
+        let data = api.account.get().data
+        return data.selectedTenant.id
       }
     }
   }
