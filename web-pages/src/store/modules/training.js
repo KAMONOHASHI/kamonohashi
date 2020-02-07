@@ -38,9 +38,8 @@ const actions = {
     commit('setTotal', parseInt(total))
   },
 
-  async fetchDetail({ commit, rootState }) {
-    let detail = (await api.training.getById({ id: rootState.route.params.id }))
-      .data
+  async fetchDetail({ commit }, id) {
+    let detail = (await api.training.getById({ id: id })).data
     commit('setDetail', { detail })
   },
 
@@ -73,6 +72,9 @@ const mutations = {
   },
   setDetail(state, { detail }) {
     state.detail = detail
+  },
+  clearDetail(state) {
+    state.detail = {}
   },
   setPartitions(state, { partitions }) {
     state.partitions = partitions
