@@ -45,8 +45,8 @@ export default {
   computed: {
     ...mapGetters(['endpoints']),
   },
-  created() {
-    this.fetchEndpoints()
+  async created() {
+    await this.fetchEndpoints()
   },
   methods: {
     ...mapActions(['fetchEndpoints']),
