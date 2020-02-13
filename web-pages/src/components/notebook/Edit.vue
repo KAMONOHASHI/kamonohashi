@@ -1,14 +1,18 @@
 <template>
   <div>
-    <el-dialog
-      class="dialog"
-      title="ノートブック詳細"
-      :visible.sync="dialogVisible"
-      :before-close="closeDialog"
-      :close-on-click-modal="false"
-    >
-      <el-form ref="updateForm" :model="this" :rules="rules">
-        <pl-display-error :error="error" />
+    <el-dialog class="dialog"
+               title="ノートブック詳細"
+               :visible.sync="dialogVisible"
+               :before-close="closeDialog"
+               :close-on-click-modal="false">
+      <el-row type="flex" justify="end">
+        <el-col :span="24" class="right-button-group">
+          <el-button @click="emitCopyCreate">コピー実行</el-button>
+        </el-col>
+      </el-row>
+
+      <el-form :model="this" :rules="rules" ref="updateForm">
+        <pl-display-error :error="error"/>
         <el-row :gutter="20">
           <el-col :span="12">
             <pl-display-text-form label="ノートブックID" :value="id">
@@ -288,79 +292,119 @@ export default {
       this.$emit('done')
       this.dialogVisible = false
     },
-    emitCancel() {
-      this.$emit('cancel')
-    },
-    closeDialog(done) {
-      done()
-      this.emitCancel()
-    },
-    // 親ジョブ履歴の表示
-    showParent(parentId) {
-      // 表示内容の変更は、beforeUpdated内で行う
-      this.$router.push('/training/' + parentId)
-    },
-    redirectEditDataSet() {
-      this.$router.push('/dataset/' + this.dataSet.id)
-    },
-    emitFiles() {
-      this.$emit('files', this.notebookId)
-    },
-    emitShell() {
-      this.$emit('shell', this.notebookId)
-    },
-    emitLog() {
-      this.$emit('log', this.notebookId)
-    },
-    async openNotebook() {
-      let endpoint = await api.notebook.getEndpointById({
-        id: this.notebookId,
-      })
-      let notebookUrl = endpoint.data.url
-      window.open(notebookUrl)
-    },
-    async updateHistory() {
-      let putData = {
-        name: this.name,
-        memo: this.memo,
-        favorite: this.favorite,
-      }
-      await api.notebook.putById({ id: this.notebookId, model: putData })
-    },
-    async onSubmit() {
-      let form = this.$refs.updateForm
-
-      await form.validate(async valid => {
-        if (valid) {
-          try {
-            await this.updateHistory()
-            this.emitDone()
-            this.error = null
-          } catch (e) {
-            this.error = e
-          }
+    methods: {
+      async getDetail () {
+        let data = (await api.notebook.getById({id: this.notebookId})).data
+        this.setTrainDetails(data)
+        this.containerUrl = data.containerImage.url
+      },
+      async setTrainDetails (data) {
+        this.name = data.name
+        this.notebookId = data.id
+        this.dataSet = data.dataSet
+        this.parents = data.parents
+        this.gitModel = data.gitModel
+        this.createdBy = data.createdBy
+        this.startedAt = data.startedAt
+        this.completedAt = data.completedAt
+        this.memo = data.memo
+        this.options = data.options
+        this.cpu = data.cpu
+        this.memory = data.memory
+        this.gpu = data.gpu
+        this.partition = data.partition
+        this.statusDetail = data.statusDetail
+        this.endpoint = data.notebookEndpoint
+        this.status = data.status === data.statusType
+          ? data.status : (data.statusType + ' (' + data.status + ')')
+        this.statusType = data.statusType
+        this.conditionNote = data.conditionNote
+        this.favorite = data.favorite
+        if (this.statusType === 'Running' || this.statusType === 'Error') {
+          this.events = (await api.notebook.getEventsById({id: data.id})).data
         }
-      })
+        this.waitingTime = data.waitingTime
+        this.executionTime = data.executionTime
+        this.expiresIn = data.expiresIn === 0 ? 0 : (data.expiresIn / 60 / 60)
+      },
+      emitDone () {
+        this.$emit('done')
+        this.dialogVisible = false
+      },
+      emitCancel () {
+        this.$emit('cancel')
+      },
+      closeDialog (done) {
+        done()
+        this.emitCancel()
+      },
+      // 親ジョブ履歴の表示
+      showParent (parentId) {
+        // 表示内容の変更は、beforeUpdated内で行う
+        this.$router.push('/training/' + parentId)
+      },
+      redirectEditDataSet () {
+        this.$router.push('/dataset/' + this.dataSet.id)
+      },
+      emitFiles () {
+        this.$emit('files', this.notebookId)
+      },
+      emitShell () {
+        this.$emit('shell', this.notebookId)
+      },
+      emitLog () {
+        this.$emit('log', this.notebookId)
+      },
+      emitCopyCreate () {
+        this.$emit('copyCreate', this.notebookId)
+      },
+      async openNotebook () {
+        let endpoint = await api.notebook.getEndpointById({id: this.notebookId})
+        let notebookUrl = endpoint.data.url
+        window.open(notebookUrl)
+      },
+      async updateHistory () {
+        let putData = {
+          name: this.name,
+          memo: this.memo,
+          favorite: this.favorite
+        }
+        await api.notebook.putById({id: this.notebookId, model: putData})
+      },
+      async onSubmit () {
+        let form = this.$refs.updateForm
+          await form.validate(async valid => {
+          if (valid) {
+            try {
+              await this.updateHistory()
+              this.emitDone()
+              this.error = null
+            } catch (e) {
+              this.error = e
+            }
+          }
+        })
+      },
+      async haltNotebook() {
+        try {
+          await api.notebook.postHaltById({ id: this.notebookId })
+          await this.getDetail()
+          this.error = null
+        } catch (e) {
+          this.error = e
+        }
+      },
+      async deleteNotebook() {
+        try {
+          await api.notebook.deleteById({ id: this.notebookId })
+          this.emitDone()
+          this.error = null
+        } catch (e) {
+          this.error = e
+        }
+      },
     },
-    async haltNotebook() {
-      try {
-        await api.notebook.postHaltById({ id: this.notebookId })
-        await this.getDetail()
-        this.error = null
-      } catch (e) {
-        this.error = e
-      }
-    },
-    async deleteNotebook() {
-      try {
-        await api.notebook.deleteById({ id: this.notebookId })
-        this.emitDone()
-        this.error = null
-      } catch (e) {
-        this.error = e
-      }
-    },
-  },
+  }
 }
 </script>
 

@@ -57,10 +57,6 @@ import RoleIndex from '@/components/system-setting/role/Index'
 import RoleCreate from '@/components/system-setting/role/Create'
 import RoleEdit from '@/components/system-setting/role/Edit'
 
-import NodeIndex from '@/components/system-setting/node/Index'
-import NodeCreate from '@/components/system-setting/node/Create'
-import NodeEdit from '@/components/system-setting/node/Edit'
-
 import UserIndex from '@/components/system-setting/user/Index'
 import UserCreate from '@/components/system-setting/user/Create'
 import UserEdit from '@/components/system-setting/user/Edit'
@@ -82,6 +78,7 @@ import VersionIndex from '@/components/version/Index'
 
 import training from '@/router/training'
 import git from '@/router/git'
+import node from '@/router/node'
 
 Vue.use(Router)
 
@@ -89,6 +86,7 @@ let router = new Router({
   routes: [
     ...training,
     ...git,
+    ...node,
     {
       path: '/login',
       name: 'Login',
@@ -376,22 +374,6 @@ let router = new Router({
       path: '/quota',
       name: 'Quota',
       component: QuotaIndex,
-    },
-    {
-      path: '/node',
-      name: 'Node,',
-      component: NodeIndex,
-      children: [
-        {
-          path: 'create',
-          component: NodeCreate,
-        },
-        {
-          path: ':id',
-          component: NodeEdit,
-          props: true,
-        },
-      ],
     },
     {
       path: '/user',

@@ -6,9 +6,8 @@
       title="データセット詳細"
       trigger="hover"
       width="350"
-      placement="right"
-    >
-      <pl-dataset-details :data-set="dataSet" />
+      placement="right">
+      <pl-dataset-details :dataSet="dataSet" v-if="dataSet"/>
     </el-popover>
     <div class="el-input">
       <el-select
@@ -65,9 +64,18 @@ export default {
     async getDataSets() {
       this.dataSets = (await api.datasets.get()).data
     },
-    onChange(dataSet) {
-      this.dataSet = dataSet
-      this.$emit('input', dataSet)
+    methods: {
+      async getDataSets () {
+        this.dataSets = (await api.datasets.get()).data
+      },
+      onChange (dataSet) {
+        this.dataSet = dataSet
+        if (dataSet) {
+          this.$emit('input', dataSet)
+        } else {
+          this.$emit('input', undefined)
+        }
+      }
     },
   },
 }

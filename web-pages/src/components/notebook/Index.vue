@@ -109,6 +109,7 @@
       @files="files"
       @shell="shell"
       @log="log"
+      @copyCreate="copyCreateDialog"
     ></router-view>
   </div>
 </template>
@@ -189,20 +190,72 @@ export default {
       await this.retrieveData()
       this.$router.push('/notebook')
     },
-    done() {
-      this.currentChange(1)
-      this.closeDialog()
-      this.showSuccessMessage()
-    },
-    closeDialog() {
-      this.$router.push('/notebook')
-    },
-    back() {
-      this.$router.go(-1)
-    },
-    openEditDialog(selectedRow) {
-      if (this.$route.path === '/notebook' && !this.notebookUrlFlg) {
-        this.$router.push('/notebook/' + selectedRow.id)
+    methods: {
+      async retrieveData () {
+        let params = this.searchCondition
+        params.page = this.currentPage
+        params.perPage = this.currentPageSize
+        params.withTotal = true
+
+        let response = await api.notebook.get(params)
+        this.tableData = response.data
+        this.total = parseInt(response.headers['x-total-count'])
+      },
+      // ページのサイズ(表示件数)変更
+      async handleSizeChange (size) {
+        this.currentPageSize = size
+        this.currentPage = 1
+        await this.retrieveData()
+      },
+      async currentChange (page) {
+        this.currentPage = page
+        await this.retrieveData()
+        this.$router.push('/notebook')
+      },
+      done () {
+        this.currentChange(1)
+        this.closeDialog()
+        this.showSuccessMessage()
+      },
+      closeDialog () {
+        this.$router.push('/notebook')
+      },
+      back () {
+        this.$router.go(-1)
+      },
+      openEditDialog (selectedRow) {
+        if (this.$route.path === '/notebook' && !this.notebookUrlFlg) {
+          this.$router.push('/notebook/' + selectedRow.id)
+        }
+      },
+      openCreateDialog () {
+        this.$router.push('/notebook/run/')
+      },
+      async openNotebook (selectedRow) {
+        this.notebookUrlFlg = true
+        let endpoint = await api.notebook.getEndpointById({id: selectedRow.id})
+        this.notebookUrl = endpoint.data.url
+        window.open(this.notebookUrl)
+        this.notebookUrlFlg = false
+      },
+      async search () {
+        this.currentPage = 1
+        await this.retrieveData()
+      },
+      files (id) {
+        this.$router.push('/notebook/' + id + '/files')
+      },
+      shell (id) {
+        this.$router.push('/notebook/' + id + '/shell')
+      },
+      log (id) {
+        this.$router.push('/notebook/' + id + '/log')
+      },
+      openRerunDialog (selectedRow) {
+        this.$router.push('/notebook/run/' + selectedRow.id)
+      },
+      copyCreateDialog (originId) {
+        this.$router.push('/notebook/run/' + originId + '?run=copy')
       }
     },
     openCreateDialog() {
