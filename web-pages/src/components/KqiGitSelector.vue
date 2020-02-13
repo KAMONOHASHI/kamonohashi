@@ -2,7 +2,8 @@
 <!--description: リポジトリ名、ブランチ名を指定するドロップダウンをそれぞれ表示する。そのままだとHEADになるので、任意でコミットIDも直接指定可能,-->
 
 <template>
-  <div class="el-input">
+  <el-form-item label="モデル">
+    <el-row></el-row>
     <el-row>
       <!-- サーバの選択 -->
       <el-col :span="6" :offset="1">Gitサーバ</el-col>
@@ -150,7 +151,7 @@
         </el-button>
       </el-col>
     </el-row>
-  </div>
+  </el-form-item>
 </template>
 
 <script>
