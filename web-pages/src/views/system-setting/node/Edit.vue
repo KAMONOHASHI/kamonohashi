@@ -28,7 +28,7 @@
         <el-transfer
           v-if="form.accessLevel === 1"
           v-model="form.selectedTenants"
-          :data="form.tenants"
+          :data="displayTenants"
           :transfer-titles="form.transferTitles"
         ></el-transfer>
       </transition>
@@ -65,7 +65,6 @@ const formRules = {
 }
 
 export default {
-  name: 'NodeEdit',
   components: {
     KqiDialog,
     KqiDisplayError,
@@ -84,12 +83,12 @@ export default {
         partition: null,
         accessLevel: 2,
         selectedTenants: [], // Selected tenants which can access this node.
-        tenants: [], // Tenants to display on a transfer component.
         transferTitles: ['アクセス拒否', 'アクセス許可'], // The title of the transfer component.
         tensorBoardEnabled: null,
         notebookEnabled: null,
       },
       title: '',
+      displayTenants: [],
       error: null,
       rules: {
         name: [formRules],
@@ -97,9 +96,17 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['detail', 'tenant']),
+    ...mapGetters(['detail', 'tenants']),
   },
   async created() {
+    await this.fetchTenants()
+    this.tenants.forEach(t => {
+      this.displayTenants.push({
+        key: t.id,
+        label: t.displayName,
+      })
+    })
+
     if (this.id === null) {
       this.title = 'ノード登録'
     } else {
@@ -117,25 +124,13 @@ export default {
           : []
         this.form.tensorBoardEnabled = this.detail.tensorBoardEnabled
         this.form.notebookEnabled = this.detail.notebookEnabled
-
-        // retrieve tenant to set up a transfer list.
-        await this.fetchTenant()
-        let allTenants = this.tenant.data
-        allTenants.forEach(t => {
-          if (this.form.selectedTenants.every(s => s.id !== t.id)) {
-            this.form.tenants.push({
-              key: t.id,
-              label: t.displayName,
-            })
-          }
-        })
       } catch (e) {
         this.error = e
       }
     }
   },
   methods: {
-    ...mapActions(['fetchDetail', 'fetchTenant', 'post', 'put', 'delete']),
+    ...mapActions(['fetchDetail', 'fetchTenants', 'post', 'put', 'delete']),
     async submit() {
       let form = this.$refs.createForm
       await form.validate(async valid => {
@@ -160,7 +155,7 @@ export default {
               await this.put(params)
             }
             this.emitDone()
-            this.error = undefined
+            this.error = null
           } catch (e) {
             this.error = e
           }
@@ -177,30 +172,14 @@ export default {
         this.error = e
       }
     },
-    emitDone() {
-      this.$emit('done')
-    },
     emitCancel() {
       this.$emit('cancel')
+    },
+    emitDone() {
+      this.$emit('done')
     },
   },
 }
 </script>
 
-<style lang="scss" scoped>
-.right-button-group {
-  text-align: right;
-}
-
-.dialog /deep/ label {
-  font-weight: bold !important;
-}
-
-.dialog /deep/ .el-dialog__title {
-  font-size: 24px;
-}
-
-.footer {
-  padding-top: 40px;
-}
-</style>
+<style lang="scss" scoped></style>
