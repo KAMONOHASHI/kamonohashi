@@ -12,7 +12,7 @@
           v-model="d.key"
           size="small"
           placeholder="Key"
-          @input="updateVariables"
+          @input="$emit('updateVariables', variables)"
         />
       </el-col>
       <el-col :span="10">
@@ -20,7 +20,7 @@
           v-model="d.value"
           size="small"
           placeholder="Value"
-          @input="updateVariables"
+          @input="$emit('updateVariables', variables)"
         />
       </el-col>
       <el-col :span="2">
@@ -29,7 +29,7 @@
           size="small"
           type="danger"
           width="100%"
-          @click="clickDelete(index)"
+          @click="$emit('removeVariables', index)"
         >
           -
         </el-button>
@@ -37,7 +37,7 @@
     </el-row>
     <el-row type="flex" justify="end">
       <el-col :span="2">
-        <el-button size="small" type="primary" @click="clickAdd">
+        <el-button size="small" type="primary" @click="$emit('addVariables')">
           +
         </el-button>
       </el-col>
@@ -47,9 +47,7 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex'
-const { mapGetters, mapMutations } = createNamespacedHelpers(
-  'environmentVariables',
-)
+const { mapGetters } = createNamespacedHelpers('environmentVariables')
 
 export default {
   data() {
@@ -59,23 +57,8 @@ export default {
     ...mapGetters({ vuexVariables: ['variables'] }),
   },
   created() {
-    // vuexに登録されている環境変数を読み込み
+    // storeに登録されている環境変数を読み込み
     this.variables = this.vuexVariables
-  },
-  methods: {
-    ...mapMutations(['addVariables', 'removeVariables', 'setVariables']),
-    clickAdd() {
-      this.addVariables({ key: '', value: '' })
-    },
-
-    clickDelete(index) {
-      this.removeVariables(index)
-    },
-
-    updateVariables() {
-      // 環境変数の変更をvuexに反映
-      this.setVariables(this.variables)
-    },
   },
 }
 </script>
