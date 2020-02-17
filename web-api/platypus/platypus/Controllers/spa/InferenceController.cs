@@ -35,6 +35,9 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly IClusterManagementLogic clusterManagementLogic;
         private readonly IUnitOfWork unitOfWork;
 
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
         public InferenceController(
           ITrainingHistoryRepository trainingHistoryRepository,
           IInferenceHistoryRepository inferenceHistoryRepository,
@@ -81,7 +84,7 @@ namespace Nssol.Platypus.Controllers.spa
         [ProducesResponseType(typeof(IEnumerable<InferenceIndexOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetAll([FromQuery]InferenceSearchInputModel filter, [FromQuery]int? perPage, [FromQuery] int page = 1, bool withTotal = false)
         {
-            var data = inferenceHistoryRepository.GetAllIncludeDataSetWithOrdering();
+            var data = inferenceHistoryRepository.GetAllIncludeDataSetAndParentWithOrdering();
             data = Search(data, filter);
 
             //未指定、あるいは1000件以上であれば、1000件に指定
@@ -101,6 +104,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// ステータスを更新して、出力モデルに変換する
         /// </summary>
+        /// <param name="history">推論履歴</param>
         private async Task<InferenceIndexOutputModel> GetUpdatedIndexOutputModelAsync(InferenceHistory history)
         {
             var model = new InferenceIndexOutputModel(history);
@@ -135,6 +139,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// データ件数を取得する
         /// </summary>
+        /// <param name="filter">検索条件</param>
         private int GetTotalCount(InferenceSearchInputModel filter)
         {
             IQueryable<InferenceHistory> histories;
@@ -155,6 +160,8 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 検索条件の追加
         /// </summary>
+        /// <param name="sourceData">加工前の検索結果</param>
+        /// <param name="filter">検索条件</param>
         private static IQueryable<InferenceHistory> Search(IQueryable<InferenceHistory> sourceData, InferenceSearchInputModel filter)
         {
             IQueryable<InferenceHistory> data = sourceData;
@@ -181,11 +188,11 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 if (filter.ParentName.StartsWith("!"))
                 {
-                    data = data.Where(d => string.IsNullOrEmpty(d.Parent.Name) || d.Parent.Name.Contains(filter.ParentName.Substring(1)) == false);
+                    data = data.Where(d => d.ParentMaps == null || d.ParentMaps.Count == 0 || d.ParentMaps.Any(m => m.Parent == null || string.IsNullOrEmpty(m.Parent.Name) || m.Parent.Name.Contains(filter.ParentName.Substring(1)) == false));
                 }
                 else
                 {
-                    data = data.Where(d => d.Parent != null && d.Parent.Name != null && d.Parent.Name.Contains(filter.ParentName));
+                    data = data.Where(d => d.ParentMaps != null && d.ParentMaps.Any(m => m.Parent != null && m.Parent.Name != null && m.Parent.Name.Contains(filter.ParentName)));
                 }
             }
             return data;
@@ -268,6 +275,8 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 新規に推論を開始
         /// </summary>
+        /// <param name="model">新規推論実行内容</param>
+        /// <param name="nodeRepository">DI用</param>
         [HttpPost("run")]
         [Filters.PermissionFilter(MenuCode.Inference)]
         [ProducesResponseType(typeof(InferenceSimpleOutputModel), (int)HttpStatusCode.Created)]
@@ -284,14 +293,6 @@ namespace Nssol.Platypus.Controllers.spa
             if (dataSet == null)
             {
                 return JsonNotFound($"DataSet ID {model.DataSetId} is not found.");
-            }
-            if (model.ParentId.HasValue)
-            {
-                var parent = await trainingHistoryRepository.GetByIdAsync(model.ParentId.Value);
-                if (parent == null)
-                {
-                    return JsonNotFound($"Training ID {model.ParentId.Value} is not found.");
-                }
             }
             if (string.IsNullOrEmpty(model.Partition) == false)
             {
@@ -348,7 +349,6 @@ namespace Nssol.Platypus.Controllers.spa
                 ModelBranch = branch,
                 ModelCommitId = commitId,
                 OptionDic = model.Options ?? new Dictionary<string, string>(), //オプションはnullの可能性があるので、その時は初期化
-                ParentId = model.ParentId,
                 Memo = model.Memo,
                 Cpu = model.Cpu.Value,
                 Memory = model.Memory.Value,
@@ -362,7 +362,25 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 inferenceHistory.OptionDic.Remove("");
             }
+            // 親学習が指定されていれば存在チェック
+            if (model.ParentId.HasValue)
+            {
+                var maps = new List<InferenceHistoryParentMap>();
 
+                var parent = await trainingHistoryRepository.GetByIdAsync(model.ParentId.Value);
+                if (parent == null)
+                {
+                    return JsonNotFound($"Training ID {model.ParentId.Value} is not found.");
+                }
+                // 推論履歴に親学習を紐づける
+                var map = inferenceHistoryRepository.AttachParentAsync(inferenceHistory, parent);
+                if (map != null)
+                {
+                    maps.Add(map);
+                }
+
+                inferenceHistory.ParentMaps = maps;
+            }
             inferenceHistoryRepository.Add(inferenceHistory);
             if (dataSet.IsLocked == false)
             {
@@ -638,7 +656,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 推論を終了
         /// </summary>
-        /// <param name="id">Inference ID</param>
+        /// <param name="id">推論履歴ID</param>
         /// <param name="status">変更後のステータス</param>
         /// <returns></returns>
         private async Task<IActionResult> ExitAsync(long? id, ContainerStatus status)
