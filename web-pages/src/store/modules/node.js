@@ -2,33 +2,39 @@ import api from '@/api/v1/api'
 
 // initial state
 const state = {
-  nodeData: [],
+  nodes: [],
+  total: 0,
   detail: {},
-  tenant: {},
+  tenants: {},
 }
 
 // getters
 const getters = {
-  nodeData(state) {
-    return state.nodeData
+  nodes(state) {
+    return state.nodes
+  },
+
+  total(state) {
+    return state.total
   },
 
   detail(state) {
     return state.detail
   },
 
-  tenant(state) {
-    return state.tenant
+  tenants(state) {
+    return state.tenants
   },
 }
 
 // action
 const actions = {
-  async fetchNodeData({ commit }) {
-    let params = {}
-    params.withTotal = true
-    let nodeData = await api.nodes.admin.get(params)
-    commit('setNodeData', { nodeData })
+  async fetchNodes({ commit }, params) {
+    let response = await api.nodes.admin.get(params)
+    let nodes = response.data
+    let total = response.headers['x-total-count']
+    commit('setNodes', { nodes })
+    commit('setTotal', parseInt(total))
   },
 
   async fetchDetail({ commit, rootState }) {
@@ -38,9 +44,9 @@ const actions = {
     commit('setDetail', { detail })
   },
 
-  async fetchTenant({ commit }) {
-    let tenant = await api.tenant.admin.get()
-    commit('setTenant', { tenant })
+  async fetchTenants({ commit }) {
+    let tenants = (await api.tenant.admin.get()).data
+    commit('setTenants', { tenants })
   },
 
   // eslint-disable-next-line no-unused-vars
@@ -60,16 +66,20 @@ const actions = {
 
 // mutations
 const mutations = {
-  setNodeData(state, { nodeData }) {
-    state.nodeData = nodeData
+  setNodes(state, { nodes }) {
+    state.nodes = nodes
+  },
+
+  setTotal(state, total) {
+    state.total = total
   },
 
   setDetail(state, { detail }) {
     state.detail = detail
   },
 
-  setTenant(state, { tenant }) {
-    state.tenant = tenant
+  setTenants(state, { tenants }) {
+    state.tenants = tenants
   },
 }
 

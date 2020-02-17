@@ -2,17 +2,11 @@
   <div>
     <h2>ノード管理2</h2>
     <el-row type="flex" justify="space-between" :gutter="20">
-      <el-col class="pagination" :span="16">
-        <el-pagination
-          layout="total, sizes, prev, pager, next"
-          :total="total"
-          :current-page="currentPage"
-          :page-size="currentPageSize"
-          :page-sizes="[10, 30, 50, 100, 200]"
-          @size-change="handleSizeChange"
-          @current-change="currentChange"
-        />
-      </el-col>
+      <kqi-pagination
+        v-model="pageStatus"
+        :total="total"
+        @change="retrieveData"
+      ></kqi-pagination>
       <el-col class="right-top-button" :span="8">
         <el-button
           icon="el-icon-edit-outline"
@@ -27,7 +21,7 @@
     <el-row>
       <el-table
         class="data-table pl-index-table"
-        :data="tableData"
+        :data="nodes"
         border
         @row-click="openEditDialog"
       >
@@ -61,58 +55,48 @@
       </el-table>
     </el-row>
     <el-row>
-      <el-col class="pagination" :span="10">
-        <el-pagination
-          layout="total, sizes, prev, pager, next"
-          :total="total"
-          :current-page="currentPage"
-          :page-size="currentPageSize"
-          :page-sizes="[10, 30, 50, 100, 200]"
-          @size-change="handleSizeChange"
-          @current-change="currentChange"
-        />
-      </el-col>
+      <kqi-pagination
+        v-model="pageStatus"
+        :total="total"
+        @change="retrieveData"
+      ></kqi-pagination>
     </el-row>
     <router-view @cancel="closeDialog()" @done="done()"></router-view>
   </div>
 </template>
 
 <script>
+import KqiPagination from '@/components/KqiPagination'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('node')
 
 export default {
+  components: {
+    KqiPagination,
+  },
   data() {
     return {
-      total: 0,
-      tableData: [],
-      currentPage: 1,
-      currentPageSize: 10,
+      pageStatus: {
+        currentPage: 1,
+        currentPageSize: 10,
+      },
     }
   },
   computed: {
-    ...mapGetters(['nodeData']),
+    ...mapGetters(['nodes', 'total']),
   },
   async created() {
     await this.retrieveData()
   },
   methods: {
-    ...mapActions(['fetchNodeData']),
+    ...mapActions(['fetchNodes']),
     async retrieveData() {
-      await this.fetchNodeData()
-      this.tableData = this.nodeData.data
-      this.total = parseInt(this.nodeData.headers['x-total-count'])
-    },
-    async currentChange(page) {
-      this.currentPage = page
-      await this.retrieveData()
-    },
-    // ページのサイズ(表示件数)変更
-    async handleSizeChange(size) {
-      this.currentPageSize = size
-      this.currentPage = 1
-      // データを再ロードする
-      await this.retrieveData()
+      let params = {
+        page: this.pageStatus.currentPage,
+        perPage: this.pageStatus.currentPageSize,
+        withTotal: true,
+      }
+      await this.fetchNodes(params)
     },
     getTensorBoardFlag(enabled) {
       return enabled ? 'OK' : 'NG'
@@ -137,3 +121,5 @@ export default {
   },
 }
 </script>
+
+<style lang="scss" scoped></style>

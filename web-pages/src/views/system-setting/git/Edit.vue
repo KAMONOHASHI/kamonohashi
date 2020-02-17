@@ -56,7 +56,6 @@ const formRule = {
 }
 
 export default {
-  name: 'GitEdit',
   components: {
     KqiDialog,
     KqiDisplayError,

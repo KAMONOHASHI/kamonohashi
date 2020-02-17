@@ -4,14 +4,24 @@ import git from './modules/git'
 import training from './modules/training'
 import node from './modules/node'
 import registry from './modules/registry'
+import dataSet from './modules/dataSet'
+import registrySelector from './modules/registrySelector'
+import gitSelector from './modules/gitSelector'
+import environmentVariables from './modules/environmentVariables'
+import cluster from './modules/cluster'
 
 Vue.use(Vuex)
 export default new Vuex.Store({
   modules: {
+    dataSet,
+    registrySelector,
+    gitSelector,
     training,
     git,
     node,
     registry,
+    environmentVariables,
+    cluster,
   },
   state: {
     // ログイン情報
