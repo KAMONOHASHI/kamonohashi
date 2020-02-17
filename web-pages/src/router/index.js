@@ -43,10 +43,6 @@ import TenantIndex from '@/components/system-setting/tenant/Index'
 import TenantCreate from '@/components/system-setting/tenant/Create'
 import TenantEdit from '@/components/system-setting/tenant/Edit'
 
-import RegistryIndex from '@/components/system-setting/registry/Index'
-import RegistryCreate from '@/components/system-setting/registry/Create'
-import RegistryEdit from '@/components/system-setting/registry/Edit'
-
 import StorageIndex from '@/components/system-setting/storage/Index'
 import StorageCreate from '@/components/system-setting/storage/Create'
 import StorageEdit from '@/components/system-setting/storage/Edit'
@@ -79,6 +75,7 @@ import VersionIndex from '@/components/version/Index'
 import training from '@/router/training'
 import git from '@/router/git'
 import node from '@/router/node'
+import registry from '@/router/registry'
 
 Vue.use(Router)
 
@@ -87,6 +84,7 @@ let router = new Router({
     ...training,
     ...git,
     ...node,
+    ...registry,
     {
       path: '/login',
       name: 'Login',
@@ -318,22 +316,6 @@ let router = new Router({
         {
           path: ':id',
           component: TenantEdit,
-          props: true,
-        },
-      ],
-    },
-    {
-      path: '/registry',
-      name: 'Registry',
-      component: RegistryIndex,
-      children: [
-        {
-          path: 'create',
-          component: RegistryCreate,
-        },
-        {
-          path: ':id',
-          component: RegistryEdit,
           props: true,
         },
       ],

@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import git from './modules/git'
 import training from './modules/training'
 import node from './modules/node'
+import registry from './modules/registry'
 
 Vue.use(Vuex)
 export default new Vuex.Store({
@@ -10,6 +11,7 @@ export default new Vuex.Store({
     training,
     git,
     node,
+    registry,
   },
   state: {
     // ログイン情報
