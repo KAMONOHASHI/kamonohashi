@@ -22,51 +22,61 @@ namespace Nssol.Platypus.Models.TenantModels
         /// </summary>
         [Required]
         public string Name { get; set; }
+
         /// <summary>
         /// データセットID
         /// </summary>
         [Required]
         public long DataSetId { get; set; }
+
         /// <summary>
         /// 推論モデルGit
         /// </summary>
         [Required]
         public long? ModelGitId { get; set; }
+
         /// <summary>
         /// 推論モデルリポジトリ
         /// </summary>
         [Required]
         public string ModelRepository { get; set; }
+
         /// <summary>
         /// 推論モデルリポジトリオーナー
         /// </summary>
         [Required]
         public string ModelRepositoryOwner { get; set; }
+
         /// <summary>
         /// 推論モデルブランチ。
         /// </summary>
         public string ModelBranch { get; set; }
+
         /// <summary>
         /// 推論モデルコミットID
         /// </summary>
         [Required]
         public string ModelCommitId { get; set; }
+
         /// <summary>
         /// エントリポイント.
         /// 推論開始時に実行されるコマンド。
         /// </summary>
         [Required]
         public string EntryPoint { get; set; }
+
         /// <summary>
         /// Dockerリポジトリ。
         /// </summary>
         [Required]
         public long? ContainerRegistryId { get; set; }
+
         /// <summary>
         /// コンテナイメージ名
         /// </summary>
         [Required]
         public string ContainerImage { get; set; }
+
         /// <summary>
         /// コンテナタグ（＝バージョン）
         /// </summary>
@@ -85,6 +95,7 @@ namespace Nssol.Platypus.Models.TenantModels
         /// }
         /// </remarks>
         public string Options { get; set; }
+
         /// <summary>
         /// <see cref="Options"/> のディクショナリ表現。
         /// </summary>
@@ -94,31 +105,33 @@ namespace Nssol.Platypus.Models.TenantModels
         /// </remarks>
         [NotMapped]
         public Dictionary<string, string> OptionDic { get; set; }
-        /// <summary>
-        /// 親学習履歴ID
-        /// </summary>
-        public long? ParentId { get; set; }
+
         /// <summary>
         /// CPUコア数
         /// </summary>
         public int Cpu { get; set; }
+
         /// <summary>
         /// メモリ容量（GiB）
         /// </summary>
         public int Memory { get; set; }
+
         /// <summary>
         /// GPU数
         /// </summary>
         public int Gpu { get; set; }
+
         /// <summary>
         /// パーティション
         /// </summary>
         public string Partition { get; set; }
+
         /// <summary>
         /// コンテナの設定値（起動したときのJson）
         /// </summary>
         //[Required] TODO:学習実行が自動化されるまではNULLを許可する
         public string Configuration { get; set; }
+
         /// <summary>
         /// ステータス
         /// </summary>
@@ -129,20 +142,24 @@ namespace Nssol.Platypus.Models.TenantModels
         /// コンテナが実行されたノード名
         /// </summary>
         public string Node { get; set; }
+
         /// <summary>
         /// 実行開始日時
         /// </summary>
         public DateTime? StartedAt { get; set; }
+
         /// <summary>
         /// 推論完了日時。
         /// エラーなどで中断した際も、その時刻が記録される。
         /// </summary>
         public DateTime? CompletedAt { get; set; }
+
         /// <summary>
         /// ログ要約。
         /// ユーザが推論中に任意の値を記述できる。
         /// </summary>
         public string LogSummary { get; set; }
+
         /// <summary>
         /// メモ
         /// </summary>
@@ -164,11 +181,7 @@ namespace Nssol.Platypus.Models.TenantModels
         /// </summary>
         [ForeignKey(nameof(DataSetId))]
         public virtual DataSet DataSet { get; set; }
-        /// <summary>
-        /// 親学習履歴
-        /// </summary>
-        [ForeignKey(nameof(ParentId))]
-        public virtual TrainingHistory Parent { get; set; }
+
         /// <summary>
         /// コンテナレジストリ
         /// </summary>
@@ -176,10 +189,18 @@ namespace Nssol.Platypus.Models.TenantModels
         public virtual Registry ContainerRegistry { get; set; }
 
         /// <summary>
+        /// 親学習履歴のマッピング
+        /// </summary>
+        public virtual ICollection<InferenceHistoryParentMap> ParentMaps { get; set; }
+
+        /// <summary>
         /// 推論履歴添付ファイル
         /// </summary>
         public virtual ICollection<InferenceHistoryAttachedFile> InferenceHistoryAttachedFile { get; set; }
 
+        /// <summary>
+        /// コンテナ起動時に使用する名前
+        /// </summary>
         public string Key
         {
             get
@@ -197,6 +218,10 @@ namespace Nssol.Platypus.Models.TenantModels
             return $"{Id}:{Name}";
         }
 
+        /// <summary>
+        /// 環境変数のディクショナリ表現
+        /// </summary>
+        /// <returns>環境変数</returns>
         public Dictionary<string, string> GetOptionDic()
         {
             if (Options == null)
@@ -207,6 +232,10 @@ namespace Nssol.Platypus.Models.TenantModels
             return OptionDic;
         }
 
+        /// <summary>
+        /// コンテナステータスの取得
+        /// </summary>
+        /// <returns>コンテナのステータス詳細</returns>
         public ContainerStatus GetStatus()
         {
             return ContainerStatus.Convert(Status);
