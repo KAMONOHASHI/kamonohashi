@@ -3,7 +3,7 @@ import api from '@/api/v1/api'
 // initial state
 const state = {
   serviceTypes: [],
-  registrys: [],
+  registries: [],
   detail: {},
 }
 
@@ -13,8 +13,8 @@ const getters = {
     return state.serviceTypes
   },
 
-  registrys(state) {
-    return state.registrys
+  registries(state) {
+    return state.registries
   },
 
   detail(state) {
@@ -24,18 +24,18 @@ const getters = {
 
 // action
 const actions = {
-  async fetchRegistrys({ commit }) {
+  async fetchRegistries({ commit }) {
     let serviceTypes = (await api.registry.admin.getType()).data
-    let registrys = (await api.registry.admin.get()).data
-    for (let i = 0; i < registrys.length; i++) {
-      let serviceTypeId = registrys[i].serviceType
+    let registries = (await api.registry.admin.get()).data
+    for (let i = 0; i < registries.length; i++) {
+      let serviceTypeId = registries[i].serviceType
       // ServiceTypeの数値から表示名に変換
-      registrys[i] = {
-        ...registrys[i],
+      registries[i] = {
+        ...registries[i],
         serviceType: serviceTypes.find(s => s.id === serviceTypeId).name,
       }
     }
-    commit('setRegistrys', { registrys })
+    commit('setRegistries', { registries })
   },
 
   async fetchDetail({ commit, rootState }) {
@@ -72,8 +72,8 @@ const mutations = {
     state.serviceTypes = serviceTypes
   },
 
-  setRegistrys(state, { registrys }) {
-    state.registrys = registrys
+  setRegistries(state, { registries }) {
+    state.registries = registries
   },
 
   setDetail(state, { detail }) {

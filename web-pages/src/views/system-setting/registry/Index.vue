@@ -17,7 +17,7 @@
     <el-row>
       <el-table
         class="registry-table pl-index-table"
-        :data="registrys"
+        :data="registries"
         border
         @row-click="openEditDialog"
       >
@@ -47,14 +47,15 @@ import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('registry')
 
 export default {
+  title: 'レジストリ管理', //<title>設定
   computed: {
-    ...mapGetters(['serviceTypes', 'registrys']),
+    ...mapGetters(['registries']),
   },
   async created() {
-    await this.fetchRegistrys()
+    await this.fetchRegistries()
   },
   methods: {
-    ...mapActions(['fetchRegistrys']),
+    ...mapActions(['fetchRegistries']),
     openCreateDialog() {
       this.$router.push('/registry/edit')
     },
@@ -65,7 +66,7 @@ export default {
       this.$router.push('/registry')
     },
     async done() {
-      await this.fetchRegistrys()
+      await this.fetchRegistries()
       this.closeDialog()
       this.showSuccessMessage()
     },

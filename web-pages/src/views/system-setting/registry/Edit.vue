@@ -19,6 +19,7 @@
             v-model="form.serviceType"
             style="width: 100%;"
             :disabled="isNotEditable"
+            @change="changeService"
           >
             <el-option
               v-for="service in serviceTypes"
@@ -53,18 +54,21 @@
           </el-col>
         </el-row>
         <el-form-item label="API URL" prop="apiUrl">
-          <el-switch v-model="form.editApiUrl" :disabled="isNotEditable" />
+          <el-switch v-model="form.editableApiUrl" :disabled="isNotEditable" />
           <el-input
             v-model="form.apiUrl"
-            :disabled="isNotEditable || !form.editApiUrl"
+            :disabled="isNotEditable || !form.editableApiUrl"
             @change="handleChange"
           />
         </el-form-item>
         <el-form-item label="URL" prop="registryUrl">
-          <el-switch v-model="form.editRegistryUrl" :disabled="isNotEditable" />
+          <el-switch
+            v-model="form.editableRegistryUrl"
+            :disabled="isNotEditable"
+          />
           <el-input
             v-model="form.registryUrl"
-            :disabled="isNotEditable || !form.editRegistryUrl"
+            :disabled="isNotEditable || !form.editableRegistryUrl"
           />
         </el-form-item>
         <div v-if="form.serviceType === 2">
@@ -110,10 +114,10 @@ export default {
         portNo: null,
         projectName: null,
         serviceType: null,
-        registryUrl: null,
         apiUrl: null,
-        editApiUrl: false,
-        editRegistryUrl: false,
+        editableApiUrl: false,
+        registryUrl: null,
+        editableRegistryUrl: false,
       },
       dialogVisible: true,
       error: null,
@@ -133,7 +137,31 @@ export default {
     ...mapGetters(['detail', 'serviceTypes']),
   },
   async created() {
-    await this.retrieveData()
+    if (this.id === null) {
+      this.title = 'Dockerレジストリ登録'
+    } else {
+      this.title = 'Dockerレジストリ編集'
+      try {
+        await this.fetchDetail()
+        this.form.name = this.detail.name
+        this.form.host = this.detail.host
+        this.form.portNo = this.detail.portNo
+        this.form.password = this.detail.password
+        this.form.projectName = this.detail.projectName
+        this.form.serviceType = this.detail.serviceType
+        this.form.isNotEditable = this.detail.isNotEditable
+        this.form.apiUrl = this.detail.apiUrl
+        this.form.editableApiUrl =
+          defaultProtocol + this.detail.host !== this.detail.apiUrl
+        this.form.registryUrl = this.detail.registryUrl
+        this.form.editableRegistryUrl =
+          defaultProtocol + this.detail.host + ':' + this.detail.portNo !==
+          this.detail.registryUrl
+      } catch (e) {
+        this.error = e
+      }
+    }
+    await this.fetchServiceTypes()
   },
   methods: {
     ...mapActions([
@@ -173,33 +201,6 @@ export default {
         }
       })
     },
-    async retrieveData() {
-      if (this.id === null) {
-        this.title = 'Dockerレジストリ登録'
-      } else {
-        this.title = 'Dockerレジストリ編集'
-        try {
-          await this.fetchDetail()
-          this.form.name = this.detail.name
-          this.form.host = this.detail.host
-          this.form.portNo = this.detail.portNo
-          this.form.password = this.detail.password
-          this.form.registryUrl = this.detail.registryUrl
-          this.form.apiUrl = this.detail.apiUrl
-          this.form.projectName = this.detail.projectName
-          this.form.serviceType = this.detail.serviceType
-          this.form.isNotEditable = this.detail.isNotEditable
-          this.form.editApiUrl =
-            defaultProtocol + this.detail.host !== this.detail.apiUrl
-          this.form.editRegistryUrl =
-            defaultProtocol + this.detail.host + ':' + this.detail.portNo !==
-            this.detail.registryUrl
-        } catch (e) {
-          this.error = e
-        }
-      }
-      await this.fetchServiceTypes()
-    },
     async deleteRegistry() {
       try {
         await this.delete()
@@ -209,16 +210,20 @@ export default {
       }
     },
     handleChange() {
-      if (!this.editApiUrl) {
-        if (this.host) {
-          this.apiUrl = defaultProtocol + this.host
+      if (!this.form.editableApiUrl) {
+        if (this.form.host) {
+          this.form.apiUrl = defaultProtocol + this.form.host
         }
       }
-      if (!this.editRegistryUrl) {
-        if (this.host && this.portNo) {
-          this.registryUrl = defaultProtocol + this.host + ':' + this.portNo
+      if (!this.form.editableRegistryUrl) {
+        if (this.form.host && this.form.portNo) {
+          this.form.registryUrl =
+            defaultProtocol + this.form.host + ':' + this.form.portNo
         }
       }
+    },
+    changeService() {
+      this.form.projectName = null
     },
     emitDone() {
       this.$emit('done')
