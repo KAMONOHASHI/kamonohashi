@@ -10,7 +10,9 @@
     <el-row class="footer">
       <div v-if="type === 'CREATE'" class="right-button-group">
         <el-button @click="emitClose">キャンセル</el-button>
-        <el-button type="primary" @click="emitSubmit">登録</el-button>
+        <el-button type="primary" @click="emitSubmit">
+          {{ submitText }}
+        </el-button>
       </div>
       <div v-else>
         <el-col :span="12">
@@ -42,6 +44,10 @@ export default {
     type: {
       type: String,
       default: 'CREATE',
+    },
+    submitText: {
+      type: String,
+      default: '登録',
     },
     disabled: {
       type: Boolean,
