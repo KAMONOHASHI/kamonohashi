@@ -49,10 +49,6 @@ import StorageEdit from '@/components/system-setting/storage/Edit'
 
 import QuotaIndex from '@/components/system-setting/quota/Index'
 
-import RoleIndex from '@/components/system-setting/role/Index'
-import RoleCreate from '@/components/system-setting/role/Create'
-import RoleEdit from '@/components/system-setting/role/Edit'
-
 import UserIndex from '@/components/system-setting/user/Index'
 import UserCreate from '@/components/system-setting/user/Create'
 import UserEdit from '@/components/system-setting/user/Edit'
@@ -76,6 +72,7 @@ import training from '@/router/training'
 import git from '@/router/git'
 import node from '@/router/node'
 import registry from '@/router/registry'
+import role from '@/router/role'
 
 Vue.use(Router)
 
@@ -85,6 +82,7 @@ let router = new Router({
     ...git,
     ...node,
     ...registry,
+    ...role,
     {
       path: '/login',
       name: 'Login',
@@ -332,22 +330,6 @@ let router = new Router({
         {
           path: ':id',
           component: StorageEdit,
-          props: true,
-        },
-      ],
-    },
-    {
-      path: '/role',
-      name: 'Role',
-      component: RoleIndex,
-      children: [
-        {
-          path: 'create',
-          component: RoleCreate,
-        },
-        {
-          path: ':id',
-          component: RoleEdit,
           props: true,
         },
       ],
