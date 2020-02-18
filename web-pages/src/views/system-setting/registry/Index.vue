@@ -38,7 +38,7 @@
         </el-table-column>
       </el-table>
     </el-row>
-    <router-view @cancel="closeDialog" @done="done()"></router-view>
+    <router-view @cancel="closeDialog()" @done="done()"></router-view>
   </div>
 </template>
 
