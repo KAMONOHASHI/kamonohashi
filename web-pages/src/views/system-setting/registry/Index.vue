@@ -47,6 +47,7 @@ import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('registry')
 
 export default {
+  title: 'レジストリ管理', //<title>設定
   computed: {
     ...mapGetters(['registries']),
   },

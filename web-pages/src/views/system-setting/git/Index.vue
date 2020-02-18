@@ -42,6 +42,7 @@ import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('git')
 
 export default {
+  title: 'Git管理', //<title>設定
   computed: {
     ...mapGetters(['endpoints']),
   },
@@ -51,7 +52,7 @@ export default {
   methods: {
     ...mapActions(['fetchEndpoints']),
     openCreateDialog() {
-      this.$router.push('git/edit')
+      this.$router.push('/git/edit')
     },
     openEditDialog(selectedRow) {
       this.$router.push('/git/edit/' + selectedRow.id)
@@ -61,7 +62,7 @@ export default {
     },
     async done() {
       this.closeDialog()
-      this.fetchEndpoints()
+      await this.fetchEndpoints()
       this.showSuccessMessage()
     },
   },
