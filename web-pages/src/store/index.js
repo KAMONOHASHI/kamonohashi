@@ -9,6 +9,7 @@ import registrySelector from './modules/registrySelector'
 import gitSelector from './modules/gitSelector'
 import environmentVariables from './modules/environmentVariables'
 import cluster from './modules/cluster'
+import role from './modules/role'
 
 Vue.use(Vuex)
 export default new Vuex.Store({
@@ -22,6 +23,7 @@ export default new Vuex.Store({
     registry,
     environmentVariables,
     cluster,
+    role,
   },
   state: {
     // ログイン情報
