@@ -1,4 +1,5 @@
 import api from '@/api/v1/api'
+import Util from '@/util/util'
 
 // initial state
 const state = {
@@ -10,6 +11,7 @@ const state = {
   uploadedFiles: [],
   partitions: [],
   tensorboard: {},
+  fileList: [],
 }
 
 // getters
@@ -37,6 +39,9 @@ const getters = {
   },
   tensorboard(state) {
     return state.tensorboard
+  },
+  fileList(state) {
+    return state.fileList
   },
 }
 
@@ -139,6 +144,27 @@ const actions = {
   async deleteTensorboard({ commit }, id) {
     await api.training.deleteTensorboardById({ id: id })
   },
+
+  async fetchFileList({ commit }, params) {
+    let response = (await api.training.getContainerFilesById(params)).data
+    let newList = []
+    response.dirs.forEach(d =>
+      newList.push({
+        isDirectory: true,
+        name: d.dirName,
+      }),
+    )
+    response.files.forEach(f =>
+      newList.push({
+        isDirectory: false,
+        name: f.fileName,
+        url: f.url,
+        size: Util.getByteString(f.size),
+        lastModified: f.lastModified,
+      }),
+    )
+    commit('setFileList', newList)
+  },
 }
 
 // mutations
@@ -177,6 +203,10 @@ const mutations = {
 
   setTensorboard(state, { tensorboard }) {
     state.tensorboard = tensorboard
+  },
+
+  setFileList(state, fileList) {
+    state.fileList = fileList
   },
 }
 

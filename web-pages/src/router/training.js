@@ -1,8 +1,8 @@
 import Index from '@/views/training/Index'
 import Edit from '@/views/training/Edit'
 import Create from '@/views/training/Create'
-import FileIndex from '@/views/training/FileIndex'
-import Shell from '@/components/common/Shell.vue'
+import FileList from '@/views/training/FileList'
+import Shell from '@/views/common/Shell.vue'
 import LogViewer from '@/components/common/LogViewer.vue'
 
 export default [
@@ -23,7 +23,7 @@ export default [
       },
       {
         path: ':id/files',
-        component: FileIndex,
+        component: FileList,
         props: true,
       },
       {
