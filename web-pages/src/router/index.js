@@ -43,10 +43,6 @@ import TenantIndex from '@/components/system-setting/tenant/Index'
 import TenantCreate from '@/components/system-setting/tenant/Create'
 import TenantEdit from '@/components/system-setting/tenant/Edit'
 
-import StorageIndex from '@/components/system-setting/storage/Index'
-import StorageCreate from '@/components/system-setting/storage/Create'
-import StorageEdit from '@/components/system-setting/storage/Edit'
-
 import QuotaIndex from '@/components/system-setting/quota/Index'
 
 import UserIndex from '@/components/system-setting/user/Index'
@@ -73,6 +69,7 @@ import git from '@/router/git'
 import node from '@/router/node'
 import registry from '@/router/registry'
 import role from '@/router/role'
+import storage from '@/router/storage'
 
 Vue.use(Router)
 
@@ -83,6 +80,7 @@ let router = new Router({
     ...node,
     ...registry,
     ...role,
+    ...storage,
     {
       path: '/login',
       name: 'Login',
@@ -314,22 +312,6 @@ let router = new Router({
         {
           path: ':id',
           component: TenantEdit,
-          props: true,
-        },
-      ],
-    },
-    {
-      path: '/storage',
-      name: 'Storage',
-      component: StorageIndex,
-      children: [
-        {
-          path: 'create',
-          component: StorageCreate,
-        },
-        {
-          path: ':id',
-          component: StorageEdit,
           props: true,
         },
       ],

@@ -10,6 +10,7 @@ import gitSelector from './modules/gitSelector'
 import environmentVariables from './modules/environmentVariables'
 import cluster from './modules/cluster'
 import role from './modules/role'
+import storage from './modules/storage'
 
 Vue.use(Vuex)
 export default new Vuex.Store({
@@ -24,6 +25,7 @@ export default new Vuex.Store({
     environmentVariables,
     cluster,
     role,
+    storage,
   },
   state: {
     // ログイン情報
