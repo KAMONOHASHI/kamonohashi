@@ -116,7 +116,7 @@ export default {
         this.error = null
         this.isNotEditable = this.detail.isNotEditable
         if (this.detail.tenantName) {
-          this.tenantName = 'テナント(カスタム) / ' + this.detail.tenantName
+          this.tenantName = `テナント(カスタム) / ${this.detail.tenantName}`
         }
       } catch (e) {
         this.error = e
