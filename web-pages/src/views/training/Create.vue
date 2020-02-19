@@ -129,13 +129,13 @@
 </template>
 
 <script>
-import KqiDataSetSelector from '@/components/KqiDatasetSelector.vue'
-import KqiTrainingHistorySelector from '@/components/KqiTrainingHistorySelector.vue'
-import KqiContainerSelector from '@/components/KqiContainerSelector.vue'
-import KqiGitSelector from '@/components/KqiGitSelector.vue'
+import KqiDataSetSelector from '@/components/selector/KqiDatasetSelector.vue'
+import KqiTrainingHistorySelector from '@/components/selector/KqiTrainingHistorySelector.vue'
+import KqiContainerSelector from '@/components/selector/KqiContainerSelector.vue'
+import KqiGitSelector from '@/components/selector/KqiGitSelector.vue'
+import KqiPartitionSelector from '@/components/selector/KqiPartitionSelector.vue'
+import KqiResourceSelector from '@/components/selector/KqiResourceSelector'
 import KqiEnvironmentVariables from '@/components/KqiEnvironmentVariables'
-import KqiPartitionSelector from '@/components/KqiPartitionSelector.vue'
-import KqiResourceSelector from '@/components/KqiResourceSelector'
 import KqiDisplayError from '@/components/KqiDisplayError'
 import { mapActions, mapMutations, mapGetters } from 'vuex'
 
