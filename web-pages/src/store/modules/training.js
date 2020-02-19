@@ -5,10 +5,11 @@ const state = {
   histories: [],
   total: 0,
   selections: [],
-  detail: null,
+  detail: {},
   events: {},
-  uploadedFiles: {},
+  uploadedFiles: [],
   partitions: [],
+  tensorboard: {},
 }
 
 // getters
@@ -33,6 +34,9 @@ const getters = {
   },
   partitions(state) {
     return state.partitions
+  },
+  tensorboard(state) {
+    return state.tensorboard
   },
 }
 
@@ -114,6 +118,27 @@ const actions = {
       fileId: fileId,
     })
   },
+
+  // tensorboard関連
+  async fetchTensorboard({ commit }, id) {
+    let tensorboard = (
+      await api.training.getTensorboardById({
+        id: id,
+        $config: { apiDisabledLoading: true },
+      })
+    ).data
+    commit('setTensorboard', { tensorboard })
+  },
+
+  // eslint-disable-next-line no-unused-vars
+  async putTensorboard({ commit }, id) {
+    await api.training.putTensorboardById({ id: id })
+  },
+
+  // eslint-disable-next-line no-unused-vars
+  async deleteTensorboard({ commit }, id) {
+    await api.training.deleteTensorboardById({ id: id })
+  },
 }
 
 // mutations
@@ -148,6 +173,10 @@ const mutations = {
 
   setPartitions(state, { partitions }) {
     state.partitions = partitions
+  },
+
+  setTensorboard(state, { tensorboard }) {
+    state.tensorboard = tensorboard
   },
 }
 

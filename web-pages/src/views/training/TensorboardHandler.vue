@@ -14,7 +14,7 @@
       状態確認中...
     </span>
     <span v-else-if="statusName === 'Running'">
-      <div v-if="current.url" class="tensorBoardlink">
+      <div v-if="tensorboard.url" class="tensorBoardlink">
         <el-button type="primary" size="small" plain @click="openTensorBoard"
           >開く</el-button
         >
@@ -43,32 +43,34 @@
 </template>
 
 <script>
-import api from '@/api/v1/api'
+import { createNamespacedHelpers } from 'vuex'
+
+const { mapGetters, mapActions } = createNamespacedHelpers('training')
 
 export default {
-  name: 'TensorBoardHandler',
   props: {
-    trainingHistoryId: Number,
+    id: {
+      type: String,
+      default: null,
+    },
     visible: Boolean,
   },
   data() {
     return {
-      current: {
-        status: undefined,
-        statusType: undefined,
-      }, // 現在のステータス詳細
-      statusName: undefined, // 現在のステータス。スクリプト中から適宜変更できるようにstatusとは切り離す。
+      statusName: null, // 現在のステータス。スクリプト中から適宜変更できるようにstatusとは切り離す。
       intervalId: -1, // ポーリングを止めるためにIDを退避しておく
-      polling: undefined, // ポーリング中かの判定フラグ
+      polling: false, // ポーリング中かの判定フラグ
     }
+  },
+  computed: {
+    ...mapGetters(['tensorboard']),
   },
   // 準備ができたらステータスのポーリング開始
   created() {
-    let self = this
     this.intervalId = setInterval(() => {
       // 可視状態かつIDがセットされている状態でのみ、ポーリング
-      if (self.visible && self.trainingHistoryId >= 0) {
-        self.checkTensorBoardStatus()
+      if (this.visible && this.id >= 0) {
+        this.checkTensorBoardStatus()
       }
     }, 5000) // 5秒間隔
   },
@@ -77,6 +79,7 @@ export default {
     clearInterval(this.intervalId)
   },
   methods: {
+    ...mapActions(['fetchTensorboard', 'putTensorboard', 'deleteTensorboard']),
     // TensorBoardステータス確認
     async checkTensorBoardStatus() {
       if (this.polling) {
@@ -87,37 +90,26 @@ export default {
       // 多重問い合わせを回避するために、ポーリング中フラグを立てる。
       this.polling = true
 
-      let next = (
-        await api.training.getTensorboardById({
-          id: this.trainingHistoryId,
-          $config: { apiDisabledLoading: true },
-        })
-      ).data
-      if (
-        this.current === null ||
-        this.current.statusType !== next.statusType
-      ) {
-        // TS側で変えたステータスが再度上書きされないように、返り値のステータスが変わっていた場合のみ更新する
-        this.statusName = next.statusType
-      }
-      this.current = next // status名以外が変わっている可能性があるので、更新自体はする
+      await this.fetchTensorboard(this.id)
+      this.statusName = this.tensorboard.statusType
+
       this.polling = false
     },
     // TensorBoard起動
     async runTensorBoard() {
+      // statusNameを変更し、"起動中"と表示する
       this.statusName = 'Starting'
-      // currentの更新はしない（名前がNoneのまま残る）
-      await api.training.putTensorboardById({ id: this.trainingHistoryId })
+      await this.putTensorboard(this.id)
     },
     // TensorBoardを開く
     openTensorBoard() {
-      window.open(this.current.url)
+      window.open(this.tensorboard.url)
     },
     // TensorBoard削除
     async deleteTensorBoard() {
+      // statusNameを変更し、"停止中"と表示する
       this.statusName = 'Deleting'
-      // currentの更新はしない（名前がRunningのまま残る）
-      await api.training.deleteTensorboardById({ id: this.trainingHistoryId })
+      await this.deleteTensorboard(this.id)
     },
   },
 }
