@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import KqiDataSetDetails from '@/components/KqiDatasetDetails.vue'
+import KqiDataSetDetails from '@/components/selector/KqiDatasetDetails.vue'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters } = createNamespacedHelpers('dataSet')
 

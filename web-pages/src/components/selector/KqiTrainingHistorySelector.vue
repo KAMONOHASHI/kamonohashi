@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import KqiTrainingHistoryDetails from '@/components/KqiTrainingHistoryDetails'
+import KqiTrainingHistoryDetails from '@/components/selector/KqiTrainingHistoryDetails'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters } = createNamespacedHelpers('training')
 
