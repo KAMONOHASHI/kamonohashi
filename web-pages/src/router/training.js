@@ -2,8 +2,8 @@ import Index from '@/views/training/Index'
 import Edit from '@/views/training/Edit'
 import Create from '@/views/training/Create'
 import FileList from '@/views/training/FileList'
-import Shell from '@/views/common/Shell.vue'
-import LogViewer from '@/components/common/LogViewer.vue'
+import Shell from '@/views/common/Shell'
+import LogViewer from '@/views/common/LogViewer'
 
 export default [
   {
