@@ -65,8 +65,12 @@ const actions = {
   },
 
   async fetchParent({ commit }, id) {
-    let parent = (await api.training.getById({ id: id })).data
-    commit('setParent', { parent })
+    if (id === null) {
+      commit('clearParent')
+    } else {
+      let parent = (await api.training.getById({ id: id })).data
+      commit('setParent', { parent })
+    }
   },
 
   async fetchEvents({ commit }, id) {

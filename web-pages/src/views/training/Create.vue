@@ -189,7 +189,7 @@
 </template>
 
 <script>
-import KqiDataSetSelector from '@/components/selector/KqiDatasetSelector.vue'
+import KqiDataSetSelector from '@/components/selector/KqiDataSetSelector.vue'
 import KqiTrainingHistorySelector from '@/components/selector/KqiTrainingHistorySelector.vue'
 import KqiContainerSelector from '@/components/selector/KqiContainerSelector.vue'
 import KqiGitSelector from '@/components/selector/KqiGitSelector.vue'
@@ -343,9 +343,6 @@ export default {
   methods: {
     ...mapMutations([
       'cluster/setPartition',
-      'dataSet/clearDetail',
-      'training/clearDetail',
-      'training/clearParent',
       'registrySelector/setRegistry',
       'registrySelector/setImage',
       'registrySelector/setTag',
@@ -451,20 +448,12 @@ export default {
 
     // データセット
     async selectDataSet(dataSetId) {
-      if (dataSetId == null) {
-        this['dataSet/clearDetail']()
-      } else {
-        await this['dataSet/fetchDetail'](dataSetId)
-      }
+      await this['dataSet/fetchDetail'](dataSetId)
     },
 
     // 親ジョブ
     async selectParent(trainingId) {
-      if (trainingId == null) {
-        this['training/clearParent']()
-      } else {
-        await this['training/fetchParent'](trainingId)
-      }
+      await this['training/fetchParent'](trainingId)
     },
 
     // コンテナイメージ
