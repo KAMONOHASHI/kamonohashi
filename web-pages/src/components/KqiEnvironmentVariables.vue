@@ -2,26 +2,16 @@
   <el-form-item label="環境変数">
     <el-row></el-row>
     <el-row
-      v-for="(d, index) in variables"
+      v-for="(d, index) in value"
       :key="index"
       type="flex"
       justify="space-between"
     >
       <el-col :span="10" :offset="1">
-        <el-input
-          v-model="d.key"
-          size="small"
-          placeholder="Key"
-          @input="$emit('updateVariables', variables)"
-        />
+        <el-input v-model="d.key" size="small" placeholder="Key" />
       </el-col>
       <el-col :span="10">
-        <el-input
-          v-model="d.value"
-          size="small"
-          placeholder="Value"
-          @input="$emit('updateVariables', variables)"
-        />
+        <el-input v-model="d.value" size="small" placeholder="Value" />
       </el-col>
       <el-col :span="2">
         <el-button
@@ -29,7 +19,7 @@
           size="small"
           type="danger"
           width="100%"
-          @click="$emit('removeVariables', index)"
+          @click="removeVariables"
         >
           -
         </el-button>
@@ -37,7 +27,7 @@
     </el-row>
     <el-row type="flex" justify="end">
       <el-col :span="2">
-        <el-button size="small" type="primary" @click="$emit('addVariables')">
+        <el-button size="small" type="primary" @click="addVariables">
           +
         </el-button>
       </el-col>
@@ -46,19 +36,22 @@
 </template>
 
 <script>
-import { createNamespacedHelpers } from 'vuex'
-const { mapGetters } = createNamespacedHelpers('environmentVariables')
-
 export default {
-  data() {
-    return { variables: null }
+  props: {
+    value: {
+      type: Array,
+      default: () => {
+        return [{ key: '', value: '' }]
+      },
+    },
   },
-  computed: {
-    ...mapGetters({ vuexVariables: ['variables'] }),
-  },
-  created() {
-    // storeに登録されている環境変数を読み込み
-    this.variables = this.vuexVariables
+  methods: {
+    removeVariables(index) {
+      this.value.splice(index, 1)
+    },
+    addVariables() {
+      this.value.push({ key: '', value: '' })
+    },
   },
 }
 </script>

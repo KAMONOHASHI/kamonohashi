@@ -32,11 +32,7 @@
               @input="selectResource"
             ></kqi-resource-selector>
 
-            <kqi-environment-variables
-              @addVariables="addVariables"
-              @removeVariables="removeVariables"
-              @updateVariables="updateVariables"
-            />
+            <kqi-environment-variables v-model="variables" />
             <el-form-item label="結果Zip圧縮">
               <el-switch
                 v-model="form.zip"
@@ -139,11 +135,7 @@
             :rules="rules"
           >
             <el-col>
-              <kqi-environment-variables
-                @addVariables="addVariables"
-                @removeVariables="removeVariables"
-                @updateVariables="updateVariables"
-              />
+              <kqi-environment-variables v-model="variables" />
               <el-form-item label="結果Zip圧縮">
                 <el-switch
                   v-model="form.zip"
@@ -242,6 +234,7 @@ export default {
         name: [formRule],
         entryPoint: [formRule],
       },
+      variables: [{ key: '', value: '' }],
       dialogVisible: true,
       error: null,
       active: 0,
@@ -251,7 +244,6 @@ export default {
   computed: {
     ...mapGetters({
       dataset: ['dataSet/detail'],
-      variables: ['environmentVariables/variables'],
       registry: ['registrySelector/registry'],
       image: ['registrySelector/image'],
       tag: ['registrySelector/tag'],
@@ -289,7 +281,6 @@ export default {
       memory: 1,
       gpu: 0,
     })
-    this.updateVariables([{ key: '', value: '' }])
     this.selectPartition(null)
 
     // コピー実行時はコピー元情報を各項目を設定
@@ -345,7 +336,7 @@ export default {
         memory: this.detail.memory,
         gpu: this.detail.gpu,
       })
-      this.updateVariables(this.detail.options)
+      this.variables = this.detail.options
       this.selectPartition(this.detail.partition)
     }
   },
@@ -362,9 +353,6 @@ export default {
       'gitSelector/setRepository',
       'gitSelector/setBranch',
       'gitSelector/setCommit',
-      'environmentVariables/addVariables',
-      'environmentVariables/removeVariables',
-      'environmentVariables/setVariables',
       'resource/setResource',
     ]),
     ...mapActions([
@@ -594,18 +582,6 @@ export default {
     selectResource(resource) {
       this['resource/setResource'](resource)
       this.form.resource = this.resource
-    },
-
-    // 環境変数
-    addVariables() {
-      this['environmentVariables/addVariables']({ key: '', value: '' })
-    },
-    removeVariables(index) {
-      this['environmentVariables/removeVariables'](index)
-    },
-    updateVariables(variables) {
-      // 環境変数の変更をstoreに反映
-      this['environmentVariables/setVariables'](variables)
     },
 
     // パーティション
