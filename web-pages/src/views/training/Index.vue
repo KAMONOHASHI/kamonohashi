@@ -103,6 +103,7 @@ import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('training')
 
 export default {
+  title: '学習管理',
   components: {
     'kqi-pagination': KqiPagination,
     'pl-smart-search-input': SmartSearchInput,

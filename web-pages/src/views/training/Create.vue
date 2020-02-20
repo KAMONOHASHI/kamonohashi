@@ -259,12 +259,6 @@ export default {
   },
   async created() {
     this.isCopyCreation = this.originId !== null
-    await this['training/fetchHistories']()
-    await this['cluster/fetchPartitions']()
-    await this['dataSet/fetchDataSets']()
-    await this['registrySelector/fetchRegistries']()
-    await this['gitSelector/fetchGits']()
-
     // vuexの情報をリセット
     await this.selectDataSet(null)
     await this.selectParent(null)
@@ -282,6 +276,15 @@ export default {
       gpu: 0,
     })
     this.selectPartition(null)
+
+    // 指定に必要な情報を取得
+    await this['training/fetchHistories']()
+    await this['cluster/fetchPartitions']()
+    await this['dataSet/fetchDataSets']()
+    await this['registrySelector/fetchRegistries']()
+    await this['registrySelector/fetchImages']()
+    await this['gitSelector/fetchGits']()
+    await this['gitSelector/fetchRepositories']()
 
     // コピー実行時はコピー元情報を各項目を設定
     if (this.isCopyCreation) {
