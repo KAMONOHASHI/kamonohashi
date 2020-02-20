@@ -7,7 +7,6 @@ import registry from './modules/registry'
 import dataSet from './modules/dataSet'
 import registrySelector from './modules/registrySelector'
 import gitSelector from './modules/gitSelector'
-import resource from './modules/resource'
 import cluster from './modules/cluster'
 import role from './modules/role'
 import storage from './modules/storage'
@@ -22,7 +21,6 @@ export default new Vuex.Store({
     git,
     node,
     registry,
-    resource,
     cluster,
     role,
     storage,

@@ -28,9 +28,7 @@
             <kqi-git-selector @input="selectModel" />
           </el-col>
           <el-col :span="12">
-            <kqi-resource-selector
-              @input="selectResource"
-            ></kqi-resource-selector>
+            <kqi-resource-selector v-model="resource"></kqi-resource-selector>
 
             <kqi-environment-variables v-model="variables" />
             <el-form-item label="結果Zip圧縮">
@@ -121,9 +119,7 @@
             :rules="rules"
           >
             <el-col :span="18" :offset="3">
-              <kqi-resource-selector
-                @input="selectResource"
-              ></kqi-resource-selector>
+              <kqi-resource-selector v-model="resource"></kqi-resource-selector>
             </el-col>
           </el-form>
 
@@ -234,10 +230,15 @@ export default {
         name: [formRule],
         entryPoint: [formRule],
       },
+      resource: {
+        cpu: 1,
+        memory: 1,
+        gpu: 0,
+      },
       variables: [{ key: '', value: '' }],
       dialogVisible: true,
       error: null,
-      active: 0,
+      active: 2,
       isCopyCreation: false,
     }
   },
@@ -253,7 +254,6 @@ export default {
       commit: ['gitSelector/commit'],
       detail: ['training/detail'],
       parent: ['training/parent'],
-      resource: ['resource/resource'],
       partition: ['cluster/partition'],
     }),
   },
@@ -269,11 +269,6 @@ export default {
     await this.selectModel({
       type: 'git',
       value: null,
-    })
-    this.selectResource({
-      cpu: 1,
-      memory: 1,
-      gpu: 0,
     })
     this.selectPartition(null)
 
@@ -334,11 +329,10 @@ export default {
         value: this.detail.gitModel.commitId,
       })
 
-      this.selectResource({
-        cpu: this.detail.cpu,
-        memory: this.detail.memory,
-        gpu: this.detail.gpu,
-      })
+      this.resource.cpu = this.detail.cpu
+      this.resource.memory = this.detail.memory
+      this.resource.gpu = this.detail.gpu
+
       this.variables = this.detail.options
       this.selectPartition(this.detail.partition)
     }
@@ -353,7 +347,6 @@ export default {
       'gitSelector/setRepository',
       'gitSelector/setBranch',
       'gitSelector/setCommit',
-      'resource/setResource',
     ]),
     ...mapActions([
       'training/fetchHistories',
@@ -568,12 +561,6 @@ export default {
           }
           break
       }
-    },
-
-    // リソース
-    selectResource(resource) {
-      this['resource/setResource'](resource)
-      this.form.resource = this.resource
     },
 
     // パーティション
