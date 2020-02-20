@@ -28,9 +28,11 @@
             <kqi-git-selector @input="selectModel" />
           </el-col>
           <el-col :span="12">
-            <kqi-resource-selector v-model="resource"></kqi-resource-selector>
+            <kqi-resource-selector
+              v-model="form.resource"
+            ></kqi-resource-selector>
 
-            <kqi-environment-variables v-model="variables" />
+            <kqi-environment-variables v-model="form.variables" />
             <el-form-item label="結果Zip圧縮">
               <el-switch
                 v-model="form.zip"
@@ -122,7 +124,9 @@
             :rules="rules"
           >
             <el-col :span="18" :offset="3">
-              <kqi-resource-selector v-model="resource"></kqi-resource-selector>
+              <kqi-resource-selector
+                v-model="form.resource"
+              ></kqi-resource-selector>
             </el-col>
           </el-form>
 
@@ -134,7 +138,7 @@
             :rules="rules"
           >
             <el-col>
-              <kqi-environment-variables v-model="variables" />
+              <kqi-environment-variables v-model="form.variables" />
               <el-form-item label="結果Zip圧縮">
                 <el-switch
                   v-model="form.zip"
@@ -229,6 +233,12 @@ export default {
       form: {
         name: null,
         entryPoint: null,
+        resource: {
+          cpu: 1,
+          memory: 1,
+          gpu: 0,
+        },
+        variables: [{ key: '', value: '' }],
         partition: null,
         zip: true,
         memo: null,
@@ -237,12 +247,6 @@ export default {
         name: [formRule],
         entryPoint: [formRule],
       },
-      resource: {
-        cpu: 1,
-        memory: 1,
-        gpu: 0,
-      },
-      variables: [{ key: '', value: '' }],
       dialogVisible: true,
       error: null,
       active: 0,
@@ -334,11 +338,11 @@ export default {
         value: this.detail.gitModel.commitId,
       })
 
-      this.resource.cpu = this.detail.cpu
-      this.resource.memory = this.detail.memory
-      this.resource.gpu = this.detail.gpu
+      this.form.resource.cpu = this.detail.cpu
+      this.form.resource.memory = this.detail.memory
+      this.form.resource.gpu = this.detail.gpu
 
-      this.variables = this.detail.options
+      this.form.variables = this.detail.options
       this.form.partition = this.detail.partition
     }
   },
@@ -372,7 +376,7 @@ export default {
       try {
         let options = {}
         // apiのフォーマットに合わせる(配列 => オブジェクト)
-        this.variables.forEach(kvp => {
+        this.form.variables.forEach(kvp => {
           options[kvp.key] = kvp.value
         })
         let params = {
@@ -392,9 +396,9 @@ export default {
             commitId: this.commit ? this.commit.commitId : 'HEAD',
           },
           EntryPoint: this.form.entryPoint,
-          Cpu: this.resource.cpu,
-          Memory: this.resource.memory,
-          Gpu: this.resource.gpu,
+          Cpu: this.form.resource.cpu,
+          Memory: this.form.resource.memory,
+          Gpu: this.form.resource.gpu,
           Options: options,
           Zip: this.form.zip,
           Partition: this.form.partition,
