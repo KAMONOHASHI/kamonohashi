@@ -39,7 +39,10 @@
                 active-text="圧縮する"
               />
             </el-form-item>
-            <kqi-partition-selector @input="selectPartition" />
+            <kqi-partition-selector
+              :partition="form.partition"
+              @input="selectPartition"
+            />
             <el-form-item label="メモ">
               <el-input
                 v-model="form.memo"
@@ -140,7 +143,10 @@
                   active-text="圧縮する"
                 />
               </el-form-item>
-              <kqi-partition-selector @input="selectPartition" />
+              <kqi-partition-selector
+                :partition="form.partition"
+                @input="selectPartition"
+              />
               <el-form-item label="メモ">
                 <el-input
                   v-model="form.memo"
@@ -223,6 +229,7 @@ export default {
       form: {
         name: null,
         entryPoint: null,
+        partition: null,
         zip: true,
         memo: null,
       },
@@ -238,7 +245,7 @@ export default {
       variables: [{ key: '', value: '' }],
       dialogVisible: true,
       error: null,
-      active: 2,
+      active: 0,
       isCopyCreation: false,
     }
   },
@@ -254,7 +261,6 @@ export default {
       commit: ['gitSelector/commit'],
       detail: ['training/detail'],
       parent: ['training/parent'],
-      partition: ['cluster/partition'],
     }),
   },
   async created() {
@@ -270,7 +276,6 @@ export default {
       type: 'git',
       value: null,
     })
-    this.selectPartition(null)
 
     // 指定に必要な情報を取得
     await this['training/fetchHistories']()
@@ -334,12 +339,11 @@ export default {
       this.resource.gpu = this.detail.gpu
 
       this.variables = this.detail.options
-      this.selectPartition(this.detail.partition)
+      this.form.partition = this.detail.partition
     }
   },
   methods: {
     ...mapMutations([
-      'cluster/setPartition',
       'registrySelector/setRegistry',
       'registrySelector/setImage',
       'registrySelector/setTag',
@@ -393,7 +397,7 @@ export default {
           Gpu: this.resource.gpu,
           Options: options,
           Zip: this.form.zip,
-          Partition: this.partition,
+          Partition: this.form.partition,
           Memo: this.form.memo,
         }
         await this['training/post'](params)
@@ -565,7 +569,7 @@ export default {
 
     // パーティション
     selectPartition(partition) {
-      this['cluster/setPartition'](partition)
+      this.form.partition = partition
     },
   },
 }
