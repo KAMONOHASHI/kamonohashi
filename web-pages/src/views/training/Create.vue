@@ -7,39 +7,16 @@
     :close-on-click-modal="false"
   >
     <kqi-display-error :error="error" />
-    <el-row :gutter="20">
-      <el-steps :active="active" align-center>
-        <el-step title="Step 1" description="training name & dataset"></el-step>
-        <el-step title="Step 2" description="container image & model"></el-step>
-        <el-step title="Step 3" description="resource"></el-step>
-        <el-step title="Step 4" description="option"></el-step>
-      </el-steps>
-      <div class="element">
-        <!-- step 1 -->
-        <el-form v-if="active === 0" ref="form0" :model="form" :rules="rules">
+    <div v-if="isCopyCreation">
+      <el-form ref="runForm" :rules="rules" :model="form">
+        <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="学習名" prop="name">
               <el-input v-model="form.name" />
             </el-form-item>
             <kqi-training-history-selector @input="selectParent" />
-          </el-col>
-          <el-col :span="12">
             <kqi-data-set-selector @input="selectDataSet" />
-          </el-col>
-        </el-form>
 
-        <!-- step 2 -->
-        <el-form
-          v-else-if="active === 1"
-          ref="form1"
-          :model="form"
-          :rules="rules"
-        >
-          <el-col :span="12">
-            <kqi-container-selector @input="selectContainer" />
-            <kqi-git-selector @input="selectModel" />
-          </el-col>
-          <el-col :span="12">
             <el-form-item label="実行コマンド" prop="entryPoint">
               <el-input
                 v-model="form.entryPoint"
@@ -47,31 +24,14 @@
                 :autosize="{ minRows: 10 }"
               />
             </el-form-item>
+            <kqi-container-selector @input="selectContainer" />
+            <kqi-git-selector @input="selectModel" />
           </el-col>
-        </el-form>
-
-        <!-- step 3 -->
-        <el-form
-          v-else-if="active === 2"
-          ref="form2"
-          :model="form"
-          :rules="rules"
-        >
-          <el-col :span="18" :offset="3">
+          <el-col :span="12">
             <kqi-resource-selector
               @input="selectResource"
             ></kqi-resource-selector>
-          </el-col>
-        </el-form>
 
-        <!-- step 4 -->
-        <el-form
-          v-else-if="active === 3"
-          ref="form3"
-          :model="form"
-          :rules="rules"
-        >
-          <el-col>
             <kqi-environment-variables
               @addVariables="addVariables"
               @removeVariables="removeVariables"
@@ -95,36 +55,144 @@
               </el-input>
             </el-form-item>
           </el-col>
-        </el-form>
-      </div>
-    </el-row>
-    <el-row class="step">
-      <span
-        v-if="active >= 1"
-        class="left-step-group"
-        style="margin-top: 12px;"
-        @click="previous"
-      >
-        <i class="el-icon-arrow-left"></i>
-        Previous step
-      </span>
-      <span
-        v-if="active <= 2"
-        class="right-step-group"
-        style="margin-top: 12px;"
-        @click="next"
-      >
-        Next step
-        <i class="el-icon-arrow-right"></i>
-      </span>
-      <el-button
-        v-if="active === 3"
-        class="right-step-group"
-        type="primary"
-        @click="runTrain"
-        >実行
-      </el-button>
-    </el-row>
+        </el-row>
+        <el-row class="right-button-group footer">
+          <el-button @click="emitCancel">キャンセル</el-button>
+          <el-button
+            v-if="(originId !== undefined) | (active === 3)"
+            type="primary"
+            @click="runTrain"
+            >実行
+          </el-button>
+        </el-row>
+      </el-form>
+    </div>
+    <div v-else>
+      <el-row :gutter="20">
+        <el-steps :active="active" align-center>
+          <el-step
+            title="Step 1"
+            description="training name & dataset"
+          ></el-step>
+          <el-step
+            title="Step 2"
+            description="container image & model"
+          ></el-step>
+          <el-step title="Step 3" description="resource"></el-step>
+          <el-step title="Step 4" description="option"></el-step>
+        </el-steps>
+        <div class="element">
+          <!-- step 1 -->
+          <el-form v-if="active === 0" ref="form0" :model="form" :rules="rules">
+            <el-col :span="12">
+              <el-form-item label="学習名" prop="name">
+                <el-input v-model="form.name" />
+              </el-form-item>
+              <kqi-training-history-selector @input="selectParent" />
+            </el-col>
+            <el-col :span="12">
+              <kqi-data-set-selector @input="selectDataSet" />
+            </el-col>
+          </el-form>
+
+          <!-- step 2 -->
+          <el-form
+            v-else-if="active === 1"
+            ref="form1"
+            :model="form"
+            :rules="rules"
+          >
+            <el-col :span="12">
+              <kqi-container-selector @input="selectContainer" />
+              <kqi-git-selector @input="selectModel" />
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="実行コマンド" prop="entryPoint">
+                <el-input
+                  v-model="form.entryPoint"
+                  type="textarea"
+                  :autosize="{ minRows: 10 }"
+                />
+              </el-form-item>
+            </el-col>
+          </el-form>
+
+          <!-- step 3 -->
+          <el-form
+            v-else-if="active === 2"
+            ref="form2"
+            :model="form"
+            :rules="rules"
+          >
+            <el-col :span="18" :offset="3">
+              <kqi-resource-selector
+                @input="selectResource"
+              ></kqi-resource-selector>
+            </el-col>
+          </el-form>
+
+          <!-- step 4 -->
+          <el-form
+            v-else-if="active === 3"
+            ref="form3"
+            :model="form"
+            :rules="rules"
+          >
+            <el-col>
+              <kqi-environment-variables
+                @addVariables="addVariables"
+                @removeVariables="removeVariables"
+                @updateVariables="updateVariables"
+              />
+              <el-form-item label="結果Zip圧縮">
+                <el-switch
+                  v-model="form.zip"
+                  style="width: 100%;"
+                  inactive-text="圧縮しない"
+                  active-text="圧縮する"
+                />
+              </el-form-item>
+              <kqi-partition-selector @input="selectPartition" />
+              <el-form-item label="メモ">
+                <el-input
+                  v-model="form.memo"
+                  type="textarea"
+                  :autosize="{ minRows: 2, maxRows: 4 }"
+                >
+                </el-input>
+              </el-form-item>
+            </el-col>
+          </el-form>
+        </div>
+      </el-row>
+      <el-row class="step">
+        <span
+          v-if="active >= 1"
+          class="left-step-group"
+          style="margin-top: 12px;"
+          @click="previous"
+        >
+          <i class="el-icon-arrow-left"></i>
+          Previous step
+        </span>
+        <span
+          v-if="active <= 2"
+          class="right-step-group"
+          style="margin-top: 12px;"
+          @click="next"
+        >
+          Next step
+          <i class="el-icon-arrow-right"></i>
+        </span>
+        <el-button
+          v-if="active === 3"
+          class="right-step-group"
+          type="primary"
+          @click="runTrain"
+          >実行
+        </el-button>
+      </el-row>
+    </div>
   </el-dialog>
 </template>
 
@@ -156,34 +224,33 @@ export default {
     KqiDisplayError,
     KqiResourceSelector,
   },
+  props: {
+    originId: {
+      type: String,
+      default: null,
+    },
+  },
   data() {
     return {
       form: {
         name: null,
-        parent: null,
-        dataSet: null,
         entryPoint: null,
-        resource: {
-          cpu: 1,
-          memory: 1,
-          gpu: 0,
-        },
         zip: true,
-        partition: null,
         memo: null,
       },
       rules: {
         name: [formRule],
-        dataSet: [formRule],
         entryPoint: [formRule],
       },
       dialogVisible: true,
       error: null,
       active: 0,
+      isCopyCreation: false,
     }
   },
   computed: {
     ...mapGetters({
+      dataset: ['dataSet/detail'],
       variables: ['environmentVariables/variables'],
       registry: ['registrySelector/registry'],
       image: ['registrySelector/image'],
@@ -192,19 +259,102 @@ export default {
       repository: ['gitSelector/repository'],
       branch: ['gitSelector/branch'],
       commit: ['gitSelector/commit'],
+      detail: ['training/detail'],
+      parent: ['training/parent'],
+      resource: ['resource/resource'],
+      partition: ['cluster/partition'],
     }),
   },
   async created() {
+    this.isCopyCreation = this.originId !== null
     await this['training/fetchHistories']()
     await this['cluster/fetchPartitions']()
     await this['dataSet/fetchDataSets']()
     await this['registrySelector/fetchRegistries']()
     await this['gitSelector/fetchGits']()
+
+    // vuexの情報をリセット
+    await this.selectDataSet(null)
+    await this.selectParent(null)
+    await this.selectContainer({
+      type: 'registry',
+      value: null,
+    })
+    await this.selectModel({
+      type: 'git',
+      value: null,
+    })
+    this.selectResource({
+      cpu: 1,
+      memory: 1,
+      gpu: 0,
+    })
+    this.updateVariables([{ key: '', value: '' }])
+    this.selectPartition(null)
+
+    // コピー実行時はコピー元情報を各項目を設定
+    if (this.isCopyCreation) {
+      await this['training/fetchDetail'](this.originId)
+
+      this.form.name = this.detail.name
+      this.form.entryPoint = this.detail.entryPoint
+      this.form.zip = this.detail.zip
+      this.form.memo = this.detail.memo
+
+      await this.selectDataSet(this.detail.dataSet.id)
+      await this.selectParent(this.detail.parent ? this.detail.parent.id : null)
+
+      await this.selectContainer({
+        type: 'registry',
+        value: {
+          id: this.detail.containerImage.registryId,
+          name: this.detail.containerImage.name,
+        },
+      })
+      await this.selectContainer({
+        type: 'image',
+        value: this.detail.containerImage.image,
+      })
+      await this.selectContainer({
+        type: 'tag',
+        value: this.detail.containerImage.tag,
+      })
+
+      await this.selectModel({
+        type: 'git',
+        value: {
+          id: this.detail.gitModel.gitId,
+          name: this.detail.gitModel.name,
+        },
+      })
+      await this.selectModel({
+        type: 'repository',
+        value: `${this.detail.gitModel.owner}/${this.detail.gitModel.repository}`,
+      })
+      await this.selectModel({
+        type: 'branch',
+        value: this.detail.gitModel.branch,
+      })
+      await this.selectModel({
+        type: 'commit',
+        value: this.detail.gitModel.commitId,
+      })
+
+      this.selectResource({
+        cpu: this.detail.cpu,
+        memory: this.detail.memory,
+        gpu: this.detail.gpu,
+      })
+      this.updateVariables(this.detail.options)
+      this.selectPartition(this.detail.partition)
+    }
   },
   methods: {
     ...mapMutations([
+      'cluster/setPartition',
       'dataSet/clearDetail',
       'training/clearDetail',
+      'training/clearParent',
       'registrySelector/setRegistry',
       'registrySelector/setImage',
       'registrySelector/setTag',
@@ -215,10 +365,12 @@ export default {
       'environmentVariables/addVariables',
       'environmentVariables/removeVariables',
       'environmentVariables/setVariables',
+      'resource/setResource',
     ]),
     ...mapActions([
       'training/fetchHistories',
       'training/fetchDetail',
+      'training/fetchParent',
       'training/post',
       'cluster/fetchPartitions',
       'dataSet/fetchDetail',
@@ -240,8 +392,8 @@ export default {
         })
         let params = {
           Name: this.form.name,
-          DataSetId: this.form.dataSet,
-          ParentId: this.form.parent,
+          DataSetId: this.dataset.id,
+          ParentId: this.parent.id,
           ContainerImage: {
             registryId: this.registry.id,
             image: this.image,
@@ -255,12 +407,12 @@ export default {
             commitId: this.commit ? this.commit.commitId : 'HEAD',
           },
           EntryPoint: this.form.entryPoint,
-          Cpu: this.form.resource.cpu,
-          Memory: this.form.resource.memory,
-          Gpu: this.form.resource.gpu,
+          Cpu: this.resource.cpu,
+          Memory: this.resource.memory,
+          Gpu: this.resource.gpu,
           Options: options,
           Zip: this.form.zip,
-          Partition: this.form.partition,
+          Partition: this.partition,
           Memo: this.form.memo,
         }
         await this['training/post'](params)
@@ -310,22 +462,20 @@ export default {
     },
 
     // データセット
-    selectDataSet(dataSetId) {
-      this.form.dataSet = dataSetId
+    async selectDataSet(dataSetId) {
       if (dataSetId == null) {
         this['dataSet/clearDetail']()
       } else {
-        this['dataSet/fetchDetail'](dataSetId)
+        await this['dataSet/fetchDetail'](dataSetId)
       }
     },
 
     // 親ジョブ
-    selectParent(trainingId) {
-      this.form.parent = trainingId
+    async selectParent(trainingId) {
       if (trainingId == null) {
-        this['training/clearDetail']()
+        this['training/clearParent']()
       } else {
-        this['training/fetchDetail'](trainingId)
+        await this['training/fetchParent'](trainingId)
       }
     },
 
@@ -334,7 +484,7 @@ export default {
       // arg:
       // {
       //   type: 'registry' or 'image' or 'tag'
-      //   id: id
+      //   value: id, name
       // }
       switch (arg.type) {
         case 'registry':
@@ -380,7 +530,7 @@ export default {
       // arg:
       // {
       //   type: 'git' or 'repository' or 'branch' or 'commit
-      //   id: id
+      //   value: id, name
       // }
       switch (arg.type) {
         case 'git':
@@ -442,7 +592,8 @@ export default {
 
     // リソース
     selectResource(resource) {
-      this.form.resource = resource
+      this['resource/setResource'](resource)
+      this.form.resource = this.resource
     },
 
     // 環境変数
@@ -459,7 +610,7 @@ export default {
 
     // パーティション
     selectPartition(partition) {
-      this.form.partition = partition
+      this['cluster/setPartition'](partition)
     },
   },
 }

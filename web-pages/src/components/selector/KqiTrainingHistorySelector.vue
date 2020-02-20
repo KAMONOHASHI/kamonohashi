@@ -4,13 +4,13 @@
   <el-form-item label="親学習" prop="training">
     <el-popover
       ref="detail-popover"
-      :disabled="Object.keys(detail).length === 0"
+      :disabled="Object.keys(parent).length === 0"
       title="親学習詳細"
       trigger="hover"
       width="350"
       placement="right"
     >
-      <kqi-training-history-details :training="detail" />
+      <kqi-training-history-details :training="parent" />
     </el-popover>
     <div class="el-input">
       <el-select
@@ -19,7 +19,7 @@
         value-key="id"
         remote
         clearable
-        :value="detail"
+        :value="parent"
         @change="onChange"
       >
         <el-option
@@ -49,7 +49,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['histories', 'detail']),
+    ...mapGetters(['histories', 'parent']),
   },
   methods: {
     async onChange(training) {

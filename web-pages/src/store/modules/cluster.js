@@ -3,12 +3,17 @@ import api from '@/api/v1/api'
 // initial state
 const state = {
   partitions: [],
+  partition: null,
 }
 
 // getters
 const getters = {
   partitions(state) {
     return state.partitions
+  },
+
+  partition(state) {
+    return state.partition
   },
 }
 
@@ -24,6 +29,10 @@ const actions = {
 const mutations = {
   setPartitions(state, { partitions }) {
     state.partitions = partitions
+  },
+
+  setPartition(state, partition) {
+    state.partition = partition
   },
 }
 

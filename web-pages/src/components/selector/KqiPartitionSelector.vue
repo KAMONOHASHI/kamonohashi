@@ -1,11 +1,11 @@
 <template>
   <el-form-item label="パーティション" prop="partition">
     <el-select
-      v-model="partition"
+      :value="partition"
       class="el-input"
       filterable
       :clearable="true"
-      @change="$emit('input', partition)"
+      @change="changePartition"
     >
       <el-option
         v-for="item in partitions"
@@ -23,13 +23,13 @@ import { createNamespacedHelpers } from 'vuex'
 const { mapGetters } = createNamespacedHelpers('cluster')
 
 export default {
-  data() {
-    return {
-      partition: null,
-    }
-  },
   computed: {
-    ...mapGetters(['partitions']),
+    ...mapGetters(['partitions', 'partition']),
+  },
+  methods: {
+    changePartition(partition) {
+      this.$emit('input', partition)
+    },
   },
 }
 </script>
