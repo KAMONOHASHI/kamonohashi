@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import git from './modules/git'
 import training from './modules/training'
+import inference from './modules/inference'
 import node from './modules/node'
 import registry from './modules/registry'
 import dataSet from './modules/dataSet'
@@ -18,6 +19,7 @@ export default new Vuex.Store({
     registrySelector,
     gitSelector,
     training,
+    inference,
     git,
     node,
     registry,

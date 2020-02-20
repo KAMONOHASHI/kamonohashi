@@ -25,11 +25,6 @@ import CreateNotebook from '@/components/notebook/Create.vue'
 import EditNotebook from '@/components/notebook/Edit.vue'
 import NotebookFileIndex from '@/components/notebook/FileIndex.vue'
 
-import InferenceIndex from '@/components/inference/Index'
-import CreateInference from '@/components/inference/Create'
-import EditInference from '@/components/inference/Edit'
-import FileIndexInference from '@/components/inference/FileIndex'
-
 import ManageRoleIndex from '@/components/tenant-manage/role/Index'
 import ManageRoleCreate from '@/components/tenant-manage/role/Create'
 import ManageRoleEdit from '@/components/tenant-manage/role/Edit'
@@ -65,6 +60,7 @@ import ManageResourceIndex from '@/components/tenant-manage/resource/Index'
 import VersionIndex from '@/components/version/Index'
 
 import training from '@/router/training'
+import inference from '@/router/inference'
 import git from '@/router/git'
 import node from '@/router/node'
 import registry from '@/router/registry'
@@ -76,6 +72,7 @@ Vue.use(Router)
 let router = new Router({
   routes: [
     ...training,
+    ...inference,
     ...git,
     ...node,
     ...registry,
@@ -211,38 +208,6 @@ let router = new Router({
         {
           path: ':id/files',
           component: NotebookFileIndex,
-          props: true,
-        },
-        {
-          path: ':id/shell',
-          component: Shell,
-          props: true,
-        },
-        {
-          path: ':id/log',
-          component: LogViewer,
-          props: true,
-        },
-      ],
-    },
-    {
-      path: '/inference',
-      name: 'inference',
-      component: InferenceIndex,
-      children: [
-        {
-          path: 'create/:originId?',
-          component: CreateInference,
-          props: true,
-        },
-        {
-          path: ':id',
-          component: EditInference,
-          props: true,
-        },
-        {
-          path: ':id/files',
-          component: FileIndexInference,
           props: true,
         },
         {
