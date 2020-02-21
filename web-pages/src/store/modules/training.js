@@ -7,7 +7,6 @@ const state = {
   total: 0,
   selections: [],
   detail: {},
-  parent: {},
   events: {},
   uploadedFiles: [],
   partitions: [],
@@ -28,9 +27,6 @@ const getters = {
   },
   detail(state) {
     return state.detail
-  },
-  parent(state) {
-    return state.parent
   },
   events(state) {
     return state.events
@@ -67,15 +63,6 @@ const actions = {
   async fetchDetail({ commit }, id) {
     let detail = (await api.training.getById({ id: id })).data
     commit('setDetail', { detail })
-  },
-
-  async fetchParent({ commit }, id) {
-    if (id === null) {
-      commit('clearParent')
-    } else {
-      let parent = (await api.training.getById({ id: id })).data
-      commit('setParent', { parent })
-    }
   },
 
   async fetchEvents({ commit }, id) {
@@ -203,10 +190,6 @@ const mutations = {
     state.detail = detail
   },
 
-  setParent(state, { parent }) {
-    state.parent = parent
-  },
-
   setEvents(state, { events }) {
     state.events = events
   },
@@ -217,10 +200,6 @@ const mutations = {
 
   clearDetail(state) {
     state.detail = {}
-  },
-
-  clearParent(state) {
-    state.parent = {}
   },
 
   setPartitions(state, { partitions }) {
