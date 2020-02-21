@@ -14,8 +14,10 @@
             <el-form-item label="推論名" prop="name">
               <el-input v-model="form.name" />
             </el-form-item>
-            <kqi-training-history-selector @input="selectParent" />
-
+            <kqi-training-history-selector
+              v-model="form.selectedParent"
+              :histories="trainingHistories"
+            />
             <kqi-data-set-selector @input="selectDataSet" />
 
             <el-form-item label="実行コマンド" prop="entryPoint">
@@ -88,7 +90,10 @@
               <el-form-item label="推論名" prop="name">
                 <el-input v-model="form.name" />
               </el-form-item>
-              <kqi-training-history-selector @input="selectParent" />
+              <kqi-training-history-selector
+                v-model="form.selectedParent"
+                :histories="trainingHistories"
+              />
             </el-col>
             <el-col :span="12">
               <kqi-data-set-selector @input="selectDataSet" />
@@ -234,6 +239,7 @@ export default {
       form: {
         name: null,
         entryPoint: null,
+        selectedParent: [],
         resource: {
           cpu: 1,
           memory: 1,
@@ -256,6 +262,7 @@ export default {
   },
   computed: {
     ...mapGetters({
+      trainingHistories: ['training/histories'],
       dataset: ['dataSet/detail'],
       registry: ['registrySelector/registry'],
       image: ['registrySelector/image'],
@@ -265,30 +272,17 @@ export default {
       branch: ['gitSelector/branch'],
       commit: ['gitSelector/commit'],
       detail: ['inference/detail'],
-      parent: ['training/parent'],
     }),
   },
   async created() {
-    //     let origin = this.$route.query.origin
-    // if (origin === 'train') {
-    //   let parent = (await api.training.getById({ id: this.originId })).data
-    //   this.loadParentInfo(parent)
-    // } else {
-    //   if (this.originId >= 0) {
-    //     await this.copyFromOrigin()
-    //   }
-    // }
-    //  loadParentInfo(parent) {
-    // if (parent !== undefined) {
-    //   this.parent = parent
-    //   this.dataSet = parent.dataSet
-    //   this.containerImage = parent.containerImage
-    //   this.git = parent.gitModel
-    // }
-    this.isCopyCreation = this.originId !== null
+    let origin = this.$route.query.origin
+    let fromTrainView = origin === 'train'
+
+    // originIdが設定されている、かつ学習からの遷移でない場合、コピー実行とみなして実行
+    this.isCopyCreation = this.originId !== null && !fromTrainView
+
     // vuexの情報をリセット
     await this.selectDataSet(null)
-    await this.selectParent(null)
     await this.selectContainer({
       type: 'registry',
       value: null,
@@ -309,6 +303,18 @@ export default {
     await this['gitSelector/fetchGits']()
     await this['gitSelector/fetchRepositories']()
 
+    // 学習からの遷移の場合は、マウントする学習を設定
+    if (fromTrainView) {
+      // originIdは学習のIDとなっている
+      this.form.selectParent = []
+      this.trainingHistories.forEach(history => {
+        if (String(history.id) === this.originId) {
+          this.form.selectedParent = [history]
+        }
+      })
+      this.isCopyCreation = false
+    }
+
     // コピー実行時はコピー元情報を各項目を設定
     if (this.isCopyCreation) {
       await this['inference/fetchDetail'](this.originId)
@@ -317,9 +323,16 @@ export default {
       this.form.entryPoint = this.detail.entryPoint
       this.form.zip = this.detail.zip
       this.form.memo = this.detail.memo
+      this.form.selectParent = []
+      if (this.detail.parent) {
+        this.trainingHistories.forEach(history => {
+          if (history.id === this.detail.parent.id) {
+            this.form.selectedParent = [history]
+          }
+        })
+      }
 
       await this.selectDataSet(this.detail.dataSet.id)
-      await this.selectParent(this.detail.parent ? this.detail.parent.id : null)
 
       await this.selectContainer({
         type: 'registry',
@@ -361,7 +374,10 @@ export default {
       this.form.resource.memory = this.detail.memory
       this.form.resource.gpu = this.detail.gpu
 
-      this.form.variables = this.detail.options
+      this.form.variables =
+        this.detail.options.length === 0
+          ? [{ key: '', value: '' }]
+          : this.detail.options
       this.form.partition = this.detail.partition
     }
   },
@@ -377,7 +393,6 @@ export default {
     ]),
     ...mapActions([
       'training/fetchHistoriesToMount',
-      'training/fetchParent',
       'inference/fetchDetail',
       'inference/post',
       'cluster/fetchPartitions',
@@ -401,7 +416,7 @@ export default {
         let params = {
           Name: this.form.name,
           DataSetId: this.dataset.id,
-          ParentId: this.parent.id,
+          ParentId: this.form.selectedParent.id,
           ContainerImage: {
             registryId: this.registry.id,
             image: this.image,
@@ -472,11 +487,6 @@ export default {
     // データセット
     async selectDataSet(dataSetId) {
       await this['dataSet/fetchDetail'](dataSetId)
-    },
-
-    // 親ジョブ
-    async selectParent(trainingId) {
-      await this['training/fetchParent'](trainingId)
     },
 
     // コンテナイメージ

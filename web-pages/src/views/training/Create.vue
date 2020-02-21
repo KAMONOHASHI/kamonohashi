@@ -14,7 +14,10 @@
             <el-form-item label="学習名" prop="name">
               <el-input v-model="form.name" />
             </el-form-item>
-            <kqi-training-history-selector @input="selectParent" />
+            <kqi-training-history-selector
+              v-model="form.selectedParent"
+              :histories="trainingHistories"
+            />
             <kqi-data-set-selector @input="selectDataSet" />
 
             <el-form-item label="実行コマンド" prop="entryPoint">
@@ -87,7 +90,10 @@
               <el-form-item label="学習名" prop="name">
                 <el-input v-model="form.name" />
               </el-form-item>
-              <kqi-training-history-selector @input="selectParent" />
+              <kqi-training-history-selector
+                v-model="form.selectedParent"
+                :histories="trainingHistories"
+              />
             </el-col>
             <el-col :span="12">
               <kqi-data-set-selector @input="selectDataSet" />
@@ -233,6 +239,7 @@ export default {
       form: {
         name: null,
         entryPoint: null,
+        selectedParent: [],
         resource: {
           cpu: 1,
           memory: 1,
@@ -255,6 +262,7 @@ export default {
   },
   computed: {
     ...mapGetters({
+      trainingHistories: ['training/histories'],
       dataset: ['dataSet/detail'],
       registry: ['registrySelector/registry'],
       image: ['registrySelector/image'],
@@ -264,14 +272,12 @@ export default {
       branch: ['gitSelector/branch'],
       commit: ['gitSelector/commit'],
       detail: ['training/detail'],
-      parent: ['training/parent'],
     }),
   },
   async created() {
     this.isCopyCreation = this.originId !== null
     // vuexの情報をリセット
     await this.selectDataSet(null)
-    await this.selectParent(null)
     await this.selectContainer({
       type: 'registry',
       value: null,
@@ -298,9 +304,16 @@ export default {
       this.form.entryPoint = this.detail.entryPoint
       this.form.zip = this.detail.zip
       this.form.memo = this.detail.memo
+      this.form.selectParent = []
+      if (this.detail.parent) {
+        this.trainingHistories.forEach(history => {
+          if (history.id === this.detail.parent.id) {
+            this.form.selectedParent = [history]
+          }
+        })
+      }
 
       await this.selectDataSet(this.detail.dataSet.id)
-      await this.selectParent(this.detail.parent ? this.detail.parent.id : null)
 
       await this.selectContainer({
         type: 'registry',
@@ -342,7 +355,10 @@ export default {
       this.form.resource.memory = this.detail.memory
       this.form.resource.gpu = this.detail.gpu
 
-      this.form.variables = this.detail.options
+      this.form.variables =
+        this.detail.options.length === 0
+          ? [{ key: '', value: '' }]
+          : this.detail.options
       this.form.partition = this.detail.partition
     }
   },
@@ -359,7 +375,6 @@ export default {
     ...mapActions([
       'training/fetchHistories',
       'training/fetchDetail',
-      'training/fetchParent',
       'training/post',
       'cluster/fetchPartitions',
       'dataSet/fetchDetail',
@@ -382,7 +397,7 @@ export default {
         let params = {
           Name: this.form.name,
           DataSetId: this.dataset.id,
-          ParentId: this.parent.id,
+          ParentId: this.form.selectedParent.id,
           ContainerImage: {
             registryId: this.registry.id,
             image: this.image,
@@ -453,11 +468,6 @@ export default {
     // データセット
     async selectDataSet(dataSetId) {
       await this['dataSet/fetchDetail'](dataSetId)
-    },
-
-    // 親ジョブ
-    async selectParent(trainingId) {
-      await this['training/fetchParent'](trainingId)
     },
 
     // コンテナイメージ
