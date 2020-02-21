@@ -2,17 +2,11 @@
   <div>
     <h2>ノートブック管理2</h2>
     <el-row type="flex" justify="space-between" :gutter="20">
-      <el-col class="pagination" :span="16">
-        <el-pagination
-          layout="total, sizes, prev, pager, next"
-          :total="total"
-          :current-page="currentPage"
-          :page-size="currentPageSize"
-          :page-sizes="[10, 30, 50, 100, 200]"
-          @size-change="handleSizeChange"
-          @current-change="currentChange"
-        />
-      </el-col>
+      <kqi-pagination
+        v-model="pageStatus"
+        :total="total"
+        @change="retrieveData"
+      ></kqi-pagination>
       <el-col class="right-top-button" :span="8">
         <el-button
           icon="el-icon-edit-outline"
@@ -37,7 +31,7 @@
       <el-table
         ref="table"
         class="data-table pl-index-table"
-        :data="tableData"
+        :data="histories"
         border
         @row-click="openEditDialog"
       >
@@ -90,17 +84,11 @@
       </el-table>
     </el-row>
     <el-row>
-      <el-col class="pagination" :span="10">
-        <el-pagination
-          layout="total, sizes, prev, pager, next"
-          :total="total"
-          :current-page="currentPage"
-          :page-size="currentPageSize"
-          :page-sizes="[10, 30, 50, 100, 200]"
-          @size-change="handleSizeChange"
-          @current-change="currentChange"
-        />
-      </el-col>
+      <kqi-pagination
+        v-model="pageStatus"
+        :total="total"
+        @change="retrieveData"
+      ></kqi-pagination>
     </el-row>
     <router-view
       @cancel="closeDialog"
@@ -115,17 +103,23 @@
 </template>
 
 <script>
-import api from '@/api/v1/api'
+import KqiPagination from '@/components/KqiPagination'
 import SmartSearchInput from '@/components/common/SmartSearchInput/Index.vue'
+import { createNamespacedHelpers } from 'vuex'
+const { mapGetters, mapActions } = createNamespacedHelpers('notebook')
 
 export default {
-  name: 'NotebookIndex',
   title: 'ノートブック管理',
   components: {
+    'kqi-pagination': KqiPagination,
     'pl-smart-search-input': SmartSearchInput,
   },
   data() {
     return {
+      pageStatus: {
+        currentPage: 1,
+        currentPageSize: 10,
+      },
       searchCondition: {},
       searchConfigs: [
         { prop: 'id', name: 'ノートブックID', type: 'number' },
@@ -156,118 +150,52 @@ export default {
           },
         },
       ],
-      total: 0,
-      tableData: [],
       statuses: [],
-      currentPage: 1,
-      currentPageSize: 10,
-      notebookUrl: undefined,
       notebookUrlFlg: false,
     }
   },
+  computed: {
+    ...mapGetters(['histories', 'total', 'endpoint']),
+  },
+
   async created() {
     await this.retrieveData()
   },
   methods: {
+    ...mapActions(['fetchHistories', 'fetchEndpoint']),
     async retrieveData() {
       let params = this.searchCondition
-      params.page = this.currentPage
-      params.perPage = this.currentPageSize
+      params.page = this.pageStatus.currentPage
+      params.perPage = this.pageStatus.currentPageSize
       params.withTotal = true
-
-      let response = await api.notebook.get(params)
-      this.tableData = response.data
-      this.total = parseInt(response.headers['x-total-count'])
+      await this.fetchHistories(params)
     },
-    // ページのサイズ(表示件数)変更
-    async handleSizeChange(size) {
-      this.currentPageSize = size
-      this.currentPage = 1
+    async done() {
+      this.pageStatus.currentPage = 1
       await this.retrieveData()
+      this.closeDialog()
+      this.showSuccessMessage()
     },
-    async currentChange(page) {
-      this.currentPage = page
-      await this.retrieveData()
+    closeDialog() {
       this.$router.push('/notebook')
     },
-    methods: {
-      async retrieveData() {
-        let params = this.searchCondition
-        params.page = this.currentPage
-        params.perPage = this.currentPageSize
-        params.withTotal = true
-
-        let response = await api.notebook.get(params)
-        this.tableData = response.data
-        this.total = parseInt(response.headers['x-total-count'])
-      },
-      // ページのサイズ(表示件数)変更
-      async handleSizeChange(size) {
-        this.currentPageSize = size
-        this.currentPage = 1
-        await this.retrieveData()
-      },
-      async currentChange(page) {
-        this.currentPage = page
-        await this.retrieveData()
-        this.$router.push('/notebook')
-      },
-      done() {
-        this.currentChange(1)
-        this.closeDialog()
-        this.showSuccessMessage()
-      },
-      closeDialog() {
-        this.$router.push('/notebook')
-      },
-      back() {
-        this.$router.go(-1)
-      },
-      openEditDialog(selectedRow) {
-        if (this.$route.path === '/notebook' && !this.notebookUrlFlg) {
-          this.$router.push('/notebook/' + selectedRow.id)
-        }
-      },
-      openCreateDialog() {
-        this.$router.push('/notebook/run/')
-      },
-      async openNotebook(selectedRow) {
-        this.notebookUrlFlg = true
-        let endpoint = await api.notebook.getEndpointById({
-          id: selectedRow.id,
-        })
-        this.notebookUrl = endpoint.data.url
-        window.open(this.notebookUrl)
-        this.notebookUrlFlg = false
-      },
-      async search() {
-        this.currentPage = 1
-        await this.retrieveData()
-      },
-      files(id) {
-        this.$router.push('/notebook/' + id + '/files')
-      },
-      shell(id) {
-        this.$router.push('/notebook/' + id + '/shell')
-      },
-      log(id) {
-        this.$router.push('/notebook/' + id + '/log')
-      },
-      openRerunDialog(selectedRow) {
-        this.$router.push('/notebook/run/' + selectedRow.id)
-      },
-      copyCreateDialog(originId) {
-        this.$router.push('/notebook/run/' + originId + '?run=copy')
-      },
+    back() {
+      this.$router.go(-1)
+    },
+    openEditDialog(selectedRow) {
+      console.log('openEditDialog')
+      if (this.$route.path === '/notebook' && !this.notebookUrlFlg) {
+        this.$router.push('/notebook/' + selectedRow.id)
+      }
     },
     openCreateDialog() {
       this.$router.push('/notebook/run/')
     },
     async openNotebook(selectedRow) {
+      console.log('openNotebook')
       this.notebookUrlFlg = true
-      let endpoint = await api.notebook.getEndpointById({ id: selectedRow.id })
-      this.notebookUrl = endpoint.data.url
-      window.open(this.notebookUrl)
+      await this.fetchEndpoint(selectedRow.id)
+      window.open(this.endpoint)
       this.notebookUrlFlg = false
     },
     async search() {
@@ -285,6 +213,9 @@ export default {
     },
     openRerunDialog(selectedRow) {
       this.$router.push('/notebook/run/' + selectedRow.id)
+    },
+    copyCreateDialog(originId) {
+      this.$router.push('/notebook/run/' + originId + '?run=copy')
     },
   },
 }

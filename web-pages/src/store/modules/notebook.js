@@ -5,6 +5,7 @@ const state = {
   histories: [],
   total: 0,
   detail: {},
+  endpoint: null,
   events: {},
   partitions: [],
 }
@@ -19,6 +20,9 @@ const getters = {
   },
   detail(state) {
     return state.detail
+  },
+  endpoint(state) {
+    return state.endpoint
   },
   events(state) {
     return state.events
@@ -41,6 +45,11 @@ const actions = {
   async fetchDetail({ commit }, id) {
     let detail = (await api.notebook.getById({ id: id })).data
     commit('setDetail', { detail })
+  },
+
+  async fetchEndpoint({ commit }, id) {
+    let endpoint = (await api.notebook.getEndpointById({ id: id })).data
+    commit('setEndpoint', endpoint.url)
   },
 
   async fetchEvents({ commit }, id) {
@@ -86,6 +95,10 @@ const mutations = {
 
   setDetail(state, { detail }) {
     state.detail = detail
+  },
+
+  setEndpoint(state, endpoint) {
+    state.endpoint = endpoint
   },
 
   setEvents(state, { events }) {
