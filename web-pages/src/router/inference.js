@@ -12,7 +12,7 @@ export default [
     component: Index,
     children: [
       {
-        path: 'run/:originId?',
+        path: 'create/:originId?',
         component: Create,
         props: true,
       },

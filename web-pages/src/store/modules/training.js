@@ -59,6 +59,11 @@ const actions = {
     commit('setTotal', parseInt(total))
   },
 
+  async fetchHistoriesToMount({ commit }, params) {
+    let histories = (await api.training.getMount(params)).data
+    commit('setHistories', { histories })
+  },
+
   async fetchDetail({ commit }, id) {
     let detail = (await api.training.getById({ id: id })).data
     commit('setDetail', { detail })

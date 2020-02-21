@@ -1,11 +1,11 @@
 <!--name: 学習履歴セレクタ,-->
 <!--description: 学習履歴を選択するドロップダウンメニュー。選択すると詳細がホバーで出る。,-->
 <template>
-  <el-form-item label="親学習" prop="training">
+  <el-form-item label="マウントする学習" prop="training">
     <el-popover
       ref="detail-popover"
       :disabled="Object.keys(parent).length === 0"
-      title="親学習詳細"
+      title="学習詳細"
       trigger="hover"
       width="350"
       placement="right"

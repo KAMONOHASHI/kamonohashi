@@ -226,8 +226,9 @@ export default {
           // キャンセル時はなにもしないので例外を無視
         })
     },
-    done() {
-      this.currentChange(1)
+    async done() {
+      this.pageStatus.currentPage = 1
+      await this.retrieveData()
       this.closeDialog()
       this.showSuccessMessage()
     },

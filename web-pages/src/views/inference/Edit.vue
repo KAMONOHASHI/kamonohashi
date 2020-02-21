@@ -1,395 +1,353 @@
 <template>
-  <div>
-    <el-dialog
-      class="dialog"
-      title="推論履歴"
-      :visible.sync="dialogVisible"
-      :before-close="closeDialog"
-      :close-on-click-modal="false"
-    >
-      <el-row type="flex" justify="end">
-        <el-col :span="24" class="right-button-group">
-          <el-button @click="emitCopyCreate">コピー実行</el-button>
+  <kqi-dialog
+    :title="title"
+    type="EDIT"
+    @submit="onSubmit"
+    @delete="deleteInferenceJob"
+    @close="emitCancel"
+  >
+    <el-row type="flex" justify="end">
+      <el-col :span="24" class="right-button-group">
+        <!-- <el-button @click="emitInferenceCreate">推論実行</el-button> -->
+        <el-button @click="emitCopyCreate">コピー実行</el-button>
+      </el-col>
+    </el-row>
+
+    <el-form ref="updateForm" :model="form" :rules="rules">
+      <kqi-display-error :error="error" />
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <kqi-display-text-form
+            label="推論ID"
+            :value="detail ? String(detail.id) : '0'"
+          >
+            <span slot="action">
+              <div
+                v-if="form.favorite"
+                class="el-icon-star-on favorite"
+                @click="form.favorite = false"
+              ></div>
+              <div
+                v-else
+                class="el-icon-star-off favorite"
+                @click="form.favorite = true"
+              ></div>
+            </span>
+          </kqi-display-text-form>
+          <el-form-item label="推論名" prop="name">
+            <el-input v-model="form.name" />
+          </el-form-item>
+          <div v-if="detail.parent">
+            <el-form-item label="親学習">
+              <el-popover
+                ref="parent-popover"
+                title="親学習詳細"
+                trigger="hover"
+                width="350"
+                placement="right"
+              >
+                <kqi-training-history-details :training="detail.parent" />
+              </el-popover>
+              <el-button
+                v-popover:parent-popover
+                class="el-input"
+                @click="showParent"
+                >{{ detail.parent.name }}</el-button
+              >
+            </el-form-item>
+          </div>
+
+          <div v-if="detail.dataSet">
+            <el-form-item label="データセット">
+              <el-popover
+                ref="dataSetDetail"
+                title="データセット詳細"
+                trigger="hover"
+                width="350"
+                placement="right"
+              >
+                <kqi-data-set-details :data-set="detail.dataSet" />
+              </el-popover>
+              <el-button
+                v-popover:dataSetDetail
+                class="el-input"
+                @click="redirectEditDataSet"
+                >{{ detail.dataSet.name }}
+              </el-button>
+            </el-form-item>
+          </div>
+
+          <el-form-item label="モデル">
+            <div class="el-input">
+              <span v-if="detail.gitModel" style="padding-left: 3px">
+                <a :href="detail.gitModel.url" target="_blank">
+                  {{ detail.gitModel.owner }}/{{
+                    detail.gitModel.repository
+                  }}/{{ detail.gitModel.branch }}
+                </a>
+              </span>
+              <span v-else>
+                None
+              </span>
+            </div>
+          </el-form-item>
+
+          <kqi-display-text-form
+            label="コンテナイメージ"
+            :value="detail.containerImage ? detail.containerImage.url : ''"
+          />
+
+          <label>実行コマンド</label>
+          <el-input
+            v-model="detail.entryPoint"
+            type="textarea"
+            :autosize="{ minRows: 2 }"
+            :readonly="true"
+          />
+
+          <el-form-item label="メモ">
+            <el-input
+              v-model="form.memo"
+              type="textarea"
+              :autosize="{ minRows: 2, maxRows: 4 }"
+            >
+            </el-input>
+          </el-form-item>
+
+          <el-form-item v-if="detail.options" label="環境変数">
+            <div class="el-input">
+              <el-row v-for="option in detail.options" :key="option.key">
+                <el-col :span="8" :offset="1">{{ option.key }}</el-col>
+                <el-col :span="12">{{ option.value }}</el-col>
+              </el-row>
+            </div>
+          </el-form-item>
+
+          <kqi-display-text-form label="実行者" :value="detail.createdBy" />
+          <kqi-display-text-form label="開始日時" :value="detail.createdAt" />
+          <kqi-display-text-form label="完了日時" :value="detail.completedAt" />
+
+          <kqi-display-text-form label="待機時間" :value="detail.waitingTime" />
+          <kqi-display-text-form
+            label="実行時間"
+            :value="detail.executionTime"
+          />
+
+          <kqi-display-text-form label="ログ概要" :value="detail.logSummary" />
+        </el-col>
+
+        <el-col :span="12">
+          <kqi-display-text-form
+            label="CPU"
+            :value="detail ? String(detail.cpu) : '0'"
+          />
+          <kqi-display-text-form
+            label="メモリ(GB)"
+            :value="detail ? String(detail.memory) : '0'"
+          />
+          <kqi-display-text-form
+            label="GPU"
+            :value="detail ? String(detail.gpu) : '0'"
+          />
+          <kqi-display-text-form
+            label="パーティション"
+            :value="detail.partition"
+          />
+          <!-- status: スクリプトがこけたときなどに"failed"になる -->
+          <!-- statusType: コンテナの生死等 -->
+          <kqi-display-text-form
+            label="ステータス"
+            :value="
+              detail.status === detail.statusType
+                ? detail.status
+                : detail.statusType + ' (' + detail.status + ')'
+            "
+          />
+          <div v-if="detail.conditionNote !== ``" class="k8s-event">
+            {{ detail.conditionNote }}
+          </div>
+          <div v-if="events.length" class="k8s-event">
+            <el-collapse accordion>
+              <el-collapse-item title="ステータス詳細ログ">
+                <div v-for="(event, index) in events" :key="index">
+                  <div v-if="event.isError">message:{{ event.message }}</div>
+                </div>
+              </el-collapse-item>
+            </el-collapse>
+          </div>
+          <div
+            v-if="
+              detail.statusType === 'Running' || detail.statusType === 'Error'
+            "
+          >
+            <el-form-item label="操作">
+              <div class="el-input">
+                <kqi-delete-button
+                  button-label="ジョブ停止"
+                  message="ジョブを停止しますか"
+                  @delete="showStopConfirm"
+                />
+              </div>
+              <div v-if="detail.status === 'Running'">
+                <div class="el-input" style="padding: 10px 0">
+                  <el-button @click="emitShell">Shell起動</el-button>
+                </div>
+              </div>
+            </el-form-item>
+          </div>
+          <el-form-item label="コンテナ出力ファイル">
+            <br />
+            <el-button @click="emitFiles">ファイル一覧</el-button>
+          </el-form-item>
+          <el-form-item
+            v-if="detail.zip === false"
+            label="一括ダウンロードコマンド"
+          >
+            <el-input
+              :value="
+                `kqi inference download-container-files ${detail.id} -d ./`
+              "
+              :readonly="true"
+            />
+          </el-form-item>
+          <el-form-item label="結果Zip圧縮">
+            <div class="el-input">
+              <span v-if="detail.zip">圧縮する</span>
+              <span v-else>圧縮しない</span>
+            </div>
+          </el-form-item>
+          <el-form-item label="添付ファイル">
+            <br />
+            <el-button size="mini" @click="emitLog">ログファイル閲覧</el-button>
+            <kqi-file-manager
+              v-if="uploadedFiles.length > 0"
+              type="InferenceHistoryAttachedFiles"
+              :uploaded-files="uploadedFiles"
+              :deletable="true"
+              @delete="deleteAttachedFile"
+            />
+            <kqi-file-manager
+              ref="uploadFile"
+              type="InferenceHistoryAttachedFiles"
+            />
+          </el-form-item>
         </el-col>
       </el-row>
 
-      <el-form ref="updateForm" :model="this" :rules="rules">
-        <pl-display-error :error="error" />
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <pl-display-text-form label="推論ID" :value="id">
-              <span slot="action">
-                <div
-                  v-if="favorite"
-                  class="el-icon-star-on favorite"
-                  @click="favorite = false"
-                ></div>
-                <div
-                  v-else
-                  class="el-icon-star-off favorite"
-                  @click="favorite = true"
-                ></div>
-              </span>
-            </pl-display-text-form>
-            <el-form-item label="推論名" prop="name">
-              <el-input v-model="name" />
-            </el-form-item>
-            <div v-if="parent">
-              <el-form-item label="マウントした学習">
-                <el-popover
-                  ref="parentDetail"
-                  title="マウントした学習詳細"
-                  trigger="hover"
-                  width="350"
-                  placement="right"
-                >
-                  <pl-training-history-details
-                    :id="parent.id"
-                    :name="parent.name"
-                    :status="parent.status"
-                    :memo="parent.memo"
-                  />
-                </el-popover>
-                <el-button
-                  v-popover:parentDetail
-                  class="el-input"
-                  @click="showParent"
-                  >{{ parent.name }}</el-button
-                >
-              </el-form-item>
-            </div>
-
-            <div v-if="dataSet">
-              <el-form-item label="データセット">
-                <el-popover
-                  ref="dataSetDetail"
-                  title="データセット詳細"
-                  trigger="hover"
-                  width="350"
-                  placement="right"
-                >
-                  <pl-dataset-details :data-set="dataSet" />
-                </el-popover>
-                <el-button
-                  v-popover:dataSetDetail
-                  class="el-input"
-                  @click="redirectEditDataSet"
-                  >{{ dataSet.name }}
-                </el-button>
-              </el-form-item>
-            </div>
-
-            <el-form-item label="モデル">
-              <div class="el-input">
-                <span v-if="gitModel" style="padding-left: 3px">
-                  <a :href="gitModel.url" target="_blank">
-                    {{ gitModel.owner }}/{{ gitModel.repository }}/{{
-                      gitModel.branch
-                    }}
-                  </a>
-                </span>
-                <span v-else>
-                  None
-                </span>
-              </div>
-            </el-form-item>
-
-            <pl-display-text-form label="実行者" :value="createdBy" />
-            <pl-display-text-form label="開始日時" :value="createdAt" />
-            <pl-display-text-form label="完了日時" :value="completedAt" />
-
-            <label>実行コマンド</label>
-            <el-input
-              v-model="entryPoint"
-              type="textarea"
-              :autosize="{ minRows: 2 }"
-              :readonly="true"
-            />
-
-            <pl-display-text-form label="ログ概要" :value="logSummary" />
-
-            <el-form-item label="メモ">
-              <el-input
-                v-model="memo"
-                type="textarea"
-                :autosize="{ minRows: 2, maxRows: 4 }"
-              >
-              </el-input>
-            </el-form-item>
-
-            <el-form-item v-if="options" label="環境変数">
-              <div class="el-input">
-                <el-row v-for="option in options" :key="option.key">
-                  <el-col :span="8" :offset="1">{{ option.key }}</el-col>
-                  <el-col :span="12">{{ option.value }}</el-col>
-                </el-row>
-              </div>
-            </el-form-item>
-
-            <pl-display-text-form
-              label="コンテナイメージ"
-              :value="containerUrl"
-            />
-          </el-col>
-
-          <el-col :span="12">
-            <pl-display-text-form label="CPU" :value="cpu" />
-            <pl-display-text-form label="メモリ(GB)" :value="memory" />
-            <pl-display-text-form label="GPU" :value="gpu" />
-            <pl-display-text-form label="パーティション" :value="partition" />
-            <pl-display-text-form label="ステータス" :value="status" />
-            <div v-if="conditionNote !== ``" class="k8s-event">
-              {{ conditionNote }}
-            </div>
-            <div v-if="events.length" class="k8s-event">
-              <el-collapse accordion>
-                <el-collapse-item title="ステータス詳細ログ">
-                  <div v-for="(event, index) in events" :key="index">
-                    <div v-if="event.isError">message:{{ event.message }}</div>
-                  </div>
-                </el-collapse-item>
-              </el-collapse>
-            </div>
-            <div v-if="statusType === 'Running' || statusType === 'Error'">
-              <el-form-item label="操作">
-                <div class="el-input">
-                  <pl-delete-button
-                    button-label="ジョブ停止"
-                    message="ジョブを停止しますか"
-                    @delete="showConfirm"
-                  />
-                </div>
-                <div v-if="status === 'Running'">
-                  <div class="el-input" style="padding: 10px 0">
-                    <el-button @click="emitShell">Shell起動</el-button>
-                  </div>
-                </div>
-              </el-form-item>
-            </div>
-            <el-form-item label="コンテナ出力ファイル">
-              <br />
-              <el-button @click="emitFiles">ファイル一覧</el-button>
-            </el-form-item>
-            <el-form-item v-if="zip === false" label="一括ダウンロードコマンド">
-              <el-input v-model="downloadFilesCommand" :readonly="true" />
-            </el-form-item>
-            <el-form-item label="結果Zip圧縮">
-              <div class="el-input">
-                <span v-if="zip">圧縮する</span>
-                <span v-else>圧縮しない</span>
-              </div>
-            </el-form-item>
-
-            <el-form-item label="添付ファイル">
-              <br />
-              <el-button size="mini" @click="emitLog"
-                >ログファイル閲覧</el-button
-              >
-              <pl-file-manager
-                v-if="uploadedFiles.length > 0"
-                type="InferenceHistoryAttachedFiles"
-                :uploaded-files="uploadedFiles"
-                :deletable="true"
-                @delete="deleteFile"
-              />
-              <pl-file-manager
-                ref="uploadFile"
-                type="inferenceHistoryAttachedFiles"
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-row :gutter="20" class="footer">
-          <el-col :span="12">
-            <pl-delete-button
-              message="削除しますか（出力データ数が多い場合、処理に時間がかかります）"
-              @delete="deleteInferenceJob"
-            />
-          </el-col>
-          <el-col class="right-button-group" :span="12">
-            <el-button @click="emitCancel">キャンセル</el-button>
-            <el-button type="primary" @click="onSubmit">保存</el-button>
-          </el-col>
-        </el-row>
-      </el-form>
-    </el-dialog>
-  </div>
+      <!-- <el-row :gutter="20" class="footer">
+        <el-col :span="12">
+          <pl-delete-button
+            message="削除しますか（出力データ数が多い場合、処理に時間がかかります）"
+            @delete="deleteJob"
+          />
+        </el-col>
+      </el-row> -->
+    </el-form>
+  </kqi-dialog>
 </template>
 
 <script>
-import DisplayTextForm from '@/components/common/DisplayTextForm.vue'
-import DisplayError from '@/components/common/DisplayError'
-import DeleteButton from '@/components/common/DeleteButton.vue'
-import FileManager from '@/components/common/FileManager.vue'
-import DataSetDetails from '@/components/common/DatasetDetails.vue'
-import TrainingHistoryDetails from '@/components/common/TrainingHistoryDetails.vue'
-import api from '@/api/v1/api'
+import KqiDialog from '@/components/KqiDialog'
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
+import KqiDisplayError from '@/components/KqiDisplayError'
+import KqiDeleteButton from '@/components/KqiDeleteButton.vue'
+import KqiFileManager from '@/components/KqiFileManager.vue'
+import KqiDataSetDetails from '@/components/selector/KqiDatasetDetails.vue'
+import KqiTrainingHistoryDetails from '@/components/selector/KqiTrainingHistoryDetails'
+
+import { createNamespacedHelpers } from 'vuex'
+const { mapGetters, mapActions } = createNamespacedHelpers('inference')
 
 export default {
-  name: 'EditInference',
   components: {
-    'pl-delete-button': DeleteButton,
-    'pl-display-text-form': DisplayTextForm,
-    'pl-display-error': DisplayError,
-    'pl-file-manager': FileManager,
-    'pl-dataset-details': DataSetDetails,
-    'pl-training-history-details': TrainingHistoryDetails,
+    KqiDialog,
+    KqiDeleteButton,
+    KqiDisplayError,
+    KqiFileManager,
+    KqiDataSetDetails,
+    KqiTrainingHistoryDetails,
+    KqiDisplayTextForm,
   },
   props: {
-    id: String,
+    id: {
+      type: String,
+      default: null,
+    },
   },
+
   data() {
     return {
       rules: {
-        name: [{ required: true, trigger: 'blur', message: '必須項目です' }],
+        name: [
+          {
+            required: true,
+            trigger: 'blur',
+            message: '必須項目です',
+          },
+        ],
       },
+      form: {
+        name: null,
+        favorite: false,
+        memo: null,
+      },
+      title: '',
       dialogVisible: true,
-      error: undefined,
-      uploadedFiles: [],
-      favorite: false,
-      name: undefined,
-      parent: undefined,
-      dataSet: undefined,
-      gitModel: undefined,
-      createdBy: undefined,
-      createdAt: undefined,
-      completedAt: undefined,
-      entryPoint: undefined,
-      logSummary: undefined,
-      memo: undefined,
-      options: undefined,
-      containerUrl: undefined,
-      cpu: undefined,
-      memory: undefined,
-      gpu: undefined,
-      partition: undefined,
-      // スクリプトがこけたときなどに"failed"になる
-      status: undefined,
-      // コンテナの生死等
-      statusType: undefined,
-      zip: true,
-      conditionNote: '',
-      events: [],
-      downloadFilesCommand: '',
+      error: null,
     }
   },
+  computed: {
+    ...mapGetters(['detail', 'events', 'uploadedFiles']),
+  },
   async created() {
-    await this.getDetail()
+    this.title = '推論履歴'
+    await this.retrieveData()
+    this.form.name = this.detail.name
+    this.form.favorite = this.detail.favorite
+    this.form.memo = this.detail.memo
+  },
+  async beforeUpdate() {
+    // 子ジョブから親ジョブ詳細に遷移する際にブラウザの進む/戻るボタンを押した場合の対応処理
+    // id(routerから受け取るパラメータ)とtrainingId(履歴検索に用いるID)が異なる場合、router側を優先した上で表示内容を更新
+    if (this.detail.id.toString() !== this.id.toString()) {
+      await this.retrieveData()
+      this.form.name = this.detail.name
+      this.form.favorite = this.detail.favorite
+      this.form.memo = this.detail.memo
+    }
   },
   methods: {
-    async uploadFile() {
-      // 独自ローディング処理のため共通側は無効
-      this.$store.commit('setLoading', false)
-      this.loading = true
-
-      let uploader = this.$refs.uploadFile
-      let fileInfo = await uploader.uploadFile()
-
-      if (fileInfo !== undefined) {
-        for (let i = 0; i < fileInfo.length; i++) {
-          fileInfo[i].FileName = fileInfo[i].name
-          await api.inference.postFilesById({
-            id: this.id,
-            model: fileInfo[i],
-          })
-        }
+    ...mapActions([
+      'fetchDetail',
+      'fetchEvents',
+      'fetchUploadedFiles',
+      'postHalt',
+      'postUserCancel',
+      'postFiles',
+      'put',
+      'delete',
+      'deleteFile',
+    ]),
+    async retrieveData() {
+      await this.fetchDetail(this.id)
+      await this.fetchUploadedFiles(this.detail.id)
+      if (
+        this.detail.statusType === 'Running' ||
+        this.detail.statusType === 'Error'
+      ) {
+        await this.fetchEvents(this.detail.id)
       }
-
-      // 共通側ローディングを再度有効化
-      this.loading = false
-      this.$store.commit('setLoading', true)
-    },
-    async showConfirm() {
-      let confirmMessage = '正常停止しますか、異常停止しますか。'
-      await this.$confirm(confirmMessage, 'Warning', {
-        distinguishCancelAndClose: true,
-        confirmButtonText: '正常停止',
-        cancelButtonText: '異常停止',
-        type: 'warning',
-      })
-        .then(() => {
-          this.userCancelJob() // 正常停止（Status=UserCanceled）
-        })
-        .catch(action => {
-          if (action === 'cancel') {
-            this.haltJob() // 異常停止（Status=Killed）
-          }
-        })
-    },
-    async haltJob() {
-      try {
-        await api.inference.postHaltById({ id: this.id })
-        await this.getDetail()
-        this.error = null
-      } catch (e) {
-        this.error = e
-      }
-    },
-    async userCancelJob() {
-      try {
-        await api.inference.postUserCancelById({ id: this.id })
-        await this.getDetail()
-        this.error = null
-      } catch (e) {
-        this.error = e
-      }
-    },
-    async deleteInferenceJob() {
-      try {
-        await api.inference.deleteById({ id: this.id })
-        this.emitDone()
-        this.error = null
-      } catch (e) {
-        this.error = e
-      }
-    },
-    async setInferenceDetails(data) {
-      this.name = data.name
-      this.parent = data.parent
-      this.dataSet = data.dataSet
-      this.gitModel = data.gitModel
-      this.createdBy = data.createdBy
-      this.createdAt = data.createdAt
-      this.completedAt = data.completedAt
-      this.logSummary = data.logSummary
-      this.memo = data.memo
-      this.options = data.options
-      this.cpu = data.cpu
-      this.memory = data.memory
-      this.gpu = data.gpu
-      this.partition = data.partition
-      this.statusDetail = data.statusDetail
-      this.status =
-        data.status === data.statusType
-          ? data.status
-          : data.statusType + ' (' + data.status + ')'
-      this.statusType = data.statusType
-      this.entryPoint = data.entryPoint
-      this.conditionNote = data.conditionNote
-      this.favorite = data.favorite
-      this.zip = data.zip
-      this.downloadFilesCommand =
-        'kqi inference download-container-files ' + this.id + ' -d ./'
-      if (this.statusType === 'Running' || this.statusType === 'Error') {
-        this.events = (await api.inference.getEventsById({ id: data.id })).data
-      }
-    },
-    async getDetail() {
-      let data = (await api.inference.getById({ id: this.id })).data
-      this.setInferenceDetails(data)
-      this.uploadedFiles = (
-        await api.inference.getFilesById({ id: this.id, withUrl: true })
-      ).data
-      this.containerUrl = data.containerImage.url
     },
     async updateHistory() {
-      let putData = {
-        name: this.name,
-        memo: this.memo,
-        favorite: this.favorite,
+      let params = {
+        id: this.detail.id,
+        model: {
+          name: this.form.name,
+          memo: this.form.memo,
+          favorite: this.form.favorite,
+        },
       }
-      await api.inference.putById({ id: this.id, model: putData })
+      await this.put(params)
     },
     async onSubmit() {
       let form = this.$refs.updateForm
@@ -407,35 +365,109 @@ export default {
         }
       })
     },
-    async deleteFile(fileId) {
-      try {
-        await api.inference.deleteByIdFilesByFileId({
-          id: this.id,
-          fileId: fileId,
+    async showStopConfirm() {
+      let confirmMessage = '正常停止しますか、異常停止しますか。'
+      await this.$confirm(confirmMessage, 'Warning', {
+        distinguishCancelAndClose: true,
+        confirmButtonText: '正常停止',
+        cancelButtonText: '異常停止',
+        type: 'warning',
+      })
+        .then(async () => {
+          try {
+            await this.postUserCancel(this.detail.id) // 正常停止（Status=UserCanceled）
+            await this.retrieveData()
+          } catch (e) {
+            this.error = e
+          }
         })
-        await this.getDetail()
+        .catch(async action => {
+          if (action === 'cancel') {
+            try {
+              await this.postHalt(this.detail.id) // 異常停止（Status=Killed）
+              await this.retrieveData()
+            } catch (e) {
+              this.error = e
+            }
+          }
+        })
+    },
+    async deleteInferenceJob() {
+      try {
+        await this.delete(this.detail.id)
+        this.emitDone()
         this.error = null
       } catch (e) {
         this.error = e
       }
     },
+    async uploadFile() {
+      // 独自ローディング処理のため共通側は無効
+      this.$store.commit('setLoading', false)
+      this.loading = true
+
+      let uploader = this.$refs.uploadFile
+      let fileInfo = await uploader.uploadFile()
+
+      if (fileInfo !== undefined) {
+        await this.postFiles({
+          id: this.detail.id,
+          fileInfo: fileInfo,
+        })
+      }
+
+      // 共通側ローディングを再度有効化
+      this.loading = false
+      this.$store.commit('setLoading', true)
+    },
+
+    async deleteAttachedFile(fileId) {
+      try {
+        await this.deleteFile({
+          id: this.detail.id,
+          fileId: fileId,
+        })
+        await this.retrieveData()
+        this.error = null
+      } catch (e) {
+        this.error = e
+      }
+    },
+    // 親ジョブ履歴の表示指示
     async showParent() {
-      this.$router.push('/training/' + this.parent.id)
+      // 表示内容の変更は、beforeUpdated内で行う
+      this.$router.push('/training/' + this.detail.parent.id)
     },
     redirectEditDataSet() {
-      this.$router.push('/dataset/' + this.dataSet.id)
+      this.$router.push('/dataset/' + this.detail.dataSet.id)
     },
     emitFiles() {
-      this.$emit('files', this.id)
+      this.$emit('files', this.detail.id)
     },
     emitShell() {
-      this.$emit('shell', this.id)
+      this.$emit('shell', this.detail.id)
     },
     emitLog() {
-      this.$emit('log', this.id)
+      this.$emit('log', this.detail.id)
     },
     emitCopyCreate() {
-      this.$emit('copyCreate', this.id)
+      this.$emit('copyCreate', this.detail.id)
+    },
+    async emitInferenceCreate() {
+      if (
+        this.detail.status === 'Completed' ||
+        this.detail.status === 'UserCanceled'
+      ) {
+        this.$router.push(
+          '/inference/create/' + this.detail.id + '?origin=train',
+        )
+      } else {
+        this.$notify.info({
+          title: 'Information',
+          message:
+            'ステータスがCompletedまたはUserCanceledの学習のみ推論を実行できます。',
+        })
+      }
     },
     emitCancel() {
       this.$emit('cancel')
@@ -450,8 +482,7 @@ export default {
   },
 }
 </script>
-
-<style scoped>
+<style lang="scss" scoped>
 .dialog /deep/ .el-dialog {
   min-width: 800px;
 }
