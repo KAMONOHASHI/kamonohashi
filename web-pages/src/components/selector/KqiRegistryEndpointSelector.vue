@@ -3,7 +3,7 @@
     <el-form-item label="レジストリ" prop="registryIds">
       <el-select
         class="selectRegistry"
-        :value="selectedIds"
+        :value="registryIds"
         multiple
         placeholder="Select"
         :clearable="true"
@@ -52,31 +52,49 @@ import { createNamespacedHelpers } from 'vuex'
 const { mapGetters } = createNamespacedHelpers('registry')
 
 export default {
+  props: {
+    registryIds: {
+      type: Array,
+      default: () => [],
+    },
+    defaultId: {
+      type: Number,
+      default: null,
+    },
+  },
   data() {
     return {
-      selectedIds: [],
       selectedRegistries: [],
-      defaultId: null,
     }
   },
   computed: {
     ...mapGetters(['registries']),
   },
+  watch: {
+    async defaultId() {
+      await this.selectedDefaultIds(this.registryIds)
+    },
+  },
   methods: {
     async handleChange(selectedIds) {
-      this.selectedIds = selectedIds
+      this.selectedDefaultIds(selectedIds)
+      this.$emit('changeSelectedIds', selectedIds)
+    },
+    async selectedDefaultIds(ids) {
       this.selectedRegistries = []
       this.registries.forEach(registry => {
-        if (selectedIds.some(id => id === registry.id)) {
+        if (ids.some(id => id === registry.id)) {
           // 選択中だったらリストに追加
           this.selectedRegistries.push(registry)
         }
       })
-      this.$emit('changeSelectedIds', this.selectedIds)
     },
     async handleChangeDefaultId(defaultId) {
-      this.defaultId = defaultId
-      this.$emit('changeDefaultId', this.defaultId)
+      if (defaultId === '') {
+        this.$emit('changeDefaultId', { value: null })
+      } else {
+        this.$emit('changeDefaultId', { value: defaultId })
+      }
     },
   },
 }
