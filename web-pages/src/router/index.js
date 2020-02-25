@@ -4,11 +4,6 @@ import Router from 'vue-router'
 import Shell from '@/components/common/Shell.vue'
 import LogViewer from '@/components/common/LogViewer.vue'
 
-import Data from '@/components/data/Index'
-import EditData from '@/components/data/Edit'
-import CreateData from '@/components/data/Create'
-import PreprocessData from '@/components/data/Preprocessing'
-
 import DataSet from '@/components/dataset/Index'
 import EditDataSet from '@/components/dataset/Edit'
 import CreateDataSet from '@/components/dataset/Create'
@@ -54,6 +49,7 @@ import Error from '@/components/error/Error'
 import ManageResourceIndex from '@/components/tenant-manage/resource/Index'
 import VersionIndex from '@/components/version/Index'
 
+import data from '@/router/data'
 import notebook from '@/router/notebook'
 import training from '@/router/training'
 import inference from '@/router/inference'
@@ -67,6 +63,7 @@ Vue.use(Router)
 
 let router = new Router({
   routes: [
+    ...data,
     ...notebook,
     ...training,
     ...inference,
@@ -89,27 +86,6 @@ let router = new Router({
       path: '/',
       name: 'DashBoard',
       component: DashBoardIndex,
-    },
-    {
-      path: '/data',
-      name: 'Data',
-      component: Data,
-      children: [
-        {
-          path: 'create',
-          component: CreateData,
-        },
-        {
-          path: ':id',
-          component: EditData,
-          props: true,
-        },
-        {
-          path: ':id/preprocessing',
-          component: PreprocessData,
-          props: true,
-        },
-      ],
     },
     {
       path: '/dataset',
