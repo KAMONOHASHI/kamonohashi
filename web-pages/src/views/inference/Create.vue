@@ -306,7 +306,7 @@ export default {
     // 学習からの遷移の場合は、マウントする学習を設定
     if (fromTrainView) {
       // originIdは学習のIDとなっている
-      this.form.selectParent = []
+      this.form.selectedParent = []
       this.trainingHistories.forEach(history => {
         if (String(history.id) === this.originId) {
           this.form.selectedParent = [history]
@@ -323,7 +323,7 @@ export default {
       this.form.entryPoint = this.detail.entryPoint
       this.form.zip = this.detail.zip
       this.form.memo = this.detail.memo
-      this.form.selectParent = []
+      this.form.selectedParent = []
       if (this.detail.parent) {
         this.trainingHistories.forEach(history => {
           if (history.id === this.detail.parent.id) {

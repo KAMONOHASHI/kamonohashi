@@ -304,7 +304,7 @@ export default {
       this.form.entryPoint = this.detail.entryPoint
       this.form.zip = this.detail.zip
       this.form.memo = this.detail.memo
-      this.form.selectParent = []
+      this.form.selectedParent = []
       if (this.detail.parent) {
         this.trainingHistories.forEach(history => {
           if (history.id === this.detail.parent.id) {

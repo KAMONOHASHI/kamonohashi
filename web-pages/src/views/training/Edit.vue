@@ -386,6 +386,7 @@ export default {
           try {
             await this.postUserCancel(this.detail.id) // 正常停止（Status=UserCanceled）
             await this.retrieveData()
+            this.error = null
           } catch (e) {
             this.error = e
           }
@@ -395,6 +396,7 @@ export default {
             try {
               await this.postHalt(this.detail.id) // 異常停止（Status=Killed）
               await this.retrieveData()
+              this.error = null
             } catch (e) {
               this.error = e
             }
