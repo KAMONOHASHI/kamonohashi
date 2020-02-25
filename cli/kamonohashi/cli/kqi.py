@@ -16,9 +16,10 @@ from kamonohashi.cli import account
 from kamonohashi.cli import data
 from kamonohashi.cli import data_set
 from kamonohashi.cli import inference
-from kamonohashi.cli import preprocessing
-from kamonohashi.cli import training
 from kamonohashi.cli import notebook
+from kamonohashi.cli import preprocessing
+from kamonohashi.cli import tenant
+from kamonohashi.cli import training
 
 name = 'kamonohashi-cli'
 version = pkg_resources.get_distribution(name).version
@@ -54,9 +55,10 @@ kqi.add_command(account.account)
 kqi.add_command(data_set.data_set, 'dataset')
 kqi.add_command(data.data)
 kqi.add_command(inference.inference)
-kqi.add_command(training.training)
-kqi.add_command(preprocessing.preprocessing)
 kqi.add_command(notebook.notebook)
+kqi.add_command(preprocessing.preprocessing)
+kqi.add_command(tenant.tenant)
+kqi.add_command(training.training)
 
 
 def kqi_main():

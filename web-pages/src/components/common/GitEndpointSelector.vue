@@ -105,11 +105,22 @@ export default {
     async handleChange(v) {
       this.$emit('input', v)
     },
-    async handleChangeDefaultId(v) {
-      this.$emit('changeDefaultId', v)
-    },
-  },
-}
+    methods: {
+      async init () {
+        if (this.tenantId) {
+          this.list = (await api.git.tenant.getEndpoints()).data
+        } else {
+          this.list = (await api.git.admin.getEndpoints()).data
+        }
+      },
+      async handleChange (v) {
+        this.$emit('input', v)
+      },
+      async handleChangeDefaultId (v) {
+        this.$emit('changeDefaultId', v)
+      }
+    }
+  }
 </script>
 
 <style scoped>

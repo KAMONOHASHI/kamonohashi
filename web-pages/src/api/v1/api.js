@@ -87,7 +87,7 @@ let api = {
       deleteById: gen.ApiV1AdminRegistryEndpointsByIdDelete,
     },
     tenant: {
-      getEndpoints: gen.ApiV1TenantByIdRegistryEndpointsGet,
+      getEndpoints: gen.ApiV1TenantRegistryEndpointsGet
     },
     getImages: gen.ApiV1RegistriesByRegistryIdImagesGet,
     getTags: gen.ApiV1RegistriesByRegistryIdImagesByImageTagsGet,
@@ -158,7 +158,7 @@ let api = {
       getTypes: gen.ApiV1AdminGitTypesGet,
     },
     tenant: {
-      getEndpoints: gen.ApiV1TenantByIdGitEndpointsGet,
+      getEndpoints: gen.ApiV1TenantGitEndpointsGet
     },
     getRepos: gen.ApiV1GitByGitIdReposGet,
     getBranches: gen.ApiV1GitByGitIdReposByOwnerByRepositoryNameBranchesGet,
@@ -274,9 +274,10 @@ let api = {
       post: gen.ApiV1AdminTenantsPost,
       getById: gen.ApiV1AdminTenantsByIdGet,
       put: gen.ApiV1AdminTenantsByIdPut,
-      getMembers: gen.ApiV1AdminTenantsByIdMembersGet,
-      delete: gen.ApiV1AdminTenantsByIdDelete,
+      delete: gen.ApiV1AdminTenantsByIdDelete
     },
+    get: gen.ApiV1TenantGet,
+    put: gen.ApiV1TenantPut
   },
 
   user: {

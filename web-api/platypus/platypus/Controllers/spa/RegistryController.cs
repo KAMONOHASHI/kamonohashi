@@ -17,6 +17,9 @@ using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Controllers.spa
 {
+    /// <summary>
+    /// レジストリ管理を扱うためのAPI集
+    /// </summary>
     [Route("api/v1/admin/registry")]
     public class RegistryController : PlatypusApiControllerBase
     {
@@ -230,28 +233,16 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// テナント管理者が選択可能な登録済みのDockerレジストリ エンドポイント一覧を取得
         /// </summary>
-        /// <param name="id">テナントID</param>
-        [HttpGet("/api/v1/tenant/{id}/registry/endpoints")]
+        [HttpGet("/api/v1/tenant/registry/endpoints")]
         [Filters.PermissionFilter(MenuCode.TenantSetting)]
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
-        public IActionResult GetAllForTenant(long? id)
+        public IActionResult GetAllForTenant()
         {
-            if (id == null)
-            {
-                return JsonBadRequest("Tenant ID is required.");
-            }
-
-            Tenant tenant = tenantRepository.Get(id.Value);
-            if (tenant == null)
-            {
-                return JsonNotFound($"Tenant Id {id.Value} is not found.");
-            }
-
             // 編集不可の全レジストリ情報を取得
             var registryNotEditableEndpoints = registryRepository.GetRegistryAll().Where(r => r.IsNotEditable == true);
 
             // 指定したテナントに紐づく全レジストリ情報を取得
-            var registryEndpointsForTenant = registryRepository.GetRegistryAll(id.Value);
+            var registryEndpointsForTenant = registryRepository.GetRegistryAll(CurrentUserInfo.SelectedTenant.Id);
 
             // 重複を除き結合する
             var registryEndpoints = registryNotEditableEndpoints.Union(registryEndpointsForTenant).OrderBy(r => r.Id);

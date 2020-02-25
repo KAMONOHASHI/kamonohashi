@@ -17,6 +17,9 @@ using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Controllers.spa
 {
+    /// <summary>
+    /// Git管理を扱うためのAPI集
+    /// </summary>
     [Route("api/v1/git")]
     public class GitController : PlatypusApiControllerBase
     {
@@ -206,28 +209,16 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// テナント管理者が選択可能な登録済みのGitエンドポイント一覧を取得
         /// </summary>
-        /// <param name="id">テナントID</param>
-        [HttpGet("/api/v1/tenant/{id}/git/endpoints")]
+        [HttpGet("/api/v1/tenant/git/endpoints")]
         [Filters.PermissionFilter(MenuCode.TenantSetting)]
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
-        public IActionResult GetAllForTenant(long? id)
+        public IActionResult GetAllForTenant()
         {
-            if (id == null)
-            {
-                return JsonBadRequest("Tenant ID is required.");
-            }
-
-            Tenant tenant = tenantRepository.Get(id.Value);
-            if (tenant == null)
-            {
-                return JsonNotFound($"Tenant Id {id.Value} is not found.");
-            }
-
             // 編集不可の全Git情報を取得
             var gitNotEditableEndpoints = gitRepository.GetGitAll().Where(g => g.IsNotEditable == true);
 
             // 指定したテナントに紐づく全Git情報を取得
-            var gitEndpointsForTenant = gitRepository.GetGitAll(id.Value);
+            var gitEndpointsForTenant = gitRepository.GetGitAll(CurrentUserInfo.SelectedTenant.Id);
 
             // 重複を除き結合する
             var gitEndpoints = gitNotEditableEndpoints.Union(gitEndpointsForTenant).OrderBy(g => g.Id);

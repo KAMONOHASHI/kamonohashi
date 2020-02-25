@@ -78,7 +78,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="id">テナントID</param>
         [HttpGet("{id}")]
-        [PermissionFilter(MenuCode.Tenant, MenuCode.TenantSetting)]
+        [PermissionFilter(MenuCode.Tenant)]
         [ProducesResponseType(typeof(DetailsOutputModel), (int)HttpStatusCode.OK)]
         public IActionResult GetDetails(long? id)
         {
@@ -101,6 +101,8 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 新規にテナントを登録する
         /// </summary>
+        /// <param name="model">登録内容</param>
+        /// <param name="nodeRepository">DI用</param>
         [HttpPost]
         [PermissionFilter(MenuCode.Tenant)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.Created)]
@@ -352,8 +354,10 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// テナント情報の編集
         /// </summary>
+        /// <param name="id">テナントID</param>
+        /// <param name="model">変更内容</param>
         [HttpPut("{id}")]
-        [PermissionFilter(MenuCode.Tenant, MenuCode.TenantSetting)]
+        [PermissionFilter(MenuCode.Tenant)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> Edit(long? id, [FromBody]EditInputModel model)
         {
@@ -492,6 +496,31 @@ namespace Nssol.Platypus.Controllers.spa
             tenantRepository.Update(tenant, unitOfWork);
 
             return JsonOK(new IndexOutputModel(tenant));
+        }
+        #endregion
+
+        #region 接続テナント設定
+        /// <summary>
+        /// 接続中のテナントの情報を取得。
+        /// </summary>
+        [HttpGet("/api/v1/tenant")]
+        [PermissionFilter(MenuCode.TenantSetting)]
+        [ProducesResponseType(typeof(DetailsOutputModel), (int)HttpStatusCode.OK)]
+        public IActionResult GetDetailsForTenant()
+        {
+            return GetDetails(CurrentUserInfo.SelectedTenant.Id);
+        }
+
+        /// <summary>
+        /// 接続中のテナントの情報の編集
+        /// </summary>
+        /// <param name="model">変更内容</param>
+        [HttpPut("/api/v1/tenant")]
+        [PermissionFilter(MenuCode.TenantSetting)]
+        [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> EditForTenant([FromBody]EditInputModel model)
+        {
+            return await Edit(CurrentUserInfo.SelectedTenant.Id, model);
         }
         #endregion
     }
