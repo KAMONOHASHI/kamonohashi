@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import data from './modules/data'
 import git from './modules/git'
 import notebook from './modules/notebook'
 import training from './modules/training'
@@ -16,6 +17,7 @@ import storage from './modules/storage'
 Vue.use(Vuex)
 export default new Vuex.Store({
   modules: {
+    data,
     dataSet,
     registrySelector,
     gitSelector,
