@@ -16,7 +16,12 @@
       </div>
       <div v-else>
         <el-col :span="12">
-          <kqi-delete-button :disabled="disabled" @delete="emitDelete" />
+          <div v-if="!deleteParams.dangerFlag">
+            <kqi-delete-button :disabled="disabled" @delete="emitDelete" />
+          </div>
+          <div v-else>
+            <kqi-danger-button :params="deleteParams" @delete="emitDelete" />
+          </div>
         </el-col>
         <el-col :span="12" class="right-button-group">
           <el-button @click="emitClose">キャンセル</el-button>
@@ -31,10 +36,12 @@
 
 <script>
 import KqiDeleteButton from '@/components/KqiDeleteButton'
+import KqiDangerButton from '@/components/KqiDangerButton'
 
 export default {
   components: {
     KqiDeleteButton,
+    KqiDangerButton,
   },
   props: {
     title: {
@@ -52,6 +59,16 @@ export default {
     disabled: {
       type: Boolean,
       default: false,
+    },
+    deleteParams: {
+      type: Object,
+      default() {
+        return {
+          dangerFlag: false,
+          screanName: null,
+          name: null,
+        }
+      },
     },
   },
   data() {
