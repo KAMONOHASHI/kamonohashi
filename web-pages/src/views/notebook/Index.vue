@@ -66,7 +66,7 @@
               <el-button
                 type="plain"
                 icon="el-icon-document"
-                @click="openNotebook(scope.row)"
+                @click.stop="openNotebook(scope.row)"
                 >ノートブックを開く</el-button
               >
             </div>
@@ -74,7 +74,7 @@
               <el-button
                 type="plain"
                 icon="el-icon-refresh"
-                @click="openRerunDialog(scope.row)"
+                @click.stop="openRerunDialog(scope.row)"
                 >再実行</el-button
               >
             </div>
@@ -151,7 +151,6 @@ export default {
         },
       ],
       statuses: [],
-      notebookUrlFlg: false,
     }
   },
   computed: {
@@ -183,8 +182,7 @@ export default {
       this.$router.go(-1)
     },
     openEditDialog(selectedRow) {
-      console.log('openEditDialog')
-      if (this.$route.path === '/notebook' && !this.notebookUrlFlg) {
+      if (this.$route.path === '/notebook') {
         this.$router.push('/notebook/' + selectedRow.id)
       }
     },
@@ -192,11 +190,8 @@ export default {
       this.$router.push('/notebook/run/')
     },
     async openNotebook(selectedRow) {
-      console.log('openNotebook')
-      this.notebookUrlFlg = true
       await this.fetchEndpoint(selectedRow.id)
       window.open(this.endpoint)
-      this.notebookUrlFlg = false
     },
     async search() {
       this.currentPage = 1
