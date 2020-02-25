@@ -1,410 +1,366 @@
 <template>
-  <div>
-    <el-dialog class="dialog"
-               title="ノートブック詳細"
-               :visible.sync="dialogVisible"
-               :before-close="closeDialog"
-               :close-on-click-modal="false">
-      <el-row type="flex" justify="end">
-        <el-col :span="24" class="right-button-group">
-          <el-button @click="emitCopyCreate">コピー実行</el-button>
-        </el-col>
-      </el-row>
+  <kqi-dialog
+    :title="title"
+    type="EDIT"
+    @submit="onSubmit"
+    @delete="deleteJob"
+    @close="emitCancel"
+  >
+    <el-row type="flex" justify="end">
+      <el-col :span="24" class="right-button-group">
+        <el-button @click="emitCopyCreate">コピー実行</el-button>
+      </el-col>
+    </el-row>
 
-      <el-form :model="this" :rules="rules" ref="updateForm">
-        <pl-display-error :error="error"/>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <pl-display-text-form label="ノートブックID" :value="id">
-              <span slot="action">
-                <div
-                  v-if="favorite"
-                  class="el-icon-star-on favorite"
-                  @click="favorite = false"
-                ></div>
-                <div
-                  v-else
-                  class="el-icon-star-off favorite"
-                  @click="favorite = true"
-                ></div>
-              </span>
-            </pl-display-text-form>
-            <el-form-item label="ノートブック名" prop="name">
-              <el-input v-model="name" />
-            </el-form-item>
-            <div v-if="parents && parents.length > 0">
-              <el-form-item label="マウントした学習">
-                <div v-for="parent in parents" :key="parent.id">
-                  <el-popover
-                    ref="parentDetail"
-                    title="マウントした学習詳細"
-                    trigger="hover"
-                    width="350"
-                    placement="right"
-                  >
-                    <pl-training-history-details
-                      :id="parent.id"
-                      :name="parent.name"
-                      :status="parent.status"
-                      :memo="parent.memo"
-                    />
-                    <el-button
-                      slot="reference"
-                      class="el-input"
-                      @click="showParent(parent.id)"
-                      >{{ parent.fullName }}</el-button
-                    >
-                  </el-popover>
-                </div>
-              </el-form-item>
-            </div>
-            <div v-if="dataSet">
-              <el-form-item label="データセット">
+    <el-form ref="updateForm" :model="form" :rules="rules">
+      <kqi-display-error :error="error" />
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <kqi-display-text-form
+            label="ノートブックID"
+            :value="detail ? String(detail.id) : '0'"
+          >
+            <span slot="action">
+              <div
+                v-if="form.favorite"
+                class="el-icon-star-on favorite"
+                @click="form.favorite = false"
+              ></div>
+              <div
+                v-else
+                class="el-icon-star-off favorite"
+                @click="form.favorite = true"
+              ></div>
+            </span>
+          </kqi-display-text-form>
+          <el-form-item label="ノートブック名" prop="name">
+            <el-input v-model="form.name" />
+          </el-form-item>
+          <div v-if="detail.parents && detail.parents.length > 0">
+            <el-form-item label="マウントした学習">
+              <div v-for="parent in detail.parents" :key="parent.id">
                 <el-popover
-                  ref="dataSetDetail"
-                  title="データセット詳細"
+                  ref="parentDetail"
+                  title="マウントした学習詳細"
                   trigger="hover"
                   width="350"
                   placement="right"
                 >
-                  <pl-dataset-details :data-set="dataSet" />
+                  <kqi-training-history-details :training="parent" />
+                  <el-button
+                    slot="reference"
+                    class="el-input"
+                    @click="showParent(parent.id)"
+                    >{{ parent.fullName }}</el-button
+                  >
                 </el-popover>
-                <el-button
-                  v-popover:dataSetDetail
-                  class="el-input"
-                  @click="redirectEditDataSet"
-                  >{{ dataSet.name }}
-                </el-button>
-              </el-form-item>
-            </div>
-            <el-form-item label="モデル">
-              <div class="el-input">
-                <span
-                  v-if="gitModel && gitModel.url !== null"
-                  style="padding-left: 3px"
-                >
-                  <a :href="gitModel.url" target="_blank">
-                    {{ gitModel.owner }}/{{ gitModel.repository }}/{{
-                      gitModel.branch
-                    }}
-                  </a>
-                </span>
-                <span v-else>
-                  None
-                </span>
               </div>
             </el-form-item>
-            <pl-display-text-form label="作成者" :value="createdBy" />
-            <pl-display-text-form label="開始日時" :value="startedAt" />
-            <pl-display-text-form label="完了日時" :value="completedAt" />
-            <pl-display-text-form label="待機時間" :value="waitingTime" />
-            <pl-display-text-form label="実行時間" :value="executionTime" />
-            <pl-display-text-form label="生存期間(h)" :value="expiresIn" />
-            <el-form-item v-if="options" label="環境変数">
-              <div class="el-input">
-                <el-row v-for="option in options" :key="option.key">
-                  <el-col :span="8" :offset="1">{{ option.key }}</el-col>
-                  <el-col :span="12">{{ option.value }}</el-col>
-                </el-row>
-              </div>
-            </el-form-item>
-            <pl-display-text-form
-              label="コンテナイメージ"
-              :value="containerUrl"
-            />
-          </el-col>
-          <el-col :span="12">
-            <pl-display-text-form label="CPU" :value="cpu" />
-            <pl-display-text-form label="メモリ(GB)" :value="memory" />
-            <pl-display-text-form label="GPU" :value="gpu" />
-            <pl-display-text-form label="パーティション" :value="partition" />
-            <pl-display-text-form label="ステータス" :value="status" />
-            <div v-if="conditionNote !== ``" class="k8s-event">
-              {{ conditionNote }}
-            </div>
-            <div v-if="events.length" class="k8s-event">
-              <el-collapse accordion>
-                <el-collapse-item title="ステータス詳細ログ">
-                  <div v-for="(event, index) in events" :key="index">
-                    <div v-if="event.isError">message:{{ event.message }}</div>
-                  </div>
-                </el-collapse-item>
-              </el-collapse>
-            </div>
-            <div v-if="statusType === 'Running' || statusType === 'Error'">
-              <el-form-item label="操作">
-                <div class="el-input">
-                  <pl-delete-button
-                    button-label="ジョブ停止"
-                    message="停止しますか"
-                    @delete="haltNotebook"
-                  />
-                </div>
-                <div v-if="status === 'Running'">
-                  <div class="el-input" style="padding: 10px 0">
-                    <el-button @click="emitShell">Shell起動</el-button>
-                  </div>
-                  <div>
-                    <el-button
-                      type="plain"
-                      icon="el-icon-document"
-                      @click="openNotebook"
-                      >ノートブックを開く</el-button
-                    >
-                  </div>
-                </div>
-              </el-form-item>
-            </div>
-            <el-form-item label="コンテナ出力ファイル">
-              <br />
-              <el-button @click="emitFiles">ファイル一覧</el-button>
-            </el-form-item>
-            <el-form-item label="ログファイル">
-              <br />
-              <el-button size="mini" @click="emitLog"
-                >ログファイル閲覧</el-button
+          </div>
+          <div v-if="detail.dataSet">
+            <el-form-item label="データセット">
+              <el-popover
+                ref="dataSetDetail"
+                title="データセット詳細"
+                trigger="hover"
+                width="350"
+                placement="right"
               >
+                <kqi-data-set-details :data-set="detail.dataSet" />
+              </el-popover>
+              <el-button
+                v-popover:dataSetDetail
+                class="el-input"
+                @click="redirectEditDataSet"
+                >{{ detail.dataSet.name }}
+              </el-button>
             </el-form-item>
-            <el-form-item label="メモ">
-              <el-input
-                v-model="memo"
-                type="textarea"
-                :autosize="{ minRows: 2, maxRows: 4 }"
+          </div>
+          <el-form-item label="モデル">
+            <div class="el-input">
+              <span
+                v-if="detail.gitModel && detail.gitModel.url !== null"
+                style="padding-left: 3px"
               >
-              </el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
+                <a :href="detail.gitModel.url" target="_blank">
+                  {{ detail.gitModel.owner }}/{{
+                    detail.gitModel.repository
+                  }}/{{ detail.gitModel.branch }}
+                </a>
+              </span>
+              <span v-else>
+                None
+              </span>
+            </div>
+          </el-form-item>
 
-        <el-row :gutter="20" class="footer">
-          <el-col :span="12">
-            <pl-delete-button
-              message="削除しますか（出力データ数が多い場合、処理に時間がかかります）"
-              @delete="deleteNotebook"
-            />
-          </el-col>
-          <el-col class="right-button-group" :span="12">
-            <el-button @click="emitCancel">キャンセル</el-button>
-            <el-button type="primary" @click="onSubmit">更新</el-button>
-          </el-col>
-        </el-row>
-      </el-form>
-    </el-dialog>
-  </div>
+          <kqi-display-text-form
+            label="コンテナイメージ"
+            :value="detail.containerImage ? detail.containerImage.url : ''"
+          />
+
+          <el-form-item label="メモ">
+            <el-input
+              v-model="form.memo"
+              type="textarea"
+              :autosize="{ minRows: 2, maxRows: 4 }"
+            >
+            </el-input>
+          </el-form-item>
+
+          <el-form-item v-if="detail.options" label="環境変数">
+            <div class="el-input">
+              <el-row v-for="option in detail.options" :key="option.key">
+                <el-col :span="8" :offset="1">{{ option.key }}</el-col>
+                <el-col :span="12">{{ option.value }}</el-col>
+              </el-row>
+            </div>
+          </el-form-item>
+
+          <kqi-display-text-form label="作成者" :value="detail.createdBy" />
+          <kqi-display-text-form label="開始日時" :value="detail.startedAt" />
+          <kqi-display-text-form label="完了日時" :value="detail.completedAt" />
+          <kqi-display-text-form label="待機時間" :value="detail.waitingTime" />
+          <kqi-display-text-form
+            label="実行時間"
+            :value="detail.executionTime"
+          />
+        </el-col>
+        <el-col :span="12">
+          <kqi-display-text-form
+            label="CPU"
+            :value="detail ? String(detail.cpu) : '0'"
+          />
+          <kqi-display-text-form
+            label="メモリ(GB)"
+            :value="detail ? String(detail.memory) : '0'"
+          />
+          <kqi-display-text-form
+            label="GPU"
+            :value="detail ? String(detail.gpu) : '0'"
+          />
+          <kqi-display-text-form
+            label="生存期間(h)"
+            :value="detail ? String(detail.expiresIn / 60 / 60) : '0'"
+          />
+          <kqi-display-text-form
+            label="パーティション"
+            :value="detail.partition"
+          />
+          <!-- status: スクリプトがこけたときなどに"failed"になる -->
+          <!-- statusType: コンテナの生死等 -->
+          <kqi-display-text-form
+            label="ステータス"
+            :value="
+              detail.status === detail.statusType
+                ? detail.status
+                : detail.statusType + ' (' + detail.status + ')'
+            "
+          />
+          <div v-if="detail.conditionNote !== ``" class="k8s-event">
+            {{ detail.conditionNote }}
+          </div>
+          <div v-if="events.length" class="k8s-event">
+            <el-collapse accordion>
+              <el-collapse-item title="ステータス詳細ログ">
+                <div v-for="(event, index) in events" :key="index">
+                  <div v-if="event.isError">message:{{ event.message }}</div>
+                </div>
+              </el-collapse-item>
+            </el-collapse>
+          </div>
+          <div
+            v-if="
+              detail.statusType === 'Running' || detail.statusType === 'Error'
+            "
+          >
+            <el-form-item label="操作">
+              <div class="el-input">
+                <kqi-delete-button
+                  button-label="ジョブ停止"
+                  message="停止しますか"
+                  @delete="haltNotebook"
+                />
+              </div>
+              <div v-if="detail.status === 'Running'">
+                <div class="el-input" style="padding: 10px 0">
+                  <el-button @click="emitShell">Shell起動</el-button>
+                </div>
+                <div>
+                  <el-button
+                    type="plain"
+                    icon="el-icon-document"
+                    @click="openNotebook"
+                    >ノートブックを開く</el-button
+                  >
+                </div>
+              </div>
+            </el-form-item>
+          </div>
+          <el-form-item label="コンテナ出力ファイル">
+            <br />
+            <el-button @click="emitFiles">ファイル一覧</el-button>
+          </el-form-item>
+          <el-form-item label="ログファイル">
+            <br />
+            <el-button size="mini" @click="emitLog">ログファイル閲覧</el-button>
+          </el-form-item>
+        </el-col>
+      </el-row>
+    </el-form>
+  </kqi-dialog>
 </template>
 
 <script>
-import DisplayTextForm from '@/components/common/DisplayTextForm.vue'
-import DisplayError from '@/components/common/DisplayError'
-import DeleteButton from '@/components/common/DeleteButton.vue'
-import DataSetDetails from '@/components/common/DatasetDetails.vue'
-import TrainingHistoryDetails from '@/components/common/TrainingHistoryDetails.vue'
-import api from '@/api/v1/api'
+import KqiDialog from '@/components/KqiDialog'
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
+import KqiDisplayError from '@/components/KqiDisplayError'
+import KqiDeleteButton from '@/components/KqiDeleteButton.vue'
+import KqiDataSetDetails from '@/components/selector/KqiDatasetDetails.vue'
+import KqiTrainingHistoryDetails from '@/components/selector/KqiTrainingHistoryDetails'
+
+import { createNamespacedHelpers } from 'vuex'
+const { mapGetters, mapActions } = createNamespacedHelpers('notebook')
+
 export default {
   name: 'EditNotebook',
   components: {
-    'pl-delete-button': DeleteButton,
-    'pl-display-text-form': DisplayTextForm,
-    'pl-display-error': DisplayError,
-    'pl-dataset-details': DataSetDetails,
-    'pl-training-history-details': TrainingHistoryDetails,
+    KqiDialog,
+    KqiDeleteButton,
+    KqiDisplayError,
+    KqiDataSetDetails,
+    KqiTrainingHistoryDetails,
+    KqiDisplayTextForm,
   },
   props: {
-    id: String,
+    id: {
+      type: String,
+      default: null,
+    },
   },
   data() {
     return {
       rules: {
         name: [{ required: true, trigger: 'blur', message: '必須項目です' }],
       },
-      notebookId: undefined,
+      form: {
+        name: null,
+        favorite: false,
+        memo: null,
+      },
+      title: '',
       dialogVisible: true,
-      error: undefined,
-      containerUrl: undefined, // コンテナの表示用URL
-      name: undefined,
-      dataSet: undefined,
-      parents: [],
-      gitModel: undefined,
-      createdBy: undefined,
-      startedAt: undefined,
-      completedAt: undefined,
-      memo: undefined,
-      options: undefined,
-      cpu: undefined,
-      memory: undefined,
-      gpu: undefined,
-      partition: undefined,
-      endpoint: undefined,
-      // スクリプトがこけたときなどに"failed"になる
-      status: undefined,
-      // コンテナの生死等
-      statusType: undefined,
-      conditionNote: '',
-      favorite: false,
-      events: [],
-      waitingTime: undefined,
-      executionTime: undefined,
-      expiresIn: undefined,
+      error: null,
     }
   },
+  computed: {
+    ...mapGetters(['detail', 'events', 'endpoint']),
+  },
   async created() {
-    this.notebookId = this.id
-    await this.getDetail()
+    this.title = 'ノートブック履歴'
+    await this.retrieveData()
+    this.form.name = this.detail.name
+    this.form.favorite = this.detail.favorite
+    this.form.memo = this.detail.memo
   },
   methods: {
-    async getDetail() {
-      let data = (await api.notebook.getById({ id: this.notebookId })).data
-      this.setTrainDetails(data)
-      this.containerUrl = data.containerImage.url
-    },
-    async setTrainDetails(data) {
-      this.name = data.name
-      this.notebookId = data.id
-      this.dataSet = data.dataSet
-      this.parents = data.parents
-      this.gitModel = data.gitModel
-      this.createdBy = data.createdBy
-      this.startedAt = data.startedAt
-      this.completedAt = data.completedAt
-      this.memo = data.memo
-      this.options = data.options
-      this.cpu = data.cpu
-      this.memory = data.memory
-      this.gpu = data.gpu
-      this.partition = data.partition
-      this.statusDetail = data.statusDetail
-      this.endpoint = data.notebookEndpoint
-      this.status =
-        data.status === data.statusType
-          ? data.status
-          : data.statusType + ' (' + data.status + ')'
-      this.statusType = data.statusType
-      this.conditionNote = data.conditionNote
-      this.favorite = data.favorite
-      if (this.statusType === 'Running' || this.statusType === 'Error') {
-        this.events = (await api.notebook.getEventsById({ id: data.id })).data
+    ...mapActions([
+      'fetchDetail',
+      'fetchEvents',
+      'fetchEndpoint',
+      'postHalt',
+      'put',
+      'delete',
+    ]),
+    async retrieveData() {
+      await this.fetchDetail(this.id)
+      if (
+        this.detail.statusType === 'Running' ||
+        this.detail.statusType === 'Error'
+      ) {
+        await this.fetchEvents(this.detail.id)
       }
-      this.waitingTime = data.waitingTime
-      this.executionTime = data.executionTime
-      this.expiresIn = data.expiresIn === 0 ? 0 : data.expiresIn / 60 / 60
+    },
+    async updateHistory() {
+      let params = {
+        id: this.detail.id,
+        model: {
+          name: this.form.name,
+          memo: this.form.memo,
+          favorite: this.form.favorite,
+        },
+      }
+      await this.put(params)
+    },
+    async onSubmit() {
+      let form = this.$refs.updateForm
+      await form.validate(async valid => {
+        if (valid) {
+          try {
+            await this.updateHistory()
+            this.emitDone()
+            this.error = null
+          } catch (e) {
+            this.error = e
+          }
+        }
+      })
+    },
+    async haltNotebook() {
+      try {
+        await this.postHalt(this.detail.id)
+        await this.retrieveData()
+        this.error = null
+      } catch (e) {
+        this.error = e
+      }
+    },
+    async deleteJob() {
+      try {
+        await this.delete(this.detail.id)
+        this.emitDone()
+        this.error = null
+      } catch (e) {
+        this.error = e
+      }
+    },
+    async openNotebook() {
+      await this.fetchEndpoint(this.detail.id)
+      window.open(this.endpoint)
+    },
+
+    // 親ジョブ履歴の表示
+    showParent(parentId) {
+      // 表示内容の変更は、beforeUpdated内で行う
+      this.$router.push('/training/' + parentId)
+    },
+    redirectEditDataSet() {
+      this.$router.push('/dataset/' + this.detail.dataSet.id)
+    },
+    emitFiles() {
+      this.$emit('files', this.detail.id)
+    },
+    emitShell() {
+      this.$emit('shell', this.detail.id)
+    },
+    emitLog() {
+      this.$emit('log', this.detail.id)
+    },
+    emitCopyCreate() {
+      this.$emit('copyCreate', this.detail.id)
+    },
+    emitCancel() {
+      this.$emit('cancel')
     },
     emitDone() {
       this.$emit('done')
       this.dialogVisible = false
     },
-    methods: {
-      async getDetail () {
-        let data = (await api.notebook.getById({id: this.notebookId})).data
-        this.setTrainDetails(data)
-        this.containerUrl = data.containerImage.url
-      },
-      async setTrainDetails (data) {
-        this.name = data.name
-        this.notebookId = data.id
-        this.dataSet = data.dataSet
-        this.parents = data.parents
-        this.gitModel = data.gitModel
-        this.createdBy = data.createdBy
-        this.startedAt = data.startedAt
-        this.completedAt = data.completedAt
-        this.memo = data.memo
-        this.options = data.options
-        this.cpu = data.cpu
-        this.memory = data.memory
-        this.gpu = data.gpu
-        this.partition = data.partition
-        this.statusDetail = data.statusDetail
-        this.endpoint = data.notebookEndpoint
-        this.status = data.status === data.statusType
-          ? data.status : (data.statusType + ' (' + data.status + ')')
-        this.statusType = data.statusType
-        this.conditionNote = data.conditionNote
-        this.favorite = data.favorite
-        if (this.statusType === 'Running' || this.statusType === 'Error') {
-          this.events = (await api.notebook.getEventsById({id: data.id})).data
-        }
-        this.waitingTime = data.waitingTime
-        this.executionTime = data.executionTime
-        this.expiresIn = data.expiresIn === 0 ? 0 : (data.expiresIn / 60 / 60)
-      },
-      emitDone () {
-        this.$emit('done')
-        this.dialogVisible = false
-      },
-      emitCancel () {
-        this.$emit('cancel')
-      },
-      closeDialog (done) {
-        done()
-        this.emitCancel()
-      },
-      // 親ジョブ履歴の表示
-      showParent (parentId) {
-        // 表示内容の変更は、beforeUpdated内で行う
-        this.$router.push('/training/' + parentId)
-      },
-      redirectEditDataSet () {
-        this.$router.push('/dataset/' + this.dataSet.id)
-      },
-      emitFiles () {
-        this.$emit('files', this.notebookId)
-      },
-      emitShell () {
-        this.$emit('shell', this.notebookId)
-      },
-      emitLog () {
-        this.$emit('log', this.notebookId)
-      },
-      emitCopyCreate () {
-        this.$emit('copyCreate', this.notebookId)
-      },
-      async openNotebook () {
-        let endpoint = await api.notebook.getEndpointById({id: this.notebookId})
-        let notebookUrl = endpoint.data.url
-        window.open(notebookUrl)
-      },
-      async updateHistory () {
-        let putData = {
-          name: this.name,
-          memo: this.memo,
-          favorite: this.favorite
-        }
-        await api.notebook.putById({id: this.notebookId, model: putData})
-      },
-      async onSubmit () {
-        let form = this.$refs.updateForm
-          await form.validate(async valid => {
-          if (valid) {
-            try {
-              await this.updateHistory()
-              this.emitDone()
-              this.error = null
-            } catch (e) {
-              this.error = e
-            }
-          }
-        })
-      },
-      async haltNotebook() {
-        try {
-          await api.notebook.postHaltById({ id: this.notebookId })
-          await this.getDetail()
-          this.error = null
-        } catch (e) {
-          this.error = e
-        }
-      },
-      async deleteNotebook() {
-        try {
-          await api.notebook.deleteById({ id: this.notebookId })
-          this.emitDone()
-          this.error = null
-        } catch (e) {
-          this.error = e
-        }
-      },
+    closeDialog(done) {
+      done()
+      this.emitCancel()
     },
-  }
+  },
 }
 </script>
 
