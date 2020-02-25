@@ -22,11 +22,11 @@ gen.setAxios(axios)
 let simpleStringBody = function(func, paramName) {
   return async function(params) {
     if (paramName in params) {
-      params[paramName] = '"' + params[paramName] + '"';
+      params[paramName] = '"' + params[paramName] + '"'
     }
-    return await func(params);
-  };
-};
+    return await func(params)
+  }
+}
 
 // -----------------------------------------------------------------------
 // 使いやすいようにAPI領域で再定義
@@ -73,7 +73,6 @@ let api = {
       put: gen.ApiV1AdminNodesByIdPut,
       delete: gen.ApiV1AdminNodesByIdDelete,
       postSyncFromDb: gen.ApiV1AdminNodesSync_cluster_from_dbPost,
-      postSyncFromCluster: gen.ApiV1AdminNodesSync_db_from_clusterPost,
       getAccessLevel: gen.ApiV1AdminNode_access_levelsGet,
     },
   },
@@ -87,7 +86,7 @@ let api = {
       deleteById: gen.ApiV1AdminRegistryEndpointsByIdDelete,
     },
     tenant: {
-      getEndpoints: gen.ApiV1TenantRegistryEndpointsGet
+      getEndpoints: gen.ApiV1TenantRegistryEndpointsGet,
     },
     getImages: gen.ApiV1RegistriesByRegistryIdImagesGet,
     getTags: gen.ApiV1RegistriesByRegistryIdImagesByImageTagsGet,
@@ -158,7 +157,7 @@ let api = {
       getTypes: gen.ApiV1AdminGitTypesGet,
     },
     tenant: {
-      getEndpoints: gen.ApiV1TenantGitEndpointsGet
+      getEndpoints: gen.ApiV1TenantGitEndpointsGet,
     },
     getRepos: gen.ApiV1GitByGitIdReposGet,
     getBranches: gen.ApiV1GitByGitIdReposByOwnerByRepositoryNameBranchesGet,
@@ -236,6 +235,7 @@ let api = {
     getEndpointById: gen.ApiV1NotebookByIdEndpointGet,
     getFilesById: gen.ApiV1NotebookByIdContainer_filesGet,
     postRerun: gen.ApiV1NotebookByIdRerunPost,
+    getAvailableInfiniteTime: gen.ApiV1NotebookAvailable_infinite_timeGet,
   },
 
   inference: {
@@ -274,10 +274,10 @@ let api = {
       post: gen.ApiV1AdminTenantsPost,
       getById: gen.ApiV1AdminTenantsByIdGet,
       put: gen.ApiV1AdminTenantsByIdPut,
-      delete: gen.ApiV1AdminTenantsByIdDelete
+      delete: gen.ApiV1AdminTenantsByIdDelete,
     },
     get: gen.ApiV1TenantGet,
-    put: gen.ApiV1TenantPut
+    put: gen.ApiV1TenantPut,
   },
 
   user: {
@@ -304,12 +304,12 @@ let api = {
   // dataを取り出すメソッド
   f: {
     data(response) {
-      return [response.data];
+      return [response.data]
     },
     dataTotal(response) {
-      return [response.data, response.headers['x-total-count']];
+      return [response.data, response.headers['x-total-count']]
     },
   },
-};
+}
 
-export { api as default };
+export { api as default }

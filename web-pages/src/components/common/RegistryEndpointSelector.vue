@@ -91,9 +91,7 @@ export default {
   methods: {
     async init() {
       if (this.tenantId) {
-        this.list = (
-          await api.registry.tenant.getEndpoints({ id: this.tenantId })
-        ).data
+        this.list = (await api.registry.tenant.getEndpoints()).data
       } else {
         this.list = (await api.registry.admin.get()).data
       }
@@ -101,22 +99,11 @@ export default {
     async handleChange(v) {
       this.$emit('input', v)
     },
-    methods: {
-      async init () {
-        if (this.tenantId) {
-          this.list = (await api.registry.tenant.getEndpoints()).data
-        } else {
-          this.list = (await api.registry.admin.get()).data
-        }
-      },
-      async handleChange (v) {
-        this.$emit('input', v)
-      },
-      async handleChangeDefaultId (v) {
-        this.$emit('changeDefaultId', v)
-      }
-    }
-  }
+    async handleChangeDefaultId(v) {
+      this.$emit('changeDefaultId', v)
+    },
+  },
+}
 </script>
 
 <style scoped>
