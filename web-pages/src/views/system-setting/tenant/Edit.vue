@@ -3,7 +3,7 @@
     :title="title"
     :type="id === null ? 'CREATE' : 'EDIT'"
     submit-text="作成"
-    :delete-params="deleteParams"
+    :delete-button-params="deleteButtonParams"
     @submit="submit"
     @delete="deleteTenant"
     @close="emitCancel"
@@ -84,7 +84,6 @@ const formRule = {
 }
 
 export default {
-  name: 'TenantEdit',
   components: {
     KqiDialog,
     KqiDisplayTextForm,
@@ -102,9 +101,8 @@ export default {
   data() {
     return {
       title: '',
-      dialogVisible: true,
       error: null,
-      deleteParams: {},
+      deleteButtonParams: {},
 
       form: {
         tenantName: '',
@@ -150,10 +148,11 @@ export default {
         this.form.registryIds = this.detail.registryIds
         this.form.availableInfiniteTimeNotebook = this.detail.availableInfiniteTimeNotebook
         this.error = null
-        this.deleteParams = {
-          dangerFlag: true,
-          screanName: 'tenant',
-          name: this.form.tenantName,
+        this.deleteButtonParams = {
+          isDanger: true,
+          warningText:
+            'テナントを削除すると、テナントに紐づくデータが失われます。処理を続けるにはテナント名を入力してください。',
+          confirmText: this.form.tenantName,
         }
       } catch (e) {
         this.error = e
