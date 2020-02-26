@@ -2,16 +2,21 @@ import api from '@/api/v1/api'
 
 // initial state
 const state = {
-  data: {},
+  data: [],
+  total: 0,
   detail: {},
   uploadedFiles: [],
-  tags: [],
+  tenantTags: [],
 }
 
 // getters
 const getters = {
   data(state) {
     return state.data
+  },
+
+  total(state) {
+    return state.total
   },
 
   detail(state) {
@@ -22,16 +27,19 @@ const getters = {
     return state.uploadedFiles
   },
 
-  tags(state) {
-    return state.tags
+  tenantTags(state) {
+    return state.tenantTags
   },
 }
 
 // actions
 const actions = {
   async fetchData({ commit }, params) {
-    let data = (await api.data.get(params)).data
+    let response = await api.data.get(params)
+    let data = response.data
+    let total = response.headers['x-total-count']
     commit('setData', { data })
+    commit('setTotal', parseInt(total))
   },
 
   async fetchDetail({ commit }, id) {
@@ -43,9 +51,9 @@ const actions = {
     }
   },
 
-  async fetchDataTags({ commit }) {
-    let tags = (await api.data.getDataTags()).data
-    commit('setTags', tags)
+  async fetchTenantTags({ commit }) {
+    let tenantTags = (await api.data.getDataTags()).data
+    commit('setTenantTags', tenantTags)
   },
 
   async fetchUploadedFiles({ commit }, id) {
@@ -99,6 +107,10 @@ const mutations = {
     state.data = data
   },
 
+  setTotal(state, total) {
+    state.total = total
+  },
+
   setDetail(state, { detail }) {
     state.detail = detail
   },
@@ -111,8 +123,8 @@ const mutations = {
     state.uploadedFiles = uploadedFiles
   },
 
-  setTags(state, tags) {
-    state.tags = tags
+  setTenantTags(state, tenantTags) {
+    state.tenantTags = tenantTags
   },
 }
 

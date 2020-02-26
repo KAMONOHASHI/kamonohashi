@@ -1,6 +1,5 @@
 import Index from '@/views/data/Index'
 import Edit from '@/views/data/Edit'
-import Create from '@/views/data/Create'
 import Preprocessing from '@/views/data/Preprocessing'
 
 export default [
@@ -10,11 +9,7 @@ export default [
     component: Index,
     children: [
       {
-        path: 'create',
-        component: Create,
-      },
-      {
-        path: ':id',
+        path: 'edit/:id?',
         component: Edit,
         props: true,
       },

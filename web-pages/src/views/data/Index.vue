@@ -1,17 +1,13 @@
 <template>
   <div>
-    <h2>{{ $t('title') }}</h2>
+    <h2>データ管理2</h2>
     <el-row type="flex" justify="space-between" :gutter="20">
       <el-col class="pagination" :span="16">
-        <el-pagination
-          layout="total, sizes, prev, pager, next"
+        <kqi-pagination
+          v-model="pageStatus"
           :total="total"
-          :current-page="currentPage"
-          :page-size="currentPageSize"
-          :page-sizes="[10, 30, 50, 100, 200]"
-          @size-change="handleSizeChange"
-          @current-change="currentChange"
-        />
+          @change="retrieveData"
+        ></kqi-pagination>
       </el-col>
       <el-col class="right-top-button" :span="8">
         <div>
@@ -39,7 +35,7 @@
     <el-row>
       <el-table
         class="data-table pl-index-table"
-        :data="tableData"
+        :data="data"
         border
         @row-click="openEditDialog"
         @selection-change="handleSelectionChange"
@@ -74,17 +70,11 @@
       </el-table>
     </el-row>
     <el-row>
-      <el-col class="pagination" :span="10">
-        <el-pagination
-          layout="total, sizes, prev, pager, next"
-          :total="total"
-          :current-page="currentPage"
-          :page-size="currentPageSize"
-          :page-sizes="[10, 30, 50, 100, 200]"
-          @size-change="handleSizeChange"
-          @current-change="currentChange"
-        />
-      </el-col>
+      <kqi-pagination
+        v-model="pageStatus"
+        :total="total"
+        @change="retrieveData"
+      ></kqi-pagination>
     </el-row>
     <router-view
       @cancel="closeDialog()"
@@ -97,19 +87,24 @@
 </template>
 
 <script>
-import api from '@/api/v1/api'
+import KqiPagination from '@/components/KqiPagination'
 import SmartSearchInput from '@/components/common/SmartSearchInput/Index.vue'
+import { createNamespacedHelpers } from 'vuex'
+const { mapGetters, mapActions } = createNamespacedHelpers('data')
 
 export default {
-  name: 'DataIndex',
-  title() {
-    return this.$t('title')
-  },
+  title: 'データ管理',
   components: {
+    'kqi-pagination': KqiPagination,
     'pl-smart-search-input': SmartSearchInput,
   },
+
   data() {
     return {
+      pageStatus: {
+        currentPage: 1,
+        currentPageSize: 10,
+      },
       searchCondition: {},
       searchConfigs: [
         { prop: 'id', name: 'ID', type: 'number' },
@@ -119,54 +114,37 @@ export default {
         { prop: 'memo', name: 'メモ', type: 'text' },
         { prop: 'tag', name: 'タグ', type: 'text', multiple: true },
       ],
-      total: 0,
-      tableData: [],
-      currentPage: 1,
-      selectedRowId: undefined,
-      currentPageSize: 10,
-      multipleSelection: [],
-      multiSelectedId: '',
+      selections: [],
     }
+  },
+  computed: {
+    ...mapGetters(['data', 'total']),
   },
   async created() {
     await this.retrieveData()
   },
   methods: {
-    async currentChange(page) {
-      this.currentPage = page
-      await this.retrieveData()
-    },
+    ...mapActions(['fetchData']),
     async retrieveData() {
       let params = this.searchCondition
-      params.page = this.currentPage
-      params.perPage = this.currentPageSize
+      params.page = this.pageStatus.currentPage
+      params.perPage = this.pageStatus.currentPageSize
       params.withTotal = true
-
-      let response = await api.data.get(params)
-      this.tableData = response.data
-      this.total = parseInt(response.headers['x-total-count'])
+      await this.fetchData(params)
+    },
+    async search() {
+      this.pageStatus.currentPage = 1
+      await this.retrieveData()
     },
     // checkboxの要素変更
     handleSelectionChange(val) {
-      this.multipleSelection = val
-    },
-    // ページのサイズ(表示件数)変更
-    async handleSizeChange(size) {
-      this.currentPageSize = size
-      this.currentPage = 1
-      // データを再ロードする
-      await this.retrieveData()
+      this.selections = val
     },
     openEditDialog(selectedRow) {
-      this.selectedRowId = selectedRow.id
-      this.$router.push('/data/' + selectedRow.id)
-    },
-    async search() {
-      this.currentPage = 1
-      await this.retrieveData()
+      this.$router.push('/data/edit/' + selectedRow.id)
     },
     openCreateDialog() {
-      this.$router.push('/data/create')
+      this.$router.push('/data/edit')
     },
     closeDialog() {
       this.$router.push('/data')
@@ -177,28 +155,18 @@ export default {
       this.showSuccessMessage()
     },
     openPreprocessingDialog() {
-      if (this.multipleSelection.length === 0) {
+      if (this.selections.length === 0) {
         this.$router.push('/preprocessing/run')
       } else {
-        this.multiSelectedId = ''
-        this.multipleSelection.forEach(value => {
-          this.multiSelectedId += value.id.toString() + ' '
+        let selectionString = ''
+        this.selections.forEach(value => {
+          selectionString += value.id.toString() + ' '
         })
-        this.$router.push('/data/' + this.multiSelectedId + '/preprocessing')
+        this.$router.push('/data/' + selectionString + '/preprocessing')
       }
     },
     redirectPreprocessingPage() {
       this.$router.push('/preprocessing')
-    },
-  },
-  i18n: {
-    messages: {
-      en: {
-        title: 'Data',
-      },
-      ja: {
-        title: 'データ管理',
-      },
     },
   },
 }

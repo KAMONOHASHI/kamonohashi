@@ -1,12 +1,12 @@
 <template>
-  <el-dialog
-    class="dialog"
-    title="データ編集"
-    :visible.sync="dialogVisible"
-    :before-close="closeDialog"
-    :close-on-click-modal="false"
+  <kqi-dialog
+    :title="title"
+    :type="id === null ? 'CREATE' : 'EDIT'"
+    @submit="submit"
+    @delete="deleteData"
+    @close="emitCancel"
   >
-    <el-row type="flex" justify="end">
+    <el-row v-if="isEditDialog" type="flex" justify="end">
       <el-col :span="24" class="right-button-group">
         <el-button @click="openPreprocessingDialog">前処理実行</el-button>
       </el-col>
@@ -14,205 +14,255 @@
 
     <!-- 薄い網掛けを表示する。ローディングバーは表示しないのでloading-spinnerはスペース -->
     <el-form
+      ref="createForm"
       v-loading="loading"
+      :model="form"
+      :rules="rules"
       element-loading-spinner=" "
       element-loading-background="rgba(255, 255, 255, 0.7)"
     >
-      <pl-display-error :error="error" />
-      <pl-display-text label="ID" :value="id" />
+      <kqi-display-error :error="error" />
+      <kqi-display-text-form
+        v-if="isEditDialog"
+        label="ID"
+        :value="detail ? String(detail.id) : '0'"
+      />
       <el-form-item label="データ名" prop="name">
-        <el-input v-model="name" />
+        <el-input v-model="form.name" />
       </el-form-item>
       <el-form-item label="タグ">
-        <pl-tag-editor v-model="tags" />
+        <tag-editor v-model="form.tags" :registered-tags="tenantTags" />
       </el-form-item>
       <el-form-item label="メモ">
-        <el-input v-model="memo" type="textarea" />
+        <el-input v-model="form.memo" type="textarea" />
       </el-form-item>
-      <pl-display-text label="登録者" :value="createdBy" />
-      <pl-display-text label="登録日時" :value="createdAt" />
-
-      <el-form-item label="ファイル一覧">
-        <br />
-        <div v-if="allFiles.length === 0"></div>
-        <div v-else-if="allFiles.length === 1">
-          <pl-file-manager
-            :uploaded-files="allFiles"
+      <kqi-display-text-form
+        v-if="isEditDialog"
+        label="登録者"
+        :value="detail.createdBy"
+      />
+      <kqi-display-text-form
+        v-if="isEditDialog"
+        label="登録日時"
+        :value="detail.createdAt"
+      />
+      <el-form-item label="データファイル" prop="files">
+        <div v-if="uploadedFiles.length >= 2">
+          <el-button type="primary" @click="viewAllFiles = !viewAllFiles"
+            >{{ viewAllFiles ? 'Hide Files' : 'View All Files' }}
+          </el-button>
+        </div>
+        <div v-if="uploadedFiles.length === 1 || viewAllFiles">
+          <kqi-file-manager
+            :uploaded-files="uploadedFiles"
             type="Data"
             :deletable="true"
-            @delete="deleteFile"
+            @delete="deleteAttachedFile"
           />
         </div>
-        <div v-else>
-          <el-button
-            type="primary"
-            class="toggle-features"
-            @click="toggleFeatures"
-            >{{ featuresOpen ? 'Hide Files' : 'View All Files' }}
-          </el-button>
-          <div v-if="featuresOpen" class="features">
-            <pl-file-manager
-              :uploaded-files="allFiles"
-              type="Data"
-              :deletable="true"
-              @delete="deleteFile"
-            />
-          </div>
-        </div>
-        <pl-file-manager ref="uploadFile" type="Data" />
+        <kqi-file-manager ref="dataFile" type="Data" :deletable="false" />
       </el-form-item>
-
-      <el-row :gutter="20" class="footer">
-        <el-col :span="8">
-          <pl-delete-button @delete="deleteData" />
-        </el-col>
-        <el-col class="right-button-group" :span="16">
-          <el-button @click="emitCancel">キャンセル</el-button>
-          <el-button type="primary" @click="handleSubmit">保存</el-button>
-        </el-col>
-      </el-row>
     </el-form>
-  </el-dialog>
+  </kqi-dialog>
 </template>
-
 <script>
-import FileManager from '@/components/common/FileManager.vue'
-import TagEditor from '@/components/data/TagEditor.vue'
-import DisplayTextForm from '@/components/common/DisplayTextForm.vue'
-import DeleteButton from '@/components/common/DeleteButton.vue'
-import DisplayError from '@/components/common/DisplayError'
-import api from '@/api/v1/api'
+import KqiDialog from '@/components/KqiDialog'
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
+import KqiDisplayError from '@/components/KqiDisplayError'
+import KqiFileManager from '@/components/KqiFileManager.vue'
+import TagEditor from './TagEditor.vue'
+import { createNamespacedHelpers } from 'vuex'
+const { mapGetters, mapActions } = createNamespacedHelpers('data')
 
 export default {
-  name: 'DataEdit',
   components: {
-    'pl-file-manager': FileManager,
-    'pl-tag-editor': TagEditor,
-    'pl-display-text': DisplayTextForm,
-    'pl-display-error': DisplayError,
-    'pl-delete-button': DeleteButton,
+    KqiDialog,
+    KqiFileManager,
+    KqiDisplayError,
+    TagEditor,
+    KqiDisplayTextForm,
   },
   props: {
-    id: String,
+    id: {
+      type: String,
+      default: null,
+    },
   },
   data() {
+    let validateFiles = (rule, value, callback) => {
+      // アップロードするファイルが存在しない場合はエラーを出す。
+      if (
+        this.$refs.dataFile.isFileSelected() ||
+        this.uploadedFiles.length >= 1
+      ) {
+        callback()
+      } else {
+        callback(new Error('ファイルを1つ以上選択してください'))
+      }
+    }
     return {
-      allFiles: [],
-      memo: undefined,
-      createdBy: undefined,
-      createdAt: undefined,
-      name: undefined,
-      tags: undefined,
+      form: {
+        name: null,
+        memo: null,
+        tags: [],
+      },
+      isEditDialog: false,
+      viewAllFiles: false,
+      title: '',
+      result: [],
       dialogVisible: true,
-      error: undefined,
+      error: null,
       loading: false,
-      featuresOpen: false,
+      files: [],
+      rules: {
+        name: [
+          {
+            required: true,
+            trigger: 'blur',
+            message: '必須項目です',
+          },
+        ],
+        files: [
+          {
+            validator: validateFiles,
+            trigger: 'blur',
+          },
+        ],
+      },
     }
   },
+  computed: {
+    ...mapGetters(['tenantTags', 'detail', 'uploadedFiles']),
+  },
   async created() {
-    await this.retrieveData()
-    this.dialogVisible = true
+    if (this.id === null) {
+      this.title = 'データ登録'
+    } else {
+      this.title = 'データ編集'
+      this.isEditDialog = true
+      await this.retrieveData()
+    }
+    await this.fetchTenantTags()
   },
   methods: {
-    toggleFeatures() {
-      this.featuresOpen = !this.featuresOpen
-    },
-    async updateData() {
-      // 独自ローディング処理のため共通側は無効
-      this.$store.commit('setLoading', false)
-      this.loading = true
-      let params = {
-        id: this.id,
-        model: {
-          name: this.name,
-          memo: this.memo,
-          tags: this.tags,
-        },
-      }
-      await api.data.putById(params)
-      // 共通側ローディングを再度有効化
-      this.loading = false
-      this.$store.commit('setLoading', true)
-    },
-    async uploadFile() {
-      // 独自ローディング処理のため共通側は無効
-      this.$store.commit('setLoading', false)
-      this.loading = true
-
-      let uploader = this.$refs.uploadFile
-      let allFilesInfo = await uploader.uploadFile()
-
-      if (allFilesInfo !== undefined) {
-        for (let i = 0; i < allFilesInfo.length; i++) {
-          allFilesInfo[i].FileName = allFilesInfo[i].name
-          await api.data.putFilesById({ id: this.id, model: allFilesInfo[i] })
-        }
-      }
-
-      // 共通側ローディングを再度有効化
-      this.loading = false
-      this.$store.commit('setLoading', true)
-    },
-    async handleSubmit() {
-      try {
-        await this.updateData()
-        await this.uploadFile()
-        this.emitDone()
-        this.error = null
-      } catch (error) {
-        this.$notify.error({
-          title: error.message,
-          message: 'ファイルアップロードに失敗しました',
-          duration: 0,
-        })
-        this.error = error
-        // 共通側ローディングを再度有効化
-        this.loading = false
-        this.$store.commit('setLoading', true)
-      }
-    },
-    async retrieveFiles() {
-      let param = {
-        id: this.id,
-        withUrl: true,
-      }
-      let result = (await api.data.getFilesById(param)).data
-      this.allFiles = result
-    },
+    ...mapActions([
+      'fetchDetail',
+      'fetchTenantTags',
+      'fetchUploadedFiles',
+      'put',
+      'post',
+      'putFile',
+      'delete',
+      'deleteFile',
+    ]),
     async retrieveData() {
-      let result = (await api.data.getById({ id: this.id })).data
-      this.attribute = result.attribute
-      this.memo = result.memo
-      this.createdBy = result.createdBy
-      this.createdAt = result.createdAt
-      this.name = result.name
-      this.tags = result.tags
-      this.featuresOpen = false
-
-      this.retrieveFiles()
-    },
-    async deleteData() {
       try {
-        await api.data.deleteById({ id: this.id })
-        this.emitDone()
+        await this.fetchDetail(this.id)
+        await this.fetchUploadedFiles(this.id)
+        this.form.name = this.detail.name
+        this.form.tags = this.detail.tags
+        this.form.memo = this.detail.memo
         this.error = null
       } catch (e) {
         this.error = e
       }
     },
-    async deleteFile(fileId) {
+    async submit() {
+      let form = this.$refs.createForm
+
+      await form.validate(async valid => {
+        if (valid) {
+          // 独自ローディング処理のため共通側は無効
+          this.$store.commit('setLoading', false)
+          this.loading = true
+
+          let dataId = null
+          try {
+            dataId = await this.updateData()
+            await this.uploadFile(dataId)
+            this.emitDone()
+            this.error = null
+          } catch (error) {
+            try {
+              // データIDが存在する場合、該当のデータを削除する
+              if (dataId !== null) {
+                await this.delete(dataId)
+              }
+            } finally {
+              this.$notify.error({
+                title: error.message,
+                message: 'データ登録に失敗しました',
+                duration: 0,
+              })
+              this.error = error
+              // 選択したファイルを削除する
+              this.$refs.dataFile.$refs.uploadForm.selectedFiles = undefined
+              this.$refs.dataFile.$refs.uploadForm.filesArray = []
+            }
+          } finally {
+            // 共通側ローディングを再度有効化
+            this.loading = false
+            this.$store.commit('setLoading', true)
+          }
+        }
+      })
+    },
+
+    async updateData() {
+      let model = {
+        name: this.form.name,
+        memo: this.form.memo,
+        tags: this.form.tags,
+        isRaw: true,
+      }
+
+      let result = null
+      if (this.id === null) {
+        result = (await this.post(model)).data
+      } else {
+        result = (
+          await this.put({
+            id: this.id,
+            model: model,
+          })
+        ).data
+      }
+      return result.id
+    },
+
+    async uploadFile(dataId) {
+      let dataFileInfo = await this.$refs.dataFile.uploadFile()
+      if (dataFileInfo !== undefined) {
+        this.putFile({ id: dataId, fileInfo: dataFileInfo })
+      }
+    },
+
+    async deleteData() {
       try {
-        await api.data.deleteFilesById({ id: this.id, fileId: fileId })
+        await this.delete()
+        this.error = null
+        this.emitDone()
+      } catch (e) {
+        this.error = e
+      }
+    },
+
+    async deleteAttachedFile(fileId) {
+      try {
+        await this.deleteFile({
+          id: this.id,
+          fileId: fileId,
+        })
         this.retrieveData()
         this.error = null
       } catch (e) {
         this.error = e
       }
     },
-    emitDone() {
-      this.showSuccessMessage()
-      this.$emit('done')
-      this.dialogVisible = false
+
+    closeDialog(done) {
+      done()
+      this.emitCancel()
     },
     emitCancel() {
       this.$emit('cancel')
@@ -220,25 +270,25 @@ export default {
     openPreprocessingDialog() {
       this.$router.push('/data/' + this.id + '/preprocessing')
     },
-    closeDialog(done) {
-      done()
-      this.emitCancel()
+    emitDone() {
+      this.showSuccessMessage()
+      this.$emit('done')
     },
   },
 }
 </script>
 
 <style lang="scss" scoped>
-.right-button-group {
-  text-align: right;
-}
-
 .dialog /deep/ label {
   font-weight: bold !important;
 }
 
 .dialog /deep/ .el-dialog__title {
   font-size: 24px;
+}
+
+.right-button-group {
+  text-align: right;
 }
 
 .footer {
