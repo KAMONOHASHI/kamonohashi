@@ -3,7 +3,7 @@
     <el-form-item label="Git" prop="gitIds">
       <el-select
         class="selectGit"
-        :value="selectedIds"
+        :value="gitIds"
         multiple
         placeholder="Select"
         :clearable="true"
@@ -52,31 +52,49 @@ import { createNamespacedHelpers } from 'vuex'
 const { mapGetters } = createNamespacedHelpers('git')
 
 export default {
+  props: {
+    gitIds: {
+      type: Array,
+      default: () => [],
+    },
+    defaultId: {
+      type: Number,
+      default: null,
+    },
+  },
   data() {
     return {
-      selectedIds: [],
       selectedEndpoints: [],
-      defaultId: null,
     }
   },
   computed: {
     ...mapGetters(['endpoints']),
   },
+  watch: {
+    async defaultId() {
+      await this.selectedDefaultIds(this.gitIds)
+    },
+  },
   methods: {
     async handleChange(selectedIds) {
-      this.selectedIds = selectedIds
+      this.selectedDefaultIds(selectedIds)
+      this.$emit('changeSelectedIds', selectedIds)
+    },
+    async selectedDefaultIds(ids) {
       this.selectedEndpoints = []
       this.endpoints.forEach(endpoint => {
-        if (selectedIds.some(id => id === endpoint.id)) {
+        if (ids.some(id => id === endpoint.id)) {
           // 選択中だったらリストに追加
           this.selectedEndpoints.push(endpoint)
         }
       })
-      this.$emit('changeSelectedIds', this.selectedIds)
     },
     async handleChangeDefaultId(defaultId) {
-      this.defaultId = defaultId
-      this.$emit('changeDefaultId', this.defaultId)
+      if (defaultId === '') {
+        this.$emit('changeDefaultId', { value: null })
+      } else {
+        this.$emit('changeDefaultId', { value: defaultId })
+      }
     },
   },
 }

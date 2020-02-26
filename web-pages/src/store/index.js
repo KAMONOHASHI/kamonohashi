@@ -13,6 +13,7 @@ import gitSelector from './modules/gitSelector'
 import cluster from './modules/cluster'
 import role from './modules/role'
 import storage from './modules/storage'
+import tenant from './modules/tenant'
 
 Vue.use(Vuex)
 export default new Vuex.Store({
@@ -30,6 +31,7 @@ export default new Vuex.Store({
     cluster,
     role,
     storage,
+    tenant,
   },
   state: {
     // ログイン情報
