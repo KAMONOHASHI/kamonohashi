@@ -5,7 +5,7 @@
 <template>
   <div class="el-input">
     <el-tag
-      v-for="tag in tags"
+      v-for="tag in value"
       :key="tag"
       closable
       :disable-transitions="false"
@@ -14,9 +14,9 @@
       <span class="tag-ellipsis">{{ tag }}</span>
     </el-tag>
     <el-select
-      v-if="inputTagVisible"
+      v-if="selectBoxVisible"
       ref="saveTagInput"
-      v-model="inputTagValue"
+      v-model="tagValue"
       filterable
       default-first-option
       allow-create
@@ -26,60 +26,61 @@
     >
       <el-option v-for="t in registeredTags" :key="t" :label="t" :value="t" />
     </el-select>
-    <el-button v-else class="button-new-tag" size="small" @click="showTagInput"
-      >+ 新規タグ</el-button
-    >
+    <el-button v-else class="button-new-tag" size="small" @click="showTagInput">
+      + 新規タグ
+    </el-button>
   </div>
 </template>
 
 <script>
-import api from '@/api/v1/api'
-
 export default {
-  name: 'TagEditor',
   props: {
-    value: Array,
+    // 選択中のタグ
+    value: {
+      type: Array,
+      default: () => {
+        return []
+      },
+    },
+    // テナントの登録済みのタグ
+    registeredTags: {
+      type: Array,
+      default: () => {
+        return []
+      },
+    },
   },
   data() {
     return {
-      inputTagVisible: false, // 新規タグの入力エリアの表示有無
-      inputTagValue: '', // 新規タグの入力値
-      tags: [],
-      registeredTags: [],
+      selectBoxVisible: false, // 新規タグの入力エリアの表示有無
+      tagValue: '', // 新規タグの入力値
     }
   },
-  watch: {
-    value: function setCurrentTags() {
-      this.tags = this.value
-      this.inputTagVisible = false
-      this.inputTagValue = ''
-    },
-  },
-  async mounted() {
-    this.registeredTags = (await api.data.getDataTags()).data
-  },
   methods: {
-    async removeTag(tag) {
-      this.tags.splice(this.tags.indexOf(tag), 1)
-    },
+    //タグ入力ボックスを表示する
     showTagInput() {
-      this.inputTagVisible = true
+      this.selectBoxVisible = true
       this.$nextTick(() =>
         // 新しいタグ入力テキストボックスを出したら、すぐに入力開始できるよう、フォーカスする
         this.$refs.saveTagInput.focus(),
       )
     },
-    /* eslint-disable */
-    handleInputConfirm(newTag) {
-      let inputValue = this.inputTagValue;
-      if (inputValue) {
-        this.tags.push(inputValue);
-        this.$emit('input', this.tags);
+    //タグを追加しemit
+    handleInputConfirm() {
+      if (this.tagValue) {
+        let tags = this.value
+        tags.push(this.tagValue)
+        this.$emit('input', tags)
       }
-      this.inputTagVisible = false;
-      this.inputTagValue = '';
+      this.selectBoxVisible = false
+      this.tagValue = ''
     },
-    /* eslint-enable */
+    // タグを削除しemit
+    async removeTag(tag) {
+      let tags = this.value
+      tags.splice(tags.indexOf(tag), 1)
+      this.$emit('input', tags)
+    },
   },
 }
 </script>
