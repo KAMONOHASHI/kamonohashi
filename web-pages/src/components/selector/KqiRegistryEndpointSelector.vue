@@ -1,9 +1,9 @@
 <template>
   <div>
-    <el-form-item label="レジストリ" prop="registryIds">
+    <el-form-item label="レジストリ" prop="registryselectedIds">
       <el-select
         class="selectRegistry"
-        :value="registryIds"
+        :value="value.selectedIds"
         multiple
         placeholder="Select"
         :clearable="true"
@@ -23,16 +23,16 @@
       </el-select>
     </el-form-item>
 
-    <el-form-item label="デフォルト" prop="defaultRegistryId">
+    <el-form-item label="デフォルト" prop="registryDefaultId">
       <el-select
         class="selectRegistry"
-        :value="defaultId"
+        :value="value.defaultId"
         placeholder="Select"
         :clearable="true"
         @change="handleChangeDefaultId"
       >
         <el-option
-          v-for="item in selectedRegistries"
+          v-for="item in availableRegistries"
           :key="item.id"
           :label="item.name"
           :value="item.id"
@@ -53,48 +53,47 @@ const { mapGetters } = createNamespacedHelpers('registry')
 
 export default {
   props: {
-    registryIds: {
-      type: Array,
-      default: () => [],
+    value: {
+      type: Object,
+      default: () => {
+        return {
+          selectedIds: [], // 選択中のregistry idの配列
+          defaultId: 0, // selectedIdsの中からデフォルトとして設定したregistry id
+        }
+      },
     },
-    defaultId: {
-      type: Number,
-      default: null,
-    },
-  },
-  data() {
-    return {
-      selectedRegistries: [],
-    }
   },
   computed: {
     ...mapGetters(['registries']),
-  },
-  watch: {
-    async defaultId() {
-      await this.selectedDefaultIds(this.registryIds)
+    availableRegistries: function() {
+      // selectedIdsとendpointsを突き合わせて該当するものを抜き出し、表示に用いる配列を作成する。
+      let registryList = []
+      this.registries.forEach(registry => {
+        if (this.value.selectedIds.some(id => id === registry.id)) {
+          registryList.push(registry)
+        }
+      })
+      return registryList
     },
   },
   methods: {
     async handleChange(selectedIds) {
-      this.selectedDefaultIds(selectedIds)
-      this.$emit('changeSelectedIds', selectedIds)
-    },
-    async selectedDefaultIds(ids) {
-      this.selectedRegistries = []
-      this.registries.forEach(registry => {
-        if (ids.some(id => id === registry.id)) {
-          // 選択中だったらリストに追加
-          this.selectedRegistries.push(registry)
-        }
-      })
+      let updateValue = this.value
+      updateValue.selectedIds = selectedIds
+      // selectedIdsに含まれないものがdefaultIdに指定されていた場合はdefaultIdをリセット
+      if (!selectedIds.some(id => id === updateValue.defaultId)) {
+        updateValue.defaultId = null
+      }
+      this.$emit('input', updateValue)
     },
     async handleChangeDefaultId(defaultId) {
+      let updateValue = this.value
       if (defaultId === '') {
-        this.$emit('changeDefaultId', { value: null })
+        updateValue.defaultId = null
       } else {
-        this.$emit('changeDefaultId', { value: defaultId })
+        updateValue.defaultId = defaultId
       }
+      this.$emit('input', updateValue)
     },
   },
 }

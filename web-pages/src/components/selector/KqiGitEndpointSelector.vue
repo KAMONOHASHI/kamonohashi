@@ -57,8 +57,8 @@ export default {
       type: Object,
       default: () => {
         return {
-          selectedIds: [],
-          defaultId: 0,
+          selectedIds: [], // 選択中のgit idの配列
+          defaultId: 0, // selectedIdsの中からデフォルトとして設定したgit id
         }
       },
     },

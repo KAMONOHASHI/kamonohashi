@@ -52,12 +52,7 @@
 
       <h3>Docker Registry 情報</h3>
       <div class="margin">
-        <kqi-registry-endpoint-selector
-          :registry-ids="form.registryIds"
-          :default-id="form.defaultRegistryId"
-          @changeSelectedIds="changeSelectedRegistryIds"
-          @changeDefaultId="changeDefaultRegistryId"
-        />
+        <kqi-registry-endpoint-selector v-model="form.registry" />
       </div>
     </el-form>
   </kqi-dialog>
@@ -108,6 +103,21 @@ export default {
         callback()
       }
     }
+    let registrySelectedIdsValidator = (rule, value, callback) => {
+      if (this.form.gitEndpoint.selectedIds.length === 0) {
+        callback(new Error('必須項目です'))
+      } else {
+        callback()
+      }
+    }
+    let registryDefaultIdValidator = (rule, value, callback) => {
+      if (this.form.gitEndpoint.defaultId === null) {
+        callback(new Error('必須項目です'))
+      } else {
+        callback()
+      }
+    }
+
     return {
       title: '',
       error: null,
@@ -120,8 +130,10 @@ export default {
           selectedIds: [],
           defaultId: null,
         },
-        registryIds: [],
-        defaultRegistryId: null,
+        registry: {
+          selectedIds: [],
+          defaultId: null,
+        },
         storageId: null,
         availableInfiniteTimeNotebook: false,
       },
@@ -143,8 +155,20 @@ export default {
             trigger: 'blur',
           },
         ],
-        registryIds: [formRule],
-        defaultRegistryId: [formRule],
+        registryselectedIds: [
+          {
+            required: true,
+            validator: registrySelectedIdsValidator,
+            trigger: 'blur',
+          },
+        ],
+        registryDefaultId: [
+          {
+            required: true,
+            validator: registryDefaultIdValidator,
+            trigger: 'blur',
+          },
+        ],
         storageId: [formRule],
       },
     }
@@ -164,11 +188,11 @@ export default {
         await this['tenant/fetchDetail']()
         this.form.tenantName = this.detail.name
         this.form.displayName = this.detail.displayName
+        this.form.storageId = this.detail.storageId
         this.form.gitEndpoint.selectedIds = this.detail.gitIds
         this.form.gitEndpoint.defaultId = this.detail.defaultGitId
-        this.form.storageId = this.detail.storageId
-        this.form.defaultRegistryId = this.detail.defaultRegistryId
-        this.form.registryIds = this.detail.registryIds
+        this.form.registry.selectedIds = this.detail.registryIds
+        this.form.registry.defaultId = this.detail.defaultRegistryId
         this.form.availableInfiniteTimeNotebook = this.detail.availableInfiniteTimeNotebook
         this.error = null
         this.deleteButtonParams = {
@@ -202,11 +226,11 @@ export default {
               model: {
                 tenantName: this.form.tenantName,
                 displayName: this.form.displayName,
+                storageId: this.form.storageId,
                 gitIds: this.form.gitEndpoint.selectedIds,
                 defaultGitId: this.form.gitEndpoint.defaultId,
-                storageId: this.form.storageId,
-                defaultRegistryId: this.form.defaultRegistryId,
-                registryIds: this.form.registryIds,
+                registryIds: this.form.registry.selectedIds,
+                defaultRegistryId: this.form.registry.defaultId,
               },
             }
             if (this.id === null) {
@@ -250,12 +274,6 @@ export default {
     },
     changeStorageId(selectStorageId) {
       this.form.storageId = selectStorageId.value
-    },
-    changeSelectedRegistryIds(selectRegistryIds) {
-      this.form.registryIds = selectRegistryIds
-    },
-    changeDefaultRegistryId(selectDefaultRegistryIds) {
-      this.form.defaultRegistryId = selectDefaultRegistryIds.value
     },
   },
 }
