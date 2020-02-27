@@ -81,6 +81,7 @@ namespace Nssol.Platypus
             services.Configure<DeleteNotebookContainerTimerOptions>(Configuration.GetSection("DeleteNotebookContainerTimerOptions"));
             services.Configure<BackupPostgresTimerOptions>(Configuration.GetSection("BackupPostgresTimerOptions"));
             services.Configure<DBInitRetryOptions>(Configuration.GetSection("DBInitRetryOptions"));
+            services.Configure<GetKQIReleaseVersionTimerOptions>(Configuration.GetSection("GetKQIReleaseVersionTimerOptions"));
 
             services.Configure<SyncClusterFromDBOptions>(Configuration.GetSection("SyncClusterFromDBOptions"));
             services.Configure<DeployOptions>(Configuration.GetSection("DeployOptions"));
@@ -108,6 +109,7 @@ namespace Nssol.Platypus
             // ServiceのDI設定
             services.AddTransient<IClusterManagementService, KubernetesService>();
             services.AddTransient<IObjectStorageService, ObjectStorageS3Service>();
+            services.AddTransient<IVersionService, VersionService>();
             // 切替のため型指定でDI設定
             services.AddTransient<GitHubService>();
             services.AddTransient<GitLabService>();
@@ -154,6 +156,7 @@ namespace Nssol.Platypus
             services.AddSingleton<DeleteNotebookContainerTimer>();
             services.AddSingleton<BackupPostgresTimer>();
             services.AddSingleton<SyncClusterFromDBTimer>();
+            services.AddSingleton<GetKQIReleaseVersionTimer>();
 
             //ASP.NET Core MVCの追加
             WebSecurityOptions wsops = new WebSecurityOptions();
@@ -313,6 +316,7 @@ namespace Nssol.Platypus
             services.AddHostedService<DeleteNotebookContainerTimer>();
             services.AddHostedService<BackupPostgresTimer>();
             services.AddHostedService<SyncClusterFromDBTimer>();
+            services.AddHostedService<GetKQIReleaseVersionTimer>();
         }
 
         /// <summary>
