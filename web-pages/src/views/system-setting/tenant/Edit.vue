@@ -13,7 +13,7 @@
 
       <h3>テナント情報</h3>
       <div class="margin">
-        <kqi-display-text-form label="ID" :value="id" />
+        <kqi-display-text-form v-if="id !== null" label="ID" :value="id" />
         <el-form-item v-if="id === null" label="テナント名" prop="tenantName">
           <el-input v-model="form.tenantName" />
         </el-form-item>
