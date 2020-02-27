@@ -1,19 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Nssol.Platypus.ApiModels.VersionApiModels
 {
-    public class VersionModel
+    /// <summary>
+    /// バージョン情報出力モデル
+    /// </summary>
+    public class VersionOutputModel
     {
-        public VersionModel(string version)
-        {
-            Version = version;
-        }
         /// <summary>
-        /// version番号
+        /// バージョン番号
         /// </summary>
         public string Version { get; set; }
+
+        /// <summary>
+        /// メッセージ
+        /// </summary>
+        public List<string> Messages { get; set; }
     }
 }
