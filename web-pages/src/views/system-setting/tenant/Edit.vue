@@ -228,6 +228,8 @@ export default {
                 defaultGitId: this.form.gitEndpoint.defaultId,
                 registryIds: this.form.registry.selectedIds,
                 defaultRegistryId: this.form.registry.defaultId,
+                availableInfiniteTimeNotebook: this.form
+                  .availableInfiniteTimeNotebook,
               },
             }
             if (this.id === null) {
