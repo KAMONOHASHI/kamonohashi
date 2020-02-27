@@ -1,9 +1,9 @@
 <template>
   <div>
-    <el-form-item label="Git" prop="gitIds">
+    <el-form-item label="Git" prop="gitSelectedIds">
       <el-select
         class="selectGit"
-        :value="gitIds"
+        :value="value.selectedIds"
         multiple
         placeholder="Select"
         :clearable="true"
@@ -23,16 +23,16 @@
       </el-select>
     </el-form-item>
 
-    <el-form-item label="デフォルト" prop="defaultGitId">
+    <el-form-item label="デフォルト" prop="gitDefaultId">
       <el-select
         class="selectGit"
-        :value="defaultId"
+        :value="value.defaultId"
         placeholder="Select"
         :clearable="true"
         @change="handleChangeDefaultId"
       >
         <el-option
-          v-for="item in selectedEndpoints"
+          v-for="item in availableEndpoints"
           :key="item.id"
           :label="item.name"
           :value="item.id"
@@ -53,48 +53,47 @@ const { mapGetters } = createNamespacedHelpers('git')
 
 export default {
   props: {
-    gitIds: {
-      type: Array,
-      default: () => [],
+    value: {
+      type: Object,
+      default: () => {
+        return {
+          selectedIds: [],
+          defaultId: 0,
+        }
+      },
     },
-    defaultId: {
-      type: Number,
-      default: null,
-    },
-  },
-  data() {
-    return {
-      selectedEndpoints: [],
-    }
   },
   computed: {
     ...mapGetters(['endpoints']),
-  },
-  watch: {
-    async defaultId() {
-      await this.selectedDefaultIds(this.gitIds)
+    availableEndpoints: function() {
+      // selectedIdsとendpointsを突き合わせて該当するものを抜き出し、表示に用いる配列を作成する。
+      let endpointList = []
+      this.endpoints.forEach(endpoint => {
+        if (this.value.selectedIds.some(id => id === endpoint.id)) {
+          endpointList.push(endpoint)
+        }
+      })
+      return endpointList
     },
   },
   methods: {
     async handleChange(selectedIds) {
-      this.selectedDefaultIds(selectedIds)
-      this.$emit('changeSelectedIds', selectedIds)
-    },
-    async selectedDefaultIds(ids) {
-      this.selectedEndpoints = []
-      this.endpoints.forEach(endpoint => {
-        if (ids.some(id => id === endpoint.id)) {
-          // 選択中だったらリストに追加
-          this.selectedEndpoints.push(endpoint)
-        }
-      })
+      let updateValue = this.value
+      updateValue.selectedIds = selectedIds
+      // selectedIdsに含まれないものがdefaultIdに指定されていた場合はdefaultIdをリセット
+      if (!selectedIds.some(id => id === updateValue.defaultId)) {
+        updateValue.defaultId = null
+      }
+      this.$emit('input', updateValue)
     },
     async handleChangeDefaultId(defaultId) {
+      let updateValue = this.value
       if (defaultId === '') {
-        this.$emit('changeDefaultId', { value: null })
+        updateValue.defaultId = null
       } else {
-        this.$emit('changeDefaultId', { value: defaultId })
+        updateValue.defaultId = defaultId
       }
+      this.$emit('input', updateValue)
     },
   },
 }

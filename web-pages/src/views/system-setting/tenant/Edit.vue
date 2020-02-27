@@ -47,12 +47,7 @@
 
       <h3>Git情報</h3>
       <div class="margin">
-        <kqi-git-endpoint-selector
-          :git-ids="form.gitIds"
-          :default-id="form.defaultGitId"
-          @changeSelectedIds="changeSelectedGitIds"
-          @changeDefaultId="changeDefaultGitId"
-        />
+        <kqi-git-endpoint-selector v-model="form.gitEndpoint" />
       </div>
 
       <h3>Docker Registry 情報</h3>
@@ -99,6 +94,20 @@ export default {
     },
   },
   data() {
+    let gitSelectedIdsValidator = (rule, value, callback) => {
+      if (this.form.gitEndpoint.selectedIds.length === 0) {
+        callback(new Error('必須項目です'))
+      } else {
+        callback()
+      }
+    }
+    let gitDefaultIdValidator = (rule, value, callback) => {
+      if (this.form.gitEndpoint.defaultId === null) {
+        callback(new Error('必須項目です'))
+      } else {
+        callback()
+      }
+    }
     return {
       title: '',
       error: null,
@@ -107,8 +116,10 @@ export default {
       form: {
         tenantName: '',
         displayName: '',
-        gitIds: [],
-        defaultGitId: null,
+        gitEndpoint: {
+          selectedIds: [],
+          defaultId: null,
+        },
         registryIds: [],
         defaultRegistryId: null,
         storageId: null,
@@ -118,8 +129,20 @@ export default {
       rules: {
         tenantName: [formRule],
         displayName: [formRule],
-        gitIds: [formRule],
-        defaultGitId: [formRule],
+        gitSelectedIds: [
+          {
+            required: true,
+            validator: gitSelectedIdsValidator,
+            trigger: 'blur',
+          },
+        ],
+        gitDefaultId: [
+          {
+            required: true,
+            validator: gitDefaultIdValidator,
+            trigger: 'blur',
+          },
+        ],
         registryIds: [formRule],
         defaultRegistryId: [formRule],
         storageId: [formRule],
@@ -141,8 +164,8 @@ export default {
         await this['tenant/fetchDetail']()
         this.form.tenantName = this.detail.name
         this.form.displayName = this.detail.displayName
-        this.form.gitIds = this.detail.gitIds
-        this.form.defaultGitId = this.detail.defaultGitId
+        this.form.gitEndpoint.selectedIds = this.detail.gitIds
+        this.form.gitEndpoint.defaultId = this.detail.defaultGitId
         this.form.storageId = this.detail.storageId
         this.form.defaultRegistryId = this.detail.defaultRegistryId
         this.form.registryIds = this.detail.registryIds
@@ -179,8 +202,8 @@ export default {
               model: {
                 tenantName: this.form.tenantName,
                 displayName: this.form.displayName,
-                gitIds: this.form.gitIds,
-                defaultGitId: this.form.defaultGitId,
+                gitIds: this.form.gitEndpoint.selectedIds,
+                defaultGitId: this.form.gitEndpoint.defaultId,
                 storageId: this.form.storageId,
                 defaultRegistryId: this.form.defaultRegistryId,
                 registryIds: this.form.registryIds,
@@ -227,12 +250,6 @@ export default {
     },
     changeStorageId(selectStorageId) {
       this.form.storageId = selectStorageId.value
-    },
-    async changeSelectedGitIds(selectGitIds) {
-      this.form.gitIds = selectGitIds
-    },
-    changeDefaultGitId(selectDefaultGitIds) {
-      this.form.defaultGitId = selectDefaultGitIds.value
     },
     changeSelectedRegistryIds(selectRegistryIds) {
       this.form.registryIds = selectRegistryIds
