@@ -38,10 +38,7 @@
       <h3>ストレージ情報</h3>
       <div class="margin">
         <el-form-item>
-          <kqi-storage-endpoint-selector
-            :storage-id="form.storageId"
-            @changeStorageId="changeStorageId"
-          />
+          <kqi-storage-endpoint-selector v-model="form.storageId" />
         </el-form-item>
       </div>
 
@@ -271,9 +268,6 @@ export default {
     },
     emitDone() {
       this.$emit('done')
-    },
-    changeStorageId(selectStorageId) {
-      this.form.storageId = selectStorageId.value
     },
   },
 }
