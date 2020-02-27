@@ -101,14 +101,14 @@ export default {
       }
     }
     let registrySelectedIdsValidator = (rule, value, callback) => {
-      if (this.form.gitEndpoint.selectedIds.length === 0) {
+      if (this.form.registry.selectedIds.length === 0) {
         callback(new Error('必須項目です'))
       } else {
         callback()
       }
     }
     let registryDefaultIdValidator = (rule, value, callback) => {
-      if (this.form.gitEndpoint.defaultId === null) {
+      if (this.form.registry.defaultId === null) {
         callback(new Error('必須項目です'))
       } else {
         callback()
