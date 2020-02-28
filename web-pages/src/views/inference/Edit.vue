@@ -252,7 +252,7 @@ import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
 import KqiDisplayError from '@/components/KqiDisplayError'
 import KqiDeleteButton from '@/components/KqiDeleteButton.vue'
 import KqiFileManager from '@/components/KqiFileManager.vue'
-import KqiDataSetDetails from '@/components/selector/KqiDatasetDetails.vue'
+import KqiDataSetDetails from '@/components/selector/KqiDataSetDetails.vue'
 import KqiTrainingHistoryDetails from '@/components/selector/KqiTrainingHistoryDetails'
 
 import { createNamespacedHelpers } from 'vuex'
