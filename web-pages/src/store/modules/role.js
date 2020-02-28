@@ -4,6 +4,7 @@ import api from '@/api/v1/api'
 const state = {
   roles: [],
   detail: {},
+  tenantRoles: [],
 }
 
 // getters
@@ -14,6 +15,10 @@ const getters = {
 
   detail(state) {
     return state.detail
+  },
+
+  tenantRoles(state) {
+    return state.tenantRoles
   },
 }
 
@@ -44,6 +49,11 @@ const actions = {
   async delete({ rootState }) {
     return await api.role.admin.delete({ id: rootState.route.params.id })
   },
+
+  async fetchTenantRoles({ commit }) {
+    let tenantRoles = (await api.role.tenant.get()).data
+    commit('setTenantRoles', { tenantRoles })
+  },
 }
 
 // mutations
@@ -54,6 +64,10 @@ const mutations = {
 
   setDetail(state, { detail }) {
     state.detail = detail
+  },
+
+  setTenantRoles(state, { tenantRoles }) {
+    state.tenantRoles = tenantRoles
   },
 }
 
