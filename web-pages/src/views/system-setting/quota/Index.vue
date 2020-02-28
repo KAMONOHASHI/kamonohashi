@@ -10,7 +10,7 @@
       </el-col>
     </el-row>
     <el-row>
-      <el-table class="quota-table pl-index-table" :data="quotas" border>
+      <el-table class="quota-table pl-index-table" :data="quotasData" border>
         <!-- テーブルの各列の表示項目を注入 -->
         <el-table-column prop="tenantName" label="テナント" width="auto" />
         <el-table-column prop="cpu" label="CPU" width="auto">
@@ -66,6 +66,7 @@ export default {
   data() {
     return {
       error: null,
+      quotasData: [],
     }
   },
   computed: {
@@ -73,12 +74,13 @@ export default {
   },
   async created() {
     await this.fetchQuotas()
+    this.quotasData = this.quotas
   },
   methods: {
     ...mapActions(['fetchQuotas', 'post']),
     async update() {
       try {
-        let model = this.quotas.map(function(quota) {
+        let model = this.quotasData.map(function(quota) {
           return {
             tenantId: quota.tenantId,
             cpu: quota.cpu,
