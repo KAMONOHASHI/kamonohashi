@@ -41,10 +41,6 @@ import ManageTenantSetting from '@/components/tenant-manage/tenant/Setting'
 
 import QuotaIndex from '@/components/system-setting/quota/Index'
 
-import UserIndex from '@/components/system-setting/user/Index'
-import UserCreate from '@/components/system-setting/user/Create'
-import UserEdit from '@/components/system-setting/user/Edit'
-
 import ClusterResource from '@/components/system-setting/cluster-resource/Index'
 import ClusterResourceEdit from '@/components/system-setting/cluster-resource/Edit'
 import ClusterResourceNode from '@/components/system-setting/cluster-resource/Node'
@@ -67,6 +63,7 @@ import registry from '@/router/registry'
 import role from '@/router/role'
 import storage from '@/router/storage'
 import tenant from '@/router/tenant'
+import user from '@/router/user'
 
 Vue.use(Router)
 
@@ -79,6 +76,7 @@ let router = new Router({
     ...role,
     ...storage,
     ...tenant,
+    ...user,
     {
       path: '/login',
       name: 'Login',
@@ -302,22 +300,6 @@ let router = new Router({
       path: '/quota',
       name: 'Quota',
       component: QuotaIndex,
-    },
-    {
-      path: '/user',
-      name: 'User',
-      component: UserIndex,
-      children: [
-        {
-          path: 'create',
-          component: UserCreate,
-        },
-        {
-          path: ':id',
-          component: UserEdit,
-          props: true,
-        },
-      ],
     },
     {
       path: '/menu',
