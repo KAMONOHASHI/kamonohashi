@@ -1,354 +1,396 @@
 <template>
-  <el-dialog
-    class="dialog"
-    title="前処理情報"
-    :visible="dialogVisible"
-    :before-close="handleCancel"
-    :close-on-click-modal="false"
+  <kqi-dialog
+    :title="title"
+    :type="id === null ? 'CREATE' : 'EDIT'"
+    @submit="submit"
+    @delete="deletePreprocessing"
+    @close="emitCancel"
   >
-    <el-row type="flex" justify="end">
+    <el-row v-if="isEditDialog" type="flex" justify="end">
       <el-col :span="24" class="right-button-group">
-        <el-button @click="handleCopy">コピー</el-button>
+        <el-button @click="emitCopy">コピー</el-button>
       </el-col>
     </el-row>
+
     <el-form
-      ref="editForm"
-      v-loading="loading || loadingGit"
-      :model="this"
+      ref="createForm"
+      :model="form"
       :rules="rules"
       element-loading-background="rgba(255, 255, 255, 0.7)"
     >
-      <pl-display-error :error="error" />
-      <pl-display-text label="ID" :value="id" />
+      <kqi-display-error :error="error" />
+      <kqi-display-text-form v-if="isEditDialog" label="ID" :value="id" />
       <el-form-item label="前処理名" prop="name">
-        <el-input v-model="name"></el-input>
+        <el-input v-model="form.name"> </el-input>
       </el-form-item>
       <el-form-item label="実行コマンド" prop="entryPoint">
-        <div v-if="isPatch">
-          <el-input
-            v-model="entryPoint"
-            type="textarea"
-            :autosize="{ minRows: 2 }"
-            :readonly="true"
-          />
-        </div>
-        <div v-else>
-          <el-input
-            v-model="entryPoint"
-            type="textarea"
-            :autosize="{ minRows: 2 }"
-          />
-        </div>
+        <el-input
+          v-model="form.entryPoint"
+          type="textarea"
+          :autosize="{ minRows: 2 }"
+          :disabled="isPatch"
+        />
       </el-form-item>
       <el-form-item label="メモ" prop="memo">
-        <el-input v-model="memo" type="textarea"> </el-input>
+        <el-input v-model="form.memo" type="textarea"> </el-input>
       </el-form-item>
       <el-row :gutter="20">
         <el-col :span="12">
-          <div v-if="isPatch">
-            <pl-display-text-form label="コンテナ" :value="containerUrl" />
-            <el-form-item label="モデル">
-              <div class="el-input">
-                <span v-if="gitModel" style="padding-left: 3px">
-                  <a :href="gitModel.url" target="_blank">
-                    {{ gitModel.owner }}/{{ gitModel.repository }}/{{
-                      gitModel.branch
-                    }}
-                  </a>
-                </span>
-                <span v-else>
-                  None
-                </span>
-              </div>
-            </el-form-item>
-          </div>
-          <div v-else>
-            <el-form-item label="コンテナ" prop="selectedContainer">
-              <pl-container-selector
-                v-model="selectedContainer"
-              ></pl-container-selector>
-            </el-form-item>
-            <el-form-item label="Git" prop="selectedGit">
-              <pl-git-selector
-                v-model="selectedGit"
-                :loading.sync="loadingGit"
-              ></pl-git-selector>
-            </el-form-item>
-          </div>
+          <kqi-container-selector
+            :disabled="isPatch"
+            @input="selectContainer"
+          />
+          <kqi-git-selector :disabled="isPatch" @input="selectModel" />
         </el-col>
         <el-col :span="12">
-          <el-form-item label="CPU" required>
-            <el-slider
-              v-model="cpu"
-              class="el-input"
-              :min="1"
-              :max="200"
-              show-input
-            >
-            </el-slider>
-          </el-form-item>
-          <el-form-item label="メモリ(GB)" required>
-            <el-slider
-              v-model="memory"
-              class="el-input"
-              :min="1"
-              :max="200"
-              show-input
-            >
-            </el-slider>
-          </el-form-item>
-          <el-form-item label="GPU" required>
-            <el-slider
-              v-model="gpu"
-              class="el-input"
-              :min="0"
-              :max="16"
-              show-input
-            >
-            </el-slider>
-          </el-form-item>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col class="button-group">
-          <el-button
-            class="pull-right btn-update"
-            type="primary"
-            icon="el-icon-edit-outline"
-            @click="handleUpdate"
-            >保存
-          </el-button>
-          <el-button
-            class="pull-right btn-cancel"
-            icon="el-icon-close"
-            @click="handleCancel"
-            >キャンセル</el-button
-          >
-          <pl-delete-button
-            class="pull-left btn-update"
-            :disabled="isPatch"
-            @delete="handleRemove"
-          />
+          <kqi-resource-selector
+            v-model="form.resource"
+          ></kqi-resource-selector>
         </el-col>
       </el-row>
     </el-form>
-  </el-dialog>
+  </kqi-dialog>
 </template>
 
 <script>
-import ContainerSelector from '@/components/common/ContainerSelector'
-import GitSelector from '@/components/common/GitSelector'
-import DisplayTextForm from '@/components/common/DisplayTextForm.vue'
-import DeleteButton from '@/components/common/DeleteButton.vue'
-import DisplayError from '@/components/common/DisplayError'
-import api from '@/api/v1/api'
+import KqiDialog from '@/components/KqiDialog'
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
+import KqiResourceSelector from '@/components/selector/KqiResourceSelector'
+import KqiContainerSelector from '@/components/selector/KqiContainerSelector.vue'
+import KqiGitSelector from '@/components/selector/KqiGitSelector.vue'
+import KqiDisplayError from '@/components/KqiDisplayError'
+import { mapActions, mapMutations, mapGetters } from 'vuex'
 
 export default {
-  name: 'PreprocessingEdit',
   components: {
-    'pl-display-error': DisplayError,
-    'pl-git-selector': GitSelector,
-    'pl-container-selector': ContainerSelector,
-    'pl-display-text': DisplayTextForm,
-    'pl-delete-button': DeleteButton,
-    'pl-display-text-form': DisplayTextForm,
+    KqiDialog,
+    KqiDisplayTextForm,
+    KqiDisplayError,
+    KqiContainerSelector,
+    KqiGitSelector,
+    KqiResourceSelector,
   },
   props: {
-    id: String,
+    id: {
+      type: String,
+      default: null,
+    },
   },
   data() {
     return {
+      form: {
+        name: null,
+        entryPoint: null,
+        memo: null,
+        resource: {
+          cpu: 1,
+          memory: 1,
+          gpu: 0,
+        },
+      },
+      title: '',
       dialogVisible: true,
-      loading: false,
-      loadingGit: false,
       error: null,
-
-      name: '',
-      memo: '',
-      entryPoint: '',
-      selectedContainer: undefined,
-      selectedGit: undefined,
-      isPatch: true, // true: nameとmemoのみ更新、false: 全て更新
-      containerUrl: '',
-      gitModel: '',
-      cpu: 0,
-      memory: 0,
-      gpu: 0,
+      isCreateDialog: false,
+      isCopyCreation: false,
+      isEditDialog: false,
+      isPatch: false, // 利用済み前処理の場合name, memo, resourceのみ更新可能
 
       rules: {
         name: [{ required: true, trigger: 'blur', message: '必須項目です' }],
-        selectedContainer: [
-          {
-            trigger: 'blur',
-            validator(rule, value, callback) {
-              if (value && value.image && !value.tag) {
-                callback(new Error('タグを選択してください'))
-              } else {
-                callback()
-              }
-            },
-          },
-        ],
-        selectedGit: [
-          {
-            trigger: 'blur',
-            validator(rule, value, callback) {
-              if (value && value.owner && value.repository && !value.branch) {
-                callback(new Error('ブランチを選択してください'))
-              } else {
-                callback()
-              }
-            },
-          },
-        ],
       },
     }
   },
-
-  watch: {
-    async id() {
-      await this.changeId()
-    },
+  computed: {
+    ...mapGetters({
+      registry: ['registrySelector/registry'],
+      image: ['registrySelector/image'],
+      tag: ['registrySelector/tag'],
+      git: ['gitSelector/git'],
+      repository: ['gitSelector/repository'],
+      branch: ['gitSelector/branch'],
+      commit: ['gitSelector/commit'],
+      detail: ['preprocessing/detail'],
+      history: ['preprocessing/history'],
+    }),
   },
 
   async created() {
-    await this.changeId()
-  },
+    let url = this.$route.path
+    let type = url.split('/')[2] // ["", "preprocessing", "{type}", "{id}"]
+    switch (type) {
+      case 'create':
+        this.title = '前処理作成'
+        this.isCreateDialog = true
+        this.isCopyCreation = this.id !== null
+        break
+      case 'edit':
+        this.title = '前処理編集'
+        this.isEditDialog = true
+        break
+    }
 
-  methods: {
-    async changeId() {
-      if (this.id) {
-        this.loading = true
-        try {
-          let params = {
-            id: this.id,
-          }
-          // 履歴情報が存在する場合、nameとmemoのみ編集可能
-          let [historyData] = api.f.data(
-            await api.preprocessings.getHistory(params),
-          )
-          this.isPatch = historyData.length !== 0
-          // 前処理情報を取得
-          let [model] = api.f.data(await api.preprocessings.getById(params))
-          this.name = model.name
-          this.memo = model.memo
-          this.cpu = model.cpu
-          this.memory = model.memory
-          this.gpu = model.gpu
-          this.entryPoint = model.entryPoint
-          if (model.containerImage !== null) {
-            this.selectedContainer = model.containerImage
-            this.containerUrl = model.containerImage.url
-          }
-          this.gitModel = model.gitModel
-          this.selectedGit = model.gitModel || {}
-          this.error = null
-        } catch (e) {
-          this.error = e
-        } finally {
-          this.loading = false
-        }
+    // vuexの情報をリセット
+    await this.selectContainer({
+      type: 'registry',
+      value: null,
+    })
+    await this.selectModel({
+      type: 'git',
+      value: null,
+    })
+
+    // 指定に必要な情報を取得
+    await this['registrySelector/fetchRegistries']()
+    await this['registrySelector/fetchImages']()
+    await this['gitSelector/fetchGits']()
+    await this['gitSelector/fetchRepositories']()
+
+    // 編集時/コピー実行時は、既に登録されている情報を各項目を設定
+    if (this.isEditDialog || this.isCopyCreation) {
+      await this['preprocessing/fetchDetail'](this.id)
+      await this['preprocessing/fetchHistory'](this.id)
+      if (this.history.length > 0) {
+        this.isPatch = true
       }
-    },
-    /* eslint-disable */
-    async handleClose(done) {
-      this.close(false)
-    },
-    /* eslint-enable */
 
-    async handleUpdate() {
-      let form = this.$refs.editForm
+      this.form.name = this.detail.name
+      this.form.entryPoint = this.detail.entryPoint
+      this.form.memo = this.detail.memo
+
+      await this.selectContainer({
+        type: 'registry',
+        value: {
+          id: this.detail.containerImage.registryId,
+          name: this.detail.containerImage.name,
+        },
+      })
+      await this.selectContainer({
+        type: 'image',
+        value: this.detail.containerImage.image,
+      })
+      await this.selectContainer({
+        type: 'tag',
+        value: this.detail.containerImage.tag,
+      })
+
+      await this.selectModel({
+        type: 'git',
+        value: {
+          id: this.detail.gitModel.gitId,
+          name: this.detail.gitModel.name,
+        },
+      })
+      await this.selectModel({
+        type: 'repository',
+        value: `${this.detail.gitModel.owner}/${this.detail.gitModel.repository}`,
+      })
+      await this.selectModel({
+        type: 'branch',
+        value: this.detail.gitModel.branch,
+      })
+      await this.selectModel({
+        type: 'commit',
+        value: this.detail.gitModel.commitId,
+      })
+
+      this.form.resource.cpu = this.detail.cpu
+      this.form.resource.memory = this.detail.memory
+      this.form.resource.gpu = this.detail.gpu
+    }
+  },
+  methods: {
+    ...mapMutations([
+      'registrySelector/setRegistry',
+      'registrySelector/setImage',
+      'registrySelector/setTag',
+      'gitSelector/setGit',
+      'gitSelector/setRepository',
+      'gitSelector/setBranch',
+      'gitSelector/setCommit',
+    ]),
+    ...mapActions([
+      'preprocessing/fetchDetail',
+      'preprocessing/post',
+      'preprocessing/fetchHistory',
+      'preprocessing/delete',
+      'registrySelector/fetchRegistries',
+      'registrySelector/fetchImages',
+      'registrySelector/fetchTags',
+      'gitSelector/fetchGits',
+      'gitSelector/fetchRepositories',
+      'gitSelector/fetchBranches',
+      'gitSelector/fetchCommits',
+    ]),
+    async submit() {
+      let form = this.$refs.createForm
       await form.validate(async valid => {
         if (valid) {
-          this.loading = true
           try {
-            if (this.isPatch) {
-              await this.patchPreprocessings() // 名称・メモのみ更新
-            } else {
-              await this.putPreprocessings() // 全部更新（ID以外）
+            let params = {
+              model: {
+                name: this.form.name,
+                entryPoint: this.form.entryPoint,
+                ContainerImage: {
+                  registryId: this.registry.id,
+                  image: this.image,
+                  tag: this.tag,
+                },
+                GitModel: {
+                  gitId: this.git.id,
+                  repository: this.repository.name,
+                  owner: this.repository.owner,
+                  branch: this.branch.branchName,
+                  commitId: this.commit ? this.commit : 'HEAD',
+                },
+                memo: this.form.memo,
+                cpu: this.form.resource.cpu,
+                memory: this.form.resource.memory,
+                gpu: this.form.resource.gpu,
+              },
             }
+            await this['preprocessing/post'](params)
             this.emitDone()
             this.error = null
           } catch (e) {
             this.error = e
-          } finally {
-            this.loading = false
           }
         }
       })
     },
-    // 全部更新（ID以外）
-    async putPreprocessings() {
-      let param = {
-        id: this.id,
-        model: {
-          name: this.name,
-          entryPoint: this.entryPoint,
-          containerImage: this.containerImageEmptyCheck(this.selectedContainer),
-          gitModel: this.repositoryEmptyCheck(this.selectedGit),
-          memo: this.memo,
-          cpu: this.cpu,
-          memory: this.memory,
-          gpu: this.gpu,
-        },
-      }
-      await api.preprocessings.put(param)
-    },
-    containerImageEmptyCheck(obj) {
-      if (!obj) return null
-      if (!obj.image) return null
-      return obj
-    },
-    repositoryEmptyCheck(obj) {
-      if (!obj) return null
-      if (!obj.repository) return null
-      return obj
-    },
-    // 名称・メモ・リソースのみ更新
-    async patchPreprocessings() {
-      let param = {
-        id: this.id,
-        model: {
-          name: this.name,
-          memo: this.memo,
-          cpu: this.cpu,
-          memory: this.memory,
-          gpu: this.gpu,
-        },
-      }
-      await api.preprocessings.patch(param)
-    },
-
-    async handleRemove() {
-      this.loading = true
+    async deletePreprocessing() {
       try {
-        let params = {
-          id: this.id,
-        }
-        await api.preprocessings.delete(params)
+        await this['preprocessing/delete'](this.id)
         this.emitDone()
-        this.error = null
       } catch (e) {
         this.error = e
-      } finally {
-        this.loading = false
       }
     },
-    async handleCancel() {
+    closeDialog(done) {
+      if (done) {
+        done()
+      }
       this.emitCancel()
     },
-    async handleCopy() {
-      this.emitCopy(this.id)
+    emitCopy() {
+      this.$emit('copy', this.id)
     },
-    emitCopy(id) {
-      this.$emit('copy', id)
-    },
-    emitDone() {
-      this.$emit('done')
-    },
-
     emitCancel() {
       this.$emit('cancel')
+    },
+    emitDone() {
+      this.showSuccessMessage()
+      this.$emit('done')
+    },
+    // コンテナイメージ
+    async selectContainer(arg) {
+      // arg:
+      // {
+      //   type: 'registry' or 'image' or 'tag'
+      //   value: id, name
+      // }
+      switch (arg.type) {
+        case 'registry':
+          // 過去の選択状態をリセット
+          this['registrySelector/setImage'](null)
+          this['registrySelector/setTag'](null)
+
+          // clearの場合リセット、レジストリが選択された場合はイメージ取得
+          if (arg.value == null) {
+            this['registrySelector/setRegistry'](null)
+          } else {
+            this['registrySelector/setRegistry'](arg.value)
+            await this['registrySelector/fetchImages']()
+          }
+          break
+
+        case 'image':
+          // 過去の選択状態をリセット
+          this['registrySelector/setTag'](null)
+
+          // clearの場合リセット、イメージが選択された場合はタグ取得
+          if (arg.value == null) {
+            this['registrySelector/setImage'](null)
+          } else {
+            this['registrySelector/setImage'](arg.value)
+            await this['registrySelector/fetchTags']()
+          }
+          break
+
+        case 'tag':
+          // clearの場合リセット、タグが選択された場合は設定
+          if (arg.value == null) {
+            this['registrySelector/setTag'](null)
+          } else {
+            this['registrySelector/setTag'](arg.value)
+          }
+          break
+      }
+    },
+
+    // モデル
+    async selectModel(arg) {
+      // arg:
+      // {
+      //   type: 'git' or 'repository' or 'branch' or 'commit
+      //   value: id, name
+      // }
+      switch (arg.type) {
+        case 'git':
+          // 過去の選択状態をリセット
+          this['gitSelector/setRepository'](null)
+          this['gitSelector/setBranch'](null)
+          this['gitSelector/setCommit'](null)
+
+          // clearの場合リセット、gitサーバが選択された場合はリポジトリ取得
+          if (arg.value == null) {
+            this['gitSelector/setGit'](null)
+          } else {
+            this['gitSelector/setGit'](arg.value)
+            // 独自ローディング処理のため共通側は無効
+            this.$store.commit('setLoading', false)
+            await this['gitSelector/fetchRepositories']()
+            // 共通側ローディングを再度有効化
+            this.$store.commit('setLoading', true)
+          }
+          break
+
+        case 'repository':
+          // 過去の選択状態をリセット
+          this['gitSelector/setBranch'](null)
+          this['gitSelector/setCommit'](null)
+
+          // clearの場合リセット、リポジトリが選択された場合はブランチ取得
+          if (arg.value == null) {
+            this['gitSelector/setRepository'](null)
+          } else {
+            this['gitSelector/setRepository'](arg.value)
+            await this['gitSelector/fetchBranches']()
+          }
+          break
+
+        case 'branch':
+          // 過去の選択状態をリセット
+          this['gitSelector/setCommit'](null)
+
+          // clearの場合リセット、ブランチが選択された場合はコミット取得
+          if (arg.value == null) {
+            this['gitSelector/setBranch'](null)
+          } else {
+            this['gitSelector/setBranch'](arg.value)
+            await this['gitSelector/fetchCommits']()
+          }
+          break
+
+        case 'commit':
+          // clearの場合リセット、コミットが選択された場合は設定
+          if (arg.value == null) {
+            this['gitSelector/setCommit'](null)
+          } else {
+            this['gitSelector/setCommit'](arg.value)
+          }
+          break
+      }
     },
   },
 }
@@ -359,24 +401,11 @@ export default {
   text-align: right;
   padding-top: 10px;
 }
-
 .right-button-group {
   text-align: right;
 }
 
-.btn-update {
-  margin-left: 10px;
-}
-
 .dialog /deep/ label {
   font-weight: bold !important;
-}
-
-.pull-right {
-  float: right !important;
-}
-
-.pull-left {
-  float: left !important;
 }
 </style>

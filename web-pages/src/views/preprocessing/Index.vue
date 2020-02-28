@@ -1,25 +1,14 @@
 <template>
   <div>
-    <h2>{{ $t('title') }}</h2>
+    <h2>前処理管理2</h2>
 
     <el-row>
-      <el-col
-        type="flex"
-        justify="space-between"
-        :gutter="20"
-        class="pagination"
-        :span="16"
-      >
-        <el-pagination
-          layout="total, sizes, prev, pager, next"
-          :total="total"
-          :page-size="currentPageSize"
-          :current-page="currentPage"
-          :page-sizes="[10, 30, 50, 100, 200]"
-          @size-change="handleSizeChange"
-          @current-change="currentChange"
-        />
-      </el-col>
+      <kqi-pagination
+        v-model="pageStatus"
+        :total="total"
+        @change="retrieveData"
+      ></kqi-pagination>
+
       <el-col class="right-top-button" :span="8">
         <el-button @click="openPreprocessingDialog">前処理実行</el-button>
         <el-button
@@ -46,7 +35,7 @@
         <el-table
           ref="table"
           class="data-table pl-index-table"
-          :data="tableData"
+          :data="preprocessings"
           border
           @row-click="openEditDialog"
         >
@@ -67,6 +56,11 @@
           </el-table-column>
         </el-table>
       </el-row>
+      <kqi-pagination
+        v-model="pageStatus"
+        :total="total"
+        @change="retrieveData"
+      ></kqi-pagination>
     </div>
     <router-view
       @done="done"
@@ -79,20 +73,23 @@
 </template>
 
 <script>
-import api from '@/api/v1/api'
+import KqiPagination from '@/components/KqiPagination'
 import SmartSearchInput from '@/components/common/SmartSearchInput/Index'
+import { createNamespacedHelpers } from 'vuex'
+const { mapGetters, mapActions } = createNamespacedHelpers('preprocessing')
 
 export default {
-  name: 'PreprocessingIndex',
-  title() {
-    return this.$t('title')
-  },
+  title: '前処理管理',
   components: {
+    'kqi-pagination': KqiPagination,
     'pl-smart-search-input': SmartSearchInput,
   },
   data() {
     return {
-      mode: '1',
+      pageStatus: {
+        currentPage: 1,
+        currentPageSize: 10,
+      },
       searchCondition: {},
       searchConfigs: [
         { prop: 'id', name: 'ID', type: 'number' },
@@ -100,45 +97,36 @@ export default {
         { prop: 'memo', name: 'メモ', type: 'text' },
         { prop: 'createdAt', name: '登録日時', type: 'date' },
       ],
-      total: 0,
-      tableData: [],
-      currentPage: 1,
       selectedRowId: 0,
-      currentPageSize: 10,
     }
+  },
+  computed: {
+    ...mapGetters(['preprocessings', 'total']),
   },
   async created() {
     await this.retrieveData()
   },
   methods: {
-    async currentChange(page) {
-      this.currentPage = page
-      await this.retrieveData()
-    },
-
+    ...mapActions(['fetchPreprocessings']),
     async retrieveData() {
       let params = this.searchCondition
-      params.page = this.currentPage
-      params.perPage = this.currentPageSize
+      params.page = this.pageStatus.currentPage
+      params.perPage = this.pageStatus.currentPageSize
       params.withTotal = true
-
-      let response = await api.preprocessings.get(params)
-      this.tableData = response.data
-      this.total = parseInt(response.headers['x-total-count'])
+      await this.fetchPreprocessings(params)
     },
-
     async search() {
-      this.currentPage = 1
+      this.pageStatus.currentPage = 1
       await this.retrieveData()
     },
 
-    async handleSizeChange(size) {
-      this.currentPageSize = size
-      this.currentPage = 1
+    async done() {
+      this.closeDialog()
       await this.retrieveData()
+      this.showSuccessMessage()
     },
-    async handleModeChange() {
-      await this.retrieveData()
+    back() {
+      this.$router.go(-1)
     },
     closeDialog() {
       this.$router.push('/preprocessing')
@@ -152,11 +140,6 @@ export default {
       this.$router.push('/preprocessing/create/' + id)
       this.$store.commit('setLoading', false)
     },
-    async done() {
-      this.closeDialog()
-      await this.retrieveData()
-      this.showSuccessMessage()
-    },
     async openHistoryIndex(row) {
       this.$router.push('/preprocessingHistory/' + row.id)
       this.$store.commit('setLoading', false)
@@ -164,39 +147,17 @@ export default {
 
     async openEditDialog(selectedRow) {
       this.selectedRowId = selectedRow.id
-      this.$router.push('/preprocessing/' + selectedRow.id + '/edit')
+      this.$router.push('/preprocessing/edit/' + selectedRow.id)
       this.$store.commit('setLoading', false)
     },
     openPreprocessingDialog() {
       this.$router.push('preprocessing/run')
       this.$store.commit('setLoading', false)
     },
-    openPreprocessingHistoryEditDialog(data) {
-      this.$router.push('/preprocessing/' + data.id + '/' + data.dataId)
-    },
-    expand(row) {
-      // 編集ボタンクリック時は、expandしないように処理
-      if (this.$route.path === '/preprocessing') {
-        this.$refs.table.toggleRowExpansion(row)
-      }
-    },
     shell(data) {
       this.$router.push(
         '/preprocessing/' + data.id + '/' + data.dataId + '/shell',
       )
-    },
-    back() {
-      this.$router.go(-1)
-    },
-  },
-  i18n: {
-    messages: {
-      en: {
-        title: 'Preprocessing',
-      },
-      ja: {
-        title: '前処理管理',
-      },
     },
   },
 }
