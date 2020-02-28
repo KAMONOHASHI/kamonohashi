@@ -14,8 +14,6 @@ import ManageUserEdit from '@/components/tenant-manage/user/Edit'
 
 import ManageTenantSetting from '@/components/tenant-manage/tenant/Setting'
 
-import QuotaIndex from '@/components/system-setting/quota/Index'
-
 import UserIndex from '@/components/system-setting/user/Index'
 import UserCreate from '@/components/system-setting/user/Create'
 import UserEdit from '@/components/system-setting/user/Edit'
@@ -42,6 +40,7 @@ import training from '@/router/training'
 import inference from '@/router/inference'
 import git from '@/router/git'
 import node from '@/router/node'
+import quota from '@/router/quota'
 import registry from '@/router/registry'
 import role from '@/router/role'
 import storage from '@/router/storage'
@@ -58,6 +57,7 @@ let router = new Router({
     ...inference,
     ...git,
     ...node,
+    ...quota,
     ...registry,
     ...role,
     ...storage,
@@ -136,11 +136,6 @@ let router = new Router({
       path: '/manage/resource',
       name: 'ManageResource',
       component: ManageResourceIndex,
-    },
-    {
-      path: '/quota',
-      name: 'Quota',
-      component: QuotaIndex,
     },
     {
       path: '/user',

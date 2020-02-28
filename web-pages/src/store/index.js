@@ -7,6 +7,7 @@ import preprocessing from './modules/preprocessing'
 import training from './modules/training'
 import inference from './modules/inference'
 import node from './modules/node'
+import quota from './modules/quota'
 import registry from './modules/registry'
 import dataSet from './modules/dataSet'
 import registrySelector from './modules/registrySelector'
@@ -29,6 +30,7 @@ export default new Vuex.Store({
     inference,
     git,
     node,
+    quota,
     registry,
     cluster,
     role,
