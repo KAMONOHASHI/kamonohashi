@@ -23,8 +23,8 @@
 
           <kqi-environment-variables v-model="form.variables" />
           <kqi-partition-selector
-            :partition="form.partition"
-            @input="selectPartition"
+            v-model="form.partition"
+            :partitions="partitions"
           />
         </el-col>
 
@@ -61,12 +61,12 @@ import { mapActions, mapGetters } from 'vuex'
 
 export default {
   components: {
-    'kqi-partition-selector': KqiPartitionSelector,
-    'kqi-resource-selector': KqiResourceSelector,
-    'kqi-environment-variables': KqiEnvironmentVariables,
-    'kqi-preprocessings-selector': KqiPreprocessingsSelector,
-    'kqi-display-text-form': KqiDisplayTextForm,
-    'kqi-display-error': KqiDisplayError,
+    KqiPartitionSelector,
+    KqiResourceSelector,
+    KqiEnvironmentVariables,
+    KqiPreprocessingsSelector,
+    KqiDisplayTextForm,
+    KqiDisplayError,
   },
   props: {
     id: {
@@ -77,7 +77,7 @@ export default {
   data() {
     let preprocessingIdValidator = (rule, value, callback) => {
       if (this.form.preprocessingId === null)
-        callback(new Error('必須項aa目です'))
+        callback(new Error('必須項目です'))
       else {
         callback()
       }
@@ -109,7 +109,10 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({ preprocessings: ['preprocessing/preprocessings'] }),
+    ...mapGetters({
+      preprocessings: ['preprocessing/preprocessings'],
+      partitions: ['cluster/partitions'],
+    }),
   },
   async created() {
     await this['cluster/fetchPartitions']()
@@ -199,10 +202,6 @@ export default {
       this.form.resource.cpu = preprocessing.cpu
       this.form.resource.memory = preprocessing.memory
       this.form.resource.gpu = preprocessing.gpu
-    },
-    // パーティション
-    selectPartition(partition) {
-      this.form.partition = partition
     },
 
     emitCancel() {

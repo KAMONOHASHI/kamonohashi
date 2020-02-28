@@ -45,8 +45,8 @@
               />
             </el-form-item>
             <kqi-partition-selector
-              :partition="form.partition"
-              @input="selectPartition"
+              v-model="form.partition"
+              :partitions="partitions"
             />
             <el-form-item label="メモ">
               <el-input
@@ -154,8 +154,8 @@
                 />
               </el-form-item>
               <kqi-partition-selector
-                :partition="form.partition"
-                @input="selectPartition"
+                v-model="form.partition"
+                :partitions="partitions"
               />
               <el-form-item label="メモ">
                 <el-input
@@ -272,6 +272,7 @@ export default {
       branch: ['gitSelector/branch'],
       commit: ['gitSelector/commit'],
       detail: ['inference/detail'],
+      partitions: ['cluster/partitions'],
     }),
   },
   async created() {
@@ -598,11 +599,6 @@ export default {
           }
           break
       }
-    },
-
-    // パーティション
-    selectPartition(partition) {
-      this.form.partition = partition
     },
   },
 }

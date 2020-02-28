@@ -54,8 +54,8 @@
                 </div>
                 <kqi-environment-variables v-model="form.variables" />
                 <kqi-partition-selector
-                  :partition="form.partition"
-                  @input="selectPartition"
+                  v-model="form.partition"
+                  :partitions="partitions"
                 />
                 <el-form-item label="メモ">
                   <el-input
@@ -196,8 +196,8 @@
             <el-col>
               <kqi-environment-variables v-model="form.variables" />
               <kqi-partition-selector
-                :partition="form.partition"
-                @input="selectPartition"
+                v-model="form.partition"
+                :partitions="partitions"
               />
               <el-form-item label="メモ">
                 <el-input
@@ -322,6 +322,7 @@ export default {
       commit: ['gitSelector/commit'],
       availableInfiniteTime: ['notebook/availableInfiniteTime'],
       detail: ['notebook/detail'],
+      partitions: ['cluster/partitions'],
     }),
   },
   async created() {
@@ -718,11 +719,6 @@ export default {
           }
           break
       }
-    },
-
-    // パーティション
-    selectPartition(partition) {
-      this.form.partition = partition
     },
   },
 }

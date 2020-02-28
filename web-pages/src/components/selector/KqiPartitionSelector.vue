@@ -2,7 +2,7 @@
   <div>
     <el-form-item label="パーティション" prop="partition">
       <el-select
-        :value="partition"
+        :value="value"
         class="el-input"
         filterable
         :clearable="true"
@@ -21,22 +21,28 @@
 </template>
 
 <script>
-import { createNamespacedHelpers } from 'vuex'
-const { mapGetters } = createNamespacedHelpers('cluster')
-
 export default {
   props: {
-    partition: {
+    // パーティション名の一覧
+    partitions: {
+      type: Array,
+      default: () => {
+        return []
+      },
+    },
+    // 選択されたパーティション名
+    value: {
       type: String,
       default: null,
     },
   },
-  computed: {
-    ...mapGetters(['partitions']),
-  },
   methods: {
     changePartition(partition) {
-      this.$emit('input', partition)
+      if (partition === '') {
+        this.$emit('input', null)
+      } else {
+        this.$emit('input', partition)
+      }
     },
   },
 }
