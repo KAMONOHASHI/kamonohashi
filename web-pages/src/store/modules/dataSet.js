@@ -2,7 +2,7 @@ import api from '@/api/v1/api'
 
 // initial state
 const state = {
-  dataSets: {},
+  dataSets: [],
   detail: {},
 }
 

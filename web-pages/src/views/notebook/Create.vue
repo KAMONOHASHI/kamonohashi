@@ -22,7 +22,10 @@
                   :histories="trainingHistories"
                   multiple
                 />
-                <kqi-data-set-selector @input="selectDataSet" />
+                <kqi-data-set-selector
+                  v-model="form.dataSetId"
+                  :data-sets="dataSets"
+                />
                 <kqi-container-selector @input="selectContainer" />
                 <kqi-git-selector @input="selectModel" />
               </el-col>
@@ -111,7 +114,10 @@
                 :histories="trainingHistories"
                 multiple
               />
-              <kqi-data-set-selector @input="selectDataSet" />
+              <kqi-data-set-selector
+                v-model="form.dataSetId"
+                :data-sets="dataSets"
+              />
             </el-col>
           </el-form>
         </div>
@@ -187,7 +193,10 @@
                 :histories="trainingHistories"
                 multiple
               />
-              <kqi-data-set-selector @input="selectDataSet" />
+              <kqi-data-set-selector
+                v-model="form.dataSetId"
+                :data-sets="dataSets"
+              />
             </el-col>
           </el-form>
 
@@ -290,6 +299,7 @@ export default {
       },
       form: {
         name: null,
+        dataSetId: null,
         selectedParent: [],
         resource: {
           cpu: 1,
@@ -312,7 +322,7 @@ export default {
   computed: {
     ...mapGetters({
       trainingHistories: ['training/histories'],
-      dataset: ['dataSet/detail'],
+      dataSets: ['dataSet/dataSets'],
       registry: ['registrySelector/registry'],
       image: ['registrySelector/image'],
       tag: ['registrySelector/tag'],
@@ -335,7 +345,6 @@ export default {
     }
 
     // vuexの情報をリセット
-    await this.selectDataSet(null)
     await this.selectContainer({
       type: 'registry',
       value: null,
@@ -373,7 +382,7 @@ export default {
       }
 
       if (this.detail.dataSet) {
-        await this.selectDataSet(this.detail.dataSet.id)
+        this.form.dataSetId = String(this.detail.dataSet.id)
       }
 
       if (this.detail.containerImage.registryId) {
@@ -448,7 +457,7 @@ export default {
       }
 
       if (this.detail.dataSet) {
-        await this.selectDataSet(this.detail.dataSet.id)
+        this.form.dataSetId = String(this.detail.dataSet.id)
       }
       this.form.resource.cpu = this.detail.cpu
       this.form.resource.memory = this.detail.memory
@@ -481,7 +490,6 @@ export default {
       'notebook/postRerun',
       'notebook/fetchAvailableInfiniteTime',
       'cluster/fetchPartitions',
-      'dataSet/fetchDetail',
       'dataSet/fetchDataSets',
       'registrySelector/fetchRegistries',
       'registrySelector/fetchImages',
@@ -503,7 +511,7 @@ export default {
             selectedParentIds.push(parent.id)
           })
           let params = {
-            dataSetId: this.dataset ? this.dataset.id : null,
+            dataSetId: this.form.dataSetId,
             parentIds: selectedParentIds,
             cpu: this.form.resource.cpu,
             memory: this.form.resource.memory,
@@ -562,7 +570,7 @@ export default {
           })
           let params = {
             name: this.form.name,
-            dataSetId: this.dataset ? this.dataset.id : null,
+            dataSetId: this.form.dataSetId,
             parentIds: selectedParentIds,
             ContainerImage: containerImage,
             GitModel: gitModel,
@@ -603,11 +611,6 @@ export default {
       if (this.active-- < 0) {
         this.active = 0
       }
-    },
-
-    // データセット
-    async selectDataSet(dataSetId) {
-      await this['dataSet/fetchDetail'](dataSetId)
     },
 
     // コンテナイメージ

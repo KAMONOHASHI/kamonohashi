@@ -17,7 +17,7 @@
         filterable
         value-key="id"
         remote
-        :clearable="true"
+        clearable
         @change="onChange"
       >
         <el-option

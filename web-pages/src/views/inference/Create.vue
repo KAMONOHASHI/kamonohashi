@@ -18,7 +18,10 @@
               v-model="form.selectedParent"
               :histories="trainingHistories"
             />
-            <kqi-data-set-selector @input="selectDataSet" />
+            <kqi-data-set-selector
+              v-model="form.dataSetId"
+              :data-sets="dataSets"
+            />
 
             <el-form-item label="実行コマンド" prop="entryPoint">
               <el-input
@@ -96,7 +99,10 @@
               />
             </el-col>
             <el-col :span="12">
-              <kqi-data-set-selector @input="selectDataSet" />
+              <kqi-data-set-selector
+                v-model="form.dataSetId"
+                :data-sets="dataSets"
+              />
             </el-col>
           </el-form>
 
@@ -238,6 +244,7 @@ export default {
     return {
       form: {
         name: null,
+        dataSetId: null,
         entryPoint: null,
         selectedParent: [],
         resource: {
@@ -263,7 +270,7 @@ export default {
   computed: {
     ...mapGetters({
       trainingHistories: ['training/histories'],
-      dataset: ['dataSet/detail'],
+      dataSets: ['dataSet/dataSets'],
       registry: ['registrySelector/registry'],
       image: ['registrySelector/image'],
       tag: ['registrySelector/tag'],
@@ -283,7 +290,6 @@ export default {
     this.isCopyCreation = this.originId !== null && !fromTrainView
 
     // vuexの情報をリセット
-    await this.selectDataSet(null)
     await this.selectContainer({
       type: 'registry',
       value: null,
@@ -321,6 +327,7 @@ export default {
       await this['inference/fetchDetail'](this.originId)
 
       this.form.name = this.detail.name
+      this.form.dataSetId = String(this.detail.dataSet.id)
       this.form.entryPoint = this.detail.entryPoint
       this.form.zip = this.detail.zip
       this.form.memo = this.detail.memo
@@ -332,8 +339,6 @@ export default {
           }
         })
       }
-
-      await this.selectDataSet(this.detail.dataSet.id)
 
       await this.selectContainer({
         type: 'registry',
@@ -397,7 +402,6 @@ export default {
       'inference/fetchDetail',
       'inference/post',
       'cluster/fetchPartitions',
-      'dataSet/fetchDetail',
       'dataSet/fetchDataSets',
       'registrySelector/fetchRegistries',
       'registrySelector/fetchImages',
@@ -416,7 +420,7 @@ export default {
         })
         let params = {
           Name: this.form.name,
-          DataSetId: this.dataset.id,
+          DataSetId: this.form.dataSetId,
           ParentId: this.form.selectedParent.id,
           ContainerImage: {
             registryId: this.registry.id,
@@ -483,11 +487,6 @@ export default {
       if (this.active-- < 0) {
         this.active = 0
       }
-    },
-
-    // データセット
-    async selectDataSet(dataSetId) {
-      await this['dataSet/fetchDetail'](dataSetId)
     },
 
     // コンテナイメージ

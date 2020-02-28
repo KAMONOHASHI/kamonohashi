@@ -2,7 +2,7 @@
   <el-form-item label="データセット" prop="dataSet">
     <el-popover
       ref="detail-popover"
-      :disabled="Object.keys(detail).length === 0"
+      :disabled="!value"
       title="データセット詳細"
       trigger="hover"
       width="350"
@@ -36,20 +36,30 @@
 
 <script>
 import KqiDataSetDetails from '@/components/selector/KqiDatasetDetails.vue'
-import { createNamespacedHelpers } from 'vuex'
-const { mapGetters } = createNamespacedHelpers('dataSet')
 
 export default {
   components: {
     KqiDataSetDetails,
   },
-  data() {
-    return {
-      dataSet: null,
-    }
+  props: {
+    // データセット一覧(オブジェクトの配列)
+    dataSets: {
+      type: Array,
+      default: () => {
+        return [{}]
+      },
+    },
+    // 選択されたデータセットID。未選択時はnull
+    value: {
+      type: String,
+      default: null,
+    },
   },
   computed: {
-    ...mapGetters(['dataSets', 'detail']),
+    // 選択されているデータセットを返す
+    detail() {
+      return this.dataSets.find(dataSet => String(dataSet.id) === this.value)
+    },
   },
   methods: {
     async onChange(dataSet) {
@@ -57,7 +67,7 @@ export default {
         // clearボタンが押下された場合
         this.$emit('input', null)
       } else {
-        this.$emit('input', dataSet.id)
+        this.$emit('input', String(dataSet.id))
       }
     },
   },
