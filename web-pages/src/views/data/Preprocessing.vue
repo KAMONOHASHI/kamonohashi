@@ -6,73 +6,35 @@
     :before-close="closeDialog"
     :close-on-click-modal="false"
   >
-    <el-form
-      ref="preprocessingForm"
-      v-loading="loading"
-      :rules="rules"
-      :model="this"
-      element-loading-spinner=""
-      element-loading-background="rgba(255, 255, 255, 0.7)"
-    >
-      <pl-display-error :error="error" />
+    <el-form ref="preprocessingForm" :rules="rules" :model="form">
+      <kqi-display-error :error="error" />
       <el-row :gutter="20">
         <el-col :span="12">
-          <pl-display-text label="データID" :value="id"></pl-display-text>
-          <el-form-item label="前処理" prop="preprocessing">
-            <pl-preprocessings-selector
-              v-model="preprocessing"
-              @input="onPreprocessingChanged"
-            />
-          </el-form-item>
+          <kqi-display-text-form
+            label="データID"
+            :value="id"
+          ></kqi-display-text-form>
 
-          <el-form-item label="環境変数">
-            <pl-dynamic-multi-input v-model="options" />
-          </el-form-item>
-          <el-form-item label="パーティション" prop="partition">
-            <pl-string-selector
-              v-if="partitions"
-              v-model="partition"
-              :value-list="partitions"
-            />
-          </el-form-item>
+          <kqi-preprocessings-selector
+            v-model="form.preprocessingId"
+            :preprocessings="preprocessings"
+            @input="onPreprocessingChanged"
+          />
+
+          <kqi-environment-variables v-model="form.variables" />
+          <kqi-partition-selector
+            :partition="form.partition"
+            @input="selectPartition"
+          />
         </el-col>
 
         <el-col :span="12">
-          <el-form-item label="CPU" required>
-            <el-slider
-              v-model="cpu"
-              class="el-input"
-              :min="1"
-              :max="200"
-              show-input
-            >
-            </el-slider>
-          </el-form-item>
-
-          <el-form-item label="メモリ(GB)" required>
-            <el-slider
-              v-model="memory"
-              class="el-input"
-              :min="1"
-              :max="200"
-              show-input
-            >
-            </el-slider>
-          </el-form-item>
-
-          <el-form-item label="GPU" required>
-            <el-slider
-              v-model="gpu"
-              class="el-input"
-              :min="0"
-              :max="16"
-              show-input
-            >
-            </el-slider>
-          </el-form-item>
+          <kqi-resource-selector
+            v-model="form.resource"
+          ></kqi-resource-selector>
           <el-form-item label="オプション">
             <br />
-            <el-checkbox v-model="checked" size="medium"
+            <el-checkbox v-model="form.movePreprocessingPage" size="medium"
               >実行後に履歴を確認する</el-checkbox
             >
           </el-form-item>
@@ -88,70 +50,161 @@
 </template>
 
 <script>
-import DisplayTextForm from '@/components/common/DisplayTextForm.vue'
-import DynamicMultiInputField from '@/components/common/DynamicMultiInputField.vue'
-import DisplayError from '@/components/common/DisplayError'
-import PreprocessingsSelector from '@/components/common/PreprocessingSelector.vue'
-import StringSelector from '@/components/common/StringSelector.vue'
-import api from '@/api/v1/api'
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
+import KqiDisplayError from '@/components/KqiDisplayError'
+import KqiPreprocessingsSelector from '@/components/selector/KqiPreprocessingSelector'
+import KqiPartitionSelector from '@/components/selector/KqiPartitionSelector'
+import KqiResourceSelector from '@/components/selector/KqiResourceSelector'
+import KqiEnvironmentVariables from '@/components/KqiEnvironmentVariables'
+
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
-  name: 'DataPreprocessing',
   components: {
-    'pl-preprocessings-selector': PreprocessingsSelector,
-    'pl-string-selector': StringSelector,
-    'pl-display-text': DisplayTextForm,
-    'pl-dynamic-multi-input': DynamicMultiInputField,
-    'pl-display-error': DisplayError,
+    'kqi-partition-selector': KqiPartitionSelector,
+    'kqi-resource-selector': KqiResourceSelector,
+    'kqi-environment-variables': KqiEnvironmentVariables,
+    'kqi-preprocessings-selector': KqiPreprocessingsSelector,
+    'kqi-display-text-form': KqiDisplayTextForm,
+    'kqi-display-error': KqiDisplayError,
   },
   props: {
-    id: String,
+    id: {
+      type: String,
+      default: null,
+    },
   },
   data() {
+    let preprocessingIdValidator = (rule, value, callback) => {
+      if (this.form.preprocessingId === null)
+        callback(new Error('必須項aa目です'))
+      else {
+        callback()
+      }
+    }
+
     return {
       rules: {
         preprocessing: [
           {
             required: true,
             trigger: 'blur',
-            validator(rule, value, callback) {
-              let exists = false
-              for (let key in value) {
-                if (value[key].length > 0) {
-                  exists = true
-                }
-              }
-              if (exists) {
-                callback()
-              } else {
-                callback(new Error('必須項目です'))
-              }
-            },
+            validator: preprocessingIdValidator,
           },
         ],
       },
+      form: {
+        preprocessingId: null,
+        resource: {
+          cpu: 1,
+          memory: 1,
+          gpu: 0,
+        },
+        variables: [{ key: '', value: '' }],
+        partition: null,
+        movePreprocessingPage: true,
+      },
       dialogVisible: true,
-      error: undefined,
-      loading: false,
-      preprocessing: undefined,
-      cpu: undefined,
-      memory: undefined,
-      gpu: undefined,
-      options: undefined,
-      partitions: undefined,
-      partition: undefined,
-      multiSelectedIdList: [],
-      updataDataId: undefined,
-      preprocessingHistoryIndex: [],
-      preprocessingHistoryIdList: [],
-      message: undefined,
-      checked: true,
+      error: null,
     }
   },
+  computed: {
+    ...mapGetters({ preprocessings: ['preprocessing/preprocessings'] }),
+  },
   async created() {
-    this.partitions = (await api.cluster.getPartitions()).data
+    await this['cluster/fetchPartitions']()
+    await this['preprocessing/fetchPreprocessings']()
   },
   methods: {
+    ...mapActions([
+      'cluster/fetchPartitions',
+      'data/put',
+      'preprocessing/fetchPreprocessings',
+      'preprocessing/runById',
+    ]),
+    async runPreprocessing() {
+      let form = this.$refs.preprocessingForm
+      await form.validate(async valid => {
+        if (valid) {
+          // データIDの分割
+          let selectedIdList = this.id.split(' ')
+          if (selectedIdList.length > 1) {
+            selectedIdList.pop() // 複数IDの場合、最後の空要素を削除
+          }
+          // 環境変数の作成
+          let options = {}
+          // apiのフォーマットに合わせる(配列 => オブジェクト)
+          this.form.variables.forEach(kvp => {
+            options[kvp.key] = kvp.value
+          })
+
+          selectedIdList.forEach(async dataId => {
+            try {
+              let params = {
+                dataId: dataId,
+                options: options,
+                cpu: this.form.resource.cpu,
+                memory: this.form.resource.memory,
+                gpu: this.form.resource.gpu,
+                partition: this.form.partition,
+              }
+              await this['preprocessing/runById']({
+                id: this.form.preprocessingId,
+                params: params,
+              })
+              await this.$notify.success({
+                title: 'Success',
+                message: `ID:${dataId}の前処理に成功しました`,
+              })
+              // 成功した場合、使用したデータのisRawフラグをFalseにする
+              await this.updateData(dataId)
+              this.error = null
+            } catch (e) {
+              this.error = e
+            }
+          })
+          await this.sleep(1000)
+          // エラーがない場合、前処理履歴画面に遷移
+          if (this.form.movePreprocessingPage && this.error === null) {
+            this.emitHistoryPage(this.form.preprocessingId)
+          } else if (this.error === null) {
+            this.emitDone()
+          } else {
+            this.$notify.error({
+              title: 'Error',
+              message: '前処理に失敗しました',
+            })
+          }
+        }
+      })
+    },
+    async updateData(id) {
+      let params = {
+        id: id,
+        model: {
+          isRaw: false,
+        },
+      }
+      await this['data/put'](params)
+    },
+    sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms))
+    },
+
+    onPreprocessingChanged() {
+      // リソースサイズのデフォルト値を選択された前処理の値とする
+      let preprocessing = this.preprocessings.find(
+        preprocessing => String(preprocessing.id) === this.form.preprocessingId,
+      )
+      this.form.resource.cpu = preprocessing.cpu
+      this.form.resource.memory = preprocessing.memory
+      this.form.resource.gpu = preprocessing.gpu
+    },
+    // パーティション
+    selectPartition(partition) {
+      this.form.partition = partition
+    },
+
     emitCancel() {
       this.$emit('cancel')
     },
@@ -166,92 +219,6 @@ export default {
     closeDialog(done) {
       done()
       this.$emit('close')
-    },
-    splitmultiSelection(id) {
-      this.multiSelectedIdList = id.split(' ')
-    },
-    onPreprocessingChanged(preprocessing) {
-      // リソースサイズをデフォルトで埋める
-      this.cpu = preprocessing.cpu
-      this.memory = preprocessing.memory
-      this.gpu = preprocessing.gpu
-    },
-    sleep(ms) {
-      return new Promise(resolve => setTimeout(resolve, ms))
-    },
-    async updateData() {
-      // 独自ローディング処理のため共通側は無効
-      this.$store.commit('setLoading', false)
-      this.loading = false
-      let params = {
-        id: this.updataDataId,
-        model: {
-          isRaw: false,
-        },
-      }
-      await api.data.putById(params)
-    },
-    async runPreprocessing() {
-      let form = this.$refs.preprocessingForm
-      this.$forceUpdate()
-      await form.validate(async valid => {
-        if (valid) {
-          this.error = undefined
-          // まず、データIDを分割する
-          this.splitmultiSelection(this.id)
-          this.$store.commit('setLoading', false)
-          this.loading = true
-          for (let i = 0; i < this.multiSelectedIdList.length; i++) {
-            if (this.multiSelectedIdList[i] === '') {
-              //  配列の最後の要素が空になるので、それ以外の要素を順番に前処理をかける
-            } else {
-              try {
-                this.updataDataId = this.multiSelectedIdList[i]
-                let options = {}
-                // apiのフォーマットに合わせる(配列 => オブジェクト)
-                this.options.forEach(kvp => {
-                  options[kvp.key] = kvp.value
-                })
-                let param = {
-                  dataId: this.updataDataId,
-                  options: options,
-                  cpu: this.cpu,
-                  memory: this.memory,
-                  gpu: this.gpu,
-                  partition: this.partition,
-                }
-                await api.preprocessings.runById({
-                  id: this.preprocessing.id,
-                  model: param,
-                })
-                await this.$notify.success({
-                  title: 'Success',
-                  message: 'ID:' + this.updataDataId + 'の前処理に成功しました',
-                })
-                // 成功した場合、使用したデータのisRawフラグをFalseにする
-                await this.updateData()
-                this.error = null
-              } catch (e) {
-                this.error = e
-              }
-            }
-          }
-          this.loading = false
-          this.$store.commit('setLoading', true)
-          await this.sleep(2000)
-          // 前処理画面に遷移
-          if (this.checked && this.error === null) {
-            this.emitHistoryPage(this.preprocessing.id)
-          } else if (this.error === null) {
-            this.emitDone()
-          } else {
-            this.$notify.error({
-              title: 'Error',
-              message: '前処理に失敗しました',
-            })
-          }
-        }
-      })
     },
   },
 }

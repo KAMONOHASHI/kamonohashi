@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import data from './modules/data'
 import git from './modules/git'
 import notebook from './modules/notebook'
+import preprocessing from './modules/preprocessing'
 import training from './modules/training'
 import inference from './modules/inference'
 import node from './modules/node'
@@ -23,6 +24,7 @@ export default new Vuex.Store({
     registrySelector,
     gitSelector,
     notebook,
+    preprocessing,
     training,
     inference,
     git,
