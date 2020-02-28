@@ -10,10 +10,40 @@
       <kqi-display-error :error="error" />
       <el-row :gutter="20">
         <el-col :span="12">
-          <kqi-display-text-form
-            label="データID"
-            :value="id"
-          ></kqi-display-text-form>
+          <div v-if="enableDataSelection">
+            <el-form-item label="データ" prop="data">
+              <div class="el-input">
+                <el-select
+                  v-model="tmp"
+                  multiple
+                  placeholder="Select Data"
+                  filterable
+                  value-key="id"
+                  remote
+                  :clearable="true"
+                >
+                  <el-option
+                    v-for="item in data"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item"
+                  >
+                    <span style="float: left">{{ item.name }}</span>
+                    <span
+                      style="float: right; margin-right:16px; color: #8492a6; font-size: 13px"
+                      >{{ item.memo }}</span
+                    >
+                  </el-option>
+                </el-select>
+              </div>
+            </el-form-item>
+          </div>
+          <div v-else>
+            <kqi-display-text-form
+              label="データID"
+              :value="id"
+            ></kqi-display-text-form>
+          </div>
 
           <kqi-preprocessings-selector
             v-model="form.preprocessingId"
@@ -69,7 +99,7 @@ export default {
     KqiDisplayError,
   },
   props: {
-    id: {
+    idArray: {
       type: String,
       default: null,
     },
@@ -104,23 +134,33 @@ export default {
         partition: null,
         movePreprocessingPage: true,
       },
+      enableDataSelection: false,
       dialogVisible: true,
       error: null,
+      tmp: null,
     }
   },
   computed: {
     ...mapGetters({
       preprocessings: ['preprocessing/preprocessings'],
       partitions: ['cluster/partitions'],
+      data: ['data/data'],
     }),
   },
   async created() {
+    // データ管理画面からの呼び出しの場合、propsのidArrayが格納されている
+    // idArrayが格納されていない場合、前処理管理画面からの呼び出し
+    if (this.idArray === null) {
+      this.enableDataSelection = true
+      await this['data/fetchData']()
+    }
     await this['cluster/fetchPartitions']()
     await this['preprocessing/fetchPreprocessings']()
   },
   methods: {
     ...mapActions([
       'cluster/fetchPartitions',
+      'data/fetchData',
       'data/put',
       'preprocessing/fetchPreprocessings',
       'preprocessing/runById',
@@ -130,7 +170,7 @@ export default {
       await form.validate(async valid => {
         if (valid) {
           // データIDの分割
-          let selectedIdList = this.id.split(' ')
+          let selectedIdList = this.idArray.split(' ')
           if (selectedIdList.length > 1) {
             selectedIdList.pop() // 複数IDの場合、最後の空要素を削除
           }

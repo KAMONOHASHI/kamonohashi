@@ -5,6 +5,7 @@ const state = {
   preprocessings: [],
   total: 0,
   detail: {},
+  history: {},
 }
 
 // getters
@@ -17,6 +18,9 @@ const getters = {
   },
   detail(state) {
     return state.detail
+  },
+  history(state) {
+    return state.history
   },
 }
 
@@ -35,9 +39,19 @@ const actions = {
     commit('setDetail', { detail })
   },
 
+  async fetchHistory({ commit }, id) {
+    let history = (await api.preprocessings.getHistory({ id: id })).data
+    commit('setHistory', history)
+  },
+
   // eslint-disable-next-line no-unused-vars
   async runById({ rootState }, { id, params }) {
     return await api.preprocessings.runById({ id: id, model: params })
+  },
+
+  // eslint-disable-next-line no-unused-vars
+  async post({ rootState }, params) {
+    return await api.preprocessings.post(params)
   },
 
   // eslint-disable-next-line no-unused-vars
@@ -47,7 +61,7 @@ const actions = {
 
   // eslint-disable-next-line no-unused-vars
   async delete({ state }, id) {
-    await api.preprocessings.deleteById({ id: id })
+    await api.preprocessings.delete({ id: id })
   },
 }
 
@@ -67,6 +81,10 @@ const mutations = {
 
   clearDetail(state) {
     state.detail = {}
+  },
+
+  setHistory(state, history) {
+    state.history = history
   },
 }
 

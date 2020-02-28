@@ -1,6 +1,6 @@
 import Index from '@/views/data/Index'
 import Edit from '@/views/data/Edit'
-import Preprocessing from '@/views/data/Preprocessing'
+import Preprocessing from '@/views/common/Preprocessing'
 
 export default [
   {
@@ -14,7 +14,7 @@ export default [
         props: true,
       },
       {
-        path: ':id/preprocessing',
+        path: ':idArray/preprocessing',
         component: Preprocessing,
         props: true,
       },
