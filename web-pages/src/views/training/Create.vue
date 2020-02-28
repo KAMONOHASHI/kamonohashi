@@ -413,7 +413,7 @@ export default {
             repository: this.repository.name,
             owner: this.repository.owner,
             branch: this.branch.branchName,
-            commitId: this.commit ? this.commit.commitId : 'HEAD',
+            commitId: this.commit ? this.commit : 'HEAD',
           },
           EntryPoint: this.form.entryPoint,
           Cpu: this.form.resource.cpu,

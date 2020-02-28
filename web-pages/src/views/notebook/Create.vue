@@ -560,7 +560,7 @@ export default {
               repository: this.repository ? this.repository.name : null,
               owner: this.repository ? this.repository.owner : null,
               branch: this.branch ? this.branch.branchName : null,
-              commitId: this.commit ? this.commit.commitId : 'HEAD',
+              commitId: this.commit ? this.commit : 'HEAD',
             }
           }
           // training history ObjectのリストからIDのみを抜き出して格納
