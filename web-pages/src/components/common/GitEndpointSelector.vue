@@ -95,9 +95,7 @@ export default {
   methods: {
     async init() {
       if (this.tenantId) {
-        this.list = (
-          await api.git.tenant.getEndpoints({ id: this.tenantId })
-        ).data
+        this.list = (await api.git.tenant.getEndpoints()).data
       } else {
         this.list = (await api.git.admin.getEndpoints()).data
       }

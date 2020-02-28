@@ -91,9 +91,7 @@ export default {
   methods: {
     async init() {
       if (this.tenantId) {
-        this.list = (
-          await api.registry.tenant.getEndpoints({ id: this.tenantId })
-        ).data
+        this.list = (await api.registry.tenant.getEndpoints()).data
       } else {
         this.list = (await api.registry.admin.get()).data
       }

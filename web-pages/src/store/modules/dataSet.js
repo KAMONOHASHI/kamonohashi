@@ -2,7 +2,7 @@ import api from '@/api/v1/api'
 
 // initial state
 const state = {
-  dataSets: {},
+  dataSets: [],
   detail: {},
 }
 
@@ -25,8 +25,12 @@ const actions = {
   },
 
   async fetchDetail({ commit }, id) {
-    let detail = (await api.datasets.getById({ id: id })).data
-    commit('setDetail', { detail })
+    if (id === null) {
+      commit('clearDetail')
+    } else {
+      let detail = (await api.datasets.getById({ id: id })).data
+      commit('setDetail', { detail })
+    }
   },
 }
 

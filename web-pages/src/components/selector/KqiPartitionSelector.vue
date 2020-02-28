@@ -1,34 +1,48 @@
 <template>
-  <el-form-item label="パーティション" prop="partition">
-    <el-select
-      :value="partition"
-      class="el-input"
-      filterable
-      :clearable="true"
-      @change="changePartition"
-    >
-      <el-option
-        v-for="item in partitions"
-        :key="item"
-        :label="item"
-        :value="item"
+  <div>
+    <el-form-item label="パーティション" prop="partition">
+      <el-select
+        :value="value"
+        class="el-input"
+        filterable
+        :clearable="true"
+        @change="changePartition"
       >
-      </el-option>
-    </el-select>
-  </el-form-item>
+        <el-option
+          v-for="item in partitions"
+          :key="item"
+          :label="item"
+          :value="item"
+        >
+        </el-option>
+      </el-select>
+    </el-form-item>
+  </div>
 </template>
 
 <script>
-import { createNamespacedHelpers } from 'vuex'
-const { mapGetters } = createNamespacedHelpers('cluster')
-
 export default {
-  computed: {
-    ...mapGetters(['partitions', 'partition']),
+  props: {
+    // パーティション名の一覧
+    partitions: {
+      type: Array,
+      default: () => {
+        return []
+      },
+    },
+    // 選択されたパーティション名
+    value: {
+      type: String,
+      default: null,
+    },
   },
   methods: {
     changePartition(partition) {
-      this.$emit('input', partition)
+      if (partition === '') {
+        this.$emit('input', null)
+      } else {
+        this.$emit('input', partition)
+      }
     },
   },
 }

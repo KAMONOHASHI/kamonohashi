@@ -1,13 +1,17 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import data from './modules/data'
 import git from './modules/git'
+import notebook from './modules/notebook'
+import preprocessing from './modules/preprocessing'
 import training from './modules/training'
+import inference from './modules/inference'
 import node from './modules/node'
+import quota from './modules/quota'
 import registry from './modules/registry'
 import dataSet from './modules/dataSet'
 import registrySelector from './modules/registrySelector'
 import gitSelector from './modules/gitSelector'
-import environmentVariables from './modules/environmentVariables'
 import cluster from './modules/cluster'
 import role from './modules/role'
 import storage from './modules/storage'
@@ -17,14 +21,18 @@ import user from './modules/user'
 Vue.use(Vuex)
 export default new Vuex.Store({
   modules: {
+    data,
     dataSet,
     registrySelector,
     gitSelector,
+    notebook,
+    preprocessing,
     training,
+    inference,
     git,
     node,
+    quota,
     registry,
-    environmentVariables,
     cluster,
     role,
     storage,

@@ -3,7 +3,7 @@
     :title="title"
     :type="id === null ? 'CREATE' : 'EDIT'"
     submit-text="作成"
-    :delete-params="deleteParams"
+    :delete-button-params="deleteButtonParams"
     @submit="submit"
     @delete="deleteTenant"
     @close="emitCancel"
@@ -13,7 +13,7 @@
 
       <h3>テナント情報</h3>
       <div class="margin">
-        <kqi-display-text-form label="ID" :value="id" />
+        <kqi-display-text-form v-if="id !== null" label="ID" :value="id" />
         <el-form-item v-if="id === null" label="テナント名" prop="tenantName">
           <el-input v-model="form.tenantName" />
         </el-form-item>
@@ -38,31 +38,18 @@
       <h3>ストレージ情報</h3>
       <div class="margin">
         <el-form-item>
-          <kqi-storage-endpoint-selector
-            :storage-id="form.storageId"
-            @changeStorageId="changeStorageId"
-          />
+          <kqi-storage-endpoint-selector v-model="form.storageId" />
         </el-form-item>
       </div>
 
       <h3>Git情報</h3>
       <div class="margin">
-        <kqi-git-endpoint-selector
-          :git-ids="form.gitIds"
-          :default-id="form.defaultGitId"
-          @changeSelectedIds="changeSelectedGitIds"
-          @changeDefaultId="changeDefaultGitId"
-        />
+        <kqi-git-endpoint-selector v-model="form.gitEndpoint" />
       </div>
 
       <h3>Docker Registry 情報</h3>
       <div class="margin">
-        <kqi-registry-endpoint-selector
-          :registry-ids="form.registryIds"
-          :default-id="form.defaultRegistryId"
-          @changeSelectedIds="changeSelectedRegistryIds"
-          @changeDefaultId="changeDefaultRegistryId"
-        />
+        <kqi-registry-endpoint-selector v-model="form.registry" />
       </div>
     </el-form>
   </kqi-dialog>
@@ -84,7 +71,6 @@ const formRule = {
 }
 
 export default {
-  name: 'TenantEdit',
   components: {
     KqiDialog,
     KqiDisplayTextForm,
@@ -100,19 +86,51 @@ export default {
     },
   },
   data() {
+    let gitSelectedIdsValidator = (rule, value, callback) => {
+      if (this.form.gitEndpoint.selectedIds.length === 0) {
+        callback(new Error('必須項目です'))
+      } else {
+        callback()
+      }
+    }
+    let gitDefaultIdValidator = (rule, value, callback) => {
+      if (this.form.gitEndpoint.defaultId === null) {
+        callback(new Error('必須項目です'))
+      } else {
+        callback()
+      }
+    }
+    let registrySelectedIdsValidator = (rule, value, callback) => {
+      if (this.form.registry.selectedIds.length === 0) {
+        callback(new Error('必須項目です'))
+      } else {
+        callback()
+      }
+    }
+    let registryDefaultIdValidator = (rule, value, callback) => {
+      if (this.form.registry.defaultId === null) {
+        callback(new Error('必須項目です'))
+      } else {
+        callback()
+      }
+    }
+
     return {
       title: '',
-      dialogVisible: true,
       error: null,
-      deleteParams: {},
+      deleteButtonParams: {},
 
       form: {
         tenantName: '',
         displayName: '',
-        gitIds: [],
-        defaultGitId: null,
-        registryIds: [],
-        defaultRegistryId: null,
+        gitEndpoint: {
+          selectedIds: [],
+          defaultId: null,
+        },
+        registry: {
+          selectedIds: [],
+          defaultId: null,
+        },
         storageId: null,
         availableInfiniteTimeNotebook: false,
       },
@@ -120,10 +138,34 @@ export default {
       rules: {
         tenantName: [formRule],
         displayName: [formRule],
-        gitIds: [formRule],
-        defaultGitId: [formRule],
-        registryIds: [formRule],
-        defaultRegistryId: [formRule],
+        gitSelectedIds: [
+          {
+            required: true,
+            validator: gitSelectedIdsValidator,
+            trigger: 'blur',
+          },
+        ],
+        gitDefaultId: [
+          {
+            required: true,
+            validator: gitDefaultIdValidator,
+            trigger: 'blur',
+          },
+        ],
+        registryselectedIds: [
+          {
+            required: true,
+            validator: registrySelectedIdsValidator,
+            trigger: 'blur',
+          },
+        ],
+        registryDefaultId: [
+          {
+            required: true,
+            validator: registryDefaultIdValidator,
+            trigger: 'blur',
+          },
+        ],
         storageId: [formRule],
       },
     }
@@ -143,17 +185,18 @@ export default {
         await this['tenant/fetchDetail']()
         this.form.tenantName = this.detail.name
         this.form.displayName = this.detail.displayName
-        this.form.gitIds = this.detail.gitIds
-        this.form.defaultGitId = this.detail.defaultGitId
         this.form.storageId = this.detail.storageId
-        this.form.defaultRegistryId = this.detail.defaultRegistryId
-        this.form.registryIds = this.detail.registryIds
+        this.form.gitEndpoint.selectedIds = this.detail.gitIds
+        this.form.gitEndpoint.defaultId = this.detail.defaultGitId
+        this.form.registry.selectedIds = this.detail.registryIds
+        this.form.registry.defaultId = this.detail.defaultRegistryId
         this.form.availableInfiniteTimeNotebook = this.detail.availableInfiniteTimeNotebook
         this.error = null
-        this.deleteParams = {
-          dangerFlag: true,
-          screanName: 'tenant',
-          name: this.form.tenantName,
+        this.deleteButtonParams = {
+          isDanger: true,
+          warningText:
+            'テナントを削除すると、テナントに紐づくデータが失われます。処理を続けるにはテナント名を入力してください。',
+          confirmText: this.form.tenantName,
         }
       } catch (e) {
         this.error = e
@@ -180,11 +223,13 @@ export default {
               model: {
                 tenantName: this.form.tenantName,
                 displayName: this.form.displayName,
-                gitIds: this.form.gitIds,
-                defaultGitId: this.form.defaultGitId,
                 storageId: this.form.storageId,
-                defaultRegistryId: this.form.defaultRegistryId,
-                registryIds: this.form.registryIds,
+                gitIds: this.form.gitEndpoint.selectedIds,
+                defaultGitId: this.form.gitEndpoint.defaultId,
+                registryIds: this.form.registry.selectedIds,
+                defaultRegistryId: this.form.registry.defaultId,
+                availableInfiniteTimeNotebook: this.form
+                  .availableInfiniteTimeNotebook,
               },
             }
             if (this.id === null) {
@@ -225,21 +270,6 @@ export default {
     },
     emitDone() {
       this.$emit('done')
-    },
-    changeStorageId(selectStorageId) {
-      this.form.storageId = selectStorageId.value
-    },
-    async changeSelectedGitIds(selectGitIds) {
-      this.form.gitIds = selectGitIds
-    },
-    changeDefaultGitId(selectDefaultGitIds) {
-      this.form.defaultGitId = selectDefaultGitIds.value
-    },
-    changeSelectedRegistryIds(selectRegistryIds) {
-      this.form.registryIds = selectRegistryIds
-    },
-    changeDefaultRegistryId(selectDefaultRegistryIds) {
-      this.form.defaultRegistryId = selectDefaultRegistryIds.value
     },
   },
 }

@@ -2,7 +2,7 @@
   <el-form-item label="ストレージ" prop="storageId">
     <el-select
       class="selectStorage"
-      :value="storageId"
+      :value="value"
       placeholder="Select"
       :clearable="true"
       @change="handleChange"
@@ -28,7 +28,8 @@ const { mapGetters } = createNamespacedHelpers('storage')
 
 export default {
   props: {
-    storageId: {
+    // storagesの中から選択したid
+    value: {
       type: Number,
       default: null,
     },
@@ -39,9 +40,9 @@ export default {
   methods: {
     async handleChange(storageId) {
       if (storageId === '') {
-        this.$emit('changeStorageId', { value: null })
+        this.$emit('input', null)
       } else {
-        this.$emit('changeStorageId', { value: storageId })
+        this.$emit('input', storageId)
       }
     },
   },

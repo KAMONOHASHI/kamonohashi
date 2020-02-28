@@ -18,6 +18,14 @@
             <el-form-item label="表示名" prop="displayName">
               <el-input v-model="form.displayName" />
             </el-form-item>
+            <el-form-item label="ノートブック無期限実行" required>
+              <el-switch
+                v-model="form.availableInfiniteTimeNotebook"
+                style="width: 100%;"
+                inactive-text="禁止"
+                active-text="許可"
+              />
+            </el-form-item>
           </div>
         </el-col>
 
@@ -27,7 +35,7 @@
             <pl-git-endpoint-selector
               v-model="form.gitIds"
               :default-id="form.defaultGitId"
-              :tenant-id="form.id"
+              :tenant-id="getTenantId"
               @changeDefaultId="form.defaultGitId = $event"
             />
           </div>
@@ -37,7 +45,7 @@
             <pl-registry-endpoint-selector
               v-model="form.registryIds"
               :default-id="form.defaultRegistryId"
-              :tenant-id="form.id"
+              :tenant-id="getTenantId"
               @changeDefaultId="form.defaultRegistryId = $event"
             />
           </div>
@@ -84,6 +92,7 @@ export default {
         registryIds: [],
         defaultRegistryId: null,
         storageId: null,
+        availableInfiniteTimeNotebook: false,
       },
       rules: {
         displayName: [
@@ -108,12 +117,8 @@ export default {
   methods: {
     async init() {
       try {
-        let data = (await api.account.get()).data
-        let params = {
-          id: data.selectedTenant.id,
-        }
-        let [model] = api.f.data(await api.tenant.admin.getById(params))
-        this.form.id = data.selectedTenant.id
+        let [model] = api.f.data(await api.tenant.get())
+        this.form.id = model.id
         this.form.name = model.name
         this.form.displayName = model.displayName
         this.form.gitIds = model.gitIds
@@ -121,6 +126,8 @@ export default {
         this.form.storageId = model.storageId
         this.form.defaultRegistryId = model.defaultRegistryId
         this.form.registryIds = model.registryIds
+        this.form.availableInfiniteTimeNotebook =
+          model.availableInfiniteTimeNotebook
         this.error = null
       } catch (e) {
         this.error = e
@@ -143,7 +150,6 @@ export default {
     },
     async putTenant() {
       let param = {
-        id: this.form.id,
         model: {
           displayName: this.form.displayName,
           gitIds: this.form.gitIds,
@@ -151,9 +157,16 @@ export default {
           storageId: this.form.storageId,
           defaultRegistryId: this.form.defaultRegistryId,
           registryIds: this.form.registryIds,
+          availableInfiniteTimeNotebook: this.form
+            .availableInfiniteTimeNotebook,
         },
       }
-      await api.tenant.admin.put(param)
+      await api.tenant.put(param)
+    },
+    getTenantId() {
+      // 接続中テナントのIDを取得する
+      let data = api.account.get().data
+      return data.selectedTenant.id
     },
   },
 }

@@ -86,10 +86,19 @@ const actions = {
           fullName: repositoryName,
         }
         context.commit('setRepository', repository)
-        // リポジトリ一覧に追加
+        // リポジトリ一覧にない場合は追加
         let repositories = context.state.repositories
-        repositories.push(repository)
-        context.commit('setRepositories', { repositories })
+        if (
+          !repositories.some(
+            r =>
+              r.owner === repository.owner &&
+              r.name === repository.name &&
+              r.fullName === repository.fullName,
+          )
+        ) {
+          repositories.push(repository)
+          context.commit('setRepositories', { repositories })
+        }
       } else {
         //構文エラー
       }

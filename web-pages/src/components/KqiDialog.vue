@@ -16,11 +16,15 @@
       </div>
       <div v-else>
         <el-col :span="12">
-          <div v-if="!deleteParams.dangerFlag">
-            <kqi-delete-button :disabled="disabled" @delete="emitDelete" />
+          <div v-if="deleteButtonParams.isDanger">
+            <kqi-danger-button
+              :warning-text="deleteButtonParams.warningText"
+              :confirm-text="deleteButtonParams.confirmText"
+              @delete="emitDelete"
+            />
           </div>
           <div v-else>
-            <kqi-danger-button :params="deleteParams" @delete="emitDelete" />
+            <kqi-delete-button :disabled="disabled" @delete="emitDelete" />
           </div>
         </el-col>
         <el-col :span="12" class="right-button-group">
@@ -60,13 +64,13 @@ export default {
       type: Boolean,
       default: false,
     },
-    deleteParams: {
+    deleteButtonParams: {
       type: Object,
       default() {
         return {
-          dangerFlag: false,
-          screanName: null,
-          name: null,
+          isDanger: false,
+          warningText: null,
+          confirmText: null,
         }
       },
     },
