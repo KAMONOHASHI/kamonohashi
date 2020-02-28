@@ -1,19 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-import Shell from '@/components/common/Shell.vue'
-import LogViewer from '@/components/common/LogViewer.vue'
-
 import DataSet from '@/components/dataset/Index'
 import EditDataSet from '@/components/dataset/Edit'
 import CreateDataSet from '@/components/dataset/Create'
-
-import Preprocessing from '@/components/preprocessing/Index'
-import CreatePreprocessing from '@/components/preprocessing/Create'
-import EditPreprocessing from '@/components/preprocessing/Edit'
-import RunPreprocessing from '@/components/preprocessing/Run'
-import PreprocessingHistory from '@/components/preprocessing/PreprocessingHistory'
-import PreprocessingHistoryEdit from '@/components/preprocessing/PreprocessingHistoryEdit'
 
 import ManageRoleIndex from '@/components/tenant-manage/role/Index'
 import ManageRoleCreate from '@/components/tenant-manage/role/Create'
@@ -46,6 +36,7 @@ import ManageResourceIndex from '@/components/tenant-manage/resource/Index'
 import VersionIndex from '@/components/version/Index'
 
 import data from '@/router/data'
+import preprocessing from '@/router/preprocessing'
 import notebook from '@/router/notebook'
 import training from '@/router/training'
 import inference from '@/router/inference'
@@ -61,6 +52,7 @@ Vue.use(Router)
 let router = new Router({
   routes: [
     ...data,
+    ...preprocessing,
     ...notebook,
     ...training,
     ...inference,
@@ -98,65 +90,6 @@ let router = new Router({
         {
           path: ':id',
           component: EditDataSet,
-          props: true,
-        },
-      ],
-    },
-    {
-      path: '/preprocessing',
-      name: 'Preprocessing',
-      component: Preprocessing,
-      children: [
-        {
-          path: 'create',
-          component: CreatePreprocessing,
-        },
-        {
-          path: 'create/:originId?',
-          component: CreatePreprocessing,
-          props: true,
-        },
-        {
-          path: ':id/edit',
-          component: EditPreprocessing,
-          props: true,
-        },
-        {
-          path: 'run',
-          component: RunPreprocessing,
-          props: true,
-        },
-        {
-          path: ':id/:dataId',
-          component: PreprocessingHistoryEdit,
-          props: true,
-        },
-        {
-          path: ':id/:dataId/shell',
-          component: Shell,
-          props: true,
-        },
-      ],
-    },
-    {
-      path: '/preprocessingHistory/:id',
-      name: 'preprocessingHistory',
-      component: PreprocessingHistory,
-      props: true,
-      children: [
-        {
-          path: ':dataId',
-          component: PreprocessingHistoryEdit,
-          props: true,
-        },
-        {
-          path: ':dataId/shell',
-          component: Shell,
-          props: true,
-        },
-        {
-          path: ':dataId/log',
-          component: LogViewer,
           props: true,
         },
       ],
