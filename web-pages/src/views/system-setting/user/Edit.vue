@@ -41,12 +41,17 @@
       <el-form-item label="システムロール" prop="roleIds">
         <kqi-role-selector
           v-model="form.selectedSystemRoleIds"
-          :roles="systemRoles"
+          :roles="roles"
           show-system-role
         />
       </el-form-item>
       <el-form-item label="テナント" prop="tenants">
-        <tenant-role-selector ref="tenantsForm" v-model="form.tenants" />
+        <tenant-role-selector
+          ref="tenantsForm"
+          v-model="form.tenants"
+          :tenants="tenants"
+          :roles="roles"
+        />
       </el-form-item>
     </el-form>
   </kqi-dialog>
@@ -81,6 +86,27 @@ export default {
     },
   },
   data() {
+    let passwordValidator = (rule, value, callback) => {
+      if (!value[0] && !value[1]) {
+        callback()
+      } else if (!(value[0] === value[1])) {
+        callback(new Error('同一のパスワードを入力してください'))
+      } else {
+        callback()
+      }
+    }
+    let tenantsValidator = (rule, value, callback) => {
+      if (this.form.tenants.selectedTenantIds.length === 0) {
+        callback(new Error('必須項目です'))
+      } else {
+        this.form.tenants.selectedTenants.forEach(tenant => {
+          if (tenant.$roles.length === 0) {
+            callback(new Error('ロールが選択されていないテナントがあります'))
+          }
+        })
+      }
+      callback()
+    }
     return {
       dialogVisible: true,
       error: null,
@@ -95,17 +121,17 @@ export default {
         password: ['', ''],
         selectedSystemRoleIds: [],
         tenants: {
-          selectedTenantsId: [],
+          selectedTenantIds: [],
           selectedTenants: [],
         },
       },
       rules: {
         name: [formRule],
         password: [
-          { required: true, trigger: 'blur', validator: this.validatePassword },
+          { required: true, trigger: 'blur', validator: passwordValidator },
         ],
         tenants: [
-          { required: true, trigger: 'blur', validator: this.validateTenants },
+          { required: true, trigger: 'blur', validator: tenantsValidator },
         ],
       },
     }
@@ -114,7 +140,7 @@ export default {
     ...mapGetters({
       detail: ['user/detail'],
       tenants: ['tenant/tenants'],
-      systemRoles: ['role/roles'],
+      roles: ['role/roles'],
     }),
   },
   async created() {
@@ -139,7 +165,7 @@ export default {
         })
         this.form.tenants.selectedTenants = this.detail.tenants
         this.detail.tenants.forEach(s => {
-          this.form.tenants.selectedTenantsId.push(s.id)
+          this.form.tenants.selectedTenantIds.push(s.id)
         })
         this.form.error = null
         this.deleteButtonParams = {
@@ -163,25 +189,23 @@ export default {
       'user/put',
       'user/delete',
     ]),
-    /* eslint-enable */
     async submit() {
       let form = this.$refs.createForm
       await form.validate(async valid => {
         if (valid) {
           try {
             let postTenants = []
-            for (
-              let i = 0;
-              i < this.form.tenants.selectedTenantsId.length;
-              i++
-            ) {
-              this.form.tenants.selectedTenants[i].forEach(t => {
-                postTenants.push({ id: t.id, default: t.default, roles: [] })
-                t.roles.forEach(r => {
-                  postTenants[postTenants.length - 1].roles.push(r.id)
-                })
+            this.form.tenants.selectedTenants.forEach(tenant => {
+              let postTenant = {
+                id: tenant.id,
+                default: tenant.default,
+                roles: [],
+              }
+              tenant.$roles.forEach(roleId => {
+                postTenant.roles.push(roleId)
               })
-            }
+              postTenants.push(postTenant)
+            })
             let param = {
               model: {
                 name: this.form.name,
@@ -214,28 +238,6 @@ export default {
         this.error = null
       } catch (e) {
         this.error = e
-      }
-    },
-    validatePassword(rule, value, callback) {
-      if (!value[0] && !value[1]) {
-        callback()
-      } else if (!(value[0] === value[1])) {
-        callback(new Error('同一のパスワードを入力してください'))
-      } else {
-        callback()
-      }
-    },
-    validateTenants(rule, value, callback) {
-      if (value.selectedTenantsId.length === 0) {
-        callback(new Error('必須項目です'))
-      } else {
-        for (let i = 0; i < value.selectedTenantsId.length; i++) {
-          if (value.selectedTenants[i].some(x => x.roles.length === 0)) {
-            callback(new Error('ロールが選択されていないテナントがあります'))
-          } else {
-            callback()
-          }
-        }
       }
     },
     emitDone() {

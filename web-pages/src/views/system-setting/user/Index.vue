@@ -53,6 +53,7 @@
             </el-table>
           </template>
         </el-table-column>
+
         <el-table-column prop="name" label="ユーザ名" width="300px" />
         <el-table-column prop="serviceType" label="認証タイプ" width="150px">
           <template slot-scope="scope">
