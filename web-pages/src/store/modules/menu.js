@@ -22,7 +22,7 @@ const actions = {
     let response = await await api.menu.admin.get()
     let menus = response.data
 
-    // roles の形式を変換して設定
+    // roleオブジェクトの配列であるrolesから、idを抜き出して設定
     menus.forEach(menu => {
       let roles = []
       menu.roles.forEach(role => {

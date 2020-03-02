@@ -141,21 +141,17 @@ export default {
 
     async handleUpdate() {
       try {
-        await this.putMenus()
+        for (const data of this.tableData) {
+          let params = {
+            id: data.id,
+            roleIds: data.roles,
+          }
+          await this['menu/put'](params)
+        }
         this.showSuccessMessage()
         this.error = null
       } catch (e) {
         this.error = e
-      }
-    },
-
-    async putMenus() {
-      for (let i = 0; i < this.tableData.length; i++) {
-        let params = {
-          id: this.tableData[i].id,
-          roleIds: this.tableData[i].roles,
-        }
-        await this['menu/put'](params)
       }
     },
 
