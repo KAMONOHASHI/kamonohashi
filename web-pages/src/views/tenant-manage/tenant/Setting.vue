@@ -156,23 +156,23 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({ tenant: ['manageTenant/tenant'] }),
+    ...mapGetters({ tenant: ['tenant/detail'] }),
   },
   async created() {
     await this['git/fetchEndpoints']()
     await this['registry/fetchRegistries']()
-    await this.init()
+    await this.retrieveData()
   },
   methods: {
     ...mapActions([
       'git/fetchEndpoints',
       'registry/fetchRegistries',
-      'manageTenant/fetchTenant',
-      'manageTenant/put',
+      'tenant/fetchCurrentTenant',
+      'tenant/putCurrentTenant',
     ]),
-    async init() {
+    async retrieveData() {
       try {
-        await this['manageTenant/fetchTenant']()
+        await this['tenant/fetchCurrentTenant']()
         this.form.id = String(this.tenant.id)
         this.form.name = this.tenant.name
         this.form.displayName = this.tenant.displayName
@@ -204,9 +204,9 @@ export default {
                   .availableInfiniteTimeNotebook,
               },
             }
-            await this['manageTenant/put'](param)
+            await this['tenant/putCurrentTenant'](param)
             this.showSuccessMessage()
-            this.init()
+            this.retrieveData()
             this.error = null
           } catch (e) {
             this.error = e
