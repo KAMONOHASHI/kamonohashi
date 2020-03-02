@@ -1,7 +1,7 @@
 // 前処理管理
 import Index from '@/views/preprocessing/Index'
 import Edit from '@/views/preprocessing/Edit'
-import Preprocessing from '@/views/common/Preprocessing'
+import Run from '@/views/common/RunPreprocessing'
 
 // 前処理履歴管理
 import HistoryIndex from '@/views/preprocessing/HistoryIndex'
@@ -34,7 +34,7 @@ export default [
       // 作成した前処理を利用し、前処理を実行する画面
       {
         path: 'run',
-        component: Preprocessing,
+        component: Run,
         props: true,
       },
     ],
