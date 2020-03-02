@@ -30,12 +30,14 @@
 </template>
 
 <script>
-import api from '@/api/v1/api'
 import DataSetTransfer from '@/components/dataset/DatasetTransfer/Index.vue'
 import DisplayError from '@/components/common/DisplayError'
+import { createNamespacedHelpers } from 'vuex'
+const { mapGetters, mapMutations, mapActions } = createNamespacedHelpers(
+  'dataSet',
+)
 
 export default {
-  name: 'DataSetCreate',
   components: {
     'pl-display-error': DisplayError,
     'pl-dataset-transfer': DataSetTransfer,
@@ -55,9 +57,12 @@ export default {
         memo: '',
         entries: undefined,
       },
-      dataTypes: [], // new Array<DataType>();
       rules: this.createRules(),
     }
+  },
+
+  computed: {
+    ...mapGetters(['detail', 'dataTypes']),
   },
 
   async created() {
@@ -65,10 +70,13 @@ export default {
   },
 
   methods: {
+    ...mapActions(['fetchDetail', 'fetchDataTypes', 'post']),
+    ...mapMutations(['setDataTypes']),
+
     async getDataTypes() {
       try {
         if (!this.parentId) {
-          this.dataTypes = (await api.datasets.getDatatypes()).data
+          await this.fetchDataTypes()
           this.model.entries = {}
           this.dataTypes.forEach(type => {
             this.model.entries[type.name] = []
@@ -76,17 +84,17 @@ export default {
         }
 
         if (this.parentId) {
-          let data = (await api.datasets.getById({ id: this.parentId })).data
-          this.model.name = data.name
-          this.model.memo = data.memo
+          await this.fetchDetail(this.parentId)
+          this.model.name = this.detail.name
+          this.model.memo = this.detail.memo
           let ent = {}
           let types = []
-          for (let key in data.entries) {
-            ent[key] = data.entries[key]
+          for (let key in this.detail.entries) {
+            ent[key] = this.detail.entries[key]
             types.push({ name: key })
           }
           this.model.entries = ent
-          this.dataTypes = types
+          this.setDataTypes(types)
         }
         this.error = null
       } catch (e) {
@@ -120,13 +128,11 @@ export default {
         })
       }
       let params = {
-        model: {
-          entries: postEntries,
-          name: this.model.name,
-          memo: this.model.memo,
-        },
+        entries: postEntries,
+        name: this.model.name,
+        memo: this.model.memo,
       }
-      await api.datasets.post(params)
+      await this.post(params)
     },
 
     handleCancel() {

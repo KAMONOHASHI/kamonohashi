@@ -5,6 +5,7 @@ const state = {
   dataSets: [],
   total: 0,
   detail: {},
+  dataTypes: [],
 }
 
 // getters
@@ -19,6 +20,10 @@ const getters = {
 
   detail(state) {
     return state.detail
+  },
+
+  dataTypes(state) {
+    return state.dataTypes
   },
 }
 
@@ -40,6 +45,16 @@ const actions = {
       commit('setDetail', { detail })
     }
   },
+
+  async fetchDataTypes({ commit }) {
+    let dataTypes = (await api.datasets.getDatatypes()).data
+    commit('setDataTypes', dataTypes)
+  },
+
+  // eslint-disable-next-line no-unused-vars
+  async post({ commit }, params) {
+    return await api.data.post({ model: params })
+  },
 }
 
 // mutations
@@ -58,6 +73,10 @@ const mutations = {
 
   clearDetail(state) {
     state.detail = {}
+  },
+
+  setDataTypes(state, dataTypes) {
+    state.dataTypes = dataTypes
   },
 }
 
