@@ -40,7 +40,7 @@
 
       <el-form-item label="システムロール" prop="roleIds">
         <kqi-role-selector
-          v-model="form.systemRoleIds"
+          v-model="form.selectedSystemRoleIds"
           :roles="systemRoles"
           show-system-role
         />
@@ -93,11 +93,7 @@ export default {
         serviceType: 1,
         displayServiceType: '',
         password: ['', ''],
-        systemRoleIds: {
-          roleIds: [],
-          system: true,
-          tenant: false,
-        },
+        selectedSystemRoleIds: [],
         tenants: {
           selectedTenantsId: [],
           selectedTenants: [],
@@ -139,7 +135,7 @@ export default {
           this.form.displayServiceType = 'ローカル'
         if (this.form.serviceType === 2) this.form.displayServiceType = 'LDAP'
         this.detail.systemRoles.forEach(s => {
-          this.form.systemRoleIds.roleIds.push(s.id)
+          this.form.selectedSystemRoleIds.push(s.id)
         })
         this.form.tenants.selectedTenants = this.detail.tenants
         this.detail.tenants.forEach(s => {
@@ -190,7 +186,7 @@ export default {
               model: {
                 name: this.form.name,
                 password: this.form.password[0],
-                systemRoles: this.form.systemRoleIds.roleIds,
+                systemRoles: this.form.selectedSystemRoleIds,
                 tenants: postTenants,
                 serviceType: this.form.serviceType,
               },

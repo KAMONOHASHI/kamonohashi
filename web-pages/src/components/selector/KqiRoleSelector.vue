@@ -2,7 +2,7 @@
   <span>
     <el-select
       class="selectTenant"
-      :value="value.roleIds"
+      :value="value"
       multiple
       placeholder="Select"
       @change="handleChange"
@@ -25,13 +25,9 @@ export default {
   props: {
     // 選択したロールIDの配列
     value: {
-      type: Object,
+      type: Array,
       default: () => {
-        return {
-          roleIds: [],
-          system: false,
-          tenant: false,
-        }
+        return []
       },
     },
     // 選択肢となるロール
@@ -55,7 +51,7 @@ export default {
       if (selectedRoleIds === '') {
         this.$emit('input', null)
       } else {
-        updateValue.roleIds = selectedRoleIds
+        updateValue = selectedRoleIds
         this.$emit('input', updateValue)
       }
     },
