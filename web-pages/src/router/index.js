@@ -12,14 +12,6 @@ import ManageRoleEdit from '@/components/tenant-manage/role/Edit'
 import ManageUserIndex from '@/components/tenant-manage/user/Index'
 import ManageUserEdit from '@/components/tenant-manage/user/Edit'
 
-import ManageTenantSetting from '@/components/tenant-manage/tenant/Setting'
-
-import QuotaIndex from '@/components/system-setting/quota/Index'
-
-import UserIndex from '@/components/system-setting/user/Index'
-import UserCreate from '@/components/system-setting/user/Create'
-import UserEdit from '@/components/system-setting/user/Edit'
-
 import ClusterResource from '@/components/system-setting/cluster-resource/Index'
 import ClusterResourceEdit from '@/components/system-setting/cluster-resource/Edit'
 import ClusterResourceNode from '@/components/system-setting/cluster-resource/Node'
@@ -39,6 +31,7 @@ import preprocessing from '@/router/preprocessing'
 import notebook from '@/router/notebook'
 import training from '@/router/training'
 import inference from '@/router/inference'
+import manageTenant from '@/router/manageTenant'
 import git from '@/router/git'
 import menu from '@/router/menu'
 import node from '@/router/node'
@@ -58,6 +51,7 @@ let router = new Router({
     ...notebook,
     ...training,
     ...inference,
+    ...manageTenant,
     ...git,
     ...menu,
     ...node,
@@ -100,11 +94,6 @@ let router = new Router({
       ],
     },
     {
-      path: '/manage/tenant',
-      name: 'ManageTenant',
-      component: ManageTenantSetting,
-    },
-    {
       path: '/manage/role',
       name: 'ManageRole',
       component: ManageRoleIndex,
@@ -141,27 +130,6 @@ let router = new Router({
       path: '/manage/resource',
       name: 'ManageResource',
       component: ManageResourceIndex,
-    },
-    {
-      path: '/quota',
-      name: 'Quota',
-      component: QuotaIndex,
-    },
-    {
-      path: '/user',
-      name: 'User',
-      component: UserIndex,
-      children: [
-        {
-          path: 'create',
-          component: UserCreate,
-        },
-        {
-          path: ':id',
-          component: UserEdit,
-          props: true,
-        },
-      ],
     },
     {
       path: '/cluster-resource',
