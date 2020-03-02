@@ -1,10 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-import DataSet from '@/components/dataset/Index'
-import EditDataSet from '@/components/dataset/Edit'
-import CreateDataSet from '@/components/dataset/Create'
-
 import ManageRoleIndex from '@/components/tenant-manage/role/Index'
 import ManageRoleCreate from '@/components/tenant-manage/role/Create'
 import ManageRoleEdit from '@/components/tenant-manage/role/Edit'
@@ -27,6 +23,7 @@ import ManageResourceIndex from '@/components/tenant-manage/resource/Index'
 import VersionIndex from '@/components/version/Index'
 
 import data from '@/router/data'
+import dataSet from '@/router/dataSet'
 import preprocessing from '@/router/preprocessing'
 import notebook from '@/router/notebook'
 import training from '@/router/training'
@@ -47,6 +44,7 @@ Vue.use(Router)
 let router = new Router({
   routes: [
     ...data,
+    ...dataSet,
     ...preprocessing,
     ...notebook,
     ...training,
@@ -75,23 +73,6 @@ let router = new Router({
       path: '/',
       name: 'DashBoard',
       component: DashBoardIndex,
-    },
-    {
-      path: '/dataset',
-      name: 'DataSet',
-      component: DataSet,
-      children: [
-        {
-          path: 'create/:parentId?',
-          component: CreateDataSet,
-          props: true,
-        },
-        {
-          path: ':id',
-          component: EditDataSet,
-          props: true,
-        },
-      ],
     },
     {
       path: '/manage/role',
