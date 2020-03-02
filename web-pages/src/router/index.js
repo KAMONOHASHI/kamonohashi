@@ -29,7 +29,6 @@ import ClusterResourceContainerList from '@/components/system-setting/cluster-re
 import AccountLogin from '@/components/account/Login'
 import AccountSetting from '@/components/account/Setting'
 import DashBoardIndex from '@/components/dashboard/Index'
-import MenuIndex from '@/components/system-setting/menu/Index'
 import ManageMenuIndex from '@/components/tenant-manage/menu/Index'
 import Error from '@/components/error/Error'
 import ManageResourceIndex from '@/components/tenant-manage/resource/Index'
@@ -41,6 +40,7 @@ import notebook from '@/router/notebook'
 import training from '@/router/training'
 import inference from '@/router/inference'
 import git from '@/router/git'
+import menu from '@/router/menu'
 import node from '@/router/node'
 import quota from '@/router/quota'
 import registry from '@/router/registry'
@@ -59,6 +59,7 @@ let router = new Router({
     ...training,
     ...inference,
     ...git,
+    ...menu,
     ...node,
     ...quota,
     ...registry,
@@ -161,11 +162,6 @@ let router = new Router({
           props: true,
         },
       ],
-    },
-    {
-      path: '/menu',
-      name: 'Menu',
-      component: MenuIndex,
     },
     {
       path: '/cluster-resource',
