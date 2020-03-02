@@ -22,7 +22,7 @@ export default [
         component: Edit,
       },
       {
-        path: 'create/:originId?',
+        path: 'create/:id?',
         component: Edit,
         props: true,
       },
