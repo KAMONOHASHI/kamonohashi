@@ -6,6 +6,7 @@ import notebook from './modules/notebook'
 import preprocessing from './modules/preprocessing'
 import training from './modules/training'
 import inference from './modules/inference'
+import manageTenant from './modules/manageTenant'
 import node from './modules/node'
 import quota from './modules/quota'
 import registry from './modules/registry'
@@ -29,6 +30,7 @@ export default new Vuex.Store({
     preprocessing,
     training,
     inference,
+    manageTenant,
     git,
     node,
     quota,

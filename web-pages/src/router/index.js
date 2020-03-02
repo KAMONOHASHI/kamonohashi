@@ -12,8 +12,6 @@ import ManageRoleEdit from '@/components/tenant-manage/role/Edit'
 import ManageUserIndex from '@/components/tenant-manage/user/Index'
 import ManageUserEdit from '@/components/tenant-manage/user/Edit'
 
-import ManageTenantSetting from '@/components/tenant-manage/tenant/Setting'
-
 import ClusterResource from '@/components/system-setting/cluster-resource/Index'
 import ClusterResourceEdit from '@/components/system-setting/cluster-resource/Edit'
 import ClusterResourceNode from '@/components/system-setting/cluster-resource/Node'
@@ -34,6 +32,7 @@ import preprocessing from '@/router/preprocessing'
 import notebook from '@/router/notebook'
 import training from '@/router/training'
 import inference from '@/router/inference'
+import manageTenant from '@/router/manageTenant'
 import git from '@/router/git'
 import node from '@/router/node'
 import quota from '@/router/quota'
@@ -52,6 +51,7 @@ let router = new Router({
     ...notebook,
     ...training,
     ...inference,
+    ...manageTenant,
     ...git,
     ...node,
     ...quota,
@@ -91,11 +91,6 @@ let router = new Router({
           props: true,
         },
       ],
-    },
-    {
-      path: '/manage/tenant',
-      name: 'ManageTenant',
-      component: ManageTenantSetting,
     },
     {
       path: '/manage/role',
