@@ -1,6 +1,6 @@
 import Index from '@/views/data/Index'
 import Edit from '@/views/data/Edit'
-import Preprocessing from '@/views/common/Preprocessing'
+import Preprocessing from '@/views/common/RunPreprocessing'
 
 export default [
   {

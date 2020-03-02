@@ -5,7 +5,10 @@ const state = {
   preprocessings: [],
   total: 0,
   detail: {},
-  history: {},
+  histories: {},
+  historyDetail: {},
+  historyEvents: {},
+  logFile: {},
 }
 
 // getters
@@ -13,14 +16,29 @@ const getters = {
   preprocessings(state) {
     return state.preprocessings
   },
+
   total(state) {
     return state.total
   },
+
   detail(state) {
     return state.detail
   },
-  history(state) {
-    return state.history
+
+  histories(state) {
+    return state.histories
+  },
+
+  historyDetail(state) {
+    return state.historyDetail
+  },
+
+  historyEvents(state) {
+    return state.historyEvents
+  },
+
+  logFile(state) {
+    return state.logFile
   },
 }
 
@@ -39,9 +57,40 @@ const actions = {
     commit('setDetail', { detail })
   },
 
-  async fetchHistory({ commit }, id) {
-    let history = (await api.preprocessings.getHistory({ id: id })).data
-    commit('setHistory', history)
+  async fetchHistories({ commit }, id) {
+    let histories = (await api.preprocessings.getHistory({ id: id })).data
+    commit('setHistories', histories)
+  },
+
+  async fetchHistoryDetail({ commit }, { id, dataId }) {
+    let historyDetail = (
+      await api.preprocessings.getHistroyById({
+        id: id,
+        dataId: dataId,
+      })
+    ).data
+    commit('setHistoryDetail', historyDetail)
+  },
+
+  async fetchHistoryEvents({ commit }, { id, dataId }) {
+    let historyEvents = (
+      await api.preprocessings.getEventsById({
+        id: id,
+        dataId: dataId,
+      })
+    ).data
+    commit('setHistoryEvents', historyEvents)
+  },
+
+  async fetchLogFile({ commit }, { id, dataId }) {
+    let logFile = (
+      await api.preprocessings.getFilesById({
+        id: id,
+        dataId: dataId,
+        withUrl: true,
+      })
+    ).data
+    commit('setLogFile', logFile)
   },
 
   // eslint-disable-next-line no-unused-vars
@@ -63,6 +112,14 @@ const actions = {
   async delete({ state }, id) {
     await api.preprocessings.delete({ id: id })
   },
+
+  // eslint-disable-next-line no-unused-vars
+  async deleteHistory({ state }, { id, dataId }) {
+    await api.preprocessings.deleteHistroyById({
+      id: id,
+      dataId: dataId,
+    })
+  },
 }
 
 // mutations
@@ -83,8 +140,20 @@ const mutations = {
     state.detail = {}
   },
 
-  setHistory(state, history) {
-    state.history = history
+  setHistories(state, histories) {
+    state.histories = histories
+  },
+
+  setHistoryDetail(state, historyDetail) {
+    state.historyDetail = historyDetail
+  },
+
+  setHistoryEvents(state, historyEvents) {
+    state.historyEvents = historyEvents
+  },
+
+  setLogFile(state, logFile) {
+    state.logFile = logFile
   },
 }
 

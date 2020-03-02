@@ -14,19 +14,19 @@
             <el-form-item label="データ" prop="data">
               <div class="el-input">
                 <el-select
-                  v-model="tmp"
+                  v-model="form.selectedDataId"
                   multiple
                   placeholder="Select Data"
                   filterable
                   value-key="id"
                   remote
-                  :clearable="true"
+                  clearable
                 >
                   <el-option
                     v-for="item in data"
                     :key="item.id"
                     :label="item.name"
-                    :value="item"
+                    :value="item.id"
                   >
                     <span style="float: left">{{ item.name }}</span>
                     <span
@@ -41,7 +41,7 @@
           <div v-else>
             <kqi-display-text-form
               label="データID"
-              :value="id"
+              :value="idArray"
             ></kqi-display-text-form>
           </div>
 
@@ -105,6 +105,14 @@ export default {
     },
   },
   data() {
+    let dataSelectedIdsValidator = (rule, value, callback) => {
+      if (this.enableDataSelection && this.form.selectedDataId.length === 0) {
+        callback(new Error('必須項目です'))
+      } else {
+        callback()
+      }
+    }
+
     let preprocessingIdValidator = (rule, value, callback) => {
       if (this.form.preprocessingId === null)
         callback(new Error('必須項目です'))
@@ -122,8 +130,16 @@ export default {
             validator: preprocessingIdValidator,
           },
         ],
+        data: [
+          {
+            required: true,
+            trigger: 'blur',
+            validator: dataSelectedIdsValidator,
+          },
+        ],
       },
       form: {
+        selectedDataId: [],
         preprocessingId: null,
         resource: {
           cpu: 1,
@@ -137,7 +153,6 @@ export default {
       enableDataSelection: false,
       dialogVisible: true,
       error: null,
-      tmp: null,
     }
   },
   computed: {
@@ -169,11 +184,18 @@ export default {
       let form = this.$refs.preprocessingForm
       await form.validate(async valid => {
         if (valid) {
-          // データIDの分割
-          let selectedIdList = this.idArray.split(' ')
-          if (selectedIdList.length > 1) {
-            selectedIdList.pop() // 複数IDの場合、最後の空要素を削除
+          let selectedIdList = []
+          if (this.idArray === null) {
+            // 前処理管理画面からの呼び出しの場合、selectedDataIdを利用
+            selectedIdList = this.form.selectedDataId
+          } else {
+            // データ管理画面からの呼び出しの場合、idArray文字列の分割
+            selectedIdList = this.idArray.split(' ')
+            if (selectedIdList.length > 1) {
+              selectedIdList.pop() // 複数IDの場合、最後の空要素を削除
+            }
           }
+
           // 環境変数の作成
           let options = {}
           // apiのフォーマットに合わせる(配列 => オブジェクト)
@@ -282,5 +304,9 @@ export default {
 
 .footer {
   padding-top: 40px;
+}
+
+.el-select {
+  width: 100% !important;
 }
 </style>

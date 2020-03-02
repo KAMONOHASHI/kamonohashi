@@ -1,4 +1,3 @@
-<script src="../../../swagger-to-api.js"></script>
 <template>
   <el-dialog
     class="dialog"
@@ -7,11 +6,12 @@
     :before-close="handleCancel"
     :close-on-click-modal="false"
   >
-    <el-form ref="editForm" :model="this">
+    <el-form ref="editForm">
       <pl-display-error :error="error" />
-      <pl-display-text label="データ名" :value="dataName" />
-      <pl-display-text label="前処理名" :value="preprocessName" />
-      <pl-display-text label="実行日時" :value="createdAt" />
+      <pl-display-text label="ID" :value="preprocessingId" />
+      <pl-display-text label="データ名" :value="historyDetail.dataName" />
+      <pl-display-text label="前処理名" :value="historyDetail.preprocessName" />
+      <pl-display-text label="実行日時" :value="historyDetail.createdAt" />
       <el-form-item label="前処理ログ">
         <br />
         <pl-download
@@ -20,18 +20,18 @@
         />
         <el-button size="mini" @click="emitLog">閲覧</el-button>
       </el-form-item>
-      <pl-display-text label="ステータス" :value="status" />
-      <div v-if="status === 'Running'">
+      <pl-display-text label="ステータス" :value="historyDetail.status" />
+      <div v-if="historyDetail.status === 'Running'">
         <el-form-item label="操作">
           <div class="el-input">
             <el-button @click="emitShell">Shell起動</el-button>
           </div>
         </el-form-item>
       </div>
-      <div v-if="events.length">
+      <div v-if="historyEvents.length">
         <el-collapse accordion>
           <el-collapse-item title="ステータス詳細ログ">
-            <div v-for="(event, index) in events" :key="index">
+            <div v-for="(event, index) in historyEvents" :key="index">
               <div v-if="event.isError">message:{{ event.message }}</div>
             </div>
           </el-collapse-item>
@@ -57,41 +57,39 @@
 </template>
 
 <script>
-import api from '@/api/v1/api'
 import DisplayTextForm from '@/components/common/DisplayTextForm.vue'
 import DeleteButton from '@/components/common/DeleteButton.vue'
 import DisplayError from '@/components/common/DisplayError'
-import FileManager from '@/components/common/FileManager.vue'
 import DownloadButton from '@/components/common/DownloadButton.vue'
+import { createNamespacedHelpers } from 'vuex'
+const { mapGetters, mapActions } = createNamespacedHelpers('preprocessing')
 
 export default {
-  name: 'PreprocessHistoryEdit',
   components: {
     'pl-display-error': DisplayError,
     'pl-display-text': DisplayTextForm,
     'pl-delete-button': DeleteButton,
-    'pl-file-manager': FileManager,
     'pl-download': DownloadButton,
   },
   props: {
-    id: String,
-    dataId: String,
+    id: {
+      type: String,
+      default: null,
+    },
+    dataId: {
+      type: String,
+      default: null,
+    },
   },
   data() {
     return {
       dialogVisible: true,
+      preprocessingId: null,
       error: null,
-      dataName: '',
-      preprocessName: '',
-      createdAt: '',
-      status: '',
-      logFile: [],
-      events: [],
     }
   },
-
-  async created() {
-    await this.changeValue()
+  computed: {
+    ...mapGetters(['historyDetail', 'historyEvents', 'logFile']),
   },
 
   watch: {
@@ -103,7 +101,18 @@ export default {
     },
   },
 
+  async created() {
+    await this.changeValue()
+  },
+
   methods: {
+    ...mapActions([
+      'fetchHistoryDetail',
+      'fetchHistoryEvents',
+      'fetchLogFile',
+      'deleteHistory',
+    ]),
+
     async changeValue() {
       this.dataName = ''
       this.preprocessName = ''
@@ -112,26 +121,16 @@ export default {
 
       if (this.id && this.dataId) {
         try {
-          let params = {
-            id: this.id,
-            dataId: this.dataId,
-          }
-          let data = (await api.preprocessings.getHistroyById(params)).data
-          this.dataName = data.dataName
-          this.preprocessName = data.preprocessName
-          this.createdAt = data.createdAt
-          this.status = data.status
+          await this.fetchHistoryDetail({ id: this.id, dataId: this.dataId })
+          this.preprocessingId = this.historyDetail.key.split('-')[1]
           this.error = null
-          if (data.statusType === 'Running' || data.statusType === 'Error') {
-            this.events = (await api.preprocessings.getEventsById(params)).data
+          if (
+            this.historyDetail.statusType === 'Running' ||
+            this.historyDetail.statusType === 'Error'
+          ) {
+            await this.fetchHistoryEvents({ id: this.id, dataId: this.dataId })
           }
-          this.logFile = (
-            await api.preprocessings.getFilesById({
-              id: this.id,
-              dataId: this.dataId,
-              withUrl: true,
-            })
-          ).data
+          await this.fetchLogFile({ id: this.id, dataId: this.dataId })
         } catch (e) {
           this.error = e
         }
@@ -140,11 +139,7 @@ export default {
 
     async handleRemove() {
       try {
-        let params = {
-          id: this.id,
-          dataId: this.dataId,
-        }
-        await api.preprocessings.deleteHistroyById(params)
+        await this.deleteHistory({ id: this.id, dataId: this.dataId })
         this.emitDone()
         this.error = null
       } catch (e) {
@@ -156,7 +151,7 @@ export default {
       this.emitCancel()
     },
     emitShell() {
-      this.$emit('shell', { id: this.id, dataId: this.dataId })
+      this.$emit('shell', { id: this.preprocessingId })
     },
     emitLog() {
       this.$emit('log', { id: this.id, dataId: this.dataId })
