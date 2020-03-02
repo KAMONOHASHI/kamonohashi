@@ -36,11 +36,6 @@ export default {
       type: String,
       default: null,
     },
-    // 前処理履歴用
-    dataId: {
-      type: String,
-      default: null,
-    },
   },
   data() {
     return {
@@ -54,7 +49,7 @@ export default {
   async mounted() {
     let url = this.$route.path
     this.type = url.split('/')[1] // ["", "{type}", "{id}", "shell"]
-    if (this.type === 'preprocessing' || this.type === 'preprocessingHistory') {
+    if (this.type === 'preprocessingShell') {
       this.type = 'preproc'
     }
     await this.connectShell()

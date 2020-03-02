@@ -111,7 +111,7 @@ export default {
       branch: ['gitSelector/branch'],
       commit: ['gitSelector/commit'],
       detail: ['preprocessing/detail'],
-      history: ['preprocessing/history'],
+      histories: ['preprocessing/histories'],
     }),
   },
 
@@ -149,8 +149,10 @@ export default {
     // 編集時/コピー実行時は、既に登録されている情報を各項目を設定
     if (this.isEditDialog || this.isCopyCreation) {
       await this['preprocessing/fetchDetail'](this.id)
-      await this['preprocessing/fetchHistory'](this.id)
-      if (this.history.length > 0) {
+
+      // 既に前処理で利用されている場合は、patchフラグを立てる
+      await this['preprocessing/fetchHistories'](this.id)
+      if (this.histories.length > 0) {
         this.isPatch = true
       }
 
@@ -212,7 +214,7 @@ export default {
     ...mapActions([
       'preprocessing/fetchDetail',
       'preprocessing/post',
-      'preprocessing/fetchHistory',
+      'preprocessing/fetchHistories',
       'preprocessing/delete',
       'registrySelector/fetchRegistries',
       'registrySelector/fetchImages',

@@ -52,15 +52,16 @@ export default [
         props: true,
       },
       {
-        path: ':dataId/shell',
-        component: Shell,
-        props: true,
-      },
-      {
         path: ':dataId/log',
         component: LogViewer,
         props: true,
       },
     ],
+  },
+  // 前処理実行中のshellコンポーネントへは前処理履歴のIDを渡す(前処理のIDでも、データIDでも無い)
+  {
+    path: '/preprocessingShell/:id',
+    component: Shell,
+    props: true,
   },
 ]

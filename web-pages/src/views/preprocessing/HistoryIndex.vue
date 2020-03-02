@@ -1,8 +1,6 @@
-<script src="../../api/v1/api.js"></script>
-<script src="../../api/v1/api.generator.js"></script>
 <template>
   <div>
-    <h2>{{ $t('title') }}</h2>
+    <h2>前処理履歴</h2>
     <el-row>
       <el-col :span="8" class="back">
         <span @click="openPreprocessing">
@@ -15,62 +13,45 @@
     </el-row>
     <br />
     <el-row>
-      <el-col
-        type="flex"
-        justify="space-between"
-        :gutter="20"
-        class="pagination"
-        :span="16"
-      >
-        <el-pagination
-          layout="total, sizes, prev, pager, next"
-          :total="total"
-          :page-size="currentPageSize"
-          :current-page="currentPage"
-          :page-sizes="[10, 30, 50, 100, 200]"
-          @size-change="handleSizeChange"
-          @current-change="currentChange"
-        />
-      </el-col>
+      <kqi-pagination
+        v-model="pageStatus"
+        :total="histories.length"
+        @change="retrieveData"
+      ></kqi-pagination>
     </el-row>
 
-    <pl-display-error :error="error" />
+    <kqi-display-error :error="error" />
     <br />
-    <div v-if="loading">
-      <i class="el-icon-loading"></i>
+    <div v-if="histories.length === 0">
+      履歴が見つかりませんでした。
     </div>
     <div v-else>
-      <div v-if="tableData.length === 0">
-        履歴が見つかりませんでした。
-      </div>
-      <div v-else>
-        <el-table
-          class="data-table pl-index-table"
-          :data="tableData"
-          border
-          @row-click="openEditDialog"
-        >
-          <el-table-column prop="dataId" label="入力データID" width="120px" />
-          <el-table-column prop="dataName" label="入力データ名" width="auto" />
-          <el-table-column prop="createdAt" label="実行日時" width="170px" />
-          <el-table-column width="25px">
-            <div slot-scope="scope">
-              <div
-                v-if="
-                  (scope.row.status === 'Running') |
-                    (scope.row.status === 'Completed')
-                "
-              >
-                <i class="el-icon-success" style="color: #67C23A"></i>
-              </div>
-              <div v-else>
-                <i class="el-icon-warning" style="color: #E6A23C"></i>
-              </div>
+      <el-table
+        class="data-table pl-index-table"
+        :data="tableData"
+        border
+        @row-click="openEditDialog"
+      >
+        <el-table-column prop="dataId" label="入力データID" width="120px" />
+        <el-table-column prop="dataName" label="入力データ名" width="auto" />
+        <el-table-column prop="createdAt" label="実行日時" width="170px" />
+        <el-table-column width="25px">
+          <div slot-scope="scope">
+            <div
+              v-if="
+                (scope.row.status === 'Running') |
+                  (scope.row.status === 'Completed')
+              "
+            >
+              <i class="el-icon-success" style="color: #67C23A"></i>
             </div>
-          </el-table-column>
-          <el-table-column prop="status" label="ステータス" width="120px" />
-        </el-table>
-      </div>
+            <div v-else>
+              <i class="el-icon-warning" style="color: #E6A23C"></i>
+            </div>
+          </div>
+        </el-table-column>
+        <el-table-column prop="status" label="ステータス" width="120px" />
+      </el-table>
     </div>
 
     <router-view
@@ -84,96 +65,77 @@
 </template>
 
 <script>
-import api from '@/api/v1/api'
-import DisplayError from '@/components/common/DisplayError'
+import KqiPagination from '@/components/KqiPagination'
+import KqiDisplayError from '@/components/KqiDisplayError'
+import { createNamespacedHelpers } from 'vuex'
+const { mapGetters, mapActions } = createNamespacedHelpers('preprocessing')
 
 export default {
-  name: 'PreprocessingHistory',
+  title: '前処理履歴',
   components: {
-    'pl-display-error': DisplayError,
+    KqiPagination,
+    KqiDisplayError,
   },
-  props: ['id'],
+  props: {
+    id: {
+      type: String,
+      default: null,
+    },
+  },
   data() {
     return {
-      error: null,
-      loading: true,
-      selectedEdit: {},
+      pageStatus: {
+        currentPage: 1,
+        currentPageSize: 10,
+      },
       tableData: [],
-      historyData: [],
-      total: 0,
-      currentPage: 1,
-      currentPageSize: 10,
+      error: null,
     }
   },
-  async created() {
-    await this.changeId()
+  computed: {
+    ...mapGetters(['histories']),
   },
-  watch: {
-    async id() {
-      await this.changeId()
-    },
+  async created() {
+    await this.retrieveData()
   },
   methods: {
-    async refreshTable() {
-      // api.preprocessings.getHistory()で、全履歴が取得できているため、手動でページ分割して表示
-      this.tableData = this.historyData.slice(
-        (this.currentPage - 1) * this.currentPageSize,
-        (this.currentPage - 1) * this.currentPageSize + this.currentPageSize,
-      )
-    },
-    async changeId() {
-      this.tableData = []
+    ...mapActions(['fetchHistories']),
 
+    async retrieveData() {
       if (this.id) {
         try {
-          this.loading = true
-          let params = {
-            $config: { apiDisabledLoading: true },
-            id: this.id,
-          }
-          this.historyData = (await api.preprocessings.getHistory(params)).data
-          this.total = this.historyData.length
+          await this.fetchHistories(this.id)
           this.error = null
         } catch (e) {
           this.error = e
-        } finally {
-          this.loading = false
         }
-        this.refreshTable()
+        // fetchHistories()で、全履歴が取得できているため、手動でページ分割して表示
+        this.tableData = this.histories.slice(
+          (this.pageStatus.currentPage - 1) * this.pageStatus.currentPageSize,
+          (this.pageStatus.currentPage - 1) * this.pageStatus.currentPageSize +
+            this.pageStatus.currentPageSize,
+        )
       }
     },
+
     async openEditDialog(row) {
       if (row) {
         this.$router.push('/preprocessingHistory/' + this.id + '/' + row.dataId)
-      } else {
-        this.selectedEdit = null
       }
     },
     async closeEditDialog() {
       this.$router.push('/preprocessingHistory/' + this.id)
     },
     async done() {
-      await this.changeId()
+      await this.retrieveData()
       this.closeEditDialog()
       this.showSuccessMessage()
     },
-    async currentChange(page) {
-      this.currentPage = page
-      await this.refreshTable()
-    },
-    async handleSizeChange(size) {
-      this.currentPageSize = size
-      this.currentPage = 1
-      await this.refreshTable()
-    },
     async openPreprocessing() {
       this.$router.push('/preprocessing')
-      this.$store.commit('setLoading', false)
     },
     shell(data) {
-      this.$router.push(
-        '/preprocessingHistory/' + data.id + '/' + data.dataId + '/shell',
-      )
+      this.$router.push('/preprocessingShell/' + data.id)
     },
     log(data) {
       this.$router.push(
@@ -182,16 +144,6 @@ export default {
     },
     back() {
       this.$router.go(-1)
-    },
-  },
-  i18n: {
-    messages: {
-      en: {
-        title: 'PreprocessingHistory',
-      },
-      ja: {
-        title: '前処理履歴',
-      },
     },
   },
 }
@@ -204,10 +156,5 @@ export default {
   :hover {
     color: #409eff;
   }
-}
-
-.pagination /deep/ .el-input {
-  text-align: left;
-  width: 120px;
 }
 </style>
