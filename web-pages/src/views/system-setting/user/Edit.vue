@@ -39,7 +39,11 @@
       </span>
 
       <el-form-item label="システムロール" prop="roleIds">
-        <kqi-role-selector v-model="form.systemRoleIds" :roles="systemRoles" />
+        <kqi-role-selector
+          v-model="form.systemRoleIds"
+          :roles="systemRoles"
+          show-system-role
+        />
       </el-form-item>
       <el-form-item label="テナント" prop="tenants">
         <tenant-role-selector ref="tenantsForm" v-model="form.tenants" />
