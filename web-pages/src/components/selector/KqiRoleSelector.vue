@@ -7,9 +7,9 @@
       placeholder="Select"
       @change="handleChange"
     >
-      <template v-for="item in availableRoles">
+      <template v-for="item in roles">
         <el-option
-          v-if="item.isSystemRole === showSystem"
+          v-if="item.isSystemRole === showSystemRole"
           :key="item.id"
           :label="item.displayName"
           :value="item.id"
@@ -21,11 +21,9 @@
 </template>
 
 <script>
-import { createNamespacedHelpers } from 'vuex'
-const { mapGetters } = createNamespacedHelpers('role')
-
 export default {
   props: {
+    // 選択したロールIDの配列
     value: {
       type: Object,
       default: () => {
@@ -36,36 +34,28 @@ export default {
         }
       },
     },
-  },
-  data() {
-    return {
-      selectedRoleIds: [],
-      showSystem: false,
-    }
-  },
-  computed: {
-    ...mapGetters(['roles', 'tenantRoles']),
-    availableRoles: function() {
-      if (this.value.tenant) {
-        return this.selectedRoleIds
-      } else {
-        this.showRoles()
-        return this.roles
-      }
+    // 選択肢となるロール
+    roles: {
+      type: Array,
+      default: () => {
+        return []
+      },
+    },
+    // システムロールの表示かどうか。
+    // trueの場合: isSystemRoleがtrueのものを表示
+    // falseの場合: isSystemRoleがfalseのものを表示
+    showSystemRole: {
+      type: Boolean,
+      default: true,
     },
   },
   methods: {
-    async showRoles() {
-      if (!this.value.tenant) {
-        this.showSystem = true
-      }
-    },
-    async handleChange(v) {
+    async handleChange(selectedRoleIds) {
       let updateValue = this.value
-      updateValue.roleIds = v
-      if (v === '') {
+      if (selectedRoleIds === '') {
         this.$emit('input', null)
       } else {
+        updateValue.roleIds = selectedRoleIds
         this.$emit('input', updateValue)
       }
     },

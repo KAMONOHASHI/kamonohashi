@@ -39,7 +39,7 @@
       </span>
 
       <el-form-item label="システムロール" prop="roleIds">
-        <kqi-role-selector v-model="form.systemRoleIds" />
+        <kqi-role-selector v-model="form.systemRoleIds" :roles="systemRoles" />
       </el-form-item>
       <el-form-item label="テナント" prop="tenants">
         <tenant-role-selector ref="tenantsForm" v-model="form.tenants" />
@@ -111,7 +111,11 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({ detail: ['user/detail'], tenants: ['tenant/tenants'] }),
+    ...mapGetters({
+      detail: ['user/detail'],
+      tenants: ['tenant/tenants'],
+      systemRoles: ['role/roles'],
+    }),
   },
   async created() {
     await this['role/fetchRoles']()
