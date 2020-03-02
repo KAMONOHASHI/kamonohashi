@@ -3,15 +3,11 @@
     <h2>データセット管理2</h2>
     <el-row type="flex" justify="space-between" :gutter="20">
       <el-col class="pagination" :span="16">
-        <el-pagination
-          layout="total, sizes, prev, pager, next"
+        <kqi-pagination
+          v-model="pageStatus"
           :total="total"
-          :current-page="currentPage"
-          :page-size="currentPageSize"
-          :page-sizes="[10, 30, 50, 100, 200]"
-          @size-change="handleSizeChange"
-          @current-change="currentChange"
-        />
+          @change="retrieveData"
+        ></kqi-pagination>
       </el-col>
       <el-col class="right-top-button" :span="8">
         <el-button
@@ -36,7 +32,7 @@
     <el-row class="test">
       <el-table
         class="data-table pl-index-table"
-        :data="tableData"
+        :data="dataSets"
         border
         @row-click="openEditDialog"
       >
@@ -47,17 +43,11 @@
       </el-table>
     </el-row>
     <el-row>
-      <el-col class="pagination" :span="10">
-        <el-pagination
-          layout="total, sizes, prev, pager, next"
-          :total="total"
-          :current-page="currentPage"
-          :page-size="currentPageSize"
-          :page-sizes="[10, 30, 50, 100, 200]"
-          @size-change="handleSizeChange"
-          @current-change="currentChange"
-        />
-      </el-col>
+      <kqi-pagination
+        v-model="pageStatus"
+        :total="total"
+        @change="retrieveData"
+      ></kqi-pagination>
     </el-row>
     <router-view
       @cancel="closeDialog"
@@ -68,16 +58,23 @@
 </template>
 
 <script>
-import api from '@/api/v1/api'
+import KqiPagination from '@/components/KqiPagination'
 import SmartSearchInput from '@/components/common/SmartSearchInput/Index.vue'
+import { createNamespacedHelpers } from 'vuex'
+const { mapGetters, mapActions } = createNamespacedHelpers('dataSet')
 
 export default {
   title: 'データセット管理',
   components: {
+    'kqi-pagination': KqiPagination,
     'pl-smart-search-input': SmartSearchInput,
   },
   data() {
     return {
+      pageStatus: {
+        currentPage: 1,
+        currentPageSize: 10,
+      },
       searchCondition: {},
       searchConfigs: [
         { prop: 'id', name: 'ID', type: 'number' },
@@ -85,36 +82,29 @@ export default {
         { prop: 'memo', name: 'メモ', type: 'text' },
         { prop: 'createdAt', name: '登録日時', type: 'date' },
       ],
-      total: 0,
       tableData: [],
-      currentPage: 1,
-      currentPageSize: 10,
     }
   },
+  computed: {
+    ...mapGetters(['dataSets', 'total']),
+  },
+
   async created() {
     await this.retrieveData()
   },
   methods: {
+    ...mapActions(['fetchDataSets']),
+
     async currentChange(page) {
       this.currentPage = page
       await this.retrieveData()
     },
     async retrieveData() {
       let params = this.searchCondition
-      params.page = this.currentPage
-      params.perPage = this.currentPageSize
+      params.page = this.pageStatus.currentPage
+      params.perPage = this.pageStatus.currentPageSize
       params.withTotal = true
-
-      let response = await api.datasets.get(params)
-      this.tableData = response.data
-      this.total = parseInt(response.headers['x-total-count'])
-    },
-    // ページのサイズ(表示件数)変更
-    async handleSizeChange(size) {
-      this.currentPageSize = size
-      this.currentPage = 1
-      // データを再ロードする
-      await this.retrieveData()
+      await this.fetchDataSets(params)
     },
     closeDialog() {
       this.$router.push('/dataset')
@@ -134,7 +124,7 @@ export default {
       this.$router.push('/dataset/create/' + id)
     },
     async search() {
-      this.currentPage = 1
+      this.pageStatus.currentPage = 1
       await this.retrieveData()
     },
   },

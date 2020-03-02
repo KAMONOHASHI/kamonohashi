@@ -3,6 +3,7 @@ import api from '@/api/v1/api'
 // initial state
 const state = {
   dataSets: [],
+  total: 0,
   detail: {},
 }
 
@@ -12,6 +13,10 @@ const getters = {
     return state.dataSets
   },
 
+  total(state) {
+    return state.total
+  },
+
   detail(state) {
     return state.detail
   },
@@ -19,9 +24,12 @@ const getters = {
 
 // actions
 const actions = {
-  async fetchDataSets({ commit }) {
-    let dataSets = (await api.datasets.get()).data
+  async fetchDataSets({ commit }, params) {
+    let response = await api.datasets.get(params)
+    let dataSets = response.data
+    let total = response.headers['x-total-count']
     commit('setDataSets', { dataSets })
+    commit('setTotal', parseInt(total))
   },
 
   async fetchDetail({ commit }, id) {
@@ -38,6 +46,10 @@ const actions = {
 const mutations = {
   setDataSets(state, { dataSets }) {
     state.dataSets = dataSets
+  },
+
+  setTotal(state, total) {
+    state.total = total
   },
 
   setDetail(state, { detail }) {
