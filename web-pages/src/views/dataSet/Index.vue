@@ -118,10 +118,11 @@ export default {
       this.$router.push('/dataset/create')
     },
     openEditDialog(selectedRow) {
-      this.$router.push('/dataset/' + selectedRow.id)
+      this.$router.push('/dataset/edit/' + selectedRow.id)
     },
     handleCopy(id) {
       this.$router.push('/dataset/create/' + id)
+      this.$router.go('/dataset/create/' + id)
     },
     async search() {
       this.pageStatus.currentPage = 1

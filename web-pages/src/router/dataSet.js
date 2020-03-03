@@ -1,6 +1,5 @@
 import Index from '@/views/dataSet/Index'
 import Edit from '@/views/dataSet/Edit'
-import Create from '@/views/dataSet/Create'
 
 export default [
   {
@@ -9,12 +8,12 @@ export default [
     component: Index,
     children: [
       {
-        path: 'create/:parentId?',
-        component: Create,
+        path: 'create/:id?',
+        component: Edit,
         props: true,
       },
       {
-        path: ':id',
+        path: 'edit/:id',
         component: Edit,
         props: true,
       },

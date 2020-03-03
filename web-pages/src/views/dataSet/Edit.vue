@@ -1,95 +1,230 @@
 <template>
-  <el-dialog
-    class="dialog"
-    title="データセット編集"
-    :visible.sync="dialogVisible"
-    :before-close="handleCancel"
-    :close-on-click-modal="false"
+  <kqi-dialog
+    :title="title"
+    :type="id === null ? 'CREATE' : 'EDIT'"
+    @submit="submit"
+    @delete="deleteDataSet"
+    @close="emitCancel"
   >
-    <el-row>
+    <el-row v-if="isEditDialog">
       <el-col :span="24" class="right-button-group">
-        <el-button @click="handleCopy">コピー</el-button>
+        <el-button @click="emitCopy">コピー</el-button>
       </el-col>
     </el-row>
 
-    <el-form ref="updateForm" :model="model" :rules="rules">
-      <pl-display-error :error="error" />
-      <el-row>
+    <el-form ref="createForm" :model="form" :rules="rules">
+      <kqi-display-error :error="error" />
+      <el-row v-if="isCreateDialog">
+        <el-form-item label="データセット名" prop="name">
+          <el-input v-model="form.name" />
+        </el-form-item>
+        <el-form-item label="メモ" prop="memo">
+          <el-input v-model="form.memo" type="textarea" />
+        </el-form-item>
+      </el-row>
+      <el-row v-else>
         <el-col :span="12">
           <el-form-item label="ID">
-            <pl-display-text-form v-model="id" />
+            <kqi-display-text-form v-model="id" />
           </el-form-item>
           <el-form-item label="データセット名" prop="name">
-            <el-input v-model="model.name" />
+            <el-input v-model="form.name" />
           </el-form-item>
           <el-form-item label="メモ" prop="memo">
-            <el-input v-model="model.memo" type="textarea" />
+            <el-input v-model="form.memo" type="textarea" />
           </el-form-item>
         </el-col>
-        <el-col :offset="1" :span="11">
+        <el-col v-if="isEditDialog" :offset="1" :span="11">
           <el-form-item label="編集可否">
-            <pl-display-text-form v-if="model.isLocked" value="不可" />
-            <pl-display-text-form v-else value="可能" />
+            <kqi-display-text-form v-if="detail.isLocked" value="不可" />
+            <kqi-display-text-form v-else value="可能" />
           </el-form-item>
           <el-form-item label="登録者">
-            <pl-display-text-form v-model="model.createdBy" />
+            <kqi-display-text-form v-model="detail.createdBy" />
           </el-form-item>
           <el-form-item label="登録日時">
-            <pl-display-text-form v-model="model.createdAt" />
+            <kqi-display-text-form v-model="detail.createdAt" />
           </el-form-item>
         </el-col>
       </el-row>
+
       <el-form-item label="データ" prop="entries"> </el-form-item>
-      <el-form-item v-if="model.entries">
+      <el-form-item>
         <pl-dataset-transfer
-          v-model="model.entries"
-          :disabled="model.isLocked"
+          v-if="form.entries"
+          v-model="form.entries"
         ></pl-dataset-transfer>
       </el-form-item>
-      <el-row class="footer">
-        <el-col class="left-button-group" :span="12">
-          <pl-delete-button @delete="handleDelete" />
-        </el-col>
-        <el-col class="right-button-group" :span="12">
-          <el-button @click="handleCancel">キャンセル</el-button>
-          <el-button type="primary" @click="handleUpdate">更新</el-button>
-        </el-col>
-      </el-row>
     </el-form>
-  </el-dialog>
+  </kqi-dialog>
 </template>
 
 <script>
+import KqiDialog from '@/components/KqiDialog'
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
+import KqiDisplayError from '@/components/KqiDisplayError'
+
 import DataSetTransfer from '@/components/dataset/DatasetTransfer/Index.vue'
-import DisplayError from '@/components/common/DisplayError'
-import DisplayTextForm from '@/components/common/DisplayTextForm'
-import DeleteButton from '@/components/common/DeleteButton.vue'
-import api from '@/api/v1/api'
+import { createNamespacedHelpers } from 'vuex'
+const { mapGetters, mapMutations, mapActions } = createNamespacedHelpers(
+  'dataSet',
+)
 
 export default {
-  name: 'DataSetCreate',
   components: {
-    'pl-display-text-form': DisplayTextForm,
-    'pl-display-error': DisplayError,
+    'kqi-dialog': KqiDialog,
+    'kqi-display-text-form': KqiDisplayTextForm,
+    'kqi-display-error': KqiDisplayError,
     'pl-dataset-transfer': DataSetTransfer,
-    'pl-delete-button': DeleteButton,
   },
   props: {
-    id: String,
+    id: {
+      type: String,
+      default: null,
+    },
   },
   data() {
     return {
-      dialogVisible: true,
-      error: null,
-      model: {
+      form: {
         name: '',
         memo: '',
-        createdBy: '',
-        createdAt: '',
-        entries: undefined,
-        isLocked: false,
+        entries: null,
       },
-      rules: {
+      title: '',
+      isCreateDialog: false,
+      isCopyCreation: false,
+      isEditDialog: false,
+      dialogVisible: true,
+      error: null,
+      rules: this.createRules(),
+    }
+  },
+
+  computed: {
+    ...mapGetters(['detail', 'dataTypes']),
+  },
+
+  async created() {
+    let url = this.$route.path
+    let type = url.split('/')[2] // ["", "dataset", "{type}", "{id}"]
+    switch (type) {
+      case 'create':
+        this.title = 'データセット作成'
+        this.isCreateDialog = true
+        this.isCopyCreation = this.id !== null
+        break
+
+      case 'edit':
+        this.title = 'データセット編集'
+        this.isEditDialog = true
+        break
+    }
+
+    // 新規作成時はデータタイプを設定
+    if (this.isCreateDialog && !this.isCopyCreation) {
+      try {
+        await this.fetchDataTypes()
+        this.form.entries = {}
+        this.dataTypes.forEach(type => {
+          this.form.entries[type.name] = []
+        })
+        this.error = null
+      } catch (e) {
+        this.error = e
+      }
+    }
+
+    // 編集時/コピー作成時は、既に登録されている情報を各項目を設定
+    if (this.isEditDialog || this.isCopyCreation) {
+      await this.retrieveData()
+    }
+  },
+
+  methods: {
+    ...mapActions(['fetchDetail', 'fetchDataTypes', 'post', 'put', 'delete']),
+    ...mapMutations(['setDataTypes']),
+    async retrieveData() {
+      try {
+        await this.fetchDetail(this.id)
+        this.form.name = this.detail.name
+        this.form.memo = this.detail.memo
+        let ent = {}
+        let types = []
+        for (let key in this.detail.entries) {
+          ent[key] = this.detail.entries[key]
+          types.push({ name: key })
+        }
+        this.form.entries = ent
+        this.setDataTypes(types)
+        this.error = null
+      } catch (e) {
+        this.error = e
+      }
+    },
+
+    async submit() {
+      let form = this.$refs.createForm
+      await form.validate(async valid => {
+        if (valid) {
+          try {
+            await this.postDataSet()
+            this.emitDone()
+            this.error = null
+          } catch (e) {
+            this.error = e
+          }
+        }
+      })
+    },
+
+    async postDataSet() {
+      let postEntries = {}
+      for (let key in this.form.entries) {
+        postEntries[key] = []
+        this.form.entries[key].forEach(entry => {
+          postEntries[key].push({
+            id: entry.id,
+          })
+        })
+      }
+      let params = {
+        entries: postEntries,
+        name: this.form.name,
+        memo: this.form.memo,
+      }
+      if (this.isCreateDialog) {
+        // 新規作成
+        await this.post(params)
+      } else {
+        // 編集
+        await this.put({ id: this.id, params: params })
+      }
+    },
+
+    async deleteDataSet() {
+      try {
+        await this.delete(this.id)
+        this.emitDone()
+      } catch (e) {
+        this.error = e
+      }
+    },
+
+    emitDone() {
+      this.showSuccessMessage()
+      this.$emit('done')
+    },
+
+    emitCancel() {
+      this.$emit('cancel')
+    },
+
+    emitCopy() {
+      this.$emit('copy', this.id)
+    },
+
+    createRules() {
+      return {
         name: [{ required: true, trigger: 'blur', message: '必須項目です' }],
         entries: [
           {
@@ -110,121 +245,7 @@ export default {
             },
           },
         ],
-      },
-    }
-  },
-
-  watch: {
-    id: async function() {
-      await this.retrieveData()
-    },
-  },
-
-  async created() {
-    await this.retrieveData()
-  },
-
-  methods: {
-    async retrieveData() {
-      try {
-        let data = (await api.datasets.getById({ id: this.id })).data
-        this.model.name = data.name
-        this.model.memo = data.memo
-        this.model.createdBy = data.createdBy
-        this.model.createdAt = data.createdAt
-        this.model.entries = data.entries
-        this.model.isLocked = data.isLocked
-      } catch (e) {
-        this.error = e
       }
-    },
-
-    async handleUpdate() {
-      let form = this.$refs.updateForm
-      await form.validate(async valid => {
-        if (valid) {
-          try {
-            if (this.model.isLocked) {
-              await this.patchDataSet()
-            } else {
-              await this.putDataSet()
-            }
-            this.emitDone()
-            this.error = null
-          } catch (e) {
-            this.error = e
-          }
-        }
-      })
-    },
-
-    async handleDelete() {
-      try {
-        await this.deleteDataSet()
-        this.emitDone()
-      } catch (e) {
-        this.error = e
-      }
-    },
-
-    async handleCancel() {
-      this.emitCancel()
-    },
-
-    async putDataSet() {
-      let postEntries = {}
-      for (let key in this.model.entries) {
-        postEntries[key] = []
-        this.model.entries[key].forEach(entry => {
-          postEntries[key].push({
-            id: entry.id,
-          })
-        })
-      }
-      let params = {
-        id: this.id,
-        model: {
-          entries: postEntries,
-          name: this.model.name,
-          memo: this.model.memo,
-        },
-      }
-      await api.datasets.put(params)
-    },
-
-    async patchDataSet() {
-      let params = {
-        id: this.id,
-        model: {
-          name: this.model.name,
-          memo: this.model.memo,
-        },
-      }
-      await api.datasets.patch(params)
-    },
-
-    async deleteDataSet() {
-      let params = {
-        id: this.id,
-      }
-      await api.datasets.delete(params)
-    },
-
-    async handleCopy() {
-      this.emitCopy(this.id)
-    },
-
-    emitDone() {
-      this.showSuccessMessage()
-      this.$emit('done')
-    },
-
-    emitCancel() {
-      this.$emit('cancel')
-    },
-
-    emitCopy(id) {
-      this.$emit('copy', id)
     },
   },
 }
