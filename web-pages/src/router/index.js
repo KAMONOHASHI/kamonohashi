@@ -1,10 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-import DataSet from '@/components/dataset/Index'
-import EditDataSet from '@/components/dataset/Edit'
-import CreateDataSet from '@/components/dataset/Create'
-
 import ManageRoleIndex from '@/components/tenant-manage/role/Index'
 import ManageRoleCreate from '@/components/tenant-manage/role/Create'
 import ManageRoleEdit from '@/components/tenant-manage/role/Edit'
@@ -18,13 +14,13 @@ import ClusterResourceContainerList from '@/components/system-setting/cluster-re
 import AccountLogin from '@/components/account/Login'
 import AccountSetting from '@/components/account/Setting'
 import DashBoardIndex from '@/components/dashboard/Index'
-import MenuIndex from '@/components/system-setting/menu/Index'
 import ManageMenuIndex from '@/components/tenant-manage/menu/Index'
 import Error from '@/components/error/Error'
 import ManageResourceIndex from '@/components/tenant-manage/resource/Index'
 import VersionIndex from '@/components/version/Index'
 
 import data from '@/router/data'
+import dataSet from '@/router/dataSet'
 import preprocessing from '@/router/preprocessing'
 import notebook from '@/router/notebook'
 import training from '@/router/training'
@@ -32,6 +28,7 @@ import inference from '@/router/inference'
 import manageTenant from '@/router/manageTenant'
 import manageUser from '@/router/manageUser'
 import git from '@/router/git'
+import menu from '@/router/menu'
 import node from '@/router/node'
 import quota from '@/router/quota'
 import registry from '@/router/registry'
@@ -45,6 +42,7 @@ Vue.use(Router)
 let router = new Router({
   routes: [
     ...data,
+    ...dataSet,
     ...preprocessing,
     ...notebook,
     ...training,
@@ -52,6 +50,7 @@ let router = new Router({
     ...manageTenant,
     ...manageUser,
     ...git,
+    ...menu,
     ...node,
     ...quota,
     ...registry,
@@ -73,23 +72,6 @@ let router = new Router({
       path: '/',
       name: 'DashBoard',
       component: DashBoardIndex,
-    },
-    {
-      path: '/dataset',
-      name: 'DataSet',
-      component: DataSet,
-      children: [
-        {
-          path: 'create/:parentId?',
-          component: CreateDataSet,
-          props: true,
-        },
-        {
-          path: ':id',
-          component: EditDataSet,
-          props: true,
-        },
-      ],
     },
     {
       path: '/manage/role',
@@ -116,11 +98,6 @@ let router = new Router({
       path: '/manage/resource',
       name: 'ManageResource',
       component: ManageResourceIndex,
-    },
-    {
-      path: '/menu',
-      name: 'Menu',
-      component: MenuIndex,
     },
     {
       path: '/cluster-resource',

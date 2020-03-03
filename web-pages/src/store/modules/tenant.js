@@ -31,6 +31,11 @@ const actions = {
     commit('setDetail', { detail })
   },
 
+  async fetchCurrentTenant({ commit }) {
+    let detail = (await api.tenant.get()).data
+    commit('setDetail', { detail })
+  },
+
   // eslint-disable-next-line no-unused-vars
   async post({ rootState }, params) {
     return await api.tenant.admin.post(params)
@@ -39,6 +44,11 @@ const actions = {
   async put({ rootState }, params) {
     params['id'] = rootState.route.params.id
     return await api.tenant.admin.put(params)
+  },
+
+  // eslint-disable-next-line no-unused-vars
+  async putCurrentTenant({ rootState }, params) {
+    return await api.tenant.put(params)
   },
 
   // eslint-disable-next-line no-unused-vars

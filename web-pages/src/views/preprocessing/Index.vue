@@ -130,29 +130,24 @@ export default {
     },
     closeDialog() {
       this.$router.push('/preprocessing')
-      this.$store.commit('setLoading', true)
     },
     openCreateDialog() {
       this.$router.push('/preprocessing/create')
-      this.$store.commit('setLoading', false)
     },
     handleCopy(id) {
       this.$router.push('/preprocessing/create/' + id)
-      this.$store.commit('setLoading', false)
+      this.$router.go('/preprocessing/create/' + id)
     },
     async openHistoryIndex(row) {
       this.$router.push('/preprocessingHistory/' + row.id)
-      this.$store.commit('setLoading', false)
     },
 
     async openEditDialog(selectedRow) {
       this.selectedRowId = selectedRow.id
       this.$router.push('/preprocessing/edit/' + selectedRow.id)
-      this.$store.commit('setLoading', false)
     },
     openPreprocessingDialog() {
       this.$router.push('preprocessing/run')
-      this.$store.commit('setLoading', false)
     },
     shell(data) {
       this.$router.push(

@@ -146,15 +146,16 @@ export default {
     await this['gitSelector/fetchGits']()
     await this['gitSelector/fetchRepositories']()
 
-    // 編集時/コピー実行時は、既に登録されている情報を各項目を設定
-    if (this.isEditDialog || this.isCopyCreation) {
-      await this['preprocessing/fetchDetail'](this.id)
-
-      // 既に前処理で利用されている場合は、patchフラグを立てる
+    // 編集時で既に前処理で利用されている場合は、patchフラグを立てる
+    if (this.isEditDialog) {
       await this['preprocessing/fetchHistories'](this.id)
       if (this.histories.length > 0) {
         this.isPatch = true
       }
+    }
+    // 編集時/コピー実行時は、既に登録されている情報を各項目を設定
+    if (this.isEditDialog || this.isCopyCreation) {
+      await this['preprocessing/fetchDetail'](this.id)
 
       this.form.name = this.detail.name
       this.form.entryPoint = this.detail.entryPoint
@@ -214,6 +215,8 @@ export default {
     ...mapActions([
       'preprocessing/fetchDetail',
       'preprocessing/post',
+      'preprocessing/put',
+      'preprocessing/patch',
       'preprocessing/fetchHistories',
       'preprocessing/delete',
       'registrySelector/fetchRegistries',
@@ -229,35 +232,70 @@ export default {
       await form.validate(async valid => {
         if (valid) {
           try {
-            let params = {
-              model: {
-                name: this.form.name,
-                entryPoint: this.form.entryPoint,
-                ContainerImage: {
+            if (this.isPatch) {
+              // 名称・メモ・リソースのみ更新
+              await this.patchPreprocessing()
+            } else {
+              let containerImage = null
+              if (this.image !== null && this.tag !== null) {
+                containerImage = {
                   registryId: this.registry.id,
                   image: this.image,
                   tag: this.tag,
-                },
-                GitModel: {
+                }
+              }
+              let gitModel = null
+              if (this.repository !== null && this.branch !== null) {
+                gitModel = {
                   gitId: this.git.id,
                   repository: this.repository.name,
                   owner: this.repository.owner,
                   branch: this.branch.branchName,
                   commitId: this.commit ? this.commit : 'HEAD',
-                },
+                }
+              }
+              let params = {
+                name: this.form.name,
+                entryPoint: this.form.entryPoint,
+                ContainerImage: containerImage,
+                GitModel: gitModel,
                 memo: this.form.memo,
                 cpu: this.form.resource.cpu,
                 memory: this.form.resource.memory,
                 gpu: this.form.resource.gpu,
-              },
+              }
+              if (this.isCreateDialog) {
+                // 新規作成
+                await this['preprocessing/post'](params)
+              } else {
+                // 編集
+                await this['preprocessing/put']({
+                  id: this.id,
+                  params: params,
+                })
+              }
             }
-            await this['preprocessing/post'](params)
+
             this.emitDone()
             this.error = null
           } catch (e) {
             this.error = e
           }
         }
+      })
+    },
+
+    async patchPreprocessing() {
+      let params = {
+        name: this.form.name,
+        memo: this.form.memo,
+        cpu: this.form.resource.cpu,
+        memory: this.form.resource.memory,
+        gpu: this.form.resource.gpu,
+      }
+      await this['preprocessing/patch']({
+        id: this.id,
+        params: params,
       })
     },
     async deletePreprocessing() {

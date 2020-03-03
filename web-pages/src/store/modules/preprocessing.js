@@ -100,12 +100,17 @@ const actions = {
 
   // eslint-disable-next-line no-unused-vars
   async post({ rootState }, params) {
-    return await api.preprocessings.post(params)
+    return await api.preprocessings.post({ model: params })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async put({ rootState }, params) {
-    return await api.preprocessings.putById(params)
+  async put({ rootState }, { id, params }) {
+    return await api.preprocessings.put({ id: id, model: params })
+  },
+
+  // eslint-disable-next-line no-unused-vars
+  async patch({ rootState }, { id, params }) {
+    await api.preprocessings.patch({ id: id, model: params })
   },
 
   // eslint-disable-next-line no-unused-vars
