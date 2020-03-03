@@ -64,7 +64,7 @@ import KqiDialog from '@/components/KqiDialog'
 import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
 import KqiDisplayError from '@/components/KqiDisplayError'
 
-import DataSetTransfer from '@/components/dataset/DatasetTransfer/Index.vue'
+import DataSetTransfer from './DatasetTransfer/Index.vue'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapMutations, mapActions } = createNamespacedHelpers(
   'dataSet',

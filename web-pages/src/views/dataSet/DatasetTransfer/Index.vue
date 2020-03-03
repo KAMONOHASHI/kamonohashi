@@ -1,4 +1,6 @@
 <template>
+  <!-- データセット管理画面において、データ一覧(all data)を各entry(training, testing...)に振り分けるコンポーネント -->
+  <!-- this.entryListに結果を格納し、その内容をemitする -->
   <div>
     <!-- all data, training... の欄の表示/非表示を切り替えるチェックボックス -->
     <div :style="{ marginLeft: '20px', marginBottom: '20px' }">
@@ -22,7 +24,7 @@
     <div id="list-container">
       <!-- all data の表示欄 -->
       <span v-if="dataViewInfo.visible">
-        <pl-data-list
+        <data-list
           ref="data"
           :data-list="dataViewInfo.dataList"
           :view-info="dataViewInfo"
@@ -36,11 +38,11 @@
         />
       </span>
 
-      <!-- 他のデータ区分の表示欄 -->
+      <!-- 他のデータ区分(training, testingの表示欄 -->
       <span v-for="viewInfo in entryViewInfo" :key="viewInfo.entryName">
         <!-- dataList, widthは変更監視を有効にするために直接propに入れる -->
         <template v-if="viewInfo.visible">
-          <pl-data-list
+          <data-list
             :data-list="viewInfo.dataList"
             :view-info="viewInfo"
             :move-list="moveList"
@@ -58,16 +60,34 @@
 </template>
 
 <script>
-import DataList from '@/components/dataset/DatasetTransfer/DataList.vue'
-import api from '@/api/v1/api'
+import DataList from './DataList'
 import Util from '@/util/util'
+import { createNamespacedHelpers } from 'vuex'
+const { mapGetters, mapActions } = createNamespacedHelpers('data')
 
 export default {
-  name: 'DatasetTransfer',
   components: {
-    'pl-data-list': DataList,
+    DataList,
   },
-  props: ['value', 'disabled'],
+  props: {
+    // 各項目ごとに分類されているデータ配列のオブジェクト
+    // {
+    //   training: Array(3)
+    //   testing: Array(1)
+    //   ...
+    // }
+    // Arrayの中身はdata: {id: , name: , ...}
+    value: {
+      type: Object,
+      default: () => {
+        return {}
+      },
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {
       defaultViewInfo: {
@@ -78,15 +98,20 @@ export default {
         filter: null, // 検索条件
       },
       // 表示の性能問題が出たため、子に直接データをpropで渡さずに親側で表示分を取り出して渡す
-      dataViewInfo: {}, // dataのpaging情報やentry自体の表示情報。createdで初期化
+      dataViewInfo: {}, // all dataのpaging情報やentry自体の表示情報。createdで初期化
+      entryViewInfo: [], // 各entry(training, testing, ...)のpaging情報やentry自体の表示情報
+
       selectedList: [], // checkListの内選択されたもの
       checkList: [], // checkListの項目名
       moveList: {}, // Entry名とドロップダウンに表示する移動メッセージの連想配列
       entryList: {}, // datasetの各entryの持つ dataリストの連想配列。dataset APIから受け取ったもの
       filteredEntryList: {}, // フィルタを適用したentryList
-      entryViewInfo: [], // 各entryのpaging情報やentry自体の表示情報
     }
   },
+  computed: {
+    ...mapGetters(['data', 'total']),
+  },
+
   watch: {
     async value() {
       this.entryList = this.value
@@ -94,12 +119,14 @@ export default {
     },
   },
   async created() {
+    // all dataの初期化
     this.dataViewInfo = this.makeViewInfo({
       entryName: 'all　data', // 全角スペースによりエントリー名との衝突を回避
       colorIndex: 0,
       showAssign: true,
     })
     this.entryList = this.value
+
     this.checkList = [this.dataViewInfo.entryName].concat(
       Object.keys(this.entryList),
     )
@@ -126,19 +153,29 @@ export default {
     this.handleViewGroupChange()
   },
   methods: {
-    makeViewInfo(optionalProps) {
-      return Object.assign(optionalProps, this.defaultViewInfo)
+    ...mapActions(['fetchData']),
+
+    // データ一覧を取得し、それぞれのデータをentryに割り当てる
+    async retrieveData(page, filter) {
+      let params = Object.assign({}, filter)
+      params.page = page
+      params.perPage = this.dataViewInfo.currentPageSize
+      params.withTotal = true
+      await this.fetchData(params)
+      this.dataViewInfo.dataList = this.data
+      this.dataViewInfo.filteredTotal = this.total
+      this.dataViewInfo.currentPage = page
+      this.refreshAssign()
     },
-    initViewInfo() {
-      for (let entryName in this.entryList) {
-        let initViewInfo = this.makeViewInfo({
-          entryName,
-          colorIndex: this.checkList.indexOf(entryName),
-          showAssign: false,
-        })
-        this.entryViewInfo.push(initViewInfo)
-      }
+
+    // 全データの割り当て状況をアップデートする
+    refreshAssign() {
+      this.dataViewInfo.dataList.forEach(x => this.setAssign(x))
+      this.$refs.data.$forceUpdate()
+      this.$forceUpdate()
     },
+
+    // あるデータの割り当て状況を変更する
     setAssign(data) {
       // 最初に初期化（見つからなかった場合に備える）
       data.assign = undefined
@@ -159,31 +196,35 @@ export default {
         }
       }
     },
-    // 全データの割り当て状況をアップデートする
-    refreshAssign() {
-      this.dataViewInfo.dataList.forEach(x => this.setAssign(x))
-      this.$refs.data.$forceUpdate()
-      this.$forceUpdate()
+
+    // viewInfo(training, testing, validation)の初期化
+    initViewInfo() {
+      for (let entryName in this.entryList) {
+        let initViewInfo = this.makeViewInfo({
+          entryName,
+          colorIndex: this.checkList.indexOf(entryName),
+          showAssign: false,
+        })
+        this.entryViewInfo.push(initViewInfo)
+      }
     },
-    async retrieveData(page, filter) {
-      let params = Object.assign({}, filter)
-      params.page = page
-      params.perPage = this.dataViewInfo.currentPageSize
-      params.withTotal = true
-      let response = await api.data.get(params)
-      this.dataViewInfo.dataList = response.data
-      this.dataViewInfo.filteredTotal = parseInt(
-        response.headers['x-total-count'],
-      )
-      this.dataViewInfo.currentPage = page
-      this.refreshAssign()
+
+    // defaultViewInfoにoptionalPropsを追加し、ViewInfoを作成する
+    makeViewInfo(optionalProps) {
+      return Object.assign(optionalProps, this.defaultViewInfo)
     },
+
+    // training, testing等に対応するviewInfoを取得する
     getViewInfo(entryName) {
       return this.entryViewInfo.find(x => x.entryName === entryName)
     },
+
+    // all dataのページング処理
     handleDataViewPaging(x) {
       this.retrieveData(x.page, x.searchCondition)
     },
+
+    // training, testingのページング処理
     handlePaging(pagingInfo) {
       let { entryName, page } = pagingInfo
       let viewInfo = this.getViewInfo(entryName)
@@ -204,24 +245,8 @@ export default {
       viewInfo.filteredTotal = entry.length
       this.$forceUpdate()
     },
-    handleRemove({ data, entryName }) {
-      // データ列の場合はデータのアサインされているエントリの列から消す
-      let removeEntryName =
-        entryName === this.dataViewInfo.entryName ? data.assign : entryName
-      // データ列かつ assin なしデータの場合、削除する列はない
-      if (removeEntryName) {
-        let viewInfo = this.getViewInfo(removeEntryName)
-        this.entryList[removeEntryName] = this.entryList[
-          removeEntryName
-        ].filter(x => x.id !== data.id)
-        this.handleFilter({
-          filter: viewInfo.filter,
-          entryName: removeEntryName,
-        })
-        this.refreshAssign()
-        this.emitInput()
-      }
-    },
+
+    // entryにデータを追加する
     insertData(entryName, viewInfo, addedIndex, data) {
       // フィルタ上で一つ下隣になるDataからentryListに挿入するindexを割り出す
       // 挿入先indexにいる現在の要素が挿入後の下隣り。
@@ -247,6 +272,8 @@ export default {
         this.entryList[entryName].splice(neighborOriginalIndex + 1, 0, data)
       }
     },
+
+    // 'add'がemitされた際の処理
     handleAdd({ data, addedIndex, entryName }) {
       if (entryName !== this.dataViewInfo.entryName) {
         // そのまま移すとチェックボックス等が連動してしまうのでコピーを作成
@@ -262,6 +289,28 @@ export default {
       this.refreshAssign()
       this.emitInput()
     },
+
+    // 'remove'がemitされた際の処理
+    handleRemove({ data, entryName }) {
+      // データ列の場合はデータのアサインされているエントリの列から消す
+      let removeEntryName =
+        entryName === this.dataViewInfo.entryName ? data.assign : entryName
+      // データ列かつ assign なしデータの場合、削除する列はない
+      if (removeEntryName) {
+        let viewInfo = this.getViewInfo(removeEntryName)
+        this.entryList[removeEntryName] = this.entryList[
+          removeEntryName
+        ].filter(x => x.id !== data.id)
+        this.handleFilter({
+          filter: viewInfo.filter,
+          entryName: removeEntryName,
+        })
+        this.refreshAssign()
+        this.emitInput()
+      }
+    },
+
+    // 'filter'がemitされた際の処理
     handleFilter(info) {
       let { filter, entryName } = info
       let viewInfo = this.getViewInfo(entryName)
@@ -283,6 +332,7 @@ export default {
       this.handlePaging({ entryName, page: viewInfo.currentPage })
     },
 
+    // entryの選択が変更された際の処理
     handleViewGroupChange() {
       let w = this.getListWidth()
       this.entryViewInfo.forEach(viewInfo => {
@@ -295,6 +345,7 @@ export default {
       this.dataViewInfo.width = w
     },
 
+    // コンポーネントの横幅の計算
     getListWidth() {
       let cnt = this.selectedList.length
       let obj = document.getElementById('list-container')

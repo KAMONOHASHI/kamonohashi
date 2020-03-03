@@ -1,4 +1,5 @@
 <template>
+  <!-- データセット編集画面において、データ一覧を表示するコンポーネント -->
   <div :style="'margin-right: 10px; width:' + width + 'px'">
     <div>
       <div class="title" :class="'color-' + viewInfo.colorIndex">
@@ -53,11 +54,11 @@
             <el-col :span="checkSpanSize">
               <el-checkbox
                 v-model="data.checked"
-                @change="handleCheck(data)"
+                @change="handleCheck()"
               ></el-checkbox>
             </el-col>
             <el-col :span="idSpanSize">
-              <el-checkbox v-model="data.checked" @change="handleCheck(data)">{{
+              <el-checkbox v-model="data.checked" @change="handleCheck()">{{
                 data.id
               }}</el-checkbox>
             </el-col>
@@ -94,18 +95,27 @@
                   </div>
                   <el-row>
                     <el-col :span="15">
-                      <pl-display-text label="ID" :value="data.id" />
-                      <pl-display-text label="データ名" :value="data.name" />
+                      <kqi-display-text-form
+                        label="ID"
+                        :value="data.id ? String(data.id) : null"
+                      />
+                      <kqi-display-text-form
+                        label="データ名"
+                        :value="data.name"
+                      />
                     </el-col>
                     <el-col :offset="1" :span="8">
-                      <pl-display-text
+                      <kqi-display-text-form
                         label="登録日時"
                         :value="data.createdAt"
                       />
-                      <pl-display-text label="登録者" :value="data.createdBy" />
+                      <kqi-display-text-form
+                        label="登録者"
+                        :value="data.createdBy"
+                      />
                     </el-col>
                   </el-row>
-                  <pl-display-text label="メモ" :value="data.memo" />
+                  <kqi-display-text-form label="メモ" :value="data.memo" />
                   <el-form-item label="タグ">
                     <br clear="all" />
                     <span style="display: block; line-height: normal;">
@@ -145,18 +155,55 @@
 
 <script>
 import { Container, Draggable } from 'vue-smooth-dnd'
-import DisplayTextForm from '@/components/common/DisplayTextForm.vue'
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
 import SmartSearchInput from '@/components/common/SmartSearchInput/Index.vue'
 
 export default {
-  name: 'EntryDataList',
   components: {
     Container,
     Draggable,
-    'pl-display-text': DisplayTextForm,
+    'kqi-display-text-form': KqiDisplayTextForm,
     'pl-smart-search-input': SmartSearchInput,
   },
-  props: ['viewInfo', 'disabled', 'moveList', 'dataList', 'width'],
+  props: {
+    // dataのpaging情報やentry自体の表示情報
+    viewInfo: {
+      type: Object,
+      default: () => {
+        return {
+          visible: true,
+          currentPage: 1,
+          currentPageSize: 100,
+          width: 330,
+          filter: null, // 検索条件
+        }
+      },
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
+    // Entry名とドロップダウンに表示する移動メッセージの連想配列
+    // "選択をtrainingに移動"など
+    moveList: {
+      type: Object,
+      default: () => {
+        return {}
+      },
+    },
+    // 表示するデータの配列
+    dataList: {
+      type: Array,
+      default: () => {
+        return []
+      },
+    },
+    // 横幅
+    width: {
+      type: Number,
+      default: 330,
+    },
+  },
   data() {
     return {
       searchCondition: {}, // 検索条件
@@ -203,6 +250,7 @@ export default {
     }
   },
   methods: {
+    // レスポンシブ対応
     bind() {
       if (this.width > 1000) {
         this.checkSpanSize = 0
@@ -293,11 +341,9 @@ export default {
       })
       this.isAllChecked = false // 全選択ボタンは非選択状態にする
     },
-    /* eslint-disable */
-    handleCheck(data) {
-      this.$forceUpdate();
+    handleCheck() {
+      this.$forceUpdate()
     },
-    /* eslint-enable */
     async showData(data) {
       this.$router.push('/data/' + data.id)
     },
