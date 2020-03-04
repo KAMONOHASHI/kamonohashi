@@ -8,7 +8,7 @@ const state = {
   detail: {},
   events: [],
   containerLog: [],
-  tenantResourceDetail: [],
+  tenantContainerLists: [],
 }
 
 // getters
@@ -31,13 +31,14 @@ const getters = {
   containerLog(state) {
     return state.containerLog
   },
-  tenantResourceDetail(state) {
-    return state.tenantResourceDetail
+  tenantContainerLists(state) {
+    return state.tenantContainerLists
   },
 }
 
 // action
 const actions = {
+  // admin系
   async fetchNodes({ commit }) {
     let response = await api.resource.admin.getNodes()
     let nodes = response.data
@@ -75,9 +76,10 @@ const actions = {
     return await api.resource.admin.deleteContainerByName(params)
   },
 
-  async fetchTenantResourceDetail({ commit }) {
-    let tenantResourceDetail = (await api.resource.tenant.getContainers()).data
-    commit('setTenantResourceDetail', { tenantResourceDetail })
+  // tenant系
+  async fetchTenantContainerLists({ commit }) {
+    let tenantContainerLists = (await api.resource.tenant.getContainers()).data
+    commit('setTenantContainerLists', { tenantContainerLists })
   },
 }
 
@@ -101,8 +103,8 @@ const mutations = {
   setContainerLog(state, { containerLog }) {
     state.containerLog = containerLog
   },
-  setTenantResourceDetail(state, { tenantResourceDetail }) {
-    state.tenantResourceDetail = tenantResourceDetail
+  setTenantContainerLists(state, { tenantContainerLists }) {
+    state.tenantContainerLists = tenantContainerLists
   },
 }
 

@@ -4,7 +4,7 @@
 
     <br />
     <br />
-    <el-table :data="tenantResourceDetail" class="table pl-index-table" border>
+    <el-table :data="tenantContainerLists" class="table pl-index-table" border>
       <el-table-column prop="name" label="コンテナ" width="auto" />
       <el-table-column prop="createdBy" label="ユーザ" width="auto" />
       <el-table-column prop="nodeName" label="ノード" width="auto" />
@@ -31,13 +31,13 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['tenantResourceDetail']),
+    ...mapGetters(['tenantContainerLists']),
   },
   async created() {
-    await this.fetchTenantResourceDetail()
+    await this.fetchTenantContainerLists()
   },
   methods: {
-    ...mapActions(['fetchTenantResourceDetail']),
+    ...mapActions(['fetchTenantContainerLists']),
   },
 }
 </script>
