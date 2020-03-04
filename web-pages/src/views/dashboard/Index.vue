@@ -111,13 +111,6 @@ a {
   margin: 20px 20px 10px 0;
 }
 
-// .card {
-//   border: solid 1px #ebeef5;
-//   width: 360px;
-//   height: 200px;
-//   border-left: 5px solid rgba(26, 191, 213, 0.7);
-// }
-
 .footer {
   display: flex;
   justify-content: center;
