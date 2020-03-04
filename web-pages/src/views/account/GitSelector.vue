@@ -15,7 +15,7 @@
     </el-select>
     <br />
     <br />
-    <kqi-display-text-form label="Gitサーバ" :value="gitForm.name" />
+    <kqi-display-text-form label="Gitサーバ" :value="value.name" />
     <el-form-item label="トークン">
       <el-input
         v-model="gitForm.token"
@@ -29,14 +29,18 @@
 
 <script>
 import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
-import { createNamespacedHelpers } from 'vuex'
-const { mapGetters } = createNamespacedHelpers('gitSelector')
 
 export default {
   components: {
     KqiDisplayTextForm,
   },
   props: {
+    gits: {
+      type: Array,
+      default: () => {
+        return []
+      },
+    },
     value: {
       type: Object,
       default: () => ({
@@ -46,23 +50,10 @@ export default {
       }),
     },
   },
-  data() {
-    return {
-      gitForm:
-        this.value === undefined || this.value === null ? {} : this.value,
-    }
-  },
   computed: {
-    ...mapGetters(['gits', 'git']),
-  },
-  created() {
-    for (const data of this.gits) {
-      if (this.git.id === data.id) {
-        this.gitForm.id = data.id
-        this.gitForm.name = data.name
-        this.gitForm.token = data.token
-      }
-    }
+    gitForm() {
+      return this.value === undefined || this.value === null ? {} : this.value
+    },
   },
   methods: {
     selectedGitChange() {
