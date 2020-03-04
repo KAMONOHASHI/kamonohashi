@@ -4,26 +4,10 @@
     <div class="parent-container">
       <kqi-display-error :error="error" />
       <!-- 選択中テナント情報 -->
-      <el-card class="container base">
-        <img class="logo" src="@/assets/logo_A.png" alt="" />
-        <el-form ref="userForm" :model="userForm">
-          <el-form-item style="text-align: center;">
-            {{ userForm.userName }}
-          </el-form-item>
-          <el-form-item label="選択中のテナント" :label-width="labelwidth">
-            {{ userForm.selectedTenant.displayName }}
-            (ID: {{ userForm.selectedTenant.id }})
-          </el-form-item>
-          <el-form-item label="ロール" :label-width="labelwidth">
-            <div
-              v-for="(r, index) in userForm.selectedTenant.roles"
-              :key="index"
-            >
-              {{ r.displayName }}
-            </div>
-          </el-form-item>
-        </el-form>
-      </el-card>
+      <tenant-info
+        :user-name="account.userName"
+        :tenant="account.selectedTenant"
+      />
 
       <!-- ユーザ情報設定 -->
       <el-card class="container detail">
@@ -68,74 +52,22 @@
             password
           </label>
 
-          <!-- デフォルトテナント設定 -->
           <div class="cp_tabpanels">
-            <div id="first_tab01" class="cp_tabpanel">
-              <el-form ref="userForm" :rules="userRules" :model="userForm">
-                <el-form-item
-                  label="既定のテナント"
-                  prop="defaultTenantName"
-                  :label-width="labelwidth"
-                >
-                  <el-select
-                    v-if="account.tenants"
-                    v-model="userForm.defaultTenantName"
-                    placeholder="Select"
-                    :clearable="true"
-                  >
-                    <el-option
-                      v-for="(t, index) in account.tenants"
-                      :key="index"
-                      :label="t.displayName"
-                      :value="t.name"
-                    />
-                  </el-select>
-                </el-form-item>
-                <el-form-item class="button-group">
-                  <el-button type="primary" @click="handleSave">更新</el-button>
-                </el-form-item>
-              </el-form>
-            </div>
+            <!-- デフォルトテナント設定 -->
+            <default-tenant-setting
+              id="first_tab01"
+              v-model="defaultTenantName"
+              class="cp_tabpanel"
+              :tenants="account.tenants"
+              @defaultTenantUpdate="defaultTenantUpdate"
+            />
 
             <!-- アクセストークン取得 -->
-            <div id="second_tab01" class="cp_tabpanel">
-              <el-form ref="tokenForm" :rules="tokenRules" :model="tokenForm">
-                <el-form-item
-                  label="期限切れまでの日数"
-                  prop="day"
-                  :label-width="labelwidth"
-                >
-                  <el-slider
-                    v-model="tokenForm.day"
-                    class="el-input"
-                    :min="1"
-                    :max="3650"
-                    show-input
-                  />
-                  <br />
-                  値は 1 ～ 3650 の数字を入力して下さい。
-                </el-form-item>
-                <el-form-item
-                  v-if="tokenForm.token"
-                  label="トークン"
-                  :label-width="labelwidth"
-                >
-                  <el-input
-                    v-model="tokenForm.token"
-                    type="textarea"
-                    autosize
-                    readonly
-                  />
-                </el-form-item>
-              </el-form>
-              <el-form>
-                <el-form-item v-if="!tokenForm.token" class="button-group">
-                  <el-button type="primary" @click="handleAccessToken">
-                    トークン発行
-                  </el-button>
-                </el-form-item>
-              </el-form>
-            </div>
+            <access-token-setting
+              v-model="tokenForm.day"
+              :token="tokenForm.token"
+              @getAccessToken="getAccessToken"
+            />
 
             <!-- Gitトークン設定 -->
             <div id="third_tab01" class="cp_tabpanel">
@@ -149,7 +81,7 @@
                     label="選択中のGitリポジトリ"
                     :label-width="labelwidth"
                   >
-                    <git-selector v-model="gitForm" />
+                    <git-selector v-model="gitForm" :gits="gits" />
                   </el-form-item>
                   <el-form-item class="button-group">
                     <el-button type="primary" @click="handleGitToken">
@@ -172,7 +104,10 @@
                     label="選択中のRegistry"
                     :label-width="labelwidth"
                   >
-                    <registry-selector v-model="registryForm" />
+                    <registry-selector
+                      v-model="registryForm"
+                      :registries="registries"
+                    />
                   </el-form-item>
                   <el-form-item class="button-group">
                     <el-button type="primary" @click="handleRegistryToken">
@@ -233,6 +168,9 @@
 import KqiDisplayError from '@/components/KqiDisplayError'
 import GitSelector from '@/views/account/GitSelector'
 import RegistrySelector from '@/views/account/RegistrySelector'
+import TenantInfo from './TenantInfo'
+import DefaultTenantSetting from './DefaultTenantSetting'
+import AccessTokenSetting from './AccessTokenSetting'
 import { mapGetters, mapActions } from 'vuex'
 
 const formRule = {
@@ -244,6 +182,9 @@ const formRule = {
 export default {
   title: 'ユーザ情報設定',
   components: {
+    TenantInfo,
+    DefaultTenantSetting,
+    AccessTokenSetting,
     KqiDisplayError,
     GitSelector,
     RegistrySelector,
@@ -253,22 +194,11 @@ export default {
       error: null,
       labelwidth: '220px',
 
-      userForm: {
-        userId: 0,
-        userName: '',
-        selectedTenant: null,
-        defaultTenantName: '',
-      },
-      userRules: {
-        defaultTenantName: [formRule],
-      },
+      defaultTenantName: '',
 
       tokenForm: {
         token: '',
         day: 30,
-      },
-      tokenRules: {
-        day: [formRule],
       },
 
       gitForm: {
@@ -276,6 +206,7 @@ export default {
         name: '',
         token: '',
       },
+
       registryForm: {
         id: 0,
         name: '',
@@ -294,7 +225,7 @@ export default {
           {
             required: true,
             trigger: 'blur',
-            validator: this.validatorPassword,
+            validator: this.passwordValidator,
           },
         ],
       },
@@ -305,14 +236,39 @@ export default {
       account: ['account/account'],
       token: ['account/token'],
       gits: ['gitSelector/gits'],
-      git: ['gitSelector/git'],
       registries: ['registrySelector/registries'],
-      registry: ['registrySelector/registry'],
     }),
   },
   async created() {
-    await this.init()
+    try {
+      // ログインユーザのアカウント情報を取得する
+      await this['account/fetchAccount']()
+      this.defaultTenantName = this.account.defaultTenant.name
+      this.passForm.passwordChangeEnabled = this.account.passwordChangeEnabled
+
+      // 選択中のテナントにおけるGit情報を取得する
+      await this['gitSelector/fetchGits']()
+      // gitFormに一番初めの要素を設定
+      if (this.gits.length > 0) {
+        this.gitForm.id = this.gits[0].id
+        this.gitForm.name = this.gits[0].name
+        this.gitForm.token = this.gits[0].token
+      }
+
+      // 選択中のテナントにおけるレジストリ情報を取得する
+      await this['registrySelector/fetchRegistries']()
+      // registryFormに一番初めの要素を設定
+      if (this.registries.length > 0) {
+        this.registryForm.id = this.registries[0].id
+        this.registryForm.name = this.registries[0].name
+        this.registryForm.userName = this.registries[0].userName
+        this.registryForm.password = this.registries[0].password
+      }
+    } catch (e) {
+      this.error = e
+    }
   },
+
   methods: {
     ...mapActions([
       'account/fetchAccount',
@@ -325,7 +281,35 @@ export default {
       'registrySelector/fetchRegistries',
     ]),
 
-    validatorPassword(rule, value, callback) {
+    async defaultTenantUpdate() {
+      try {
+        let params = {
+          defaultTenant: this.defaultTenantName,
+        }
+        await this['account/put'](params)
+        this.showSuccessMessage()
+        this.error = null
+      } catch (error) {
+        this.error = error
+      }
+    },
+    async getAccessToken() {
+      try {
+        let params = {
+          tenantId: this.account.selectedTenant.id,
+          expiresIn: this.tokenForm.day * 60 * 60 * 24,
+        }
+        // 新規アクセストークンを取得する
+        await this['account/postTokenTenants'](params)
+        this.tokenForm.token = this.token
+        this.showSuccessMessage()
+        this.error = null
+      } catch (error) {
+        this.error = error
+      }
+    },
+
+    passwordValidator(rule, value, callback) {
       if (!(value[0] && value[1])) {
         callback(new Error('必須項目です'))
       } else if (!(value[0] === value[1])) {
@@ -333,63 +317,6 @@ export default {
       } else {
         callback()
       }
-    },
-
-    async init() {
-      try {
-        // ログインユーザのアカウント情報を取得する
-        await this['account/fetchAccount']()
-        this.userForm.userId = this.account.userId
-        this.userForm.userName = this.account.userName
-        this.userForm.selectedTenant = this.account.selectedTenant
-        this.userForm.defaultTenantName = this.account.defaultTenant.name
-        this.passForm.passwordChangeEnabled = this.account.passwordChangeEnabled
-
-        // 選択中のテナントにおけるGit情報を取得する
-        await this['gitSelector/fetchGits']()
-
-        // 択中のテナントにおけるレジストリ情報を取得する
-        await this['registrySelector/fetchRegistries']()
-      } catch (e) {
-        this.error = e
-      }
-    },
-
-    async handleSave() {
-      this.$refs['userForm'].validate(async valid => {
-        if (valid) {
-          try {
-            let params = {
-              defaultTenant: this.userForm.defaultTenantName,
-            }
-            await this['account/put'](params)
-            this.showSuccessMessage()
-            this.error = null
-          } catch (error) {
-            this.error = error
-          }
-        }
-      })
-    },
-
-    async handleAccessToken() {
-      this.$refs['tokenForm'].validate(async valid => {
-        if (valid) {
-          try {
-            let params = {
-              tenantId: this.userForm.selectedTenant.id,
-              expiresIn: this.tokenForm.day * 60 * 60 * 24,
-            }
-            // 新規アクセストークンを取得する
-            await this['account/postTokenTenants'](params)
-            this.tokenForm.token = this.token
-            this.showSuccessMessage()
-            this.error = null
-          } catch (error) {
-            this.error = error
-          }
-        }
-      })
     },
 
     async handleGitToken() {
@@ -459,20 +386,9 @@ export default {
   margin-top: 10px;
 }
 
-.base {
-  grid-row: 1 / 3;
-  grid-column: 1 / 2;
-  margin-right: 20px;
-}
-
 .detail {
   grid-row: 1 / 3;
   grid-column: 2 / 3;
-}
-
-.logo {
-  text-align: center;
-  margin-left: 106px;
 }
 
 .container-title {

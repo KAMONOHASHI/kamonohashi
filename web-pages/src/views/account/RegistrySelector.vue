@@ -32,14 +32,19 @@
 
 <script>
 import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
-import { createNamespacedHelpers } from 'vuex'
-const { mapGetters } = createNamespacedHelpers('registrySelector')
 
 export default {
   components: {
     KqiDisplayTextForm,
   },
   props: {
+    registries: {
+      type: Array,
+      default: () => {
+        return []
+      },
+    },
+
     value: {
       type: Object,
       default: () => ({
@@ -50,24 +55,10 @@ export default {
       }),
     },
   },
-  data() {
-    return {
-      registryForm:
-        this.value === undefined || this.value === null ? {} : this.value,
-    }
-  },
   computed: {
-    ...mapGetters(['registries', 'registry']),
-  },
-  created() {
-    for (const data of this.registries) {
-      if (this.registry.id === data.id) {
-        this.registryForm.id = data.id
-        this.registryForm.name = data.name
-        this.registryForm.userName = data.userName
-        this.registryForm.password = data.password
-      }
-    }
+    registryForm() {
+      return this.value === undefined || this.value === null ? {} : this.value
+    },
   },
   methods: {
     selectedRegistryChange() {

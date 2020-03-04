@@ -5,9 +5,6 @@ import ManageRoleIndex from '@/components/tenant-manage/role/Index'
 import ManageRoleCreate from '@/components/tenant-manage/role/Create'
 import ManageRoleEdit from '@/components/tenant-manage/role/Edit'
 
-import ManageUserIndex from '@/components/tenant-manage/user/Index'
-import ManageUserEdit from '@/components/tenant-manage/user/Edit'
-
 import AccountLogin from '@/components/account/Login'
 import ManageMenuIndex from '@/components/tenant-manage/menu/Index'
 import Error from '@/components/error/Error'
@@ -22,7 +19,7 @@ import preprocessing from '@/router/preprocessing'
 import notebook from '@/router/notebook'
 import training from '@/router/training'
 import inference from '@/router/inference'
-import manageTenant from '@/router/manageTenant'
+import tenantManage from '@/router/tenant-manage'
 import git from '@/router/git'
 import menu from '@/router/menu'
 import node from '@/router/node'
@@ -46,7 +43,7 @@ let router = new Router({
     ...notebook,
     ...training,
     ...inference,
-    ...manageTenant,
+    ...tenantManage,
     ...git,
     ...menu,
     ...node,
@@ -74,18 +71,6 @@ let router = new Router({
         {
           path: ':id',
           component: ManageRoleEdit,
-          props: true,
-        },
-      ],
-    },
-    {
-      path: '/manage/user',
-      name: 'ManageUser',
-      component: ManageUserIndex,
-      children: [
-        {
-          path: ':id',
-          component: ManageUserEdit,
           props: true,
         },
       ],
