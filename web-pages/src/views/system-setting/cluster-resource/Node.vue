@@ -21,14 +21,14 @@
             <el-table-column prop="tenantName" width="auto" />
             <el-table-column prop="createdBy" width="auto" />
             <el-table-column prop="name" width="auto" />
-            <el-table-column align="right" prop="cpu" :width="width1" />
-            <el-table-column align="right" prop="memory" :width="width1" />
-            <el-table-column align="right" prop="gpu" :width="width1" />
+            <el-table-column align="right" prop="cpu" :width="columnWidth" />
+            <el-table-column align="right" prop="memory" :width="columnWidth" />
+            <el-table-column align="right" prop="gpu" :width="columnWidth" />
             <el-table-column
               align="center"
               prop="status"
               label="ステータス"
-              :width="width1"
+              :width="columnWidth"
             />
           </el-table>
         </template>
@@ -45,21 +45,21 @@
         align="right"
         prop="cpuInfo"
         label="CPU"
-        :width="width1"
+        :width="columnWidth"
       />
       <el-table-column
         align="right"
         prop="memoryInfo"
         label="メモリ"
-        :width="width1"
+        :width="columnWidth"
       />
       <el-table-column
         align="right"
         prop="gpuInfo"
         label="GPU"
-        :width="width1"
+        :width="columnWidth"
       />
-      <el-table-column align="center" label="ステータス" :width="width1" />
+      <el-table-column align="center" label="ステータス" :width="columnWidth" />
     </el-table>
     <router-view @cancel="closeDialog" @done="done"></router-view>
   </div>
@@ -70,13 +70,11 @@ import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('resource')
 
 export default {
-  data: function() {
-    return {
-      width1: '150px',
-    }
-  },
   computed: {
     ...mapGetters(['nodes']),
+    columnWidth: function() {
+      return '150px'
+    },
   },
   async created() {
     await this.retrieveData()
