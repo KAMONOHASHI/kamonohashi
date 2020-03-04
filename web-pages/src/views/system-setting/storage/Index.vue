@@ -2,7 +2,7 @@
   <div>
     <h2>ストレージ管理2</h2>
     <el-row>
-      <el-col :span="4" :offset="20" class="create-new">
+      <el-col class="create-new">
         <el-button
           icon="el-icon-edit-outline"
           type="primary"
@@ -22,11 +22,15 @@
       >
         <el-table-column prop="id" label="ID" width="100px" />
         <el-table-column prop="name" label="ストレージ名" width="auto" />
-        <el-table-column prop="serverUrl" label="サーバURL" width="auto" />
+        <el-table-column
+          prop="serverUrl"
+          label="ホスト名:ポート"
+          width="auto"
+        />
         <el-table-column prop="nfsServer" label="NFSサーバ" width="auto" />
         <el-table-column
           prop="nfsRoot"
-          label="NFS共有ディレクトリ"
+          label="NFSエクスポートポイント"
           width="auto"
         />
       </el-table>
@@ -67,4 +71,9 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.create-new {
+  text-align: right;
+  padding-top: 10px;
+}
+</style>

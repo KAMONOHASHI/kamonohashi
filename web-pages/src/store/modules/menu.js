@@ -19,7 +19,7 @@ const getters = {
 // action
 const actions = {
   async fetchMenus({ commit }) {
-    let response = await await api.menu.admin.get()
+    let response = await api.menu.admin.get()
     let menus = response.data
 
     // roleオブジェクトの配列であるrolesから、idを抜き出して設定

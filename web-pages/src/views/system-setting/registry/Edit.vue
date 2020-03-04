@@ -54,29 +54,13 @@
           </el-col>
         </el-row>
         <el-form-item label="API URL" prop="apiUrl">
-          <el-switch v-model="form.editableApiUrl" :disabled="isNotEditable" />
-          <el-input
-            v-model="form.apiUrl"
-            :disabled="isNotEditable || !form.editableApiUrl"
-            @change="handleChange"
-          />
-        </el-form-item>
-        <el-form-item label="URL" prop="registryUrl">
-          <el-switch
-            v-model="form.editableRegistryUrl"
-            :disabled="isNotEditable"
-          />
-          <el-input
-            v-model="form.registryUrl"
-            :disabled="isNotEditable || !form.editableRegistryUrl"
-          />
+          <el-input v-model="form.apiUrl" :disabled="isNotEditable" />
         </el-form-item>
         <div v-if="form.serviceType === 2">
           <el-form-item label="プロジェクト名" prop="projectName">
             <el-input v-model="form.projectName" :disabled="isNotEditable" />
           </el-form-item>
         </div>
-        <div v-else></div>
       </div>
     </el-form>
   </kqi-dialog>
@@ -115,9 +99,7 @@ export default {
         projectName: null,
         serviceType: null,
         apiUrl: null,
-        editableApiUrl: false,
         registryUrl: null,
-        editableRegistryUrl: false,
       },
       dialogVisible: true,
       error: null,
@@ -151,12 +133,7 @@ export default {
         this.form.serviceType = this.detail.serviceType
         this.form.isNotEditable = this.detail.isNotEditable
         this.form.apiUrl = this.detail.apiUrl
-        this.form.editableApiUrl =
-          defaultProtocol + this.detail.host !== this.detail.apiUrl
         this.form.registryUrl = this.detail.registryUrl
-        this.form.editableRegistryUrl =
-          defaultProtocol + this.detail.host + ':' + this.detail.portNo !==
-          this.detail.registryUrl
       } catch (e) {
         this.error = e
       }
@@ -184,8 +161,8 @@ export default {
                 portNo: this.form.portNo,
                 serviceType: this.form.serviceType,
                 projectName: this.form.projectName,
-                registryUrl: this.form.registryUrl,
                 apiUrl: this.form.apiUrl,
+                registryUrl: this.form.apiUrl + ':' + this.form.portNo,
               },
             }
             if (this.id === null) {
@@ -210,16 +187,8 @@ export default {
       }
     },
     handleChange() {
-      if (!this.form.editableApiUrl) {
-        if (this.form.host) {
-          this.form.apiUrl = defaultProtocol + this.form.host
-        }
-      }
-      if (!this.form.editableRegistryUrl) {
-        if (this.form.host && this.form.portNo) {
-          this.form.registryUrl =
-            defaultProtocol + this.form.host + ':' + this.form.portNo
-        }
+      if (this.form.host && !this.form.apiUrl) {
+        this.form.apiUrl = defaultProtocol + this.form.host
       }
     },
     changeService() {

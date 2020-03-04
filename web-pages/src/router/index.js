@@ -2,11 +2,11 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 import AccountLogin from '@/components/account/Login'
-import AccountSetting from '@/components/account/Setting'
-import DashBoardIndex from '@/components/dashboard/Index'
 import Error from '@/components/error/Error'
 import VersionIndex from '@/components/version/Index'
 
+import account from '@/router/account'
+import dashboard from '@/router/dashboard'
 import data from '@/router/data'
 import dataSet from '@/router/dataSet'
 import preprocessing from '@/router/preprocessing'
@@ -29,6 +29,8 @@ Vue.use(Router)
 
 let router = new Router({
   routes: [
+    ...account,
+    ...dashboard,
     ...data,
     ...dataSet,
     ...preprocessing,
@@ -50,16 +52,6 @@ let router = new Router({
       path: '/login',
       name: 'Login',
       component: AccountLogin,
-    },
-    {
-      path: '/setting',
-      name: 'Setting',
-      component: AccountSetting,
-    },
-    {
-      path: '/',
-      name: 'DashBoard',
-      component: DashBoardIndex,
     },
     {
       path: '/error',
