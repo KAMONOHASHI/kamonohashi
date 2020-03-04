@@ -5,7 +5,6 @@ import ManageRoleIndex from '@/components/tenant-manage/role/Index'
 import ManageRoleCreate from '@/components/tenant-manage/role/Create'
 import ManageRoleEdit from '@/components/tenant-manage/role/Edit'
 
-
 import AccountLogin from '@/components/account/Login'
 import AccountSetting from '@/components/account/Setting'
 import DashBoardIndex from '@/components/dashboard/Index'
@@ -20,8 +19,7 @@ import preprocessing from '@/router/preprocessing'
 import notebook from '@/router/notebook'
 import training from '@/router/training'
 import inference from '@/router/inference'
-import manageTenant from '@/router/manageTenant'
-import manageUser from '@/router/manageUser'
+import tenantManage from '@/router/tenant-manage'
 import git from '@/router/git'
 import menu from '@/router/menu'
 import node from '@/router/node'
@@ -43,8 +41,7 @@ let router = new Router({
     ...notebook,
     ...training,
     ...inference,
-    ...manageTenant,
-    ...manageUser,
+    ...tenantManage,
     ...git,
     ...menu,
     ...node,

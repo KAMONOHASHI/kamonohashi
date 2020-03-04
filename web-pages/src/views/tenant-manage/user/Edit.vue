@@ -9,7 +9,7 @@
   >
     <el-form ref="form" :model="form" :rules="rules">
       <kqi-display-error :error="error" />
-      <kqi-display-text-form label="ユーザ名" :value="form.name" />
+      <kqi-display-text-form label="ユーザ名" :value="detail.name" />
       <kqi-display-text-form
         label="認証タイプ"
         :value="form.displayServiceType"
@@ -53,16 +53,13 @@ export default {
   },
   data() {
     return {
-      dialogVisible: true,
-      error: null,
-      deleteButtonParams: {},
-
       form: {
-        name: '',
-        serviceType: 1,
-        displayServiceType: '',
         tenantRoleIds: [],
       },
+      displayServiceType: '',
+      deleteButtonParams: {},
+      dialogVisible: true,
+      error: null,
       rules: {
         tenantRoleIds: [formRule],
       },
@@ -73,22 +70,32 @@ export default {
   },
 
   async created() {
-    await this['user/fetchTenantUserDetail']()
-    await this['role/fetchRoles']()
     try {
-      this.form.name = this.detail.name
-      this.form.serviceType = this.detail.serviceType
-      this.form.displayServiceType = this.form.serviceType
-      if (this.form.serviceType === 1) this.form.displayServiceType = 'ローカル'
-      if (this.form.serviceType === 2) this.form.displayServiceType = 'LDAP'
+      await this['user/fetchTenantUserDetail']()
+      await this['role/fetchRoles']()
+
+      // serviceTypeのIDを変換
+      switch (this.detail.serviceType) {
+        case 1:
+          this.displayServiceType = 'ローカル'
+          break
+        case 2:
+          this.displayServiceType = 'LDAP'
+          break
+        default:
+          this.displayServiceType = this.detail.serviceType
+          break
+      }
+      // ロール一覧からIDを抽出
       this.detail.roles.forEach(s => {
         this.form.tenantRoleIds.push(s.id)
       })
+      // dangerButtonのパラメータを設定
       this.deleteButtonParams = {
         isDanger: true,
         warningText:
           'ユーザを除外すると、対象ユーザは現在のテナントに入れなくなります。処理を続けるにはユーザ名を入力してください。',
-        confirmText: this.form.name,
+        confirmText: this.detail.name,
       }
       this.error = null
     } catch (e) {
@@ -103,7 +110,6 @@ export default {
       'user/tenantUserDelete',
       'role/fetchRoles',
     ]),
-    /* eslint-enable */
     async submit() {
       let form = this.$refs.form
       await form.validate(async valid => {
