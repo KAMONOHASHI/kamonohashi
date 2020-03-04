@@ -1,15 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-import ManageRoleIndex from '@/components/tenant-manage/role/Index'
-import ManageRoleCreate from '@/components/tenant-manage/role/Create'
-import ManageRoleEdit from '@/components/tenant-manage/role/Edit'
-
 import AccountLogin from '@/components/account/Login'
 import DashBoardIndex from '@/components/dashboard/Index'
-import ManageMenuIndex from '@/components/tenant-manage/menu/Index'
 import Error from '@/components/error/Error'
-import ManageResourceIndex from '@/components/tenant-manage/resource/Index'
 import VersionIndex from '@/components/version/Index'
 
 import account from '@/router/account'
@@ -62,32 +56,6 @@ let router = new Router({
       path: '/',
       name: 'DashBoard',
       component: DashBoardIndex,
-    },
-    {
-      path: '/manage/role',
-      name: 'ManageRole',
-      component: ManageRoleIndex,
-      children: [
-        {
-          path: 'create',
-          component: ManageRoleCreate,
-        },
-        {
-          path: ':id',
-          component: ManageRoleEdit,
-          props: true,
-        },
-      ],
-    },
-    {
-      path: '/manage/menu',
-      name: 'ManageMenu',
-      component: ManageMenuIndex,
-    },
-    {
-      path: '/manage/resource',
-      name: 'ManageResource',
-      component: ManageResourceIndex,
     },
     {
       path: '/error',
