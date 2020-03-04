@@ -2,7 +2,7 @@
   <div>
     <h2>レジストリ管理2</h2>
     <el-row>
-      <el-col :span="4" :offset="20" class="create-new">
+      <el-col class="create-new">
         <el-button
           icon="el-icon-edit-outline"
           type="primary"
@@ -74,4 +74,9 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.create-new {
+  text-align: right;
+  padding-top: 10px;
+}
+</style>
