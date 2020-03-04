@@ -37,34 +37,22 @@ export default {
       mode: '',
     }
   },
-  watch: {
-    // eslint-disable-next-line no-unused-vars
-    $route(to, from) {
-      this.setMode()
-    },
-  },
   created() {
-    this.setMode()
+    let path = this.$route.path
+    this.mode = path.split('/').pop() // urlの最後の要素を取り出す('cluster-resource'か'tenant'か'list')
   },
   methods: {
-    setMode() {
-      let path = this.$route.path
-      this.mode = path.split('/').pop() // urlの最後の要素を取り出す('cluster-resource'か'tenant'か'list')
-
-      // cluster-resource(この画面のトップページの場合、ノード別画面を表示)
-      if (this.mode === 'cluster-resource') {
-        this.mode = ''
-      }
-    },
-    handleModeChange() {
-      if (this.mode === '') {
-        this.$router.push('/cluster-resource')
-      }
-      if (this.mode === 'tenant') {
-        this.$router.push('/cluster-resource/tenant')
-      }
-      if (this.mode === 'container-list') {
-        this.$router.push('/cluster-resource/container-list')
+    handleModeChange(mode) {
+      switch (mode) {
+        case '':
+          this.$router.push('/cluster-resource')
+          break
+        case 'tenant':
+          this.$router.push('/cluster-resource/tenant')
+          break
+        case 'container-list':
+          this.$router.push('/cluster-resource/container-list')
+          break
       }
     },
     handleReload() {

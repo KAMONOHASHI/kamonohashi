@@ -34,7 +34,6 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex'
-
 const { mapGetters, mapActions } = createNamespacedHelpers('resource')
 
 export default {

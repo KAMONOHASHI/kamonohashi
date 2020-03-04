@@ -7,7 +7,6 @@ import ContainerList from '@/views/system-setting/cluster-resource/ContainerList
 export default [
   {
     path: '/cluster-resource',
-    name: 'ClusterResource',
     component: Index,
     children: [
       {

@@ -67,7 +67,6 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex'
-
 const { mapGetters, mapActions } = createNamespacedHelpers('resource')
 
 export default {
@@ -94,8 +93,7 @@ export default {
         )
       }
     },
-    // eslint-disable-next-line no-unused-vars
-    rowClassName({ row, rowIndex }) {
+    rowClassName({ row }) {
       if (row.containerResourceList && row.containerResourceList.length === 0) {
         return 'row-disabled'
       }
