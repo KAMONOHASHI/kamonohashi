@@ -9,13 +9,13 @@ import ManageUserIndex from '@/components/tenant-manage/user/Index'
 import ManageUserEdit from '@/components/tenant-manage/user/Edit'
 
 import AccountLogin from '@/components/account/Login'
-import AccountSetting from '@/components/account/Setting'
 import DashBoardIndex from '@/components/dashboard/Index'
 import ManageMenuIndex from '@/components/tenant-manage/menu/Index'
 import Error from '@/components/error/Error'
 import ManageResourceIndex from '@/components/tenant-manage/resource/Index'
 import VersionIndex from '@/components/version/Index'
 
+import account from '@/router/account'
 import data from '@/router/data'
 import dataSet from '@/router/dataSet'
 import preprocessing from '@/router/preprocessing'
@@ -38,6 +38,7 @@ Vue.use(Router)
 
 let router = new Router({
   routes: [
+    ...account,
     ...data,
     ...dataSet,
     ...preprocessing,
@@ -59,11 +60,6 @@ let router = new Router({
       path: '/login',
       name: 'Login',
       component: AccountLogin,
-    },
-    {
-      path: '/setting',
-      name: 'Setting',
-      component: AccountSetting,
     },
     {
       path: '/',
