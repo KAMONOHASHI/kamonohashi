@@ -15,7 +15,7 @@
       <h3>ストレージ情報</h3>
       <div style="padding-left: 30px; padding-right: 10px;">
         <el-form-item
-          label="サーバ名URL（例: kamonohashi.ai:9000）"
+          label="ホスト名:ポート（例: kamonohashi.ai:9000）"
           prop="serverUrl"
         >
           <el-input v-model="form.serverUrl" />
@@ -29,7 +29,7 @@
         <el-form-item label="NFSサーバ" prop="nfsServer">
           <el-input v-model="form.nfsServer" />
         </el-form-item>
-        <el-form-item label="NFS共有ルートディレクトリ" prop="nfsRoot">
+        <el-form-item label="NFSエクスポートポイント" prop="nfsRoot">
           <el-input v-model="form.nfsRoot" />
         </el-form-item>
       </div>
