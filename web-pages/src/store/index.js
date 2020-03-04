@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import account from './modules/account'
 import data from './modules/data'
 import git from './modules/git'
 import notebook from './modules/notebook'
@@ -23,6 +24,7 @@ import user from './modules/user'
 Vue.use(Vuex)
 export default new Vuex.Store({
   modules: {
+    account,
     data,
     dataSet,
     registrySelector,
