@@ -70,53 +70,18 @@
             />
 
             <!-- Gitトークン設定 -->
-            <div id="third_tab01" class="cp_tabpanel">
-              <div v-if="gits.length <= 0">
-                Gitリポジトリが選択されていません。
-                システム管理者にお問い合わせください。
-              </div>
-              <div v-else>
-                <el-form ref="gitForm" :model="gitForm">
-                  <el-form-item
-                    label="選択中のGitリポジトリ"
-                    :label-width="labelwidth"
-                  >
-                    <git-selector v-model="gitForm" :gits="gits" />
-                  </el-form-item>
-                  <el-form-item class="button-group">
-                    <el-button type="primary" @click="handleGitToken">
-                      更新
-                    </el-button>
-                  </el-form-item>
-                </el-form>
-              </div>
-            </div>
+            <git-token-setting
+              v-model="gitForm"
+              :gits="gits"
+              @updateGitToken="updateGitToken"
+            />
 
             <!-- Registryトークン設定 -->
-            <div id="force_tab01" class="cp_tabpanel">
-              <div v-if="registries.length <= 0">
-                Registryが選択されていません。
-                システム管理者にお問い合わせください。
-              </div>
-              <div v-else>
-                <el-form ref="registryForm" :model="registryForm">
-                  <el-form-item
-                    label="選択中のRegistry"
-                    :label-width="labelwidth"
-                  >
-                    <registry-selector
-                      v-model="registryForm"
-                      :registries="registries"
-                    />
-                  </el-form-item>
-                  <el-form-item class="button-group">
-                    <el-button type="primary" @click="handleRegistryToken">
-                      更新
-                    </el-button>
-                  </el-form-item>
-                </el-form>
-              </div>
-            </div>
+            <registry-token-setting
+              v-model="registryForm"
+              :registries="registries"
+              @updateRegistryToken="updateRegistryToken"
+            />
 
             <!-- パスワード変更 -->
             <div
@@ -166,8 +131,8 @@
 
 <script>
 import KqiDisplayError from '@/components/KqiDisplayError'
-import GitSelector from '@/views/account/GitSelector'
-import RegistrySelector from '@/views/account/RegistrySelector'
+import GitTokenSetting from '@/views/account/GitTokenSetting'
+import RegistryTokenSetting from '@/views/account/RegistryTokenSetting'
 import TenantInfo from './TenantInfo'
 import DefaultTenantSetting from './DefaultTenantSetting'
 import AccessTokenSetting from './AccessTokenSetting'
@@ -186,8 +151,8 @@ export default {
     DefaultTenantSetting,
     AccessTokenSetting,
     KqiDisplayError,
-    GitSelector,
-    RegistrySelector,
+    GitTokenSetting,
+    RegistryTokenSetting,
   },
   data() {
     return {
@@ -236,7 +201,9 @@ export default {
       account: ['account/account'],
       token: ['account/token'],
       gits: ['gitSelector/gits'],
+      git: ['gitSelector/git'],
       registries: ['registrySelector/registries'],
+      registry: ['registrySelector/registry'],
     }),
   },
   async created() {
@@ -248,22 +215,17 @@ export default {
 
       // 選択中のテナントにおけるGit情報を取得する
       await this['gitSelector/fetchGits']()
-      // gitFormに一番初めの要素を設定
-      if (this.gits.length > 0) {
-        this.gitForm.id = this.gits[0].id
-        this.gitForm.name = this.gits[0].name
-        this.gitForm.token = this.gits[0].token
-      }
+      // gitFormにデフォルトGit情報を設定
+      this.gitForm.id = this.git.id
+      this.gitForm.name = this.git.name
+      this.gitForm.token = this.git.token
 
       // 選択中のテナントにおけるレジストリ情報を取得する
       await this['registrySelector/fetchRegistries']()
-      // registryFormに一番初めの要素を設定
-      if (this.registries.length > 0) {
-        this.registryForm.id = this.registries[0].id
-        this.registryForm.name = this.registries[0].name
-        this.registryForm.userName = this.registries[0].userName
-        this.registryForm.password = this.registries[0].password
-      }
+      this.registryForm.id = this.registry.id
+      this.registryForm.name = this.registry.name
+      this.registryForm.userName = this.registry.userName
+      this.registryForm.password = this.registry.password
     } catch (e) {
       this.error = e
     }
@@ -309,17 +271,7 @@ export default {
       }
     },
 
-    passwordValidator(rule, value, callback) {
-      if (!(value[0] && value[1])) {
-        callback(new Error('必須項目です'))
-      } else if (!(value[0] === value[1])) {
-        callback(new Error('同一のパスワードを入力してください'))
-      } else {
-        callback()
-      }
-    },
-
-    async handleGitToken() {
+    async updateGitToken() {
       try {
         let params = {
           model: {
@@ -335,7 +287,7 @@ export default {
       }
     },
 
-    async handleRegistryToken() {
+    async updateRegistryToken() {
       try {
         let params = {
           model: {
@@ -349,6 +301,16 @@ export default {
         this.error = null
       } catch (error) {
         this.error = error
+      }
+    },
+
+    passwordValidator(rule, value, callback) {
+      if (!(value[0] && value[1])) {
+        callback(new Error('必須項目です'))
+      } else if (!(value[0] === value[1])) {
+        callback(new Error('同一のパスワードを入力してください'))
+      } else {
+        callback()
       }
     },
 

@@ -4,6 +4,7 @@ import api from '@/api/v1/api'
 const state = {
   token: {},
   account: {},
+  menuList: {},
 }
 
 // getters
@@ -14,6 +15,9 @@ const getters = {
   account(state) {
     return state.account
   },
+  menuList(state) {
+    return state.menuList
+  },
 }
 
 // action
@@ -22,6 +26,12 @@ const actions = {
     let response = await api.account.get()
     let account = response.data
     commit('setAccount', { account })
+  },
+
+  async fetchMenuList({ commit }) {
+    let response = await api.menuList.getMenuList()
+    let menuList = response.data
+    commit('setMenuList', { menuList })
   },
 
   // eslint-disable-next-line no-unused-vars
@@ -59,6 +69,9 @@ const mutations = {
   },
   setAccount(state, { account }) {
     state.account = account
+  },
+  setMenuList(state, { menuList }) {
+    state.menuList = menuList
   },
 }
 
