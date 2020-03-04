@@ -8,6 +8,7 @@ const state = {
   detail: {},
   events: [],
   containerLog: [],
+  tenantResourceDetail: [],
 }
 
 // getters
@@ -29,6 +30,9 @@ const getters = {
   },
   containerLog(state) {
     return state.containerLog
+  },
+  tenantResourceDetail(state) {
+    return state.tenantResourceDetail
   },
 }
 
@@ -70,6 +74,11 @@ const actions = {
   async delete({ rootState }, params) {
     return await api.resource.admin.deleteContainerByName(params)
   },
+
+  async fetchTenantResourceDetail({ commit }) {
+    let tenantResourceDetail = (await api.resource.tenant.getContainers()).data
+    commit('setTenantResourceDetail', { tenantResourceDetail })
+  },
 }
 
 // mutations
@@ -91,6 +100,9 @@ const mutations = {
   },
   setContainerLog(state, { containerLog }) {
     state.containerLog = containerLog
+  },
+  setTenantResourceDetail(state, { tenantResourceDetail }) {
+    state.tenantResourceDetail = tenantResourceDetail
   },
 }
 

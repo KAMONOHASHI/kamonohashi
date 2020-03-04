@@ -10,7 +10,6 @@ import AccountSetting from '@/components/account/Setting'
 import DashBoardIndex from '@/components/dashboard/Index'
 import ManageMenuIndex from '@/components/tenant-manage/menu/Index'
 import Error from '@/components/error/Error'
-import ManageResourceIndex from '@/components/tenant-manage/resource/Index'
 import VersionIndex from '@/components/version/Index'
 
 import data from '@/router/data'
@@ -87,11 +86,6 @@ let router = new Router({
       path: '/manage/menu',
       name: 'ManageMenu',
       component: ManageMenuIndex,
-    },
-    {
-      path: '/manage/resource',
-      name: 'ManageResource',
-      component: ManageResourceIndex,
     },
     {
       path: '/error',
