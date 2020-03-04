@@ -37,13 +37,28 @@ export default {
       mode: '',
     }
   },
+  watch: {
+    // テナント別リソース利用状況を表示中→メニューからリソース管理を選択した場合に
+    $route() {
+      this.setMode()
+    },
+  },
   created() {
-    let path = this.$route.path
-    this.mode = path.split('/').pop() // urlの最後の要素を取り出す('cluster-resource'か'tenant'か'list')
+    this.setMode()
   },
   methods: {
-    handleModeChange(mode) {
-      switch (mode) {
+    setMode() {
+      let path = this.$route.path
+      let lastElement = path.split('/').pop() // urlの最後の要素を取り出す('cluster-resource'か'tenant'か'container-list')
+      // cluster-resource(この画面のトップページの場合、ノード別画面を表示)
+      if (lastElement === 'cluster-resource') {
+        this.mode = ''
+      } else {
+        this.mode = lastElement
+      }
+    },
+    handleModeChange() {
+      switch (this.mode) {
         case '':
           this.$router.push('/cluster-resource')
           break
