@@ -8,12 +8,6 @@ import ManageRoleEdit from '@/components/tenant-manage/role/Edit'
 import ManageUserIndex from '@/components/tenant-manage/user/Index'
 import ManageUserEdit from '@/components/tenant-manage/user/Edit'
 
-import ClusterResource from '@/components/system-setting/cluster-resource/Index'
-import ClusterResourceEdit from '@/components/system-setting/cluster-resource/Edit'
-import ClusterResourceNode from '@/components/system-setting/cluster-resource/Node'
-import ClusterResourceTenant from '@/components/system-setting/cluster-resource/Tenant'
-import ClusterResourceContainerList from '@/components/system-setting/cluster-resource/ContainerList'
-
 import AccountLogin from '@/components/account/Login'
 import AccountSetting from '@/components/account/Setting'
 import DashBoardIndex from '@/components/dashboard/Index'
@@ -38,6 +32,7 @@ import role from '@/router/role'
 import storage from '@/router/storage'
 import tenant from '@/router/tenant'
 import user from '@/router/user'
+import clusterResource from '@/router/cluster-resource'
 
 Vue.use(Router)
 
@@ -59,6 +54,7 @@ let router = new Router({
     ...storage,
     ...tenant,
     ...user,
+    ...clusterResource,
     {
       path: '/login',
       name: 'Login',
@@ -111,46 +107,6 @@ let router = new Router({
       path: '/manage/resource',
       name: 'ManageResource',
       component: ManageResourceIndex,
-    },
-    {
-      path: '/cluster-resource',
-      name: 'ClusterResource',
-      component: ClusterResource,
-      children: [
-        {
-          path: '',
-          component: ClusterResourceNode,
-          children: [
-            {
-              path: ':id/:name',
-              component: ClusterResourceEdit,
-              props: true,
-            },
-          ],
-        },
-        {
-          path: 'tenant',
-          component: ClusterResourceTenant,
-          children: [
-            {
-              path: ':id/:name',
-              component: ClusterResourceEdit,
-              props: true,
-            },
-          ],
-        },
-        {
-          path: 'container-list',
-          component: ClusterResourceContainerList,
-          children: [
-            {
-              path: ':id/:name',
-              component: ClusterResourceEdit,
-              props: true,
-            },
-          ],
-        },
-      ],
     },
     {
       path: '/error',

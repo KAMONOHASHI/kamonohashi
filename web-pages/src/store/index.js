@@ -10,6 +10,7 @@ import menu from './modules/menu'
 import node from './modules/node'
 import quota from './modules/quota'
 import registry from './modules/registry'
+import resource from './modules/resource'
 import dataSet from './modules/dataSet'
 import registrySelector from './modules/registrySelector'
 import gitSelector from './modules/gitSelector'
@@ -35,6 +36,7 @@ export default new Vuex.Store({
     node,
     quota,
     registry,
+    resource,
     cluster,
     role,
     storage,
