@@ -48,11 +48,16 @@
 </template>
 
 <script>
-import { createNamespacedHelpers } from 'vuex'
-const { mapGetters } = createNamespacedHelpers('registry')
-
 export default {
   props: {
+    // 表示するレジストリの一覧
+    registries: {
+      type: Array,
+      default: () => {
+        return []
+      },
+    },
+    // 選択されたレジストリIDの配列とその中から選んだデフォルトのID
     value: {
       type: Object,
       default: () => {
@@ -64,7 +69,6 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['registries']),
     availableRegistries: function() {
       // selectedIdsとendpointsを突き合わせて該当するものを抜き出し、表示に用いる配列を作成する。
       let registryList = []

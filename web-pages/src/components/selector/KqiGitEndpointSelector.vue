@@ -57,6 +57,7 @@ export default {
         return []
       },
     },
+    // 選択されたgitエンドポイントIDの配列とその中から選んだデフォルトのID
     value: {
       type: Object,
       default: () => {

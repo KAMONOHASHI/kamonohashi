@@ -52,7 +52,10 @@
 
       <h3>Docker Registry 情報</h3>
       <div class="margin">
-        <kqi-registry-endpoint-selector v-model="form.registry" />
+        <kqi-registry-endpoint-selector
+          v-model="form.registry"
+          :registries="registryEndpoints"
+        />
       </div>
     </el-form>
   </kqi-dialog>
@@ -177,6 +180,7 @@ export default {
     ...mapGetters({
       detail: ['tenant/detail'],
       gitEndpoints: ['git/endpoints'],
+      registryEndpoints: ['registry/registries'],
     }),
   },
   async created() {
