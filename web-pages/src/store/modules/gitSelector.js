@@ -8,11 +8,6 @@ const state = {
   branches: [],
   commits: [],
 
-  git: null,
-  repository: null,
-  branch: null,
-  commit: null,
-
   // リポジトリのロードは時間がかかる可能性があるためフラグを設けて管理
   loadingRepositories: false,
 }
@@ -33,19 +28,6 @@ const getters = {
   },
   commits(state) {
     return state.commits
-  },
-
-  git(state) {
-    return state.git
-  },
-  repository(state) {
-    return state.repository
-  },
-  branch(state) {
-    return state.branch
-  },
-  commit(state) {
-    return state.commit
   },
 
   loadingRepositories(state) {
@@ -124,19 +106,6 @@ const mutations = {
   },
   setCommits(state, { commits }) {
     state.commits = commits
-  },
-
-  setGit(state, git) {
-    state.git = git
-  },
-  setRepository(state, repository) {
-    state.repository = repository
-  },
-  setBranch(state, branch) {
-    state.branch = branch
-  },
-  setCommit(state, commit) {
-    state.commit = commit
   },
 
   setLoadingRepositories(state, flag) {

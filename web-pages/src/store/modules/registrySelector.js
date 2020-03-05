@@ -6,9 +6,6 @@ const state = {
   defaultRegistryId: null,
   images: [],
   tags: [],
-  registry: null,
-  image: null,
-  tag: null,
 }
 
 // getters
@@ -24,16 +21,6 @@ const getters = {
   },
   tags(state) {
     return state.tags
-  },
-
-  registry(state) {
-    return state.registry
-  },
-  image(state) {
-    return state.image
-  },
-  tag(state) {
-    return state.tag
   },
 }
 
@@ -75,16 +62,6 @@ const mutations = {
   },
   setTags(state, { tags }) {
     state.tags = tags
-  },
-
-  setRegistry(state, registry) {
-    state.registry = registry
-  },
-  setImage(state, image) {
-    state.image = image
-  },
-  setTag(state, tag) {
-    state.tag = tag
   },
 }
 
