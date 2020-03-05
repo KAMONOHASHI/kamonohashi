@@ -38,7 +38,10 @@
       <h3>ストレージ情報</h3>
       <div class="margin">
         <el-form-item>
-          <kqi-storage-endpoint-selector v-model="form.storageId" />
+          <kqi-storage-endpoint-selector
+            v-model="form.storageId"
+            :storages="storageEndpoints"
+          />
         </el-form-item>
       </div>
 
@@ -181,6 +184,7 @@ export default {
       detail: ['tenant/detail'],
       gitEndpoints: ['git/endpoints'],
       registryEndpoints: ['registry/registries'],
+      storageEndpoints: ['storage/storages'],
     }),
   },
   async created() {

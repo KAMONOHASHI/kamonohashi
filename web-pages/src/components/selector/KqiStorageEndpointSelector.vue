@@ -23,19 +23,20 @@
 </template>
 
 <script>
-import { createNamespacedHelpers } from 'vuex'
-const { mapGetters } = createNamespacedHelpers('storage')
-
 export default {
   props: {
+    // 表示するstorageの一覧
+    storages: {
+      type: Array,
+      default: () => {
+        return []
+      },
+    },
     // storagesの中から選択したid
     value: {
       type: Number,
       default: null,
     },
-  },
-  computed: {
-    ...mapGetters(['storages']),
   },
   methods: {
     async handleChange(storageId) {
