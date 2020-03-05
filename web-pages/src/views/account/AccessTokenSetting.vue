@@ -1,7 +1,7 @@
 <template>
   <!-- アクセストークン取得 -->
   <div>
-    <el-row class="row-element" style="padding-top: 100px;">
+    <el-row class="row-element" style="padding-top: 50px;">
       <el-col :span="6" class="content-color">
         期限切れまでの日数
       </el-col>
@@ -70,7 +70,7 @@ export default {
 
 .button-group {
   text-align: right;
-  padding-top: 150px;
+  padding-top: 100px;
   padding-right: 30px;
 }
 

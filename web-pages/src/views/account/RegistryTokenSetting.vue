@@ -114,7 +114,7 @@ export default {
 
 .button-group {
   text-align: right;
-  padding-top: 150px;
+  padding-top: 100px;
   padding-right: 30px;
 }
 
