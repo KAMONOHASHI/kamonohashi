@@ -136,7 +136,6 @@ export default {
     },
     handleCopy(id) {
       this.$router.push('/preprocessing/create/' + id)
-      this.$router.go('/preprocessing/create/' + id)
     },
     async openHistoryIndex(row) {
       this.$router.push('/preprocessingHistory/' + row.id)

@@ -99,51 +99,63 @@ export default {
       rules: this.createRules(),
     }
   },
-
   computed: {
     ...mapGetters(['detail', 'dataTypes']),
   },
+  watch: {
+    async $route() {
+      // 通常の作成とコピー作成が同一コンポーネントのため、コピー作成の実行はrouterの変化により検知する
+      await this.initialize()
+    },
+  },
 
   async created() {
-    let url = this.$route.path
-    let type = url.split('/')[2] // ["", "dataset", "{type}", "{id}"]
-    switch (type) {
-      case 'create':
-        this.title = 'データセット作成'
-        this.isCreateDialog = true
-        this.isCopyCreation = this.id !== null
-        break
-
-      case 'edit':
-        this.title = 'データセット編集'
-        this.isEditDialog = true
-        break
-    }
-
-    // 新規作成時はデータタイプを設定
-    if (this.isCreateDialog && !this.isCopyCreation) {
-      try {
-        await this.fetchDataTypes()
-        this.form.entries = {}
-        this.dataTypes.forEach(type => {
-          this.form.entries[type.name] = []
-        })
-        this.error = null
-      } catch (e) {
-        this.error = e
-      }
-    }
-
-    // 編集時/コピー作成時は、既に登録されている情報を各項目を設定
-    if (this.isEditDialog || this.isCopyCreation) {
-      await this.retrieveData()
-    }
+    await this.initialize()
   },
 
   methods: {
     ...mapActions(['fetchDetail', 'fetchDataTypes', 'post', 'put', 'delete']),
     ...mapMutations(['setDataTypes']),
+    async initialize() {
+      let url = this.$route.path
+      let type = url.split('/')[2] // ["", "dataset", "{type}", "{id}"]
+      switch (type) {
+        case 'create':
+          this.title = 'データセット作成'
+          this.isCreateDialog = true
+          this.isCopyCreation = this.id !== null
+          this.isEditDialog = false
+          break
+
+        case 'edit':
+          this.title = 'データセット編集'
+          this.isCreateDialog = false
+          this.isCopyCreation = false
+          this.isEditDialog = true
+          break
+      }
+
+      // 新規作成時はデータタイプを設定
+      if (this.isCreateDialog && !this.isCopyCreation) {
+        try {
+          await this.fetchDataTypes()
+          this.form.entries = {}
+          this.dataTypes.forEach(type => {
+            this.form.entries[type.name] = []
+          })
+          this.error = null
+        } catch (e) {
+          this.error = e
+        }
+      }
+
+      // 編集時/コピー作成時は、既に登録されている情報を各項目を設定
+      if (this.isEditDialog || this.isCopyCreation) {
+        await this.retrieveData()
+      }
+    },
     async retrieveData() {
+      this.form.entries = null
       try {
         await this.fetchDetail(this.id)
         this.form.name = this.detail.name

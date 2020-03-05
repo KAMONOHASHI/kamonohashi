@@ -144,78 +144,14 @@ export default {
       histories: ['preprocessing/histories'],
     }),
   },
-
+  watch: {
+    async $route() {
+      // 通常の作成とコピー作成が同一コンポーネントのため、コピー作成の実行はrouterの変化により検知する
+      await this.initialize()
+    },
+  },
   async created() {
-    let url = this.$route.path
-    let type = url.split('/')[2] // ["", "preprocessing", "{type}", "{id}"]
-    switch (type) {
-      case 'create':
-        this.title = '前処理作成'
-        this.isCreateDialog = true
-        this.isCopyCreation = this.id !== null
-        break
-      case 'edit':
-        this.title = '前処理編集'
-        this.isEditDialog = true
-        break
-    }
-
-    // 指定に必要な情報を取得
-    // レジストリ一覧を取得し、デフォルトレジストリを設定
-    await this['registrySelector/fetchRegistries']()
-    this.form.containerImage.registry = this.registries.find(registry => {
-      return registry.id === this.defaultRegistryId
-    })
-    await this.selectRegistry(this.defaultRegistryId)
-
-    // gitサーバ一覧を取得し、デフォルトgitサーバを設定
-    await this['gitSelector/fetchGits']()
-    this.form.gitModel.git = this.gits.find(git => {
-      return git.id === this.defaultGitId
-    })
-    await this['gitSelector/fetchRepositories'](this.defaultGitId)
-
-    // 編集時で既に前処理で利用されている場合は、patchフラグを立てる
-    if (this.isEditDialog) {
-      await this['preprocessing/fetchHistories'](this.id)
-      if (this.histories.length > 0) {
-        this.isPatch = true
-      }
-    }
-    // 編集時/コピー実行時は、既に登録されている情報を各項目を設定
-    if (this.isEditDialog || this.isCopyCreation) {
-      await this['preprocessing/fetchDetail'](this.id)
-
-      this.form.name = this.detail.name
-      this.form.entryPoint = this.detail.entryPoint
-      this.form.memo = this.detail.memo
-
-      // レジストリの設定
-      this.form.containerImage.registry = {
-        id: this.detail.containerImage.registryId,
-        name: this.detail.containerImage.name,
-      }
-      await this.selectRegistry(this.detail.containerImage.registryId)
-      this.form.containerImage.image = this.detail.containerImage.image
-      await this.selectImage()
-      this.form.containerImage.tag = this.detail.containerImage.tag
-
-      // gitモデルの設定
-      this.form.gitModel.git = {
-        id: this.detail.gitModel.gitId,
-        name: this.detail.gitModel.name,
-      }
-      await this.selectGit(this.detail.gitModel.gitId)
-      this.form.gitModel.repository = `${this.detail.gitModel.owner}/${this.detail.gitModel.repository}`
-      await this.selectRepository(this.form.gitModel.repository)
-      this.form.gitModel.branch = this.detail.gitModel.branch
-      await this.selectBranch(this.detail.gitModel.branch)
-      this.form.gitModel.commit = this.detail.gitModel.commitId
-
-      this.form.resource.cpu = this.detail.cpu
-      this.form.resource.memory = this.detail.memory
-      this.form.resource.gpu = this.detail.gpu
-    }
+    await this.initialize()
   },
   methods: {
     ...mapActions([
@@ -233,6 +169,82 @@ export default {
       'gitSelector/fetchBranches',
       'gitSelector/fetchCommits',
     ]),
+    async initialize() {
+      let url = this.$route.path
+      let type = url.split('/')[2] // ["", "preprocessing", "{type}", "{id}"]
+      switch (type) {
+        case 'create':
+          this.title = '前処理作成'
+          this.isCreateDialog = true
+          this.isCopyCreation = this.id !== null
+          this.isEditDialog = false
+          this.isPatch = false
+          break
+        case 'edit':
+          this.title = '前処理編集'
+          this.isCreateDialog = false
+          this.isCopyCreation = false
+          this.isEditDialog = true
+          break
+      }
+
+      // 指定に必要な情報を取得
+      // レジストリ一覧を取得し、デフォルトレジストリを設定
+      await this['registrySelector/fetchRegistries']()
+      this.form.containerImage.registry = this.registries.find(registry => {
+        return registry.id === this.defaultRegistryId
+      })
+      await this.selectRegistry(this.defaultRegistryId)
+
+      // gitサーバ一覧を取得し、デフォルトgitサーバを設定
+      await this['gitSelector/fetchGits']()
+      this.form.gitModel.git = this.gits.find(git => {
+        return git.id === this.defaultGitId
+      })
+      await this['gitSelector/fetchRepositories'](this.defaultGitId)
+
+      // 編集時で既に前処理で利用されている場合は、patchフラグを立てる
+      if (this.isEditDialog) {
+        await this['preprocessing/fetchHistories'](this.id)
+        if (this.histories.length > 0) {
+          this.isPatch = true
+        }
+      }
+      // 編集時/コピー実行時は、既に登録されている情報を各項目を設定
+      if (this.isEditDialog || this.isCopyCreation) {
+        await this['preprocessing/fetchDetail'](this.id)
+
+        this.form.name = this.detail.name
+        this.form.entryPoint = this.detail.entryPoint
+        this.form.memo = this.detail.memo
+
+        // レジストリの設定
+        this.form.containerImage.registry = {
+          id: this.detail.containerImage.registryId,
+          name: this.detail.containerImage.name,
+        }
+        await this.selectRegistry(this.detail.containerImage.registryId)
+        this.form.containerImage.image = this.detail.containerImage.image
+        await this.selectImage()
+        this.form.containerImage.tag = this.detail.containerImage.tag
+
+        // gitモデルの設定
+        this.form.gitModel.git = {
+          id: this.detail.gitModel.gitId,
+          name: this.detail.gitModel.name,
+        }
+        await this.selectGit(this.detail.gitModel.gitId)
+        this.form.gitModel.repository = `${this.detail.gitModel.owner}/${this.detail.gitModel.repository}`
+        await this.selectRepository(this.form.gitModel.repository)
+        this.form.gitModel.branch = this.detail.gitModel.branch
+        await this.selectBranch(this.detail.gitModel.branch)
+        this.form.gitModel.commit = this.detail.gitModel.commitId
+
+        this.form.resource.cpu = this.detail.cpu
+        this.form.resource.memory = this.detail.memory
+        this.form.resource.gpu = this.detail.gpu
+      }
+    },
     async submit() {
       let form = this.$refs.createForm
       await form.validate(async valid => {
