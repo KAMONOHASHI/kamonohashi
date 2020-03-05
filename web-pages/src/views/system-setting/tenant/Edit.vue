@@ -72,6 +72,7 @@ import KqiGitEndpointSelector from '@/components/selector/KqiGitEndpointSelector
 import KqiRegistryEndpointSelector from '@/components/selector/KqiRegistryEndpointSelector.vue'
 import KqiStorageEndpointSelector from '@/components/selector/KqiStorageEndpointSelector.vue'
 import { mapGetters, mapActions } from 'vuex'
+import validator from '@/util/validator'
 
 const formRule = {
   required: true,
@@ -95,35 +96,6 @@ export default {
     },
   },
   data() {
-    let gitSelectedIdsValidator = (rule, value, callback) => {
-      if (this.form.gitEndpoint.selectedIds.length === 0) {
-        callback(new Error('必須項目です'))
-      } else {
-        callback()
-      }
-    }
-    let gitDefaultIdValidator = (rule, value, callback) => {
-      if (this.form.gitEndpoint.defaultId === null) {
-        callback(new Error('必須項目です'))
-      } else {
-        callback()
-      }
-    }
-    let registrySelectedIdsValidator = (rule, value, callback) => {
-      if (this.form.registry.selectedIds.length === 0) {
-        callback(new Error('必須項目です'))
-      } else {
-        callback()
-      }
-    }
-    let registryDefaultIdValidator = (rule, value, callback) => {
-      if (this.form.registry.defaultId === null) {
-        callback(new Error('必須項目です'))
-      } else {
-        callback()
-      }
-    }
-
     return {
       title: '',
       error: null,
@@ -147,34 +119,16 @@ export default {
       rules: {
         tenantName: [formRule],
         displayName: [formRule],
-        gitSelectedIds: [
-          {
-            required: true,
-            validator: gitSelectedIdsValidator,
-            trigger: 'blur',
-          },
-        ],
-        gitDefaultId: [
-          {
-            required: true,
-            validator: gitDefaultIdValidator,
-            trigger: 'blur',
-          },
-        ],
-        registryselectedIds: [
-          {
-            required: true,
-            validator: registrySelectedIdsValidator,
-            trigger: 'blur',
-          },
-        ],
-        registryDefaultId: [
-          {
-            required: true,
-            validator: registryDefaultIdValidator,
-            trigger: 'blur',
-          },
-        ],
+        gitEndpoint: {
+          required: true,
+          trigger: 'blur',
+          validator: validator.gitEndpointValidator,
+        },
+        registry: {
+          required: true,
+          validator: validator.regystryEndpointValidator,
+          trigger: 'blur',
+        },
         storageId: [formRule],
       },
     }

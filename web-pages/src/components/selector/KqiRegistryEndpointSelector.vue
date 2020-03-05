@@ -1,6 +1,7 @@
 <template>
   <div>
-    <el-form-item label="レジストリ" prop="registryselectedIds">
+    <el-form-item prop="registry">
+      <el-col :span="6">レジストリ</el-col>
       <el-select
         class="selectRegistry"
         :value="value.selectedIds"
@@ -21,9 +22,8 @@
           }}</span>
         </el-option>
       </el-select>
-    </el-form-item>
 
-    <el-form-item label="デフォルト" prop="registryDefaultId">
+      <el-col :span="6">デフォルト</el-col>
       <el-select
         class="selectRegistry"
         :value="value.defaultId"

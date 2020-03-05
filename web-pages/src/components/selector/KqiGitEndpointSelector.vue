@@ -1,6 +1,7 @@
 <template>
   <div>
-    <el-form-item label="Git" prop="gitSelectedIds">
+    <el-form-item prop="gitEndpoint">
+      <el-col :span="6">Git</el-col>
       <el-select
         class="selectGit"
         :value="value.selectedIds"
@@ -21,9 +22,7 @@
           }}</span>
         </el-option>
       </el-select>
-    </el-form-item>
-
-    <el-form-item label="デフォルト" prop="gitDefaultId">
+      <el-col :span="6">デフォルト</el-col>
       <el-select
         class="selectGit"
         :value="value.defaultId"
