@@ -319,7 +319,7 @@ export default {
       },
       dialogVisible: true,
       error: null,
-      active: 1,
+      active: 0,
       isCopyCreation: false,
     }
   },
