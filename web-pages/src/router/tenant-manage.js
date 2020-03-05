@@ -2,6 +2,7 @@ import ManageTenant from '@/views/tenant-manage/tenant/Setting'
 import ManageUserIndex from '@/views/tenant-manage/user/Index'
 import ManageUserEdit from '@/views/tenant-manage/user/Edit'
 import ManageResourceIndex from '@/views/tenant-manage/resource/Index'
+import ManageResourceEdit from '@/views/tenant-manage/resource/Edit'
 
 export default [
   {
@@ -25,5 +26,12 @@ export default [
     path: '/manage/resource',
     name: 'ManageResource',
     component: ManageResourceIndex,
+    children: [
+      {
+        path: ':name',
+        component: ManageResourceEdit,
+        props: true,
+      },
+    ],
   },
 ]
