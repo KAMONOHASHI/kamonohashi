@@ -54,7 +54,7 @@
           <div class="cp_tabpanels">
             <!-- デフォルトテナント設定 -->
             <div id="first_tab01" class="cp_tabpanel">
-              <kqi-display-error :error="error" />
+              <kqi-display-error :error="tenantError" />
               <default-tenant-setting
                 v-model="defaultTenantName"
                 :tenants="account.tenants"
@@ -64,7 +64,7 @@
 
             <!-- アクセストークン取得 -->
             <div id="second_tab01" class="cp_tabpanel">
-              <kqi-display-error :error="error" />
+              <kqi-display-error :error="accessTokenError" />
               <access-token-setting
                 v-model="tokenForm.day"
                 :token="tokenForm.token"
@@ -74,7 +74,7 @@
 
             <!-- Gitトークン設定 -->
             <div id="third_tab01" class="cp_tabpanel">
-              <kqi-display-error :error="error" />
+              <kqi-display-error :error="gitTokenError" />
               <git-token-setting
                 v-model="gitForm"
                 :gits="gits"
@@ -84,7 +84,7 @@
 
             <!-- Registryトークン設定 -->
             <div id="force_tab01" class="cp_tabpanel">
-              <kqi-display-error :error="error" />
+              <kqi-display-error :error="registryTokenError" />
               <registry-token-setting
                 v-model="registryForm"
                 :registries="registries"
@@ -94,7 +94,7 @@
 
             <!-- パスワード変更 -->
             <div id="five_tab01" class="cp_tabpanel">
-              <kqi-display-error :error="error" />
+              <kqi-display-error :error="passwordError" />
               <Password-Setting
                 v-if="passwordChangeEnabled"
                 v-model="passForm"
@@ -131,27 +131,27 @@ export default {
   },
   data() {
     return {
-      error: null,
+      tenantError: null,
+      accessTokenError: null,
+      gitTokenError: null,
+      registryTokenError: null,
+      passwordError: null,
       defaultTenantName: '',
-
       tokenForm: {
         token: '',
         day: 30,
       },
-
       gitForm: {
         id: 0,
         name: '',
         token: '',
       },
-
       registryForm: {
         id: 0,
         name: '',
         userName: '',
         password: '',
       },
-
       passwordChangeEnabled: true,
       passForm: {
         currentPassword: '',
@@ -170,28 +170,24 @@ export default {
     }),
   },
   async created() {
-    try {
-      // ログインユーザのアカウント情報を取得する
-      await this['account/fetchAccount']()
-      this.defaultTenantName = this.account.defaultTenant.name
-      this.passwordChangeEnabled = this.account.passwordChangeEnabled
+    // ログインユーザのアカウント情報を取得する
+    await this['account/fetchAccount']()
+    this.defaultTenantName = this.account.defaultTenant.name
+    this.passwordChangeEnabled = this.account.passwordChangeEnabled
 
-      // 選択中のテナントにおけるGit情報を取得する
-      await this['gitSelector/fetchGits']()
-      // gitFormにデフォルトGit情報を設定
-      this.gitForm.id = this.git.id
-      this.gitForm.name = this.git.name
-      this.gitForm.token = this.git.token
+    // 選択中のテナントにおけるGit情報を取得する
+    await this['gitSelector/fetchGits']()
+    // gitFormにデフォルトGit情報を設定
+    this.gitForm.id = this.git.id
+    this.gitForm.name = this.git.name
+    this.gitForm.token = this.git.token
 
-      // 選択中のテナントにおけるレジストリ情報を取得する
-      await this['registrySelector/fetchRegistries']()
-      this.registryForm.id = this.registry.id
-      this.registryForm.name = this.registry.name
-      this.registryForm.userName = this.registry.userName
-      this.registryForm.password = this.registry.password
-    } catch (error) {
-      this.error = error
-    }
+    // 選択中のテナントにおけるレジストリ情報を取得する
+    await this['registrySelector/fetchRegistries']()
+    this.registryForm.id = this.registry.id
+    this.registryForm.name = this.registry.name
+    this.registryForm.userName = this.registry.userName
+    this.registryForm.password = this.registry.password
   },
 
   methods: {
@@ -213,9 +209,9 @@ export default {
         }
         await this['account/put'](params)
         this.showSuccessMessage()
-        this.error = null
+        this.tenantError = null
       } catch (error) {
-        this.error = error
+        this.tenantError = error
       }
     },
 
@@ -229,9 +225,9 @@ export default {
         await this['account/postTokenTenants'](params)
         this.tokenForm.token = this.token
         this.showSuccessMessage()
-        this.error = null
+        this.accessTokenError = null
       } catch (error) {
-        this.error = error
+        this.accessTokenError = error
       }
     },
 
@@ -245,9 +241,9 @@ export default {
         }
         await this['account/putGitToken'](params)
         this.showSuccessMessage()
-        this.error = null
+        this.gitTokenError = null
       } catch (error) {
-        this.error = error
+        this.gitTokenError = error
       }
     },
 
@@ -262,9 +258,9 @@ export default {
         }
         await this['account/putRegistryToken'](params)
         this.showSuccessMessage()
-        this.error = null
+        this.registryTokenError = null
       } catch (error) {
-        this.error = error
+        this.registryTokenError = error
       }
     },
 
@@ -278,9 +274,9 @@ export default {
         }
         await this['account/putPassword'](params)
         this.showSuccessMessage()
-        this.error = null
+        this.passwordError = null
       } catch (error) {
-        this.error = error
+        this.passwordError = error
       }
     },
   },
