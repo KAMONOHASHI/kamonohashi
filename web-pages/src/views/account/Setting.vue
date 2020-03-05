@@ -2,7 +2,7 @@
   <div>
     <h2>ユーザ情報設定</h2>
     <div class="parent-container">
-      <kqi-display-error :error="error" />
+      <!-- <kqi-display-error :error="error" /> -->
       <!-- 選択中テナント情報 -->
       <tenant-info
         :user-name="account.userName"
@@ -20,14 +20,14 @@
             aria-controls="first_tab01"
             checked
           />
-          <label for="tab1_1">tenant</label>
+          <label for="tab1_1">Tenant</label>
           <input
             id="tab1_2"
             type="radio"
             name="cp_tab"
             aria-controls="second_tab01"
           />
-          <label for="tab1_2">access Token</label>
+          <label for="tab1_2">Access Token</label>
           <input
             id="tab1_3"
             type="radio"
@@ -49,54 +49,59 @@
             aria-controls="five_tab01"
           />
           <label v-if="passwordChangeEnabled" for="tab1_5">
-            password
+            Password
           </label>
 
           <div class="cp_tabpanels">
             <!-- デフォルトテナント設定 -->
-            <default-tenant-setting
-              id="first_tab01"
-              v-model="defaultTenantName"
-              class="cp_tabpanel"
-              :tenants="account.tenants"
-              @defaultTenantUpdate="defaultTenantUpdate"
-            />
+            <div id="first_tab01" class="cp_tabpanel">
+              <kqi-display-error :error="error" />
+              <default-tenant-setting
+                v-model="defaultTenantName"
+                :tenants="account.tenants"
+                @defaultTenantUpdate="defaultTenantUpdate"
+              />
+            </div>
 
             <!-- アクセストークン取得 -->
-            <access-token-setting
-              id="second_tab01"
-              v-model="tokenForm.day"
-              class="cp_tabpanel"
-              :token="tokenForm.token"
-              @getAccessToken="getAccessToken"
-            />
+            <div id="second_tab01" class="cp_tabpanel">
+              <kqi-display-error :error="error" />
+              <access-token-setting
+                v-model="tokenForm.day"
+                :token="tokenForm.token"
+                @getAccessToken="getAccessToken"
+              />
+            </div>
 
             <!-- Gitトークン設定 -->
-            <git-token-setting
-              id="third_tab01"
-              v-model="gitForm"
-              class="cp_tabpanel"
-              :gits="gits"
-              @updateGitToken="updateGitToken"
-            />
+            <div id="third_tab01" class="cp_tabpanel">
+              <kqi-display-error :error="error" />
+              <git-token-setting
+                v-model="gitForm"
+                :gits="gits"
+                @updateGitToken="updateGitToken"
+              />
+            </div>
 
             <!-- Registryトークン設定 -->
-            <registry-token-setting
-              id="force_tab01"
-              v-model="registryForm"
-              class="cp_tabpanel"
-              :registries="registries"
-              @updateRegistryToken="updateRegistryToken"
-            />
+            <div id="force_tab01" class="cp_tabpanel">
+              <kqi-display-error :error="error" />
+              <registry-token-setting
+                v-model="registryForm"
+                :registries="registries"
+                @updateRegistryToken="updateRegistryToken"
+              />
+            </div>
 
             <!-- パスワード変更 -->
-            <Password-Setting
-              v-if="passwordChangeEnabled"
-              id="five_tab01"
-              v-model="passForm"
-              class="cp_tabpanel"
-              @updatePassword="updatePassword"
-            />
+            <div id="five_tab01" class="cp_tabpanel">
+              <kqi-display-error :error="error" />
+              <Password-Setting
+                v-if="passwordChangeEnabled"
+                v-model="passForm"
+                @updatePassword="updatePassword"
+              />
+            </div>
           </div>
         </div>
       </el-card>
@@ -218,7 +223,7 @@ export default {
     async getAccessToken() {
       try {
         let params = {
-          tenantId: this.account.selectedTenant.id,
+          tenantId: this.account.selectedTenant.id + 5000,
           expiresIn: this.tokenForm.day * 60 * 60 * 24,
         }
         // 新規アクセストークンを取得する
