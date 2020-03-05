@@ -1,8 +1,8 @@
 <template>
   <!-- デフォルトテナント設定 -->
-  <div id="first_tab01" class="cp_tabpanel">
-    <el-row class="row-element">
-      <el-col :span="6">
+  <div>
+    <el-row class="row-element" style="padding-top: 100px;">
+      <el-col :span="6" class="content-color">
         既定のテナント
       </el-col>
       <el-col :span="12">
@@ -19,6 +19,10 @@
             :value="t.name"
           />
         </el-select>
+      </el-col>
+    </el-row>
+    <el-row>
+      <el-col class="button-group">
         <el-button type="primary" @click="$emit('defaultTenantUpdate')">
           更新
         </el-button>
@@ -51,6 +55,19 @@ export default {
 
 <style scoped>
 .row-element {
-  margin: 40px;
+  font-size: 14px;
+  line-height: 40px;
+  margin-top: 30px;
+  font-weight: bold !important;
+}
+
+.button-group {
+  text-align: right;
+  padding-top: 150px;
+  padding-right: 30px;
+}
+
+.content-color {
+  color: #606266;
 }
 </style>

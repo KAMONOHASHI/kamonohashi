@@ -1,11 +1,11 @@
 <template>
   <!-- アクセストークン取得 -->
-  <div id="second_tab01" class="cp_tabpanel">
-    <el-row class="row-element">
-      <el-col :span="8">
+  <div>
+    <el-row class="row-element" style="padding-top: 100px;">
+      <el-col :span="6" class="content-color">
         期限切れまでの日数
       </el-col>
-      <el-col :span="16">
+      <el-col :span="17">
         <el-slider
           :value="value"
           class="el-input"
@@ -16,21 +16,25 @@
         />
       </el-col>
       <br />
-      <el-col :offset="8" :span="16">
+      <el-col :offset="6" :span="12">
         値は 1 ～ 3650 の数字を入力して下さい。
       </el-col>
     </el-row>
     <el-row class="row-element">
       <div v-if="!token">
-        <el-col :offset="20">
+        <el-col class="button-group">
           <el-button type="primary" @click="$emit('getAccessToken')">
             トークン発行
           </el-button>
         </el-col>
       </div>
       <div v-else>
-        トークン
-        <el-input v-model="token" type="textarea" autosize readonly />
+        <el-col :span="6" class="content-color">
+          トークン
+        </el-col>
+        <el-col :span="17">
+          <el-input v-model="token" type="textarea" autosize readonly />
+        </el-col>
       </div>
     </el-row>
   </div>
@@ -59,6 +63,19 @@ export default {
 
 <style scoped>
 .row-element {
-  margin: 30px;
+  font-size: 14px;
+  line-height: 40px;
+  margin-top: 30px;
+  font-weight: bold !important;
+}
+
+.button-group {
+  text-align: right;
+  padding-top: 150px;
+  padding-right: 30px;
+}
+
+.content-color {
+  color: #606266;
 }
 </style>
