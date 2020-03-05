@@ -4,7 +4,6 @@ import Edit from '@/views/system-setting/user/Edit'
 export default [
   {
     path: '/user',
-    name: 'User',
     component: Index,
     children: [
       {

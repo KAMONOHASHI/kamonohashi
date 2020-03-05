@@ -4,7 +4,6 @@ import Edit from '@/views/system-setting/storage/Edit'
 export default [
   {
     path: '/storage',
-    name: 'Storage',
     component: Index,
     children: [
       {

@@ -6,12 +6,10 @@ import ManageResourceIndex from '@/views/tenant-manage/resource/Index'
 export default [
   {
     path: '/manage/tenant',
-    name: 'ManageTenant',
     component: ManageTenant,
   },
   {
     path: '/manage/user',
-    name: 'ManageUser',
     component: ManageUserIndex,
     children: [
       {
@@ -23,7 +21,6 @@ export default [
   },
   {
     path: '/manage/resource',
-    name: 'ManageResource',
     component: ManageResourceIndex,
   },
 ]

@@ -50,17 +50,14 @@ let router = new Router({
     ...clusterResource,
     {
       path: '/login',
-      name: 'Login',
       component: AccountLogin,
     },
     {
       path: '/error',
-      name: 'error',
       component: Error,
     },
     {
       path: '/version',
-      name: 'Version',
       component: VersionIndex,
     },
   ],

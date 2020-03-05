@@ -4,7 +4,6 @@ import Edit from '@/views/system-setting/registry/Edit'
 export default [
   {
     path: '/registry',
-    name: 'Registry,',
     component: Index,
     children: [
       {

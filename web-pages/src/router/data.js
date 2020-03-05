@@ -5,7 +5,6 @@ import Preprocessing from '@/views/common/RunPreprocessing'
 export default [
   {
     path: '/data',
-    name: 'Data',
     component: Index,
     children: [
       {
