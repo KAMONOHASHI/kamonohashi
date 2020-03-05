@@ -44,7 +44,10 @@
 
       <h3>Git情報</h3>
       <div class="margin">
-        <kqi-git-endpoint-selector v-model="form.gitEndpoint" />
+        <kqi-git-endpoint-selector
+          v-model="form.gitEndpoint"
+          :endpoints="gitEndpoints"
+        />
       </div>
 
       <h3>Docker Registry 情報</h3>
@@ -171,7 +174,10 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({ detail: ['tenant/detail'] }),
+    ...mapGetters({
+      detail: ['tenant/detail'],
+      gitEndpoints: ['git/endpoints'],
+    }),
   },
   async created() {
     await this['storage/fetchStorages']()

@@ -48,11 +48,15 @@
 </template>
 
 <script>
-import { createNamespacedHelpers } from 'vuex'
-const { mapGetters } = createNamespacedHelpers('git')
-
 export default {
   props: {
+    // 表示するgitエンドポイントの一覧
+    endpoints: {
+      type: Array,
+      default: () => {
+        return []
+      },
+    },
     value: {
       type: Object,
       default: () => {
@@ -64,7 +68,6 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['endpoints']),
     availableEndpoints: function() {
       // selectedIdsとendpointsを突き合わせて該当するものを抜き出し、表示に用いる配列を作成する。
       let endpointList = []

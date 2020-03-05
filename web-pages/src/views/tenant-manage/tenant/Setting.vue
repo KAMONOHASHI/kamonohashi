@@ -32,7 +32,10 @@
         <el-col class="container detail">
           <h3>Git 情報</h3>
           <div class="margin">
-            <kqi-git-endpoint-selector v-model="form.gitEndpoint" />
+            <kqi-git-endpoint-selector
+              v-model="form.gitEndpoint"
+              :endpoints="gitEndpoints"
+            />
           </div>
 
           <h3>Docker Registry 情報</h3>
@@ -156,7 +159,10 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({ tenant: ['tenant/detail'] }),
+    ...mapGetters({
+      tenant: ['tenant/detail'],
+      gitEndpoints: ['git/endpoints'],
+    }),
   },
   async created() {
     await this['git/fetchEndpoints']()
