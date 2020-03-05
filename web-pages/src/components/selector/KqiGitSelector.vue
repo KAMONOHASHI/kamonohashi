@@ -2,14 +2,14 @@
 <!--description: リポジトリ名、ブランチ名を指定するドロップダウンをそれぞれ表示する。そのままだとHEADになるので、任意でコミットIDも直接指定可能,-->
 
 <template>
-  <el-form-item label="モデル">
+  <el-form-item label="モデル" prop="gitModel">
     <el-row></el-row>
     <el-row>
       <!-- サーバの選択 -->
       <el-col :span="6" :offset="1">Gitサーバ</el-col>
       <el-col :span="12">
         <el-select
-          :value="git"
+          :value="value.git"
           size="small"
           filterable
           value-key="id"
@@ -33,7 +33,7 @@
       <el-col :span="6" :offset="1">リポジトリ</el-col>
       <el-col :span="12">
         <el-select
-          :value="repository"
+          :value="value.repository"
           size="small"
           filterable
           clearable
@@ -41,7 +41,7 @@
           default-first-option
           remote
           :value-key="repositoryValueKey"
-          :disabled="!git || loadingRepositories || disabled"
+          :disabled="!value.git || loadingRepositories || disabled"
           @change="changeRepository"
         >
           <el-option
@@ -62,13 +62,13 @@
       <el-col :span="6" :offset="1">ブランチ</el-col>
       <el-col :span="12">
         <el-select
-          :value="branch"
+          :value="value.branch"
           size="small"
           filterable
           clearable
           remote
           default-first-option
-          :disabled="!repository || disabled"
+          :disabled="!value.repository || disabled"
           :loading="listLoading"
           value-key="branchName"
           @change="changeBranch"
@@ -89,7 +89,7 @@
       <el-col v-if="enableCommitIdSelecter" :span="12">
         <el-popover
           ref="commitDetail"
-          :disabled="commit === null"
+          :disabled="value.commit === null"
           title="コミット詳細"
           trigger="hover"
           width="350"
@@ -98,31 +98,31 @@
           <span>
             <kqi-display-text-form
               label="コミットID"
-              :value="commit ? commit.commitId : ''"
+              :value="value.commit ? value.commit.commitId : ''"
             ></kqi-display-text-form>
             <kqi-display-text-form
               label="コミッター"
-              :value="commit ? commit.committerName : ''"
+              :value="value.commit ? value.commit.committerName : ''"
             ></kqi-display-text-form>
             <kqi-display-text-form
               label="コミット日時"
-              :value="commit ? commit.commitAt : ''"
+              :value="value.commit ? value.commit.commitAt : ''"
             ></kqi-display-text-form>
             <kqi-display-text-form
               label="コメント"
-              :value="commit ? commit.comment : ''"
+              :value="value.commit ? value.commit.comment : ''"
             ></kqi-display-text-form>
           </span>
         </el-popover>
         <el-select
           v-popover:commitDetail
-          :value="commit"
+          :value="value.commit"
           size="small"
           filterable
           clearable
           remote
           default-first-option
-          :disabled="!branch || disabled"
+          :disabled="!value.branch || disabled"
           :loading="listLoading"
           value-key="commitId"
           @change="changeCommit"
@@ -144,7 +144,7 @@
         </span>
         <el-button
           size="mini"
-          :disabled="!branch || disabled"
+          :disabled="!value.branch || disabled"
           @click="enableCommitIdSelecter = true"
         >
           コミットIDを指定
@@ -156,8 +156,6 @@
 
 <script>
 import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
-import { createNamespacedHelpers } from 'vuex'
-const { mapGetters } = createNamespacedHelpers('gitSelector')
 
 export default {
   components: {
@@ -165,6 +163,51 @@ export default {
   },
 
   props: {
+    // gitサーバ一覧
+    gits: {
+      type: Array,
+      default: () => {
+        return []
+      },
+    },
+    // リポジトリ一覧
+    repositories: {
+      type: Array,
+      default: () => {
+        return []
+      },
+    },
+    // ブランチ一覧
+    branches: {
+      type: Array,
+      default: () => {
+        return []
+      },
+    },
+    // コミット一覧
+    commits: {
+      type: Array,
+      default: () => {
+        return []
+      },
+    },
+    // 選択されたgitサーバ、リポジトリ、ブランチ、コミットをvalueで保持
+    value: {
+      type: Object,
+      default: () => {
+        return {
+          git: null,
+          repository: null,
+          branch: null,
+          tag: null,
+        }
+      },
+    },
+    // リポジトリ取得中フラグ
+    loadingRepositories: {
+      type: Boolean,
+      default: false,
+    },
     disabled: {
       type: Boolean,
       default: false,
@@ -173,8 +216,6 @@ export default {
 
   data() {
     return {
-      model: this.value === undefined || this.value === null ? {} : this.value,
-
       // popover（コミットID一覧等）の「ローディング中」 文字列の表示制御
       listLoading: false,
       enableCommitIdSelecter: false,
@@ -183,38 +224,31 @@ export default {
       repositoryValueKey: 'fullName',
     }
   },
-  computed: {
-    ...mapGetters([
-      'gits',
-      'repositories',
-      'branches',
-      'commits',
-      'git',
-      'repository',
-      'branch',
-      'commit',
-      'loadingRepositories',
-    ]),
-  },
 
   methods: {
     changeGit(git) {
+      let gitModel = this.value
       if (git === '') {
         // clearボタンが押下された場合
-        this.$emit('input', { type: 'git', value: null })
+        gitModel.git = null
       } else {
-        this.$emit('input', { type: 'git', value: git })
+        gitModel.git = git
       }
+      this.$emit('input', gitModel)
+      this.$emit('selectGit', git === '' ? null : git.id)
     },
 
     // 選択しているリポジトリが切り替わった時に呼ばれるイベントハンドラ。
     changeRepository(repository) {
+      let gitModel = this.value
       if (repository === '') {
         // clearボタンが押下された場合
-        this.$emit('input', { type: 'repository', value: null })
+        gitModel.repository = null
       } else {
-        this.$emit('input', { type: 'repository', value: repository })
+        gitModel.repository = repository
       }
+      this.$emit('input', gitModel)
+      this.$emit('selectRepository', repository === '' ? null : repository)
 
       if (typeof repository === 'string') {
         // リポジトリ名を手入力された
@@ -226,22 +260,28 @@ export default {
 
     // 選択しているブランチが切り替わった時に呼ばれるイベントハンドラ。
     changeBranch(branch) {
+      let gitModel = this.value
       if (branch === '') {
         // clearボタンが押下された場合
-        this.$emit('input', { type: 'branch', value: null })
+        gitModel.branch = null
       } else {
-        this.$emit('input', { type: 'branch', value: branch })
+        gitModel.branch = branch
       }
+      this.$emit('input', gitModel)
+      this.$emit('selectBranch', branch === '' ? null : branch.name)
     },
 
     // 選択しているコミットが切り替わった時に呼ばれるイベントハンドラ。
     changeCommit(commit) {
+      let gitModel = this.value
+
       if (commit === '') {
         // clearボタンが押下された場合
-        this.$emit('input', { type: 'commit', value: null })
+        gitModel.commit = null
       } else {
-        this.$emit('input', { type: 'commit', value: commit })
+        gitModel.commit = commit
       }
+      this.$emit('input', gitModel)
     },
   },
 }

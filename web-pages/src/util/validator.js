@@ -6,4 +6,15 @@ export default class Validator {
       callback()
     }
   }
+  static gitModelValidator = (rule, value, callback) => {
+    if (
+      value.git === null ||
+      value.repository === null ||
+      value.branch === null
+    ) {
+      callback(new Error('必須項目です'))
+    } else {
+      callback()
+    }
+  }
 }

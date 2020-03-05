@@ -34,7 +34,17 @@
                   @selectRegistry="selectRegistry"
                   @selectImage="selectImage"
                 />
-                <kqi-git-selector @input="selectModel" />
+                <kqi-git-selector
+                  v-model="form.gitModel"
+                  :gits="gits"
+                  :repositories="repositories"
+                  :branches="branches"
+                  :commits="commits"
+                  :loading-repositories="loadingRepositories"
+                  @selectGit="selectGit"
+                  @selectRepository="selectRepository"
+                  @selectBranch="selectBranch"
+                />
               </el-col>
               <el-col :span="12">
                 <kqi-resource-selector
@@ -199,7 +209,17 @@
               />
             </el-col>
             <el-col :span="10">
-              <kqi-git-selector @input="selectModel" />
+              <kqi-git-selector
+                v-model="form.gitModel"
+                :gits="gits"
+                :repositories="repositories"
+                :branches="branches"
+                :commits="commits"
+                :loading-repositories="loadingRepositories"
+                @selectGit="selectGit"
+                @selectRepository="selectRepository"
+                @selectBranch="selectBranch"
+              />
             </el-col>
             <el-col :span="18" :offset="3">
               <kqi-training-history-selector
@@ -280,7 +300,7 @@ import KqiPartitionSelector from '@/components/selector/KqiPartitionSelector'
 import KqiResourceSelector from '@/components/selector/KqiResourceSelector'
 import KqiEnvironmentVariables from '@/components/KqiEnvironmentVariables'
 import KqiDisplayError from '@/components/KqiDisplayError'
-import { mapActions, mapMutations, mapGetters } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   components: {
@@ -309,6 +329,12 @@ export default {
           registry: null,
           image: null,
           tag: null,
+        },
+        gitModel: {
+          git: null,
+          repository: null,
+          branch: null,
+          commit: null,
         },
         resource: {
           cpu: 1,
@@ -345,10 +371,12 @@ export default {
       defaultRegistryId: ['registrySelector/defaultRegistryId'],
       images: ['registrySelector/images'],
       tags: ['registrySelector/tags'],
-      git: ['gitSelector/git'],
-      repository: ['gitSelector/repository'],
-      branch: ['gitSelector/branch'],
-      commit: ['gitSelector/commit'],
+      gits: ['gitSelector/gits'],
+      defaultGitId: ['gitSelector/defaultGitId'],
+      repositories: ['gitSelector/repositories'],
+      branches: ['gitSelector/branches'],
+      commits: ['gitSelector/commits'],
+      loadingRepositories: ['gitSelector/loadingRepositories'],
       availableInfiniteTime: ['notebook/availableInfiniteTime'],
       detail: ['notebook/detail'],
       partitions: ['cluster/partitions'],
@@ -363,12 +391,6 @@ export default {
       }
     }
 
-    // vuexの情報をリセット
-    await this.selectModel({
-      type: 'git',
-      value: null,
-    })
-
     // 指定に必要な情報を取得
     await this['training/fetchHistories']()
     await this['cluster/fetchPartitions']()
@@ -381,8 +403,13 @@ export default {
     })
     await this.selectRegistry(this.defaultRegistryId)
 
+    // gitサーバ一覧を取得し、デフォルトgitサーバを設定
     await this['gitSelector/fetchGits']()
-    await this['gitSelector/fetchRepositories']()
+    this.form.gitModel.git = this.gits.find(git => {
+      return git.id === this.defaultGitId
+    })
+    await this['gitSelector/fetchRepositories'](this.defaultGitId)
+
     await this['notebook/fetchAvailableInfiniteTime']()
 
     // コピー実行時はコピー元情報を各項目を設定
@@ -417,26 +444,19 @@ export default {
         await this.selectImage()
         this.form.containerImage.tag = this.detail.containerImage.tag
       }
+
+      // gitモデルの設定
       if (this.detail.gitModel.gitId) {
-        await this.selectModel({
-          type: 'git',
-          value: {
-            id: this.detail.gitModel.gitId,
-            name: this.detail.gitModel.name,
-          },
-        })
-        await this.selectModel({
-          type: 'repository',
-          value: `${this.detail.gitModel.owner}/${this.detail.gitModel.repository}`,
-        })
-        await this.selectModel({
-          type: 'branch',
-          value: this.detail.gitModel.branch,
-        })
-        await this.selectModel({
-          type: 'commit',
-          value: this.detail.gitModel.commitId,
-        })
+        this.form.gitModel.git = {
+          id: this.detail.gitModel.gitId,
+          name: this.detail.gitModel.name,
+        }
+        await this.selectGit(this.detail.gitModel.gitId)
+        this.form.gitModel.repository = `${this.detail.gitModel.owner}/${this.detail.gitModel.repository}`
+        await this.selectRepository(this.form.gitModel.repository)
+        this.form.gitModel.branch = this.detail.gitModel.branch
+        await this.selectBranch(this.detail.gitModel.branch)
+        this.form.gitModel.commit = this.detail.gitModel.commitId
       }
 
       this.form.resource.cpu = this.detail.cpu
@@ -489,12 +509,6 @@ export default {
   },
 
   methods: {
-    ...mapMutations([
-      'gitSelector/setGit',
-      'gitSelector/setRepository',
-      'gitSelector/setBranch',
-      'gitSelector/setCommit',
-    ]),
     ...mapActions([
       'training/fetchHistories',
       'notebook/fetchDetail',
@@ -568,11 +582,19 @@ export default {
             this.commit !== null
           ) {
             gitModel = {
-              gitId: this.git.id,
-              repository: this.repository ? this.repository.name : null,
-              owner: this.repository ? this.repository.owner : null,
-              branch: this.branch ? this.branch.branchName : null,
-              commitId: this.commit ? this.commit : 'HEAD',
+              gitId: this.form.gitModel.git.id,
+              repository: this.form.gitModel.repository
+                ? this.form.gitModel.repository.name
+                : null,
+              owner: this.form.gitModel.repository
+                ? this.form.gitModel.repository.owner
+                : null,
+              branch: this.form.gitModel.branch
+                ? this.form.gitModel.branch.branchName
+                : null,
+              commitId: this.form.gitModel.commit
+                ? this.form.gitModel.commit.commitId
+                : 'HEAD',
             }
           }
           // training history ObjectのリストからIDのみを抜き出して格納
@@ -649,67 +671,66 @@ export default {
     },
 
     // モデル
-    async selectModel(arg) {
-      // arg:
-      // {
-      //   type: 'git' or 'repository' or 'branch' or 'commit
-      //   value: id, name
-      // }
-      switch (arg.type) {
-        case 'git':
-          // 過去の選択状態をリセット
-          this['gitSelector/setRepository'](null)
-          this['gitSelector/setBranch'](null)
-          this['gitSelector/setCommit'](null)
+    async selectGit(gitId) {
+      // 過去の選択状態をリセット
+      this.form.gitModel.repository = null
+      this.form.gitModel.branch = null
+      this.form.gitModel.commit = null
 
-          // clearの場合リセット、gitサーバが選択された場合はリポジトリ取得
-          if (arg.value == null) {
-            this['gitSelector/setGit'](null)
-          } else {
-            this['gitSelector/setGit'](arg.value)
-            // 独自ローディング処理のため共通側は無効
-            this.$store.commit('setLoading', false)
-            await this['gitSelector/fetchRepositories']()
-            // 共通側ローディングを再度有効化
-            this.$store.commit('setLoading', true)
+      // clearの場合リセット、gitサーバが選択された場合はリポジトリ取得
+      if (this.form.gitModel.git !== null) {
+        // 独自ローディング処理のため共通側は無効
+        this.$store.commit('setLoading', false)
+        await this['gitSelector/fetchRepositories'](gitId)
+        // 共通側ローディングを再度有効化
+        this.$store.commit('setLoading', true)
+      }
+    },
+    // repositoryの型がstring：手入力, object: 選択
+    async selectRepository(repository) {
+      // 過去の選択状態をリセット
+      this.form.gitModel.branch = null
+      this.form.gitModel.commit = null
+
+      let manualInput = false
+      let argRepository = {}
+      if (typeof repository === 'string') {
+        manualInput = true
+        let repositoryName = repository
+        let index = repositoryName.indexOf('/')
+        if (index > 0) {
+          argRepository = {
+            owner: repositoryName.substring(0, index),
+            name: repositoryName.substring(index + 1),
+            fullName: repositoryName,
           }
-          break
+          this.form.gitModel.repository = argRepository
+        } else {
+          //構文エラー
+        }
+      } else {
+        argRepository = repository
+      }
+      // clearの場合リセット、リポジトリが選択された場合はブランチ取得
+      if (this.form.gitModel.repository !== null) {
+        await this['gitSelector/fetchBranches']({
+          gitId: this.form.gitModel.git.id,
+          repository: argRepository,
+          manualInput: manualInput,
+        })
+      }
+    },
+    async selectBranch(branchName) {
+      // 過去の選択状態をリセット
+      this.form.gitModel.commit = null
 
-        case 'repository':
-          // 過去の選択状態をリセット
-          this['gitSelector/setBranch'](null)
-          this['gitSelector/setCommit'](null)
-
-          // clearの場合リセット、リポジトリが選択された場合はブランチ取得
-          if (arg.value == null) {
-            this['gitSelector/setRepository'](null)
-          } else {
-            this['gitSelector/setRepository'](arg.value)
-            await this['gitSelector/fetchBranches']()
-          }
-          break
-
-        case 'branch':
-          // 過去の選択状態をリセット
-          this['gitSelector/setCommit'](null)
-
-          // clearの場合リセット、ブランチが選択された場合はコミット取得
-          if (arg.value == null) {
-            this['gitSelector/setBranch'](null)
-          } else {
-            this['gitSelector/setBranch'](arg.value)
-            await this['gitSelector/fetchCommits']()
-          }
-          break
-
-        case 'commit':
-          // clearの場合リセット、コミットが選択された場合は設定
-          if (arg.value == null) {
-            this['gitSelector/setCommit'](null)
-          } else {
-            this['gitSelector/setCommit'](arg.value)
-          }
-          break
+      // clearの場合リセット、ブランチが選択された場合はコミット取得
+      if (this.form.gitModel.branch !== null) {
+        await this['gitSelector/fetchCommits']({
+          gitId: this.form.gitModel.git.id,
+          repository: this.form.gitModel.repository,
+          branchName: branchName,
+        })
       }
     },
   },
