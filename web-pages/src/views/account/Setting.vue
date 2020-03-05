@@ -2,7 +2,6 @@
   <div>
     <h2>ユーザ情報設定</h2>
     <div class="parent-container">
-      <!-- <kqi-display-error :error="error" /> -->
       <!-- 選択中テナント情報 -->
       <tenant-info
         :user-name="account.userName"
@@ -190,8 +189,8 @@ export default {
       this.registryForm.name = this.registry.name
       this.registryForm.userName = this.registry.userName
       this.registryForm.password = this.registry.password
-    } catch (e) {
-      this.error = e
+    } catch (error) {
+      this.error = error
     }
   },
 
@@ -223,7 +222,7 @@ export default {
     async getAccessToken() {
       try {
         let params = {
-          tenantId: this.account.selectedTenant.id + 5000,
+          tenantId: this.account.selectedTenant.id,
           expiresIn: this.tokenForm.day * 60 * 60 * 24,
         }
         // 新規アクセストークンを取得する
