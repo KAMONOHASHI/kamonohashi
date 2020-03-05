@@ -9,28 +9,28 @@
       <el-col :span="16">
         <div>
           <el-select
-            v-if="registryForm.name"
-            v-model="registryForm.name"
+            :value="value.name"
             placeholder="Select"
             @change="selectedRegistryChange"
           >
             <el-option
-              v-for="(r, index) in registries"
-              :key="index"
-              :label="r.displayName"
-              :value="r.name"
+              v-for="item in registries"
+              :key="item.id"
+              :label="item.name"
+              :value="item.name"
             />
           </el-select>
           <br />
           <br />
+
           <div class="content-color">ユーザ名/リポジトリ</div>
-          <div>{{ registryForm.userName ? registryForm.userName : '--' }}</div>
-          <div class="content-color">パスワード</div>
+          <div>{{ value.userName ? value.userName : '--' }}</div>
+          <div class="content-color">トークン</div>
           <el-input
-            v-model="registryForm.password"
+            :value="value.password"
             type="password"
             show-password
-            @change="tokenChange"
+            @input="tokenChange"
           />
         </div>
       </el-col>
@@ -48,6 +48,7 @@
 <script>
 export default {
   props: {
+    // レジストリ一覧
     registries: {
       type: Array,
       default: () => {
@@ -55,6 +56,7 @@ export default {
       },
     },
 
+    // 選択したレジストリ情報
     value: {
       type: Object,
       default: () => ({
@@ -65,32 +67,25 @@ export default {
       }),
     },
   },
-  computed: {
-    registryForm() {
-      return this.value === undefined || this.value === null ? {} : this.value
-    },
-  },
+
   methods: {
-    selectedRegistryChange() {
+    selectedRegistryChange(registryName) {
+      let form = Object.assign({}, this.value)
+      form.name = registryName
       for (const data of this.registries) {
-        if (this.registryForm.name === data.name) {
-          this.registryForm.id = data.id
-          this.registryForm.userName = data.userName
-          this.registryForm.password = data.password
+        if (data.name === registryName) {
+          form.id = data.id
+          form.password = data.password
+          form.userName = data.userName
         }
       }
-      this.value = this.registryForm
+      this.$emit('input', form)
     },
 
     tokenChange(password) {
-      this.registryForm.password = password
-      this.value = this.registryForm
-      for (const data of this.registries) {
-        if (this.registryForm.id === data.id) {
-          data.password = this.registryForm.password
-        }
-      }
-      this.$emit('input', this.value)
+      let form = Object.assign({}, this.value)
+      form.password = password
+      this.$emit('input', form)
     },
   },
 }

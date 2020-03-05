@@ -164,9 +164,9 @@ export default {
       account: ['account/account'],
       token: ['account/token'],
       gits: ['gitSelector/gits'],
-      git: ['gitSelector/git'],
+      defaultGitId: ['gitSelector/defaultGitId'],
       registries: ['registrySelector/registries'],
-      registry: ['registrySelector/registry'],
+      defaultRegistryId: ['registrySelector/defaultRegistryId'],
     }),
   },
   async created() {
@@ -178,16 +178,15 @@ export default {
     // 選択中のテナントにおけるGit情報を取得する
     await this['gitSelector/fetchGits']()
     // gitFormにデフォルトGit情報を設定
-    this.gitForm.id = this.git.id
-    this.gitForm.name = this.git.name
-    this.gitForm.token = this.git.token
+    this.gitForm = this.gits.find(git => {
+      return git.id === this.defaultGitId
+    })
 
     // 選択中のテナントにおけるレジストリ情報を取得する
     await this['registrySelector/fetchRegistries']()
-    this.registryForm.id = this.registry.id
-    this.registryForm.name = this.registry.name
-    this.registryForm.userName = this.registry.userName
-    this.registryForm.password = this.registry.password
+    this.registryForm = this.registries.find(registry => {
+      return registry.id === this.defaultRegistryId
+    })
   },
 
   methods: {

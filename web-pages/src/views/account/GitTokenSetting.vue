@@ -9,16 +9,15 @@
       <el-col :span="16">
         <div>
           <el-select
-            v-if="gitForm.name"
-            v-model="gitForm.name"
+            :value="value.name"
             placeholder="Select"
             @change="selectedGitChange"
           >
             <el-option
-              v-for="(r, index) in gits"
-              :key="index"
-              :label="r.displayName"
-              :value="r.name"
+              v-for="item in gits"
+              :key="item.id"
+              :label="item.name"
+              :value="item.name"
             />
           </el-select>
           <br />
@@ -27,10 +26,10 @@
           <div>{{ value.name }}</div>
           <div class="content-color">トークン</div>
           <el-input
-            v-model="gitForm.token"
+            :value="value.token"
             type="password"
             show-password
-            @change="tokenChange"
+            @input="tokenChange"
           />
         </div>
       </el-col>
@@ -48,12 +47,14 @@
 <script>
 export default {
   props: {
+    // git一覧
     gits: {
       type: Array,
       default: () => {
         return []
       },
     },
+    // 選択したgit情報
     value: {
       type: Object,
       default: () => ({
@@ -63,31 +64,24 @@ export default {
       }),
     },
   },
-  computed: {
-    gitForm() {
-      return this.value === undefined || this.value === null ? {} : this.value
-    },
-  },
   methods: {
-    selectedGitChange() {
+    selectedGitChange(gitName) {
+      let form = Object.assign({}, this.value)
+      form.name = gitName
+
       for (const data of this.gits) {
-        if (this.gitForm.name === data.name) {
-          this.gitForm.id = data.id
-          this.gitForm.token = data.token
+        if (data.name === gitName) {
+          form.id = data.id
+          form.token = data.token
         }
       }
-      this.value = this.gitForm
+      this.$emit('input', form)
     },
 
     tokenChange(token) {
-      this.gitForm.token = token
-      this.value = this.gitForm
-      for (const data of this.gits) {
-        if (this.gitForm.id === data.id) {
-          data.token = this.gitForm.token
-        }
-      }
-      this.$emit('input', this.value)
+      let form = Object.assign({}, this.value)
+      form.token = token
+      this.$emit('input', form)
     },
   },
 }
