@@ -2,7 +2,6 @@
   <div>
     <h2>ユーザ情報設定</h2>
     <div class="parent-container">
-      <kqi-display-error :error="error" />
       <!-- 選択中テナント情報 -->
       <tenant-info
         :user-name="account.userName"
@@ -20,14 +19,14 @@
             aria-controls="first_tab01"
             checked
           />
-          <label for="tab1_1">tenant</label>
+          <label for="tab1_1">Tenant</label>
           <input
             id="tab1_2"
             type="radio"
             name="cp_tab"
             aria-controls="second_tab01"
           />
-          <label for="tab1_2">access Token</label>
+          <label for="tab1_2">Access Token</label>
           <input
             id="tab1_3"
             type="radio"
@@ -48,79 +47,59 @@
             name="cp_tab"
             aria-controls="five_tab01"
           />
-          <label v-if="passForm.passwordChangeEnabled" for="tab1_5">
-            password
+          <label v-if="passwordChangeEnabled" for="tab1_5">
+            Password
           </label>
 
           <div class="cp_tabpanels">
             <!-- デフォルトテナント設定 -->
-            <default-tenant-setting
-              id="first_tab01"
-              v-model="defaultTenantName"
-              class="cp_tabpanel"
-              :tenants="account.tenants"
-              @defaultTenantUpdate="defaultTenantUpdate"
-            />
+            <div id="first_tab01" class="cp_tabpanel">
+              <kqi-display-error :error="tenantError" />
+              <default-tenant-setting
+                v-model="defaultTenantName"
+                :tenants="account.tenants"
+                @defaultTenantUpdate="defaultTenantUpdate"
+              />
+            </div>
 
             <!-- アクセストークン取得 -->
-            <access-token-setting
-              v-model="tokenForm.day"
-              :token="tokenForm.token"
-              @getAccessToken="getAccessToken"
-            />
+            <div id="second_tab01" class="cp_tabpanel">
+              <kqi-display-error :error="accessTokenError" />
+              <access-token-setting
+                v-model="tokenForm.day"
+                :token="tokenForm.token"
+                @getAccessToken="getAccessToken"
+              />
+            </div>
 
             <!-- Gitトークン設定 -->
-            <git-token-setting
-              v-model="gitForm"
-              :gits="gits"
-              @updateGitToken="updateGitToken"
-            />
+            <div id="third_tab01" class="cp_tabpanel">
+              <kqi-display-error :error="gitTokenError" />
+              <git-token-setting
+                v-model="gitForm"
+                :gits="gits"
+                @updateGitToken="updateGitToken"
+              />
+            </div>
 
             <!-- Registryトークン設定 -->
-            <registry-token-setting
-              v-model="registryForm"
-              :registries="registries"
-              @updateRegistryToken="updateRegistryToken"
-            />
+            <div id="force_tab01" class="cp_tabpanel">
+              <kqi-display-error :error="registryTokenError" />
+              <registry-token-setting
+                v-model="registryForm"
+                :registries="registries"
+                @updateRegistryToken="updateRegistryToken"
+              />
+            </div>
 
             <!-- パスワード変更 -->
-            <div
-              v-if="passForm.passwordChangeEnabled"
-              id="five_tab01"
-              class="cp_tabpanel"
-            >
-              <el-form ref="passForm" :rules="passRules" :model="passForm">
-                <el-form-item
-                  label="現在のパスワード"
-                  prop="currentPassword"
-                  :label-width="labelwidth"
-                >
-                  <el-input
-                    v-model="passForm.currentPassword"
-                    type="password"
-                  />
-                </el-form-item>
-                <el-form-item
-                  label="新しいパスワード"
-                  prop="password"
-                  :label-width="labelwidth"
-                >
-                  <el-input v-model="passForm.password[0]" type="password" />
-                  <span style="position: relative; left: -200px; top:24px;">
-                    （再入力）
-                  </span>
-                  <el-input
-                    v-model="passForm.password[1]"
-                    type="password"
-                    style="position: relative; top:-20px;"
-                  />
-                </el-form-item>
-                <el-form-item class="button-group">
-                  <el-button type="primary" @click="handlePassword">
-                    更新
-                  </el-button>
-                </el-form-item>
-              </el-form>
+            <div id="five_tab01" class="cp_tabpanel">
+              <kqi-display-error :error="passwordError" />
+              <Password-Setting
+                v-if="passwordChangeEnabled"
+                v-model="passForm"
+                @updatePassword="updatePassword"
+              />
             </div>
           </div>
         </div>
@@ -136,13 +115,8 @@ import RegistryTokenSetting from '@/views/account/RegistryTokenSetting'
 import TenantInfo from './TenantInfo'
 import DefaultTenantSetting from './DefaultTenantSetting'
 import AccessTokenSetting from './AccessTokenSetting'
+import PasswordSetting from './PasswordSetting'
 import { mapGetters, mapActions } from 'vuex'
-
-const formRule = {
-  required: true,
-  trigger: 'blur',
-  message: '必須項目です',
-}
 
 export default {
   title: 'ユーザ情報設定',
@@ -153,46 +127,35 @@ export default {
     KqiDisplayError,
     GitTokenSetting,
     RegistryTokenSetting,
+    PasswordSetting,
   },
   data() {
     return {
-      error: null,
-      labelwidth: '220px',
-
+      tenantError: null,
+      accessTokenError: null,
+      gitTokenError: null,
+      registryTokenError: null,
+      passwordError: null,
       defaultTenantName: '',
-
       tokenForm: {
         token: '',
         day: 30,
       },
-
       gitForm: {
         id: 0,
         name: '',
         token: '',
       },
-
       registryForm: {
         id: 0,
         name: '',
         userName: '',
         password: '',
       },
-
+      passwordChangeEnabled: true,
       passForm: {
-        passwordChangeEnabled: true,
         currentPassword: '',
         password: ['', ''],
-      },
-      passRules: {
-        currentPassword: [formRule],
-        password: [
-          {
-            required: true,
-            trigger: 'blur',
-            validator: this.passwordValidator,
-          },
-        ],
       },
     }
   },
@@ -207,28 +170,24 @@ export default {
     }),
   },
   async created() {
-    try {
-      // ログインユーザのアカウント情報を取得する
-      await this['account/fetchAccount']()
-      this.defaultTenantName = this.account.defaultTenant.name
-      this.passForm.passwordChangeEnabled = this.account.passwordChangeEnabled
+    // ログインユーザのアカウント情報を取得する
+    await this['account/fetchAccount']()
+    this.defaultTenantName = this.account.defaultTenant.name
+    this.passwordChangeEnabled = this.account.passwordChangeEnabled
 
-      // 選択中のテナントにおけるGit情報を取得する
-      await this['gitSelector/fetchGits']()
-      // gitFormにデフォルトGit情報を設定
-      this.gitForm.id = this.git.id
-      this.gitForm.name = this.git.name
-      this.gitForm.token = this.git.token
+    // 選択中のテナントにおけるGit情報を取得する
+    await this['gitSelector/fetchGits']()
+    // gitFormにデフォルトGit情報を設定
+    this.gitForm.id = this.git.id
+    this.gitForm.name = this.git.name
+    this.gitForm.token = this.git.token
 
-      // 選択中のテナントにおけるレジストリ情報を取得する
-      await this['registrySelector/fetchRegistries']()
-      this.registryForm.id = this.registry.id
-      this.registryForm.name = this.registry.name
-      this.registryForm.userName = this.registry.userName
-      this.registryForm.password = this.registry.password
-    } catch (e) {
-      this.error = e
-    }
+    // 選択中のテナントにおけるレジストリ情報を取得する
+    await this['registrySelector/fetchRegistries']()
+    this.registryForm.id = this.registry.id
+    this.registryForm.name = this.registry.name
+    this.registryForm.userName = this.registry.userName
+    this.registryForm.password = this.registry.password
   },
 
   methods: {
@@ -250,11 +209,12 @@ export default {
         }
         await this['account/put'](params)
         this.showSuccessMessage()
-        this.error = null
+        this.tenantError = null
       } catch (error) {
-        this.error = error
+        this.tenantError = error
       }
     },
+
     async getAccessToken() {
       try {
         let params = {
@@ -265,9 +225,9 @@ export default {
         await this['account/postTokenTenants'](params)
         this.tokenForm.token = this.token
         this.showSuccessMessage()
-        this.error = null
+        this.accessTokenError = null
       } catch (error) {
-        this.error = error
+        this.accessTokenError = error
       }
     },
 
@@ -281,9 +241,9 @@ export default {
         }
         await this['account/putGitToken'](params)
         this.showSuccessMessage()
-        this.error = null
+        this.gitTokenError = null
       } catch (error) {
-        this.error = error
+        this.gitTokenError = error
       }
     },
 
@@ -298,40 +258,26 @@ export default {
         }
         await this['account/putRegistryToken'](params)
         this.showSuccessMessage()
-        this.error = null
+        this.registryTokenError = null
       } catch (error) {
-        this.error = error
+        this.registryTokenError = error
       }
     },
 
-    passwordValidator(rule, value, callback) {
-      if (!(value[0] && value[1])) {
-        callback(new Error('必須項目です'))
-      } else if (!(value[0] === value[1])) {
-        callback(new Error('同一のパスワードを入力してください'))
-      } else {
-        callback()
-      }
-    },
-
-    async handlePassword() {
-      this.$refs['passForm'].validate(async valid => {
-        if (valid) {
-          try {
-            let params = {
-              model: {
-                currentPassword: this.passForm.currentPassword,
-                newPassword: this.passForm.password[0],
-              },
-            }
-            await this['account/putPassword'](params)
-            this.showSuccessMessage()
-            this.error = null
-          } catch (error) {
-            this.error = error
-          }
+    async updatePassword() {
+      try {
+        let params = {
+          model: {
+            currentPassword: this.passForm.currentPassword,
+            newPassword: this.passForm.password[0],
+          },
         }
-      })
+        await this['account/putPassword'](params)
+        this.showSuccessMessage()
+        this.passwordError = null
+      } catch (error) {
+        this.passwordError = error
+      }
     },
   },
 }
@@ -340,7 +286,7 @@ export default {
 <style lang="scss" scoped>
 .parent-container {
   display: grid;
-  grid-template-rows: 100px 700px;
+  grid-template-rows: 100px 600px;
   grid-template-columns: 500px 1fr;
 }
 
@@ -357,35 +303,6 @@ export default {
   font-weight: bold;
   font-size: 18px;
   color: #1abfd5;
-}
-
-.button-group {
-  text-align: right;
-  padding-top: 150px;
-}
-
-.el-form-item {
-  margin-top: 30px;
-}
-
-.el-form-item /deep/ .el-form-item__label {
-  font-weight: bold !important;
-  padding-right: 30px;
-  text-align: left;
-}
-
-.el-form-item /deep/ .el-form-item__inner {
-  text-align: left;
-}
-
-.el-form-item /deep/ .el-form-item__content {
-  font-weight: bold !important;
-  padding-right: 30px;
-}
-
-.el-form-item.is-required {
-  padding-top: 100px;
-  text-align: left;
 }
 
 .cp_tab *,
