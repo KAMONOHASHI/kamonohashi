@@ -9,6 +9,8 @@ const state = {
   events: [],
   containerLog: [],
   tenantContainerLists: [],
+  tenantDetail: {},
+  tenantContainerLog: [],
 }
 
 // getters
@@ -33,6 +35,12 @@ const getters = {
   },
   tenantContainerLists(state) {
     return state.tenantContainerLists
+  },
+  tenantDetail(state) {
+    return state.tenantDetail
+  },
+  tenantContainerLog(state) {
+    return state.tenantContainerLog
   },
 }
 
@@ -81,6 +89,24 @@ const actions = {
     let tenantContainerLists = (await api.resource.tenant.getContainers()).data
     commit('setTenantContainerLists', { tenantContainerLists })
   },
+
+  async fetchTenantDetail({ commit }, params) {
+    let tenantDetail = (await api.resource.tenant.getContainerByName(params))
+      .data
+    commit('setTenantDetail', { tenantDetail })
+  },
+
+  async fetchTenantContainerLog({ commit }, params) {
+    let tenantContainerLog = (
+      await api.resource.tenant.getContainerLogByName(params)
+    ).data
+    commit('setTenantContainerLog', { tenantContainerLog })
+  },
+
+  // eslint-disable-next-line no-unused-vars
+  async deleteTenantContainer({ rootState }, params) {
+    return await api.resource.tenant.deleteContainerByName(params)
+  },
 }
 
 // mutations
@@ -105,6 +131,12 @@ const mutations = {
   },
   setTenantContainerLists(state, { tenantContainerLists }) {
     state.tenantContainerLists = tenantContainerLists
+  },
+  setTenantDetail(state, { tenantDetail }) {
+    state.tenantDetail = tenantDetail
+  },
+  setTenantContainerLog(state, { tenantContainerLog }) {
+    state.tenantContainerLog = tenantContainerLog
   },
 }
 
