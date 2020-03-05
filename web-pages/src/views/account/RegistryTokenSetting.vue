@@ -1,13 +1,13 @@
 <template>
   <!-- Registryトークン設定 -->
-  <div id="force_tab01" class="cp_tabpanel">
-    <div v-if="registries.length <= 0">
-      Registryが選択されていません。 システム管理者にお問い合わせください。
-    </div>
-    <div v-else>
-      <el-row>
-        <el-col :span="8">選択中のRegistry</el-col>
-        <el-col :span="16">
+  <div v-if="registries.length <= 0">
+    Registryが選択されていません。 システム管理者にお問い合わせください。
+  </div>
+  <div v-else>
+    <el-row class="row-element" style="margin-top: 30px;">
+      <el-col :span="6" class="content-color">選択中のRegistry</el-col>
+      <el-col :span="16">
+        <div>
           <el-select
             v-if="registryForm.name"
             v-model="registryForm.name"
@@ -21,27 +21,27 @@
               :value="r.name"
             />
           </el-select>
-        </el-col>
-        <br />
-        <br />
-        <el-col>ユーザ名/リポジトリ</el-col>
-        <el-col :offset="8" :span="16">{{ registryForm.userName }}</el-col>
-        <el-col>パスワード</el-col>
-        <el-col :offset="8" :span="16">
+          <br />
+          <br />
+          <div class="content-color">ユーザ名/リポジトリ</div>
+          <div>{{ registryForm.userName ? registryForm.userName : '--' }}</div>
+          <div class="content-color">パスワード</div>
           <el-input
             v-model="registryForm.password"
             type="password"
             show-password
             @change="tokenChange"
           />
-        </el-col>
-      </el-row>
+        </div>
+      </el-col>
+    </el-row>
+    <el-row>
       <el-col class="button-group">
         <el-button type="primary" @click="$emit('updateRegistryToken')">
           更新
         </el-button>
       </el-col>
-    </div>
+    </el-row>
   </div>
 </template>
 
@@ -103,5 +103,22 @@ export default {
 
 .el-input {
   text-align: right;
+}
+
+.row-element {
+  font-size: 14px;
+  line-height: 40px;
+  margin-top: 30px;
+  font-weight: bold !important;
+}
+
+.button-group {
+  text-align: right;
+  padding-top: 150px;
+  padding-right: 30px;
+}
+
+.content-color {
+  color: #606266;
 }
 </style>

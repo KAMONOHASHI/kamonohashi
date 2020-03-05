@@ -15,7 +15,6 @@
           @input="updateDay"
         />
       </el-col>
-      <br />
       <el-col :offset="6" :span="12">
         値は 1 ～ 3650 の数字を入力して下さい。
       </el-col>
