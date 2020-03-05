@@ -48,7 +48,7 @@
             name="cp_tab"
             aria-controls="five_tab01"
           />
-          <label v-if="passForm.passwordChangeEnabled" for="tab1_5">
+          <label v-if="passwordChangeEnabled" for="tab1_5">
             password
           </label>
 
@@ -64,64 +64,39 @@
 
             <!-- アクセストークン取得 -->
             <access-token-setting
+              id="second_tab01"
               v-model="tokenForm.day"
+              class="cp_tabpanel"
               :token="tokenForm.token"
               @getAccessToken="getAccessToken"
             />
 
             <!-- Gitトークン設定 -->
             <git-token-setting
+              id="third_tab01"
               v-model="gitForm"
+              class="cp_tabpanel"
               :gits="gits"
               @updateGitToken="updateGitToken"
             />
 
             <!-- Registryトークン設定 -->
             <registry-token-setting
+              id="force_tab01"
               v-model="registryForm"
+              class="cp_tabpanel"
               :registries="registries"
               @updateRegistryToken="updateRegistryToken"
             />
 
             <!-- パスワード変更 -->
-            <div
-              v-if="passForm.passwordChangeEnabled"
+            <Password-Setting
+              v-if="passwordChangeEnabled"
               id="five_tab01"
+              v-model="passForm"
               class="cp_tabpanel"
-            >
-              <el-form ref="passForm" :rules="passRules" :model="passForm">
-                <el-form-item
-                  label="現在のパスワード"
-                  prop="currentPassword"
-                  :label-width="labelwidth"
-                >
-                  <el-input
-                    v-model="passForm.currentPassword"
-                    type="password"
-                  />
-                </el-form-item>
-                <el-form-item
-                  label="新しいパスワード"
-                  prop="password"
-                  :label-width="labelwidth"
-                >
-                  <el-input v-model="passForm.password[0]" type="password" />
-                  <span style="position: relative; left: -200px; top:24px;">
-                    （再入力）
-                  </span>
-                  <el-input
-                    v-model="passForm.password[1]"
-                    type="password"
-                    style="position: relative; top:-20px;"
-                  />
-                </el-form-item>
-                <el-form-item class="button-group">
-                  <el-button type="primary" @click="handlePassword">
-                    更新
-                  </el-button>
-                </el-form-item>
-              </el-form>
-            </div>
+              @updatePassword="updatePassword"
+            />
           </div>
         </div>
       </el-card>
@@ -136,13 +111,8 @@ import RegistryTokenSetting from '@/views/account/RegistryTokenSetting'
 import TenantInfo from './TenantInfo'
 import DefaultTenantSetting from './DefaultTenantSetting'
 import AccessTokenSetting from './AccessTokenSetting'
+import PasswordSetting from './PasswordSetting'
 import { mapGetters, mapActions } from 'vuex'
-
-const formRule = {
-  required: true,
-  trigger: 'blur',
-  message: '必須項目です',
-}
 
 export default {
   title: 'ユーザ情報設定',
@@ -153,12 +123,11 @@ export default {
     KqiDisplayError,
     GitTokenSetting,
     RegistryTokenSetting,
+    PasswordSetting,
   },
   data() {
     return {
       error: null,
-      labelwidth: '220px',
-
       defaultTenantName: '',
 
       tokenForm: {
@@ -179,20 +148,10 @@ export default {
         password: '',
       },
 
+      passwordChangeEnabled: true,
       passForm: {
-        passwordChangeEnabled: true,
         currentPassword: '',
         password: ['', ''],
-      },
-      passRules: {
-        currentPassword: [formRule],
-        password: [
-          {
-            required: true,
-            trigger: 'blur',
-            validator: this.passwordValidator,
-          },
-        ],
       },
     }
   },
@@ -211,7 +170,7 @@ export default {
       // ログインユーザのアカウント情報を取得する
       await this['account/fetchAccount']()
       this.defaultTenantName = this.account.defaultTenant.name
-      this.passForm.passwordChangeEnabled = this.account.passwordChangeEnabled
+      this.passwordChangeEnabled = this.account.passwordChangeEnabled
 
       // 選択中のテナントにおけるGit情報を取得する
       await this['gitSelector/fetchGits']()
@@ -255,6 +214,7 @@ export default {
         this.error = error
       }
     },
+
     async getAccessToken() {
       try {
         let params = {
@@ -304,34 +264,20 @@ export default {
       }
     },
 
-    passwordValidator(rule, value, callback) {
-      if (!(value[0] && value[1])) {
-        callback(new Error('必須項目です'))
-      } else if (!(value[0] === value[1])) {
-        callback(new Error('同一のパスワードを入力してください'))
-      } else {
-        callback()
-      }
-    },
-
-    async handlePassword() {
-      this.$refs['passForm'].validate(async valid => {
-        if (valid) {
-          try {
-            let params = {
-              model: {
-                currentPassword: this.passForm.currentPassword,
-                newPassword: this.passForm.password[0],
-              },
-            }
-            await this['account/putPassword'](params)
-            this.showSuccessMessage()
-            this.error = null
-          } catch (error) {
-            this.error = error
-          }
+    async updatePassword() {
+      try {
+        let params = {
+          model: {
+            currentPassword: this.passForm.currentPassword,
+            newPassword: this.passForm.password[0],
+          },
         }
-      })
+        await this['account/putPassword'](params)
+        this.showSuccessMessage()
+        this.error = null
+      } catch (error) {
+        this.error = error
+      }
     },
   },
 }
@@ -340,7 +286,7 @@ export default {
 <style lang="scss" scoped>
 .parent-container {
   display: grid;
-  grid-template-rows: 100px 700px;
+  grid-template-rows: 100px 600px;
   grid-template-columns: 500px 1fr;
 }
 
@@ -357,35 +303,6 @@ export default {
   font-weight: bold;
   font-size: 18px;
   color: #1abfd5;
-}
-
-.button-group {
-  text-align: right;
-  padding-top: 150px;
-}
-
-.el-form-item {
-  margin-top: 30px;
-}
-
-.el-form-item /deep/ .el-form-item__label {
-  font-weight: bold !important;
-  padding-right: 30px;
-  text-align: left;
-}
-
-.el-form-item /deep/ .el-form-item__inner {
-  text-align: left;
-}
-
-.el-form-item /deep/ .el-form-item__content {
-  font-weight: bold !important;
-  padding-right: 30px;
-}
-
-.el-form-item.is-required {
-  padding-top: 100px;
-  text-align: left;
 }
 
 .cp_tab *,
