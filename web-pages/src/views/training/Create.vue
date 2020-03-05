@@ -30,7 +30,14 @@
                 :autosize="{ minRows: 10 }"
               />
             </el-form-item>
-            <kqi-container-selector @input="selectContainer" />
+            <kqi-container-selector
+              v-model="form.containerImage"
+              :registries="registries"
+              :images="images"
+              :tags="tags"
+              @selectRegistry="selectRegistry"
+              @selectImage="selectImage"
+            />
             <kqi-git-selector @input="selectModel" />
           </el-col>
           <el-col :span="12">
@@ -114,7 +121,14 @@
             :rules="rules"
           >
             <el-col :span="12">
-              <kqi-container-selector @input="selectContainer" />
+              <kqi-container-selector
+                v-model="form.containerImage"
+                :registries="registries"
+                :images="images"
+                :tags="tags"
+                @selectRegistry="selectRegistry"
+                @selectImage="selectImage"
+              />
               <kqi-git-selector @input="selectModel" />
             </el-col>
             <el-col :span="12">
@@ -216,6 +230,7 @@ import KqiResourceSelector from '@/components/selector/KqiResourceSelector'
 import KqiEnvironmentVariables from '@/components/KqiEnvironmentVariables'
 import KqiDisplayError from '@/components/KqiDisplayError'
 import { mapActions, mapMutations, mapGetters } from 'vuex'
+import validator from '@/util/validator'
 
 const formRule = {
   required: true,
@@ -247,6 +262,11 @@ export default {
         dataSetId: null,
         entryPoint: null,
         selectedParent: [],
+        containerImage: {
+          registry: null,
+          image: null,
+          tag: null,
+        },
         resource: {
           cpu: 1,
           memory: 1,
@@ -260,6 +280,11 @@ export default {
       rules: {
         name: [formRule],
         entryPoint: [formRule],
+        containerImage: {
+          required: true,
+          trigger: 'blur',
+          validator: validator.containerImageValidator,
+        },
       },
       dialogVisible: true,
       error: null,
@@ -271,9 +296,10 @@ export default {
     ...mapGetters({
       trainingHistories: ['training/histories'],
       dataSets: ['dataSet/dataSets'],
-      registry: ['registrySelector/registry'],
-      image: ['registrySelector/image'],
-      tag: ['registrySelector/tag'],
+      registries: ['registrySelector/registries'],
+      defaultRegistryId: ['registrySelector/defaultRegistryId'],
+      images: ['registrySelector/images'],
+      tags: ['registrySelector/tags'],
       git: ['gitSelector/git'],
       repository: ['gitSelector/repository'],
       branch: ['gitSelector/branch'],
@@ -285,10 +311,6 @@ export default {
   async created() {
     this.isCopyCreation = this.originId !== null
     // vuexの情報をリセット
-    await this.selectContainer({
-      type: 'registry',
-      value: null,
-    })
     await this.selectModel({
       type: 'git',
       value: null,
@@ -298,8 +320,14 @@ export default {
     await this['training/fetchHistories']()
     await this['cluster/fetchPartitions']()
     await this['dataSet/fetchDataSets']()
+
+    // レジストリ一覧を取得し、デフォルトレジストリを設定
     await this['registrySelector/fetchRegistries']()
-    await this['registrySelector/fetchImages']()
+    this.form.containerImage.registry = this.registries.find(registry => {
+      return registry.id === this.defaultRegistryId
+    })
+    await this.selectRegistry(this.defaultRegistryId)
+
     await this['gitSelector/fetchGits']()
     await this['gitSelector/fetchRepositories']()
 
@@ -321,21 +349,15 @@ export default {
         })
       }
 
-      await this.selectContainer({
-        type: 'registry',
-        value: {
-          id: this.detail.containerImage.registryId,
-          name: this.detail.containerImage.name,
-        },
-      })
-      await this.selectContainer({
-        type: 'image',
-        value: this.detail.containerImage.image,
-      })
-      await this.selectContainer({
-        type: 'tag',
-        value: this.detail.containerImage.tag,
-      })
+      // レジストリの設定
+      this.form.containerImage.registry = {
+        id: this.detail.containerImage.registryId,
+        name: this.detail.containerImage.name,
+      }
+      await this.selectRegistry(this.detail.containerImage.registryId)
+      this.form.containerImage.image = this.detail.containerImage.image
+      await this.selectImage()
+      this.form.containerImage.tag = this.detail.containerImage.tag
 
       await this.selectModel({
         type: 'git',
@@ -370,9 +392,6 @@ export default {
   },
   methods: {
     ...mapMutations([
-      'registrySelector/setRegistry',
-      'registrySelector/setImage',
-      'registrySelector/setTag',
       'gitSelector/setGit',
       'gitSelector/setRepository',
       'gitSelector/setBranch',
@@ -404,9 +423,9 @@ export default {
           DataSetId: this.form.dataSetId,
           ParentId: this.form.selectedParent.id,
           ContainerImage: {
-            registryId: this.registry.id,
-            image: this.image,
-            tag: this.tag,
+            registryId: this.form.containerImage.registry.id,
+            image: this.form.containerImage.image,
+            tag: this.form.containerImage.tag,
           },
           GitModel: {
             gitId: this.git.id,
@@ -471,48 +490,25 @@ export default {
     },
 
     // コンテナイメージ
-    async selectContainer(arg) {
-      // arg:
-      // {
-      //   type: 'registry' or 'image' or 'tag'
-      //   value: id, name
-      // }
-      switch (arg.type) {
-        case 'registry':
-          // 過去の選択状態をリセット
-          this['registrySelector/setImage'](null)
-          this['registrySelector/setTag'](null)
+    async selectRegistry(registryId) {
+      // 過去の選択状態をリセット
+      this.form.containerImage.image = null
+      this.form.containerImage.tag = null
+      // clearの場合リセット、レジストリが選択された場合はイメージ取得
+      if (this.form.containerImage.registry !== null) {
+        await this['registrySelector/fetchImages'](registryId)
+      }
+    },
+    async selectImage() {
+      // 過去の選択状態をリセット
+      this.form.containerImage.tag = null
 
-          // clearの場合リセット、レジストリが選択された場合はイメージ取得
-          if (arg.value == null) {
-            this['registrySelector/setRegistry'](null)
-          } else {
-            this['registrySelector/setRegistry'](arg.value)
-            await this['registrySelector/fetchImages']()
-          }
-          break
-
-        case 'image':
-          // 過去の選択状態をリセット
-          this['registrySelector/setTag'](null)
-
-          // clearの場合リセット、イメージが選択された場合はタグ取得
-          if (arg.value == null) {
-            this['registrySelector/setImage'](null)
-          } else {
-            this['registrySelector/setImage'](arg.value)
-            await this['registrySelector/fetchTags']()
-          }
-          break
-
-        case 'tag':
-          // clearの場合リセット、タグが選択された場合は設定
-          if (arg.value == null) {
-            this['registrySelector/setTag'](null)
-          } else {
-            this['registrySelector/setTag'](arg.value)
-          }
-          break
+      // clearの場合リセット、イメージが選択された場合はタグ取得
+      if (this.form.containerImage.image !== null) {
+        await this['registrySelector/fetchTags']({
+          registryId: this.form.containerImage.registry.id,
+          image: this.form.containerImage.image,
+        })
       }
     },
 
