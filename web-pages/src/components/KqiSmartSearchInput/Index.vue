@@ -163,7 +163,7 @@ export default {
       this.emitSearch()
     },
 
-    // 追加した検索条件を使用して再検索
+    // 下位コンポーネントから'done'を受け取った場合、追加した検索条件を使用して再検索
     handleInputDone(tag, event) {
       tag.input = false
       tag.value = event.value
@@ -191,7 +191,7 @@ export default {
       this.emitSearch()
     },
 
-    // 対象の検索条件を解除してを再検索
+    // 対象の検索条件を解除して再検索
     handleInputCancel(tag) {
       this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1)
 

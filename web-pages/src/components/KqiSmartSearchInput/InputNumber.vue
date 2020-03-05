@@ -62,7 +62,7 @@ export default {
     /* eslint-enable */
   },
   methods: {
-    // 検索範囲の設定
+    // 検索条件を指定し、検索
     handleCommand(row) {
       if (this.value !== undefined) {
         this.show = false
@@ -84,7 +84,7 @@ export default {
       }, 300)
     },
 
-    // 検索タグに表示する値の設定
+    // 表示する値の取得
     getValue() {
       if (this.tag.display) {
         return this.tag.display
@@ -95,6 +95,7 @@ export default {
       return undefined
     },
 
+    // 'done'をemitし、検索
     emitDone(value, display, suffix) {
       this.$emit('done', { value, display, suffix })
     },
