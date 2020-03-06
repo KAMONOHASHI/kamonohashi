@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>レジストリ管理2</h2>
+    <h2>レジストリ管理</h2>
     <el-row>
       <el-col class="create-new">
         <el-button
