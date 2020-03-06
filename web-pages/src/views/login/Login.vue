@@ -79,7 +79,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['login']),
+    ...mapGetters(['loginData']),
   },
   methods: {
     ...mapActions(['postLogin']),
@@ -98,9 +98,9 @@ export default {
             this.error = null
             this.$emit(
               'login',
-              this.login.userName,
-              this.login.tenantId,
-              this.login.token,
+              this.loginData.userName,
+              this.loginData.tenantId,
+              this.loginData.token,
               this.returnUrl || '/',
             )
           } catch (error) {

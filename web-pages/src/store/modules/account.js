@@ -2,7 +2,7 @@ import api from '@/api/v1/api'
 
 // initial state
 const state = {
-  login: {},
+  loginData: {},
   token: {},
   account: {},
   menuList: {},
@@ -11,8 +11,8 @@ const state = {
 
 // getters
 const getters = {
-  login(state) {
-    return state.login
+  loginData(state) {
+    return state.loginData
   },
   token(state) {
     return state.token
@@ -60,14 +60,15 @@ const actions = {
 
   async postLogin({ commit }, params) {
     let response = await api.account.postLogin(params)
-    let login = response.data
-    commit('setLogin', { login })
+    let loginData = response.data
+    commit('setLoginData', { loginData })
   },
 
   async postTokenTenants({ commit }, params) {
-    let login = (await api.account.postTokenTenants(params)).data
-    let token = login.token
+    let loginData = (await api.account.postTokenTenants(params)).data
+    let token = loginData.token
     commit('setToken', { token })
+    commit('setLoginData', { loginData })
   },
 
   // eslint-disable-next-line no-unused-vars
@@ -83,8 +84,8 @@ const actions = {
 
 // mutations
 const mutations = {
-  setLogin(state, { login }) {
-    state.login = login
+  setLoginData(state, { loginData }) {
+    state.loginData = loginData
   },
   setToken(state, { token }) {
     state.token = token
