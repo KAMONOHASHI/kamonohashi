@@ -4,7 +4,6 @@ import Edit from '@/views/dataSet/Edit'
 export default [
   {
     path: '/dataset',
-    name: 'DataSet',
     component: Index,
     children: [
       {

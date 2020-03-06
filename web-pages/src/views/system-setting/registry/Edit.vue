@@ -162,7 +162,9 @@ export default {
                 serviceType: this.form.serviceType,
                 projectName: this.form.projectName,
                 apiUrl: this.form.apiUrl,
-                registryUrl: this.form.apiUrl + ':' + this.form.portNo,
+                registryUrl: this.form.apiUrl.endsWith('/')
+                  ? this.form.apiUrl.slice(0, -1) + ':' + this.form.portNo
+                  : this.form.apiUrl + ':' + this.form.portNo,
               },
             }
             if (this.id === null) {

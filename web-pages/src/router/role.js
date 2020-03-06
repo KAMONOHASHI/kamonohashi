@@ -4,7 +4,6 @@ import Edit from '@/views/system-setting/role/Edit'
 export default [
   {
     path: '/role',
-    name: 'Role,',
     component: Index,
     children: [
       {

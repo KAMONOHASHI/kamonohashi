@@ -27,9 +27,9 @@
           :value="item"
         >
           <span style="float: left">{{ item.name }}</span>
-          <span style="float: right; color: #8492a6; font-size: 13px">{{
-            item.memo
-          }}</span>
+          <span style="float: right; color: #8492a6; font-size: 13px">
+            {{ item.memo }}
+          </span>
         </el-option>
       </el-select>
     </div>

@@ -13,7 +13,6 @@ export default [
   // 前処理管理
   {
     path: '/preprocessing',
-    name: 'Preprocessing',
     component: Index,
     children: [
       // 前処理作成画面
@@ -42,7 +41,6 @@ export default [
   // 前処理履歴管理
   {
     path: '/preprocessingHistory/:id',
-    name: 'preprocessingHistory',
     component: HistoryIndex,
     props: true,
     children: [

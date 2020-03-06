@@ -23,7 +23,8 @@
         />
         <el-form-item :label="passwordLabel" prop="password">
           <el-input v-model="form.password[0]" type="password" />
-          パスワード（再入力）<br />
+          パスワード（再入力）
+          <br />
           <el-input v-model="form.password[1]" type="password" />
         </el-form-item>
       </span>

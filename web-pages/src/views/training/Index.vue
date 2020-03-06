@@ -6,11 +6,11 @@
         v-model="pageStatus"
         :total="total"
         @change="retrieveData"
-      ></kqi-pagination>
+      />
       <el-col class="right-top-button" :span="8">
-        <el-button v-if="selections.length !== 0" @click="showDeleteConfirm"
-          >一括削除</el-button
-        >
+        <el-button v-if="selections.length !== 0" @click="showDeleteConfirm">
+          一括削除
+        </el-button>
         <el-button
           icon="el-icon-edit-outline"
           type="primary"
@@ -38,10 +38,10 @@
         @row-click="openEditDialog"
         @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="55px"></el-table-column>
+        <el-table-column type="selection" width="55px" />
         <el-table-column width="25px">
           <div slot-scope="scope">
-            <i v-if="scope.row.favorite" class="el-icon-star-on favorite"></i>
+            <i v-if="scope.row.favorite" class="el-icon-star-on favorite" />
           </div>
         </el-table-column>
         <el-table-column prop="id" label="学習ID" width="120px" />
@@ -67,10 +67,10 @@
                   (scope.row.status === 'Completed')
               "
             >
-              <i class="el-icon-success" style="color: #67C23A"></i>
+              <i class="el-icon-success" style="color: #67C23A" />
             </div>
             <div v-else>
-              <i class="el-icon-warning" style="color: #E6A23C"></i>
+              <i class="el-icon-warning" style="color: #E6A23C" />
             </div>
           </div>
         </el-table-column>
@@ -82,7 +82,7 @@
         v-model="pageStatus"
         :total="total"
         @change="retrieveData"
-      ></kqi-pagination>
+      />
     </el-row>
     <router-view
       @cancel="closeDialog"
@@ -92,7 +92,7 @@
       @shell="shell"
       @log="log"
       @copyCreate="copyCreate"
-    ></router-view>
+    />
   </div>
 </template>
 
@@ -105,8 +105,8 @@ const { mapGetters, mapActions } = createNamespacedHelpers('training')
 export default {
   title: '学習管理',
   components: {
-    'kqi-pagination': KqiPagination,
     KqiSmartSearchInput,
+    KqiPagination,
   },
   data() {
     return {

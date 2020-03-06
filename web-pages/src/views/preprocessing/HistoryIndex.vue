@@ -6,8 +6,8 @@
         <span @click="openPreprocessing">
           前処理管理
         </span>
-        <el-button type="text" @click="openPreprocessing"></el-button>
-        <i class="el-icon-arrow-right"></i>
+        <el-button type="text" @click="openPreprocessing" />
+        <i class="el-icon-arrow-right" />
         <span>{{ id }}</span>
       </el-col>
     </el-row>
@@ -17,7 +17,7 @@
         v-model="pageStatus"
         :total="histories.length"
         @change="retrieveData"
-      ></kqi-pagination>
+      />
     </el-row>
 
     <kqi-display-error :error="error" />
@@ -43,10 +43,10 @@
                   (scope.row.status === 'Completed')
               "
             >
-              <i class="el-icon-success" style="color: #67C23A"></i>
+              <i class="el-icon-success" style="color: #67C23A" />
             </div>
             <div v-else>
-              <i class="el-icon-warning" style="color: #E6A23C"></i>
+              <i class="el-icon-warning" style="color: #E6A23C" />
             </div>
           </div>
         </el-table-column>
@@ -60,7 +60,7 @@
       @return="back"
       @shell="shell"
       @log="log"
-    ></router-view>
+    />
   </div>
 </template>
 

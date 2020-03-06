@@ -8,8 +8,9 @@
           type="primary"
           plain
           @click="openCreateDialog"
-          >新規登録</el-button
         >
+          新規登録
+        </el-button>
       </el-col>
     </el-row>
     <el-row>
@@ -33,7 +34,7 @@
       </el-table>
     </el-row>
 
-    <router-view @cancel="closeDialog()" @done="done()"></router-view>
+    <router-view @cancel="closeDialog()" @done="done()" />
   </div>
 </template>
 

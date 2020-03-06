@@ -1,6 +1,7 @@
 <template>
   <div>
-    <el-form-item label="レジストリ" prop="registryselectedIds">
+    <el-form-item prop="registry">
+      <el-col :span="6">レジストリ</el-col>
       <el-select
         class="selectRegistry"
         :value="value.selectedIds"
@@ -16,14 +17,13 @@
           :value="item.id"
         >
           <span style="float: left">{{ item.name }}</span>
-          <span style="float: right; color: #8492a6; font-size: 13px">{{
-            item.registryPath
-          }}</span>
+          <span style="float: right; color: #8492a6; font-size: 13px">
+            {{ item.registryPath }}
+          </span>
         </el-option>
       </el-select>
-    </el-form-item>
 
-    <el-form-item label="デフォルト" prop="registryDefaultId">
+      <el-col :span="6">デフォルト</el-col>
       <el-select
         class="selectRegistry"
         :value="value.defaultId"
@@ -38,9 +38,9 @@
           :value="item.id"
         >
           <span style="float: left">{{ item.name }}</span>
-          <span style="float: right; color: #8492a6; font-size: 13px">{{
-            item.registryPath
-          }}</span>
+          <span style="float: right; color: #8492a6; font-size: 13px">
+            {{ item.registryPath }}
+          </span>
         </el-option>
       </el-select>
     </el-form-item>
@@ -48,11 +48,16 @@
 </template>
 
 <script>
-import { createNamespacedHelpers } from 'vuex'
-const { mapGetters } = createNamespacedHelpers('registry')
-
 export default {
   props: {
+    // 表示するレジストリの一覧
+    registries: {
+      type: Array,
+      default: () => {
+        return []
+      },
+    },
+    // 選択されたレジストリIDの配列とその中から選んだデフォルトのID
     value: {
       type: Object,
       default: () => {
@@ -64,7 +69,6 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['registries']),
     availableRegistries: function() {
       // selectedIdsとendpointsを突き合わせて該当するものを抜き出し、表示に用いる配列を作成する。
       let registryList = []

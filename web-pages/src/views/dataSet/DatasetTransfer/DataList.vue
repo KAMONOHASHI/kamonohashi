@@ -17,11 +17,9 @@
                   :key="entryName"
                 >
                   <span v-if="entryName !== viewInfo.entryName">
-                    <el-dropdown-item
-                      :command="entryName"
-                      :disabled="disabled"
-                      >{{ moveMessage }}</el-dropdown-item
-                    >
+                    <el-dropdown-item :command="entryName" :disabled="disabled">
+                      {{ moveMessage }}
+                    </el-dropdown-item>
                   </span>
                 </span>
               </el-dropdown-menu>
@@ -58,9 +56,9 @@
               ></el-checkbox>
             </el-col>
             <el-col :span="idSpanSize">
-              <el-checkbox v-model="data.checked" @change="handleCheck()">{{
-                data.id
-              }}</el-checkbox>
+              <el-checkbox v-model="data.checked" @change="handleCheck()">
+                {{ data.id }}
+              </el-checkbox>
             </el-col>
             <el-col :span="nameSpanSize">
               <div class="syouryaku">
@@ -78,7 +76,6 @@
               >
                 {{ tag }}
               </el-tag>
-              &nbsp;
             </el-col>
 
             <el-col v-if="viewInfo.showAssign" :span="assignSpanSize">
@@ -162,8 +159,8 @@ export default {
   components: {
     Container,
     Draggable,
-    'kqi-display-text-form': KqiDisplayTextForm,
     KqiSmartSearchInput,
+    KqiDisplayTextForm,
   },
   props: {
     // dataのpaging情報やentry自体の表示情報

@@ -3,14 +3,10 @@ import api from '@/api/v1/api'
 // initial state
 const state = {
   gits: [],
+  defaultGitId: null,
   repositories: [],
   branches: [],
   commits: [],
-
-  git: null,
-  repository: null,
-  branch: null,
-  commit: null,
 
   // リポジトリのロードは時間がかかる可能性があるためフラグを設けて管理
   loadingRepositories: false,
@@ -21,6 +17,9 @@ const getters = {
   gits(state) {
     return state.gits
   },
+  defaultGitId(state) {
+    return state.defaultGitId
+  },
   repositories(state) {
     return state.repositories
   },
@@ -29,19 +28,6 @@ const getters = {
   },
   commits(state) {
     return state.commits
-  },
-
-  git(state) {
-    return state.git
-  },
-  repository(state) {
-    return state.repository
-  },
-  branch(state) {
-    return state.branch
-  },
-  commit(state) {
-    return state.commit
   },
 
   loadingRepositories(state) {
@@ -56,71 +42,51 @@ const actions = {
     let gits = response.gits
     let defaultGitId = response.defaultGitId
     commit('setGits', { gits })
-
-    commit(
-      'setGit',
-      gits.find(git => {
-        return git.id === defaultGitId
-      }),
-    )
+    commit('setDefaultGitId', defaultGitId)
   },
 
-  async fetchRepositories(context) {
-    let gitId = context.state.git.id
-    context.commit('setLoadingRepositories', true)
+  async fetchRepositories({ commit }, gitId) {
+    commit('setLoadingRepositories', true)
     let repositories = (await api.git.getRepos({ gitId: gitId })).data
-    context.commit('setRepositories', { repositories })
-    context.commit('setLoadingRepositories', false)
+    commit('setRepositories', { repositories })
+    commit('setLoadingRepositories', false)
   },
 
-  async fetchBranches(context) {
-    if (typeof context.state.repository === 'string') {
-      // リポジトリ名を手入力された
-      let repositoryName = context.state.repository
-      let index = repositoryName.indexOf('/')
-
-      if (index > 0) {
-        let repository = {
-          owner: repositoryName.substring(0, index),
-          name: repositoryName.substring(index + 1),
-          fullName: repositoryName,
-        }
-        context.commit('setRepository', repository)
-        // リポジトリ一覧にない場合は追加
-        let repositories = context.state.repositories
-        if (
-          !repositories.some(
-            r =>
-              r.owner === repository.owner &&
-              r.name === repository.name &&
-              r.fullName === repository.fullName,
-          )
-        ) {
-          repositories.push(repository)
-          context.commit('setRepositories', { repositories })
-        }
-      } else {
-        //構文エラー
+  async fetchBranches(context, { gitId, repository, manualInput }) {
+    // 手入力された場合
+    if (manualInput) {
+      // リポジトリ一覧にない場合は追加
+      let repositories = context.state.repositories
+      if (
+        !repositories.some(
+          r =>
+            r.owner === repository.owner &&
+            r.name === repository.name &&
+            r.fullName === repository.fullName,
+        )
+      ) {
+        repositories.push(repository)
+        context.commit('setRepositories', { repositories })
       }
     }
     let params = {
-      gitId: context.state.git.id,
-      owner: context.state.repository.owner,
-      repositoryName: context.state.repository.name,
+      gitId: gitId,
+      owner: repository.owner,
+      repositoryName: repository.name,
     }
     let branches = (await api.git.getBranches(params)).data
     context.commit('setBranches', { branches })
   },
 
-  async fetchCommits(context) {
+  async fetchCommits({ commit }, { gitId, repository, branchName }) {
     let params = {
-      gitId: context.state.git.id,
-      owner: context.state.repository.owner,
-      repositoryName: context.state.repository.name,
-      branch: context.state.branch.name,
+      gitId: gitId,
+      owner: repository.owner,
+      repositoryName: repository.name,
+      branch: branchName,
     }
     let commits = (await api.git.getCommits(params)).data
-    context.commit('setCommits', { commits })
+    commit('setCommits', { commits })
   },
 }
 
@@ -128,6 +94,9 @@ const actions = {
 const mutations = {
   setGits(state, { gits }) {
     state.gits = gits
+  },
+  setDefaultGitId(state, defaultGitId) {
+    state.defaultGitId = defaultGitId
   },
   setRepositories(state, { repositories }) {
     state.repositories = repositories
@@ -137,19 +106,6 @@ const mutations = {
   },
   setCommits(state, { commits }) {
     state.commits = commits
-  },
-
-  setGit(state, git) {
-    state.git = git
-  },
-  setRepository(state, repository) {
-    state.repository = repository
-  },
-  setBranch(state, branch) {
-    state.branch = branch
-  },
-  setCommit(state, commit) {
-    state.commit = commit
   },
 
   setLoadingRepositories(state, flag) {

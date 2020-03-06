@@ -1,53 +1,54 @@
 <template>
   <!-- Registryトークン設定 -->
-  <div id="force_tab01" class="cp_tabpanel">
-    <div v-if="registries.length <= 0">
-      Registryが選択されていません。 システム管理者にお問い合わせください。
-    </div>
-    <div v-else>
-      <el-row>
-        <el-col :span="8">選択中のRegistry</el-col>
-        <el-col :span="16">
+  <div v-if="registries.length <= 0">
+    Registryが選択されていません。 システム管理者にお問い合わせください。
+  </div>
+  <div v-else>
+    <el-row class="row-element" style="margin-top: 30px;">
+      <el-col :span="6" class="content-color">選択中のRegistry</el-col>
+      <el-col :span="16">
+        <div>
           <el-select
-            v-if="registryForm.name"
-            v-model="registryForm.name"
+            :value="value.name"
             placeholder="Select"
             @change="selectedRegistryChange"
           >
             <el-option
-              v-for="(r, index) in registries"
-              :key="index"
-              :label="r.displayName"
-              :value="r.name"
+              v-for="item in registries"
+              :key="item.id"
+              :label="item.name"
+              :value="item.name"
             />
           </el-select>
-        </el-col>
-        <br />
-        <br />
-        <el-col>ユーザ名/リポジトリ</el-col>
-        <el-col :offset="8" :span="16">{{ registryForm.userName }}</el-col>
-        <el-col>パスワード</el-col>
-        <el-col :offset="8" :span="16">
+          <br />
+          <br />
+
+          <div class="content-color">ユーザ名/リポジトリ</div>
+          <div>{{ value.userName ? value.userName : '--' }}</div>
+          <div class="content-color">トークン</div>
           <el-input
-            v-model="registryForm.password"
+            :value="value.password"
             type="password"
             show-password
-            @change="tokenChange"
+            @input="tokenChange"
           />
-        </el-col>
-      </el-row>
+        </div>
+      </el-col>
+    </el-row>
+    <el-row>
       <el-col class="button-group">
         <el-button type="primary" @click="$emit('updateRegistryToken')">
           更新
         </el-button>
       </el-col>
-    </div>
+    </el-row>
   </div>
 </template>
 
 <script>
 export default {
   props: {
+    // レジストリ一覧
     registries: {
       type: Array,
       default: () => {
@@ -55,6 +56,7 @@ export default {
       },
     },
 
+    // 選択したレジストリ情報
     value: {
       type: Object,
       default: () => ({
@@ -65,32 +67,25 @@ export default {
       }),
     },
   },
-  computed: {
-    registryForm() {
-      return this.value === undefined || this.value === null ? {} : this.value
-    },
-  },
+
   methods: {
-    selectedRegistryChange() {
+    selectedRegistryChange(registryName) {
+      let form = Object.assign({}, this.value)
+      form.name = registryName
       for (const data of this.registries) {
-        if (this.registryForm.name === data.name) {
-          this.registryForm.id = data.id
-          this.registryForm.userName = data.userName
-          this.registryForm.password = data.password
+        if (data.name === registryName) {
+          form.id = data.id
+          form.password = data.password
+          form.userName = data.userName
         }
       }
-      this.value = this.registryForm
+      this.$emit('input', form)
     },
 
     tokenChange(password) {
-      this.registryForm.password = password
-      this.value = this.registryForm
-      for (const data of this.registries) {
-        if (this.registryForm.id === data.id) {
-          data.password = this.registryForm.password
-        }
-      }
-      this.$emit('input', this.value)
+      let form = Object.assign({}, this.value)
+      form.password = password
+      this.$emit('input', form)
     },
   },
 }
@@ -103,5 +98,22 @@ export default {
 
 .el-input {
   text-align: right;
+}
+
+.row-element {
+  font-size: 14px;
+  line-height: 40px;
+  margin-top: 30px;
+  font-weight: bold !important;
+}
+
+.button-group {
+  text-align: right;
+  padding-top: 100px;
+  padding-right: 30px;
+}
+
+.content-color {
+  color: #606266;
 }
 </style>

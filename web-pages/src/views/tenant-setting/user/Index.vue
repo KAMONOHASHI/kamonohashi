@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>テナントユーザ管理2</h2>
+    <h2>テナントユーザ管理</h2>
     <el-row>
       <el-table
         class="data-table pl-index-table"
@@ -18,13 +18,8 @@
         </el-table-column>
         <el-table-column prop="roles" label="ロール" width="auto">
           <template slot-scope="scope">
-            <span
-              v-for="role in scope.row.roles"
-              :key="role.id"
-              class="role-tag"
-            >
-              <el-tag>{{ role.displayName }}</el-tag>
-              &nbsp;
+            <span v-for="role in scope.row.roles" :key="role.id">
+              <el-tag class="role-tag">{{ role.displayName }}</el-tag>
             </span>
           </template>
         </el-table-column>

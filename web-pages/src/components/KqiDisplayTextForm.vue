@@ -11,7 +11,7 @@
       <span v-else>
         --
       </span>
-      <slot name="action"></slot>
+      <slot name="action" />
     </div>
   </div>
 </template>

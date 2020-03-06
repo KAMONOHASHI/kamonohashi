@@ -1,23 +1,25 @@
 <template>
   <!-- 選択中テナント情報 -->
   <el-card class="container base">
-    <img class="logo" src="@/assets/logo_A.png" alt="" />
+    <div class="logo">
+      <img src="@/assets/logo_A.png" alt="" />
+    </div>
     <el-row class="row-element" style="text-align: center;">
       {{ userName }}
     </el-row>
     <el-row class="row-element">
-      <el-col :span="12">選択中のテナント</el-col>
-      <el-col v-if="tenant" :span="12"
-        >{{ tenant.displayName }}(ID: {{ tenant.id }})</el-col
-      >
+      <el-col :span="12" class="content-color">選択中のテナント</el-col>
+      <el-col v-if="tenant" :span="12">
+        {{ tenant.displayName }} (ID: {{ tenant.id }})
+      </el-col>
     </el-row>
     <el-row class="row-element">
-      <el-col :span="12">ロール</el-col>
+      <el-col :span="12" class="content-color">ロール</el-col>
       <el-col v-if="tenant" :span="12">
         <div v-for="(r, index) in tenant.roles" :key="index">
           {{ r.displayName }}
-        </div></el-col
-      >
+        </div>
+      </el-col>
     </el-row>
   </el-card>
 </template>
@@ -45,12 +47,16 @@ export default {
 
 <style scoped>
 .row-element {
-  margin: 30px;
+  font-size: 14px;
+  line-height: 40px;
+  margin-top: 30px;
+  font-weight: bold !important;
 }
+
 .logo {
   text-align: center;
-  margin-left: 106px;
 }
+
 .container {
   margin-top: 10px;
 }
@@ -59,5 +65,9 @@ export default {
   grid-row: 1 / 3;
   grid-column: 1 / 2;
   margin-right: 20px;
+}
+
+.content-color {
+  color: #606266;
 }
 </style>

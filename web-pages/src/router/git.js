@@ -4,7 +4,6 @@ import Edit from '@/views/system-setting/git/Edit'
 export default [
   {
     path: '/git',
-    name: 'Git',
     component: Index,
     children: [
       {

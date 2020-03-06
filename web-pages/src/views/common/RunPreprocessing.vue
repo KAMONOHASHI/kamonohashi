@@ -31,18 +31,16 @@
                     <span style="float: left">{{ item.name }}</span>
                     <span
                       style="float: right; margin-right:16px; color: #8492a6; font-size: 13px"
-                      >{{ item.memo }}</span
                     >
+                      {{ item.memo }}
+                    </span>
                   </el-option>
                 </el-select>
               </div>
             </el-form-item>
           </div>
           <div v-else>
-            <kqi-display-text-form
-              label="データID"
-              :value="idArray"
-            ></kqi-display-text-form>
+            <kqi-display-text-form label="データID" :value="idArray" />
           </div>
 
           <kqi-preprocessings-selector
@@ -59,14 +57,12 @@
         </el-col>
 
         <el-col :span="12">
-          <kqi-resource-selector
-            v-model="form.resource"
-          ></kqi-resource-selector>
+          <kqi-resource-selector v-model="form.resource" />
           <el-form-item label="オプション">
             <br />
-            <el-checkbox v-model="form.movePreprocessingPage" size="medium"
-              >実行後に履歴を確認する</el-checkbox
-            >
+            <el-checkbox v-model="form.movePreprocessingPage" size="medium">
+              実行後に履歴を確認する
+            </el-checkbox>
           </el-form-item>
         </el-col>
       </el-row>

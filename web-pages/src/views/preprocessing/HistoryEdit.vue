@@ -7,20 +7,26 @@
     :close-on-click-modal="false"
   >
     <el-form ref="editForm">
-      <pl-display-error :error="error" />
-      <pl-display-text label="ID" :value="preprocessingId" />
-      <pl-display-text label="データ名" :value="historyDetail.dataName" />
-      <pl-display-text label="前処理名" :value="historyDetail.preprocessName" />
-      <pl-display-text label="実行日時" :value="historyDetail.createdAt" />
+      <kqi-display-error :error="error" />
+      <kqi-display-text-form label="ID" :value="preprocessingId" />
+      <kqi-display-text-form label="データ名" :value="historyDetail.dataName" />
+      <kqi-display-text-form
+        label="前処理名"
+        :value="historyDetail.preprocessName"
+      />
+      <kqi-display-text-form
+        label="実行日時"
+        :value="historyDetail.createdAt"
+      />
       <el-form-item label="前処理ログ">
         <br />
-        <pl-download
+        <kqi-download-button
           :download-url="logFile.url"
           :file-name="logFile.fileName"
         />
         <el-button size="mini" @click="emitLog">閲覧</el-button>
       </el-form-item>
-      <pl-display-text label="ステータス" :value="historyDetail.status" />
+      <kqi-display-text-form label="ステータス" :value="historyDetail.status" />
       <div v-if="historyDetail.status === 'Running'">
         <el-form-item label="操作">
           <div class="el-input">
@@ -43,9 +49,10 @@
             class="pull-right btn-cancel"
             icon="el-icon-close"
             @click="handleCancel"
-            >キャンセル</el-button
           >
-          <pl-delete-button
+            キャンセル
+          </el-button>
+          <kqi-delete-button
             class="pull-left btn-update"
             message="削除しますか（出力データ数が多い場合、処理に時間がかかります）"
             @delete="handleRemove"
@@ -57,19 +64,19 @@
 </template>
 
 <script>
-import DisplayTextForm from '@/components/common/DisplayTextForm.vue'
-import DeleteButton from '@/components/common/DeleteButton.vue'
-import DisplayError from '@/components/common/DisplayError'
-import DownloadButton from '@/components/common/DownloadButton.vue'
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
+import KqiDeleteButton from '@/components/KqiDeleteButton'
+import KqiDisplayError from '@/components/KqiDisplayError'
+import KqiDownloadButton from '@/components/KqiDownloadButton.vue'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('preprocessing')
 
 export default {
   components: {
-    'pl-display-error': DisplayError,
-    'pl-display-text': DisplayTextForm,
-    'pl-delete-button': DeleteButton,
-    'pl-download': DownloadButton,
+    KqiDisplayError,
+    KqiDisplayTextForm,
+    KqiDeleteButton,
+    KqiDownloadButton,
   },
   props: {
     id: {

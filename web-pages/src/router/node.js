@@ -4,7 +4,6 @@ import Edit from '@/views/system-setting/node/Edit'
 export default [
   {
     path: '/node',
-    name: 'Node,',
     component: Index,
     children: [
       {

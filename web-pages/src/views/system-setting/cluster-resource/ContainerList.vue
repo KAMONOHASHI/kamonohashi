@@ -38,7 +38,7 @@
         :width="columnWidth"
       />
     </el-table>
-    <router-view @cancel="closeDialog" @done="done"></router-view>
+    <router-view @cancel="closeDialog" @done="done" />
   </div>
 </template>
 

@@ -13,8 +13,7 @@
           :key="item.id"
           :label="item.displayName"
           :value="item.id"
-        >
-        </el-option>
+        />
       </template>
     </el-select>
   </span>

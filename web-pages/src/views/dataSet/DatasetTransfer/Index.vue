@@ -15,8 +15,7 @@
           :label="entryName"
           :class="'assign assign-' + index"
           border
-        >
-        </el-checkbox>
+        />
       </el-checkbox-group>
     </div>
 

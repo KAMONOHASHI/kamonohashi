@@ -2,7 +2,7 @@
 <!--description: イメージ名、タグ名を指定するドロップダウンをそれぞれ表示する,-->
 
 <template>
-  <el-form-item label="コンテナイメージ">
+  <el-form-item label="コンテナイメージ" prop="containerImage">
     <el-row></el-row>
     <el-row>
       <!-- レジストリの選択 -->
@@ -15,7 +15,7 @@
           clearable
           remote
           :disabled="disabled"
-          :value="registry"
+          :value="value.registry"
           @change="changeRegistry"
         >
           <el-option
@@ -23,8 +23,7 @@
             :key="item.id"
             :label="item.name"
             :value="item"
-          >
-          </el-option>
+          />
         </el-select>
       </el-col>
     </el-row>
@@ -34,13 +33,13 @@
       <el-col :span="6" :offset="1">イメージ</el-col>
       <el-col :span="12">
         <el-select
-          :value="image"
+          :value="value.image"
           size="small"
           filterable
           clearable
           default-first-option
           allow-create
-          :disabled="!registry || disabled"
+          :disabled="!value.registry || disabled"
           automatic-dropdown
           @change="changeImage"
         >
@@ -49,8 +48,7 @@
             :key="index"
             :label="item"
             :value="item"
-          >
-          </el-option>
+          />
         </el-select>
       </el-col>
     </el-row>
@@ -60,13 +58,13 @@
       <el-col :span="6" :offset="1">タグ</el-col>
       <el-col :span="12">
         <el-select
-          :value="tag"
+          :value="value.tag"
           size="small"
           filterable
           clearable
           default-first-option
           allow-create
-          :disabled="!image || disabled"
+          :disabled="!value.image || disabled"
           @change="changeTag"
         >
           <el-option
@@ -74,8 +72,7 @@
             :key="index"
             :label="item"
             :value="item"
-          >
-          </el-option>
+          />
         </el-select>
       </el-col>
     </el-row>
@@ -83,50 +80,85 @@
 </template>
 
 <script>
-import { createNamespacedHelpers } from 'vuex'
-const { mapGetters } = createNamespacedHelpers('registrySelector')
-
 export default {
   props: {
+    // レジストリ一覧
+    registries: {
+      type: Array,
+      default: () => {
+        return []
+      },
+    },
+    // イメージ一覧
+    images: {
+      type: Array,
+      default: () => {
+        return []
+      },
+    },
+    // タグ一覧
+    tags: {
+      type: Array,
+      default: () => {
+        return []
+      },
+    },
+    // 選択されたレジストリ、イメージ、タグをvalueで保持
+    value: {
+      type: Object,
+      default: () => {
+        return {
+          registry: null,
+          image: null,
+          tag: null,
+        }
+      },
+    },
     disabled: {
       type: Boolean,
       default: false,
     },
   },
 
-  computed: {
-    ...mapGetters(['registries', 'registry', 'images', 'image', 'tags', 'tag']),
-  },
-
   methods: {
     // 選択しているレジストリが切り替わった時に呼ばれるイベントハンドラ。
     changeRegistry(registry) {
+      let containerImage = this.value
       if (registry === '') {
         // clearボタンが押下された場合
-        this.$emit('input', { type: 'registry', value: null })
+        containerImage.registry = null
       } else {
-        this.$emit('input', { type: 'registry', value: registry })
+        containerImage.registry = registry
       }
+      this.$emit('input', containerImage)
+      this.$emit('selectRegistry', registry === '' ? null : registry.id)
     },
 
     // 選択しているイメージが切り替わった時に呼ばれるイベントハンドラ。
     changeImage(image) {
+      let containerImage = this.value
+
       if (image === '') {
         // clearボタンが押下された場合
-        this.$emit('input', { type: 'image', value: null })
+        containerImage.image = null
       } else {
-        this.$emit('input', { type: 'image', value: image })
+        containerImage.image = image
       }
+      this.$emit('input', containerImage)
+      this.$emit('selectImage')
     },
 
     // 選択しているタグが切り替わった時に呼ばれるイベントハンドラ。
     changeTag(tag) {
+      let containerImage = this.value
+
       if (tag === '') {
         // clearボタンが押下された場合
-        this.$emit('input', { type: 'tag', value: null })
+        containerImage.tag = null
       } else {
-        this.$emit('input', { type: 'tag', value: tag })
+        containerImage.tag = tag
       }
+      this.$emit('input', containerImage)
     },
   },
 }

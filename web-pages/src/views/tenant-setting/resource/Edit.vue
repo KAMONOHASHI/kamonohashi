@@ -9,13 +9,13 @@
     <kqi-display-error :error="error" />
 
     <container-info
-      :detail="form.detail"
+      :detail="containerInfo"
       :filename="filename"
       :exists="exists"
       @download="handleDonwloadLog"
       @cancel="handleCancel"
       @remove="handleRemove"
-    ></container-info>
+    />
   </el-dialog>
 </template>
 
@@ -41,16 +41,14 @@ export default {
       dialogVisible: true,
       filename: '',
       exists: false,
-      form: {
-        detail: {},
-      },
+      containerInfo: {},
     }
   },
 
   computed: {
     ...mapGetters({
       tenantDetail: ['resource/tenantDetail'],
-      containerLog: ['resource/containerLog'],
+      tenantContainerLog: ['resource/tenantContainerLog'],
       tenant: ['tenant/detail'],
     }),
   },
@@ -61,9 +59,9 @@ export default {
       }
       await this['tenant/fetchCurrentTenant']()
       await this['resource/fetchTenantDetail'](params)
-      this.tenantDetail.tenantName = this.tenant.name
-      this.tenantDetail.displayName = this.tenant.name
-      this.form.detail = this.tenantDetail
+      this.containerInfo = this.tenantDetail
+      this.containerInfo.tenantName = this.tenant.name
+      this.containerInfo.displayName = this.tenant.name
       this.error = null
     } catch (e) {
       this.error = e
@@ -85,7 +83,7 @@ export default {
         }
         await this['resource/fetchTenantContainerLog'](params)
 
-        if (this.containerLog !== '') {
+        if (this.tenantContainerLog !== '') {
           this.exists = true
           if (!this.tenantDetail.nodeName) {
             // ノードが振り分けられていない場合
@@ -108,7 +106,7 @@ export default {
           a.download = this.filename
           a.href =
             'data:application/octet-stream,' +
-            encodeURIComponent(this.containerLog)
+            encodeURIComponent(this.tenantContainerLog)
         } else {
           this.exists = false
           this.filename = '取得可能なログファイルはありません。'

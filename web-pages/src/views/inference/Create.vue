@@ -30,13 +30,28 @@
                 :autosize="{ minRows: 10 }"
               />
             </el-form-item>
-            <kqi-container-selector @input="selectContainer" />
-            <kqi-git-selector @input="selectModel" />
+            <kqi-container-selector
+              v-model="form.containerImage"
+              :registries="registries"
+              :images="images"
+              :tags="tags"
+              @selectRegistry="selectRegistry"
+              @selectImage="selectImage"
+            />
+            <kqi-git-selector
+              v-model="form.gitModel"
+              :gits="gits"
+              :repositories="repositories"
+              :branches="branches"
+              :commits="commits"
+              :loading-repositories="loadingRepositories"
+              @selectGit="selectGit"
+              @selectRepository="selectRepository"
+              @selectBranch="selectBranch"
+            />
           </el-col>
           <el-col :span="12">
-            <kqi-resource-selector
-              v-model="form.resource"
-            ></kqi-resource-selector>
+            <kqi-resource-selector v-model="form.resource" />
 
             <kqi-environment-variables v-model="form.variables" />
             <el-form-item label="結果Zip圧縮">
@@ -56,8 +71,7 @@
                 v-model="form.memo"
                 type="textarea"
                 :autosize="{ minRows: 2, maxRows: 4 }"
-              >
-              </el-input>
+              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -67,7 +81,8 @@
             v-if="(originId !== undefined) | (active === 3)"
             type="primary"
             @click="runInference"
-            >実行
+          >
+            実行
           </el-button>
         </el-row>
       </el-form>
@@ -75,16 +90,10 @@
     <div v-else>
       <el-row :gutter="20">
         <el-steps :active="active" align-center>
-          <el-step
-            title="Step 1"
-            description="inference name & dataset"
-          ></el-step>
-          <el-step
-            title="Step 2"
-            description="container image & model"
-          ></el-step>
-          <el-step title="Step 3" description="resource"></el-step>
-          <el-step title="Step 4" description="option"></el-step>
+          <el-step title="Step 1" description="inference name & dataset" />
+          <el-step title="Step 2" description="container image & model" />
+          <el-step title="Step 3" description="resource" />
+          <el-step title="Step 4" description="option" />
         </el-steps>
         <div class="element">
           <!-- step 1 -->
@@ -114,8 +123,25 @@
             :rules="rules"
           >
             <el-col :span="12">
-              <kqi-container-selector @input="selectContainer" />
-              <kqi-git-selector @input="selectModel" />
+              <kqi-container-selector
+                v-model="form.containerImage"
+                :registries="registries"
+                :images="images"
+                :tags="tags"
+                @selectRegistry="selectRegistry"
+                @selectImage="selectImage"
+              />
+              <kqi-git-selector
+                v-model="form.gitModel"
+                :gits="gits"
+                :repositories="repositories"
+                :branches="branches"
+                :commits="commits"
+                :loading-repositories="loadingRepositories"
+                @selectGit="selectGit"
+                @selectRepository="selectRepository"
+                @selectBranch="selectBranch"
+              />
             </el-col>
             <el-col :span="12">
               <el-form-item label="実行コマンド" prop="entryPoint">
@@ -136,9 +162,7 @@
             :rules="rules"
           >
             <el-col :span="18" :offset="3">
-              <kqi-resource-selector
-                v-model="form.resource"
-              ></kqi-resource-selector>
+              <kqi-resource-selector v-model="form.resource" />
             </el-col>
           </el-form>
 
@@ -168,8 +192,7 @@
                   v-model="form.memo"
                   type="textarea"
                   :autosize="{ minRows: 2, maxRows: 4 }"
-                >
-                </el-input>
+                />
               </el-form-item>
             </el-col>
           </el-form>
@@ -182,7 +205,7 @@
           style="margin-top: 12px;"
           @click="previous"
         >
-          <i class="el-icon-arrow-left"></i>
+          <i class="el-icon-arrow-left" />
           Previous step
         </span>
         <span
@@ -192,14 +215,15 @@
           @click="next"
         >
           Next step
-          <i class="el-icon-arrow-right"></i>
+          <i class="el-icon-arrow-right" />
         </span>
         <el-button
           v-if="active === 3"
           class="right-step-group"
           type="primary"
           @click="runInference"
-          >実行
+        >
+          実行
         </el-button>
       </el-row>
     </div>
@@ -215,7 +239,8 @@ import KqiPartitionSelector from '@/components/selector/KqiPartitionSelector.vue
 import KqiResourceSelector from '@/components/selector/KqiResourceSelector'
 import KqiEnvironmentVariables from '@/components/KqiEnvironmentVariables'
 import KqiDisplayError from '@/components/KqiDisplayError'
-import { mapActions, mapMutations, mapGetters } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
+import validator from '@/util/validator'
 
 const formRule = {
   required: true,
@@ -247,6 +272,17 @@ export default {
         dataSetId: null,
         entryPoint: null,
         selectedParent: [],
+        containerImage: {
+          registry: null,
+          image: null,
+          tag: null,
+        },
+        gitModel: {
+          git: null,
+          repository: null,
+          branch: null,
+          commit: null,
+        },
         resource: {
           cpu: 1,
           memory: 1,
@@ -260,6 +296,16 @@ export default {
       rules: {
         name: [formRule],
         entryPoint: [formRule],
+        containerImage: {
+          required: true,
+          trigger: 'blur',
+          validator: validator.containerImageValidator,
+        },
+        gitModel: {
+          required: true,
+          trigger: 'blur',
+          validator: validator.gitModelValidator,
+        },
       },
       dialogVisible: true,
       error: null,
@@ -271,13 +317,16 @@ export default {
     ...mapGetters({
       trainingHistories: ['training/histories'],
       dataSets: ['dataSet/dataSets'],
-      registry: ['registrySelector/registry'],
-      image: ['registrySelector/image'],
-      tag: ['registrySelector/tag'],
-      git: ['gitSelector/git'],
-      repository: ['gitSelector/repository'],
-      branch: ['gitSelector/branch'],
-      commit: ['gitSelector/commit'],
+      registries: ['registrySelector/registries'],
+      defaultRegistryId: ['registrySelector/defaultRegistryId'],
+      images: ['registrySelector/images'],
+      tags: ['registrySelector/tags'],
+      gits: ['gitSelector/gits'],
+      defaultGitId: ['gitSelector/defaultGitId'],
+      repositories: ['gitSelector/repositories'],
+      branches: ['gitSelector/branches'],
+      commits: ['gitSelector/commits'],
+      loadingRepositories: ['gitSelector/loadingRepositories'],
       detail: ['inference/detail'],
       partitions: ['cluster/partitions'],
     }),
@@ -289,26 +338,26 @@ export default {
     // originIdが設定されている、かつ学習からの遷移でない場合、コピー実行とみなして実行
     this.isCopyCreation = this.originId !== null && !fromTrainView
 
-    // vuexの情報をリセット
-    await this.selectContainer({
-      type: 'registry',
-      value: null,
-    })
-    await this.selectModel({
-      type: 'git',
-      value: null,
-    })
-
     // 指定に必要な情報を取得
     await this['training/fetchHistoriesToMount']({
       status: ['Completed', 'UserCanceled'],
     })
     await this['cluster/fetchPartitions']()
     await this['dataSet/fetchDataSets']()
+
+    // レジストリ一覧を取得し、デフォルトレジストリを設定
     await this['registrySelector/fetchRegistries']()
-    await this['registrySelector/fetchImages']()
+    this.form.containerImage.registry = this.registries.find(registry => {
+      return registry.id === this.defaultRegistryId
+    })
+    await this.selectRegistry(this.defaultRegistryId)
+
+    // gitサーバ一覧を取得し、デフォルトgitサーバを設定
     await this['gitSelector/fetchGits']()
-    await this['gitSelector/fetchRepositories']()
+    this.form.gitModel.git = this.gits.find(git => {
+      return git.id === this.defaultGitId
+    })
+    await this['gitSelector/fetchRepositories'](this.defaultGitId)
 
     // 学習からの遷移の場合は、マウントする学習を設定
     if (fromTrainView) {
@@ -340,41 +389,27 @@ export default {
         })
       }
 
-      await this.selectContainer({
-        type: 'registry',
-        value: {
-          id: this.detail.containerImage.registryId,
-          name: this.detail.containerImage.name,
-        },
-      })
-      await this.selectContainer({
-        type: 'image',
-        value: this.detail.containerImage.image,
-      })
-      await this.selectContainer({
-        type: 'tag',
-        value: this.detail.containerImage.tag,
-      })
+      // レジストリの設定
+      this.form.containerImage.registry = {
+        id: this.detail.containerImage.registryId,
+        name: this.detail.containerImage.name,
+      }
+      await this.selectRegistry(this.detail.containerImage.registryId)
+      this.form.containerImage.image = this.detail.containerImage.image
+      await this.selectImage()
+      this.form.containerImage.tag = this.detail.containerImage.tag
 
-      await this.selectModel({
-        type: 'git',
-        value: {
-          id: this.detail.gitModel.gitId,
-          name: this.detail.gitModel.name,
-        },
-      })
-      await this.selectModel({
-        type: 'repository',
-        value: `${this.detail.gitModel.owner}/${this.detail.gitModel.repository}`,
-      })
-      await this.selectModel({
-        type: 'branch',
-        value: this.detail.gitModel.branch,
-      })
-      await this.selectModel({
-        type: 'commit',
-        value: this.detail.gitModel.commitId,
-      })
+      // gitモデルの設定
+      this.form.gitModel.git = {
+        id: this.detail.gitModel.gitId,
+        name: this.detail.gitModel.name,
+      }
+      await this.selectGit(this.detail.gitModel.gitId)
+      this.form.gitModel.repository = `${this.detail.gitModel.owner}/${this.detail.gitModel.repository}`
+      await this.selectRepository(this.form.gitModel.repository)
+      this.form.gitModel.branch = this.detail.gitModel.branch
+      await this.selectBranch(this.detail.gitModel.branch)
+      this.form.gitModel.commit = this.detail.gitModel.commitId
 
       this.form.resource.cpu = this.detail.cpu
       this.form.resource.memory = this.detail.memory
@@ -388,15 +423,6 @@ export default {
     }
   },
   methods: {
-    ...mapMutations([
-      'registrySelector/setRegistry',
-      'registrySelector/setImage',
-      'registrySelector/setTag',
-      'gitSelector/setGit',
-      'gitSelector/setRepository',
-      'gitSelector/setBranch',
-      'gitSelector/setCommit',
-    ]),
     ...mapActions([
       'training/fetchHistoriesToMount',
       'inference/fetchDetail',
@@ -423,9 +449,9 @@ export default {
           DataSetId: this.form.dataSetId,
           ParentId: this.form.selectedParent.id,
           ContainerImage: {
-            registryId: this.registry.id,
-            image: this.image,
-            tag: this.tag,
+            registryId: this.form.containerImage.registry.id,
+            image: this.form.containerImage.image,
+            tag: this.form.containerImage.tag,
           },
           GitModel: {
             gitId: this.git.id,
@@ -490,113 +516,89 @@ export default {
     },
 
     // コンテナイメージ
-    async selectContainer(arg) {
-      // arg:
-      // {
-      //   type: 'registry' or 'image' or 'tag'
-      //   value: id, name
-      // }
-      switch (arg.type) {
-        case 'registry':
-          // 過去の選択状態をリセット
-          this['registrySelector/setImage'](null)
-          this['registrySelector/setTag'](null)
+    async selectRegistry(registryId) {
+      // 過去の選択状態をリセット
+      this.form.containerImage.image = null
+      this.form.containerImage.tag = null
+      // clearの場合リセット、レジストリが選択された場合はイメージ取得
+      if (this.form.containerImage.registry !== null) {
+        await this['registrySelector/fetchImages'](registryId)
+      }
+    },
+    async selectImage() {
+      // 過去の選択状態をリセット
+      this.form.containerImage.tag = null
 
-          // clearの場合リセット、レジストリが選択された場合はイメージ取得
-          if (arg.value == null) {
-            this['registrySelector/setRegistry'](null)
-          } else {
-            this['registrySelector/setRegistry'](arg.value)
-            await this['registrySelector/fetchImages']()
-          }
-          break
-
-        case 'image':
-          // 過去の選択状態をリセット
-          this['registrySelector/setTag'](null)
-
-          // clearの場合リセット、イメージが選択された場合はタグ取得
-          if (arg.value == null) {
-            this['registrySelector/setImage'](null)
-          } else {
-            this['registrySelector/setImage'](arg.value)
-            await this['registrySelector/fetchTags']()
-          }
-          break
-
-        case 'tag':
-          // clearの場合リセット、タグが選択された場合は設定
-          if (arg.value == null) {
-            this['registrySelector/setTag'](null)
-          } else {
-            this['registrySelector/setTag'](arg.value)
-          }
-          break
+      // clearの場合リセット、イメージが選択された場合はタグ取得
+      if (this.form.containerImage.image !== null) {
+        await this['registrySelector/fetchTags']({
+          registryId: this.form.containerImage.registry.id,
+          image: this.form.containerImage.image,
+        })
       }
     },
 
     // モデル
-    async selectModel(arg) {
-      // arg:
-      // {
-      //   type: 'git' or 'repository' or 'branch' or 'commit
-      //   value: id, name
-      // }
-      switch (arg.type) {
-        case 'git':
-          // 過去の選択状態をリセット
-          this['gitSelector/setRepository'](null)
-          this['gitSelector/setBranch'](null)
-          this['gitSelector/setCommit'](null)
+    async selectGit(gitId) {
+      // 過去の選択状態をリセット
+      this.form.gitModel.repository = null
+      this.form.gitModel.branch = null
+      this.form.gitModel.commit = null
 
-          // clearの場合リセット、gitサーバが選択された場合はリポジトリ取得
-          if (arg.value == null) {
-            this['gitSelector/setGit'](null)
-          } else {
-            this['gitSelector/setGit'](arg.value)
-            // 独自ローディング処理のため共通側は無効
-            this.$store.commit('setLoading', false)
-            await this['gitSelector/fetchRepositories']()
-            // 共通側ローディングを再度有効化
-            this.$store.commit('setLoading', true)
+      // clearの場合リセット、gitサーバが選択された場合はリポジトリ取得
+      if (this.form.gitModel.git !== null) {
+        // 独自ローディング処理のため共通側は無効
+        this.$store.commit('setLoading', false)
+        await this['gitSelector/fetchRepositories'](gitId)
+        // 共通側ローディングを再度有効化
+        this.$store.commit('setLoading', true)
+      }
+    },
+    // repositoryの型がstring：手入力, object: 選択
+    async selectRepository(repository) {
+      // 過去の選択状態をリセット
+      this.form.gitModel.branch = null
+      this.form.gitModel.commit = null
+
+      let manualInput = false
+      let argRepository = {}
+      if (typeof repository === 'string') {
+        manualInput = true
+        let repositoryName = repository
+        let index = repositoryName.indexOf('/')
+        if (index > 0) {
+          argRepository = {
+            owner: repositoryName.substring(0, index),
+            name: repositoryName.substring(index + 1),
+            fullName: repositoryName,
           }
-          break
+          this.form.gitModel.repository = argRepository
+        } else {
+          //構文エラー
+        }
+      } else {
+        argRepository = repository
+      }
+      // clearの場合リセット、リポジトリが選択された場合はブランチ取得
+      if (this.form.gitModel.repository !== null) {
+        await this['gitSelector/fetchBranches']({
+          gitId: this.form.gitModel.git.id,
+          repository: argRepository,
+          manualInput: manualInput,
+        })
+      }
+    },
+    async selectBranch(branchName) {
+      // 過去の選択状態をリセット
+      this.form.gitModel.commit = null
 
-        case 'repository':
-          // 過去の選択状態をリセット
-          this['gitSelector/setBranch'](null)
-          this['gitSelector/setCommit'](null)
-
-          // clearの場合リセット、リポジトリが選択された場合はブランチ取得
-          if (arg.value == null) {
-            this['gitSelector/setRepository'](null)
-          } else {
-            this['gitSelector/setRepository'](arg.value)
-            await this['gitSelector/fetchBranches']()
-          }
-          break
-
-        case 'branch':
-          // 過去の選択状態をリセット
-          this['gitSelector/setCommit'](null)
-
-          // clearの場合リセット、ブランチが選択された場合はコミット取得
-          if (arg.value == null) {
-            this['gitSelector/setBranch'](null)
-          } else {
-            this['gitSelector/setBranch'](arg.value)
-            await this['gitSelector/fetchCommits']()
-          }
-          break
-
-        case 'commit':
-          // clearの場合リセット、コミットが選択された場合は設定
-          if (arg.value == null) {
-            this['gitSelector/setCommit'](null)
-          } else {
-            this['gitSelector/setCommit'](arg.value)
-          }
-          break
+      // clearの場合リセット、ブランチが選択された場合はコミット取得
+      if (this.form.gitModel.branch !== null) {
+        await this['gitSelector/fetchCommits']({
+          gitId: this.form.gitModel.git.id,
+          repository: this.form.gitModel.repository,
+          branchName: branchName,
+        })
       }
     },
   },

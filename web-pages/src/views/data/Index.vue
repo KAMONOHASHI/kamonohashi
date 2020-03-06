@@ -7,7 +7,7 @@
           v-model="pageStatus"
           :total="total"
           @change="retrieveData"
-        ></kqi-pagination>
+        />
       </el-col>
       <el-col class="right-top-button" :span="8">
         <div>
@@ -74,7 +74,7 @@
         v-model="pageStatus"
         :total="total"
         @change="retrieveData"
-      ></kqi-pagination>
+      />
     </el-row>
     <router-view
       @cancel="closeDialog()"
@@ -82,7 +82,7 @@
       @preprocessing="openPreprocessingDialog()"
       @close="closeDialog()"
       @runPreprocessing="redirectPreprocessingPage()"
-    ></router-view>
+    />
   </div>
 </template>
 
@@ -95,8 +95,8 @@ const { mapGetters, mapActions } = createNamespacedHelpers('data')
 export default {
   title: 'データ管理',
   components: {
-    'kqi-pagination': KqiPagination,
     KqiSmartSearchInput,
+    KqiPagination,
   },
 
   data() {

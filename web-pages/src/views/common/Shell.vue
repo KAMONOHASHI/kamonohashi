@@ -8,7 +8,7 @@
       width="80%"
       :close-on-click-modal="false"
     >
-      <div id="terminal"></div>
+      <div id="terminal" />
       <div>
         コピー: Ctrl+Insert, ペースト: Shift+Insert(Google
         Chromeの場合Ctrl+Shift+Vでペーストも可能)
@@ -23,11 +23,12 @@
 </template>
 
 <script>
-import api from '@/api/v1/api'
 import '@/xterm.css'
 import { Terminal } from 'xterm'
 import { AttachAddon } from 'xterm-addon-attach'
 import { FitAddon } from 'xterm-addon-fit'
+import { createNamespacedHelpers } from 'vuex'
+const { mapGetters, mapActions } = createNamespacedHelpers('account')
 
 let socket
 export default {
@@ -46,6 +47,9 @@ export default {
       intervalId: -1,
     }
   },
+  computed: {
+    ...mapGetters(['account']),
+  },
   async mounted() {
     let url = this.$route.path
     this.type = url.split('/')[1] // ["", "{type}", "{id}", "shell"]
@@ -55,6 +59,8 @@ export default {
     await this.connectShell()
   },
   methods: {
+    ...mapActions(['fetchAccount']),
+
     emitCancel() {
       this.$emit('cancel')
       this.closeSocket()
@@ -71,9 +77,7 @@ export default {
     },
 
     async connectShell() {
-      // テナント名を取得
-      let res = await api.account.get()
-      let tenantName = res.data.selectedTenant.name
+      await this.fetchAccount()
 
       // xtermjsの設定
       let term = new Terminal()
@@ -87,6 +91,7 @@ export default {
         // ジョブ名を作成 例: training-101, preproc-30
         let jobName = `${this.type}-${this.id}`
         this.title = `Shell in ${jobName}`
+        let tenantName = this.account.selectedTenant.name
 
         // ||を合体演算子として使う https://en.wikipedia.org/wiki/Null_coalescing_operator
         // API_HOST: webpackのdefine pluginから渡ってくる。

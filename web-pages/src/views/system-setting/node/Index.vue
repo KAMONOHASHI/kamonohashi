@@ -6,7 +6,7 @@
         v-model="pageStatus"
         :total="total"
         @change="retrieveData"
-      ></kqi-pagination>
+      />
       <el-col class="right-top-button" :span="8">
         <el-button
           icon="el-icon-edit-outline"
@@ -59,9 +59,9 @@
         v-model="pageStatus"
         :total="total"
         @change="retrieveData"
-      ></kqi-pagination>
+      />
     </el-row>
-    <router-view @cancel="closeDialog()" @done="done()"></router-view>
+    <router-view @cancel="closeDialog()" @done="done()" />
   </div>
 </template>
 

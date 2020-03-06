@@ -19,8 +19,9 @@
               type="text"
               style="font-size: 1.8rem;"
               @click="handleNav(navigation.slice(0, idx + 1).join('/') + '/')"
-              >{{ d }}</el-button
             >
+              {{ d }}
+            </el-button>
           </span>
         </span>
       </el-col>
@@ -38,9 +39,9 @@
           <el-table-column prop="name" label="ファイル名" width="auto">
             <template slot-scope="scope">
               <span v-if="scope.row.isDirectory">
-                <el-button type="text" @click="handleNavAdd(scope.row.name)">{{
-                  scope.row.name
-                }}</el-button>
+                <el-button type="text" @click="handleNavAdd(scope.row.name)">
+                  {{ scope.row.name }}
+                </el-button>
               </span>
               <span v-else>
                 {{ scope.row.name }}

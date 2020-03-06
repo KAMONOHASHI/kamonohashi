@@ -1,6 +1,7 @@
 <template>
   <div>
-    <el-form-item label="Git" prop="gitSelectedIds">
+    <el-form-item prop="gitEndpoint">
+      <el-col :span="6">Git</el-col>
       <el-select
         class="selectGit"
         :value="value.selectedIds"
@@ -16,14 +17,12 @@
           :value="item.id"
         >
           <span style="float: left">{{ item.name }}</span>
-          <span style="float: right; color: #8492a6; font-size: 13px">{{
-            item.repositoryUrl
-          }}</span>
+          <span style="float: right; color: #8492a6; font-size: 13px">
+            {{ item.repositoryUrl }}
+          </span>
         </el-option>
       </el-select>
-    </el-form-item>
-
-    <el-form-item label="デフォルト" prop="gitDefaultId">
+      <el-col :span="6">デフォルト</el-col>
       <el-select
         class="selectGit"
         :value="value.defaultId"
@@ -38,9 +37,9 @@
           :value="item.id"
         >
           <span style="float: left">{{ item.name }}</span>
-          <span style="float: right; color: #8492a6; font-size: 13px">{{
-            item.repositryUrl
-          }}</span>
+          <span style="float: right; color: #8492a6; font-size: 13px">
+            {{ item.repositryUrl }}
+          </span>
         </el-option>
       </el-select>
     </el-form-item>
@@ -48,11 +47,16 @@
 </template>
 
 <script>
-import { createNamespacedHelpers } from 'vuex'
-const { mapGetters } = createNamespacedHelpers('git')
-
 export default {
   props: {
+    // 表示するgitエンドポイントの一覧
+    endpoints: {
+      type: Array,
+      default: () => {
+        return []
+      },
+    },
+    // 選択されたgitエンドポイントIDの配列とその中から選んだデフォルトのID
     value: {
       type: Object,
       default: () => {
@@ -64,7 +68,6 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['endpoints']),
     availableEndpoints: function() {
       // selectedIdsとendpointsを突き合わせて該当するものを抜き出し、表示に用いる配列を作成する。
       let endpointList = []

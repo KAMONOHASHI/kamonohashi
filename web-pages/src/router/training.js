@@ -8,7 +8,6 @@ import LogViewer from '@/views/common/LogViewer'
 export default [
   {
     path: '/training',
-    name: 'training',
     component: Index,
     children: [
       {
