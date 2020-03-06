@@ -1,8 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-import Error from '@/components/error/Error'
-
+import error from '@/router/error'
 import login from '@/router/login'
 import account from '@/router/account'
 import dashboard from '@/router/dashboard'
@@ -29,6 +28,7 @@ Vue.use(Router)
 
 let router = new Router({
   routes: [
+    ...error,
     ...login,
     ...account,
     ...dashboard,
@@ -50,10 +50,6 @@ let router = new Router({
     ...user,
     ...clusterResource,
     ...version,
-    {
-      path: '/error',
-      component: Error,
-    },
   ],
 })
 /* eslint-disable */
