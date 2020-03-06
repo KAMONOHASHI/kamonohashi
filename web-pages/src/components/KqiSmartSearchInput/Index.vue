@@ -150,12 +150,10 @@ export default {
       if (tag.config.type === 'select') component = SmartSearchInputSelect
 
       tag.component = null
-      /* eslint-disable */
-      this.$nextTick(_ => {
+      this.$nextTick(() => {
         tag.component = component
         tag.input = true
       })
-      /* eslint-enable */
     },
 
     // 検索実行

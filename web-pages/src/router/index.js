@@ -52,7 +52,6 @@ let router = new Router({
     ...version,
   ],
 })
-/* eslint-disable */
 router.beforeEach((to, from, next) => {
   if (!to.matched.length) {
     next('/error?url=' + to.path)
@@ -62,10 +61,9 @@ router.beforeEach((to, from, next) => {
 })
 
 // clear notification
-router.afterEach((to, from) => {
+router.afterEach(() => {
   let vue = new Vue()
   vue.$notify.closeAll()
 })
-/* eslint-enable */
 
 export { router as default }

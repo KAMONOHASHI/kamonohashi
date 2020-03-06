@@ -51,15 +51,13 @@ export default {
     }
   },
   created() {
-    /* eslint-disable */
-    this.$nextTick(_ => {
+    this.$nextTick(() => {
       this.value = this.getValue()
       this.$refs.saveTagInput.$refs.input.focus()
-      this.$nextTick(_ => {
+      this.$nextTick(() => {
         this.$refs.saveTagInput.$refs.input.select()
       })
     })
-    /* eslint-enable */
   },
   methods: {
     // 検索条件を指定し、検索

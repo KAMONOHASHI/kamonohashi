@@ -54,14 +54,12 @@ export default {
     }
   },
   created() {
-    /* eslint-disable */
-    this.$nextTick(_ => {
+    this.$nextTick(() => {
       this.value = this.getValue()
       setTimeout(() => {
         this.$refs.saveTagInput.focus()
       }, 600)
     })
-    /* eslint-enable */
   },
   methods: {
     // 検索する基準値入力後に検索範囲のドロップダウンを表示

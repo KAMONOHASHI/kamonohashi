@@ -67,13 +67,11 @@ export default {
     }
   },
   watch: {
-    /* eslint-disable */
-    $route(to, from) {
+    $route() {
       this.url = this.$route.query.url
       this.status = this.$route.query.status
       this.message = this.$route.query.message
     },
-    /* eslint-enable */
   },
 }
 </script>
