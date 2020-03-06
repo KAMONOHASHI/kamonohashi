@@ -23,8 +23,7 @@
             :key="item.id"
             :label="item.name"
             :value="item"
-          >
-          </el-option>
+          />
         </el-select>
       </el-col>
     </el-row>
@@ -49,8 +48,7 @@
             :key="item.fullName"
             :label="item.fullName"
             :value="item"
-          >
-          </el-option>
+          />
         </el-select>
       </el-col>
       <el-col :span="2">
@@ -78,8 +76,7 @@
             :key="item.branchName"
             :label="item.branchName"
             :value="item"
-          >
-          </el-option>
+          />
         </el-select>
       </el-col>
     </el-row>
@@ -99,19 +96,19 @@
             <kqi-display-text-form
               label="コミットID"
               :value="value.commit ? value.commit.commitId : ''"
-            ></kqi-display-text-form>
+            />
             <kqi-display-text-form
               label="コミッター"
               :value="value.commit ? value.commit.committerName : ''"
-            ></kqi-display-text-form>
+            />
             <kqi-display-text-form
               label="コミット日時"
               :value="value.commit ? value.commit.commitAt : ''"
-            ></kqi-display-text-form>
+            />
             <kqi-display-text-form
               label="コメント"
               :value="value.commit ? value.commit.comment : ''"
-            ></kqi-display-text-form>
+            />
           </span>
         </el-popover>
         <el-select
@@ -134,8 +131,7 @@
             :key="item.commitId"
             :label="item.commitId"
             :value="item"
-          >
-          </el-option>
+          />
         </el-select>
       </el-col>
       <el-col v-else :span="12">

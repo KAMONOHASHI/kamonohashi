@@ -18,7 +18,7 @@
       <el-table-column prop="gpu" label="GPU" width="auto" />
       <el-table-column prop="status" label="ステータス" width="auto" />
     </el-table>
-    <router-view @cancel="closeDialog()" @done="done()"></router-view>
+    <router-view @cancel="closeDialog()" @done="done()" />
   </div>
 </template>
 

@@ -23,8 +23,7 @@
             :key="item.id"
             :label="item.name"
             :value="item"
-          >
-          </el-option>
+          />
         </el-select>
       </el-col>
     </el-row>
@@ -49,8 +48,7 @@
             :key="index"
             :label="item"
             :value="item"
-          >
-          </el-option>
+          />
         </el-select>
       </el-col>
     </el-row>
@@ -74,8 +72,7 @@
             :key="index"
             :label="item"
             :value="item"
-          >
-          </el-option>
+          />
         </el-select>
       </el-col>
     </el-row>

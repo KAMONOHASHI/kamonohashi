@@ -7,7 +7,7 @@
           v-model="pageStatus"
           :total="total"
           @change="retrieveData"
-        ></kqi-pagination>
+        />
       </el-col>
       <el-col class="right-top-button" :span="8">
         <el-button
@@ -47,13 +47,9 @@
         v-model="pageStatus"
         :total="total"
         @change="retrieveData"
-      ></kqi-pagination>
+      />
     </el-row>
-    <router-view
-      @cancel="closeDialog"
-      @done="done"
-      @copy="handleCopy"
-    ></router-view>
+    <router-view @cancel="closeDialog" @done="done" @copy="handleCopy" />
   </div>
 </template>
 
@@ -66,7 +62,7 @@ const { mapGetters, mapActions } = createNamespacedHelpers('dataSet')
 export default {
   title: 'データセット管理',
   components: {
-    'kqi-pagination': KqiPagination,
+    KqiPagination,
     'pl-smart-search-input': SmartSearchInput,
   },
   data() {

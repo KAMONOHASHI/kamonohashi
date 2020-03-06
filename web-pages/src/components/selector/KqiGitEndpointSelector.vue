@@ -17,9 +17,9 @@
           :value="item.id"
         >
           <span style="float: left">{{ item.name }}</span>
-          <span style="float: right; color: #8492a6; font-size: 13px">{{
-            item.repositoryUrl
-          }}</span>
+          <span style="float: right; color: #8492a6; font-size: 13px">
+            {{ item.repositoryUrl }}
+          </span>
         </el-option>
       </el-select>
       <el-col :span="6">デフォルト</el-col>
@@ -37,9 +37,9 @@
           :value="item.id"
         >
           <span style="float: left">{{ item.name }}</span>
-          <span style="float: right; color: #8492a6; font-size: 13px">{{
-            item.repositryUrl
-          }}</span>
+          <span style="float: right; color: #8492a6; font-size: 13px">
+            {{ item.repositryUrl }}
+          </span>
         </el-option>
       </el-select>
     </el-form-item>

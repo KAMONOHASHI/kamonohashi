@@ -7,7 +7,7 @@
         v-model="pageStatus"
         :total="total"
         @change="retrieveData"
-      ></kqi-pagination>
+      />
 
       <el-col class="right-top-button" :span="8">
         <el-button @click="openPreprocessingDialog">前処理実行</el-button>
@@ -50,7 +50,8 @@
                 type="primary"
                 plain
                 @click="openHistoryIndex(props.row)"
-                >履歴
+              >
+                履歴
               </el-button>
             </template>
           </el-table-column>
@@ -60,7 +61,7 @@
         v-model="pageStatus"
         :total="total"
         @change="retrieveData"
-      ></kqi-pagination>
+      />
     </div>
     <router-view
       @done="done"
@@ -68,7 +69,7 @@
       @copy="handleCopy"
       @return="back"
       @shell="shell"
-    ></router-view>
+    />
   </div>
 </template>
 
@@ -81,7 +82,7 @@ const { mapGetters, mapActions } = createNamespacedHelpers('preprocessing')
 export default {
   title: '前処理管理',
   components: {
-    'kqi-pagination': KqiPagination,
+    KqiPagination,
     'pl-smart-search-input': SmartSearchInput,
   },
   data() {

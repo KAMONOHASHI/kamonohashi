@@ -8,7 +8,7 @@
       width="80%"
       :close-on-click-modal="false"
     >
-      <div id="terminal"></div>
+      <div id="terminal" />
       <div>
         コピー: Ctrl+Insert, ペースト: Shift+Insert(Google
         Chromeの場合Ctrl+Shift+Vでペーストも可能)

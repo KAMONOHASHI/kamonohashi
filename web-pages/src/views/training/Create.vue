@@ -51,9 +51,7 @@
             />
           </el-col>
           <el-col :span="12">
-            <kqi-resource-selector
-              v-model="form.resource"
-            ></kqi-resource-selector>
+            <kqi-resource-selector v-model="form.resource" />
 
             <kqi-environment-variables v-model="form.variables" />
             <el-form-item label="結果Zip圧縮">
@@ -73,8 +71,7 @@
                 v-model="form.memo"
                 type="textarea"
                 :autosize="{ minRows: 2, maxRows: 4 }"
-              >
-              </el-input>
+              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -84,7 +81,8 @@
             v-if="(originId !== undefined) | (active === 3)"
             type="primary"
             @click="runTrain"
-            >実行
+          >
+            実行
           </el-button>
         </el-row>
       </el-form>
@@ -92,16 +90,10 @@
     <div v-else>
       <el-row :gutter="20">
         <el-steps :active="active" align-center>
-          <el-step
-            title="Step 1"
-            description="training name & dataset"
-          ></el-step>
-          <el-step
-            title="Step 2"
-            description="container image & model"
-          ></el-step>
-          <el-step title="Step 3" description="resource"></el-step>
-          <el-step title="Step 4" description="option"></el-step>
+          <el-step title="Step 1" description="training name & dataset" />
+          <el-step title="Step 2" description="container image & model" />
+          <el-step title="Step 3" description="resource" />
+          <el-step title="Step 4" description="option" />
         </el-steps>
         <div class="element">
           <!-- step 1 -->
@@ -170,9 +162,7 @@
             :rules="rules"
           >
             <el-col :span="18" :offset="3">
-              <kqi-resource-selector
-                v-model="form.resource"
-              ></kqi-resource-selector>
+              <kqi-resource-selector v-model="form.resource" />
             </el-col>
           </el-form>
 
@@ -202,8 +192,7 @@
                   v-model="form.memo"
                   type="textarea"
                   :autosize="{ minRows: 2, maxRows: 4 }"
-                >
-                </el-input>
+                />
               </el-form-item>
             </el-col>
           </el-form>
@@ -216,7 +205,7 @@
           style="margin-top: 12px;"
           @click="previous"
         >
-          <i class="el-icon-arrow-left"></i>
+          <i class="el-icon-arrow-left" />
           Previous step
         </span>
         <span
@@ -226,14 +215,15 @@
           @click="next"
         >
           Next step
-          <i class="el-icon-arrow-right"></i>
+          <i class="el-icon-arrow-right" />
         </span>
         <el-button
           v-if="active === 3"
           class="right-step-group"
           type="primary"
           @click="runTrain"
-          >実行
+        >
+          実行
         </el-button>
       </el-row>
     </div>

@@ -29,8 +29,7 @@
           :key="item.id"
           :label="item.fullName"
           :value="item"
-        >
-        </el-option>
+        />
       </el-select>
     </div>
   </el-form-item>

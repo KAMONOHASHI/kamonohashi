@@ -61,7 +61,7 @@
       />
       <el-table-column align="center" label="ステータス" :width="columnWidth" />
     </el-table>
-    <router-view @cancel="closeDialog" @done="done"></router-view>
+    <router-view @cancel="closeDialog" @done="done" />
   </div>
 </template>
 

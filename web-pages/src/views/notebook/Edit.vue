@@ -25,12 +25,12 @@
                 v-if="form.favorite"
                 class="el-icon-star-on favorite"
                 @click="form.favorite = false"
-              ></div>
+              />
               <div
                 v-else
                 class="el-icon-star-off favorite"
                 @click="form.favorite = true"
-              ></div>
+              />
             </span>
           </kqi-display-text-form>
           <el-form-item label="ノートブック名" prop="name">
@@ -51,8 +51,9 @@
                     slot="reference"
                     class="el-input"
                     @click="showParent(parent.id)"
-                    >{{ parent.fullName }}</el-button
                   >
+                    {{ parent.fullName }}
+                  </el-button>
                 </el-popover>
               </div>
             </el-form-item>
@@ -72,7 +73,8 @@
                 v-popover:dataSetDetail
                 class="el-input"
                 @click="redirectEditDataSet"
-                >{{ detail.dataSet.name }}
+              >
+                {{ detail.dataSet.name }}
               </el-button>
             </el-form-item>
           </div>
@@ -104,8 +106,7 @@
               v-model="form.memo"
               type="textarea"
               :autosize="{ minRows: 2, maxRows: 4 }"
-            >
-            </el-input>
+            />
           </el-form-item>
 
           <el-form-item v-if="detail.options" label="環境変数">
@@ -191,8 +192,9 @@
                     type="plain"
                     icon="el-icon-document"
                     @click="openNotebook"
-                    >ノートブックを開く</el-button
                   >
+                    ノートブックを開く
+                  </el-button>
                 </div>
               </div>
             </el-form-item>
@@ -223,7 +225,6 @@ import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('notebook')
 
 export default {
-  name: 'EditNotebook',
   components: {
     KqiDialog,
     KqiDeleteButton,

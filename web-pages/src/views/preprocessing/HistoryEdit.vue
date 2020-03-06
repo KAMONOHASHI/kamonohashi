@@ -43,8 +43,9 @@
             class="pull-right btn-cancel"
             icon="el-icon-close"
             @click="handleCancel"
-            >キャンセル</el-button
           >
+            キャンセル
+          </el-button>
           <pl-delete-button
             class="pull-left btn-update"
             message="削除しますか（出力データ数が多い場合、処理に時間がかかります）"

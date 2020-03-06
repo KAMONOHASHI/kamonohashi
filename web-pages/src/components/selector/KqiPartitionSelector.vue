@@ -13,8 +13,7 @@
           :key="item"
           :label="item"
           :value="item"
-        >
-        </el-option>
+        />
       </el-select>
     </el-form-item>
   </div>

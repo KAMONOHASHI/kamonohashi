@@ -25,10 +25,7 @@
         </el-col>
       </el-row>
 
-      <kqi-file-viewer
-        :file-list="fileList"
-        @updatePath="updatePath"
-      ></kqi-file-viewer>
+      <kqi-file-viewer :file-list="fileList" @updatePath="updatePath" />
       <el-row :gutter="20" class="footer">
         <el-col class="right-button-group" :span="24">
           <el-button @click="emitCancel">キャンセル</el-button>
@@ -96,6 +93,7 @@ export default {
   },
 }
 </script>
+
 <style lang="scss" scoped>
 .dialog /deep/ .el-dialog {
   min-width: 800px;

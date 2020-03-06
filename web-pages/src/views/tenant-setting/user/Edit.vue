@@ -1,6 +1,6 @@
 <template>
   <kqi-dialog
-    title="テナントユーザ編集2"
+    title="テナントユーザ編集"
     :type="'EDIT'"
     :delete-button-params="deleteButtonParams"
     @submit="submit"
@@ -10,10 +10,7 @@
     <el-form ref="form" :model="form" :rules="rules">
       <kqi-display-error :error="error" />
       <kqi-display-text-form label="ユーザ名" :value="detail.name" />
-      <kqi-display-text-form
-        label="認証タイプ"
-        :value="form.displayServiceType"
-      />
+      <kqi-display-text-form label="認証タイプ" :value="displayServiceType" />
       <el-form-item label="テナントロール" prop="tenantRoleIds">
         <kqi-role-selector
           v-model="form.tenantRoleIds"
@@ -66,7 +63,10 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({ detail: ['user/tenantUserDetail'], roles: ['role/roles'] }),
+    ...mapGetters({
+      detail: ['user/tenantUserDetail'],
+      roles: ['role/roles'],
+    }),
   },
 
   async created() {

@@ -32,13 +32,15 @@
           prop="projectName"
           label="GitLabプロジェクト名"
           width="auto"
-        >
-        </el-table-column>
-        <el-table-column prop="serviceType" label="レジストリ種別" width="auto">
-        </el-table-column>
+        />
+        <el-table-column
+          prop="serviceType"
+          label="レジストリ種別"
+          width="auto"
+        />
       </el-table>
     </el-row>
-    <router-view @cancel="closeDialog()" @done="done()"></router-view>
+    <router-view @cancel="closeDialog()" @done="done()" />
   </div>
 </template>
 

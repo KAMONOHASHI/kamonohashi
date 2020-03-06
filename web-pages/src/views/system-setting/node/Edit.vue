@@ -30,7 +30,7 @@
           v-model="form.selectedTenants"
           :data="displayTenants"
           :transfer-titles="form.transferTitles"
-        ></el-transfer>
+        />
       </transition>
       <el-form-item label="TensorBoard">
         <el-switch

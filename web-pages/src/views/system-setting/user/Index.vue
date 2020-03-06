@@ -42,11 +42,12 @@
               <el-table-column prop="roles" label="ロール" width="auto">
                 <template slot-scope="scope">
                   <span v-for="(role, index) in scope.row.roles" :key="index">
-                    <el-tag v-if="role.isCustomed" type="info">{{
-                      role.displayName
-                    }}</el-tag>
-                    <el-tag v-else>{{ role.displayName }}</el-tag>
-                    <span>&nbsp;</span>
+                    <el-tag v-if="role.isCustomed" type="info" class="role-tag">
+                      {{ role.displayName }}
+                    </el-tag>
+                    <el-tag v-else class="role-tag">
+                      {{ role.displayName }}
+                    </el-tag>
                   </span>
                 </template>
               </el-table-column>
@@ -74,14 +75,15 @@
         <el-table-column prop="systemRoles" label="ロール" width="auto">
           <template slot-scope="scope">
             <span v-for="role in scope.row.systemRoles" :key="role.id">
-              <el-tag type="warning">{{ role.displayName }}</el-tag
-              >&nbsp;
+              <el-tag type="warning" class="role-tag">
+                {{ role.displayName }}
+              </el-tag>
             </span>
           </template>
         </el-table-column>
       </el-table>
     </el-row>
-    <router-view @cancel="closeDialog()" @done="done()"></router-view>
+    <router-view @cancel="closeDialog()" @done="done()" />
   </div>
 </template>
 
@@ -146,6 +148,10 @@ export default {
 .data-table /deep/ .el-table__expanded-cell {
   padding-top: 0px !important;
   padding-right: 0px !important;
+}
+
+.role-tag {
+  margin-right: 8px;
 }
 
 .tenant {

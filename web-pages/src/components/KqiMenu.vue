@@ -53,13 +53,13 @@
         :style="disableActive"
         @click="handleClick('/version')"
       >
-        <i class="el-icon-info"></i>
+        <i class="el-icon-info" />
         <span>バージョン情報</span>
       </el-menu-item>
     </el-menu>
-    <div style="background-color: transparent; height: 200px; width: 1px;">
-      <!--スクロール調整-->
-    </div>
+
+    <!--スクロール調整-->
+    <div style="background-color: transparent; height: 200px; width: 1px;" />
   </div>
 </template>
 

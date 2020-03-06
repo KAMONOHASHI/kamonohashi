@@ -7,8 +7,7 @@
         :min="1"
         :max="200"
         show-input
-      >
-      </el-slider>
+      />
     </el-form-item>
     <el-form-item label="メモリ(GB)" required>
       <el-slider
@@ -17,8 +16,7 @@
         :min="1"
         :max="200"
         show-input
-      >
-      </el-slider>
+      />
     </el-form-item>
     <el-form-item label="GPU" required>
       <el-slider
@@ -27,8 +25,7 @@
         :min="0"
         :max="16"
         show-input
-      >
-      </el-slider>
+      />
     </el-form-item>
   </div>
 </template>

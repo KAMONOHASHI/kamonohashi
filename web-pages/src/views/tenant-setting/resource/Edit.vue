@@ -15,7 +15,7 @@
       @download="handleDonwloadLog"
       @cancel="handleCancel"
       @remove="handleRemove"
-    ></container-info>
+    />
   </el-dialog>
 </template>
 

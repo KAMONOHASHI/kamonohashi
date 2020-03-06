@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>接続テナント設定2</h2>
+    <h2>接続テナント設定</h2>
     <el-card>
       <el-form
         ref="editForm"
