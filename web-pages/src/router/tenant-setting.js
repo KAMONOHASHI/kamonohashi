@@ -1,8 +1,8 @@
-import ManageTenant from '@/views/tenant-manage/tenant/Setting'
-import ManageUserIndex from '@/views/tenant-manage/user/Index'
-import ManageUserEdit from '@/views/tenant-manage/user/Edit'
-import ManageResourceIndex from '@/views/tenant-manage/resource/Index'
-import ManageResourceEdit from '@/views/tenant-manage/resource/Edit'
+import ManageTenant from '@/views/tenant-setting/tenant/Setting'
+import ManageUserIndex from '@/views/tenant-setting/user/Index'
+import ManageUserEdit from '@/views/tenant-setting/user/Edit'
+import ManageResourceIndex from '@/views/tenant-setting/resource/Index'
+import ManageResourceEdit from '@/views/tenant-setting/resource/Edit'
 
 export default [
   {
