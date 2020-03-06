@@ -5,6 +5,7 @@ const state = {
   token: {},
   account: {},
   menuList: {},
+  menuTree: {},
 }
 
 // getters
@@ -17,6 +18,9 @@ const getters = {
   },
   menuList(state) {
     return state.menuList
+  },
+  menuTree(state) {
+    return state.menuTree
   },
 }
 
@@ -32,6 +36,12 @@ const actions = {
     let response = await api.menuList.getMenuList()
     let menuList = response.data
     commit('setMenuList', { menuList })
+  },
+
+  async fetchMenuTree({ commit }) {
+    let response = await api.account.getTreeMenus()
+    let menuTree = response.data
+    commit('setMenuTree', { menuTree })
   },
 
   // eslint-disable-next-line no-unused-vars
@@ -72,6 +82,9 @@ const mutations = {
   },
   setMenuList(state, { menuList }) {
     state.menuList = menuList
+  },
+  setMenuTree(state, { menuTree }) {
+    state.menuTree = menuTree
   },
 }
 
