@@ -2,6 +2,7 @@ import api from '@/api/v1/api'
 
 // initial state
 const state = {
+  login: {},
   token: {},
   account: {},
   menuList: {},
@@ -10,6 +11,9 @@ const state = {
 
 // getters
 const getters = {
+  login(state) {
+    return state.login
+  },
   token(state) {
     return state.token
   },
@@ -54,7 +58,12 @@ const actions = {
     return await api.account.putPassword(params)
   },
 
-  // eslint-disable-next-line no-unused-vars
+  async postLogin({ commit }, params) {
+    let response = await api.account.postLogin(params)
+    let login = response.data
+    commit('setLogin', { login })
+  },
+
   async postTokenTenants({ commit }, params) {
     let login = (await api.account.postTokenTenants(params)).data
     let token = login.token
@@ -74,6 +83,9 @@ const actions = {
 
 // mutations
 const mutations = {
+  setLogin(state, { login }) {
+    state.login = login
+  },
   setToken(state, { token }) {
     state.token = token
   },

@@ -1,9 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-import AccountLogin from '@/components/account/Login'
 import Error from '@/components/error/Error'
 
+import login from '@/router/login'
 import account from '@/router/account'
 import dashboard from '@/router/dashboard'
 import data from '@/router/data'
@@ -29,6 +29,7 @@ Vue.use(Router)
 
 let router = new Router({
   routes: [
+    ...login,
     ...account,
     ...dashboard,
     ...data,
@@ -49,10 +50,6 @@ let router = new Router({
     ...user,
     ...clusterResource,
     ...version,
-    {
-      path: '/login',
-      component: AccountLogin,
-    },
     {
       path: '/error',
       component: Error,
