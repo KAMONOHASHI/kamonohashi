@@ -55,7 +55,7 @@
 
 <script>
 import KqiPagination from '@/components/KqiPagination'
-import KqiSmartSearchInput from '@/components/common/KqiSmartSearchInput/Index.vue'
+import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index.vue'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('dataSet')
 

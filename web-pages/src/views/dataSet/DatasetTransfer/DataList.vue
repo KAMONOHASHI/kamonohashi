@@ -153,7 +153,7 @@
 <script>
 import { Container, Draggable } from 'vue-smooth-dnd'
 import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
-import KqiSmartSearchInput from '@/components/common/KqiSmartSearchInput/Index.vue'
+import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index.vue'
 
 export default {
   components: {
