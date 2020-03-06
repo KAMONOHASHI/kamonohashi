@@ -23,7 +23,7 @@
     </el-row>
     <el-row :gutter="20">
       <el-col class="search">
-        <pl-smart-search-input
+        <kqi-smart-search-input
           v-model="searchCondition"
           :configs="searchConfigs"
           @search="search"
@@ -74,7 +74,7 @@
 
 <script>
 import KqiPagination from '@/components/KqiPagination'
-import SmartSearchInput from '@/components/common/SmartSearchInput/Index'
+import KqiSmartSearchInput from '@/components/common/KqiSmartSearchInput/Index'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('preprocessing')
 
@@ -82,7 +82,7 @@ export default {
   title: '前処理管理',
   components: {
     'kqi-pagination': KqiPagination,
-    'pl-smart-search-input': SmartSearchInput,
+    KqiSmartSearchInput,
   },
   data() {
     return {

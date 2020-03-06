@@ -30,7 +30,7 @@
         </el-row>
         <el-row type="flex" justify="end">
           <el-col class="header-action">
-            <pl-smart-search-input
+            <kqi-smart-search-input
               v-model="searchCondition"
               :configs="searchConfigs"
               :mini="true"
@@ -156,14 +156,14 @@
 <script>
 import { Container, Draggable } from 'vue-smooth-dnd'
 import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
-import SmartSearchInput from '@/components/common/SmartSearchInput/Index.vue'
+import KqiSmartSearchInput from '@/components/common/KqiSmartSearchInput/Index.vue'
 
 export default {
   components: {
     Container,
     Draggable,
     'kqi-display-text-form': KqiDisplayTextForm,
-    'pl-smart-search-input': SmartSearchInput,
+    KqiSmartSearchInput,
   },
   props: {
     // dataのpaging情報やentry自体の表示情報
