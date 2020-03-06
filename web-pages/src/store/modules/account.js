@@ -5,6 +5,7 @@ const state = {
   token: {},
   account: {},
   menuList: {},
+  loginData: {},
 }
 
 // getters
@@ -17,6 +18,9 @@ const getters = {
   },
   menuList(state) {
     return state.menuList
+  },
+  loginData(state) {
+    return state.loginData
   },
 }
 
@@ -46,9 +50,10 @@ const actions = {
 
   // eslint-disable-next-line no-unused-vars
   async postTokenTenants({ commit }, params) {
-    let login = (await api.account.postTokenTenants(params)).data
-    let token = login.token
+    let loginData = (await api.account.postTokenTenants(params)).data
+    let token = loginData.token
     commit('setToken', { token })
+    commit('setLoginData', { loginData })
   },
 
   // eslint-disable-next-line no-unused-vars
@@ -72,6 +77,9 @@ const mutations = {
   },
   setMenuList(state, { menuList }) {
     state.menuList = menuList
+  },
+  setLoginData(state, { loginData }) {
+    state.loginData = loginData
   },
 }
 
