@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>ノード管理2</h2>
+    <h2>ノード管理</h2>
     <el-row type="flex" justify="space-between" :gutter="20">
       <kqi-pagination
         v-model="pageStatus"
@@ -123,4 +123,8 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.right-top-button {
+  text-align: right;
+}
+</style>

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>ユーザ管理2</h2>
+    <h2>ユーザ管理</h2>
     <el-row :gutter="20">
       <el-col class="right-top-button">
         <el-button
