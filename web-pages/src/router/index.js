@@ -3,7 +3,6 @@ import Router from 'vue-router'
 
 import AccountLogin from '@/components/account/Login'
 import Error from '@/components/error/Error'
-import VersionIndex from '@/components/version/Index'
 
 import account from '@/router/account'
 import dashboard from '@/router/dashboard'
@@ -24,6 +23,7 @@ import storage from '@/router/storage'
 import tenant from '@/router/tenant'
 import user from '@/router/user'
 import clusterResource from '@/router/cluster-resource'
+import version from '@/router/version'
 
 Vue.use(Router)
 
@@ -48,6 +48,7 @@ let router = new Router({
     ...tenant,
     ...user,
     ...clusterResource,
+    ...version,
     {
       path: '/login',
       component: AccountLogin,
@@ -55,10 +56,6 @@ let router = new Router({
     {
       path: '/error',
       component: Error,
-    },
-    {
-      path: '/version',
-      component: VersionIndex,
     },
   ],
 })
