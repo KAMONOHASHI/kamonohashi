@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>前処理管理2</h2>
+    <h2>前処理管理</h2>
 
     <el-row>
       <kqi-pagination

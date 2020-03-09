@@ -1,7 +1,7 @@
 <template>
   <kqi-dialog
     :title="title"
-    :type="id === null ? 'CREATE' : 'EDIT'"
+    :type="isCreateDialog ? 'CREATE' : 'EDIT'"
     @submit="submit"
     @delete="deletePreprocessing"
     @close="emitCancel"
@@ -216,27 +216,44 @@ export default {
         this.form.entryPoint = this.detail.entryPoint
         this.form.memo = this.detail.memo
 
-        // レジストリの設定
-        this.form.containerImage.registry = {
-          id: this.detail.containerImage.registryId,
-          name: this.detail.containerImage.name,
+        // 編集対象/コピー元でレジストリが指定されていればその情報をコピー
+        if (this.detail.containerImage !== null) {
+          this.form.containerImage.registry = {
+            id: this.detail.containerImage.registryId,
+            name: this.detail.containerImage.name,
+          }
+          this.form.containerImage.registry = this.registries.find(registry => {
+            return registry.id === this.detail.containerImage.registryId
+          })
+          await this.selectRegistry(this.detail.containerImage.registryId)
+          this.form.containerImage.image = this.detail.containerImage.image
+          await this.selectImage()
+          this.form.containerImage.tag = this.detail.containerImage.tag
         }
-        await this.selectRegistry(this.detail.containerImage.registryId)
-        this.form.containerImage.image = this.detail.containerImage.image
-        await this.selectImage()
-        this.form.containerImage.tag = this.detail.containerImage.tag
 
-        // gitモデルの設定
-        this.form.gitModel.git = {
-          id: this.detail.gitModel.gitId,
-          name: this.detail.gitModel.name,
+        // 編集対象/コピー元でgitが指定されていればその情報をコピー
+        if (this.detail.gitModel !== null) {
+          this.form.gitModel.git = {
+            id: this.detail.gitModel.gitId,
+            name: this.detail.gitModel.name,
+          }
+          this.form.gitModel.git = this.gits.find(git => {
+            return git.id === this.detail.gitModel.gitId
+          })
+          await this.selectGit(this.detail.gitModel.gitId)
+          this.form.gitModel.repository = `${this.detail.gitModel.owner}/${this.detail.gitModel.repository}`
+          await this.selectRepository(this.form.gitModel.repository)
+          this.form.gitModel.branch = this.branches.find(branch => {
+            return branch.branchName == this.detail.gitModel.branch
+          })
+          await this.selectBranch(this.detail.gitModel.branch)
+          this.form.gitModel.commit = this.commits.find(commit => {
+            return commit.commitId == this.detail.gitModel.commitId
+          })
+          if (this.form.gitModel.commit === undefined) {
+            this.form.gitModel.commit = 'HEAD'
+          }
         }
-        await this.selectGit(this.detail.gitModel.gitId)
-        this.form.gitModel.repository = `${this.detail.gitModel.owner}/${this.detail.gitModel.repository}`
-        await this.selectRepository(this.form.gitModel.repository)
-        this.form.gitModel.branch = this.detail.gitModel.branch
-        await this.selectBranch(this.detail.gitModel.branch)
-        this.form.gitModel.commit = this.detail.gitModel.commitId
 
         this.form.resource.cpu = this.detail.cpu
         this.form.resource.memory = this.detail.memory
@@ -252,16 +269,29 @@ export default {
               // 名称・メモ・リソースのみ更新
               await this.patchPreprocessing()
             } else {
+              // コンテナイメージの指定
+              // イメージとタグが指定されている場合、コンテナイメージを指定して登録
+              // イメージとタグが指定されていない場合、コンテナイメージは未指定(null)として登録
               let containerImage = null
-              if (this.image !== null && this.tag !== null) {
+              if (
+                this.form.containerImage.image !== null &&
+                this.form.containerImage.tag !== null
+              ) {
                 containerImage = {
                   registryId: this.form.containerImage.registry.id,
                   image: this.form.containerImage.image,
                   tag: this.form.containerImage.tag,
                 }
               }
+
+              // gitモデルの指定
+              // リポジトリとブランチが指定されている場合、gitモデルを指定して登録
+              // リポジトリとブランチが指定されていない場合、gitモデルは未指定(null)として登録
               let gitModel = null
-              if (this.repository !== null && this.branch !== null) {
+              if (
+                this.form.gitModel.repository !== null &&
+                this.form.gitModel.branch !== null
+              ) {
                 gitModel = {
                   gitId: this.form.gitModel.git.id,
                   repository: this.form.gitModel.repository.name,
