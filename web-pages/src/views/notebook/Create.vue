@@ -12,77 +12,75 @@
       <el-form ref="runForm" :rules="rules" :model="form">
         <el-row :gutter="20">
           <div class="element">
-            <el-form v-if="active === 0">
-              <el-col :span="12">
-                <el-form-item label="ノートブック名" prop="name">
-                  <el-input v-model="form.name" />
-                </el-form-item>
-                <kqi-training-history-selector
-                  v-model="form.selectedParent"
-                  :histories="trainingHistories"
-                  multiple
-                />
-                <kqi-data-set-selector
-                  v-model="form.dataSetId"
-                  :data-sets="dataSets"
-                />
-                <kqi-container-selector
-                  v-model="form.containerImage"
-                  :registries="registries"
-                  :images="images"
-                  :tags="tags"
-                  @selectRegistry="selectRegistry"
-                  @selectImage="selectImage"
-                />
-                <kqi-git-selector
-                  v-model="form.gitModel"
-                  :gits="gits"
-                  :repositories="repositories"
-                  :branches="branches"
-                  :commits="commits"
-                  :loading-repositories="loadingRepositories"
-                  @selectGit="selectGit"
-                  @selectRepository="selectRepository"
-                  @selectBranch="selectBranch"
-                />
-              </el-col>
-              <el-col :span="12">
-                <kqi-resource-selector v-model="form.resource" />
-                <div v-if="availableInfiniteTime">
-                  <el-form-item label="起動期間設定">
-                    <el-switch
-                      v-model="form.withExpiresInSetting"
-                      style="width: 100%;"
-                      inactive-text="OFF"
-                      active-text="ON"
-                    />
-                  </el-form-item>
-                </div>
-                <div v-show="form.withExpiresInSetting">
-                  <el-form-item label="起動期間(h)" required>
-                    <el-slider
-                      v-model="form.expiresIn"
-                      class="el-input"
-                      :min="1"
-                      :max="100"
-                      show-input
-                    />
-                  </el-form-item>
-                </div>
-                <kqi-environment-variables v-model="form.variables" />
-                <kqi-partition-selector
-                  v-model="form.partition"
-                  :partitions="partitions"
-                />
-                <el-form-item label="メモ">
-                  <el-input
-                    v-model="form.memo"
-                    type="textarea"
-                    :autosize="{ minRows: 2, maxRows: 4 }"
+            <el-col :span="12">
+              <el-form-item label="ノートブック名" prop="name">
+                <el-input v-model="form.name" />
+              </el-form-item>
+              <kqi-training-history-selector
+                v-model="form.selectedParent"
+                :histories="trainingHistories"
+                multiple
+              />
+              <kqi-data-set-selector
+                v-model="form.dataSetId"
+                :data-sets="dataSets"
+              />
+              <kqi-container-selector
+                v-model="form.containerImage"
+                :registries="registries"
+                :images="images"
+                :tags="tags"
+                @selectRegistry="selectRegistry"
+                @selectImage="selectImage"
+              />
+              <kqi-git-selector
+                v-model="form.gitModel"
+                :gits="gits"
+                :repositories="repositories"
+                :branches="branches"
+                :commits="commits"
+                :loading-repositories="loadingRepositories"
+                @selectGit="selectGit"
+                @selectRepository="selectRepository"
+                @selectBranch="selectBranch"
+              />
+            </el-col>
+            <el-col :span="12">
+              <kqi-resource-selector v-model="form.resource" />
+              <div v-if="availableInfiniteTime">
+                <el-form-item label="起動期間設定">
+                  <el-switch
+                    v-model="form.withExpiresInSetting"
+                    style="width: 100%;"
+                    inactive-text="OFF"
+                    active-text="ON"
                   />
                 </el-form-item>
-              </el-col>
-            </el-form>
+              </div>
+              <div v-show="form.withExpiresInSetting">
+                <el-form-item label="起動期間(h)" required>
+                  <el-slider
+                    v-model="form.expiresIn"
+                    class="el-input"
+                    :min="1"
+                    :max="100"
+                    show-input
+                  />
+                </el-form-item>
+              </div>
+              <kqi-environment-variables v-model="form.variables" />
+              <kqi-partition-selector
+                v-model="form.partition"
+                :partitions="partitions"
+              />
+              <el-form-item label="メモ">
+                <el-input
+                  v-model="form.memo"
+                  type="textarea"
+                  :autosize="{ minRows: 2, maxRows: 4 }"
+                />
+              </el-form-item>
+            </el-col>
           </div>
         </el-row>
       </el-form>
@@ -144,7 +142,7 @@
         <br />
         <div class="element">
           <!-- step 1 -->
-          <el-form v-if="active === 0">
+          <el-form v-if="active === 0" ref="form0" :model="form" :rules="rules">
             <el-col :span="18" :offset="3">
               <el-form-item
                 label="ノートブック名"
@@ -157,7 +155,7 @@
           </el-form>
 
           <!-- step 2 -->
-          <el-form v-if="active === 1">
+          <el-form v-if="active === 1" ref="form1" :model="form" :rules="rules">
             <el-col :span="18" :offset="3">
               <kqi-resource-selector v-model="form.resource" />
             </el-col>
@@ -187,7 +185,7 @@
           </el-form>
 
           <!-- step 3 -->
-          <el-form v-if="active === 2">
+          <el-form v-if="active === 2" ref="form2" :model="form" :rules="rules">
             <el-col :span="10" :offset="2">
               <kqi-container-selector
                 v-model="form.containerImage"
@@ -225,7 +223,7 @@
           </el-form>
 
           <!-- step 4 -->
-          <el-form v-if="active === 3">
+          <el-form v-if="active === 3" ref="form3" :model="form" :rules="rules">
             <el-col>
               <kqi-environment-variables v-model="form.variables" />
               <kqi-partition-selector
@@ -516,6 +514,7 @@ export default {
     ]),
     async runNotebook() {
       if (this.isReRunCreation) {
+        // 再実行
         try {
           if (!this.form.withExpiresInSetting) {
             this.form.expiresIn = 0
@@ -545,72 +544,79 @@ export default {
           this.error = e
         }
       } else {
-        try {
-          let options = {}
-          // apiのフォーマットに合わせる(配列 => オブジェクト)
-          this.form.variables.forEach(kvp => {
-            options[kvp.key] = kvp.value
-          })
-          if (!this.form.withExpiresInSetting) {
-            this.form.expiresIn = 0
-          }
-          // コンテナイメージが指定されていれば設定。指定されていなければnullとし、サーバ側で自動設定
-          let containerImage = null
-          if (this.image !== null || this.tag !== null) {
-            containerImage = {
-              registryId: this.form.containerImage.registry.id,
-              image: this.form.containerImage.image,
-              tag: this.form.containerImage.tag,
+        // 実行
+        let form = this.$refs.runForm
+        await form.validate(async valid => {
+          if (valid) {
+            try {
+              let options = {}
+              // apiのフォーマットに合わせる(配列 => オブジェクト)
+              this.form.variables.forEach(kvp => {
+                options[kvp.key] = kvp.value
+              })
+              if (!this.form.withExpiresInSetting) {
+                this.form.expiresIn = 0
+              }
+              // コンテナイメージの指定
+              // イメージとタグが指定されている場合、コンテナイメージを指定して登録
+              // イメージとタグが指定されていない場合、コンテナイメージは未指定(null)として登録
+              let containerImage = null
+              if (
+                this.form.containerImage.image !== null &&
+                this.form.containerImage.tag !== null
+              ) {
+                containerImage = {
+                  registryId: this.form.containerImage.registry.id,
+                  image: this.form.containerImage.image,
+                  tag: this.form.containerImage.tag,
+                }
+              }
+
+              // gitモデルの指定
+              // リポジトリとブランチが指定されている場合、gitモデルを指定して登録
+              // リポジトリとブランチが指定されていない場合、gitモデルは未指定(null)として登録
+              let gitModel = null
+              if (
+                this.form.gitModel.repository !== null &&
+                this.form.gitModel.branch !== null
+              ) {
+                gitModel = {
+                  gitId: this.form.gitModel.git.id,
+                  repository: this.form.gitModel.repository.name,
+                  owner: this.form.gitModel.repository.owner,
+                  branch: this.form.gitModel.branch.branchName,
+                  commitId: this.form.gitModel.commit
+                    ? this.form.gitModel.commit.commitId
+                    : 'HEAD',
+                }
+              }
+              // training history ObjectのリストからIDのみを抜き出して格納
+              let selectedParentIds = []
+              this.form.selectedParent.forEach(parent => {
+                selectedParentIds.push(parent.id)
+              })
+              let params = {
+                name: this.form.name,
+                dataSetId: this.form.dataSetId,
+                parentIds: selectedParentIds,
+                ContainerImage: containerImage,
+                GitModel: gitModel,
+                cpu: this.form.resource.cpu,
+                memory: this.form.resource.memory,
+                gpu: this.form.resource.gpu,
+                expiresIn: this.form.expiresIn * 60 * 60,
+                options: options,
+                partition: this.form.partition,
+                memo: this.form.memo,
+              }
+              await this['notebook/post'](params)
+              this.emitDone()
+              this.error = null
+            } catch (e) {
+              this.error = e
             }
           }
-          // モデルが指定されていれば設定。指定されていなければnullとし、サーバ側で自動設定
-          let gitModel = null
-          if (
-            this.repository !== null ||
-            this.branch !== null ||
-            this.commit !== null
-          ) {
-            gitModel = {
-              gitId: this.form.gitModel.git.id,
-              repository: this.form.gitModel.repository
-                ? this.form.gitModel.repository.name
-                : null,
-              owner: this.form.gitModel.repository
-                ? this.form.gitModel.repository.owner
-                : null,
-              branch: this.form.gitModel.branch
-                ? this.form.gitModel.branch.branchName
-                : null,
-              commitId: this.form.gitModel.commit
-                ? this.form.gitModel.commit.commitId
-                : 'HEAD',
-            }
-          }
-          // training history ObjectのリストからIDのみを抜き出して格納
-          let selectedParentIds = []
-          this.form.selectedParent.forEach(parent => {
-            selectedParentIds.push(parent.id)
-          })
-          let params = {
-            name: this.form.name,
-            dataSetId: this.form.dataSetId,
-            parentIds: selectedParentIds,
-            ContainerImage: containerImage,
-            GitModel: gitModel,
-            cpu: this.form.resource.cpu,
-            memory: this.form.resource.memory,
-            gpu: this.form.resource.gpu,
-            expiresIn: this.form.expiresIn * 60 * 60,
-            options: options,
-            partition: this.form.partition,
-            memo: this.form.memo,
-          }
-          await this['notebook/post'](params)
-          this.emitDone()
-          this.error = null
-        } catch (e) {
-          this.error = e
-        }
+        })
       }
     },
 
@@ -625,10 +631,27 @@ export default {
       done()
       this.emitCancel()
     },
-    next() {
-      if (this.active++ > 3) {
-        this.active = 0
+    async next() {
+      let form = null
+      switch (this.active) {
+        case 0:
+          form = this.$refs.form0
+          break
+        case 1:
+          form = this.$refs.form1
+          break
+        case 2:
+          form = this.$refs.form2
+          break
+        case 3:
+          form = this.$refs.form3
+          break
       }
+      await form.validate(async valid => {
+        if (valid) {
+          this.active++
+        }
+      })
     },
     previous() {
       if (this.active-- < 0) {
