@@ -440,6 +440,9 @@ export default {
     ]),
     async runInference() {
       let form = this.$refs.runForm
+      if (this.active !== 0) {
+        form = this.$refs.form3
+      }
       await form.validate(async valid => {
         if (valid) {
           try {
@@ -506,9 +509,6 @@ export default {
           break
         case 2:
           form = this.$refs.form2
-          break
-        case 3:
-          form = this.$refs.form3
           break
       }
       await form.validate(async valid => {
