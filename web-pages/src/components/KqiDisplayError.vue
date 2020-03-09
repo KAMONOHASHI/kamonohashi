@@ -13,11 +13,9 @@
 
 <script>
 export default {
-  name: 'DisplayError',
-
   props: {
     error: {
-      type: Object,
+      type: Error,
       default: null,
     },
   },

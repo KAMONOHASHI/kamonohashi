@@ -59,9 +59,9 @@ export default {
     KqiDisplayError,
   },
   data() {
-    let err = ''
+    let err = null
     if (this.$route.query.timeout) {
-      err = '認証エラー：ログインしてください。'
+      err = Error('認証エラー：ログインしてください。')
     }
     return {
       labelwidth: '100px',
