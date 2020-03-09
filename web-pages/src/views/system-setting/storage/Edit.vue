@@ -14,10 +14,7 @@
 
       <h3>ストレージ情報</h3>
       <div style="padding-left: 30px; padding-right: 10px;">
-        <el-form-item
-          label="ホスト名:ポート（例: kamonohashi.ai:9000）"
-          prop="serverUrl"
-        >
+        <el-form-item label="ホスト名:ポート" prop="serverUrl">
           <el-input v-model="form.serverUrl" />
         </el-form-item>
         <el-form-item label="アクセスキー" prop="accessKey">
@@ -90,7 +87,7 @@ export default {
     } else {
       this.title = 'ストレージ編集'
       try {
-        await this.fetchDetail()
+        await this.fetchDetail(this.id)
         this.form.name = this.detail.name
         this.form.serverUrl = this.detail.serverUrl
         this.form.accessKey = this.detail.accessKey
@@ -110,20 +107,17 @@ export default {
         if (valid) {
           try {
             let params = {
-              id: this.id,
-              model: {
-                name: this.form.name,
-                serverUrl: this.form.serverUrl,
-                accessKey: this.form.accessKey,
-                secretKey: this.form.secretKey,
-                nfsServer: this.form.nfsServer,
-                nfsRoot: this.form.nfsRoot,
-              },
+              name: this.form.name,
+              serverUrl: this.form.serverUrl,
+              accessKey: this.form.accessKey,
+              secretKey: this.form.secretKey,
+              nfsServer: this.form.nfsServer,
+              nfsRoot: this.form.nfsRoot,
             }
             if (this.id === null) {
               await this.post(params)
             } else {
-              await this.put(params)
+              await this.put({ id: this.id, params: params })
             }
             this.emitDone()
             this.error = null
@@ -135,7 +129,7 @@ export default {
     },
     async deleteStorage() {
       try {
-        await this.delete()
+        await this.delete(this.id)
         this.error = null
         this.emitDone()
       } catch (e) {
