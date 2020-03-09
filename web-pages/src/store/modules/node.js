@@ -37,10 +37,8 @@ const actions = {
     commit('setTotal', parseInt(total))
   },
 
-  async fetchDetail({ commit, rootState }) {
-    let detail = (
-      await api.nodes.admin.getById({ id: rootState.route.params.id })
-    ).data
+  async fetchDetail({ commit }, id) {
+    let detail = (await api.nodes.admin.getById({ id: id })).data
     commit('setDetail', { detail })
   },
 
@@ -50,17 +48,18 @@ const actions = {
   },
 
   // eslint-disable-next-line no-unused-vars
-  async post({ rootState }, params) {
-    return await api.nodes.admin.post(params)
+  async post({ commit }, params) {
+    return await api.nodes.admin.post({ model: params })
   },
 
-  async put({ rootState }, params) {
-    params['id'] = rootState.route.params.id
-    return await api.nodes.admin.put(params)
+  // eslint-disable-next-line no-unused-vars
+  async put({ commit }, { id, params }) {
+    return await api.nodes.admin.put({ id: id, model: params })
   },
 
-  async delete({ rootState }) {
-    return await api.nodes.admin.delete({ id: rootState.route.params.id })
+  // eslint-disable-next-line no-unused-vars
+  async delete({ commit }, id) {
+    return await api.nodes.admin.delete({ id: id })
   },
 }
 

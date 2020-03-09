@@ -112,7 +112,7 @@ export default {
     } else {
       this.title = 'ノード編集'
       try {
-        await this.fetchDetail()
+        await this.fetchDetail(this.id)
         this.form.name = this.detail.name
         this.form.memo = this.detail.memo
         this.form.partition = this.detail.partition
@@ -137,22 +137,19 @@ export default {
         if (valid) {
           try {
             let params = {
-              id: this.id,
-              model: {
-                name: this.form.name,
-                memo: this.form.memo,
-                partition: this.form.partition,
-                accessLevel: this.form.accessLevel,
-                assignedTenantIds:
-                  this.form.accessLevel === 1 ? this.form.selectedTenants : [],
-                tensorBoardEnabled: this.form.tensorBoardEnabled,
-                notebookEnabled: this.form.notebookEnabled,
-              },
+              name: this.form.name,
+              memo: this.form.memo,
+              partition: this.form.partition,
+              accessLevel: this.form.accessLevel,
+              assignedTenantIds:
+                this.form.accessLevel === 1 ? this.form.selectedTenants : [],
+              tensorBoardEnabled: this.form.tensorBoardEnabled,
+              notebookEnabled: this.form.notebookEnabled,
             }
             if (this.id === null) {
               await this.post(params)
             } else {
-              await this.put(params)
+              await this.put({ id: this.id, params: params })
             }
             this.emitDone()
             this.error = null
@@ -165,7 +162,7 @@ export default {
 
     async deleteNode() {
       try {
-        await this.delete()
+        await this.delete(this.id)
         this.error = null
         this.emitDone()
       } catch (e) {
