@@ -115,6 +115,10 @@ const mutations = {
     state.detail = detail
   },
 
+  clearDetail(state) {
+    state.detail = {}
+  },
+
   setUploadedFiles(state, { uploadedFiles }) {
     state.uploadedFiles = uploadedFiles
   },
