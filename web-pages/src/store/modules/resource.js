@@ -80,7 +80,7 @@ const actions = {
   },
 
   // eslint-disable-next-line no-unused-vars
-  async delete({ rootState }, params) {
+  async delete({ commit }, params) {
     return await api.resource.admin.deleteContainerByName(params)
   },
 
@@ -104,7 +104,7 @@ const actions = {
   },
 
   // eslint-disable-next-line no-unused-vars
-  async deleteTenantContainer({ rootState }, params) {
+  async deleteTenantContainer({ commit }, params) {
     return await api.resource.tenant.deleteContainerByName(params)
   },
 }

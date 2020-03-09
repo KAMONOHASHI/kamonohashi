@@ -1,7 +1,7 @@
 <template>
   <kqi-dialog
     :title="title"
-    :type="id === null ? 'CREATE' : 'EDIT'"
+    :type="isCreateDialog ? 'CREATE' : 'EDIT'"
     @submit="submit"
     @delete="deleteDataSet"
     @close="emitCancel"

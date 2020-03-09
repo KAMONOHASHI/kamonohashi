@@ -153,7 +153,7 @@ export default {
     } else {
       this.title = 'ユーザ編集'
       this.passwordLabel = 'パスワード（変更する場合のみ入力）'
-      await this['user/fetchDetail']()
+      await this['user/fetchDetail'](this.id)
       try {
         this.form.name = this.detail.name
         this.form.serviceType = this.detail.serviceType
@@ -207,19 +207,17 @@ export default {
               })
               postTenants.push(postTenant)
             })
-            let param = {
-              model: {
-                name: this.form.name,
-                password: this.form.password[0],
-                systemRoles: this.form.selectedSystemRoleIds,
-                tenants: postTenants,
-                serviceType: this.form.serviceType,
-              },
+            let params = {
+              name: this.form.name,
+              password: this.form.password[0],
+              systemRoles: this.form.selectedSystemRoleIds,
+              tenants: postTenants,
+              serviceType: this.form.serviceType,
             }
             if (this.id === null) {
-              await this['user/post'](param)
+              await this['user/post'](params)
             } else {
-              await this['user/put'](param)
+              await this['user/put']({ id: this.id, params: params })
             }
             this.emitDone()
             this.error = null
@@ -231,10 +229,7 @@ export default {
     },
     async deleteUser() {
       try {
-        let params = {
-          id: this.id,
-        }
-        await this['user/delete'](params)
+        await this['user/delete'](this.id)
         this.emitDone()
         this.error = null
       } catch (e) {

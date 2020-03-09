@@ -34,31 +34,29 @@ const actions = {
     commit('setUsers', { users })
   },
 
-  async fetchDetail({ commit, rootState }) {
-    let detail = (
-      await api.user.admin.getById({ id: rootState.route.params.id })
-    ).data
+  async fetchDetail({ commit }, id) {
+    let detail = (await api.user.admin.getById({ id: id })).data
     commit('setDetail', { detail })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async post({ rootState }, params) {
-    return await api.user.admin.post(params)
+  async post({ commit }, params) {
+    return await api.user.admin.post({ model: params })
   },
 
-  async put({ rootState }, params) {
-    params['id'] = rootState.route.params.id
+  // eslint-disable-next-line no-unused-vars
+  async put({ commit }, { id, params }) {
     if (params.serviceType === 1) {
       if (params.password) {
         await api.user.admin.putPassword(params)
       }
     }
-    return await api.user.admin.put(params)
+    return await api.user.admin.put({ id: id, model: params })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async delete({ rootState }, params) {
-    return await api.user.admin.delete(params)
+  async delete({ commit }, id) {
+    return await api.user.admin.delete({ id: id })
   },
 
   async fetchTenantUsers({ commit }) {
@@ -66,21 +64,19 @@ const actions = {
     commit('setTenantUsers', { tenantUsers })
   },
 
-  async fetchTenantUserDetail({ commit, rootState }) {
-    let tenantUserDetail = (
-      await api.user.tenant.getById({ id: rootState.route.params.id })
-    ).data
+  async fetchTenantUserDetail({ commit }, id) {
+    let tenantUserDetail = (await api.user.tenant.getById({ id: id })).data
     commit('setTenantUserDetail', { tenantUserDetail })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async tenantRolesPut({ rootState }, params) {
+  async tenantRolesPut({ commit }, params) {
     return await api.user.tenant.putRoles(params)
   },
 
   // eslint-disable-next-line no-unused-vars
-  async tenantUserDelete({ rootState }, params) {
-    return await api.user.tenant.delete(params)
+  async tenantUserDelete({ commit }, id) {
+    return await api.user.tenant.delete({ id: id })
   },
 }
 

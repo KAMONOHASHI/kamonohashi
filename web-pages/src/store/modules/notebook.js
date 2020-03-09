@@ -78,27 +78,27 @@ const actions = {
   },
 
   // eslint-disable-next-line no-unused-vars
-  async post({ rootState }, params) {
+  async post({ commit }, params) {
     return await api.notebook.post({ model: params })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async postRerun({ rootState }, { id, params }) {
+  async postRerun({ commit }, { id, params }) {
     return await api.notebook.postRerun({ id: id, model: params })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async put({ rootState }, params) {
+  async put({ commit }, params) {
     return await api.notebook.putById(params)
   },
 
   // eslint-disable-next-line no-unused-vars
-  async postHalt({ state }, id) {
+  async postHalt({ commit }, id) {
     return await api.notebook.postHaltById({ id: id })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async delete({ state }, id) {
+  async delete({ commit }, id) {
     await api.notebook.deleteById({ id: id })
   },
 

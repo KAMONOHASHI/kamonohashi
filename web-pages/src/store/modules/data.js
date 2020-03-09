@@ -72,12 +72,12 @@ const actions = {
   },
 
   // eslint-disable-next-line no-unused-vars
-  async put({ rootState }, params) {
+  async put({ commit }, params) {
     return await api.data.putById(params)
   },
 
   // eslint-disable-next-line no-unused-vars
-  async putFile({ rootState }, { id, fileInfo }) {
+  async putFile({ commit }, { id, fileInfo }) {
     for (let i = 0; i < fileInfo.length; i++) {
       fileInfo[i].FileName = fileInfo[i].name
       await api.data.putFilesById({
@@ -93,7 +93,7 @@ const actions = {
   },
 
   // eslint-disable-next-line no-unused-vars
-  async deleteFile({ rootState }, { id, fileId }) {
+  async deleteFile({ commit }, { id, fileId }) {
     await api.data.deleteFilesById({
       id: id,
       fileId: fileId,
@@ -121,6 +121,10 @@ const mutations = {
 
   setUploadedFiles(state, { uploadedFiles }) {
     state.uploadedFiles = uploadedFiles
+  },
+
+  clearUploadedFiles(state) {
+    state.uploadedFiles = []
   },
 
   setTenantTags(state, tenantTags) {

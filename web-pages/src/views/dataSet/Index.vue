@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>データセット管理2</h2>
+    <h2>データセット管理</h2>
     <el-row type="flex" justify="space-between" :gutter="20">
       <el-col class="pagination" :span="16">
         <kqi-pagination

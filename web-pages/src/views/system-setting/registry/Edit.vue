@@ -124,7 +124,7 @@ export default {
     } else {
       this.title = 'Dockerレジストリ編集'
       try {
-        await this.fetchDetail()
+        await this.fetchDetail(this.id)
         this.form.name = this.detail.name
         this.form.host = this.detail.host
         this.form.portNo = this.detail.portNo
@@ -154,23 +154,20 @@ export default {
         if (valid) {
           try {
             let params = {
-              id: this.id,
-              model: {
-                name: this.form.name,
-                host: this.form.host,
-                portNo: this.form.portNo,
-                serviceType: this.form.serviceType,
-                projectName: this.form.projectName,
-                apiUrl: this.form.apiUrl,
-                registryUrl: this.form.apiUrl.endsWith('/')
-                  ? this.form.apiUrl.slice(0, -1) + ':' + this.form.portNo
-                  : this.form.apiUrl + ':' + this.form.portNo,
-              },
+              name: this.form.name,
+              host: this.form.host,
+              portNo: this.form.portNo,
+              serviceType: this.form.serviceType,
+              projectName: this.form.projectName,
+              apiUrl: this.form.apiUrl,
+              registryUrl: this.form.apiUrl.endsWith('/')
+                ? this.form.apiUrl.slice(0, -1) + ':' + this.form.portNo
+                : this.form.apiUrl + ':' + this.form.portNo,
             }
             if (this.id === null) {
               await this.post(params)
             } else {
-              await this.put(params)
+              await this.put({ id: this.id, params: params })
             }
             this.emitDone()
             this.error = null
@@ -182,7 +179,7 @@ export default {
     },
     async deleteRegistry() {
       try {
-        await this.delete()
+        await this.delete(this.id)
         this.emitDone()
       } catch (e) {
         this.error = e

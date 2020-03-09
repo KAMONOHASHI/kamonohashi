@@ -150,7 +150,7 @@ export default {
     } else {
       this.title = 'テナント編集'
       try {
-        await this['tenant/fetchDetail']()
+        await this['tenant/fetchDetail'](this.id)
         this.form.tenantName = this.detail.name
         this.form.displayName = this.detail.displayName
         this.form.storageId = this.detail.storageId
@@ -187,23 +187,20 @@ export default {
         if (valid) {
           try {
             let params = {
-              id: this.id,
-              model: {
-                tenantName: this.form.tenantName,
-                displayName: this.form.displayName,
-                storageId: this.form.storageId,
-                gitIds: this.form.gitEndpoint.selectedIds,
-                defaultGitId: this.form.gitEndpoint.defaultId,
-                registryIds: this.form.registry.selectedIds,
-                defaultRegistryId: this.form.registry.defaultId,
-                availableInfiniteTimeNotebook: this.form
-                  .availableInfiniteTimeNotebook,
-              },
+              tenantName: this.form.tenantName,
+              displayName: this.form.displayName,
+              storageId: this.form.storageId,
+              gitIds: this.form.gitEndpoint.selectedIds,
+              defaultGitId: this.form.gitEndpoint.defaultId,
+              registryIds: this.form.registry.selectedIds,
+              defaultRegistryId: this.form.registry.defaultId,
+              availableInfiniteTimeNotebook: this.form
+                .availableInfiniteTimeNotebook,
             }
             if (this.id === null) {
               await this['tenant/post'](params)
             } else {
-              await this['tenant/put'](params)
+              await this['tenant/put']({ id: this.id, params: params })
             }
             this.error = null
             this.emitDone()
@@ -215,15 +212,7 @@ export default {
     },
     async deleteTenant() {
       try {
-        let params = {
-          id: this.id,
-          model: {
-            data: {
-              ignoreMinioBucketDeletion: true,
-            },
-          },
-        }
-        await this['tenant/delete'](params)
+        await this['tenant/delete'](this.id)
         this.error = null
         this.emitDone()
       } catch (e) {

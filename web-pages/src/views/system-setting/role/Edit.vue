@@ -107,7 +107,7 @@ export default {
     } else {
       this.title = 'ロール編集'
       try {
-        await this.fetchDetail()
+        await this.fetchDetail(this.id)
         this.form.name = this.detail.name
         this.form.displayName = this.detail.displayName
         this.form.isSystemRole = this.detail.isSystemRole
@@ -131,18 +131,15 @@ export default {
         if (valid) {
           try {
             let params = {
-              id: this.id,
-              model: {
-                name: this.form.name,
-                displayName: this.form.displayName,
-                isSystemRole: this.form.isSystemRole,
-                sortOrder: this.form.sortOrder,
-              },
+              name: this.form.name,
+              displayName: this.form.displayName,
+              isSystemRole: this.form.isSystemRole,
+              sortOrder: this.form.sortOrder,
             }
             if (this.id === null) {
               await this.post(params)
             } else {
-              await this.put(params)
+              await this.put({ id: this.id, params: params })
             }
             this.error = null
             this.emitDone()
@@ -154,7 +151,7 @@ export default {
     },
     async deleteRole() {
       try {
-        await this.delete()
+        await this.delete(this.id)
         this.error = null
         this.emitDone()
       } catch (e) {

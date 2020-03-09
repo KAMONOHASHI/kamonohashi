@@ -6,7 +6,6 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import router from './router'
 import store from './store'
-import { sync } from 'vuex-router-sync'
 import componentExt from './util/component-ext'
 import VueI18n from 'vue-i18n'
 import lineClamp from 'vue-line-clamp'
@@ -26,9 +25,6 @@ Vue.mixin(componentExt)
 
 Vue.component('icon', Icon)
 
-sync(store, router)
-
-/* eslint-disable no-new */
 new Vue({
   store,
   el: '#app',
