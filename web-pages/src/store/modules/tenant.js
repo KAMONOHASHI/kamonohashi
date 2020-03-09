@@ -24,10 +24,8 @@ const actions = {
     commit('setTenants', { tenants })
   },
 
-  async fetchDetail({ commit, rootState }) {
-    let detail = (
-      await api.tenant.admin.getById({ id: rootState.route.params.id })
-    ).data
+  async fetchDetail({ commit }, id) {
+    let detail = (await api.tenant.admin.getById({ id: id })).data
     commit('setDetail', { detail })
   },
 
@@ -37,23 +35,23 @@ const actions = {
   },
 
   // eslint-disable-next-line no-unused-vars
-  async post({ rootState }, params) {
-    return await api.tenant.admin.post(params)
-  },
-
-  async put({ rootState }, params) {
-    params['id'] = rootState.route.params.id
-    return await api.tenant.admin.put(params)
+  async post({ commit }, params) {
+    return await api.tenant.admin.post({ model: params })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async putCurrentTenant({ rootState }, params) {
+  async put({ commit }, { id, params }) {
+    return await api.tenant.admin.put({ id: id, model: params })
+  },
+
+  // eslint-disable-next-line no-unused-vars
+  async putCurrentTenant({ commit }, params) {
     return await api.tenant.put(params)
   },
 
   // eslint-disable-next-line no-unused-vars
-  async delete({ rootState }, params) {
-    return await api.tenant.admin.delete(params)
+  async delete({ commit }, id) {
+    return await api.tenant.admin.delete({ id: id })
   },
 }
 
