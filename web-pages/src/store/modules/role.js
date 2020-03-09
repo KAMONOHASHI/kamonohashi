@@ -29,25 +29,24 @@ const actions = {
     commit('setRoles', { roles })
   },
 
-  async fetchDetail({ commit, rootState }) {
-    let detail = (
-      await api.role.admin.getById({ id: rootState.route.params.id })
-    ).data
+  async fetchDetail({ commit }, id) {
+    let detail = (await api.role.admin.getById({ id: id })).data
     commit('setDetail', { detail })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async post({ rootState }, params) {
-    return await api.role.admin.post(params)
+  async post({ commit }, params) {
+    return await api.role.admin.post({ model: params })
   },
 
-  async put({ rootState }, params) {
-    params['id'] = rootState.route.params.id
-    return await api.role.admin.put(params)
+  // eslint-disable-next-line no-unused-vars
+  async put({ commit }, { id, params }) {
+    return await api.role.admin.put({ id: id, model: params })
   },
 
-  async delete({ rootState }) {
-    return await api.role.admin.delete({ id: rootState.route.params.id })
+  // eslint-disable-next-line no-unused-vars
+  async delete({ commit }, id) {
+    return await api.role.admin.delete({ id: id })
   },
 
   async fetchTenantRoles({ commit }) {
