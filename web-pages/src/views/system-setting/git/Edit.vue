@@ -95,7 +95,7 @@ export default {
     } else {
       this.title = 'Git編集'
       try {
-        await this.fetchDetail()
+        await this.fetchDetail(this.id)
         this.form.name = this.detail.name
         this.form.serviceType = this.detail.serviceType
         this.form.repositoryUrl = this.detail.repositoryUrl
@@ -124,17 +124,15 @@ export default {
         if (valid) {
           try {
             let params = {
-              model: {
-                name: this.form.name,
-                repositoryUrl: this.form.repositoryUrl,
-                serviceType: this.form.serviceType,
-                apiUrl: this.form.apiUrl,
-              },
+              name: this.form.name,
+              repositoryUrl: this.form.repositoryUrl,
+              serviceType: this.form.serviceType,
+              apiUrl: this.form.apiUrl,
             }
             if (this.id === null) {
               await this.post(params)
             } else {
-              await this.put(params)
+              await this.put({ id: this.id, params: params })
             }
             this.error = null
             this.emitDone()
@@ -146,7 +144,7 @@ export default {
     },
     async deleteGit() {
       try {
-        await this.delete()
+        await this.delete(this.id)
         this.error = null
         this.emitDone()
       } catch (e) {
@@ -155,7 +153,7 @@ export default {
     },
     handleChange() {
       if (!this.editApiUrl) {
-        this.apiUrl = this.repositoryUrl
+        this.form.apiUrl = this.form.repositoryUrl
       }
     },
     emitCancel() {
