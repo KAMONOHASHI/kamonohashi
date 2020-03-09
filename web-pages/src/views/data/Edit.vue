@@ -73,7 +73,7 @@ import KqiDisplayError from '@/components/KqiDisplayError'
 import KqiFileManager from '@/components/KqiFileManager.vue'
 import TagEditor from './TagEditor.vue'
 import { createNamespacedHelpers } from 'vuex'
-const { mapGetters, mapActions } = createNamespacedHelpers('data')
+const { mapGetters, mapMutations, mapActions } = createNamespacedHelpers('data')
 
 export default {
   components: {
@@ -138,6 +138,7 @@ export default {
   async created() {
     if (this.id === null) {
       this.title = 'データ登録'
+      this.clearUploadedFiles()
     } else {
       this.title = 'データ編集'
       this.isEditDialog = true
@@ -146,6 +147,7 @@ export default {
     await this.fetchTenantTags()
   },
   methods: {
+    ...mapMutations(['clearUploadedFiles']),
     ...mapActions([
       'fetchDetail',
       'fetchTenantTags',
@@ -240,7 +242,7 @@ export default {
 
     async deleteData() {
       try {
-        await this.delete()
+        await this.delete(this.id)
         this.error = null
         this.emitDone()
       } catch (e) {

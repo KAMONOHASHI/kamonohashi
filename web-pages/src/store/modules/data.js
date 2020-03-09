@@ -115,12 +115,12 @@ const mutations = {
     state.detail = detail
   },
 
-  clearDetail(state) {
-    state.detail = {}
-  },
-
   setUploadedFiles(state, { uploadedFiles }) {
     state.uploadedFiles = uploadedFiles
+  },
+
+  clearUploadedFiles(state) {
+    state.uploadedFiles = []
   },
 
   setTenantTags(state, tenantTags) {
