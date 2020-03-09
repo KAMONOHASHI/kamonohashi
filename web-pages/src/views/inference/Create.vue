@@ -295,6 +295,7 @@ export default {
       },
       rules: {
         name: [formRule],
+        dataSetId: [formRule],
         entryPoint: [formRule],
         containerImage: {
           required: true,
@@ -438,43 +439,50 @@ export default {
       'gitSelector/fetchCommits',
     ]),
     async runInference() {
-      try {
-        let options = {}
-        // apiのフォーマットに合わせる(配列 => オブジェクト)
-        this.form.variables.forEach(kvp => {
-          options[kvp.key] = kvp.value
-        })
-        let params = {
-          Name: this.form.name,
-          DataSetId: this.form.dataSetId,
-          ParentId: this.form.selectedParent.id,
-          ContainerImage: {
-            registryId: this.form.containerImage.registry.id,
-            image: this.form.containerImage.image,
-            tag: this.form.containerImage.tag,
-          },
-          GitModel: {
-            gitId: this.git.id,
-            repository: this.repository.name,
-            owner: this.repository.owner,
-            branch: this.branch.branchName,
-            commitId: this.commit ? this.commit : 'HEAD',
-          },
-          EntryPoint: this.form.entryPoint,
-          Cpu: this.form.resource.cpu,
-          Memory: this.form.resource.memory,
-          Gpu: this.form.resource.gpu,
-          Options: options,
-          Zip: this.form.zip,
-          Partition: this.form.partition,
-          Memo: this.form.memo,
+      let form = this.$refs.runForm
+      await form.validate(async valid => {
+        if (valid) {
+          try {
+            let options = {}
+            // apiのフォーマットに合わせる(配列 => オブジェクト)
+            this.form.variables.forEach(kvp => {
+              options[kvp.key] = kvp.value
+            })
+            let params = {
+              Name: this.form.name,
+              DataSetId: this.form.dataSetId,
+              ParentId: this.form.selectedParent.id,
+              ContainerImage: {
+                registryId: this.form.containerImage.registry.id,
+                image: this.form.containerImage.image,
+                tag: this.form.containerImage.tag,
+              },
+              GitModel: {
+                gitId: this.form.gitModel.git.id,
+                repository: this.form.gitModel.repository.name,
+                owner: this.form.gitModel.repository.owner,
+                branch: this.form.gitModel.branch.branchName,
+                commitId: this.form.gitModel.commit
+                  ? this.form.gitModel.commit.commitId
+                  : 'HEAD',
+              },
+              EntryPoint: this.form.entryPoint,
+              Cpu: this.form.resource.cpu,
+              Memory: this.form.resource.memory,
+              Gpu: this.form.resource.gpu,
+              Options: options,
+              Zip: this.form.zip,
+              Partition: this.form.partition,
+              Memo: this.form.memo,
+            }
+            await this['inference/post'](params)
+            this.emitDone()
+            this.error = null
+          } catch (e) {
+            this.error = e
+          }
         }
-        await this['inference/post'](params)
-        this.emitDone()
-        this.error = null
-      } catch (e) {
-        this.error = e
-      }
+      })
     },
 
     emitCancel() {
