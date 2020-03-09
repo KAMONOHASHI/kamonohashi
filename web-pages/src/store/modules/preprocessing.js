@@ -94,32 +94,32 @@ const actions = {
   },
 
   // eslint-disable-next-line no-unused-vars
-  async runById({ rootState }, { id, params }) {
+  async runById({ commit }, { id, params }) {
     return await api.preprocessings.runById({ id: id, model: params })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async post({ rootState }, params) {
+  async post({ commit }, params) {
     return await api.preprocessings.post({ model: params })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async put({ rootState }, { id, params }) {
+  async put({ commit }, { id, params }) {
     return await api.preprocessings.put({ id: id, model: params })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async patch({ rootState }, { id, params }) {
+  async patch({ commit }, { id, params }) {
     await api.preprocessings.patch({ id: id, model: params })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async delete({ state }, id) {
+  async delete({ commit }, id) {
     await api.preprocessings.delete({ id: id })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async deleteHistory({ state }, { id, dataId }) {
+  async deleteHistory({ commit }, { id, dataId }) {
     await api.preprocessings.deleteHistroyById({
       id: id,
       dataId: dataId,

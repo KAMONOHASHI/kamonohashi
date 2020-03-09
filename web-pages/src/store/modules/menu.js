@@ -41,7 +41,7 @@ const actions = {
   },
 
   // eslint-disable-next-line no-unused-vars
-  async put({ rootState }, params) {
+  async put({ commit }, params) {
     return await api.menu.admin.put(params)
   },
 }

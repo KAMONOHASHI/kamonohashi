@@ -80,27 +80,27 @@ const actions = {
   },
 
   // eslint-disable-next-line no-unused-vars
-  async post({ rootState }, params) {
+  async post({ commit }, params) {
     return await api.inference.post({ model: params })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async put({ rootState }, params) {
+  async put({ commit }, params) {
     return await api.inference.putById(params)
   },
 
   // eslint-disable-next-line no-unused-vars
-  async postHalt({ state }, id) {
+  async postHalt({ commit }, id) {
     return await api.inference.postHaltById({ id: id })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async postUserCancel({ state }, id) {
+  async postUserCancel({ commit }, id) {
     return await api.inference.postUserCancelById({ id: id })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async postFiles({ state }, { id, fileInfo }) {
+  async postFiles({ commit }, { id, fileInfo }) {
     for (let i = 0; i < fileInfo.length; i++) {
       fileInfo[i].FileName = fileInfo[i].name
       await api.inference.postFilesById({
@@ -111,12 +111,12 @@ const actions = {
   },
 
   // eslint-disable-next-line no-unused-vars
-  async delete({ state }, id) {
+  async delete({ commit }, id) {
     await api.inference.deleteById({ id: id })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async deleteFile({ state }, { id, fileId }) {
+  async deleteFile({ commit }, { id, fileId }) {
     await api.inference.deleteByIdFilesByFileId({
       id: id,
       fileId: fileId,

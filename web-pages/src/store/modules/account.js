@@ -49,12 +49,12 @@ const actions = {
   },
 
   // eslint-disable-next-line no-unused-vars
-  async put({ rootState }, params) {
+  async put({ commit }, params) {
     return await api.account.put(params)
   },
 
   // eslint-disable-next-line no-unused-vars
-  async putPassword({ rootState }, params) {
+  async putPassword({ commit }, params) {
     return await api.account.putPassword(params)
   },
 
@@ -72,12 +72,12 @@ const actions = {
   },
 
   // eslint-disable-next-line no-unused-vars
-  async putGitToken({ rootState }, params) {
+  async putGitToken({ commit }, params) {
     return await api.account.putGits(params)
   },
 
   // eslint-disable-next-line no-unused-vars
-  async putRegistryToken({ rootState }, params) {
+  async putRegistryToken({ commit }, params) {
     return await api.account.putRegistries(params)
   },
 }

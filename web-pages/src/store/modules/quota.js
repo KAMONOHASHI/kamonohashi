@@ -21,7 +21,7 @@ const actions = {
   },
 
   // eslint-disable-next-line no-unused-vars
-  async post({ rootState }, params) {
+  async post({ commit }, params) {
     return await api.quotas.post(params)
   },
 }
