@@ -442,7 +442,7 @@ export default {
       this.$router.push('/training/' + this.detail.parent.id)
     },
     redirectEditDataSet() {
-      this.$router.push('/dataset/' + this.detail.dataSet.id)
+      this.$router.push('/dataset/edit/' + this.detail.dataSet.id)
     },
     emitFiles() {
       this.$emit('files', this.detail.id)

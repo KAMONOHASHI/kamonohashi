@@ -1,5 +1,5 @@
 <template>
-  <el-form-item label="データセット" prop="dataSet">
+  <el-form-item label="データセット" prop="dataSetId">
     <el-popover
       ref="detail-popover"
       :disabled="!value"

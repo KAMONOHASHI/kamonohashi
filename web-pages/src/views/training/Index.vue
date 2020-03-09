@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>学習管理2</h2>
+    <h2>学習管理</h2>
     <el-row type="flex" justify="space-between" :gutter="20">
       <kqi-pagination
         v-model="pageStatus"
