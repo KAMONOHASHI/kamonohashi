@@ -71,7 +71,7 @@ export default {
 
   async created() {
     try {
-      await this['user/fetchTenantUserDetail']()
+      await this['user/fetchTenantUserDetail'](this.id)
       await this['role/fetchRoles']()
 
       // serviceTypeのIDを変換
@@ -131,10 +131,7 @@ export default {
 
     async deleteUser() {
       try {
-        let params = {
-          id: this.id,
-        }
-        await this['user/tenantUserDelete'](params)
+        await this['user/tenantUserDelete'](this.id)
         this.emitDone()
         this.error = null
       } catch (e) {
