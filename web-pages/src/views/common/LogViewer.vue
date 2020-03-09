@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import api from '@/api/v1/api'
+import { mapGetters, mapActions } from 'vuex'
 
 const listItemHeight = 17
 const displayLogCount = 50
@@ -49,13 +49,16 @@ export default {
       type: undefined,
       title: 'Log',
 
-      logUrl: '',
       logList: [],
       scroll: 0,
       scrollMax: 0,
     }
   },
   computed: {
+    ...mapGetters({
+      historyDetail: ['preprocessing/historyDetail'],
+      logUrl: ['storage/logUrl'],
+    }),
     displayLogList: function() {
       let startIndex = parseInt(this.scroll / listItemHeight, 10)
       return this.logList.slice(
@@ -93,13 +96,11 @@ export default {
       this.type === 'preprocessingHistory'
     ) {
       resourceType = 'PreprocContainerAttachedFiles'
-      let history = (
-        await api.preprocessings.getHistroyById({
-          id: this.id,
-          dataId: this.dataId,
-        })
-      ).data
-      let key = history.key
+      await this['preprocessing/fetchHistoryDetail']({
+        id: this.id,
+        dataId: this.dataId,
+      })
+      let key = this.historyDetail.key
       let historyId = key.split('-')[1] // "preproc-{id}" => ["preproc", "{id}"]
       fileName = `preproc_stdout_stderr_${this.id}_${this.dataId}.log`
       storedPath = `${historyId}/${fileName}`
@@ -117,11 +118,11 @@ export default {
       fileName: fileName,
       secure: false,
     }
-    this.logUrl = (await api.storage.getDownloadUrl(params)).data.url
+    await this['storage/fetchLogUrl'](params)
 
     // ログをダウンロードし、logListに格納
     this.$store.dispatch('incrementLoading')
-    fetch(this.logUrl, {
+    fetch(this.logUrl.url, {
       method: 'GET',
     })
       .then(response => response.text())
@@ -135,6 +136,7 @@ export default {
       })
   },
   methods: {
+    ...mapActions(['preprocessing/fetchHistoryDetail', 'storage/fetchLogUrl']),
     emitCancel() {
       this.$emit('cancel')
     },
