@@ -47,9 +47,7 @@
                 />
               </el-col>
               <el-col :span="12">
-                <kqi-resource-selector
-                  v-model="form.resource"
-                ></kqi-resource-selector>
+                <kqi-resource-selector v-model="form.resource" />
                 <div v-if="availableInfiniteTime">
                   <el-form-item label="起動期間設定">
                     <el-switch
@@ -68,8 +66,7 @@
                       :min="1"
                       :max="100"
                       show-input
-                    >
-                    </el-slider>
+                    />
                   </el-form-item>
                 </div>
                 <kqi-environment-variables v-model="form.variables" />
@@ -82,8 +79,7 @@
                     v-model="form.memo"
                     type="textarea"
                     :autosize="{ minRows: 2, maxRows: 4 }"
-                  >
-                  </el-input>
+                  />
                 </el-form-item>
               </el-col>
             </el-form>
@@ -97,9 +93,7 @@
         <div class="element">
           <el-form v-if="active === 0">
             <el-col :span="18" :offset="3">
-              <kqi-resource-selector
-                v-model="form.resource"
-              ></kqi-resource-selector>
+              <kqi-resource-selector v-model="form.resource" />
             </el-col>
             <el-col :span="18" :offset="3">
               <div v-if="availableInfiniteTime">
@@ -120,8 +114,7 @@
                     :min="1"
                     :max="100"
                     show-input
-                  >
-                  </el-slider>
+                  />
                 </el-form-item>
               </div>
             </el-col>
@@ -143,10 +136,10 @@
     <div v-else>
       <el-row :gutter="20">
         <el-steps :active="active" align-center>
-          <el-step title="Step 1" description="ノートブック名"></el-step>
-          <el-step title="Step 2" description="リソース & 起動期間"></el-step>
-          <el-step title="Step 3" description="任意項目"></el-step>
-          <el-step title="Step 4" description="任意項目"></el-step>
+          <el-step title="Step 1" description="ノートブック名" />
+          <el-step title="Step 2" description="リソース & 起動期間" />
+          <el-step title="Step 3" description="任意項目" />
+          <el-step title="Step 4" description="任意項目" />
         </el-steps>
         <br />
         <div class="element">
@@ -166,9 +159,7 @@
           <!-- step 2 -->
           <el-form v-if="active === 1">
             <el-col :span="18" :offset="3">
-              <kqi-resource-selector
-                v-model="form.resource"
-              ></kqi-resource-selector>
+              <kqi-resource-selector v-model="form.resource" />
             </el-col>
             <el-col :span="18" :offset="3">
               <div v-if="availableInfiniteTime">
@@ -189,8 +180,7 @@
                     :min="1"
                     :max="100"
                     show-input
-                  >
-                  </el-slider>
+                  />
                 </el-form-item>
               </div>
             </el-col>
@@ -247,8 +237,7 @@
                   v-model="form.memo"
                   type="textarea"
                   :autosize="{ minRows: 2, maxRows: 4 }"
-                >
-                </el-input>
+                />
               </el-form-item>
             </el-col>
           </el-form>
@@ -269,7 +258,7 @@
           style="margin-top: 12px;"
           @click="previous"
         >
-          <i class="el-icon-arrow-left"></i>
+          <i class="el-icon-arrow-left" />
           Previous step
         </span>
         <span
@@ -279,11 +268,11 @@
           @click="next"
         >
           Next step
-          <i class="el-icon-arrow-right"></i>
+          <i class="el-icon-arrow-right" />
         </span>
         <span class="right-step-group">
-          <el-button v-if="active === 3" type="primary" @click="runNotebook"
-            >起動
+          <el-button v-if="active === 3" type="primary" @click="runNotebook">
+            起動
           </el-button>
         </span>
       </div>

@@ -7,7 +7,7 @@
         v-model="pageStatus"
         :total="total"
         @change="retrieveData"
-      ></kqi-pagination>
+      />
 
       <el-col class="right-top-button" :span="8">
         <el-button @click="openPreprocessingDialog">前処理実行</el-button>
@@ -23,7 +23,7 @@
     </el-row>
     <el-row :gutter="20">
       <el-col class="search">
-        <pl-smart-search-input
+        <kqi-smart-search-input
           v-model="searchCondition"
           :configs="searchConfigs"
           @search="search"
@@ -50,7 +50,8 @@
                 type="primary"
                 plain
                 @click="openHistoryIndex(props.row)"
-                >履歴
+              >
+                履歴
               </el-button>
             </template>
           </el-table-column>
@@ -60,7 +61,7 @@
         v-model="pageStatus"
         :total="total"
         @change="retrieveData"
-      ></kqi-pagination>
+      />
     </div>
     <router-view
       @done="done"
@@ -68,21 +69,21 @@
       @copy="handleCopy"
       @return="back"
       @shell="shell"
-    ></router-view>
+    />
   </div>
 </template>
 
 <script>
 import KqiPagination from '@/components/KqiPagination'
-import SmartSearchInput from '@/components/common/SmartSearchInput/Index'
+import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('preprocessing')
 
 export default {
   title: '前処理管理',
   components: {
-    'kqi-pagination': KqiPagination,
-    'pl-smart-search-input': SmartSearchInput,
+    KqiSmartSearchInput,
+    KqiPagination,
   },
   data() {
     return {

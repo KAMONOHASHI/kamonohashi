@@ -21,7 +21,7 @@
       <kqi-display-error :error="error" />
       <kqi-display-text-form v-if="isEditDialog" label="ID" :value="id" />
       <el-form-item label="前処理名" prop="name">
-        <el-input v-model="form.name"> </el-input>
+        <el-input v-model="form.name" />
       </el-form-item>
       <el-form-item label="実行コマンド" prop="entryPoint">
         <el-input
@@ -32,7 +32,7 @@
         />
       </el-form-item>
       <el-form-item label="メモ" prop="memo">
-        <el-input v-model="form.memo" type="textarea"> </el-input>
+        <el-input v-model="form.memo" type="textarea" />
       </el-form-item>
       <el-row :gutter="20">
         <el-col :span="12">
@@ -59,9 +59,7 @@
           />
         </el-col>
         <el-col :span="12">
-          <kqi-resource-selector
-            v-model="form.resource"
-          ></kqi-resource-selector>
+          <kqi-resource-selector v-model="form.resource" />
         </el-col>
       </el-row>
     </el-form>
@@ -437,6 +435,7 @@ export default {
   text-align: right;
   padding-top: 10px;
 }
+
 .right-button-group {
   text-align: right;
 }

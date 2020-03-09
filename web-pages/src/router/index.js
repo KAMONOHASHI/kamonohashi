@@ -1,10 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-import AccountLogin from '@/components/account/Login'
-import Error from '@/components/error/Error'
-import VersionIndex from '@/components/version/Index'
-
+import error from '@/router/error'
+import login from '@/router/login'
 import account from '@/router/account'
 import dashboard from '@/router/dashboard'
 import data from '@/router/data'
@@ -13,7 +11,7 @@ import preprocessing from '@/router/preprocessing'
 import notebook from '@/router/notebook'
 import training from '@/router/training'
 import inference from '@/router/inference'
-import tenantManage from '@/router/tenant-manage'
+import tenantsetting from '@/router/tenant-setting'
 import git from '@/router/git'
 import menu from '@/router/menu'
 import node from '@/router/node'
@@ -24,11 +22,14 @@ import storage from '@/router/storage'
 import tenant from '@/router/tenant'
 import user from '@/router/user'
 import clusterResource from '@/router/cluster-resource'
+import version from '@/router/version'
 
 Vue.use(Router)
 
 let router = new Router({
   routes: [
+    ...error,
+    ...login,
     ...account,
     ...dashboard,
     ...data,
@@ -37,7 +38,7 @@ let router = new Router({
     ...notebook,
     ...training,
     ...inference,
-    ...tenantManage,
+    ...tenantsetting,
     ...git,
     ...menu,
     ...node,
@@ -48,21 +49,9 @@ let router = new Router({
     ...tenant,
     ...user,
     ...clusterResource,
-    {
-      path: '/login',
-      component: AccountLogin,
-    },
-    {
-      path: '/error',
-      component: Error,
-    },
-    {
-      path: '/version',
-      component: VersionIndex,
-    },
+    ...version,
   ],
 })
-/* eslint-disable */
 router.beforeEach((to, from, next) => {
   if (!to.matched.length) {
     next('/error?url=' + to.path)
@@ -72,10 +61,9 @@ router.beforeEach((to, from, next) => {
 })
 
 // clear notification
-router.afterEach((to, from) => {
+router.afterEach(() => {
   let vue = new Vue()
   vue.$notify.closeAll()
 })
-/* eslint-enable */
 
 export { router as default }

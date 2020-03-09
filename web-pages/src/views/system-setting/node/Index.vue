@@ -1,12 +1,12 @@
 <template>
   <div>
-    <h2>ノード管理2</h2>
+    <h2>ノード管理</h2>
     <el-row type="flex" justify="space-between" :gutter="20">
       <kqi-pagination
         v-model="pageStatus"
         :total="total"
         @change="retrieveData"
-      ></kqi-pagination>
+      />
       <el-col class="right-top-button" :span="8">
         <el-button
           icon="el-icon-edit-outline"
@@ -59,9 +59,9 @@
         v-model="pageStatus"
         :total="total"
         @change="retrieveData"
-      ></kqi-pagination>
+      />
     </el-row>
-    <router-view @cancel="closeDialog()" @done="done()"></router-view>
+    <router-view @cancel="closeDialog()" @done="done()" />
   </div>
 </template>
 
@@ -123,4 +123,8 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.right-top-button {
+  text-align: right;
+}
+</style>

@@ -129,12 +129,10 @@ export default {
         this.logList = text.split(/[\n\r]+/)
         this.scrollMax = this.logList.length * listItemHeight
       })
-      /* eslint-disable */
-      .then(_ => {
+      .then(() => {
         document.getElementById('logArea').scrollTop = this.scrollMax
         this.$store.dispatch('decrementLoading')
       })
-    /* eslint-enable */
   },
   methods: {
     emitCancel() {

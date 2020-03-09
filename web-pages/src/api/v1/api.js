@@ -18,7 +18,6 @@ gen.setAxios(axios)
 
 // -----------------------------------------------------------------------
 // HTTP Method の拡張
-/* eslint-disable */
 let simpleStringBody = function(func, paramName) {
   return async function(params) {
     if (paramName in params) {

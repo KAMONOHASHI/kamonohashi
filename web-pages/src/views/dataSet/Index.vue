@@ -7,7 +7,7 @@
           v-model="pageStatus"
           :total="total"
           @change="retrieveData"
-        ></kqi-pagination>
+        />
       </el-col>
       <el-col class="right-top-button" :span="8">
         <el-button
@@ -22,7 +22,7 @@
     </el-row>
     <el-row :gutter="20">
       <el-col class="search">
-        <pl-smart-search-input
+        <kqi-smart-search-input
           v-model="searchCondition"
           :configs="searchConfigs"
           @search="search"
@@ -47,27 +47,23 @@
         v-model="pageStatus"
         :total="total"
         @change="retrieveData"
-      ></kqi-pagination>
+      />
     </el-row>
-    <router-view
-      @cancel="closeDialog"
-      @done="done"
-      @copy="handleCopy"
-    ></router-view>
+    <router-view @cancel="closeDialog" @done="done" @copy="handleCopy" />
   </div>
 </template>
 
 <script>
 import KqiPagination from '@/components/KqiPagination'
-import SmartSearchInput from '@/components/common/SmartSearchInput/Index.vue'
+import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index.vue'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('dataSet')
 
 export default {
   title: 'データセット管理',
   components: {
-    'kqi-pagination': KqiPagination,
-    'pl-smart-search-input': SmartSearchInput,
+    KqiSmartSearchInput,
+    KqiPagination,
   },
   data() {
     return {

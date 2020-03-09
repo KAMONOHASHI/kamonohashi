@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>レジストリ管理2</h2>
+    <h2>レジストリ管理</h2>
     <el-row>
       <el-col class="create-new">
         <el-button
@@ -32,13 +32,15 @@
           prop="projectName"
           label="GitLabプロジェクト名"
           width="auto"
-        >
-        </el-table-column>
-        <el-table-column prop="serviceType" label="レジストリ種別" width="auto">
-        </el-table-column>
+        />
+        <el-table-column
+          prop="serviceType"
+          label="レジストリ種別"
+          width="auto"
+        />
       </el-table>
     </el-row>
-    <router-view @cancel="closeDialog()" @done="done()"></router-view>
+    <router-view @cancel="closeDialog()" @done="done()" />
   </div>
 </template>
 

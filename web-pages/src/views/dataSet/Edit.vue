@@ -72,9 +72,9 @@ const { mapGetters, mapMutations, mapActions } = createNamespacedHelpers(
 
 export default {
   components: {
-    'kqi-dialog': KqiDialog,
-    'kqi-display-text-form': KqiDisplayTextForm,
-    'kqi-display-error': KqiDisplayError,
+    KqiDialog,
+    KqiDisplayTextForm,
+    KqiDisplayError,
     'pl-dataset-transfer': DataSetTransfer,
   },
   props: {

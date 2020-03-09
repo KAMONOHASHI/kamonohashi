@@ -1,8 +1,8 @@
 <template>
   <div>
-    <h2>ロール管理2</h2>
+    <h2>ロール管理</h2>
     <el-row>
-      <el-col :span="4" :offset="20" class="create-new">
+      <el-col class="create-new">
         <el-button
           icon="el-icon-edit-outline"
           type="primary"
@@ -34,7 +34,7 @@
       </el-table>
     </el-row>
 
-    <router-view @cancel="closeDialog()" @done="done()"></router-view>
+    <router-view @cancel="closeDialog()" @done="done()" />
   </div>
 </template>
 
@@ -70,4 +70,9 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.create-new {
+  text-align: right;
+  padding-top: 10px;
+}
+</style>

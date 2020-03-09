@@ -25,9 +25,9 @@
               @change="handleDefaultChange(prop.row)"
             >
               {{ prop.row.displayName }}
-              <span v-if="prop.row.default" style="font-size:0.7rem;"
-                >(デフォルト)</span
-              >
+              <span v-if="prop.row.default" style="font-size:0.7rem;">
+                (デフォルト)
+              </span>
             </el-radio>
           </template>
         </el-table-column>

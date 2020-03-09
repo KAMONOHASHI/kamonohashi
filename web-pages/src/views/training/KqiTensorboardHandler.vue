@@ -15,12 +15,12 @@
     </span>
     <span v-else-if="statusName === 'Running'">
       <div v-if="tensorboard.url" class="tensorBoardlink">
-        <el-button type="primary" size="small" plain @click="openTensorBoard"
-          >開く</el-button
-        >
-        <el-button type="danger" size="small" plain @click="deleteTensorBoard"
-          >停止</el-button
-        >
+        <el-button type="primary" size="small" plain @click="openTensorBoard">
+          開く
+        </el-button>
+        <el-button type="danger" size="small" plain @click="deleteTensorBoard">
+          停止
+        </el-button>
       </div>
       <div v-else>
         利用可能リソース待機中...

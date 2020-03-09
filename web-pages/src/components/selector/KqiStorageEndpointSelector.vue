@@ -14,9 +14,9 @@
         :value="item.id"
       >
         <span style="float: left">{{ item.name }}</span>
-        <span style="float: right; color: #8492a6; font-size: 13px">{{
-          item.serverUrl
-        }}</span>
+        <span style="float: right; color: #8492a6; font-size: 13px">
+          {{ item.serverUrl }}
+        </span>
       </el-option>
     </el-select>
   </el-form-item>

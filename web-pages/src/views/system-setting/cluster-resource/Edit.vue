@@ -16,13 +16,12 @@
       @download="handleDonwloadLog"
       @cancel="handleCancel"
       @remove="handleRemove"
-    ></container-info>
+    />
   </el-dialog>
 </template>
 
 <script>
 import KqiDisplayError from '@/components/KqiDisplayError'
-
 import ContainerInfo from '@/views/common/ContainerInfo'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('resource')
@@ -30,7 +29,6 @@ const { mapGetters, mapActions } = createNamespacedHelpers('resource')
 export default {
   components: {
     KqiDisplayError,
-
     ContainerInfo,
   },
   props: {

@@ -15,7 +15,12 @@
 export default {
   name: 'DisplayError',
 
-  props: ['error'],
+  props: {
+    error: {
+      type: Object,
+      default: null,
+    },
+  },
 
   data() {
     return {

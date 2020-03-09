@@ -17,7 +17,7 @@
             :show-header="false"
             @row-click="handleEditOpen"
           >
-            <el-table-column width="auto"></el-table-column>
+            <el-table-column width="auto" />
             <el-table-column prop="tenantName" width="auto" />
             <el-table-column prop="createdBy" width="auto" />
             <el-table-column prop="name" width="auto" />
@@ -61,7 +61,7 @@
       />
       <el-table-column align="center" label="ステータス" :width="columnWidth" />
     </el-table>
-    <router-view @cancel="closeDialog" @done="done"></router-view>
+    <router-view @cancel="closeDialog" @done="done" />
   </div>
 </template>
 

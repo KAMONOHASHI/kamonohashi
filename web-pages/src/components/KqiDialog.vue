@@ -29,9 +29,9 @@
         </el-col>
         <el-col :span="12" class="right-button-group">
           <el-button @click="emitClose">キャンセル</el-button>
-          <el-button type="primary" :disabled="disabled" @click="emitSubmit"
-            >保存</el-button
-          >
+          <el-button type="primary" :disabled="disabled" @click="emitSubmit">
+            保存
+          </el-button>
         </el-col>
       </div>
     </el-row>

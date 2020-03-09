@@ -48,8 +48,8 @@
       />
       <el-form-item label="データファイル" prop="files">
         <div v-if="uploadedFiles.length >= 2">
-          <el-button type="primary" @click="viewAllFiles = !viewAllFiles"
-            >{{ viewAllFiles ? 'Hide Files' : 'View All Files' }}
+          <el-button type="primary" @click="viewAllFiles = !viewAllFiles">
+            {{ viewAllFiles ? 'Hide Files' : 'View All Files' }}
           </el-button>
         </div>
         <div v-if="uploadedFiles.length === 1 || viewAllFiles">
@@ -65,6 +65,7 @@
     </el-form>
   </kqi-dialog>
 </template>
+
 <script>
 import KqiDialog from '@/components/KqiDialog'
 import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'

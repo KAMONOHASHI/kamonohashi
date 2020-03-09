@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>テナント管理2</h2>
+    <h2>テナント管理</h2>
     <el-row :gutter="20">
       <el-col class="right-top-button">
         <el-button
@@ -31,7 +31,7 @@
       </el-table>
     </el-row>
 
-    <router-view @done="done()" @cancel="closeDialog()"></router-view>
+    <router-view @done="done()" @cancel="closeDialog()" />
   </div>
 </template>
 

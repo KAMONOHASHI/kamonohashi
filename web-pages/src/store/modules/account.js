@@ -2,13 +2,18 @@ import api from '@/api/v1/api'
 
 // initial state
 const state = {
+  loginData: {},
   token: {},
   account: {},
   menuList: {},
+  menuTree: {},
 }
 
 // getters
 const getters = {
+  loginData(state) {
+    return state.loginData
+  },
   token(state) {
     return state.token
   },
@@ -17,6 +22,9 @@ const getters = {
   },
   menuList(state) {
     return state.menuList
+  },
+  menuTree(state) {
+    return state.menuTree
   },
 }
 
@@ -34,6 +42,12 @@ const actions = {
     commit('setMenuList', { menuList })
   },
 
+  async fetchMenuTree({ commit }) {
+    let response = await api.account.getTreeMenus()
+    let menuTree = response.data
+    commit('setMenuTree', { menuTree })
+  },
+
   // eslint-disable-next-line no-unused-vars
   async put({ rootState }, params) {
     return await api.account.put(params)
@@ -44,11 +58,17 @@ const actions = {
     return await api.account.putPassword(params)
   },
 
-  // eslint-disable-next-line no-unused-vars
+  async postLogin({ commit }, params) {
+    let response = await api.account.postLogin(params)
+    let loginData = response.data
+    commit('setLoginData', { loginData })
+  },
+
   async postTokenTenants({ commit }, params) {
-    let login = (await api.account.postTokenTenants(params)).data
-    let token = login.token
+    let loginData = (await api.account.postTokenTenants(params)).data
+    let token = loginData.token
     commit('setToken', { token })
+    commit('setLoginData', { loginData })
   },
 
   // eslint-disable-next-line no-unused-vars
@@ -64,6 +84,9 @@ const actions = {
 
 // mutations
 const mutations = {
+  setLoginData(state, { loginData }) {
+    state.loginData = loginData
+  },
   setToken(state, { token }) {
     state.token = token
   },
@@ -72,6 +95,9 @@ const mutations = {
   },
   setMenuList(state, { menuList }) {
     state.menuList = menuList
+  },
+  setMenuTree(state, { menuTree }) {
+    state.menuTree = menuTree
   },
 }
 

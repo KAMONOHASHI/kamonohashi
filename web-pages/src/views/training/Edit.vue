@@ -26,12 +26,12 @@
                 v-if="form.favorite"
                 class="el-icon-star-on favorite"
                 @click="form.favorite = false"
-              ></div>
+              />
               <div
                 v-else
                 class="el-icon-star-off favorite"
                 @click="form.favorite = true"
-              ></div>
+              />
             </span>
           </kqi-display-text-form>
           <el-form-item label="学習名" prop="name">
@@ -52,8 +52,9 @@
                 v-popover:parent-popover
                 class="el-input"
                 @click="showParent"
-                >{{ detail.parent.name }}</el-button
               >
+                {{ detail.parent.name }}
+              </el-button>
             </el-form-item>
           </div>
 
@@ -72,7 +73,8 @@
                 v-popover:dataSetDetail
                 class="el-input"
                 @click="redirectEditDataSet"
-                >{{ detail.dataSet.name }}
+              >
+                {{ detail.dataSet.name }}
               </el-button>
             </el-form-item>
           </div>
@@ -110,8 +112,7 @@
               v-model="form.memo"
               type="textarea"
               :autosize="{ minRows: 2, maxRows: 4 }"
-            >
-            </el-input>
+            />
           </el-form-item>
 
           <el-form-item v-if="detail.options" label="環境変数">
@@ -240,15 +241,6 @@
           </el-form-item>
         </el-col>
       </el-row>
-
-      <!-- <el-row :gutter="20" class="footer">
-        <el-col :span="12">
-          <pl-delete-button
-            message="削除しますか（出力データ数が多い場合、処理に時間がかかります）"
-            @delete="deleteJob"
-          />
-        </el-col>
-      </el-row> -->
     </el-form>
   </kqi-dialog>
 </template>

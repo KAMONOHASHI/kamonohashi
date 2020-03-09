@@ -7,10 +7,10 @@
           @logout="handleLogout"
           @login="handleLogin"
           @menu="handleMenu"
-        ></pl-header>
+        />
       </el-header>
       <el-container class="main-container">
-        <pl-menu v-show="menu" class="sidenav"></pl-menu>
+        <kqi-menu v-show="menu" class="sidenav" />
         <el-main>
           <router-view
             class="content"
@@ -24,49 +24,44 @@
 </template>
 
 <script>
-import api from '@/api/v1/api'
-import Header from '@/components/Header.vue'
-import Menu from '@/components/Menu.vue'
+import Header from '@/components/KqiHeader.vue'
+import KqiMenu from '@/components/KqiMenu'
 import Util from '@/util/util'
+import { createNamespacedHelpers } from 'vuex'
+const { mapGetters, mapActions } = createNamespacedHelpers('account')
 
 export default {
-  name: 'App',
-
   components: {
     'pl-header': Header,
-    'pl-menu': Menu,
+    KqiMenu,
   },
-
   data() {
     return {
       login: false,
       menu: this.getMenu(),
     }
   },
-
+  computed: {
+    ...mapGetters(['account']),
+  },
   watch: {
     menu() {
       this.setMenu(this.menu)
     },
   },
-
   async mounted() {
-    await this.init()
+    let token = this.getToken()
+    if (token) {
+      await this.fetchAccount()
+      this.login = true
+      this.$store.commit('setLogin', {
+        name: this.account.userName,
+        tenant: this.account.selectedTenant,
+      })
+    }
   },
-
   methods: {
-    async init() {
-      let token = this.getToken()
-      if (token) {
-        let data = (await api.account.get()).data
-        this.login = true
-        this.$store.commit('setLogin', {
-          name: data.userName,
-          tenant: data.selectedTenant,
-        })
-      }
-    },
-
+    ...mapActions(['fetchAccount']),
     async handleLogin(name, tenant, token, url) {
       this.login = true
       this.menu = true
@@ -121,7 +116,6 @@ export default {
     left: 0px;
     background-color: #1abfd5;
     border-bottom: 1px solid #cccccc;
-    /*color: white;*/
 
     background: linear-gradient(
       to bottom,
@@ -132,9 +126,6 @@ export default {
     filter: alpha(opacity=90);
     -moz-opacity: 0.9;
     opacity: 0.9;
-  }
-
-  .el-menu {
   }
 
   .sidenav {
@@ -169,8 +160,6 @@ export default {
     width: 40% !important;
   }
 
-  .content {
-  }
   @media screen and (max-width: 1000px) {
     .content {
       margin-left: 65px;

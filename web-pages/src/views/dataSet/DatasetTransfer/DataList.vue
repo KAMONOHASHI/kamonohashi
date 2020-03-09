@@ -17,11 +17,9 @@
                   :key="entryName"
                 >
                   <span v-if="entryName !== viewInfo.entryName">
-                    <el-dropdown-item
-                      :command="entryName"
-                      :disabled="disabled"
-                      >{{ moveMessage }}</el-dropdown-item
-                    >
+                    <el-dropdown-item :command="entryName" :disabled="disabled">
+                      {{ moveMessage }}
+                    </el-dropdown-item>
                   </span>
                 </span>
               </el-dropdown-menu>
@@ -30,7 +28,7 @@
         </el-row>
         <el-row type="flex" justify="end">
           <el-col class="header-action">
-            <pl-smart-search-input
+            <kqi-smart-search-input
               v-model="searchCondition"
               :configs="searchConfigs"
               :mini="true"
@@ -58,9 +56,9 @@
               ></el-checkbox>
             </el-col>
             <el-col :span="idSpanSize">
-              <el-checkbox v-model="data.checked" @change="handleCheck()">{{
-                data.id
-              }}</el-checkbox>
+              <el-checkbox v-model="data.checked" @change="handleCheck()">
+                {{ data.id }}
+              </el-checkbox>
             </el-col>
             <el-col :span="nameSpanSize">
               <div class="syouryaku">
@@ -78,7 +76,6 @@
               >
                 {{ tag }}
               </el-tag>
-              &nbsp;
             </el-col>
 
             <el-col v-if="viewInfo.showAssign" :span="assignSpanSize">
@@ -156,14 +153,14 @@
 <script>
 import { Container, Draggable } from 'vue-smooth-dnd'
 import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
-import SmartSearchInput from '@/components/common/SmartSearchInput/Index.vue'
+import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index.vue'
 
 export default {
   components: {
     Container,
     Draggable,
-    'kqi-display-text-form': KqiDisplayTextForm,
-    'pl-smart-search-input': SmartSearchInput,
+    KqiSmartSearchInput,
+    KqiDisplayTextForm,
   },
   props: {
     // dataのpaging情報やentry自体の表示情報
