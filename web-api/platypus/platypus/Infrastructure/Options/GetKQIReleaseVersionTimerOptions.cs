@@ -4,10 +4,14 @@ namespace Nssol.Platypus.Infrastructure.Options
 {
     /// <summary>
     /// <see cref="GetKQIReleaseVersionTimer"/> の実行スケジュールを設定するオプション・クラスです。
-    /// <see cref="TimerScheduleOptionsBase"/> を継承しますが、新たに追加する独自の属性はありません。
+    /// <see cref="TimerScheduleOptionsBase"/> を継承し、新たに独自の属性を追加しています。
     /// </summary>
     public class GetKQIReleaseVersionTimerOptions : TimerScheduleOptionsBase
     {
-        // 個別で設定する属性は無い
+        /// <summary>
+        /// バージョン確認をしないかするか。
+        /// しない場合ture、する場合false。
+        /// </summary>
+        public bool NoCheckVersion { get; set; }
     }
 }

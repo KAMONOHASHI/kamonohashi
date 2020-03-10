@@ -12,6 +12,7 @@
         public VersionModel(string version)
         {
             Version = version;
+            Support = false;
         }
 
         /// <summary>
@@ -23,6 +24,13 @@
         /// <see cref="Version"/>のリリース日
         /// </summary>
         public string ReleaseDate { get; set; }
+
+
+        /// <summary>
+        /// <see cref="Version"/>のサポート有無。
+        /// true：サポート対象　false：サポート対象外
+        /// </summary>
+        public bool Support { get; set; }
 
         /// <summary>
         /// 最新バージョン番号

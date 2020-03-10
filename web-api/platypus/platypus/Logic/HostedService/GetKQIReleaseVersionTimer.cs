@@ -14,8 +14,15 @@ namespace Nssol.Platypus.Logic.HostedService
     /// </summary>
     public class GetKQIReleaseVersionTimer : HostedServiceTimerBase
     {
+        /// <summary>
+        /// バージョン情報に関するロジック
+        /// </summary>
         private readonly IVersionLogic versionLogic;
-        private readonly IVersionService kqiService;
+
+        /// <summary>
+        /// 外部のバージョン情報に関するサービス
+        /// </summary>
+        private readonly IVersionService versionService;
 
         /// <summary>
         /// バージョン情報をキャッシュするためのインメモリキャッシュ
@@ -23,21 +30,29 @@ namespace Nssol.Platypus.Logic.HostedService
         private readonly IMemoryCache memoryCache;
 
         /// <summary>
+        /// バージョン確認をしないかするか。 (appsettings.json、または launchSettings.json で設定)
+        /// しない場合ture、する場合false。
+        /// </summary>
+        private readonly bool noCheckVersion;
+
+        /// <summary>
         /// コンストラクタで各 DI オブジェクトを引数で受け取ります。
         /// </summary>
         public GetKQIReleaseVersionTimer(
             IVersionLogic versionLogic,
-            IVersionService kqiService,
+            IVersionService versionService,
             IMemoryCache memoryCache,
             IOptions<GetKQIReleaseVersionTimerOptions> getReleaseVersionTimerOptions,
             ILogger<GetKQIReleaseVersionTimer> logger
             ) : base(logger, getReleaseVersionTimerOptions.Value)
         {
             this.versionLogic = versionLogic;
-            this.kqiService = kqiService;
+            this.versionService = versionService;
 
             // メモリキャッシュ
             this.memoryCache = memoryCache;
+
+            this.noCheckVersion = getReleaseVersionTimerOptions.Value.NoCheckVersion;
         }
 
         /// <summary>
@@ -62,24 +77,33 @@ namespace Nssol.Platypus.Logic.HostedService
                 // 現在のバージョンを取得する
                 string version = versionLogic.GetVersion();
 
+                // テストのため、バージョン番号を指定。
+                version = "1.1.5";
+                //version = "1.1.6";
+
                 VersionModel versionModel = new VersionModel(version);
 
-                // 開発時は問い合わせない
-                if (version != "develop")
+                // バージョン確認するか否か確認
+                if (!noCheckVersion)
                 {
-                    // KAMONOHASHIのバージョン管理サービスに問い合わせる
-                    var currentVersion = kqiService.GetKQIVersionAsync(version).Result;
-                    if (currentVersion.IsSuccess && currentVersion.Value != null)
+                    // 開発時は問い合わせない
+                    if (version != "develop")
                     {
-                        versionModel.ReleaseDate = ToFormatedString(currentVersion.Value.ReleaseDate);
+                        // KAMONOHASHIのバージョン管理サービスに問い合わせる
+                        var currentVersion = versionService.GetKQIVersionAsync(version).Result;
+                        if (currentVersion.IsSuccess && currentVersion.Value != null)
+                        {
+                            versionModel.ReleaseDate = ToFormatedString(currentVersion.Value.ReleaseDate);
+                            versionModel.Support = currentVersion.Value.Support;
+                        }
                     }
-                }
 
-                // KAMONOHASHIの最新リリース番号を取得する
-                var latestVersion = kqiService.GetLatestReleaseAsync().Result;
-                if (latestVersion.IsSuccess && latestVersion.Value != null)
-                {
-                    versionModel.LatestVersion = latestVersion.Value.TagName;
+                    // KAMONOHASHIの最新リリース番号を取得する
+                    var latestVersion = versionService.GetLatestReleaseAsync().Result;
+                    if (latestVersion.IsSuccess && latestVersion.Value != null)
+                    {
+                        versionModel.LatestVersion = latestVersion.Value.TagName;
+                    }
                 }
 
                 // インメモリキャッシュにバージョン情報を格納する

@@ -32,7 +32,7 @@ namespace Nssol.Platypus.Services
             {
                 // バージョン情報が記載されたJSONを取得
                 BaseUrl = $"https://kamonohashi.ai",
-                ApiPath = $"/.netlify/functions/v{version.Replace(".", "-")}",
+                ApiPath = $"/version{version.Replace(".", "")}/index.html",
                 UserAgent = "C#App"
             };
 
