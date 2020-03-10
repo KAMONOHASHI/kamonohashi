@@ -77,10 +77,6 @@ namespace Nssol.Platypus.Logic.HostedService
                 // 現在のバージョンを取得する
                 string version = versionLogic.GetVersion();
 
-                // テストのため、バージョン番号を指定。
-                version = "1.1.5";
-                //version = "1.1.6";
-
                 VersionModel versionModel = new VersionModel(version);
 
                 // バージョン確認するか否か確認
