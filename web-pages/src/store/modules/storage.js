@@ -4,6 +4,7 @@ import api from '@/api/v1/api'
 const state = {
   storages: [],
   detail: {},
+  logUrl: null,
 }
 
 // getters
@@ -14,6 +15,10 @@ const getters = {
 
   detail(state) {
     return state.detail
+  },
+
+  logUrl(state) {
+    return state.logUrl
   },
 }
 
@@ -43,6 +48,11 @@ const actions = {
   async delete({ commit }, id) {
     return await api.storage.admin.delete({ id: id })
   },
+
+  async fetchLogUrl({ commit }, params) {
+    let logUrl = (await api.storage.getDownloadUrl(params)).data.url
+    commit('setLogUrl', { logUrl })
+  },
 }
 
 // mutations
@@ -53,6 +63,10 @@ const mutations = {
 
   setDetail(state, { detail }) {
     state.detail = detail
+  },
+
+  setLogUrl(state, { logUrl }) {
+    state.logUrl = logUrl
   },
 }
 

@@ -54,12 +54,12 @@ export default [
         component: LogViewer,
         props: true,
       },
+      // 前処理実行中のshellコンポーネントへは前処理履歴のIDを渡す(前処理のIDでも、データIDでも無い)
+      {
+        path: '/preprocessingShell/:id',
+        component: Shell,
+        props: true,
+      },
     ],
-  },
-  // 前処理実行中のshellコンポーネントへは前処理履歴のIDを渡す(前処理のIDでも、データIDでも無い)
-  {
-    path: '/preprocessingShell/:id',
-    component: Shell,
-    props: true,
   },
 ]

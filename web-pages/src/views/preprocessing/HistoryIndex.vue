@@ -60,6 +60,7 @@
       @return="back"
       @shell="shell"
       @log="log"
+      @cancelShell="closeShell"
     />
   </div>
 </template>
@@ -144,6 +145,9 @@ export default {
     },
     back() {
       this.$router.go(-1)
+    },
+    closeShell() {
+      this.$router.go(-2)
     },
   },
 }
