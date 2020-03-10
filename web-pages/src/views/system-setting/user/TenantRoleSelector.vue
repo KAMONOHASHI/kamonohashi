@@ -1,7 +1,7 @@
 <template>
   <span>
     <el-select
-      :value="selectedTenantIds"
+      :value="value.selectedTenantIds"
       class="selectTenant"
       multiple
       placeholder="Select"
@@ -14,8 +14,8 @@
         :value="item.id"
       />
     </el-select>
-    <div v-if="tenantRoles.length">
-      <el-table :data="tenantRoles">
+    <div>
+      <el-table v-if="rolesOfTenant.length !== 0" :data="rolesOfTenant">
         <el-table-column prop="displayName" label="テナント名" width="200px">
           <template slot-scope="prop">
             <el-radio
@@ -24,7 +24,7 @@
               style="display: block;"
               @change="handleDefaultChange(prop.row)"
             >
-              {{ prop.row.displayName }}
+              {{ prop.row.tenantName }}
               <span v-if="prop.row.default" style="font-size:0.7rem;">
                 (デフォルト)
               </span>
@@ -34,17 +34,13 @@
         <el-table-column label="ロール" width="auto">
           <template slot-scope="prop">
             <el-checkbox-group
-              v-model="prop.row.$roles"
+              v-model="prop.row.selectedRoleIds"
               style="white-space: nowrap;"
               @change="handleRoleChange(prop.row)"
             >
-              <template v-for="r in roles">
-                <el-checkbox-button
-                  v-if="r.isSystemRole === false && !r.tenantId"
-                  :key="r.id"
-                  :label="r.id"
-                >
-                  {{ r.displayName }}
+              <template v-for="role in prop.row.roles">
+                <el-checkbox-button :key="role.id" :label="role.id">
+                  {{ role.displayName }}
                 </el-checkbox-button>
               </template>
             </el-checkbox-group>
@@ -62,8 +58,8 @@ export default {
       type: Object,
       default: () => {
         return {
-          selectedTenantIds: [],
-          selectedTenants: [],
+          selectedTenantIds: [], // 選択されたテナントID一覧
+          selectedTenants: [], // 各テナントごとのロール
         }
       },
     },
@@ -82,111 +78,124 @@ export default {
       },
     },
   },
-  data() {
-    return {
-      tenantRoles: [],
-    }
-  },
   computed: {
-    selectedTenantIds() {
-      this.handleTenantChange(this.value.selectedTenantIds)
-      return this.value.selectedTenantIds
+    // テナントごとのロール設定
+    // rolesOfTenant: [
+    // {
+    //   tenantId: Number,
+    //   tenantName: String,
+    //   roles: [{},...],
+    //   selectedRoleIds: [1,...],
+    // },
+    // ...
+    // ]
+    rolesOfTenant() {
+      let rolesOfTenant = []
+      this.tenants.forEach(tenant => {
+        // 選択済みのテナントについて、それぞれ設定
+        if (this.value.selectedTenantIds.includes(tenant.id)) {
+          // システムロール以外のロールの抽出
+          let tmpRoles = []
+          this.roles.forEach(role => {
+            if (!role.isSystemRole) {
+              tmpRoles.push(role)
+            }
+          })
+
+          // 選択済みのロールの設定
+          let selectedRoleIds = []
+          let isDefaultTenant = false
+          this.value.selectedTenants.forEach(selectedTenant => {
+            if (selectedTenant.tenantId === tenant.id) {
+              selectedTenant.selectedRoleIds.forEach(id => {
+                selectedRoleIds.push(id)
+              })
+              isDefaultTenant = selectedTenant.default
+            }
+          })
+
+          let element = {
+            tenantId: tenant.id,
+            tenantName: tenant.name,
+            roles: tmpRoles,
+            selectedRoleIds: selectedRoleIds,
+            default: isDefaultTenant,
+          }
+          rolesOfTenant.push(element)
+        }
+      })
+      return rolesOfTenant
     },
   },
   methods: {
     async handleTenantChange(selectedIds) {
-      // selectedIdsと一致するものだけをtenantRolesから抽出し、存在しないものは削除する
-      this.tenantRoles = this.tenantRoles.filter(tr =>
-        selectedIds.some(id => id === tr.id),
-      )
-
-      // 新規のものを追加する
-      selectedIds.forEach(id => {
-        let exists = this.tenantRoles.find(tr => id === tr.id)
-        if (!exists) {
-          let selectTenant = this.tenants.find(ti => ti.id === id)
-          this.addTenantRoles(selectTenant)
-        }
-      })
-
-      // デフォルトテナント設定
-      if (
-        this.tenantRoles.length >= 1 &&
-        this.tenantRoles.every(tr => tr.default === false)
-      ) {
-        this.tenantRoles[0].default = true
-      }
-
-      // テナント追加時のデフォルトロール設定
-      if (this.tenantRoles.length > 0) {
-        if (this.tenantRoles[this.tenantRoles.length - 1].$roles.length === 0) {
-          // テナントロールで一番最初のロールをデフォルトとして設定する
-          if (this.roles.filter(rt => rt.isSystemRole === false).length > 0) {
-            this.tenantRoles[this.tenantRoles.length - 1].$roles.push(
-              this.roles.filter(rt => rt.isSystemRole === false)[0].id,
-            )
-            this.tenantRoles[
-              this.tenantRoles.length - 1
-            ].roles = this.roles.filter(rt => rt.isSystemRole === false)
-          }
-        }
-      }
-
-      this.emitInput()
-    },
-    async handleRoleChange(row) {
-      // row.$roles から roles を再構築
-      let roles = []
-      row.$roles.forEach(r => {
-        let role = this.roles.find(rt => rt.id === r)
-        if (role) {
-          roles.push(role)
-        }
-      })
-      row.roles = roles
-      this.emitInput()
-    },
-    async handleDefaultChange(row) {
-      this.tenantRoles.forEach(tr => {
-        tr.default = false
-      })
-      row.default = true
-      this.emitInput()
-    },
-    addTenantRoles(tenant) {
-      let roles = []
-      if (tenant.roles) {
-        tenant.roles.forEach(s => {
-          roles.push(s.id)
-        })
-      }
-      let copy = {}
-      copy['$roles'] = roles
-      copy['roles'] = []
-      copy['default'] = false
-      for (let key in tenant) {
-        copy[key] = tenant[key]
-      }
-
-      // 編集時に既に設定されているロールおよびデフォルトテナントを反映する
-      this.value.selectedTenants.forEach(selectedTenant => {
-        if (selectedTenant.id === tenant.id) {
-          selectedTenant.roles.forEach(role => {
-            copy['$roles'].push(role.id)
-          })
-          copy['default'] = selectedTenant.default
-        }
-      })
-
-      this.tenantRoles.push(copy)
-    },
-    emitInput() {
+      // selectedTenantIdsの変更をemit
       let select = this.value
-      select.selectedTenantIds = []
-      this.tenantRoles.forEach(s => {
-        select.selectedTenantIds.push(s.id)
+      select.selectedTenantIds = selectedIds
+
+      // selectedTenantsに存在しなければテナント情報を追加する
+      selectedIds.forEach(id => {
+        let index = select.selectedTenants.findIndex(tenant => {
+          return tenant.tenantId === id
+        })
+        if (index < 0) {
+          let tenantInfo = this.rolesOfTenant.find(tenant => {
+            return tenant.tenantId === id
+          })
+          // rolesの一番初めの要素を初期選択ロールとする
+          tenantInfo.selectedRoleIds = [tenantInfo.roles[0].id]
+          select.selectedTenants.push(tenantInfo)
+        }
       })
-      select.selectedTenants = this.tenantRoles
+
+      // selectedTenantsのIDで、selectedIdsの中に存在しないものがあれば削除する
+      let removeTenantIndexList = []
+      select.selectedTenants.forEach((tenant, tenantIndex) => {
+        let index = selectedIds.indexOf(tenant.tenantId)
+        if (index < 0) {
+          removeTenantIndexList.push(tenantIndex)
+        }
+      })
+      removeTenantIndexList.forEach(index => {
+        select.selectedTenants.splice(index, 1)
+      })
+
+      // デフォルトが指定されていなければ、先頭をデフォルトに指定
+      let isDefaultSelected = false
+      select.selectedTenants.forEach(tenant => {
+        if (tenant.default) {
+          isDefaultSelected = true
+        }
+      })
+      if (!isDefaultSelected && select.selectedTenants.length > 0) {
+        select.selectedTenants[0].default = true
+      }
+      this.$emit('input', select)
+    },
+
+    handleRoleChange(row) {
+      // selectedTenantsの変更をemit
+      let select = Object.assign({}, this.value)
+      let index = select.selectedTenants.findIndex(tenant => {
+        return tenant.tenantId === row.tenantId
+      })
+      this.$set(select.selectedTenants, index, row)
+      this.$emit('input', select)
+    },
+
+    handleDefaultChange(row) {
+      // defaultの変更をemit
+      let select = Object.assign({}, this.value)
+      select.selectedTenants.forEach(tenant => {
+        tenant.default = false
+        if (tenant.tenantId === row.tenantId) {
+          tenant.default = true
+        }
+      })
+      // let index = select.selectedTenants.findIndex(tenant => {
+      //   return tenant.tenantId === row.tenantId
+      // })
+      // this.$set(select.selectedTenants, index, row)
       this.$emit('input', select)
     },
   },
