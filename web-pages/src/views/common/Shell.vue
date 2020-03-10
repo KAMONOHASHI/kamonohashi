@@ -15,7 +15,7 @@
       </div>
       <el-row :gutter="20" class="footer">
         <el-col class="right-button-group" :span="24">
-          <el-button @click="emitReturn">戻る</el-button>
+          <el-button @click="emitReturn()">戻る</el-button>
         </el-col>
       </el-row>
     </el-dialog>
@@ -40,10 +40,10 @@ export default {
   },
   data() {
     return {
-      type: undefined,
+      type: null,
       dialogVisible: true,
-      error: undefined,
-      title: undefined,
+      error: null,
+      title: null,
       intervalId: -1,
     }
   },
@@ -62,7 +62,7 @@ export default {
     ...mapActions(['fetchAccount']),
 
     emitCancel() {
-      this.$emit('cancel')
+      this.$emit('cancelShell')
       this.closeSocket()
     },
     emitReturn() {
