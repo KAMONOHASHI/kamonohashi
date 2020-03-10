@@ -101,7 +101,7 @@ export default {
         callback(new Error('必須項目です'))
       } else {
         this.form.tenants.selectedTenants.forEach(tenant => {
-          if (tenant.$roles.length === 0) {
+          if (tenant.selectedRoleIds.length === 0) {
             callback(new Error('ロールが選択されていないテナントがあります'))
           }
         })
@@ -164,7 +164,21 @@ export default {
         this.detail.systemRoles.forEach(s => {
           this.form.selectedSystemRoleIds.push(s.id)
         })
-        this.form.tenants.selectedTenants = this.detail.tenants
+        this.form.tenants.selectedTenants = []
+
+        this.detail.tenants.forEach(tenant => {
+          let selectedRoleIds = []
+          tenant.roles.forEach(role => {
+            selectedRoleIds.push(role.id)
+          })
+          this.form.tenants.selectedTenants.push({
+            tenantId: tenant.id,
+            tenantName: tenant.name,
+            selectedRoleIds: selectedRoleIds,
+            default: tenant.default,
+          })
+        })
+
         this.detail.tenants.forEach(s => {
           this.form.tenants.selectedTenantIds.push(s.id)
         })
@@ -198,13 +212,10 @@ export default {
             let postTenants = []
             this.form.tenants.selectedTenants.forEach(tenant => {
               let postTenant = {
-                id: tenant.id,
+                id: tenant.tenantId,
                 default: tenant.default,
-                roles: [],
+                roles: tenant.selectedRoleIds,
               }
-              tenant.$roles.forEach(roleId => {
-                postTenant.roles.push(roleId)
-              })
               postTenants.push(postTenant)
             })
             let params = {
