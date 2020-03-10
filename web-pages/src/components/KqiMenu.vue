@@ -21,7 +21,6 @@
             v-for="item in menu.children"
             :key="item.label"
             :index="item.url"
-            :style="disableActive"
             @click="handleClick(item.url)"
           >
             <icon
@@ -33,12 +32,7 @@
             <span slot="title">{{ item.label }}</span>
           </el-menu-item>
         </el-submenu>
-        <el-menu-item
-          v-else
-          :index="menu.url"
-          :style="disableActive"
-          @click="handleClick(menu.url)"
-        >
+        <el-menu-item v-else :index="menu.url" @click="handleClick(menu.url)">
           <icon
             v-if="menu.category"
             class="icon"
@@ -48,11 +42,7 @@
           <span slot="title">{{ menu.label }}</span>
         </el-menu-item>
       </div>
-      <el-menu-item
-        index="/version"
-        :style="disableActive"
-        @click="handleClick('/version')"
-      >
+      <el-menu-item index="/version" @click="handleClick('/version')">
         <i class="el-icon-info" />
         <span>バージョン情報</span>
       </el-menu-item>
@@ -73,24 +63,19 @@ export default {
       isCollapse: false,
       trees: null,
       activeIndex: null,
-      disableActive: null,
     }
   },
   computed: {
     ...mapGetters(['menuTree']),
   },
   watch: {
-    $route(to) {
-      this.activeIndex = this.$route.path
+    $route() {
+      // ["", "cluster-resource", "tenant"]等のメニュー項目を取得し設定。例：/training, /cluster-resource
+      this.activeIndex = `/${this.$route.path.split('/')[1]}`
 
-      // ダッシュボード画面にアクセスした際には、cssを上書きすることでハイライトを削除
-      if (to.path === '/') {
-        this.disableActive = {
-          color: '#303133 !important',
-          border: '0px !important',
-        }
-      } else {
-        this.disableActive = null
+      // テナント管理系の場合、/manage/tenant等の指定が必要であるため追記
+      if (this.activeIndex === '/manage') {
+        this.activeIndex += `/${this.$route.path.split('/')[2]}`
       }
     },
   },
