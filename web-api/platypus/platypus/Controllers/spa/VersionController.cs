@@ -59,12 +59,12 @@ namespace Nssol.Platypus.Controllers.spa
             if (versionModel != null)
             {
                 outputModel.Version = versionModel.Version;
-                outputModel.Messages = GetMessages(versionModel.ReleaseDate, versionModel.Version, versionModel.LatestVersion);
+                outputModel.Messages = GetMessages(versionModel.ReleaseDate, versionModel.Support, versionModel.Version, versionModel.LatestVersion);
             }
             else
             {
                 outputModel.Version = versionLogic.GetVersion(); // 現在のバージョンを取得する
-                outputModel.Messages = new List<string> { "バージョン情報の取得に失敗しました。" };
+                outputModel.Messages = new List<string> { "最新バージョン情報の取得に失敗しました。" };
             }
 
             return JsonOK(outputModel);
@@ -74,43 +74,26 @@ namespace Nssol.Platypus.Controllers.spa
         /// バージョンに関してのメッセージを作成・取得する
         /// </summary>
         /// <param name="releaseDate">リリース日</param>
+        /// <param name="support">サポート有無</param>
         /// <param name="version">バージョン番号</param>
         /// <param name="latestVersion">最新バージョン番号</param>
         /// <returns>メッセージ一覧</returns>
-        private List<string> GetMessages(string releaseDate, string version, string latestVersion)
+        private List<string> GetMessages(string releaseDate, bool support, string version, string latestVersion)
         {
             List<string> messages = new List<string>();
 
-            // サポートに関してのメッセージを作成
-            if (releaseDate != null)
-            {
-                // サポート対象期間はリリース日から1年間
-                DateTime supportEndDate = DateTime.Parse(releaseDate);
-                supportEndDate = supportEndDate.AddYears(1);
-                supportEndDate = supportEndDate.AddDays(-1);
-
-                // サポート対象期間を過ぎているか
-                if (supportEndDate < DateTime.Now)
-                {
-                    messages.Add($"バージョン { version } は { supportEndDate.ToString("yyyy/MM/dd") } にサポートが終了しました。");
-                }
-                else
-                {
-                    messages.Add($"バージョン { version } は { supportEndDate.ToString("yyyy/MM/dd") } にサポートが終了します。");
-                }
-            }
-            else
-            {
-                messages.Add($"バージョン { version } のサポート状況の取得に失敗しました。");
-            }
-
-            // 最新バージョンに関してのメッセージを作成
             if (latestVersion != null)
             {
                 // 最新バージョンを使用しているか
                 if (version != latestVersion)
                 {
-                    messages.Add($"最新バージョン { latestVersion } が公開されています。バージョンアップすることを推奨します。");
+                    messages.Add($"最新バージョン { latestVersion } が公開されています。");
+
+                    // サポート有無
+                    if (!support)
+                    {
+                        messages.Add($"バージョンアップすることを推奨します。");
+                    }
                 }
                 else
                 {
@@ -119,7 +102,7 @@ namespace Nssol.Platypus.Controllers.spa
             }
             else
             {
-                messages.Add("最新バージョン情報の取得に失敗しました。");
+                messages.Add($"最新バージョン情報の取得に失敗しました。");
             }
 
             return messages;
