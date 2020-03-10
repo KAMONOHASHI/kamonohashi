@@ -342,7 +342,7 @@ export default {
       this.$forceUpdate()
     },
     async showData(data) {
-      this.$router.push('/data/' + data.id)
+      this.$emit('showData', data.id)
     },
     // addとremoveはドラッグ, moveはドロップダウンから呼ばれる
     emitAdd(info) {

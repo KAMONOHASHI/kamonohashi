@@ -30,6 +30,7 @@
           :move-list="moveList"
           :disabled="disabled"
           :width="dataViewInfo.width"
+          @showData="handleShowData"
           @add="handleAdd"
           @remove="handleRemove"
           @paging="handleDataViewPaging"
@@ -47,6 +48,7 @@
             :move-list="moveList"
             :disabled="disabled"
             :width="viewInfo.width"
+            @showData="handleShowData"
             @add="handleAdd"
             @remove="handleRemove"
             @paging="handlePaging"
@@ -270,6 +272,10 @@ export default {
         )
         this.entryList[entryName].splice(neighborOriginalIndex + 1, 0, data)
       }
+    },
+
+    handleShowData(id) {
+      this.$emit('showData', id)
     },
 
     // 'add'がemitされた際の処理
