@@ -67,7 +67,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpGet("simple")]
         [Filters.PermissionFilter(MenuCode.Notebook)]
         [ProducesResponseType(typeof(IEnumerable<SimpleOutputModel>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetAll()
+        public IActionResult GetAll()
         {
             var histories = notebookHistoryRepository.GetAll();
             return JsonOK(histories.Select(history => new SimpleOutputModel(history)));
@@ -680,24 +680,24 @@ namespace Nssol.Platypus.Controllers.spa
         [ProducesResponseType(typeof(SimpleOutputModel), (int)HttpStatusCode.Created)]
         public async Task<IActionResult> Rerun(long? id, [FromBody]RerunInputModel model, [FromServices]INodeRepository nodeRepository, [FromServices]ITenantRepository tenantRepository)
         {
-            //データの入力チェック
+            // データの入力チェック
             if (!ModelState.IsValid)
             {
                 return JsonBadRequest("Invalid inputs.");
             }
-            //データの存在チェック
+            // データの存在チェック
             var notebookHistory = await notebookHistoryRepository.GetIncludeAllAsync(id.Value);
             if (notebookHistory == null)
             {
                 return JsonNotFound($"Notebook ID {id} is not found.");
             }
-            //ステータスのチェック
+            // ステータスのチェック
             if (notebookHistory.GetStatus().Exist())
             {
                 return JsonNotFound($"Notebook ID {id} is already running.");
             }
 
-            //データセットが指定されていれば存在チェック
+            // データセットが指定されていれば存在チェック
             if (model.DataSetId.HasValue)
             {
                 var dataSet = await dataSetRepository.GetByIdAsync(model.DataSetId.Value);
@@ -723,27 +723,57 @@ namespace Nssol.Platypus.Controllers.spa
                 }
             }
 
-            if (notebookHistory.ModelGitId != null)
+            // コンテナが指定されているかチェック
+            if (model.ContainerImage != null)
             {
-                //gitリポジトリ名が指定されていれば、ブランチ、コミットIDを設定。指定されていなければnull
-                long? gitId = notebookHistory.ModelGitId ?? CurrentUserInfo.SelectedTenant.DefaultGit?.Id;
+                notebookHistory.ContainerRegistryId = model.ContainerImage.RegistryId ?? CurrentUserInfo.SelectedTenant.DefaultRegistry?.Id;
+                notebookHistory.ContainerImage = model.ContainerImage.Image;
+                notebookHistory.ContainerTag = model.ContainerImage.Tag; // latestは運用上使用されていないハズなので、そのまま直接代入
+            }
+            else
+            {
+                // コンテナイメージの設定がない場合デフォルトのイメージを設定
+                notebookHistory.ContainerRegistryId = null;
+                notebookHistory.ContainerImage = "tensorflow/tensorflow";
+                notebookHistory.ContainerTag = "1.13.1-gpu-py3";
+            }
+            // gitが指定されているかチェック
+            if (model.GitModel != null)
+            {
+                // gitリポジトリ名が指定されていれば、ブランチ、コミットIDを設定。指定されていなければnull
+                long? gitId = model.GitModel.GitId ?? CurrentUserInfo.SelectedTenant.DefaultGit?.Id;
                 string branch = null;
                 string commitId = null;
-                if (!string.IsNullOrEmpty(notebookHistory.ModelRepository))
+                if (!string.IsNullOrEmpty(model.GitModel.Repository))
                 {
-                    branch = notebookHistory.ModelBranch ?? "master";
-                    commitId = notebookHistory.ModelCommitId;
-                    //コミットIDが指定されていなければ、ブランチのHEADからコミットIDを取得する
+                    branch = model.GitModel.Branch ?? "master";
+                    commitId = model.GitModel.CommitId;
+                    // コミットIDが指定されていなければ、ブランチのHEADからコミットIDを取得する
                     if (string.IsNullOrEmpty(commitId))
                     {
-                        commitId = await gitLogic.GetCommitIdAsync(gitId.Value, notebookHistory.ModelRepository, notebookHistory.ModelRepositoryOwner, branch);
+                        commitId = await gitLogic.GetCommitIdAsync(gitId.Value, model.GitModel.Repository, model.GitModel.Owner, branch);
                         if (string.IsNullOrEmpty(commitId))
                         {
-                            //コミットIDが特定できなかったらエラー
-                            return JsonNotFound($"The branch {branch} for {gitId.Value}/{notebookHistory.ModelRepositoryOwner}/{notebookHistory.ModelRepository} is not found.");
+                            // コミットIDが特定できなかったらエラー
+                            return JsonNotFound($"The branch {branch} for {gitId.Value}/{model.GitModel.Owner}/{model.GitModel.Repository} is not found.");
                         }
                     }
                 }
+                // git情報を設定
+                notebookHistory.ModelGitId = gitId.Value;
+                notebookHistory.ModelRepository = model.GitModel.Repository;
+                notebookHistory.ModelRepositoryOwner = model.GitModel.Owner;
+                notebookHistory.ModelBranch = branch;
+                notebookHistory.ModelCommitId = commitId;
+            }
+            else
+            {
+                // gitが未指定の場合は各項目にnullを設定する
+                notebookHistory.ModelGitId = null;
+                notebookHistory.ModelRepository = null;
+                notebookHistory.ModelRepositoryOwner = null;
+                notebookHistory.ModelBranch = null;
+                notebookHistory.ModelCommitId = null;
             }
 
             // 現状のノートブック履歴IDに紐づいている親学習をすべて外す。
@@ -771,7 +801,7 @@ namespace Nssol.Platypus.Controllers.spa
                 notebookHistory.ParentTrainingMaps = maps;
             }
 
-            //コンテナの実行前に、ノートブック履歴を更新する（コンテナの実行に失敗した場合、そのステータスをユーザに表示するため）
+            // コンテナの実行前に、ノートブック履歴を更新する（コンテナの実行に失敗した場合、そのステータスをユーザに表示するため）
             notebookHistory.DataSetId = model.DataSetId;
             notebookHistory.Cpu = model.Cpu.Value;
             notebookHistory.Memory = model.Memory.Value;
@@ -787,7 +817,7 @@ namespace Nssol.Platypus.Controllers.spa
             var result = await clusterManagementLogic.RunNotebookContainerAsync(notebookHistory);
             if (result.IsSuccess == false)
             {
-                //コンテナの起動に失敗した状態。エラーを出力して、保存したノートブック履歴も削除する。
+                // コンテナの起動に失敗した状態。エラーを出力して、保存したノートブック履歴も削除する。
                 notebookHistory.Status = ContainerStatus.Killed.Key;
                 notebookHistory.CompletedAt = DateTime.Now;
                 notebookHistoryRepository.Update(notebookHistory);
@@ -796,8 +826,8 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonError(HttpStatusCode.ServiceUnavailable, "Failed to run notebook. The message bellow may be help to resolve: " + result.Error);
             }
 
-            //結果に従い、ノートブック結果を更新する。
-            //実行には時間がかかりうるので、DBから最新の情報を取ってくる
+            // 結果に従い、ノートブック結果を更新する。
+            // 実行には時間がかかりうるので、DBから最新の情報を取ってくる
             notebookHistory = await notebookHistoryRepository.GetByIdAsync(notebookHistory.Id);
             notebookHistory.Configuration = result.Value.Configuration;
             notebookHistory.Status = result.Value.Status.Key;
