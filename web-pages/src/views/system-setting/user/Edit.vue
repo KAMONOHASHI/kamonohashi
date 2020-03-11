@@ -1,7 +1,7 @@
 <template>
   <kqi-dialog
     :title="title"
-    :type="id === null ? 'CREATE' : 'EDIT'"
+    :type="isCreateDialog ? 'CREATE' : 'EDIT'"
     submit-text="作成"
     :delete-button-params="deleteButtonParams"
     @submit="submit"
@@ -12,7 +12,7 @@
       <kqi-display-error :error="error" />
 
       <span v-if="form.serviceType === 1">
-        <el-form-item v-if="id === null" label="ユーザ名" prop="name">
+        <el-form-item v-if="isCreateDialog" label="ユーザ名" prop="name">
           <el-input v-model="form.name" />
         </el-form-item>
         <kqi-display-text-form v-else label="ユーザ名" :value="form.name" />
@@ -88,13 +88,18 @@ export default {
   },
   data() {
     let passwordValidator = (rule, value, callback) => {
-      if (!value[0] && !value[1]) {
-        callback()
-      } else if (!(value[0] === value[1])) {
-        callback(new Error('同一のパスワードを入力してください'))
-      } else {
+      // 作成時はパスワード入力必須
+      if (this.isCreateDialog && !value[0] && !value[1]) {
+        callback(new Error('必須項目です'))
+      }
+      // 編集時に両方空の場合は、パスワードは未編集とみなして続行
+      if (this.isEditDialog && !value[0] && !value[1]) {
         callback()
       }
+      if (!(value[0] === value[1])) {
+        callback(new Error('同一のパスワードを入力してください'))
+      }
+      callback()
     }
     let tenantsValidator = (rule, value, callback) => {
       if (this.form.tenants.selectedTenantIds.length === 0) {
@@ -109,12 +114,6 @@ export default {
       callback()
     }
     return {
-      dialogVisible: true,
-      error: null,
-      title: null,
-      deleteButtonParams: {},
-      passwordLabel: '',
-
       form: {
         name: '',
         serviceType: 1,
@@ -135,6 +134,11 @@ export default {
           { required: true, trigger: 'blur', validator: tenantsValidator },
         ],
       },
+      error: null,
+      title: null,
+      deleteButtonParams: {},
+      passwordLabel: '',
+      isCreateDialog: false,
     }
   },
   computed: {
@@ -143,11 +147,17 @@ export default {
       tenants: ['tenant/tenants'],
       roles: ['role/roles'],
     }),
+    isEditDialog() {
+      return !this.isCreateDialog
+    },
   },
   async created() {
+    if (this.id === null) {
+      this.isCreateDialog = true
+    }
     await this['role/fetchRoles']()
     await this['tenant/fetchTenants']()
-    if (this.id === null) {
+    if (this.isCreateDialog) {
       this.title = 'ユーザ作成'
       this.passwordLabel = 'パスワード'
     } else {
@@ -225,7 +235,7 @@ export default {
               tenants: postTenants,
               serviceType: this.form.serviceType,
             }
-            if (this.id === null) {
+            if (this.isCreateDialog) {
               await this['user/post'](params)
             } else {
               await this['user/put']({ id: this.id, params: params })
