@@ -12,7 +12,7 @@
       <el-form-item label="名前" prop="name">
         <el-input v-model="form.name" :disabled="isNotEditable" />
       </el-form-item>
-      <el-form-item label="Git種別" prop="serviceType">
+      <el-form-item label="種別" prop="serviceType">
         <el-select
           v-model="form.serviceType"
           style="width: 100%"
@@ -74,16 +74,16 @@ export default {
         repositoryUrl: null,
         apiUrl: null,
       },
-      title: '',
-      error: null,
-      isNotEditable: false,
-      editApiUrl: false,
       rules: {
         name: [formRule],
         repositoryUrl: [formRule],
         serviceType: [formRule],
         apiUrl: [formRule],
       },
+      title: '',
+      error: null,
+      isNotEditable: false,
+      editApiUrl: false,
     }
   },
   computed: {
@@ -108,7 +108,7 @@ export default {
         this.form.apiUrl = this.detail.apiUrl
 
         this.isNotEditable = this.detail.isNotEditable
-        this.editApiUrl = this.repositoryUrl !== this.apiUrl
+        this.editApiUrl = this.form.repositoryUrl !== this.form.apiUrl
         this.error = null
       } catch (e) {
         this.error = e
