@@ -24,12 +24,19 @@
             />
           </div>
           <div v-else>
-            <kqi-delete-button :disabled="disabled" @delete="emitDelete" />
+            <kqi-delete-button
+              :disabled="disabledParams.deleteButton"
+              @delete="emitDelete"
+            />
           </div>
         </el-col>
         <el-col :span="12" class="right-button-group">
           <el-button @click="emitClose">キャンセル</el-button>
-          <el-button type="primary" :disabled="disabled" @click="emitSubmit">
+          <el-button
+            type="primary"
+            :disabled="disabledParams.submitButton"
+            @click="emitSubmit"
+          >
             保存
           </el-button>
         </el-col>
@@ -60,9 +67,14 @@ export default {
       type: String,
       default: '登録',
     },
-    disabled: {
-      type: Boolean,
-      default: false,
+    disabledParams: {
+      type: Object,
+      default() {
+        return {
+          deleteButton: false,
+          submitButton: false,
+        }
+      },
     },
     deleteButtonParams: {
       type: Object,

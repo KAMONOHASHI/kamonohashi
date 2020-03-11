@@ -10,7 +10,7 @@
       <el-option
         v-for="item in tenants"
         :key="item.id"
-        :label="item.name"
+        :label="item.displayName"
         :value="item.id"
       />
     </el-select>
@@ -116,7 +116,7 @@ export default {
 
           let element = {
             tenantId: tenant.id,
-            tenantName: tenant.name,
+            tenantName: tenant.displayName,
             roles: tmpRoles,
             selectedRoleIds: selectedRoleIds,
             default: isDefaultTenant,

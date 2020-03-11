@@ -2,7 +2,7 @@
   <kqi-dialog
     :title="title"
     :type="id === null ? 'CREATE' : 'EDIT'"
-    :disabled="isNotEditable"
+    :disabled-params="disabledParams"
     submit-text="作成"
     @submit="submit"
     @delete="deleteRole"
@@ -27,7 +27,6 @@
           v-model="form.isSystemRole"
           placeholder="Select"
           style="width:100%;"
-          :clearable="true"
           :disabled="id !== null"
         >
           <el-option
@@ -44,6 +43,7 @@
           v-model="form.sortOrder"
           controls-position="right"
           style="vertical-align: middle;"
+          :min="0"
         />
         並び順。小さいほど前に表示される。一意性は不要。
       </el-form-item>
@@ -100,6 +100,12 @@ export default {
   },
   computed: {
     ...mapGetters(['detail']),
+    disabledParams() {
+      return {
+        deleteButton: this.isNotEditable,
+        submitButton: false, // ロールの表示順のみ変更する場合に備えて、保存ボタンはdisableにしない
+      }
+    },
   },
   async created() {
     if (this.id === null) {

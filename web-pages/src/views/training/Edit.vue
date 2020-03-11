@@ -183,10 +183,11 @@
           >
             <el-form-item label="操作">
               <div class="el-input">
-                <kqi-delete-button
+                <kqi-job-stop-button
                   button-label="ジョブ停止"
-                  message="ジョブを停止しますか"
-                  @delete="showStopConfirm"
+                  title="ジョブを停止しますか"
+                  @halt="handleHalt"
+                  @userCancel="handleUserCancel"
                 />
               </div>
               <div v-if="detail.status === 'Running'">
@@ -249,7 +250,7 @@
 import KqiDialog from '@/components/KqiDialog'
 import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
 import KqiDisplayError from '@/components/KqiDisplayError'
-import KqiDeleteButton from '@/components/KqiDeleteButton.vue'
+import KqiJobStopButton from '@/components/KqiJobStopButton.vue'
 import KqiFileManager from '@/components/KqiFileManager.vue'
 import KqiDataSetDetails from '@/components/selector/KqiDataSetDetails.vue'
 import KqiTensorboardHandler from './KqiTensorboardHandler.vue'
@@ -261,7 +262,7 @@ const { mapGetters, mapActions } = createNamespacedHelpers('training')
 export default {
   components: {
     KqiDialog,
-    KqiDeleteButton,
+    KqiJobStopButton,
     KqiDisplayError,
     KqiFileManager,
     KqiDataSetDetails,
@@ -366,34 +367,23 @@ export default {
         }
       })
     },
-    async showStopConfirm() {
-      let confirmMessage = '正常停止しますか、異常停止しますか。'
-      await this.$confirm(confirmMessage, 'Warning', {
-        distinguishCancelAndClose: true,
-        confirmButtonText: '正常停止',
-        cancelButtonText: '異常停止',
-        type: 'warning',
-      })
-        .then(async () => {
-          try {
-            await this.postUserCancel(this.detail.id) // 正常停止（Status=UserCanceled）
-            await this.retrieveData()
-            this.error = null
-          } catch (e) {
-            this.error = e
-          }
-        })
-        .catch(async action => {
-          if (action === 'cancel') {
-            try {
-              await this.postHalt(this.detail.id) // 異常停止（Status=Killed）
-              await this.retrieveData()
-              this.error = null
-            } catch (e) {
-              this.error = e
-            }
-          }
-        })
+    async handleHalt() {
+      try {
+        await this.postHalt(this.detail.id) // 異常停止（Status=Killed）
+        await this.retrieveData()
+        this.error = null
+      } catch (e) {
+        this.error = e
+      }
+    },
+    async handleUserCancel() {
+      try {
+        await this.postUserCancel(this.detail.id) // 正常停止（Status=UserCanceled）
+        await this.retrieveData()
+        this.error = null
+      } catch (e) {
+        this.error = e
+      }
     },
     async deleteJob() {
       try {
