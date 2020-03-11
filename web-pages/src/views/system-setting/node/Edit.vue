@@ -29,7 +29,7 @@
           v-if="form.accessLevel === 1"
           v-model="form.selectedTenants"
           :data="displayTenants"
-          :transfer-titles="form.transferTitles"
+          :titles="['アクセス拒否', 'アクセス許可']"
         />
       </transition>
       <el-form-item label="TensorBoard">
@@ -83,7 +83,6 @@ export default {
         partition: null,
         accessLevel: 2,
         selectedTenants: [], // Selected tenants which can access this node.
-        transferTitles: ['アクセス拒否', 'アクセス許可'], // The title of the transfer component.
         tensorBoardEnabled: null,
         notebookEnabled: null,
       },

@@ -53,6 +53,7 @@
         <pl-dataset-transfer
           v-if="form.entries"
           v-model="form.entries"
+          @showData="handleShowData"
         ></pl-dataset-transfer>
       </el-form-item>
     </el-form>
@@ -233,6 +234,10 @@ export default {
 
     emitCopy() {
       this.$emit('copy', this.id)
+    },
+
+    handleShowData(id) {
+      this.$router.push(`/data/edit/${id}`)
     },
 
     createRules() {
