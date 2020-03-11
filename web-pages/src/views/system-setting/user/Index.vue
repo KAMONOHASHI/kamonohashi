@@ -102,16 +102,18 @@ export default {
     ...mapGetters(['users']),
   },
   async created() {
-    await this.fetchUsers()
-
-    // add data
-    this.users.forEach(d => {
-      this.$set(this.showTenants, d.id, true)
-    })
+    await this.initialize()
   },
   methods: {
     ...mapActions(['fetchUsers']),
-
+    async initialize() {
+      await this.fetchUsers()
+      // add data
+      this.showTenants = {}
+      this.users.forEach(d => {
+        this.$set(this.showTenants, d.id, true)
+      })
+    },
     async handleToggleExpand(row) {
       this.showTenants[row.id] = !this.showTenants[row.id]
     },
@@ -124,7 +126,7 @@ export default {
       }
     },
     async done() {
-      await this.fetchUsers()
+      await this.initialize()
       this.closeDialog()
       this.showSuccessMessage()
     },
