@@ -122,7 +122,7 @@ export default {
 
     // ログをダウンロードし、logListに格納
     this.$store.dispatch('incrementLoading')
-    fetch(this.logUrl.url, {
+    fetch(this.logUrl, {
       method: 'GET',
     })
       .then(response => response.text())
