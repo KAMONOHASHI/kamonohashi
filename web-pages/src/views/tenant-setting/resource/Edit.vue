@@ -61,7 +61,7 @@ export default {
       await this['resource/fetchTenantDetail'](params)
       this.containerInfo = this.tenantDetail
       this.containerInfo.tenantName = this.tenant.name
-      this.containerInfo.displayName = this.tenant.name
+      this.containerInfo.displayName = this.tenant.displayName
       this.error = null
     } catch (e) {
       this.error = e
