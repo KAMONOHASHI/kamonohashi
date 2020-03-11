@@ -117,14 +117,14 @@ export default {
     }),
   },
   async created() {
-    await this['git/fetchEndpoints']()
-    await this['registry/fetchRegistries']()
     await this.retrieveData()
+    await this['git/fetchTenantEndpoints'](this.tenant.id)
+    await this['registry/fetchTenantRegistries'](this.tenant.id)
   },
   methods: {
     ...mapActions([
-      'git/fetchEndpoints',
-      'registry/fetchRegistries',
+      'git/fetchTenantEndpoints',
+      'registry/fetchTenantRegistries',
       'tenant/fetchCurrentTenant',
       'tenant/putCurrentTenant',
     ]),
