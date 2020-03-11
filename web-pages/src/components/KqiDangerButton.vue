@@ -24,7 +24,7 @@ export default {
     validateInput(input) {
       if (input === this.confirmText) {
         return true
-      } else return 'Value is invalid'
+      } else return '入力内容が不一致です'
     },
     showConfirm() {
       this.$prompt(this.warningText, 'Warning', {
