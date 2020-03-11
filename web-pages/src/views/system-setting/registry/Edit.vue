@@ -2,7 +2,7 @@
   <kqi-dialog
     :title="title"
     :type="id === null ? 'CREATE' : 'EDIT'"
-    :disabled="isNotEditable"
+    :disabled-params="disabledParams"
     @submit="submit"
     @delete="deleteRegistry"
     @close="emitCancel"
@@ -101,9 +101,6 @@ export default {
         apiUrl: null,
         registryUrl: null,
       },
-      dialogVisible: true,
-      error: null,
-      isNotEditable: false,
       rules: {
         name: [formRule],
         host: [formRule],
@@ -113,10 +110,19 @@ export default {
         serviceType: [formRule],
         projectName: [formRule],
       },
+      dialogVisible: true,
+      error: null,
+      isNotEditable: false,
     }
   },
   computed: {
     ...mapGetters(['detail', 'serviceTypes']),
+    disabledParams() {
+      return {
+        deleteButton: this.isNotEditable,
+        submitButton: this.isNotEditable,
+      }
+    },
   },
   async created() {
     if (this.id === null) {
@@ -128,12 +134,12 @@ export default {
         this.form.name = this.detail.name
         this.form.host = this.detail.host
         this.form.portNo = this.detail.portNo
-        this.form.password = this.detail.password
         this.form.projectName = this.detail.projectName
         this.form.serviceType = this.detail.serviceType
-        this.form.isNotEditable = this.detail.isNotEditable
         this.form.apiUrl = this.detail.apiUrl
         this.form.registryUrl = this.detail.registryUrl
+
+        this.isNotEditable = this.detail.isNotEditable
       } catch (e) {
         this.error = e
       }

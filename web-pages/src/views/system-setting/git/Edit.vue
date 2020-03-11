@@ -2,7 +2,7 @@
   <kqi-dialog
     :title="title"
     :type="id === null ? 'CREATE' : 'EDIT'"
-    :disabled="isNotEditable"
+    :disabled-params="disabledParams"
     @submit="submit"
     @delete="deleteGit"
     @close="emitCancel"
@@ -88,6 +88,12 @@ export default {
   },
   computed: {
     ...mapGetters(['detail', 'serviceTypes']),
+    disabledParams() {
+      return {
+        deleteButton: this.isNotEditable,
+        submitButton: this.isNotEditable,
+      }
+    },
   },
   async created() {
     if (this.id === null) {
