@@ -64,12 +64,14 @@
           </template>
         </el-table-column>
         <el-table-column label="テナント" width="auto">
-          <template v-if="scope.row.showTenants" slot-scope="scope">
-            <span v-for="(t, index) in scope.row.tenants" :key="index">
-              <span class="tenant" :class="{ 'tenant-default': t.default }">
-                {{ t.displayName }}
+          <template slot-scope="scope">
+            <div v-if="showTenants[scope.row.id]">
+              <span v-for="(t, index) in scope.row.tenants" :key="index">
+                <span class="tenant" :class="{ 'tenant-default': t.default }">
+                  {{ t.displayName }}
+                </span>
               </span>
-            </span>
+            </div>
           </template>
         </el-table-column>
         <el-table-column prop="systemRoles" label="ロール" width="auto">
@@ -93,22 +95,27 @@ const { mapGetters, mapActions } = createNamespacedHelpers('user')
 
 export default {
   title: 'ユーザ管理',
+  data() {
+    return { showTenants: {} }
+  },
   computed: {
     ...mapGetters(['users']),
   },
   async created() {
-    await this.fetchUsers()
-
-    // add data
-    this.users.forEach(d => {
-      d.showTenants = true
-    })
+    await this.initialize()
   },
   methods: {
     ...mapActions(['fetchUsers']),
-
+    async initialize() {
+      await this.fetchUsers()
+      // add data
+      this.showTenants = {}
+      this.users.forEach(d => {
+        this.$set(this.showTenants, d.id, true)
+      })
+    },
     async handleToggleExpand(row) {
-      row.showTenants = !row.showTenants
+      this.showTenants[row.id] = !this.showTenants[row.id]
     },
     openCreateDialog() {
       this.$router.push('/user/edit')
@@ -119,7 +126,7 @@ export default {
       }
     },
     async done() {
-      await this.fetchUsers()
+      await this.initialize()
       this.closeDialog()
       this.showSuccessMessage()
     },
