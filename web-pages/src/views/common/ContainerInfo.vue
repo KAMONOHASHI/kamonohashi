@@ -10,15 +10,15 @@
       <el-col :offset="1" :span="7">
         <kqi-display-text-form
           label="CPU"
-          :value="detail ? String(detail.cpu) : '0'"
+          :value="detail && detail.cpu ? String(detail.cpu) : '0'"
         />
         <kqi-display-text-form
           label="メモリ(GB)"
-          :value="detail ? String(detail.memory) : '0'"
+          :value="detail && detail.memory ? String(detail.memory) : '0'"
         />
         <kqi-display-text-form
           label="GPU"
-          :value="detail ? String(detail.gpu) : '0'"
+          :value="detail && detail.gpu ? String(detail.gpu) : '0'"
         />
       </el-col>
       <el-col :offset="1" :span="7">
