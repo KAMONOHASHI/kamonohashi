@@ -51,7 +51,10 @@ const actions = {
     let histories = response.data
     let total = response.headers['x-total-count']
     commit('setHistories', { histories })
-    commit('setTotal', parseInt(total))
+    // params.withTotal=trueの時は件数が取れているため設定
+    if (total !== undefined) {
+      commit('setTotal', parseInt(total))
+    }
   },
 
   async fetchDetail({ commit }, id) {
