@@ -30,21 +30,15 @@
         </el-col>
 
         <el-col class="container detail">
-          <h3>Git 情報</h3>
-          <div class="margin">
-            <kqi-git-endpoint-selector
-              v-model="form.gitEndpoint"
-              :endpoints="gitEndpoints"
-            />
-          </div>
+          <kqi-git-endpoint-selector
+            v-model="form.gitEndpoint"
+            :endpoints="gitEndpoints"
+          />
 
-          <h3>Docker Registry 情報</h3>
-          <div class="margin">
-            <kqi-registry-endpoint-selector
-              v-model="form.registry"
-              :registries="registryEndpoints"
-            />
-          </div>
+          <kqi-registry-endpoint-selector
+            v-model="form.registry"
+            :registries="registryEndpoints"
+          />
 
           <el-row :gutter="20">
             <el-col class="right-button-group">

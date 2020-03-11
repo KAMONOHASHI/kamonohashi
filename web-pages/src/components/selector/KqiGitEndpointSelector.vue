@@ -1,6 +1,7 @@
 <template>
   <div>
-    <el-form-item prop="gitEndpoint">
+    <el-form-item label="Git情報" prop="gitEndpoint">
+      <el-row></el-row>
       <el-col :span="6">Git</el-col>
       <el-select
         class="selectGit"
@@ -27,7 +28,6 @@
         class="selectGit"
         :value="value.defaultId"
         placeholder="Select"
-        :clearable="true"
         @change="handleChangeDefaultId"
       >
         <el-option

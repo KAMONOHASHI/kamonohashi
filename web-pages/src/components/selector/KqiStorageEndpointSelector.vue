@@ -1,10 +1,9 @@
 <template>
-  <el-form-item label="ストレージ" prop="storageId">
+  <el-form-item label="ストレージ情報" prop="storageId">
     <el-select
       class="selectStorage"
       :value="value"
       placeholder="Select"
-      :clearable="true"
       @change="handleChange"
     >
       <el-option
