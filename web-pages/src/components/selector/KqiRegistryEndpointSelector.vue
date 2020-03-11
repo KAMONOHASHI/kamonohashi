@@ -1,6 +1,7 @@
 <template>
   <div>
-    <el-form-item prop="registry">
+    <el-form-item label="Dockerレジストリ情報" prop="registry">
+      <el-row></el-row>
       <el-col :span="6">レジストリ</el-col>
       <el-select
         class="selectRegistry"
@@ -28,7 +29,6 @@
         class="selectRegistry"
         :value="value.defaultId"
         placeholder="Select"
-        :clearable="true"
         @change="handleChangeDefaultId"
       >
         <el-option

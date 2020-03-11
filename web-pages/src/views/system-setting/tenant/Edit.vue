@@ -25,41 +25,30 @@
         <el-form-item label="表示名" prop="displayName">
           <el-input v-model="form.displayName" />
         </el-form-item>
-        <el-form-item label="ノートブック無期限実行" required>
-          <el-switch
-            v-model="form.availableInfiniteTimeNotebook"
-            style="width: 100%;"
-            inactive-text="禁止"
-            active-text="許可"
-          />
-        </el-form-item>
       </div>
-
-      <h3>ストレージ情報</h3>
-      <div class="margin">
-        <el-form-item>
-          <kqi-storage-endpoint-selector
-            v-model="form.storageId"
-            :storages="storageEndpoints"
-          />
-        </el-form-item>
-      </div>
-
-      <h3>Git情報</h3>
-      <div class="margin">
-        <kqi-git-endpoint-selector
-          v-model="form.gitEndpoint"
-          :endpoints="gitEndpoints"
+      <el-form-item label="ノートブック無期限実行" required>
+        <el-switch
+          v-model="form.availableInfiniteTimeNotebook"
+          style="width: 100%;"
+          inactive-text="禁止"
+          active-text="許可"
         />
-      </div>
+      </el-form-item>
 
-      <h3>Docker Registry 情報</h3>
-      <div class="margin">
-        <kqi-registry-endpoint-selector
-          v-model="form.registry"
-          :registries="registryEndpoints"
-        />
-      </div>
+      <kqi-storage-endpoint-selector
+        v-model="form.storageId"
+        :storages="storageEndpoints"
+      />
+
+      <kqi-git-endpoint-selector
+        v-model="form.gitEndpoint"
+        :endpoints="gitEndpoints"
+      />
+
+      <kqi-registry-endpoint-selector
+        v-model="form.registry"
+        :registries="registryEndpoints"
+      />
     </el-form>
   </kqi-dialog>
 </template>
