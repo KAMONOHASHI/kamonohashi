@@ -64,12 +64,14 @@
           </template>
         </el-table-column>
         <el-table-column label="テナント" width="auto">
-          <template v-if="scope.row.showTenants" slot-scope="scope">
-            <span v-for="(t, index) in scope.row.tenants" :key="index">
-              <span class="tenant" :class="{ 'tenant-default': t.default }">
-                {{ t.displayName }}
+          <template slot-scope="scope">
+            <div v-if="showTenants[scope.row.id]">
+              <span v-for="(t, index) in scope.row.tenants" :key="index">
+                <span class="tenant" :class="{ 'tenant-default': t.default }">
+                  {{ t.displayName }}
+                </span>
               </span>
-            </span>
+            </div>
           </template>
         </el-table-column>
         <el-table-column prop="systemRoles" label="ロール" width="auto">
@@ -93,6 +95,9 @@ const { mapGetters, mapActions } = createNamespacedHelpers('user')
 
 export default {
   title: 'ユーザ管理',
+  data() {
+    return { showTenants: {} }
+  },
   computed: {
     ...mapGetters(['users']),
   },
@@ -101,14 +106,14 @@ export default {
 
     // add data
     this.users.forEach(d => {
-      d.showTenants = true
+      this.$set(this.showTenants, d.id, true)
     })
   },
   methods: {
     ...mapActions(['fetchUsers']),
 
     async handleToggleExpand(row) {
-      row.showTenants = !row.showTenants
+      this.showTenants[row.id] = !this.showTenants[row.id]
     },
     openCreateDialog() {
       this.$router.push('/user/edit')
