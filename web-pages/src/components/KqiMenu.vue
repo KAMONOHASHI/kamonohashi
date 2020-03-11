@@ -70,19 +70,14 @@ export default {
   },
   watch: {
     $route() {
-      // ["", "cluster-resource", "tenant"]等のメニュー項目を取得し設定。例：/training, /cluster-resource
-      this.activeIndex = `/${this.$route.path.split('/')[1]}`
-
-      // テナント管理系の場合、/manage/tenant等の指定が必要であるため追記
-      if (this.activeIndex === '/manage') {
-        this.activeIndex += `/${this.$route.path.split('/')[2]}`
-      }
+      this.setActiveIndex()
     },
   },
 
   created() {
     this.$store.watch(this.$store.getters.getLoginTenant, this.watchLogin)
     this.activeIndex = this.$route.path
+    this.setActiveIndex()
   },
   mounted() {
     window.addEventListener('load', this.handleResize)
@@ -95,6 +90,15 @@ export default {
 
   methods: {
     ...mapActions(['fetchMenuTree']),
+    setActiveIndex() {
+      // ["", "cluster-resource", "tenant"]等のメニュー項目を取得し設定。例：/training, /cluster-resource
+      this.activeIndex = `/${this.$route.path.split('/')[1]}`
+
+      // テナント管理系の場合、/manage/tenant等の指定が必要であるため追記
+      if (this.activeIndex === '/manage') {
+        this.activeIndex += `/${this.$route.path.split('/')[2]}`
+      }
+    },
     async handleClick(url) {
       if (url) {
         this.$router.push(url)
