@@ -140,10 +140,14 @@
             label="GPU"
             :value="detail ? String(detail.gpu) : '0'"
           />
-          <kqi-display-text-form
-            label="生存期間(h)"
-            :value="detail ? String(detail.expiresIn / 60 / 60) : '0'"
-          />
+          <div v-if="detail">
+            <kqi-display-text-form
+              v-if="detail.expiresIn !== 0"
+              label="起動期間(h)"
+              :value="String(detail.expiresIn / 60 / 60)"
+            />
+            <kqi-display-text-form v-else label="起動期間" value="無期限" />
+          </div>
           <kqi-display-text-form
             label="パーティション"
             :value="detail.partition"

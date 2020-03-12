@@ -455,11 +455,11 @@ export default {
       this.form.resource.gpu = this.detail.gpu
       if (this.detail.expiresIn === 0) {
         if (this.availableInfiniteTime) {
-          this.withExpiresInSetting = false
+          this.form.withExpiresInSetting = false
         }
-        this.expiresIn = 8
+        this.form.expiresIn = 8
       } else {
-        this.expiresIn = origin.expiresIn / 60 / 60
+        this.form.expiresIn = this.detail.expiresIn / 60 / 60
       }
 
       this.form.variables =
@@ -490,11 +490,11 @@ export default {
       this.form.resource.gpu = this.detail.gpu
       if (this.detail.expiresIn === 0) {
         if (this.availableInfiniteTime) {
-          this.withExpiresInSetting = false
+          this.form.withExpiresInSetting = false
         }
-        this.expiresIn = 8
+        this.form.expiresIn = 8
       } else {
-        this.expiresIn = origin.expiresIn / 60 / 60
+        this.form.expiresIn = this.detail.expiresIn / 60 / 60
       }
     }
   },
