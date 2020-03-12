@@ -287,6 +287,7 @@ import KqiPartitionSelector from '@/components/selector/KqiPartitionSelector'
 import KqiResourceSelector from '@/components/selector/KqiResourceSelector'
 import KqiEnvironmentVariables from '@/components/KqiEnvironmentVariables'
 import KqiDisplayError from '@/components/KqiDisplayError'
+import gitSelectorUtil from '@/util/gitSelectorUtil'
 import { mapActions, mapGetters } from 'vuex'
 
 export default {
@@ -576,18 +577,17 @@ export default {
               }
 
               // gitモデルの指定
-              // リポジトリとブランチが指定されている場合、gitモデルを指定して登録
-              // リポジトリとブランチが指定されていない場合、gitモデルは未指定(null)として登録
+              // リポジトリが指定されている場合、gitモデルを指定して登録
+              // リポジトリが指定されていない場合、gitモデルは未指定(null)として登録
               let gitModel = null
-              if (
-                this.form.gitModel.repository !== null &&
-                this.form.gitModel.branch !== null
-              ) {
+              if (this.form.gitModel.repository !== null) {
                 gitModel = {
                   gitId: this.form.gitModel.git.id,
                   repository: this.form.gitModel.repository.name,
                   owner: this.form.gitModel.repository.owner,
-                  branch: this.form.gitModel.branch.branchName,
+                  branch: this.form.gitModel.branch
+                    ? this.form.gitModel.branch.branchName
+                    : null,
                   commitId: this.form.gitModel.commit
                     ? this.form.gitModel.commit.commitId
                     : 'HEAD',
@@ -684,66 +684,33 @@ export default {
 
     // モデル
     async selectGit(gitId) {
-      // 過去の選択状態をリセット
-      this.form.gitModel.repository = null
-      this.form.gitModel.branch = null
-      this.form.gitModel.commit = null
-
-      // clearの場合リセット、gitサーバが選択された場合はリポジトリ取得
-      if (this.form.gitModel.git !== null) {
-        // 独自ローディング処理のため共通側は無効
-        this.$store.commit('setLoading', false)
-        await this['gitSelector/fetchRepositories'](gitId)
-        // 共通側ローディングを再度有効化
-        this.$store.commit('setLoading', true)
-      }
+      await gitSelectorUtil.selectGit(
+        this.form,
+        this['gitSelector/fetchRepositories'],
+        gitId,
+        this.$store,
+      )
     },
     // repositoryの型がstring：手入力, object: 選択
     async selectRepository(repository) {
-      // 過去の選択状態をリセット
-      this.form.gitModel.branch = null
-      this.form.gitModel.commit = null
-
-      let manualInput = false
-      let argRepository = {}
-      if (typeof repository === 'string') {
-        manualInput = true
-        let repositoryName = repository
-        let index = repositoryName.indexOf('/')
-        if (index > 0) {
-          argRepository = {
-            owner: repositoryName.substring(0, index),
-            name: repositoryName.substring(index + 1),
-            fullName: repositoryName,
-          }
-          this.form.gitModel.repository = argRepository
-        } else {
-          //構文エラー
-        }
-      } else {
-        argRepository = repository
-      }
-      // clearの場合リセット、リポジトリが選択された場合はブランチ取得
-      if (this.form.gitModel.repository !== null) {
-        await this['gitSelector/fetchBranches']({
-          gitId: this.form.gitModel.git.id,
-          repository: argRepository,
-          manualInput: manualInput,
+      try {
+        await gitSelectorUtil.selectRepository(
+          this.form,
+          this['gitSelector/fetchBranches'],
+          repository,
+        )
+      } catch (message) {
+        this.$notify.error({
+          message: message,
         })
       }
     },
     async selectBranch(branchName) {
-      // 過去の選択状態をリセット
-      this.form.gitModel.commit = null
-
-      // clearの場合リセット、ブランチが選択された場合はコミット取得
-      if (this.form.gitModel.branch !== null) {
-        await this['gitSelector/fetchCommits']({
-          gitId: this.form.gitModel.git.id,
-          repository: this.form.gitModel.repository,
-          branchName: branchName,
-        })
-      }
+      await gitSelectorUtil.selectBranch(
+        this.form,
+        this['gitSelector/fetchCommits'],
+        branchName,
+      )
     },
   },
 }
