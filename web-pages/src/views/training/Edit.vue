@@ -4,7 +4,7 @@
     type="EDIT"
     @submit="onSubmit"
     @delete="deleteJob"
-    @close="emitCancel"
+    @close="$emit('cancel')"
   >
     <el-row type="flex" justify="end">
       <el-col :span="24" class="right-button-group">
@@ -359,7 +359,7 @@ export default {
           try {
             await this.updateHistory()
             await this.uploadFile()
-            this.emitDone()
+            this.$emit('done')
             this.error = null
           } catch (e) {
             this.error = e
@@ -388,7 +388,7 @@ export default {
     async deleteJob() {
       try {
         await this.delete(this.detail.id)
-        this.emitDone()
+        this.$emit('done', 'delete')
         this.error = null
       } catch (e) {
         this.error = e
@@ -461,16 +461,6 @@ export default {
             'ステータスがCompletedまたはUserCanceledの学習のみ推論を実行できます。',
         })
       }
-    },
-    emitCancel() {
-      this.$emit('cancel')
-    },
-    emitDone() {
-      this.$emit('done')
-    },
-    closeDialog(done) {
-      done()
-      this.emitCancel()
     },
   },
 }
