@@ -204,7 +204,7 @@ export default {
       window.open(this.endpoint)
     },
     async search() {
-      this.currentPage = 1
+      this.pageStatus.currentPage = 1
       await this.retrieveData()
     },
     files(id) {

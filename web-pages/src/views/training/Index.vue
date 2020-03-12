@@ -193,7 +193,7 @@ export default {
             message: `学習履歴を削除しました。(成功：${successCount}件、 失敗：${this
               .selections.length - successCount}件`,
           })
-          this.currentPage = 1
+          this.pageStatus.currentPage = 1
           await this.retrieveData()
         })
         .catch(() => {})

@@ -187,7 +187,7 @@ export default {
       await this.fetchHistories(params)
     },
     async search() {
-      this.currentPage = 1
+      this.pageStatus.currentPage = 1
       await this.retrieveData()
     },
 
@@ -220,7 +220,7 @@ export default {
             message: `推論履歴を削除しました。(成功：${successCount}件、 失敗：${this
               .selections.length - successCount}件）`,
           })
-          this.currentPage = 1
+          this.pageStatus.currentPage = 1
           await this.retrieveData()
         })
         .catch(() => {

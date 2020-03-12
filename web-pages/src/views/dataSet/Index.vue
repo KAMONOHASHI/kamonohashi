@@ -90,7 +90,7 @@ export default {
     ...mapActions(['fetchDataSets']),
 
     async currentChange(page) {
-      this.currentPage = page
+      this.pageStatus.currentPage = page
       await this.retrieveData()
     },
     async retrieveData() {
