@@ -90,10 +90,10 @@
     <div v-else>
       <el-row :gutter="20">
         <el-steps :active="active" align-center>
-          <el-step title="Step 1" description="training name & dataset" />
-          <el-step title="Step 2" description="container image & model" />
-          <el-step title="Step 3" description="resource" />
-          <el-step title="Step 4" description="option" />
+          <el-step title="Step 1" description="学習名 & データセット" />
+          <el-step title="Step 2" description="コンテナ & モデル" />
+          <el-step title="Step 3" description="リソース" />
+          <el-step title="Step 4" description="オプション" />
         </el-steps>
         <div class="element">
           <!-- step 1 -->
