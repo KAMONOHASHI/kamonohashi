@@ -4,7 +4,7 @@
     :type="id === null ? 'CREATE' : 'EDIT'"
     @submit="submit"
     @delete="deleteNode"
-    @close="emitCancel"
+    @close="$emit('cancel')"
   >
     <el-form ref="createForm" :model="form" :rules="rules">
       <kqi-display-error :error="error" />
@@ -150,7 +150,7 @@ export default {
             } else {
               await this.put({ id: this.id, params: params })
             }
-            this.emitDone()
+            this.$emit('done')
             this.error = null
           } catch (e) {
             this.error = e
@@ -163,16 +163,10 @@ export default {
       try {
         await this.delete(this.id)
         this.error = null
-        this.emitDone()
+        this.$emit('done', 'delete')
       } catch (e) {
         this.error = e
       }
-    },
-    emitCancel() {
-      this.$emit('cancel')
-    },
-    emitDone() {
-      this.$emit('done')
     },
   },
 }
