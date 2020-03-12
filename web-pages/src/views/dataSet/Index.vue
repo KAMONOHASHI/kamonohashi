@@ -2,13 +2,11 @@
   <div>
     <h2>データセット管理</h2>
     <el-row type="flex" justify="space-between" :gutter="20">
-      <el-col class="pagination" :span="16">
-        <kqi-pagination
-          v-model="pageStatus"
-          :total="total"
-          @change="retrieveData"
-        />
-      </el-col>
+      <kqi-pagination
+        v-model="pageStatus"
+        :total="total"
+        @change="retrieveData"
+      />
       <el-col class="right-top-button" :span="8">
         <el-button
           icon="el-icon-edit-outline"

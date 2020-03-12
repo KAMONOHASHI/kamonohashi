@@ -105,6 +105,7 @@
 
     <router-view
       @cancel="closeDialog"
+      @cancelShell="closeDialog"
       @done="done"
       @return="back"
       @files="files"
