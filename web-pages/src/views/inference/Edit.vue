@@ -126,12 +126,6 @@
           <kqi-display-text-form label="実行者" :value="detail.createdBy" />
           <kqi-display-text-form label="開始日時" :value="detail.createdAt" />
           <kqi-display-text-form label="完了日時" :value="detail.completedAt" />
-
-          <kqi-display-text-form label="待機時間" :value="detail.waitingTime" />
-          <kqi-display-text-form
-            label="実行時間"
-            :value="detail.executionTime"
-          />
         </el-col>
 
         <el-col :span="12">
