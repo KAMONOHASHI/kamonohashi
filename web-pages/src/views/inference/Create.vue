@@ -317,7 +317,7 @@ export default {
   },
   computed: {
     ...mapGetters({
-      trainingHistories: ['training/histories'],
+      trainingHistories: ['training/historiesToMount'],
       dataSets: ['dataSet/dataSets'],
       registries: ['registrySelector/registries'],
       defaultRegistryId: ['registrySelector/defaultRegistryId'],

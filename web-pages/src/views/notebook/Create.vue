@@ -353,7 +353,7 @@ export default {
   },
   computed: {
     ...mapGetters({
-      trainingHistories: ['training/histories'],
+      trainingHistories: ['training/historiesToMount'],
       dataSets: ['dataSet/dataSets'],
       registries: ['registrySelector/registries'],
       defaultRegistryId: ['registrySelector/defaultRegistryId'],
@@ -380,7 +380,9 @@ export default {
     }
 
     // 指定に必要な情報を取得
-    await this['training/fetchHistories']()
+    await this['training/fetchHistoriesToMount']({
+      status: ['Completed', 'UserCanceled', 'Killed'],
+    })
     await this['cluster/fetchPartitions']()
     await this['dataSet/fetchDataSets']()
 
@@ -501,7 +503,7 @@ export default {
 
   methods: {
     ...mapActions([
-      'training/fetchHistories',
+      'training/fetchHistoriesToMount',
       'notebook/fetchDetail',
       'notebook/post',
       'notebook/postRerun',

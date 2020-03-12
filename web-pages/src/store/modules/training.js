@@ -5,6 +5,7 @@ import Util from '@/util/util'
 const state = {
   histories: [],
   total: 0,
+  historiesToMount: [],
   selections: [],
   detail: {},
   events: {},
@@ -18,6 +19,9 @@ const state = {
 const getters = {
   histories(state) {
     return state.histories
+  },
+  historiesToMount(state) {
+    return state.historiesToMount
   },
   total(state) {
     return state.total
@@ -59,8 +63,8 @@ const actions = {
   },
 
   async fetchHistoriesToMount({ commit }, params) {
-    let histories = (await api.training.getMount(params)).data
-    commit('setHistories', { histories })
+    let historiesToMount = (await api.training.getMount(params)).data
+    commit('setHistoriesToMount', { historiesToMount })
   },
 
   async fetchDetail({ commit }, id) {
@@ -183,6 +187,10 @@ const mutations = {
 
   setTotal(state, total) {
     state.total = total
+  },
+
+  setHistoriesToMount(state, { historiesToMount }) {
+    state.historiesToMount = historiesToMount
   },
 
   setSelections(state, selections) {
