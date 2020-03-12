@@ -301,22 +301,15 @@ export default {
   computed: {
     ...mapGetters(['detail', 'events', 'uploadedFiles']),
   },
-  async created() {
-    this.title = '学習履歴'
-    await this.retrieveData()
-    this.form.name = this.detail.name
-    this.form.favorite = this.detail.favorite
-    this.form.memo = this.detail.memo
+  watch: {
+    async $route() {
+      // 子学習履歴と親学習履歴が同一コンポーネントのため、その遷移はrouterの変化で検知する
+      await this.initialize()
+    },
   },
-  async beforeUpdate() {
-    // 子ジョブから親ジョブ詳細に遷移する際にブラウザの進む/戻るボタンを押した場合の対応処理
-    // id(routerから受け取るパラメータ)とtrainingId(履歴検索に用いるID)が異なる場合、router側を優先した上で表示内容を更新
-    if (this.detail.id.toString() !== this.id.toString()) {
-      await this.retrieveData()
-      this.form.name = this.detail.name
-      this.form.favorite = this.detail.favorite
-      this.form.memo = this.detail.memo
-    }
+
+  async created() {
+    await this.initialize()
   },
   methods: {
     ...mapActions([
@@ -330,6 +323,13 @@ export default {
       'delete',
       'deleteFile',
     ]),
+    async initialize() {
+      this.title = '学習履歴'
+      await this.retrieveData()
+      this.form.name = this.detail.name
+      this.form.favorite = this.detail.favorite
+      this.form.memo = this.detail.memo
+    },
     async retrieveData() {
       await this.fetchDetail(this.id)
       await this.fetchUploadedFiles(this.detail.id)
@@ -428,7 +428,6 @@ export default {
     },
     // 親ジョブ履歴の表示指示
     async showParent() {
-      // 表示内容の変更は、beforeUpdated内で行う
       this.$router.push('/training/' + this.detail.parent.id)
     },
     redirectEditDataSet() {

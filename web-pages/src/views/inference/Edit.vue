@@ -298,16 +298,6 @@ export default {
     this.form.favorite = this.detail.favorite
     this.form.memo = this.detail.memo
   },
-  async beforeUpdate() {
-    // 子ジョブから親ジョブ詳細に遷移する際にブラウザの進む/戻るボタンを押した場合の対応処理
-    // id(routerから受け取るパラメータ)とtrainingId(履歴検索に用いるID)が異なる場合、router側を優先した上で表示内容を更新
-    if (this.detail.id.toString() !== this.id.toString()) {
-      await this.retrieveData()
-      this.form.name = this.detail.name
-      this.form.favorite = this.detail.favorite
-      this.form.memo = this.detail.memo
-    }
-  },
   methods: {
     ...mapActions([
       'fetchDetail',
@@ -418,11 +408,10 @@ export default {
     },
     // 親ジョブ履歴の表示指示
     async showParent() {
-      // 表示内容の変更は、beforeUpdated内で行う
       this.$router.push('/training/' + this.detail.parent.id)
     },
     redirectEditDataSet() {
-      this.$router.push('/dataset/' + this.detail.dataSet.id)
+      this.$router.push('/dataset/edit/' + this.detail.dataSet.id)
     },
     emitFiles() {
       this.$emit('files', this.detail.id)
