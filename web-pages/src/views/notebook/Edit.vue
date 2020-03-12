@@ -250,7 +250,6 @@ export default {
         memo: null,
       },
       title: '',
-      dialogVisible: true,
       error: null,
     }
   },
@@ -299,7 +298,7 @@ export default {
         if (valid) {
           try {
             await this.updateHistory()
-            this.emitDone()
+            this.$emit('done')
             this.error = null
           } catch (e) {
             this.error = e
@@ -319,7 +318,7 @@ export default {
     async deleteJob() {
       try {
         await this.delete(this.detail.id)
-        this.emitDone()
+        this.$emit('done', 'delete')
         this.error = null
       } catch (e) {
         this.error = e
@@ -352,14 +351,6 @@ export default {
     },
     emitCancel() {
       this.$emit('cancel')
-    },
-    emitDone() {
-      this.$emit('done')
-      this.dialogVisible = false
-    },
-    closeDialog(done) {
-      done()
-      this.emitCancel()
     },
   },
 }
