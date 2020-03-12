@@ -132,8 +132,6 @@
             label="実行時間"
             :value="detail.executionTime"
           />
-
-          <kqi-display-text-form label="ログ概要" :value="detail.logSummary" />
         </el-col>
 
         <el-col :span="12">
