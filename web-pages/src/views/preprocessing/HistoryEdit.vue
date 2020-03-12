@@ -147,7 +147,7 @@ export default {
     async handleRemove() {
       try {
         await this.deleteHistory({ id: this.id, dataId: this.dataId })
-        this.emitDone()
+        this.$emit('done', 'delete')
         this.error = null
       } catch (e) {
         this.error = e
@@ -162,9 +162,6 @@ export default {
     },
     emitLog() {
       this.$emit('log', { id: this.id, dataId: this.dataId })
-    },
-    emitDone() {
-      this.$emit('done')
     },
 
     emitCancel() {

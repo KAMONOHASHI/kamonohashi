@@ -4,11 +4,11 @@
     :type="isCreateDialog ? 'CREATE' : 'EDIT'"
     @submit="submit"
     @delete="deletePreprocessing"
-    @close="emitCancel"
+    @close="$emit('cancel')"
   >
     <el-row v-if="isEditDialog" type="flex" justify="end">
       <el-col :span="24" class="right-button-group">
-        <el-button @click="emitCopy">コピー</el-button>
+        <el-button @click="$emit('copy', id)">コピー</el-button>
       </el-col>
     </el-row>
 
@@ -326,7 +326,7 @@ export default {
               }
             }
 
-            this.emitDone()
+            this.$emit('done')
             this.error = null
           } catch (e) {
             this.error = e
@@ -351,26 +351,10 @@ export default {
     async deletePreprocessing() {
       try {
         await this['preprocessing/delete'](this.id)
-        this.emitDone()
+        this.$emit('done', 'delete')
       } catch (e) {
         this.error = e
       }
-    },
-    closeDialog(done) {
-      if (done) {
-        done()
-      }
-      this.emitCancel()
-    },
-    emitCopy() {
-      this.$emit('copy', this.id)
-    },
-    emitCancel() {
-      this.$emit('cancel')
-    },
-    emitDone() {
-      this.showSuccessMessage()
-      this.$emit('done')
     },
     // コンテナイメージ
     async selectRegistry(registryId) {
