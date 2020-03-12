@@ -76,7 +76,7 @@
     </el-row>
     <router-view
       @cancel="closeDialog()"
-      @done="done()"
+      @done="done"
       @preprocessing="openPreprocessingDialog()"
       @close="closeDialog()"
       @runPreprocessing="redirectPreprocessingPage()"
@@ -147,7 +147,16 @@ export default {
     closeDialog() {
       this.$router.push('/data')
     },
-    async done() {
+    async done(type) {
+      if (type === 'delete') {
+        // 削除時、表示していたページにデータが無くなっている可能性がある。
+        // 総数 % ページサイズ === 1の時、残り1の状態で削除したため、currentPageが1で無ければ1つ前のページに戻す
+        if (this.total % this.pageStatus.currentPageSize === 1) {
+          if (this.pageStatus.currentPage !== 1) {
+            this.pageStatus.currentPage -= 1
+          }
+        }
+      }
       this.closeDialog()
       await this.retrieveData()
       this.showSuccessMessage()

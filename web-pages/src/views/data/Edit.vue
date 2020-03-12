@@ -4,7 +4,7 @@
     :type="id === null ? 'CREATE' : 'EDIT'"
     @submit="submit"
     @delete="deleteData"
-    @close="emitCancel"
+    @close="$emit('cancel')"
   >
     <el-row v-if="isEditDialog" type="flex" justify="end">
       <el-col :span="24" class="right-button-group">
@@ -183,7 +183,7 @@ export default {
           try {
             dataId = await this.updateData()
             await this.uploadFile(dataId)
-            this.emitDone()
+            this.$emit('done')
             this.error = null
           } catch (error) {
             try {
@@ -244,7 +244,7 @@ export default {
       try {
         await this.delete(this.id)
         this.error = null
-        this.emitDone()
+        this.$emit('done', 'delete')
       } catch (e) {
         this.error = e
       }
@@ -263,19 +263,8 @@ export default {
       }
     },
 
-    closeDialog(done) {
-      done()
-      this.emitCancel()
-    },
-    emitCancel() {
-      this.$emit('cancel')
-    },
     openPreprocessingDialog() {
       this.$router.push('/data/' + this.id + '/preprocessing')
-    },
-    emitDone() {
-      this.showSuccessMessage()
-      this.$emit('done')
     },
   },
 }
