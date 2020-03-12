@@ -451,10 +451,15 @@ export default {
             this.form.variables.forEach(kvp => {
               options[kvp.key] = kvp.value
             })
+            // 親学習IDを取得(1つのみマウント可)
+            let parentId = null
+            if (this.form.selectedParent.length > 0) {
+              parentId = this.form.selectedParent[0].id
+            }
             let params = {
               Name: this.form.name,
               DataSetId: this.form.dataSetId,
-              ParentId: this.form.selectedParent.id,
+              ParentId: parentId,
               ContainerImage: {
                 registryId: this.form.containerImage.registry.id,
                 image: this.form.containerImage.image,
