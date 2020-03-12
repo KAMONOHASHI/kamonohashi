@@ -34,7 +34,10 @@ const actions = {
     let nodes = response.data
     let total = response.headers['x-total-count']
     commit('setNodes', { nodes })
-    commit('setTotal', parseInt(total))
+    // params.withTotal=trueの時は件数が取れているため設定
+    if (total !== undefined) {
+      commit('setTotal', parseInt(total))
+    }
   },
 
   async fetchDetail({ commit }, id) {
