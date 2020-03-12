@@ -581,6 +581,7 @@ export default {
               // リポジトリが指定されていない場合、gitモデルは未指定(null)として登録
               let gitModel = null
               if (this.form.gitModel.repository !== null) {
+                // HEAD指定の時はcommitsの先頭要素をcommitIDに指定する。コピー実行時の再現性を担保するため
                 gitModel = {
                   gitId: this.form.gitModel.git.id,
                   repository: this.form.gitModel.repository.name,
@@ -590,7 +591,7 @@ export default {
                     : null,
                   commitId: this.form.gitModel.commit
                     ? this.form.gitModel.commit.commitId
-                    : 'HEAD',
+                    : this.commits[0].commitId,
                 }
               }
               // training history ObjectのリストからIDのみを抜き出して格納

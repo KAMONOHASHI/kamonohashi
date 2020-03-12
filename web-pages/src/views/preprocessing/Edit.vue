@@ -295,6 +295,7 @@ export default {
                 this.form.gitModel.repository !== null &&
                 this.form.gitModel.branch !== null
               ) {
+                // HEAD指定の時はcommitsの先頭要素をcommitIDに指定する。コピー実行時の再現性を担保するため
                 gitModel = {
                   gitId: this.form.gitModel.git.id,
                   repository: this.form.gitModel.repository.name,
@@ -302,7 +303,7 @@ export default {
                   branch: this.form.gitModel.branch.branchName,
                   commitId: this.form.gitModel.commit
                     ? this.form.gitModel.commit.commitId
-                    : 'HEAD',
+                    : this.commits[0].commitId,
                 }
               }
               let params = {

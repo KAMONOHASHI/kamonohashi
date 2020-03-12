@@ -466,6 +466,7 @@ export default {
                 image: this.form.containerImage.image,
                 tag: this.form.containerImage.tag,
               },
+              // HEAD指定の時はcommitsの先頭要素をcommitIDに指定する。コピー実行時の再現性を担保するため
               GitModel: {
                 gitId: this.form.gitModel.git.id,
                 repository: this.form.gitModel.repository.name,
@@ -475,7 +476,7 @@ export default {
                   : null,
                 commitId: this.form.gitModel.commit
                   ? this.form.gitModel.commit.commitId
-                  : 'HEAD',
+                  : this.commits[0].commitId,
               },
               EntryPoint: this.form.entryPoint,
               Cpu: this.form.resource.cpu,
