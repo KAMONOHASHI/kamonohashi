@@ -127,7 +127,16 @@ export default {
     async closeEditDialog() {
       this.$router.push('/preprocessingHistory/' + this.id)
     },
-    async done() {
+    async done(type) {
+      if (type === 'delete') {
+        // 削除時、表示していたページにデータが無くなっている可能性がある。
+        // 総数 % ページサイズ === 1の時、残り1の状態で削除したため、currentPageが1で無ければ1つ前のページに戻す
+        if (this.histories.length % this.pageStatus.currentPageSize === 1) {
+          if (this.pageStatus.currentPage !== 1) {
+            this.pageStatus.currentPage -= 1
+          }
+        }
+      }
       await this.retrieveData()
       this.closeEditDialog()
       this.showSuccessMessage()
