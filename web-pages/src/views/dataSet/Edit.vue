@@ -4,11 +4,11 @@
     :type="isCreateDialog ? 'CREATE' : 'EDIT'"
     @submit="submit"
     @delete="deleteDataSet"
-    @close="emitCancel"
+    @close="$emit('cancel')"
   >
     <el-row v-if="isEditDialog">
       <el-col :span="24" class="right-button-group">
-        <el-button @click="emitCopy">コピー</el-button>
+        <el-button @click="$emit('copy', id)">コピー</el-button>
       </el-col>
     </el-row>
 
@@ -97,7 +97,28 @@ export default {
       isEditDialog: false,
       dialogVisible: true,
       error: null,
-      rules: this.createRules(),
+      rules: {
+        name: [{ required: true, trigger: 'blur', message: '必須項目です' }],
+        entries: [
+          {
+            required: true,
+            trigger: 'blur',
+            validator(rule, value, callback) {
+              let exists = false
+              for (let key in value) {
+                if (value[key].length > 0) {
+                  exists = true
+                }
+              }
+              if (exists) {
+                callback()
+              } else {
+                callback(new Error('必須項目です'))
+              }
+            },
+          },
+        ],
+      },
     }
   },
   computed: {
@@ -181,7 +202,7 @@ export default {
         if (valid) {
           try {
             await this.postDataSet()
-            this.emitDone()
+            this.$emit('done')
             this.error = null
           } catch (e) {
             this.error = e
@@ -217,52 +238,14 @@ export default {
     async deleteDataSet() {
       try {
         await this.delete(this.id)
-        this.emitDone()
+        this.$emit('done', 'delete')
       } catch (e) {
         this.error = e
       }
     },
 
-    emitDone() {
-      this.showSuccessMessage()
-      this.$emit('done')
-    },
-
-    emitCancel() {
-      this.$emit('cancel')
-    },
-
-    emitCopy() {
-      this.$emit('copy', this.id)
-    },
-
     handleShowData(id) {
       this.$router.push(`/data/edit/${id}`)
-    },
-
-    createRules() {
-      return {
-        name: [{ required: true, trigger: 'blur', message: '必須項目です' }],
-        entries: [
-          {
-            required: true,
-            trigger: 'blur',
-            validator(rule, value, callback) {
-              let exists = false
-              for (let key in value) {
-                if (value[key].length > 0) {
-                  exists = true
-                }
-              }
-              if (exists) {
-                callback()
-              } else {
-                callback(new Error('必須項目です'))
-              }
-            },
-          },
-        ],
-      }
     },
   },
 }
