@@ -318,6 +318,7 @@ export default {
   computed: {
     ...mapGetters({
       trainingHistories: ['training/historiesToMount'],
+      trainingDetail: ['training/detail'],
       dataSets: ['dataSet/dataSets'],
       registries: ['registrySelector/registries'],
       defaultRegistryId: ['registrySelector/defaultRegistryId'],
@@ -329,7 +330,7 @@ export default {
       branches: ['gitSelector/branches'],
       commits: ['gitSelector/commits'],
       loadingRepositories: ['gitSelector/loadingRepositories'],
-      detail: ['inference/detail'],
+      inferenceDetail: ['inference/detail'],
       partitions: ['cluster/partitions'],
     }),
   },
@@ -337,8 +338,8 @@ export default {
     let origin = this.$route.query.origin
     let fromTrainView = origin === 'train'
 
-    // originIdが設定されている、かつ学習からの遷移でない場合、コピー実行とみなして実行
-    this.isCopyCreation = this.originId !== null && !fromTrainView
+    // originIdが設定されている場合、コピー実行とみなして実行
+    this.isCopyCreation = this.originId !== null
 
     // 指定に必要な情報を取得
     await this['training/fetchHistoriesToMount']({
@@ -370,66 +371,75 @@ export default {
           this.form.selectedParent = [history]
         }
       })
-      this.isCopyCreation = false
     }
 
-    // コピー実行時はコピー元情報を各項目を設定
+    // 学習からの遷移、もしくはコピー実行時はコピー元情報を各項目を設定
     if (this.isCopyCreation) {
-      await this['inference/fetchDetail'](this.originId)
+      let detail = {}
+      if (fromTrainView) {
+        // 学習からの遷移
+        await this['training/fetchDetail'](this.originId)
+        detail = this.trainingDetail
+      } else {
+        // 推論のコピー実行
+        await this['inference/fetchDetail'](this.originId)
+        detail = this.inferenceDetail
 
-      this.form.name = this.detail.name
-      this.form.dataSetId = String(this.detail.dataSet.id)
-      this.form.entryPoint = this.detail.entryPoint
-      this.form.zip = this.detail.zip
-      this.form.memo = this.detail.memo
-      this.form.selectedParent = []
-      if (this.detail.parent) {
-        this.trainingHistories.forEach(history => {
-          if (history.id === this.detail.parent.id) {
-            this.form.selectedParent = [history]
-          }
-        })
+        this.form.name = detail.name
+        this.form.entryPoint = detail.entryPoint
+        this.form.zip = detail.zip
+        this.form.memo = detail.memo
+        this.form.selectedParent = []
+        if (detail.parent) {
+          this.trainingHistories.forEach(history => {
+            if (history.id === detail.parent.id) {
+              this.form.selectedParent = [history]
+            }
+          })
+        }
+        this.form.resource.cpu = detail.cpu
+        this.form.resource.memory = detail.memory
+        this.form.resource.gpu = detail.gpu
+
+        this.form.variables =
+          detail.options.length === 0
+            ? [{ key: '', value: '' }]
+            : detail.options
+        this.form.partition = detail.partition
       }
 
+      // 下記は学習からの遷移/コピー実行に関わらずコピー
+      this.form.dataSetId = String(detail.dataSet.id)
       // レジストリの設定
       this.form.containerImage.registry = {
-        id: this.detail.containerImage.registryId,
-        name: this.detail.containerImage.name,
+        id: detail.containerImage.registryId,
+        name: detail.containerImage.name,
       }
-      await this.selectRegistry(this.detail.containerImage.registryId)
-      this.form.containerImage.image = this.detail.containerImage.image
+      await this.selectRegistry(detail.containerImage.registryId)
+      this.form.containerImage.image = detail.containerImage.image
       await this.selectImage()
-      this.form.containerImage.tag = this.detail.containerImage.tag
+      this.form.containerImage.tag = detail.containerImage.tag
 
       // gitモデルの設定
       this.form.gitModel.git = {
-        id: this.detail.gitModel.gitId,
-        name: this.detail.gitModel.name,
+        id: detail.gitModel.gitId,
+        name: detail.gitModel.name,
       }
-      await this.selectGit(this.detail.gitModel.gitId)
-      this.form.gitModel.repository = `${this.detail.gitModel.owner}/${this.detail.gitModel.repository}`
+      await this.selectGit(detail.gitModel.gitId)
+      this.form.gitModel.repository = `${detail.gitModel.owner}/${detail.gitModel.repository}`
       await this.selectRepository(this.form.gitModel.repository)
-      this.form.gitModel.branch = this.detail.gitModel.branch
-      await this.selectBranch(this.detail.gitModel.branch)
+      this.form.gitModel.branch = detail.gitModel.branch
+      await this.selectBranch(detail.gitModel.branch)
       // commitsから該当commitを抽出
       this.form.gitModel.commit = this.commits.find(commit => {
-        return commit.commitId == this.detail.gitModel.commitId
+        return commit.commitId == detail.gitModel.commitId
       })
-
-      this.form.resource.cpu = this.detail.cpu
-      this.form.resource.memory = this.detail.memory
-      this.form.resource.gpu = this.detail.gpu
-
-      this.form.variables =
-        this.detail.options.length === 0
-          ? [{ key: '', value: '' }]
-          : this.detail.options
-      this.form.partition = this.detail.partition
     }
   },
   methods: {
     ...mapActions([
       'training/fetchHistoriesToMount',
+      'training/fetchDetail',
       'inference/fetchDetail',
       'inference/post',
       'cluster/fetchPartitions',
