@@ -76,7 +76,9 @@
               >
                 {{ tag }}
               </el-tag>
-            </el-col>
+              <!-- タグ存在時にiボタンがずれるのを防止するためのスペース -->
+              <p style="white-space:pre-wrap;" v-text="emptyspace"></p
+            ></el-col>
 
             <el-col v-if="viewInfo.showAssign" :span="assignSpanSize">
               <div class="tag" :class="'color-' + data.colorIndex">
@@ -203,6 +205,7 @@ export default {
   },
   data() {
     return {
+      emptyspace: ' ',
       searchCondition: {}, // 検索条件
       searchConfigs: [
         { prop: 'id', name: 'ID', type: 'number' },
