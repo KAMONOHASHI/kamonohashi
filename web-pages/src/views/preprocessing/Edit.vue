@@ -248,14 +248,10 @@ export default {
             return branch.branchName == this.detail.gitModel.branch
           })
           await this.selectBranch(this.detail.gitModel.branch)
-          // commitIdがHEADの場合はHEADを指定。それ以外の場合はcommitsから該当commitを抽出
-          if (this.detail.gitModel.commitId === 'HEAD') {
-            this.form.gitModel.commit = 'HEAD'
-          } else {
-            this.form.gitModel.commit = this.commits.find(commit => {
-              return commit.commitId == this.detail.gitModel.commitId
-            })
-          }
+          // commitsから該当commitを抽出
+          this.form.gitModel.commit = this.commits.find(commit => {
+            return commit.commitId == this.detail.gitModel.commitId
+          })
         }
 
         this.form.resource.cpu = this.detail.cpu

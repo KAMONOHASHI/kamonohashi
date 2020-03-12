@@ -444,7 +444,10 @@ export default {
         await this.selectRepository(this.form.gitModel.repository)
         this.form.gitModel.branch = this.detail.gitModel.branch
         await this.selectBranch(this.detail.gitModel.branch)
-        this.form.gitModel.commit = this.detail.gitModel.commitId
+        // commitsから該当commitを抽出
+        this.form.gitModel.commit = this.commits.find(commit => {
+          return commit.commitId == this.detail.gitModel.commitId
+        })
       }
 
       this.form.resource.cpu = this.detail.cpu
@@ -581,7 +584,14 @@ export default {
               // リポジトリが指定されていない場合、gitモデルは未指定(null)として登録
               let gitModel = null
               if (this.form.gitModel.repository !== null) {
-                // HEAD指定の時はcommitsの先頭要素をcommitIDに指定する。コピー実行時の再現性を担保するため
+                // ブランチ未指定の際はcommitIdも未指定で実行
+                // ブランチ指定時、HEADが指定された際はcommitsの先頭要素をcommitIDに指定する。コピー実行時の再現性を担保するため
+                let commitId = null
+                if (this.form.gitModel.branch) {
+                  commitId = this.form.gitModel.commit
+                    ? this.form.gitModel.commit.commitId
+                    : this.commits[0].commitId
+                }
                 gitModel = {
                   gitId: this.form.gitModel.git.id,
                   repository: this.form.gitModel.repository.name,
@@ -589,9 +599,7 @@ export default {
                   branch: this.form.gitModel.branch
                     ? this.form.gitModel.branch.branchName
                     : null,
-                  commitId: this.form.gitModel.commit
-                    ? this.form.gitModel.commit.commitId
-                    : this.commits[0].commitId,
+                  commitId: commitId,
                 }
               }
               // training history ObjectのリストからIDのみを抜き出して格納

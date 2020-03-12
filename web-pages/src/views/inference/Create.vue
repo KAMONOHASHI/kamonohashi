@@ -411,7 +411,10 @@ export default {
       await this.selectRepository(this.form.gitModel.repository)
       this.form.gitModel.branch = this.detail.gitModel.branch
       await this.selectBranch(this.detail.gitModel.branch)
-      this.form.gitModel.commit = this.detail.gitModel.commitId
+      // commitsから該当commitを抽出
+      this.form.gitModel.commit = this.commits.find(commit => {
+        return commit.commitId == this.detail.gitModel.commitId
+      })
 
       this.form.resource.cpu = this.detail.cpu
       this.form.resource.memory = this.detail.memory
@@ -457,6 +460,14 @@ export default {
             if (this.form.selectedParent.length > 0) {
               parentId = this.form.selectedParent[0].id
             }
+            // ブランチ未指定の際はcommitIdも未指定で実行
+            // ブランチ指定時、HEADが指定された際はcommitsの先頭要素をcommitIDに指定する。コピー実行時の再現性を担保するため
+            let commitId = null
+            if (this.form.gitModel.branch) {
+              commitId = this.form.gitModel.commit
+                ? this.form.gitModel.commit.commitId
+                : this.commits[0].commitId
+            }
             let params = {
               Name: this.form.name,
               DataSetId: this.form.dataSetId,
@@ -466,7 +477,6 @@ export default {
                 image: this.form.containerImage.image,
                 tag: this.form.containerImage.tag,
               },
-              // HEAD指定の時はcommitsの先頭要素をcommitIDに指定する。コピー実行時の再現性を担保するため
               GitModel: {
                 gitId: this.form.gitModel.git.id,
                 repository: this.form.gitModel.repository.name,
@@ -474,9 +484,7 @@ export default {
                 branch: this.form.gitModel.branch
                   ? this.form.gitModel.branch.branchName
                   : null,
-                commitId: this.form.gitModel.commit
-                  ? this.form.gitModel.commit.commitId
-                  : this.commits[0].commitId,
+                commitId: commitId,
               },
               EntryPoint: this.form.entryPoint,
               Cpu: this.form.resource.cpu,
