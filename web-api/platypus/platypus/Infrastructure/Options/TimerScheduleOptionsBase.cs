@@ -119,17 +119,23 @@ namespace Nssol.Platypus.Infrastructure.Options
                         weekTimeArray[weekIndex] = new DateTime(sunday_base.Year, sunday_base.Month, sunday_base.Day + weekIndex, time.Hour, time.Minute, time.Second);
                     }
                 }
+                else if (key_val[0].ToLower().StartsWith("dynamic"))
+                {
+                    // 初回サーバ起動の曜日、時間によって動的に時間が設定される
+                    DateTime now = TimeZoneInfo.ConvertTime(DateTime.UtcNow, TimeZoneInfo.Utc, timeZoneInfo);
+                    weekTimeArray[(int)now.DayOfWeek] = new DateTime(sunday_base.Year, sunday_base.Month, sunday_base.Day + (int)now.DayOfWeek, now.Hour, now.Minute, now.Second);
+                }
                 else
                 {
                     // 個別曜日で時間設定
-                    int weekIndex = getWeekIndex(key_val[0]);
+                    int weekIndex = GetWeekIndex(key_val[0]);
                     if (weekIndex < 0 || weekIndex > 6)
                     {
                         LogError($"{classMethodName}: 不正な曜日指定です。曜日の英字略称名=\"{key_val[0]}\"");
                         valid = false;
                         return;
                     }
-                    weekTimeArray[weekIndex] = new DateTime(sunday_base.Year, sunday_base.Month, sunday_base.Day+ weekIndex, time.Hour, time.Minute, time.Second);
+                    weekTimeArray[weekIndex] = new DateTime(sunday_base.Year, sunday_base.Month, sunday_base.Day + weekIndex, time.Hour, time.Minute, time.Second);
                 }
             }
 
@@ -144,6 +150,10 @@ namespace Nssol.Platypus.Infrastructure.Options
             }
         }
 
+        /// <summary>
+        /// ロガーを設定する
+        /// </summary>
+        /// <param name="logger">ロガー</param>
         public void SetLogger(ILogger logger)
         {
             this.logger = logger;
@@ -165,6 +175,9 @@ namespace Nssol.Platypus.Infrastructure.Options
             return valid;
         }
 
+        /// <summary>
+        /// 初回起動までの時間を取得する
+        /// </summary>
         public TimeSpan? GetStartingtDueTime()
         {
             if (StartingDueTimeSpanSecond > 0)
@@ -252,9 +265,11 @@ namespace Nssol.Platypus.Infrastructure.Options
         private DateTime?[] weekTimeArray;
 
         /// <summary>
-        /// 文字列より曜日番号(Sun=0,Mon=,...,Sat=6)を返却
+        /// 文字列より曜日番号(Sun=0,Mon=1,...,Sat=6)を返却
         /// </summary>
-        private int getWeekIndex(string weekName)
+        /// <param name="weekName">曜日文字列</param>
+        /// <returns>曜日番号</returns>
+        private int GetWeekIndex(string weekName)
         {
             if (weekName.ToLower().StartsWith("sun"))
             {
@@ -290,6 +305,7 @@ namespace Nssol.Platypus.Infrastructure.Options
         /// <summary>
         /// ERROR ログ出力でユーザ名は "-" とします。
         /// </summary>
+        /// <param name="msg">メッセージ</param>
         private void LogError(string msg)
         {
             if (logger != null)
@@ -301,6 +317,7 @@ namespace Nssol.Platypus.Infrastructure.Options
         /// <summary>
         /// WARN ログ出力でユーザ名は "-" とします。
         /// </summary>
+        /// <param name="msg">メッセージ</param>
         private void LogWarn(string msg)
         {
             if (logger != null)
@@ -312,6 +329,7 @@ namespace Nssol.Platypus.Infrastructure.Options
         /// <summary>
         /// INFO ログ出力でユーザ名は "-" とします。
         /// </summary>
+        /// <param name="msg">メッセージ</param>
         private void LogInfo(string msg)
         {
             if (logger != null)
@@ -323,6 +341,7 @@ namespace Nssol.Platypus.Infrastructure.Options
         /// <summary>
         /// DEBUG ログ出力でユーザ名は "-" とします。
         /// </summary>
+        /// <param name="msg">メッセージ</param>
         private void LogDebug(string msg)
         {
             if (logger != null)

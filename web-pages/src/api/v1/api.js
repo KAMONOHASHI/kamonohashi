@@ -294,6 +294,9 @@ let api = {
       putRoles: gen.ApiV1TenantUsersByIdRolesPut
     }
   },
+  version: {
+    get: gen.ApiV1VersionGet
+  },
 
   // dataを取り出すメソッド
   f: {
