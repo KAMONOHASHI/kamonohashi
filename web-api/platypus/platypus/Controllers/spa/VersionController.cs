@@ -59,7 +59,7 @@ namespace Nssol.Platypus.Controllers.spa
             if (versionModel != null)
             {
                 outputModel.Version = versionModel.Version;
-                outputModel.Messages = GetMessages(versionModel.ReleaseDate, versionModel.Support, versionModel.Version, versionModel.LatestVersion);
+                outputModel.Messages = GetMessages(versionModel.Support, versionModel.Version, versionModel.LatestVersion);
             }
             else
             {
@@ -73,12 +73,11 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// バージョンに関してのメッセージを作成・取得する
         /// </summary>
-        /// <param name="releaseDate">リリース日</param>
         /// <param name="support">サポート有無</param>
         /// <param name="version">バージョン番号</param>
         /// <param name="latestVersion">最新バージョン番号</param>
         /// <returns>メッセージ一覧</returns>
-        private List<string> GetMessages(string releaseDate, bool support, string version, string latestVersion)
+        private List<string> GetMessages(bool support, string version, string latestVersion)
         {
             List<string> messages = new List<string>();
 
