@@ -26,31 +26,11 @@ const getters = {
 const actions = {
   async fetchEndpoints({ commit }) {
     let endpoints = (await api.git.admin.getEndpoints()).data
-    let serviceTypes = (await api.git.admin.getTypes()).data
-    for (let i = 0; i < endpoints.length; i++) {
-      let serviceTypeId = endpoints[i].serviceType
-
-      // ServiceTypeの数値から表示名に変換
-      endpoints[i] = {
-        ...endpoints[i],
-        serviceType: serviceTypes.find(s => s.id === serviceTypeId).name,
-      }
-    }
     commit('setEndpoints', { endpoints })
   },
 
   async fetchTenantEndpoints({ commit }, tenantId) {
     let endpoints = (await api.git.tenant.getEndpoints({ id: tenantId })).data
-    let serviceTypes = (await api.git.admin.getTypes()).data
-    for (let i = 0; i < endpoints.length; i++) {
-      let serviceTypeId = endpoints[i].serviceType
-
-      // ServiceTypeの数値から表示名に変換
-      endpoints[i] = {
-        ...endpoints[i],
-        serviceType: serviceTypes.find(s => s.id === serviceTypeId).name,
-      }
-    }
     commit('setEndpoints', { endpoints })
   },
 

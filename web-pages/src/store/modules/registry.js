@@ -26,30 +26,12 @@ const getters = {
 const actions = {
   async fetchRegistries({ commit }) {
     let registries = (await api.registry.admin.get()).data
-    let serviceTypes = (await api.registry.admin.getType()).data
-    for (let i = 0; i < registries.length; i++) {
-      let serviceTypeId = registries[i].serviceType
-      // ServiceTypeの数値から表示名に変換
-      registries[i] = {
-        ...registries[i],
-        serviceType: serviceTypes.find(s => s.id === serviceTypeId).name,
-      }
-    }
     commit('setRegistries', { registries })
   },
 
   async fetchTenantRegistries({ commit }, tenantId) {
     let registries = (await api.registry.tenant.getEndpoints({ id: tenantId }))
       .data
-    let serviceTypes = (await api.registry.admin.getType()).data
-    for (let i = 0; i < registries.length; i++) {
-      let serviceTypeId = registries[i].serviceType
-      // ServiceTypeの数値から表示名に変換
-      registries[i] = {
-        ...registries[i],
-        serviceType: serviceTypes.find(s => s.id === serviceTypeId).name,
-      }
-    }
     commit('setRegistries', { registries })
   },
 
