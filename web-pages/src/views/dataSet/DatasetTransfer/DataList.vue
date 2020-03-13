@@ -89,7 +89,10 @@
             <el-col :span="infoSpanSize" style="text-align: center;">
               <el-popover placement="right" width="500" trigger="hover">
                 <div class="popover">
-                  <div class="right-button-group">
+                  <div
+                    v-if="$store.getters['account/isAvailableData']"
+                    class="right-button-group"
+                  >
                     <el-button @click="showData(data)">データ編集</el-button>
                   </div>
                   <el-row>
