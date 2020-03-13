@@ -40,7 +40,7 @@ import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('account')
 
 export default {
-  title: 'Dashboardd',
+  title: 'ダッシュボード',
   data() {
     return {
       unwatchLogin: undefined,

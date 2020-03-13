@@ -1,11 +1,12 @@
 {
   "name": "web-pages",
-  "version": "0.1.0",
+  "version": "2.0.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "generate-api": "node swagger-to-api.js"
   },
   "dependencies": {
     "axios": "^0.19.1",
@@ -36,6 +37,7 @@
     "node-sass": "^4.12.0",
     "prettier": "^1.19.1",
     "sass-loader": "^8.0.0",
+    "swagger-vue": "^1.0.3",
     "vue-template-compiler": "^2.6.10"
   }
 }
