@@ -222,9 +222,6 @@ export default {
   },
   computed: {
     isHeadCommit() {
-      if (this.value.commit === 'HEAD') {
-        return true
-      }
       if (this.commits.length > 0) {
         return this.commits[0] === this.value.commit
       } else {

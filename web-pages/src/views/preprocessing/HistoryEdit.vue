@@ -1,14 +1,15 @@
 <template>
   <el-dialog
     class="dialog"
-    title="前処理履歴編集"
+    title="前処理履歴詳細"
     :visible="dialogVisible"
     :before-close="handleCancel"
     :close-on-click-modal="false"
   >
     <el-form ref="editForm">
       <kqi-display-error :error="error" />
-      <kqi-display-text-form label="ID" :value="preprocessingId" />
+      <kqi-display-text-form label="前処理履歴ID" :value="preprocessingId" />
+      <kqi-display-text-form label="データID" :value="historyDetail.dataId" />
       <kqi-display-text-form label="データ名" :value="historyDetail.dataName" />
       <kqi-display-text-form
         label="前処理名"
@@ -50,7 +51,7 @@
             icon="el-icon-close"
             @click="handleCancel"
           >
-            キャンセル
+            閉じる
           </el-button>
           <kqi-delete-button
             class="pull-left btn-update"
@@ -147,7 +148,7 @@ export default {
     async handleRemove() {
       try {
         await this.deleteHistory({ id: this.id, dataId: this.dataId })
-        this.emitDone()
+        this.$emit('done', 'delete')
         this.error = null
       } catch (e) {
         this.error = e
@@ -162,9 +163,6 @@ export default {
     },
     emitLog() {
       this.$emit('log', { id: this.id, dataId: this.dataId })
-    },
-    emitDone() {
-      this.$emit('done')
     },
 
     emitCancel() {

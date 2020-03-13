@@ -93,6 +93,9 @@ export default {
     setActiveIndex() {
       // ["", "cluster-resource", "tenant"]等のメニュー項目を取得し設定。例：/training, /cluster-resource
       this.activeIndex = `/${this.$route.path.split('/')[1]}`
+      if (this.activeIndex === '/preprocessingHistory') {
+        this.activeIndex = '/preprocessing'
+      }
 
       // テナント管理系の場合、/manage/tenant等の指定が必要であるため追記
       if (this.activeIndex === '/manage') {

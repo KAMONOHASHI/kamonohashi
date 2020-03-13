@@ -4,7 +4,7 @@
     type="EDIT"
     @submit="onSubmit"
     @delete="deleteInferenceJob"
-    @close="emitCancel"
+    @close="$emit('cancel')"
   >
     <el-row type="flex" justify="end">
       <el-col :span="24" class="right-button-group">
@@ -126,14 +126,6 @@
           <kqi-display-text-form label="実行者" :value="detail.createdBy" />
           <kqi-display-text-form label="開始日時" :value="detail.createdAt" />
           <kqi-display-text-form label="完了日時" :value="detail.completedAt" />
-
-          <kqi-display-text-form label="待機時間" :value="detail.waitingTime" />
-          <kqi-display-text-form
-            label="実行時間"
-            :value="detail.executionTime"
-          />
-
-          <kqi-display-text-form label="ログ概要" :value="detail.logSummary" />
         </el-col>
 
         <el-col :span="12">
@@ -298,16 +290,6 @@ export default {
     this.form.favorite = this.detail.favorite
     this.form.memo = this.detail.memo
   },
-  async beforeUpdate() {
-    // 子ジョブから親ジョブ詳細に遷移する際にブラウザの進む/戻るボタンを押した場合の対応処理
-    // id(routerから受け取るパラメータ)とtrainingId(履歴検索に用いるID)が異なる場合、router側を優先した上で表示内容を更新
-    if (this.detail.id.toString() !== this.id.toString()) {
-      await this.retrieveData()
-      this.form.name = this.detail.name
-      this.form.favorite = this.detail.favorite
-      this.form.memo = this.detail.memo
-    }
-  },
   methods: {
     ...mapActions([
       'fetchDetail',
@@ -349,7 +331,7 @@ export default {
           try {
             await this.updateHistory()
             await this.uploadFile()
-            this.emitDone()
+            this.$emit('done')
             this.error = null
           } catch (e) {
             this.error = e
@@ -378,7 +360,7 @@ export default {
     async deleteInferenceJob() {
       try {
         await this.delete(this.detail.id)
-        this.emitDone()
+        this.$emit('done', 'delete')
         this.error = null
       } catch (e) {
         this.error = e
@@ -418,11 +400,10 @@ export default {
     },
     // 親ジョブ履歴の表示指示
     async showParent() {
-      // 表示内容の変更は、beforeUpdated内で行う
       this.$router.push('/training/' + this.detail.parent.id)
     },
     redirectEditDataSet() {
-      this.$router.push('/dataset/' + this.detail.dataSet.id)
+      this.$router.push('/dataset/edit/' + this.detail.dataSet.id)
     },
     emitFiles() {
       this.$emit('files', this.detail.id)
@@ -451,16 +432,6 @@ export default {
             'ステータスがCompletedまたはUserCanceledの学習のみ推論を実行できます。',
         })
       }
-    },
-    emitCancel() {
-      this.$emit('cancel')
-    },
-    emitDone() {
-      this.$emit('done')
-    },
-    closeDialog(done) {
-      done()
-      this.emitCancel()
     },
   },
 }

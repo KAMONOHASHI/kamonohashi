@@ -171,8 +171,16 @@ export default {
       params.withTotal = true
       await this.fetchHistories(params)
     },
-    async done() {
-      this.pageStatus.currentPage = 1
+    async done(type) {
+      if (type === 'delete') {
+        // 削除時、表示していたページにデータが無くなっている可能性がある。
+        // 総数 % ページサイズ === 1の時、残り1の状態で削除したため、currentPageが1で無ければ1つ前のページに戻す
+        if (this.total % this.pageStatus.currentPageSize === 1) {
+          if (this.pageStatus.currentPage !== 1) {
+            this.pageStatus.currentPage -= 1
+          }
+        }
+      }
       await this.retrieveData()
       this.closeDialog()
       this.showSuccessMessage()
@@ -196,7 +204,7 @@ export default {
       window.open(this.endpoint)
     },
     async search() {
-      this.currentPage = 1
+      this.pageStatus.currentPage = 1
       await this.retrieveData()
     },
     files(id) {

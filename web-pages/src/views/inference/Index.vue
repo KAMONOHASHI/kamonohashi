@@ -187,7 +187,7 @@ export default {
       await this.fetchHistories(params)
     },
     async search() {
-      this.currentPage = 1
+      this.pageStatus.currentPage = 1
       await this.retrieveData()
     },
 
@@ -220,17 +220,25 @@ export default {
             message: `推論履歴を削除しました。(成功：${successCount}件、 失敗：${this
               .selections.length - successCount}件）`,
           })
-          this.currentPage = 1
+          this.pageStatus.currentPage = 1
           await this.retrieveData()
         })
         .catch(() => {
           // キャンセル時はなにもしないので例外を無視
         })
     },
-    async done() {
-      this.pageStatus.currentPage = 1
-      await this.retrieveData()
+    async done(type) {
+      if (type === 'delete') {
+        // 削除時、表示していたページにデータが無くなっている可能性がある。
+        // 総数 % ページサイズ === 1の時、残り1の状態で削除したため、currentPageが1で無ければ1つ前のページに戻す
+        if (this.total % this.pageStatus.currentPageSize === 1) {
+          if (this.pageStatus.currentPage !== 1) {
+            this.pageStatus.currentPage -= 1
+          }
+        }
+      }
       this.closeDialog()
+      await this.retrieveData()
       this.showSuccessMessage()
     },
     closeDialog() {
