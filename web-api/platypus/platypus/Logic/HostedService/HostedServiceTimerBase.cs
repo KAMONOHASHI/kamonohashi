@@ -62,7 +62,7 @@ namespace Nssol.Platypus.Logic.HostedService
         /// 状態チェック用のメソッドで導出クラスで個別に実装します。
         /// StartAsync() 時に呼び出され false ならタイマーの生成を行わずエラーをログ出力すます。
         /// </summary>
-        protected abstract bool isValid();
+        protected abstract bool IsValid();
 
         /// <summary>
         /// タイマーが定期的に実行するメソッドです。
@@ -99,7 +99,7 @@ namespace Nssol.Platypus.Logic.HostedService
             //
             // 導出クラスの状態やタイマー・スケジュールよりタイマー生成が可能かどうかのチェック
             //
-            if (!this.isValid())
+            if (!this.IsValid())
             {
                 LogError("導出クラスのデータ設定状態が不正なのでタイマーは稼働しません。");
                 return Task.CompletedTask;
