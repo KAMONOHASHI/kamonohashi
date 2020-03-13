@@ -36,7 +36,12 @@
       >
         <el-table-column prop="id" label="ID" width="120px" />
         <el-table-column prop="name" label="データセット名" width="auto" />
-        <el-table-column prop="memo" label="メモ" width="auto" />
+        <el-table-column
+          prop="memo"
+          label="メモ"
+          width="auto"
+          class-name="memo-column"
+        />
         <el-table-column prop="createdAt" label="登録日時" width="170px" />
       </el-table>
     </el-row>
@@ -143,6 +148,9 @@ export default {
 .search {
   text-align: right;
   padding-top: 10px;
+}
+.el-table /deep/ .memo-column div.cell {
+  white-space: pre-wrap;
 }
 
 .pagination /deep/ .el-input {
