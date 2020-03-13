@@ -27,10 +27,8 @@
           label="リポジトリURL"
           width="auto"
         />
-        <el-table-column prop="serviceType" label="種別" width="auto">
-        </el-table-column>
-        <el-table-column prop="apiUrl" label="API URL" width="auto">
-        </el-table-column>
+        <el-table-column prop="serviceTypeName" label="種別" width="auto" />
+        <el-table-column prop="apiUrl" label="API URL" width="auto" />
       </el-table>
     </el-row>
 
