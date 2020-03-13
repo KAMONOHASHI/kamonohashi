@@ -6,7 +6,7 @@ import * as ext from '@/util/axios-ext'
 // axiosの拡張
 // テストでモックさせるためaxiosをexport
 let axios = axiosRoot.create({
-  // API_HOST: webpackのdefine pluginから渡ってくる。 config/*.env.jsに定義がある。
+  // VUE_APP_API_HOST: .envから取得
   baseURL: 'http://' + (process.env.VUE_APP_API_HOST || ''),
   headers: { 'Content-Type': 'application/json' },
 })
