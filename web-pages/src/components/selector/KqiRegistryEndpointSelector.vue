@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <el-form-item label="Dockerレジストリ情報" prop="registry">
+  <el-form-item label="Dockerレジストリ情報" prop="registry">
+    <div class="left-margin">
       <el-row></el-row>
       <el-col :span="6">レジストリ</el-col>
       <el-select
@@ -43,8 +43,8 @@
           </span>
         </el-option>
       </el-select>
-    </el-form-item>
-  </div>
+    </div>
+  </el-form-item>
 </template>
 
 <script>
@@ -106,5 +106,8 @@ export default {
 <style scoped>
 .selectRegistry {
   width: 100%;
+}
+.left-margin {
+  padding-left: 30px;
 }
 </style>

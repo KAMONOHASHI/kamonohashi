@@ -1,23 +1,25 @@
 <template>
   <el-form-item label="ストレージ情報" prop="storageId">
-    <el-select
-      class="selectStorage"
-      :value="value"
-      placeholder="Select"
-      @change="handleChange"
-    >
-      <el-option
-        v-for="item in storages"
-        :key="item.id"
-        :label="item.name"
-        :value="item.id"
+    <div class="left-margin">
+      <el-select
+        class="selectStorage"
+        :value="value"
+        placeholder="Select"
+        @change="handleChange"
       >
-        <span style="float: left">{{ item.name }}</span>
-        <span style="float: right; color: #8492a6; font-size: 13px">
-          {{ item.serverUrl }}
-        </span>
-      </el-option>
-    </el-select>
+        <el-option
+          v-for="item in storages"
+          :key="item.id"
+          :label="item.name"
+          :value="item.id"
+        >
+          <span style="float: left">{{ item.name }}</span>
+          <span style="float: right; color: #8492a6; font-size: 13px">
+            {{ item.serverUrl }}
+          </span>
+        </el-option>
+      </el-select>
+    </div>
   </el-form-item>
 </template>
 
@@ -52,5 +54,8 @@ export default {
 <style scoped>
 .selectStorage {
   width: 100%;
+}
+.left-margin {
+  padding-left: 30px;
 }
 </style>

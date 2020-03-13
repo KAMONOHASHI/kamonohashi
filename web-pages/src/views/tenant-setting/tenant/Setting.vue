@@ -207,4 +207,8 @@ export default {
 .margin {
   padding-left: 30px;
 }
+
+/deep/ label {
+  font-weight: bold !important;
+}
 </style>

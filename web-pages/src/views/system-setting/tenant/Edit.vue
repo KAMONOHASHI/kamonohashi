@@ -12,7 +12,7 @@
       <kqi-display-error :error="error" />
 
       <h3>テナント情報</h3>
-      <div class="margin">
+      <div class="left-margin">
         <kqi-display-text-form v-if="id !== null" label="ID" :value="id" />
         <el-form-item v-if="id === null" label="テナント名" prop="tenantName">
           <el-input v-model="form.tenantName" />
@@ -32,6 +32,7 @@
           style="width: 100%;"
           inactive-text="禁止"
           active-text="許可"
+          class="left-margin"
         />
       </el-form-item>
 
@@ -230,7 +231,7 @@ export default {
   font-weight: bold !important;
 }
 
-.margin {
+.left-margin {
   padding-left: 30px;
 }
 

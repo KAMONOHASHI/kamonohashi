@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <el-form-item label="Git情報" prop="gitEndpoint">
+  <el-form-item label="Git情報" prop="gitEndpoint">
+    <div class="left-margin">
       <el-row></el-row>
       <el-col :span="6">Git</el-col>
       <el-select
@@ -42,8 +42,8 @@
           </span>
         </el-option>
       </el-select>
-    </el-form-item>
-  </div>
+    </div>
+  </el-form-item>
 </template>
 
 <script>
@@ -105,5 +105,8 @@ export default {
 <style scoped>
 .selectGit {
   width: 100%;
+}
+.left-margin {
+  padding-left: 30px;
 }
 </style>
