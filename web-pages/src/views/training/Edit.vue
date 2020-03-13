@@ -8,7 +8,11 @@
   >
     <el-row type="flex" justify="end">
       <el-col :span="24" class="right-button-group">
-        <el-button @click="emitInferenceCreate">推論実行</el-button>
+        <el-button
+          v-if="$store.getters['account/isAvailableInference']"
+          @click="emitInferenceCreate"
+          >推論実行</el-button
+        >
         <el-button @click="emitCopyCreate">コピー実行</el-button>
       </el-col>
     </el-row>

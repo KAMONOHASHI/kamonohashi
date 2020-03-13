@@ -27,16 +27,22 @@ const getters = {
     return state.menuTree
   },
 
+  // データ管理のアクセス権があるかどうか
+  isAvailableData(state) {
+    return state.menuTree.some(menu => {
+      return menu.url === '/data'
+    })
+  },
   // 前処理管理のアクセス権があるかどうか
-  isPreprocessingAvailable(state) {
+  isAvailablePreprocessing(state) {
     return state.menuTree.some(menu => {
       return menu.url === '/preprocessing'
     })
   },
-  // データ管理のアクセス権があるかどうか
-  isDataAvailable(state) {
+  // 推論管理のアクセス権があるかどうか
+  isAvailableInference(state) {
     return state.menuTree.some(menu => {
-      return menu.url === '/data'
+      return menu.url === '/inference'
     })
   },
 }
