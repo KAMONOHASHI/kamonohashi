@@ -2,6 +2,7 @@
   <div>
     <el-table
       ref="nodeTable"
+      height="calc(100vh - 250px)"
       :data="nodes"
       align="right"
       class="table pl-index-table"
