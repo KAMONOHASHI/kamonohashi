@@ -5,8 +5,8 @@ const state = {
   loginData: {},
   token: {},
   account: {},
-  menuList: {},
-  menuTree: {},
+  menuList: [],
+  menuTree: [],
 }
 
 // getters
@@ -25,6 +25,19 @@ const getters = {
   },
   menuTree(state) {
     return state.menuTree
+  },
+
+  // 前処理管理のアクセス権があるかどうか
+  isPreprocessingAvailable(state) {
+    return state.menuTree.some(menu => {
+      return menu.url === '/preprocessing'
+    })
+  },
+  // データ管理のアクセス権があるかどうか
+  isDataAvailable(state) {
+    return state.menuTree.some(menu => {
+      return menu.url === '/data'
+    })
   },
 }
 

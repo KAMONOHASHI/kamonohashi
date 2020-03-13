@@ -9,7 +9,11 @@
       />
       <el-col class="right-top-button" :span="8">
         <div>
-          <el-button @click="openPreprocessingDialog">前処理実行</el-button>
+          <el-button
+            v-if="$store.getters['account/isAvailablePreprocessing']"
+            @click="openPreprocessingDialog"
+            >前処理実行</el-button
+          >
           <el-button
             icon="el-icon-edit-outline"
             type="primary"
