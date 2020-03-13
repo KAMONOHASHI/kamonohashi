@@ -73,6 +73,7 @@ import KqiResourceSelector from '@/components/selector/KqiResourceSelector'
 import KqiContainerSelector from '@/components/selector/KqiContainerSelector.vue'
 import KqiGitSelector from '@/components/selector/KqiGitSelector.vue'
 import KqiDisplayError from '@/components/KqiDisplayError'
+import registrySelectorUtil from '@/util/registrySelectorUtil'
 import gitSelectorUtil from '@/util/gitSelectorUtil'
 import { mapActions, mapGetters } from 'vuex'
 
@@ -228,7 +229,7 @@ export default {
           })
           await this.selectRegistry(this.detail.containerImage.registryId)
           this.form.containerImage.image = this.detail.containerImage.image
-          await this.selectImage()
+          await this.selectImage(this.detail.containerImage.image)
           this.form.containerImage.tag = this.detail.containerImage.tag
         }
 
@@ -356,25 +357,19 @@ export default {
     },
     // コンテナイメージ
     async selectRegistry(registryId) {
-      // 過去の選択状態をリセット
-      this.form.containerImage.image = null
-      this.form.containerImage.tag = null
-      // clearの場合リセット、レジストリが選択された場合はイメージ取得
-      if (this.form.containerImage.registry !== null) {
-        await this['registrySelector/fetchImages'](registryId)
-      }
+      await registrySelectorUtil.selectRegistry(
+        this.form,
+        this['registrySelector/fetchImages'],
+        registryId,
+      )
     },
-    async selectImage() {
-      // 過去の選択状態をリセット
-      this.form.containerImage.tag = null
-
-      // clearの場合リセット、イメージが選択された場合はタグ取得
-      if (this.form.containerImage.image !== null) {
-        await this['registrySelector/fetchTags']({
-          registryId: this.form.containerImage.registry.id,
-          image: this.form.containerImage.image,
-        })
-      }
+    async selectImage(image) {
+      await registrySelectorUtil.selectImage(
+        this.form,
+        this['registrySelector/fetchTags'],
+        this.form.containerImage.registry.id,
+        image,
+      )
     },
 
     // モデル

@@ -145,7 +145,7 @@ export default {
         containerImage.image = image
       }
       this.$emit('input', containerImage)
-      this.$emit('selectImage')
+      this.$emit('selectImage', image === '' ? null : image)
     },
 
     // 選択しているタグが切り替わった時に呼ばれるイベントハンドラ。
