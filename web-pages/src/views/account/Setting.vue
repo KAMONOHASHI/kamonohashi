@@ -239,6 +239,8 @@ export default {
           },
         }
         await this['account/putGitToken'](params)
+        // storeで保持するgit tokenの情報を更新する
+        await this['gitSelector/fetchGits']()
         this.showSuccessMessage()
         this.gitTokenError = null
       } catch (error) {
@@ -256,6 +258,8 @@ export default {
           },
         }
         await this['account/putRegistryToken'](params)
+        // storeで保持するregistry tokenの情報を更新する
+        await this['registrySelector/fetchRegistries']()
         this.showSuccessMessage()
         this.registryTokenError = null
       } catch (error) {

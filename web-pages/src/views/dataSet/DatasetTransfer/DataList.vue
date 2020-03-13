@@ -76,7 +76,9 @@
               >
                 {{ tag }}
               </el-tag>
-            </el-col>
+              <!-- タグ存在時にiボタンがずれるのを防止するためのスペース -->
+              <p style="white-space:pre-wrap;" v-text="emptyspace"></p
+            ></el-col>
 
             <el-col v-if="viewInfo.showAssign" :span="assignSpanSize">
               <div class="tag" :class="'color-' + data.colorIndex">
@@ -87,7 +89,10 @@
             <el-col :span="infoSpanSize" style="text-align: center;">
               <el-popover placement="right" width="500" trigger="hover">
                 <div class="popover">
-                  <div class="right-button-group">
+                  <div
+                    v-if="$store.getters['account/isAvailableData']"
+                    class="right-button-group"
+                  >
                     <el-button @click="showData(data)">データ編集</el-button>
                   </div>
                   <el-row>
@@ -203,6 +208,7 @@ export default {
   },
   data() {
     return {
+      emptyspace: ' ',
       searchCondition: {}, // 検索条件
       searchConfigs: [
         { prop: 'id', name: 'ID', type: 'number' },

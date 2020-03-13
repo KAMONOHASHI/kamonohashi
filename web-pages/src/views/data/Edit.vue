@@ -6,7 +6,11 @@
     @delete="deleteData"
     @close="$emit('cancel')"
   >
-    <el-row v-if="isEditDialog" type="flex" justify="end">
+    <el-row
+      v-if="isEditDialog && $store.getters['account/isAvailablePreprocessing']"
+      type="flex"
+      justify="end"
+    >
       <el-col :span="24" class="right-button-group">
         <el-button @click="openPreprocessingDialog">前処理実行</el-button>
       </el-col>
