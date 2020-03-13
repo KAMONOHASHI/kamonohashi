@@ -217,8 +217,6 @@ export default {
                 title: 'Success',
                 message: `ID:${dataId}の前処理に成功しました`,
               })
-              // 成功した場合、使用したデータのisRawフラグをFalseにする
-              await this.updateData(dataId)
               this.error = null
             } catch (e) {
               this.error = e
@@ -238,15 +236,6 @@ export default {
           }
         }
       })
-    },
-    async updateData(id) {
-      let params = {
-        id: id,
-        model: {
-          isRaw: false,
-        },
-      }
-      await this['data/put'](params)
     },
     sleep(ms) {
       return new Promise(resolve => setTimeout(resolve, ms))
@@ -271,7 +260,6 @@ export default {
     },
     emitHistoryPage(id) {
       this.$router.push('/preprocessingHistory/' + id)
-      this.$store.commit('setLoading', false)
     },
     closeDialog(done) {
       done()
