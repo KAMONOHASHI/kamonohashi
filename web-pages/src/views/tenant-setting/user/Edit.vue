@@ -65,14 +65,14 @@ export default {
   computed: {
     ...mapGetters({
       detail: ['user/tenantUserDetail'],
-      roles: ['role/roles'],
+      roles: ['role/tenantRoles'],
     }),
   },
 
   async created() {
     try {
       await this['user/fetchTenantUserDetail'](this.id)
-      await this['role/fetchRoles']()
+      await this['role/fetchTenantRoles']()
 
       // serviceTypeのIDを変換
       switch (this.detail.serviceType) {
@@ -108,7 +108,7 @@ export default {
       'user/fetchTenantUserDetail',
       'user/tenantRolesPut',
       'user/tenantUserDelete',
-      'role/fetchRoles',
+      'role/fetchTenantRoles',
     ]),
     async submit() {
       let form = this.$refs.form
