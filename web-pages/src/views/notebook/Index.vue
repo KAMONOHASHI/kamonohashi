@@ -43,7 +43,12 @@
         <el-table-column prop="id" label="ノートブックID" width="120px" />
         <el-table-column prop="name" label="ノートブック名" width="240px" />
         <el-table-column prop="createdAt" label="作成日時" width="200px" />
-        <el-table-column prop="memo" label="メモ" width="auto" />
+        <el-table-column
+          prop="memo"
+          label="メモ"
+          width="auto"
+          class-name="memo-column"
+        />
         <el-table-column width="25px">
           <div slot-scope="scope">
             <div
@@ -243,6 +248,10 @@ export default {
 
 .favorite {
   color: rgb(230, 162, 60);
+}
+
+.el-table /deep/ .memo-column div.cell {
+  white-space: pre-wrap;
 }
 
 .el-dropdown {

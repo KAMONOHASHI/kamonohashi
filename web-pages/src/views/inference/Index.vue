@@ -69,7 +69,12 @@
           width="auto"
           class-name="entry-point-column"
         />
-        <el-table-column prop="memo" label="メモ" width="auto" />
+        <el-table-column
+          prop="memo"
+          label="メモ"
+          width="auto"
+          class-name="memo-column"
+        />
         <el-table-column
           prop="outputValue"
           label="出力値"
@@ -277,6 +282,10 @@ export default {
 .search {
   text-align: right;
   padding-top: 10px;
+}
+
+.el-table /deep/ .memo-column div.cell {
+  white-space: pre-wrap;
 }
 
 .pagination /deep/ .el-input {

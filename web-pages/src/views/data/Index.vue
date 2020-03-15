@@ -55,7 +55,12 @@
         </el-table-column>
         <el-table-column prop="createdAt" label="登録日時" width="200px" />
         <el-table-column prop="createdBy" label="登録者" width="120px" />
-        <el-table-column prop="memo" label="メモ" width="auto" />
+        <el-table-column
+          prop="memo"
+          label="メモ"
+          width="auto"
+          class-name="memo-column"
+        />
         <el-table-column prop="tag" label="タグ" width="120px">
           <template slot-scope="scope">
             <span
@@ -191,6 +196,10 @@ export default {
 .search {
   text-align: right;
   padding-top: 10px;
+}
+
+.el-table /deep/ .memo-column div.cell {
+  white-space: pre-wrap;
 }
 
 .pagination /deep/ .el-input {

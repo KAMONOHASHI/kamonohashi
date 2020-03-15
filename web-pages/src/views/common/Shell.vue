@@ -94,7 +94,7 @@ export default {
         let tenantName = this.account.selectedTenant.name
 
         // ||を合体演算子として使う https://en.wikipedia.org/wiki/Null_coalescing_operator
-        // API_HOST: webpackのdefine pluginから渡ってくる。
+        // VUE_APP_API_HOST: .envから取得
         let websocketServer =
           process.env.VUE_APP_API_HOST || window.location.hostname
 

@@ -58,7 +58,12 @@
           width="auto"
           class-name="entry-point-column"
         />
-        <el-table-column prop="memo" label="メモ" width="auto" />
+        <el-table-column
+          prop="memo"
+          label="メモ"
+          width="auto"
+          class-name="memo-column"
+        />
         <el-table-column width="25px">
           <div slot-scope="scope">
             <div
@@ -254,6 +259,10 @@ export default {
 
 .favorite {
   color: rgb(230, 162, 60);
+}
+
+.el-table /deep/ .memo-column div.cell {
+  white-space: pre-wrap;
 }
 
 .entry-point-column {
