@@ -29,7 +29,12 @@
             {{'バージョン :' }}
           </el-col>
           <el-col :span="20">
-            {{ version }}
+            <div style="margin-bottom: 20px;">
+              {{ version }}
+            </div>
+            <div v-for="(message, index) in messages" :key="index" style="margin-bottom: 10px;">
+              {{ message }}
+            </div>
           </el-col>
         </el-row>
         <br>
@@ -47,11 +52,14 @@
 </template>
 
 <script>
+  import api from '@/api/v1/api'
+
   export default {
     name: 'VersionIndex',
     data () {
       return {
-        version: process.env.VERSION // webpackのdefine pluginから渡ってくる。 config/*.env.jsに定義がある。
+        version: null,
+        messages: null
       }
     },
     title () {
@@ -65,6 +73,16 @@
         ja: {
           title: 'バージョン情報'
         }
+      }
+    },
+    async created () {
+      await this.retrieveData()
+    },
+    methods: {
+      async retrieveData () {
+        let response = (await api.version.get()).data
+        this.version = response.version
+        this.messages = response.messages
       }
     }
   }
@@ -89,7 +107,7 @@
     font-size: 18px;
   }
 
-  .item {
+ .item {
     margin-bottom: 18px;
   }
 

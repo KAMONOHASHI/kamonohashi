@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Nssol.Platypus.ApiModels.Components;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Nssol.Platypus.ApiModels.NotebookApiModels
@@ -17,7 +18,17 @@ namespace Nssol.Platypus.ApiModels.NotebookApiModels
         /// 親学習履歴ID
         /// </summary>
         public IEnumerable<long> ParentIds { get; set; }
-        
+
+        /// <summary>
+        /// コンテナ情報
+        /// </summary>
+        public ContainerImageInputModel ContainerImage { get; set; }
+
+        /// <summary>
+        /// ノートブックモデルGit情報
+        /// </summary>
+        public GitCommitInputModel GitModel { get; set; }
+
         /// <summary>
         /// CPUコア数
         /// </summary>
