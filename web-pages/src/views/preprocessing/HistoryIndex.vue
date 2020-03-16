@@ -6,7 +6,6 @@
         <span @click="openPreprocessing">
           前処理管理
         </span>
-        <el-button type="text" @click="openPreprocessing" />
         <i class="el-icon-arrow-right" />
         <span>{{ id }}</span>
       </el-col>
