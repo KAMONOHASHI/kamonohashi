@@ -1,7 +1,7 @@
 <template>
   <div>
     <kqi-display-text-form
-      label="学習ID"
+      label="ID"
       :value="training ? String(training.id) : '0'"
     />
     <kqi-display-text-form

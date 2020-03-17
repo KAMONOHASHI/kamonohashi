@@ -40,7 +40,7 @@
             <i v-if="scope.row.favorite" class="el-icon-star-on favorite" />
           </div>
         </el-table-column>
-        <el-table-column prop="id" label="ノートブックID" width="120px" />
+        <el-table-column prop="id" label="ID" width="120px" />
         <el-table-column prop="name" label="ノートブック名" width="240px" />
         <el-table-column prop="createdAt" label="作成日時" width="200px" />
         <el-table-column
@@ -129,7 +129,7 @@ export default {
       },
       searchCondition: {},
       searchConfigs: [
-        { prop: 'id', name: 'ノートブックID', type: 'number' },
+        { prop: 'id', name: 'ID', type: 'number' },
         { prop: 'name', name: 'ノートブック名', type: 'text' },
         { prop: 'createdAt', name: '作成日時', type: 'date' },
         { prop: 'createdBy', name: '作成者', type: 'text' },

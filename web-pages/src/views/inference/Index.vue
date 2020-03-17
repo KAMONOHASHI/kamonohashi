@@ -45,12 +45,7 @@
             <i v-if="scope.row.favorite" class="el-icon-star-on favorite" />
           </div>
         </el-table-column>
-        <el-table-column
-          prop="id"
-          label="推論ID"
-          width="110px"
-          align="center"
-        />
+        <el-table-column prop="id" label="ID" width="110px" align="center" />
         <el-table-column prop="name" label="推論名" width="150px" />
         <el-table-column prop="createdAt" label="開始日時" width="100px" />
         <el-table-column
@@ -142,7 +137,7 @@ export default {
       selections: [],
       searchCondition: {},
       searchConfigs: [
-        { prop: 'id', name: '推論ID', type: 'number' },
+        { prop: 'id', name: 'ID', type: 'number' },
         { prop: 'name', name: '推論名', type: 'text' },
         { prop: 'startedAt', name: '開始日時', type: 'date' },
         { prop: 'parentName', name: 'マウントした学習', type: 'text' },

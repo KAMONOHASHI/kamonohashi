@@ -44,7 +44,7 @@
             <i v-if="scope.row.favorite" class="el-icon-star-on favorite" />
           </div>
         </el-table-column>
-        <el-table-column prop="id" label="学習ID" width="120px" />
+        <el-table-column prop="id" label="ID" width="120px" />
         <el-table-column prop="name" label="学習名" width="120px" />
         <el-table-column prop="createdAt" label="開始日時" width="200px" />
         <el-table-column
@@ -123,7 +123,7 @@ export default {
       selections: [],
       searchCondition: {},
       searchConfigs: [
-        { prop: 'id', name: '学習ID', type: 'number' },
+        { prop: 'id', name: 'ID', type: 'number' },
         { prop: 'name', name: '学習名', type: 'text' },
         { prop: 'startedAt', name: '開始日時', type: 'date' },
         { prop: 'dataSet', name: 'データセット', type: 'text' },

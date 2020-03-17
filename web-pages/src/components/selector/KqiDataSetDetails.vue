@@ -1,7 +1,7 @@
 <template>
   <div>
     <kqi-display-text-form
-      label="データセットID"
+      label="ID"
       :value="dataSet ? String(dataSet.id) : '0'"
     />
     <kqi-display-text-form

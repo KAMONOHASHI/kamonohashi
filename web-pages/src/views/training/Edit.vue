@@ -23,7 +23,7 @@
       <el-row :gutter="20">
         <el-col :span="12">
           <kqi-display-text-form
-            label="学習ID"
+            label="ID"
             :value="detail ? String(detail.id) : '0'"
           >
             <span slot="action">
