@@ -48,10 +48,14 @@
                 >
                   <kqi-training-history-details :training="parent" />
                   <el-button
+                    v-if="$store.getters['account/isAvailableTraining']"
                     slot="reference"
                     class="el-input"
                     @click="showParent(parent.id)"
                   >
+                    {{ parent.fullName }}
+                  </el-button>
+                  <el-button v-else slot="reference" class="el-input">
                     {{ parent.fullName }}
                   </el-button>
                 </el-popover>
@@ -70,10 +74,14 @@
                 <kqi-data-set-details :data-set="detail.dataSet" />
               </el-popover>
               <el-button
+                v-if="$store.getters['account/isAvailableDataSet']"
                 v-popover:dataSetDetail
                 class="el-input"
                 @click="redirectEditDataSet"
               >
+                {{ detail.dataSet.name }}
+              </el-button>
+              <el-button v-else v-popover:dataSetDetail class="el-input">
                 {{ detail.dataSet.name }}
               </el-button>
             </el-form-item>

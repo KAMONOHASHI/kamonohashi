@@ -11,8 +11,9 @@
         <el-button
           v-if="$store.getters['account/isAvailableInference']"
           @click="emitInferenceCreate"
-          >推論実行</el-button
         >
+          推論実行
+        </el-button>
         <el-button @click="emitCopyCreate">コピー実行</el-button>
       </el-col>
     </el-row>
@@ -57,7 +58,7 @@
                 class="el-input"
                 @click="showParent"
               >
-                {{ detail.parent.name }}
+                {{ detail.parent.fullName }}
               </el-button>
             </el-form-item>
           </div>
@@ -74,10 +75,14 @@
                 <kqi-data-set-details :data-set="detail.dataSet" />
               </el-popover>
               <el-button
+                v-if="$store.getters['account/isAvailableDataSet']"
                 v-popover:dataSetDetail
                 class="el-input"
                 @click="redirectEditDataSet"
               >
+                {{ detail.dataSet.name }}
+              </el-button>
+              <el-button v-else v-popover:dataSetDetail class="el-input">
                 {{ detail.dataSet.name }}
               </el-button>
             </el-form-item>
