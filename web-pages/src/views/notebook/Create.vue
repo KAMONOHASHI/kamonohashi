@@ -90,10 +90,40 @@
       <el-row :gutter="20">
         <div class="element">
           <el-form v-if="active === 0">
-            <el-col :span="18" :offset="3">
+            <el-col :span="12">
+              <kqi-training-history-selector
+                v-model="form.selectedParent"
+                :histories="trainingHistories"
+                multiple
+              />
+              <kqi-data-set-selector
+                v-model="form.dataSetId"
+                :data-sets="dataSets"
+              />
+              <kqi-container-selector
+                v-model="form.containerImage"
+                :registries="registries"
+                :images="images"
+                :tags="tags"
+                @selectRegistry="selectRegistry"
+                @selectImage="selectImage"
+              />
+              <kqi-git-selector
+                v-model="form.gitModel"
+                :gits="gits"
+                :repositories="repositories"
+                :branches="branches"
+                :commits="commits"
+                :loading-repositories="loadingRepositories"
+                @selectGit="selectGit"
+                @selectRepository="selectRepository"
+                @selectBranch="selectBranch"
+              />
+            </el-col>
+            <el-col :span="12">
               <kqi-resource-selector v-model="form.resource" />
             </el-col>
-            <el-col :span="18" :offset="3">
+            <el-col :span="12">
               <div v-if="availableInfiniteTime">
                 <el-form-item label="起動期間設定">
                   <el-switch
@@ -115,17 +145,6 @@
                   />
                 </el-form-item>
               </div>
-            </el-col>
-            <el-col :span="18" :offset="3">
-              <kqi-training-history-selector
-                v-model="form.selectedParent"
-                :histories="trainingHistories"
-                multiple
-              />
-              <kqi-data-set-selector
-                v-model="form.dataSetId"
-                :data-sets="dataSets"
-              />
             </el-col>
           </el-form>
         </div>
@@ -404,11 +423,32 @@ export default {
     await this['notebook/fetchAvailableInfiniteTime']()
 
     // コピー実行時はコピー元情報を各項目を設定
-    if (this.isCopyCreation) {
+    // 再実行時は親、データセット、Git情報、コンテナ情報、リソース情報をコピー
+    if (this.isCopyCreation || this.isReRunCreation) {
       await this['notebook/fetchDetail'](this.originId)
 
-      this.form.name = this.detail.name
-      this.form.memo = this.detail.memo
+      if (this.isCopyCreation) {
+        this.form.name = this.detail.name
+        this.form.memo = this.detail.memo
+        this.form.variables =
+          this.detail.options.length === 0
+            ? [{ key: '', value: '' }]
+            : this.detail.options
+        this.form.partition = this.detail.partition
+      }
+
+      this.form.resource.cpu = this.detail.cpu
+      this.form.resource.memory = this.detail.memory
+      this.form.resource.gpu = this.detail.gpu
+      if (this.detail.expiresIn === 0) {
+        if (this.availableInfiniteTime) {
+          this.form.withExpiresInSetting = false
+        }
+        this.form.expiresIn = 8
+      } else {
+        this.form.expiresIn = this.detail.expiresIn / 60 / 60
+      }
+
       this.form.selectedParent = []
       if (this.detail.parents) {
         this.trainingHistories.forEach(history => {
@@ -451,53 +491,6 @@ export default {
         this.form.gitModel.commit = this.commits.find(commit => {
           return commit.commitId == this.detail.gitModel.commitId
         })
-      }
-
-      this.form.resource.cpu = this.detail.cpu
-      this.form.resource.memory = this.detail.memory
-      this.form.resource.gpu = this.detail.gpu
-      if (this.detail.expiresIn === 0) {
-        if (this.availableInfiniteTime) {
-          this.form.withExpiresInSetting = false
-        }
-        this.form.expiresIn = 8
-      } else {
-        this.form.expiresIn = this.detail.expiresIn / 60 / 60
-      }
-
-      this.form.variables =
-        this.detail.options.length === 0
-          ? [{ key: '', value: '' }]
-          : this.detail.options
-      this.form.partition = this.detail.partition
-    } else if (this.isReRunCreation) {
-      // 再実行時は親、データセット、リソース情報をコピー
-      await this['notebook/fetchDetail'](this.originId)
-
-      this.form.selectedParent = []
-      if (this.detail.parents) {
-        this.trainingHistories.forEach(history => {
-          this.detail.parents.forEach(parent => {
-            if (history.id === parent.id) {
-              this.form.selectedParent.push(parent)
-            }
-          })
-        })
-      }
-
-      if (this.detail.dataSet) {
-        this.form.dataSetId = String(this.detail.dataSet.id)
-      }
-      this.form.resource.cpu = this.detail.cpu
-      this.form.resource.memory = this.detail.memory
-      this.form.resource.gpu = this.detail.gpu
-      if (this.detail.expiresIn === 0) {
-        if (this.availableInfiniteTime) {
-          this.form.withExpiresInSetting = false
-        }
-        this.form.expiresIn = 8
-      } else {
-        this.form.expiresIn = this.detail.expiresIn / 60 / 60
       }
     }
   },
