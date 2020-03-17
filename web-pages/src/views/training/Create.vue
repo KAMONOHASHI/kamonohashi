@@ -382,6 +382,14 @@ export default {
           }
         })
       }
+      this.form.resource.cpu = this.detail.cpu
+      this.form.resource.memory = this.detail.memory
+      this.form.resource.gpu = this.detail.gpu
+      this.form.variables =
+        this.detail.options.length === 0
+          ? [{ key: '', value: '' }]
+          : this.detail.options
+      this.form.partition = this.detail.partition
 
       // レジストリの設定
       this.form.containerImage.registry = {
@@ -407,16 +415,6 @@ export default {
       this.form.gitModel.commit = this.commits.find(commit => {
         return commit.commitId == this.detail.gitModel.commitId
       })
-
-      this.form.resource.cpu = this.detail.cpu
-      this.form.resource.memory = this.detail.memory
-      this.form.resource.gpu = this.detail.gpu
-
-      this.form.variables =
-        this.detail.options.length === 0
-          ? [{ key: '', value: '' }]
-          : this.detail.options
-      this.form.partition = this.detail.partition
     }
   },
   methods: {
