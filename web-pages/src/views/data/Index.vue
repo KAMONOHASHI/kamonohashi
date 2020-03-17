@@ -12,8 +12,9 @@
           <el-button
             v-if="$store.getters['account/isAvailablePreprocessing']"
             @click="openPreprocessingDialog"
-            >前処理実行</el-button
           >
+            前処理実行
+          </el-button>
           <el-button
             icon="el-icon-edit-outline"
             type="primary"
