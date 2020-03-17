@@ -20,6 +20,7 @@ import role from './modules/role'
 import storage from './modules/storage'
 import tenant from './modules/tenant'
 import user from './modules/user'
+import version from './modules/version'
 
 Vue.use(Vuex)
 export default new Vuex.Store({
@@ -44,6 +45,7 @@ export default new Vuex.Store({
     storage,
     tenant,
     user,
+    version,
   },
   state: {
     // ログイン情報

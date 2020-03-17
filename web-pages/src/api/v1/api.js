@@ -300,7 +300,7 @@ let api = {
     },
   },
   version: {
-    get: gen.ApiV1VersionGet
+    get: gen.ApiV1VersionGet,
   },
 
   // dataを取り出すメソッド
