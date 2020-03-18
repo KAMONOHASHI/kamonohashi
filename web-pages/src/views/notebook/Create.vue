@@ -527,6 +527,8 @@ export default {
           let params = {
             dataSetId: this.form.dataSetId,
             parentIds: selectedParentIds,
+            ContainerImage: this.setContainerImage(),
+            GitModel: this.setGitModel(),
             cpu: this.form.resource.cpu,
             memory: this.form.resource.memory,
             gpu: this.form.resource.gpu,
@@ -560,44 +562,6 @@ export default {
               if (!this.form.withExpiresInSetting) {
                 this.form.expiresIn = 0
               }
-              // コンテナイメージの指定
-              // イメージとタグが指定されている場合、コンテナイメージを指定して登録
-              // イメージとタグが指定されていない場合、コンテナイメージは未指定(null)として登録
-              let containerImage = null
-              if (
-                this.form.containerImage.image !== null &&
-                this.form.containerImage.tag !== null
-              ) {
-                containerImage = {
-                  registryId: this.form.containerImage.registry.id,
-                  image: this.form.containerImage.image,
-                  tag: this.form.containerImage.tag,
-                }
-              }
-
-              // gitモデルの指定
-              // リポジトリが指定されている場合、gitモデルを指定して登録
-              // リポジトリが指定されていない場合、gitモデルは未指定(null)として登録
-              let gitModel = null
-              if (this.form.gitModel.repository !== null) {
-                // ブランチ未指定の際はcommitIdも未指定で実行
-                // ブランチ指定時、HEADが指定された際はcommitsの先頭要素をcommitIDに指定する。コピー実行時の再現性を担保するため
-                let commitId = null
-                if (this.form.gitModel.branch) {
-                  commitId = this.form.gitModel.commit
-                    ? this.form.gitModel.commit.commitId
-                    : this.commits[0].commitId
-                }
-                gitModel = {
-                  gitId: this.form.gitModel.git.id,
-                  repository: this.form.gitModel.repository.name,
-                  owner: this.form.gitModel.repository.owner,
-                  branch: this.form.gitModel.branch
-                    ? this.form.gitModel.branch.branchName
-                    : null,
-                  commitId: commitId,
-                }
-              }
               // training history ObjectのリストからIDのみを抜き出して格納
               let selectedParentIds = []
               this.form.selectedParent.forEach(parent => {
@@ -607,8 +571,8 @@ export default {
                 name: this.form.name,
                 dataSetId: this.form.dataSetId,
                 parentIds: selectedParentIds,
-                ContainerImage: containerImage,
-                GitModel: gitModel,
+                ContainerImage: this.setContainerImage(),
+                GitModel: this.setGitModel(),
                 cpu: this.form.resource.cpu,
                 memory: this.form.resource.memory,
                 gpu: this.form.resource.gpu,
@@ -710,6 +674,51 @@ export default {
         this['gitSelector/fetchCommits'],
         branchName,
       )
+    },
+
+    // コンテナイメージの指定
+    setContainerImage() {
+      // イメージとタグが指定されている場合、コンテナイメージを指定して登録
+      // イメージとタグが指定されていない場合、コンテナイメージは未指定(null)として登録
+      let containerImage = null
+      if (
+        this.form.containerImage.image !== null &&
+        this.form.containerImage.tag !== null
+      ) {
+        containerImage = {
+          registryId: this.form.containerImage.registry.id,
+          image: this.form.containerImage.image,
+          tag: this.form.containerImage.tag,
+        }
+      }
+      return containerImage
+    },
+
+    // gitモデルの指定
+    setGitModel() {
+      // リポジトリが指定されている場合、gitモデルを指定して登録
+      // リポジトリが指定されていない場合、gitモデルは未指定(null)として登録
+      let gitModel = null
+      if (this.form.gitModel.repository !== null) {
+        // ブランチ未指定の際はcommitIdも未指定で実行
+        // ブランチ指定時、HEADが指定された際はcommitsの先頭要素をcommitIDに指定する。コピー実行時の再現性を担保するため
+        let commitId = null
+        if (this.form.gitModel.branch) {
+          commitId = this.form.gitModel.commit
+            ? this.form.gitModel.commit.commitId
+            : this.commits[0].commitId
+        }
+        gitModel = {
+          gitId: this.form.gitModel.git.id,
+          repository: this.form.gitModel.repository.name,
+          owner: this.form.gitModel.repository.owner,
+          branch: this.form.gitModel.branch
+            ? this.form.gitModel.branch.branchName
+            : null,
+          commitId: commitId,
+        }
+      }
+      return gitModel
     },
   },
 }
