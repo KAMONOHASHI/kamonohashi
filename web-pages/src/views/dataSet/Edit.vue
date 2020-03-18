@@ -36,7 +36,7 @@
         </el-col>
         <el-col v-if="isEditDialog" :offset="1" :span="11">
           <el-form-item label="編集可否">
-            <kqi-display-text-form v-if="detail.isLocked" value="不可" />
+            <kqi-display-text-form v-if="isLocked" value="不可" />
             <kqi-display-text-form v-else value="可" />
           </el-form-item>
           <el-form-item label="登録者">
@@ -53,7 +53,7 @@
         <pl-dataset-transfer
           v-if="form.entries"
           v-model="form.entries"
-          :disabled="detail.isLocked"
+          :disabled="isLocked"
           @showData="handleShowData"
         />
       </el-form-item>
@@ -95,6 +95,7 @@ export default {
       isCreateDialog: false,
       isCopyCreation: false,
       isEditDialog: false,
+      isLocked: false,
       dialogVisible: true,
       error: null,
       rules: {
@@ -154,6 +155,7 @@ export default {
           this.isCreateDialog = true
           this.isCopyCreation = this.id !== null
           this.isEditDialog = false
+          this.isLocked = false
           break
 
         case 'edit':
@@ -196,6 +198,11 @@ export default {
           types.push({ name: key })
         }
         this.form.entries = ent
+        if (this.isEditDialog) {
+          // 編集時は編集可否を設定
+          this.isLocked = this.detail.isLocked
+        }
+
         this.setDataTypes(types)
         this.error = null
       } catch (e) {
@@ -238,7 +245,7 @@ export default {
         await this.post(params)
       } else {
         // 編集
-        if (this.detail.isLocked) {
+        if (this.isLocked) {
           // 編集不可の時は、名前とメモのみ編集可
           await this.patch({ id: this.id, params: params })
         } else {
