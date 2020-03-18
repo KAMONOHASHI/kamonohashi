@@ -1,6 +1,6 @@
 <template>
   <!-- データセット編集画面において、データ一覧を表示するコンポーネント -->
-  <div :style="'margin-right: 10px; width:' + width + 'px'">
+  <div :style="'margin-right: 10px; width:' + width + 'px;'">
     <div>
       <div class="title" :class="'color-' + viewInfo.colorIndex">
         <el-row type="flex" justify="space-between">
@@ -10,7 +10,7 @@
           </el-col>
           <el-col class="header-action" :span="6">
             <el-dropdown @command="handleSelectedCommand">
-              <el-button size="mini"><i class="el-icon-more"></i></el-button>
+              <el-button size="mini"><i class="el-icon-more"/></el-button>
               <el-dropdown-menu slot="dropdown">
                 <span
                   v-for="(moveMessage, entryName) in moveList"
@@ -50,10 +50,7 @@
         <div class="draggable-data">
           <el-row>
             <el-col :span="checkSpanSize">
-              <el-checkbox
-                v-model="data.checked"
-                @change="handleCheck()"
-              ></el-checkbox>
+              <el-checkbox v-model="data.checked" @change="handleCheck()" />
             </el-col>
             <el-col :span="idSpanSize">
               <el-checkbox v-model="data.checked" @change="handleCheck()">
@@ -72,13 +69,13 @@
                 v-for="(tag, i) in data.tags"
                 :key="i"
                 size="mini"
-                style="margin-right:3px;"
+                style="margin-right: 3px;"
               >
                 {{ tag }}
               </el-tag>
               <!-- タグ存在時にiボタンがずれるのを防止するためのスペース -->
-              <p style="white-space:pre-wrap;" v-text="emptyspace"></p
-            ></el-col>
+              <p style="white-space: pre-wrap;" v-text="emptyspace" />
+            </el-col>
 
             <el-col v-if="viewInfo.showAssign" :span="assignSpanSize">
               <div class="tag" :class="'color-' + data.colorIndex">
@@ -125,7 +122,7 @@
                         v-for="(tag, i) in data.tags"
                         :key="i"
                         size="mini"
-                        style="margin-right:3px;"
+                        style="margin-right: 3px;"
                       >
                         {{ tag }}
                       </el-tag>
@@ -142,7 +139,7 @@
     <div class="footer" :class="'color-' + viewInfo.colorIndex">
       <el-pagination
         ref="pagination"
-        style="position: relative; top: 6px; "
+        style="position: relative; top: 6px;"
         layout="total,prev,next,jumper"
         :page-size="viewInfo.currentPageSize"
         :current-page="viewInfo.currentPage"
@@ -157,15 +154,15 @@
 
 <script>
 import { Container, Draggable } from 'vue-smooth-dnd'
-import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
-import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index.vue'
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
+import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index'
 
 export default {
   components: {
     Container,
     Draggable,
-    KqiSmartSearchInput,
     KqiDisplayTextForm,
+    KqiSmartSearchInput,
   },
   props: {
     // dataのpaging情報やentry自体の表示情報

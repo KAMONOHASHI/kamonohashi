@@ -298,28 +298,28 @@
 </template>
 
 <script>
+import KqiDisplayError from '@/components/KqiDisplayError'
 import KqiDataSetSelector from '@/components/selector/KqiDataSetSelector'
 import KqiTrainingHistorySelector from '@/components/selector/KqiTrainingHistorySelector'
 import KqiContainerSelector from '@/components/selector/KqiContainerSelector'
 import KqiGitSelector from '@/components/selector/KqiGitSelector'
-import KqiPartitionSelector from '@/components/selector/KqiPartitionSelector'
 import KqiResourceSelector from '@/components/selector/KqiResourceSelector'
 import KqiEnvironmentVariables from '@/components/KqiEnvironmentVariables'
-import KqiDisplayError from '@/components/KqiDisplayError'
+import KqiPartitionSelector from '@/components/selector/KqiPartitionSelector'
 import registrySelectorUtil from '@/util/registrySelectorUtil'
 import gitSelectorUtil from '@/util/gitSelectorUtil'
 import { mapActions, mapGetters } from 'vuex'
 
 export default {
   components: {
+    KqiDisplayError,
     KqiDataSetSelector,
-    KqiResourceSelector,
     KqiTrainingHistorySelector,
+    KqiResourceSelector,
     KqiContainerSelector,
     KqiGitSelector,
-    KqiPartitionSelector,
     KqiEnvironmentVariables,
-    KqiDisplayError,
+    KqiPartitionSelector,
   },
   props: {
     originId: {

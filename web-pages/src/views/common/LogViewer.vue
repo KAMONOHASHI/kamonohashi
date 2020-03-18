@@ -18,7 +18,7 @@
     <el-row :gutter="20" class="footer">
       <el-col class="right-button-group" :span="24">
         <a :href="logUrl" :download="2">
-          <el-button icon="el-icon-download"></el-button>
+          <el-button icon="el-icon-download" />
         </a>
         <el-button @click="emitReturn">戻る</el-button>
       </el-col>

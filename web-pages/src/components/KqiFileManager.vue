@@ -33,16 +33,16 @@
 </template>
 
 <script>
-import KqiDownloadButton from '@/components/KqiDownloadButton.vue'
-import KqiDeleteButton from '@/components/KqiDeleteButton.vue'
-import KqiUploadForm from '@/components/KqiUploadForm.vue'
+import KqiDownloadButton from '@/components/KqiDownloadButton'
+import KqiDeleteButton from '@/components/KqiDeleteButton'
+import KqiUploadForm from '@/components/KqiUploadForm'
 
 export default {
   name: 'FileManager',
   components: {
     KqiDownloadButton,
-    KqiUploadForm,
     KqiDeleteButton,
+    KqiUploadForm,
   },
   props: {
     uploadedFiles: {

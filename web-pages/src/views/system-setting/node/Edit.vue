@@ -18,7 +18,7 @@
         <el-input v-model="form.partition" />
       </el-form-item>
       <el-form-item label="アクセスレベル">
-        <el-radio-group v-model="form.accessLevel" style="width:100%;">
+        <el-radio-group v-model="form.accessLevel" style="width: 100%;">
           <el-radio-button :label="0">Disabled</el-radio-button>
           <el-radio-button :label="1">Private</el-radio-button>
           <el-radio-button :label="2">Public</el-radio-button>

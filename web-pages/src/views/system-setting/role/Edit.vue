@@ -26,7 +26,7 @@
           v-else
           v-model="form.isSystemRole"
           placeholder="Select"
-          style="width:100%;"
+          style="width: 100%;"
           :disabled="id !== null"
         >
           <el-option

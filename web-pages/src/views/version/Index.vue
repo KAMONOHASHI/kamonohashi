@@ -30,7 +30,7 @@
         <br />
         <br />
         <el-row class="version">
-          <el-col :span="4" style="text-align: center">
+          <el-col :span="4" style="text-align: center;">
             {{ 'バージョン :' }}
           </el-col>
           <el-col :span="20">
@@ -49,7 +49,7 @@
         <br />
         <br />
         <br />
-        <div class="text" style="text-align: right">
+        <div class="text" style="text-align: right;">
           <a href="https://kamonohashi.ai/" target="_blank">
             KAMONOHASHI
           </a>

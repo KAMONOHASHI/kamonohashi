@@ -28,9 +28,9 @@
                     :label="item.name"
                     :value="item.id"
                   >
-                    <span style="float: left">{{ item.name }}</span>
+                    <span style="float: left;">{{ item.name }}</span>
                     <span
-                      style="float: right; margin-right:16px; color: #8492a6; font-size: 13px"
+                      style="float: right; margin-right: 16px; color: #8492a6; font-size: 13px;"
                     >
                       {{ item.memo }}
                     </span>
@@ -76,23 +76,22 @@
 </template>
 
 <script>
-import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
 import KqiDisplayError from '@/components/KqiDisplayError'
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
 import KqiPreprocessingsSelector from '@/components/selector/KqiPreprocessingSelector'
-import KqiPartitionSelector from '@/components/selector/KqiPartitionSelector'
 import KqiResourceSelector from '@/components/selector/KqiResourceSelector'
 import KqiEnvironmentVariables from '@/components/KqiEnvironmentVariables'
-
+import KqiPartitionSelector from '@/components/selector/KqiPartitionSelector'
 import { mapActions, mapGetters } from 'vuex'
 
 export default {
   components: {
-    KqiPartitionSelector,
+    KqiDisplayError,
+    KqiDisplayTextForm,
+    KqiPreprocessingsSelector,
     KqiResourceSelector,
     KqiEnvironmentVariables,
-    KqiPreprocessingsSelector,
-    KqiDisplayTextForm,
-    KqiDisplayError,
+    KqiPartitionSelector,
   },
   props: {
     idArray: {

@@ -72,20 +72,20 @@
 
 <script>
 import KqiDialog from '@/components/KqiDialog'
-import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
 import KqiDisplayError from '@/components/KqiDisplayError'
-import KqiFileManager from '@/components/KqiFileManager.vue'
-import TagEditor from './TagEditor.vue'
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
+import KqiFileManager from '@/components/KqiFileManager'
+import TagEditor from './TagEditor'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapMutations, mapActions } = createNamespacedHelpers('data')
 
 export default {
   components: {
     KqiDialog,
-    KqiFileManager,
     KqiDisplayError,
-    TagEditor,
     KqiDisplayTextForm,
+    KqiFileManager,
+    TagEditor,
   },
   props: {
     id: {

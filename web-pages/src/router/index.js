@@ -1,9 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-import error from '@/router/error'
 import login from '@/router/login'
 import account from '@/router/account'
+import error from '@/router/error'
 import dashboard from '@/router/dashboard'
 import data from '@/router/data'
 import dataSet from '@/router/dataSet'
@@ -12,15 +12,15 @@ import notebook from '@/router/notebook'
 import training from '@/router/training'
 import inference from '@/router/inference'
 import tenantsetting from '@/router/tenant-setting'
-import git from '@/router/git'
-import menu from '@/router/menu'
-import node from '@/router/node'
-import quota from '@/router/quota'
-import registry from '@/router/registry'
-import role from '@/router/role'
-import storage from '@/router/storage'
 import tenant from '@/router/tenant'
+import git from '@/router/git'
+import registry from '@/router/registry'
+import storage from '@/router/storage'
+import role from '@/router/role'
+import quota from '@/router/quota'
+import node from '@/router/node'
 import user from '@/router/user'
+import menu from '@/router/menu'
 import clusterResource from '@/router/cluster-resource'
 import version from '@/router/version'
 
@@ -28,9 +28,9 @@ Vue.use(Router)
 
 let router = new Router({
   routes: [
-    ...error,
     ...login,
     ...account,
+    ...error,
     ...dashboard,
     ...data,
     ...dataSet,
@@ -39,15 +39,15 @@ let router = new Router({
     ...training,
     ...inference,
     ...tenantsetting,
-    ...git,
-    ...menu,
-    ...node,
-    ...quota,
-    ...registry,
-    ...role,
-    ...storage,
     ...tenant,
+    ...git,
+    ...registry,
+    ...storage,
+    ...role,
+    ...quota,
+    ...node,
     ...user,
+    ...menu,
     ...clusterResource,
     ...version,
   ],

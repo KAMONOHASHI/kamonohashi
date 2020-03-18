@@ -25,7 +25,7 @@
               @change="handleDefaultChange(prop.row)"
             >
               {{ prop.row.tenantName }}
-              <span v-if="prop.row.default" style="font-size:0.7rem;">
+              <span v-if="prop.row.default" style="font-size: 0.7rem;">
                 (デフォルト)
               </span>
             </el-radio>

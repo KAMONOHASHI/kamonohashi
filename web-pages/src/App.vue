@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import KqiHeader from '@/components/KqiHeader.vue'
+import KqiHeader from '@/components/KqiHeader'
 import KqiMenu from '@/components/KqiMenu'
 import Util from '@/util/util'
 import { createNamespacedHelpers } from 'vuex'

@@ -127,6 +127,7 @@ export default {
   },
 }
 </script>
+
 <style lang="scss" scoped>
 #terminal {
   height: 700px;

@@ -63,8 +63,8 @@
 
 <script>
 import KqiDialog from '@/components/KqiDialog'
-import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
 import KqiDisplayError from '@/components/KqiDisplayError'
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
 import DataSetTransfer from './DatasetTransfer/Index'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapMutations, mapActions } = createNamespacedHelpers(
@@ -74,8 +74,8 @@ const { mapGetters, mapMutations, mapActions } = createNamespacedHelpers(
 export default {
   components: {
     KqiDialog,
-    KqiDisplayTextForm,
     KqiDisplayError,
+    KqiDisplayTextForm,
     'pl-dataset-transfer': DataSetTransfer,
   },
   props: {

@@ -3,7 +3,7 @@
 
 <template>
   <el-form-item label="モデル" prop="gitModel">
-    <el-row></el-row>
+    <el-row />
     <el-row>
       <!-- サーバの選択 -->
       <el-col :span="6" :offset="1">Gitサーバ</el-col>

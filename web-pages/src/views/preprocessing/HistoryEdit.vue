@@ -68,10 +68,10 @@
 </template>
 
 <script>
+import KqiDisplayError from '@/components/KqiDisplayError'
 import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
 import KqiDeleteButton from '@/components/KqiDeleteButton'
-import KqiDisplayError from '@/components/KqiDisplayError'
-import KqiDownloadButton from '@/components/KqiDownloadButton.vue'
+import KqiDownloadButton from '@/components/KqiDownloadButton'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('preprocessing')
 

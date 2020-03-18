@@ -37,15 +37,15 @@
 </template>
 
 <script>
-import KqiFileViewer from '@/components/KqiFileViewer'
 import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
+import KqiFileViewer from '@/components/KqiFileViewer'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('training')
 
 export default {
   components: {
-    KqiFileViewer,
     KqiDisplayTextForm,
+    KqiFileViewer,
   },
   props: {
     id: {
@@ -93,6 +93,7 @@ export default {
   },
 }
 </script>
+
 <style lang="scss" scoped>
 .dialog /deep/ .el-dialog {
   min-width: 800px;

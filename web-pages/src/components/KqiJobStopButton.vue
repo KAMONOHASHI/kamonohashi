@@ -12,12 +12,12 @@
         append-to-body
       >
         <br />
-        <div style="text-align: center">
+        <div style="text-align: center;">
           <el-button @click="dialogVisible = false">キャンセル</el-button>
           <el-button type="danger" @click="$emit('halt')">異常停止</el-button>
-          <el-button type="success" @click="$emit('userCancel')"
-            >正常停止</el-button
-          >
+          <el-button type="success" @click="$emit('userCancel')">
+            正常停止
+          </el-button>
         </div>
       </el-dialog>
     </el-button>

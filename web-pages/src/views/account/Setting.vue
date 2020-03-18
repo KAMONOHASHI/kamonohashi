@@ -110,21 +110,21 @@
 
 <script>
 import KqiDisplayError from '@/components/KqiDisplayError'
-import GitTokenSetting from '@/views/account/GitTokenSetting'
-import RegistryTokenSetting from '@/views/account/RegistryTokenSetting'
 import TenantInfo from './TenantInfo'
 import DefaultTenantSetting from './DefaultTenantSetting'
 import AccessTokenSetting from './AccessTokenSetting'
+import GitTokenSetting from '@/views/account/GitTokenSetting'
+import RegistryTokenSetting from '@/views/account/RegistryTokenSetting'
 import PasswordSetting from './PasswordSetting'
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
   title: 'ユーザ情報設定',
   components: {
+    KqiDisplayError,
     TenantInfo,
     DefaultTenantSetting,
     AccessTokenSetting,
-    KqiDisplayError,
     GitTokenSetting,
     RegistryTokenSetting,
     PasswordSetting,

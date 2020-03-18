@@ -1,24 +1,24 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import account from './modules/account'
+import cluster from './modules/cluster'
 import data from './modules/data'
+import dataSet from './modules/dataSet'
 import git from './modules/git'
-import notebook from './modules/notebook'
-import preprocessing from './modules/preprocessing'
-import training from './modules/training'
+import gitSelector from './modules/gitSelector'
 import inference from './modules/inference'
 import menu from './modules/menu'
 import node from './modules/node'
+import notebook from './modules/notebook'
+import preprocessing from './modules/preprocessing'
 import quota from './modules/quota'
 import registry from './modules/registry'
-import resource from './modules/resource'
-import dataSet from './modules/dataSet'
 import registrySelector from './modules/registrySelector'
-import gitSelector from './modules/gitSelector'
-import cluster from './modules/cluster'
+import resource from './modules/resource'
 import role from './modules/role'
 import storage from './modules/storage'
 import tenant from './modules/tenant'
+import training from './modules/training'
 import user from './modules/user'
 import version from './modules/version'
 
@@ -26,24 +26,24 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   modules: {
     account,
+    cluster,
     data,
     dataSet,
-    registrySelector,
-    gitSelector,
-    notebook,
-    preprocessing,
-    training,
-    inference,
     git,
+    gitSelector,
+    inference,
     menu,
     node,
+    notebook,
+    preprocessing,
     quota,
     registry,
+    registrySelector,
     resource,
-    cluster,
     role,
     storage,
     tenant,
+    training,
     user,
     version,
   },

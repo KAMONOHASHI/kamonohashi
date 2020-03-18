@@ -39,13 +39,13 @@
         @row-click="openEditDialog"
         @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="55px"></el-table-column>
+        <el-table-column type="selection" width="55px" />
         <el-table-column width="25px">
           <div slot-scope="scope">
             <i v-if="scope.row.favorite" class="el-icon-star-on favorite" />
           </div>
         </el-table-column>
-        <el-table-column prop="id" label="ID" width="110px" align="center" />
+        <el-table-column prop="id" label="ID" width="120px" />
         <el-table-column prop="name" label="推論名" width="150px" />
         <el-table-column prop="createdAt" label="開始日時" width="100px" />
         <el-table-column
@@ -84,10 +84,10 @@
                   (scope.row.status === 'Completed')
               "
             >
-              <i class="el-icon-success" style="color: #67C23A" />
+              <i class="el-icon-success" style="color: #67C23A;" />
             </div>
             <div v-else>
-              <i class="el-icon-warning" style="color: #E6A23C" />
+              <i class="el-icon-warning" style="color: #E6A23C;" />
             </div>
           </div>
         </el-table-column>
@@ -118,15 +118,15 @@
 
 <script>
 import KqiPagination from '@/components/KqiPagination'
-import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index.vue'
+import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('inference')
 
 export default {
   title: '推論管理',
   components: {
-    KqiSmartSearchInput,
     KqiPagination,
+    KqiSmartSearchInput,
   },
   data() {
     return {

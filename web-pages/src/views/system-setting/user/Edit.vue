@@ -61,7 +61,7 @@
 <script>
 import KqiDialog from '@/components/KqiDialog'
 import KqiDisplayError from '@/components/KqiDisplayError'
-import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
 import KqiRoleSelector from '@/components/selector/KqiRoleSelector'
 import TenantRoleSelector from '@/views/system-setting/user/TenantRoleSelector'
 import { mapGetters, mapActions } from 'vuex'

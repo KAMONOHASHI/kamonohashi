@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
 
 export default {
   components: {

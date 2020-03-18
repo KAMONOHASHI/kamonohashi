@@ -90,7 +90,7 @@
             <div class="el-input">
               <span
                 v-if="detail.gitModel && detail.gitModel.url !== null"
-                style="padding-left: 3px"
+                style="padding-left: 3px;"
               >
                 <a :href="detail.gitModel.url" target="_blank">
                   {{ detail.gitModel.owner }}/{{
@@ -196,7 +196,7 @@
                 />
               </div>
               <div v-if="detail.status === 'Running'">
-                <div class="el-input" style="padding: 10px 0">
+                <div class="el-input" style="padding: 10px 0;">
                   <el-button @click="emitShell">Shell起動</el-button>
                 </div>
                 <div>
@@ -227,23 +227,22 @@
 
 <script>
 import KqiDialog from '@/components/KqiDialog'
-import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
 import KqiDisplayError from '@/components/KqiDisplayError'
-import KqiDeleteButton from '@/components/KqiDeleteButton.vue'
-import KqiDataSetDetails from '@/components/selector/KqiDataSetDetails.vue'
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
+import KqiDeleteButton from '@/components/KqiDeleteButton'
+import KqiDataSetDetails from '@/components/selector/KqiDataSetDetails'
 import KqiTrainingHistoryDetails from '@/components/selector/KqiTrainingHistoryDetails'
-
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('notebook')
 
 export default {
   components: {
     KqiDialog,
-    KqiDeleteButton,
     KqiDisplayError,
+    KqiDisplayTextForm,
+    KqiDeleteButton,
     KqiDataSetDetails,
     KqiTrainingHistoryDetails,
-    KqiDisplayTextForm,
   },
   props: {
     id: {

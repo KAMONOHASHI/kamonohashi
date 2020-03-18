@@ -4,7 +4,7 @@
       <el-card class="box-card frame">
         <el-row>
           <el-col :span="11" class="frame-image">
-            <span style="font-size:250px;vertical-align: middle;"></span>
+            <span style="font-size: 250px; vertical-align: middle;" />
             <img
               v-if="status === 404"
               class="img"
