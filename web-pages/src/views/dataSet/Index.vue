@@ -36,7 +36,12 @@
       >
         <el-table-column prop="id" label="ID" width="120px" />
         <el-table-column prop="name" label="データセット名" width="auto" />
-        <el-table-column prop="memo" label="メモ" width="auto" />
+        <el-table-column
+          prop="memo"
+          label="メモ"
+          width="auto"
+          class-name="memo-column"
+        />
         <el-table-column prop="createdAt" label="登録日時" width="170px" />
       </el-table>
     </el-row>
@@ -53,15 +58,15 @@
 
 <script>
 import KqiPagination from '@/components/KqiPagination'
-import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index.vue'
+import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('dataSet')
 
 export default {
   title: 'データセット管理',
   components: {
-    KqiSmartSearchInput,
     KqiPagination,
+    KqiSmartSearchInput,
   },
   data() {
     return {
@@ -90,7 +95,7 @@ export default {
     ...mapActions(['fetchDataSets']),
 
     async currentChange(page) {
-      this.currentPage = page
+      this.pageStatus.currentPage = page
       await this.retrieveData()
     },
     async retrieveData() {
@@ -125,7 +130,6 @@ export default {
     },
     handleCopy(id) {
       this.$router.push('/dataset/create/' + id)
-      // this.$router.go({ path: '/dataset/create/' + id, force: true })
     },
     async search() {
       this.pageStatus.currentPage = 1
@@ -143,6 +147,9 @@ export default {
 .search {
   text-align: right;
   padding-top: 10px;
+}
+.el-table /deep/ .memo-column div.cell {
+  white-space: pre-wrap;
 }
 
 .pagination /deep/ .el-input {

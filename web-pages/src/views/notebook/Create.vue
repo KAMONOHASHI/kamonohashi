@@ -90,10 +90,40 @@
       <el-row :gutter="20">
         <div class="element">
           <el-form v-if="active === 0">
-            <el-col :span="18" :offset="3">
+            <el-col :span="12">
+              <kqi-training-history-selector
+                v-model="form.selectedParent"
+                :histories="trainingHistories"
+                multiple
+              />
+              <kqi-data-set-selector
+                v-model="form.dataSetId"
+                :data-sets="dataSets"
+              />
+              <kqi-container-selector
+                v-model="form.containerImage"
+                :registries="registries"
+                :images="images"
+                :tags="tags"
+                @selectRegistry="selectRegistry"
+                @selectImage="selectImage"
+              />
+              <kqi-git-selector
+                v-model="form.gitModel"
+                :gits="gits"
+                :repositories="repositories"
+                :branches="branches"
+                :commits="commits"
+                :loading-repositories="loadingRepositories"
+                @selectGit="selectGit"
+                @selectRepository="selectRepository"
+                @selectBranch="selectBranch"
+              />
+            </el-col>
+            <el-col :span="12">
               <kqi-resource-selector v-model="form.resource" />
             </el-col>
-            <el-col :span="18" :offset="3">
+            <el-col :span="12">
               <div v-if="availableInfiniteTime">
                 <el-form-item label="起動期間設定">
                   <el-switch
@@ -115,17 +145,6 @@
                   />
                 </el-form-item>
               </div>
-            </el-col>
-            <el-col :span="18" :offset="3">
-              <kqi-training-history-selector
-                v-model="form.selectedParent"
-                :histories="trainingHistories"
-                multiple
-              />
-              <kqi-data-set-selector
-                v-model="form.dataSetId"
-                :data-sets="dataSets"
-              />
             </el-col>
           </el-form>
         </div>
@@ -279,26 +298,28 @@
 </template>
 
 <script>
+import KqiDisplayError from '@/components/KqiDisplayError'
 import KqiDataSetSelector from '@/components/selector/KqiDataSetSelector'
 import KqiTrainingHistorySelector from '@/components/selector/KqiTrainingHistorySelector'
 import KqiContainerSelector from '@/components/selector/KqiContainerSelector'
 import KqiGitSelector from '@/components/selector/KqiGitSelector'
-import KqiPartitionSelector from '@/components/selector/KqiPartitionSelector'
 import KqiResourceSelector from '@/components/selector/KqiResourceSelector'
 import KqiEnvironmentVariables from '@/components/KqiEnvironmentVariables'
-import KqiDisplayError from '@/components/KqiDisplayError'
+import KqiPartitionSelector from '@/components/selector/KqiPartitionSelector'
+import registrySelectorUtil from '@/util/registrySelectorUtil'
+import gitSelectorUtil from '@/util/gitSelectorUtil'
 import { mapActions, mapGetters } from 'vuex'
 
 export default {
   components: {
+    KqiDisplayError,
     KqiDataSetSelector,
-    KqiResourceSelector,
     KqiTrainingHistorySelector,
+    KqiResourceSelector,
     KqiContainerSelector,
     KqiGitSelector,
-    KqiPartitionSelector,
     KqiEnvironmentVariables,
-    KqiDisplayError,
+    KqiPartitionSelector,
   },
   props: {
     originId: {
@@ -352,7 +373,7 @@ export default {
   },
   computed: {
     ...mapGetters({
-      trainingHistories: ['training/histories'],
+      trainingHistories: ['training/historiesToMount'],
       dataSets: ['dataSet/dataSets'],
       registries: ['registrySelector/registries'],
       defaultRegistryId: ['registrySelector/defaultRegistryId'],
@@ -379,7 +400,9 @@ export default {
     }
 
     // 指定に必要な情報を取得
-    await this['training/fetchHistories']()
+    await this['training/fetchHistoriesToMount']({
+      status: ['Completed', 'UserCanceled', 'Killed'],
+    })
     await this['cluster/fetchPartitions']()
     await this['dataSet/fetchDataSets']()
 
@@ -400,11 +423,32 @@ export default {
     await this['notebook/fetchAvailableInfiniteTime']()
 
     // コピー実行時はコピー元情報を各項目を設定
-    if (this.isCopyCreation) {
+    // 再実行時は親、データセット、Git情報、コンテナ情報、リソース情報をコピー
+    if (this.isCopyCreation || this.isReRunCreation) {
       await this['notebook/fetchDetail'](this.originId)
 
-      this.form.name = this.detail.name
-      this.form.memo = this.detail.memo
+      if (this.isCopyCreation) {
+        this.form.name = this.detail.name
+        this.form.memo = this.detail.memo
+        this.form.variables =
+          this.detail.options.length === 0
+            ? [{ key: '', value: '' }]
+            : this.detail.options
+        this.form.partition = this.detail.partition
+      }
+
+      this.form.resource.cpu = this.detail.cpu
+      this.form.resource.memory = this.detail.memory
+      this.form.resource.gpu = this.detail.gpu
+      if (this.detail.expiresIn === 0) {
+        if (this.availableInfiniteTime) {
+          this.form.withExpiresInSetting = false
+        }
+        this.form.expiresIn = 8
+      } else {
+        this.form.expiresIn = this.detail.expiresIn / 60 / 60
+      }
+
       this.form.selectedParent = []
       if (this.detail.parents) {
         this.trainingHistories.forEach(history => {
@@ -428,7 +472,7 @@ export default {
         }
         await this.selectRegistry(this.detail.containerImage.registryId)
         this.form.containerImage.image = this.detail.containerImage.image
-        await this.selectImage()
+        await this.selectImage(this.detail.containerImage.image)
         this.form.containerImage.tag = this.detail.containerImage.tag
       }
 
@@ -443,61 +487,17 @@ export default {
         await this.selectRepository(this.form.gitModel.repository)
         this.form.gitModel.branch = this.detail.gitModel.branch
         await this.selectBranch(this.detail.gitModel.branch)
-        this.form.gitModel.commit = this.detail.gitModel.commitId
-      }
-
-      this.form.resource.cpu = this.detail.cpu
-      this.form.resource.memory = this.detail.memory
-      this.form.resource.gpu = this.detail.gpu
-      if (this.detail.expiresIn === 0) {
-        if (this.availableInfiniteTime) {
-          this.withExpiresInSetting = false
-        }
-        this.expiresIn = 8
-      } else {
-        this.expiresIn = origin.expiresIn / 60 / 60
-      }
-
-      this.form.variables =
-        this.detail.options.length === 0
-          ? [{ key: '', value: '' }]
-          : this.detail.options
-      this.form.partition = this.detail.partition
-    } else if (this.isReRunCreation) {
-      // 再実行時は親、データセット、リソース情報をコピー
-      await this['notebook/fetchDetail'](this.originId)
-
-      this.form.selectedParent = []
-      if (this.detail.parents) {
-        this.trainingHistories.forEach(history => {
-          this.detail.parents.forEach(parent => {
-            if (history.id === parent.id) {
-              this.form.selectedParent.push(parent)
-            }
-          })
+        // commitsから該当commitを抽出
+        this.form.gitModel.commit = this.commits.find(commit => {
+          return commit.commitId === this.detail.gitModel.commitId
         })
-      }
-
-      if (this.detail.dataSet) {
-        this.form.dataSetId = String(this.detail.dataSet.id)
-      }
-      this.form.resource.cpu = this.detail.cpu
-      this.form.resource.memory = this.detail.memory
-      this.form.resource.gpu = this.detail.gpu
-      if (this.detail.expiresIn === 0) {
-        if (this.availableInfiniteTime) {
-          this.withExpiresInSetting = false
-        }
-        this.expiresIn = 8
-      } else {
-        this.expiresIn = origin.expiresIn / 60 / 60
       }
     }
   },
 
   methods: {
     ...mapActions([
-      'training/fetchHistories',
+      'training/fetchHistoriesToMount',
       'notebook/fetchDetail',
       'notebook/post',
       'notebook/postRerun',
@@ -527,6 +527,8 @@ export default {
           let params = {
             dataSetId: this.form.dataSetId,
             parentIds: selectedParentIds,
+            ContainerImage: this.setContainerImage(),
+            GitModel: this.setGitModel(),
             cpu: this.form.resource.cpu,
             memory: this.form.resource.memory,
             gpu: this.form.resource.gpu,
@@ -560,39 +562,6 @@ export default {
               if (!this.form.withExpiresInSetting) {
                 this.form.expiresIn = 0
               }
-              // コンテナイメージの指定
-              // イメージとタグが指定されている場合、コンテナイメージを指定して登録
-              // イメージとタグが指定されていない場合、コンテナイメージは未指定(null)として登録
-              let containerImage = null
-              if (
-                this.form.containerImage.image !== null &&
-                this.form.containerImage.tag !== null
-              ) {
-                containerImage = {
-                  registryId: this.form.containerImage.registry.id,
-                  image: this.form.containerImage.image,
-                  tag: this.form.containerImage.tag,
-                }
-              }
-
-              // gitモデルの指定
-              // リポジトリとブランチが指定されている場合、gitモデルを指定して登録
-              // リポジトリとブランチが指定されていない場合、gitモデルは未指定(null)として登録
-              let gitModel = null
-              if (
-                this.form.gitModel.repository !== null &&
-                this.form.gitModel.branch !== null
-              ) {
-                gitModel = {
-                  gitId: this.form.gitModel.git.id,
-                  repository: this.form.gitModel.repository.name,
-                  owner: this.form.gitModel.repository.owner,
-                  branch: this.form.gitModel.branch.branchName,
-                  commitId: this.form.gitModel.commit
-                    ? this.form.gitModel.commit.commitId
-                    : 'HEAD',
-                }
-              }
               // training history ObjectのリストからIDのみを抜き出して格納
               let selectedParentIds = []
               this.form.selectedParent.forEach(parent => {
@@ -602,8 +571,8 @@ export default {
                 name: this.form.name,
                 dataSetId: this.form.dataSetId,
                 parentIds: selectedParentIds,
-                ContainerImage: containerImage,
-                GitModel: gitModel,
+                ContainerImage: this.setContainerImage(),
+                GitModel: this.setGitModel(),
                 cpu: this.form.resource.cpu,
                 memory: this.form.resource.memory,
                 gpu: this.form.resource.gpu,
@@ -661,89 +630,95 @@ export default {
 
     // コンテナイメージ
     async selectRegistry(registryId) {
-      // 過去の選択状態をリセット
-      this.form.containerImage.image = null
-      this.form.containerImage.tag = null
-      // clearの場合リセット、レジストリが選択された場合はイメージ取得
-      if (this.form.containerImage.registry !== null) {
-        await this['registrySelector/fetchImages'](registryId)
-      }
+      await registrySelectorUtil.selectRegistry(
+        this.form,
+        this['registrySelector/fetchImages'],
+        registryId,
+      )
     },
-    async selectImage() {
-      // 過去の選択状態をリセット
-      this.form.containerImage.tag = null
-
-      // clearの場合リセット、イメージが選択された場合はタグ取得
-      if (this.form.containerImage.image !== null) {
-        await this['registrySelector/fetchTags']({
-          registryId: this.form.containerImage.registry.id,
-          image: this.form.containerImage.image,
-        })
-      }
+    async selectImage(image) {
+      await registrySelectorUtil.selectImage(
+        this.form,
+        this['registrySelector/fetchTags'],
+        this.form.containerImage.registry.id,
+        image,
+      )
     },
 
     // モデル
     async selectGit(gitId) {
-      // 過去の選択状態をリセット
-      this.form.gitModel.repository = null
-      this.form.gitModel.branch = null
-      this.form.gitModel.commit = null
-
-      // clearの場合リセット、gitサーバが選択された場合はリポジトリ取得
-      if (this.form.gitModel.git !== null) {
-        // 独自ローディング処理のため共通側は無効
-        this.$store.commit('setLoading', false)
-        await this['gitSelector/fetchRepositories'](gitId)
-        // 共通側ローディングを再度有効化
-        this.$store.commit('setLoading', true)
-      }
+      await gitSelectorUtil.selectGit(
+        this.form,
+        this['gitSelector/fetchRepositories'],
+        gitId,
+        this.$store,
+      )
     },
     // repositoryの型がstring：手入力, object: 選択
     async selectRepository(repository) {
-      // 過去の選択状態をリセット
-      this.form.gitModel.branch = null
-      this.form.gitModel.commit = null
-
-      let manualInput = false
-      let argRepository = {}
-      if (typeof repository === 'string') {
-        manualInput = true
-        let repositoryName = repository
-        let index = repositoryName.indexOf('/')
-        if (index > 0) {
-          argRepository = {
-            owner: repositoryName.substring(0, index),
-            name: repositoryName.substring(index + 1),
-            fullName: repositoryName,
-          }
-          this.form.gitModel.repository = argRepository
-        } else {
-          //構文エラー
-        }
-      } else {
-        argRepository = repository
-      }
-      // clearの場合リセット、リポジトリが選択された場合はブランチ取得
-      if (this.form.gitModel.repository !== null) {
-        await this['gitSelector/fetchBranches']({
-          gitId: this.form.gitModel.git.id,
-          repository: argRepository,
-          manualInput: manualInput,
+      try {
+        await gitSelectorUtil.selectRepository(
+          this.form,
+          this['gitSelector/fetchBranches'],
+          repository,
+        )
+      } catch (message) {
+        this.$notify.error({
+          message: message,
         })
       }
     },
     async selectBranch(branchName) {
-      // 過去の選択状態をリセット
-      this.form.gitModel.commit = null
+      await gitSelectorUtil.selectBranch(
+        this.form,
+        this['gitSelector/fetchCommits'],
+        branchName,
+      )
+    },
 
-      // clearの場合リセット、ブランチが選択された場合はコミット取得
-      if (this.form.gitModel.branch !== null) {
-        await this['gitSelector/fetchCommits']({
-          gitId: this.form.gitModel.git.id,
-          repository: this.form.gitModel.repository,
-          branchName: branchName,
-        })
+    // コンテナイメージの指定
+    setContainerImage() {
+      // イメージとタグが指定されている場合、コンテナイメージを指定して登録
+      // イメージとタグが指定されていない場合、コンテナイメージは未指定(null)として登録
+      let containerImage = null
+      if (
+        this.form.containerImage.image !== null &&
+        this.form.containerImage.tag !== null
+      ) {
+        containerImage = {
+          registryId: this.form.containerImage.registry.id,
+          image: this.form.containerImage.image,
+          tag: this.form.containerImage.tag,
+        }
       }
+      return containerImage
+    },
+
+    // gitモデルの指定
+    setGitModel() {
+      // リポジトリが指定されている場合、gitモデルを指定して登録
+      // リポジトリが指定されていない場合、gitモデルは未指定(null)として登録
+      let gitModel = null
+      if (this.form.gitModel.repository !== null) {
+        // ブランチ未指定の際はcommitIdも未指定で実行
+        // ブランチ指定時、HEADが指定された際はcommitsの先頭要素をcommitIDに指定する。コピー実行時の再現性を担保するため
+        let commitId = null
+        if (this.form.gitModel.branch) {
+          commitId = this.form.gitModel.commit
+            ? this.form.gitModel.commit.commitId
+            : this.commits[0].commitId
+        }
+        gitModel = {
+          gitId: this.form.gitModel.git.id,
+          repository: this.form.gitModel.repository.name,
+          owner: this.form.gitModel.repository.owner,
+          branch: this.form.gitModel.branch
+            ? this.form.gitModel.branch.branchName
+            : null,
+          commitId: commitId,
+        }
+      }
+      return gitModel
     },
   },
 }

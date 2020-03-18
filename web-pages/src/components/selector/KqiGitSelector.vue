@@ -3,7 +3,7 @@
 
 <template>
   <el-form-item label="モデル" prop="gitModel">
-    <el-row></el-row>
+    <el-row />
     <el-row>
       <!-- サーバの選択 -->
       <el-col :span="6" :offset="1">Gitサーバ</el-col>
@@ -83,7 +83,7 @@
     <el-row>
       <!-- コミットIDの選択。ブランチで選択する場合は表示されない。 -->
       <el-col :span="6" :offset="1">コミットID</el-col>
-      <el-col v-if="enableCommitIdSelecter || !isHeadCommit" :span="12">
+      <el-col v-if="enableCommitIdSelecter || value.commit" :span="12">
         <el-popover
           ref="commitDetail"
           :disabled="value.commit === null"
@@ -195,7 +195,7 @@ export default {
           git: null,
           repository: null,
           branch: null,
-          tag: null,
+          commit: null,
         }
       },
     },
@@ -219,18 +219,6 @@ export default {
       repositoryCreated: false,
       repositoryValueKey: 'fullName',
     }
-  },
-  computed: {
-    isHeadCommit() {
-      if (this.value.commit === 'HEAD') {
-        return true
-      }
-      if (this.commits.length > 0) {
-        return this.commits[0] === this.value.commit
-      } else {
-        return false
-      }
-    },
   },
 
   methods: {
@@ -276,7 +264,7 @@ export default {
         gitModel.branch = branch
       }
       this.$emit('input', gitModel)
-      this.$emit('selectBranch', branch === '' ? null : branch.name)
+      this.$emit('selectBranch', branch === '' ? null : branch.branchName)
     },
 
     // 選択しているコミットが切り替わった時に呼ばれるイベントハンドラ。

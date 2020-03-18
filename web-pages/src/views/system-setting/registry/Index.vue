@@ -33,7 +33,11 @@
           label="GitLabプロジェクト名"
           width="auto"
         />
-        <el-table-column prop="serviceType" label="種別" width="auto" />
+        <el-table-column prop="serviceType" label="種別" width="auto">
+          <template slot-scope="scope">
+            {{ displayNameOfServiceType(scope.row.serviceType) }}
+          </template>
+        </el-table-column>
       </el-table>
     </el-row>
     <router-view @cancel="closeDialog()" @done="done()" />
@@ -47,13 +51,19 @@ const { mapGetters, mapActions } = createNamespacedHelpers('registry')
 export default {
   title: 'レジストリ管理', //<title>設定
   computed: {
-    ...mapGetters(['registries']),
+    ...mapGetters(['registries', 'serviceTypes']),
   },
   async created() {
     await this.fetchRegistries()
+    await this.fetchServiceTypes()
   },
   methods: {
-    ...mapActions(['fetchRegistries']),
+    ...mapActions(['fetchRegistries', 'fetchServiceTypes']),
+    // ServiceTypeの数値から表示名に変換
+    displayNameOfServiceType(serviceTypeId) {
+      let serviceType = this.serviceTypes.find(s => s.id === serviceTypeId)
+      return serviceType.name
+    },
     openCreateDialog() {
       this.$router.push('/registry/edit')
     },

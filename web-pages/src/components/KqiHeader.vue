@@ -3,9 +3,9 @@ title
   <div class="header">
     <el-row justify="center">
       <el-col :span="12" class="title">
-        <el-button type="text" class="menu label-color" @click="handleMenu"
-          >≡</el-button
-        >
+        <el-button type="text" class="menu label-color" @click="handleMenu">
+          ≡
+        </el-button>
         <router-link to="/">
           <img class="logo" src="@/assets/KAMONOHASHI_logo_white.png" alt="" />
         </router-link>
@@ -18,9 +18,9 @@ title
               scale="1.4"
               class="user-label"
               style="position: relative; top: 7px; left: -8px;"
-            ></icon>
+            />
             {{ user.userName }} / {{ user.selectedTenant.displayName }}
-            <i class="el-icon-caret-bottom"></i>
+            <i class="el-icon-caret-bottom" />
           </span>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item
@@ -32,17 +32,18 @@ title
               {{ tenant.displayName }}
             </el-dropdown-item>
             <hr />
-            <el-dropdown-item key="@setting" command="@setting"
-              >ユーザ情報設定
+            <el-dropdown-item key="@setting" command="@setting">
+              ユーザ情報設定
             </el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
         <el-button
-          style="padding-left:15px;"
+          style="padding-left: 15px;"
           type="text"
           class="user-label"
           @click="handleLogin"
-          >ログアウト
+        >
+          ログアウト
         </el-button>
       </el-col>
     </el-row>
@@ -52,6 +53,7 @@ title
 <script>
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('account')
+
 export default {
   name: 'Header',
   props: {

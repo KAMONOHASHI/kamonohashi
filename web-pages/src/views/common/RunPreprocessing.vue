@@ -28,9 +28,9 @@
                     :label="item.name"
                     :value="item.id"
                   >
-                    <span style="float: left">{{ item.name }}</span>
+                    <span style="float: left;">{{ item.name }}</span>
                     <span
-                      style="float: right; margin-right:16px; color: #8492a6; font-size: 13px"
+                      style="float: right; margin-right: 16px; color: #8492a6; font-size: 13px;"
                     >
                       {{ item.memo }}
                     </span>
@@ -76,23 +76,22 @@
 </template>
 
 <script>
-import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
 import KqiDisplayError from '@/components/KqiDisplayError'
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
 import KqiPreprocessingsSelector from '@/components/selector/KqiPreprocessingSelector'
-import KqiPartitionSelector from '@/components/selector/KqiPartitionSelector'
 import KqiResourceSelector from '@/components/selector/KqiResourceSelector'
 import KqiEnvironmentVariables from '@/components/KqiEnvironmentVariables'
-
+import KqiPartitionSelector from '@/components/selector/KqiPartitionSelector'
 import { mapActions, mapGetters } from 'vuex'
 
 export default {
   components: {
-    KqiPartitionSelector,
+    KqiDisplayError,
+    KqiDisplayTextForm,
+    KqiPreprocessingsSelector,
     KqiResourceSelector,
     KqiEnvironmentVariables,
-    KqiPreprocessingsSelector,
-    KqiDisplayTextForm,
-    KqiDisplayError,
+    KqiPartitionSelector,
   },
   props: {
     idArray: {
@@ -217,8 +216,6 @@ export default {
                 title: 'Success',
                 message: `ID:${dataId}の前処理に成功しました`,
               })
-              // 成功した場合、使用したデータのisRawフラグをFalseにする
-              await this.updateData(dataId)
               this.error = null
             } catch (e) {
               this.error = e
@@ -238,15 +235,6 @@ export default {
           }
         }
       })
-    },
-    async updateData(id) {
-      let params = {
-        id: id,
-        model: {
-          isRaw: false,
-        },
-      }
-      await this['data/put'](params)
     },
     sleep(ms) {
       return new Promise(resolve => setTimeout(resolve, ms))
@@ -271,7 +259,6 @@ export default {
     },
     emitHistoryPage(id) {
       this.$router.push('/preprocessingHistory/' + id)
-      this.$store.commit('setLoading', false)
     },
     closeDialog(done) {
       done()

@@ -2,6 +2,7 @@
   <div>
     <el-table
       ref="tenantTable"
+      height="calc(100vh - 250px)"
       :data="tenants"
       align="right"
       class="table pl-index-table"

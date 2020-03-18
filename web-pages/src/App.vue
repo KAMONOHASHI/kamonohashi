@@ -2,7 +2,7 @@
   <div id="app">
     <el-container>
       <el-header>
-        <pl-header
+        <kqi-header
           :login="login"
           @logout="handleLogout"
           @login="handleLogin"
@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import Header from '@/components/KqiHeader.vue'
+import KqiHeader from '@/components/KqiHeader'
 import KqiMenu from '@/components/KqiMenu'
 import Util from '@/util/util'
 import { createNamespacedHelpers } from 'vuex'
@@ -32,7 +32,7 @@ const { mapGetters, mapActions } = createNamespacedHelpers('account')
 
 export default {
   components: {
-    'pl-header': Header,
+    KqiHeader,
     KqiMenu,
   },
   data() {

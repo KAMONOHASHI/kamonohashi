@@ -17,7 +17,7 @@
       <el-row :gutter="20">
         <el-col :span="12">
           <kqi-display-text-form
-            label="推論ID"
+            label="ID"
             :value="detail ? String(detail.id) : '0'"
           >
             <span slot="action">
@@ -48,11 +48,15 @@
                 <kqi-training-history-details :training="detail.parent" />
               </el-popover>
               <el-button
+                v-if="$store.getters['account/isAvailableTraining']"
                 v-popover:parent-popover
                 class="el-input"
                 @click="showParent"
               >
-                {{ detail.parent.name }}
+                {{ detail.parent.fullName }}
+              </el-button>
+              <el-button v-else v-popover:parent-popover class="el-input">
+                {{ detail.parent.fullName }}
               </el-button>
             </el-form-item>
           </div>
@@ -69,10 +73,14 @@
                 <kqi-data-set-details :data-set="detail.dataSet" />
               </el-popover>
               <el-button
+                v-if="$store.getters['account/isAvailableDataSet']"
                 v-popover:dataSetDetail
                 class="el-input"
                 @click="redirectEditDataSet"
               >
+                {{ detail.dataSet.name }}
+              </el-button>
+              <el-button v-else v-popover:dataSetDetail class="el-input">
                 {{ detail.dataSet.name }}
               </el-button>
             </el-form-item>
@@ -80,7 +88,7 @@
 
           <el-form-item label="モデル">
             <div class="el-input">
-              <span v-if="detail.gitModel" style="padding-left: 3px">
+              <span v-if="detail.gitModel" style="padding-left: 3px;">
                 <a :href="detail.gitModel.url" target="_blank">
                   {{ detail.gitModel.owner }}/{{
                     detail.gitModel.repository
@@ -126,14 +134,6 @@
           <kqi-display-text-form label="実行者" :value="detail.createdBy" />
           <kqi-display-text-form label="開始日時" :value="detail.createdAt" />
           <kqi-display-text-form label="完了日時" :value="detail.completedAt" />
-
-          <kqi-display-text-form label="待機時間" :value="detail.waitingTime" />
-          <kqi-display-text-form
-            label="実行時間"
-            :value="detail.executionTime"
-          />
-
-          <kqi-display-text-form label="ログ概要" :value="detail.logSummary" />
         </el-col>
 
         <el-col :span="12">
@@ -190,7 +190,7 @@
                 />
               </div>
               <div v-if="detail.status === 'Running'">
-                <div class="el-input" style="padding: 10px 0">
+                <div class="el-input" style="padding: 10px 0;">
                   <el-button @click="emitShell">Shell起動</el-button>
                 </div>
               </div>
@@ -240,25 +240,24 @@
 
 <script>
 import KqiDialog from '@/components/KqiDialog'
-import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
 import KqiDisplayError from '@/components/KqiDisplayError'
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
 import KqiJobStopButton from '@/components/KqiJobStopButton'
-import KqiFileManager from '@/components/KqiFileManager.vue'
-import KqiDataSetDetails from '@/components/selector/KqiDataSetDetails.vue'
+import KqiFileManager from '@/components/KqiFileManager'
+import KqiDataSetDetails from '@/components/selector/KqiDataSetDetails'
 import KqiTrainingHistoryDetails from '@/components/selector/KqiTrainingHistoryDetails'
-
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('inference')
 
 export default {
   components: {
     KqiDialog,
-    KqiJobStopButton,
     KqiDisplayError,
+    KqiDisplayTextForm,
+    KqiJobStopButton,
     KqiFileManager,
     KqiDataSetDetails,
     KqiTrainingHistoryDetails,
-    KqiDisplayTextForm,
   },
   props: {
     id: {
@@ -297,16 +296,6 @@ export default {
     this.form.name = this.detail.name
     this.form.favorite = this.detail.favorite
     this.form.memo = this.detail.memo
-  },
-  async beforeUpdate() {
-    // 子ジョブから親ジョブ詳細に遷移する際にブラウザの進む/戻るボタンを押した場合の対応処理
-    // id(routerから受け取るパラメータ)とtrainingId(履歴検索に用いるID)が異なる場合、router側を優先した上で表示内容を更新
-    if (this.detail.id.toString() !== this.id.toString()) {
-      await this.retrieveData()
-      this.form.name = this.detail.name
-      this.form.favorite = this.detail.favorite
-      this.form.memo = this.detail.memo
-    }
   },
   methods: {
     ...mapActions([
@@ -418,11 +407,10 @@ export default {
     },
     // 親ジョブ履歴の表示指示
     async showParent() {
-      // 表示内容の変更は、beforeUpdated内で行う
       this.$router.push('/training/' + this.detail.parent.id)
     },
     redirectEditDataSet() {
-      this.$router.push('/dataset/' + this.detail.dataSet.id)
+      this.$router.push('/dataset/edit/' + this.detail.dataSet.id)
     },
     emitFiles() {
       this.$emit('files', this.detail.id)
@@ -455,6 +443,7 @@ export default {
   },
 }
 </script>
+
 <style lang="scss" scoped>
 .dialog /deep/ .el-dialog {
   min-width: 800px;

@@ -37,15 +37,15 @@
 </template>
 
 <script>
-import KqiFileViewer from '@/components/KqiFileViewer'
 import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
+import KqiFileViewer from '@/components/KqiFileViewer'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('notebook')
 
 export default {
   components: {
-    KqiFileViewer,
     KqiDisplayTextForm,
+    KqiFileViewer,
   },
   props: {
     id: {

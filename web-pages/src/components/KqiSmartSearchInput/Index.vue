@@ -52,7 +52,7 @@
       :size="mini ? 'mini' : 'small'"
       icon="el-icon-search"
       @click="handleSearch"
-    ></el-button>
+    />
   </span>
 </template>
 

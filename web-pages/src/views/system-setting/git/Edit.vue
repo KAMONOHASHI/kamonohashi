@@ -15,7 +15,7 @@
       <el-form-item label="種別" prop="serviceType">
         <el-select
           v-model="form.serviceType"
-          style="width: 100%"
+          style="width: 100%;"
           :disabled="isNotEditable"
         >
           <el-option
@@ -43,6 +43,7 @@
     </el-form>
   </kqi-dialog>
 </template>
+
 <script>
 import KqiDialog from '@/components/KqiDialog'
 import KqiDisplayError from '@/components/KqiDisplayError'

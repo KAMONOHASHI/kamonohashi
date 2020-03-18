@@ -10,7 +10,12 @@
       </el-col>
     </el-row>
     <el-row>
-      <el-table class="quota-table pl-index-table" :data="quotasData" border>
+      <el-table
+        class="quota-table pl-index-table"
+        height="calc(100vh - 250px)"
+        :data="quotasData"
+        border
+      >
         <!-- テーブルの各列の表示項目を注入 -->
         <el-table-column prop="tenantName" label="テナント" width="auto" />
         <el-table-column prop="cpu" label="CPU" width="auto">
@@ -53,9 +58,8 @@
 </template>
 
 <script>
-import { createNamespacedHelpers } from 'vuex'
 import KqiDisplayError from '@/components/KqiDisplayError'
-
+import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('quota')
 
 export default {

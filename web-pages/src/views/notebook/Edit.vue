@@ -17,7 +17,7 @@
       <el-row :gutter="20">
         <el-col :span="12">
           <kqi-display-text-form
-            label="ノートブックID"
+            label="ID"
             :value="detail ? String(detail.id) : '0'"
           >
             <span slot="action">
@@ -48,10 +48,14 @@
                 >
                   <kqi-training-history-details :training="parent" />
                   <el-button
+                    v-if="$store.getters['account/isAvailableTraining']"
                     slot="reference"
                     class="el-input"
                     @click="showParent(parent.id)"
                   >
+                    {{ parent.fullName }}
+                  </el-button>
+                  <el-button v-else slot="reference" class="el-input">
                     {{ parent.fullName }}
                   </el-button>
                 </el-popover>
@@ -70,10 +74,14 @@
                 <kqi-data-set-details :data-set="detail.dataSet" />
               </el-popover>
               <el-button
+                v-if="$store.getters['account/isAvailableDataSet']"
                 v-popover:dataSetDetail
                 class="el-input"
                 @click="redirectEditDataSet"
               >
+                {{ detail.dataSet.name }}
+              </el-button>
+              <el-button v-else v-popover:dataSetDetail class="el-input">
                 {{ detail.dataSet.name }}
               </el-button>
             </el-form-item>
@@ -82,7 +90,7 @@
             <div class="el-input">
               <span
                 v-if="detail.gitModel && detail.gitModel.url !== null"
-                style="padding-left: 3px"
+                style="padding-left: 3px;"
               >
                 <a :href="detail.gitModel.url" target="_blank">
                   {{ detail.gitModel.owner }}/{{
@@ -140,10 +148,14 @@
             label="GPU"
             :value="detail ? String(detail.gpu) : '0'"
           />
-          <kqi-display-text-form
-            label="生存期間(h)"
-            :value="detail ? String(detail.expiresIn / 60 / 60) : '0'"
-          />
+          <div v-if="detail">
+            <kqi-display-text-form
+              v-if="detail.expiresIn !== 0"
+              label="起動期間(h)"
+              :value="String(detail.expiresIn / 60 / 60)"
+            />
+            <kqi-display-text-form v-else label="起動期間" value="無期限" />
+          </div>
           <kqi-display-text-form
             label="パーティション"
             :value="detail.partition"
@@ -184,7 +196,7 @@
                 />
               </div>
               <div v-if="detail.status === 'Running'">
-                <div class="el-input" style="padding: 10px 0">
+                <div class="el-input" style="padding: 10px 0;">
                   <el-button @click="emitShell">Shell起動</el-button>
                 </div>
                 <div>
@@ -215,23 +227,22 @@
 
 <script>
 import KqiDialog from '@/components/KqiDialog'
-import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
 import KqiDisplayError from '@/components/KqiDisplayError'
-import KqiDeleteButton from '@/components/KqiDeleteButton.vue'
-import KqiDataSetDetails from '@/components/selector/KqiDataSetDetails.vue'
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
+import KqiDeleteButton from '@/components/KqiDeleteButton'
+import KqiDataSetDetails from '@/components/selector/KqiDataSetDetails'
 import KqiTrainingHistoryDetails from '@/components/selector/KqiTrainingHistoryDetails'
-
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('notebook')
 
 export default {
   components: {
     KqiDialog,
-    KqiDeleteButton,
     KqiDisplayError,
+    KqiDisplayTextForm,
+    KqiDeleteButton,
     KqiDataSetDetails,
     KqiTrainingHistoryDetails,
-    KqiDisplayTextForm,
   },
   props: {
     id: {
@@ -335,7 +346,7 @@ export default {
       this.$router.push('/training/' + parentId)
     },
     redirectEditDataSet() {
-      this.$router.push('/dataset/' + this.detail.dataSet.id)
+      this.$router.push('/dataset/edit/' + this.detail.dataSet.id)
     },
     emitFiles() {
       this.$emit('files', this.detail.id)

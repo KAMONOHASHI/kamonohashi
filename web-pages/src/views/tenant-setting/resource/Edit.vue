@@ -47,21 +47,21 @@ export default {
 
   computed: {
     ...mapGetters({
+      account: ['account/account'],
       tenantDetail: ['resource/tenantDetail'],
       tenantContainerLog: ['resource/tenantContainerLog'],
-      tenant: ['tenant/detail'],
     }),
   },
   async created() {
     try {
+      await this['account/fetchAccount']()
       let params = {
         name: this.name,
       }
-      await this['tenant/fetchCurrentTenant']()
       await this['resource/fetchTenantDetail'](params)
       this.containerInfo = this.tenantDetail
-      this.containerInfo.tenantName = this.tenant.name
-      this.containerInfo.displayName = this.tenant.displayName
+      this.containerInfo.tenantName = this.account.selectedTenant.name
+      this.containerInfo.displayName = this.account.selectedTenant.displayName
       this.error = null
     } catch (e) {
       this.error = e
@@ -70,7 +70,7 @@ export default {
 
   methods: {
     ...mapActions([
-      'tenant/fetchCurrentTenant',
+      'account/fetchAccount',
       'resource/fetchTenantDetail',
       'resource/fetchTenantContainerLog',
       'resource/deleteTenantContainer',

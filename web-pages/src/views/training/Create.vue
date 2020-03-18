@@ -231,16 +231,18 @@
 </template>
 
 <script>
-import KqiDataSetSelector from '@/components/selector/KqiDataSetSelector.vue'
-import KqiTrainingHistorySelector from '@/components/selector/KqiTrainingHistorySelector.vue'
-import KqiContainerSelector from '@/components/selector/KqiContainerSelector.vue'
-import KqiGitSelector from '@/components/selector/KqiGitSelector.vue'
-import KqiPartitionSelector from '@/components/selector/KqiPartitionSelector.vue'
+import KqiDisplayError from '@/components/KqiDisplayError'
+import KqiDataSetSelector from '@/components/selector/KqiDataSetSelector'
+import KqiTrainingHistorySelector from '@/components/selector/KqiTrainingHistorySelector'
+import KqiContainerSelector from '@/components/selector/KqiContainerSelector'
+import KqiGitSelector from '@/components/selector/KqiGitSelector'
 import KqiResourceSelector from '@/components/selector/KqiResourceSelector'
 import KqiEnvironmentVariables from '@/components/KqiEnvironmentVariables'
-import KqiDisplayError from '@/components/KqiDisplayError'
-import { mapActions, mapGetters } from 'vuex'
+import KqiPartitionSelector from '@/components/selector/KqiPartitionSelector'
 import validator from '@/util/validator'
+import registrySelectorUtil from '@/util/registrySelectorUtil'
+import gitSelectorUtil from '@/util/gitSelectorUtil'
+import { mapActions, mapGetters } from 'vuex'
 
 const formRule = {
   required: true,
@@ -250,14 +252,14 @@ const formRule = {
 
 export default {
   components: {
+    KqiDisplayError,
     KqiDataSetSelector,
     KqiTrainingHistorySelector,
     KqiContainerSelector,
     KqiGitSelector,
-    KqiPartitionSelector,
-    KqiEnvironmentVariables,
-    KqiDisplayError,
     KqiResourceSelector,
+    KqiEnvironmentVariables,
+    KqiPartitionSelector,
   },
   props: {
     originId: {
@@ -316,7 +318,7 @@ export default {
   },
   computed: {
     ...mapGetters({
-      trainingHistories: ['training/histories'],
+      trainingHistories: ['training/historiesToMount'],
       dataSets: ['dataSet/dataSets'],
       registries: ['registrySelector/registries'],
       defaultRegistryId: ['registrySelector/defaultRegistryId'],
@@ -336,7 +338,16 @@ export default {
     this.isCopyCreation = this.originId !== null
 
     // 指定に必要な情報を取得
-    await this['training/fetchHistories']()
+    await this['training/fetchHistoriesToMount']({
+      status: [
+        'Completed',
+        'UserCanceled',
+        'Killed',
+        'Failed',
+        'None',
+        'Error',
+      ],
+    })
     await this['cluster/fetchPartitions']()
     await this['dataSet/fetchDataSets']()
 
@@ -371,6 +382,14 @@ export default {
           }
         })
       }
+      this.form.resource.cpu = this.detail.cpu
+      this.form.resource.memory = this.detail.memory
+      this.form.resource.gpu = this.detail.gpu
+      this.form.variables =
+        this.detail.options.length === 0
+          ? [{ key: '', value: '' }]
+          : this.detail.options
+      this.form.partition = this.detail.partition
 
       // レジストリの設定
       this.form.containerImage.registry = {
@@ -379,7 +398,7 @@ export default {
       }
       await this.selectRegistry(this.detail.containerImage.registryId)
       this.form.containerImage.image = this.detail.containerImage.image
-      await this.selectImage()
+      await this.selectImage(this.detail.containerImage.image)
       this.form.containerImage.tag = this.detail.containerImage.tag
 
       // gitモデルの設定
@@ -392,22 +411,15 @@ export default {
       await this.selectRepository(this.form.gitModel.repository)
       this.form.gitModel.branch = this.detail.gitModel.branch
       await this.selectBranch(this.detail.gitModel.branch)
-      this.form.gitModel.commit = this.detail.gitModel.commitId
-
-      this.form.resource.cpu = this.detail.cpu
-      this.form.resource.memory = this.detail.memory
-      this.form.resource.gpu = this.detail.gpu
-
-      this.form.variables =
-        this.detail.options.length === 0
-          ? [{ key: '', value: '' }]
-          : this.detail.options
-      this.form.partition = this.detail.partition
+      // commitsから該当commitを抽出
+      this.form.gitModel.commit = this.commits.find(commit => {
+        return commit.commitId === this.detail.gitModel.commitId
+      })
     }
   },
   methods: {
     ...mapActions([
-      'training/fetchHistories',
+      'training/fetchHistoriesToMount',
       'training/fetchDetail',
       'training/post',
       'cluster/fetchPartitions',
@@ -433,10 +445,23 @@ export default {
             this.form.variables.forEach(kvp => {
               options[kvp.key] = kvp.value
             })
+            // 親学習IDを取得(1つのみマウント可)
+            let parentId = null
+            if (this.form.selectedParent.length > 0) {
+              parentId = this.form.selectedParent[0].id
+            }
+            // ブランチ未指定の際はcommitIdも未指定で実行
+            // ブランチ指定時、HEADが指定された際はcommitsの先頭要素をcommitIDに指定する。コピー実行時の再現性を担保するため
+            let commitId = null
+            if (this.form.gitModel.branch) {
+              commitId = this.form.gitModel.commit
+                ? this.form.gitModel.commit.commitId
+                : this.commits[0].commitId
+            }
             let params = {
               Name: this.form.name,
               DataSetId: this.form.dataSetId,
-              ParentId: this.form.selectedParent.id,
+              ParentId: parentId,
               ContainerImage: {
                 registryId: this.form.containerImage.registry.id,
                 image: this.form.containerImage.image,
@@ -446,10 +471,10 @@ export default {
                 gitId: this.form.gitModel.git.id,
                 repository: this.form.gitModel.repository.name,
                 owner: this.form.gitModel.repository.owner,
-                branch: this.form.gitModel.branch.branchName,
-                commitId: this.form.gitModel.commit
-                  ? this.form.gitModel.commit.commitId
-                  : 'HEAD',
+                branch: this.form.gitModel.branch
+                  ? this.form.gitModel.branch.branchName
+                  : null,
+                commitId: commitId,
               },
               EntryPoint: this.form.entryPoint,
               Cpu: this.form.resource.cpu,
@@ -507,89 +532,50 @@ export default {
 
     // コンテナイメージ
     async selectRegistry(registryId) {
-      // 過去の選択状態をリセット
-      this.form.containerImage.image = null
-      this.form.containerImage.tag = null
-      // clearの場合リセット、レジストリが選択された場合はイメージ取得
-      if (this.form.containerImage.registry !== null) {
-        await this['registrySelector/fetchImages'](registryId)
-      }
+      await registrySelectorUtil.selectRegistry(
+        this.form,
+        this['registrySelector/fetchImages'],
+        registryId,
+      )
     },
-    async selectImage() {
-      // 過去の選択状態をリセット
-      this.form.containerImage.tag = null
-
-      // clearの場合リセット、イメージが選択された場合はタグ取得
-      if (this.form.containerImage.image !== null) {
-        await this['registrySelector/fetchTags']({
-          registryId: this.form.containerImage.registry.id,
-          image: this.form.containerImage.image,
-        })
-      }
+    async selectImage(image) {
+      await registrySelectorUtil.selectImage(
+        this.form,
+        this['registrySelector/fetchTags'],
+        this.form.containerImage.registry.id,
+        image,
+      )
     },
 
     // モデル
     async selectGit(gitId) {
-      // 過去の選択状態をリセット
-      this.form.gitModel.repository = null
-      this.form.gitModel.branch = null
-      this.form.gitModel.commit = null
-
-      // clearの場合リセット、gitサーバが選択された場合はリポジトリ取得
-      if (this.form.gitModel.git !== null) {
-        // 独自ローディング処理のため共通側は無効
-        this.$store.commit('setLoading', false)
-        await this['gitSelector/fetchRepositories'](gitId)
-        // 共通側ローディングを再度有効化
-        this.$store.commit('setLoading', true)
-      }
+      await gitSelectorUtil.selectGit(
+        this.form,
+        this['gitSelector/fetchRepositories'],
+        gitId,
+        this.$store,
+      )
     },
     // repositoryの型がstring：手入力, object: 選択
     async selectRepository(repository) {
-      // 過去の選択状態をリセット
-      this.form.gitModel.branch = null
-      this.form.gitModel.commit = null
-
-      let manualInput = false
-      let argRepository = {}
-      if (typeof repository === 'string') {
-        manualInput = true
-        let repositoryName = repository
-        let index = repositoryName.indexOf('/')
-        if (index > 0) {
-          argRepository = {
-            owner: repositoryName.substring(0, index),
-            name: repositoryName.substring(index + 1),
-            fullName: repositoryName,
-          }
-          this.form.gitModel.repository = argRepository
-        } else {
-          //構文エラー
-        }
-      } else {
-        argRepository = repository
-      }
-      // clearの場合リセット、リポジトリが選択された場合はブランチ取得
-      if (this.form.gitModel.repository !== null) {
-        await this['gitSelector/fetchBranches']({
-          gitId: this.form.gitModel.git.id,
-          repository: argRepository,
-          manualInput: manualInput,
+      try {
+        await gitSelectorUtil.selectRepository(
+          this.form,
+          this['gitSelector/fetchBranches'],
+          repository,
+        )
+      } catch (message) {
+        this.$notify.error({
+          message: message,
         })
       }
     },
     async selectBranch(branchName) {
-      // 過去の選択状態をリセット
-      this.form.gitModel.commit = null
-
-      // clearの場合リセット、ブランチが選択された場合はコミット取得
-      if (this.form.gitModel.branch !== null) {
-        await this['gitSelector/fetchCommits']({
-          gitId: this.form.gitModel.git.id,
-          repository: this.form.gitModel.repository,
-          branchName: branchName,
-        })
-      }
+      await gitSelectorUtil.selectBranch(
+        this.form,
+        this['gitSelector/fetchCommits'],
+        branchName,
+      )
     },
   },
 }

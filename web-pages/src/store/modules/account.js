@@ -5,8 +5,8 @@ const state = {
   loginData: {},
   token: {},
   account: {},
-  menuList: {},
-  menuTree: {},
+  menuList: [],
+  menuTree: [],
 }
 
 // getters
@@ -25,6 +25,37 @@ const getters = {
   },
   menuTree(state) {
     return state.menuTree
+  },
+
+  // データ管理のアクセス権があるかどうか
+  isAvailableData(state) {
+    return state.menuTree.some(menu => {
+      return menu.url === '/data'
+    })
+  },
+  // データセット管理のアクセス権があるかどうか
+  isAvailableDataSet(state) {
+    return state.menuTree.some(menu => {
+      return menu.url === '/dataset'
+    })
+  },
+  // 前処理管理のアクセス権があるかどうか
+  isAvailablePreprocessing(state) {
+    return state.menuTree.some(menu => {
+      return menu.url === '/preprocessing'
+    })
+  },
+  // 学習管理のアクセス権があるかどうか
+  isAvailableTraining(state) {
+    return state.menuTree.some(menu => {
+      return menu.url === '/training'
+    })
+  },
+  // 推論管理のアクセス権があるかどうか
+  isAvailableInference(state) {
+    return state.menuTree.some(menu => {
+      return menu.url === '/inference'
+    })
   },
 }
 

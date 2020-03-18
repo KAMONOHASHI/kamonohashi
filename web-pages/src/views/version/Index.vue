@@ -30,17 +30,26 @@
         <br />
         <br />
         <el-row class="version">
-          <el-col :span="4" style="text-align: center">
+          <el-col :span="4" style="text-align: center;">
             {{ 'バージョン :' }}
           </el-col>
           <el-col :span="20">
-            {{ version }}
+            <div style="margin-bottom: 20px;">
+              {{ version.version }}
+            </div>
+            <div
+              v-for="(message, index) in version.messages"
+              :key="index"
+              style="margin-bottom: 10px;"
+            >
+              {{ message }}
+            </div>
           </el-col>
         </el-row>
         <br />
         <br />
         <br />
-        <div class="text" style="text-align: right">
+        <div class="text" style="text-align: right;">
           <a href="https://kamonohashi.ai/" target="_blank">
             KAMONOHASHI
           </a>
@@ -56,12 +65,19 @@
 </template>
 
 <script>
+import { createNamespacedHelpers } from 'vuex'
+const { mapGetters, mapActions } = createNamespacedHelpers('version')
+
 export default {
   title: 'バージョン情報',
-  data() {
-    return {
-      version: process.env.VUE_APP_VERSION, // webpackのdefine pluginから渡ってくる。 config/*.env.jsに定義がある。
-    }
+  computed: {
+    ...mapGetters(['version']),
+  },
+  async created() {
+    await this.fetchVersion()
+  },
+  methods: {
+    ...mapActions(['fetchVersion']),
   },
 }
 </script>

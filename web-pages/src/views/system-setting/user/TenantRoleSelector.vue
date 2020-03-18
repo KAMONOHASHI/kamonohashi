@@ -25,7 +25,7 @@
               @change="handleDefaultChange(prop.row)"
             >
               {{ prop.row.tenantName }}
-              <span v-if="prop.row.default" style="font-size:0.7rem;">
+              <span v-if="prop.row.default" style="font-size: 0.7rem;">
                 (デフォルト)
               </span>
             </el-radio>
@@ -192,10 +192,6 @@ export default {
           tenant.default = true
         }
       })
-      // let index = select.selectedTenants.findIndex(tenant => {
-      //   return tenant.tenantId === row.tenantId
-      // })
-      // this.$set(select.selectedTenants, index, row)
       this.$emit('input', select)
     },
   },

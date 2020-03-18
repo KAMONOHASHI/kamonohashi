@@ -1,7 +1,7 @@
 <template>
-  <div>
-    <el-form-item label="Git情報" prop="gitEndpoint">
-      <el-row></el-row>
+  <el-form-item label="Git情報" prop="gitEndpoint">
+    <div class="left-margin">
+      <el-row />
       <el-col :span="6">Git</el-col>
       <el-select
         class="selectGit"
@@ -17,8 +17,8 @@
           :label="item.name"
           :value="item.id"
         >
-          <span style="float: left">{{ item.name }}</span>
-          <span style="float: right; color: #8492a6; font-size: 13px">
+          <span style="float: left;">{{ item.name }}</span>
+          <span style="float: right; color: #8492a6; font-size: 13px;">
             {{ item.repositoryUrl }}
           </span>
         </el-option>
@@ -36,14 +36,14 @@
           :label="item.name"
           :value="item.id"
         >
-          <span style="float: left">{{ item.name }}</span>
-          <span style="float: right; color: #8492a6; font-size: 13px">
+          <span style="float: left;">{{ item.name }}</span>
+          <span style="float: right; color: #8492a6; font-size: 13px;">
             {{ item.repositryUrl }}
           </span>
         </el-option>
       </el-select>
-    </el-form-item>
-  </div>
+    </div>
+  </el-form-item>
 </template>
 
 <script>
@@ -105,5 +105,8 @@ export default {
 <style scoped>
 .selectGit {
   width: 100%;
+}
+.left-margin {
+  padding-left: 30px;
 }
 </style>

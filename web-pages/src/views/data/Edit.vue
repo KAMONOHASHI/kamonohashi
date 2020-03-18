@@ -6,7 +6,11 @@
     @delete="deleteData"
     @close="$emit('cancel')"
   >
-    <el-row v-if="isEditDialog" type="flex" justify="end">
+    <el-row
+      v-if="isEditDialog && $store.getters['account/isAvailablePreprocessing']"
+      type="flex"
+      justify="end"
+    >
       <el-col :span="24" class="right-button-group">
         <el-button @click="openPreprocessingDialog">前処理実行</el-button>
       </el-col>
@@ -68,20 +72,20 @@
 
 <script>
 import KqiDialog from '@/components/KqiDialog'
-import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
 import KqiDisplayError from '@/components/KqiDisplayError'
-import KqiFileManager from '@/components/KqiFileManager.vue'
-import TagEditor from './TagEditor.vue'
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
+import KqiFileManager from '@/components/KqiFileManager'
+import TagEditor from './TagEditor'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapMutations, mapActions } = createNamespacedHelpers('data')
 
 export default {
   components: {
     KqiDialog,
-    KqiFileManager,
     KqiDisplayError,
-    TagEditor,
     KqiDisplayTextForm,
+    KqiFileManager,
+    TagEditor,
   },
   props: {
     id: {

@@ -39,18 +39,13 @@
         @row-click="openEditDialog"
         @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="55px"></el-table-column>
+        <el-table-column type="selection" width="55px" />
         <el-table-column width="25px">
           <div slot-scope="scope">
             <i v-if="scope.row.favorite" class="el-icon-star-on favorite" />
           </div>
         </el-table-column>
-        <el-table-column
-          prop="id"
-          label="推論ID"
-          width="110px"
-          align="center"
-        />
+        <el-table-column prop="id" label="ID" width="120px" />
         <el-table-column prop="name" label="推論名" width="150px" />
         <el-table-column prop="createdAt" label="開始日時" width="100px" />
         <el-table-column
@@ -69,7 +64,12 @@
           width="auto"
           class-name="entry-point-column"
         />
-        <el-table-column prop="memo" label="メモ" width="auto" />
+        <el-table-column
+          prop="memo"
+          label="メモ"
+          width="auto"
+          class-name="memo-column"
+        />
         <el-table-column
           prop="outputValue"
           label="出力値"
@@ -84,10 +84,10 @@
                   (scope.row.status === 'Completed')
               "
             >
-              <i class="el-icon-success" style="color: #67C23A" />
+              <i class="el-icon-success" style="color: #67C23A;" />
             </div>
             <div v-else>
-              <i class="el-icon-warning" style="color: #E6A23C" />
+              <i class="el-icon-warning" style="color: #E6A23C;" />
             </div>
           </div>
         </el-table-column>
@@ -118,15 +118,15 @@
 
 <script>
 import KqiPagination from '@/components/KqiPagination'
-import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index.vue'
+import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('inference')
 
 export default {
   title: '推論管理',
   components: {
-    KqiSmartSearchInput,
     KqiPagination,
+    KqiSmartSearchInput,
   },
   data() {
     return {
@@ -137,7 +137,7 @@ export default {
       selections: [],
       searchCondition: {},
       searchConfigs: [
-        { prop: 'id', name: '推論ID', type: 'number' },
+        { prop: 'id', name: 'ID', type: 'number' },
         { prop: 'name', name: '推論名', type: 'text' },
         { prop: 'startedAt', name: '開始日時', type: 'date' },
         { prop: 'parentName', name: 'マウントした学習', type: 'text' },
@@ -187,7 +187,7 @@ export default {
       await this.fetchHistories(params)
     },
     async search() {
-      this.currentPage = 1
+      this.pageStatus.currentPage = 1
       await this.retrieveData()
     },
 
@@ -220,7 +220,7 @@ export default {
             message: `推論履歴を削除しました。(成功：${successCount}件、 失敗：${this
               .selections.length - successCount}件）`,
           })
-          this.currentPage = 1
+          this.pageStatus.currentPage = 1
           await this.retrieveData()
         })
         .catch(() => {
@@ -277,6 +277,10 @@ export default {
 .search {
   text-align: right;
   padding-top: 10px;
+}
+
+.el-table /deep/ .memo-column div.cell {
+  white-space: pre-wrap;
 }
 
 .pagination /deep/ .el-input {

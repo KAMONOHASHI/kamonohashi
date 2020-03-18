@@ -12,7 +12,7 @@
       <kqi-display-error :error="error" />
 
       <h3>テナント情報</h3>
-      <div class="margin">
+      <div class="left-margin">
         <kqi-display-text-form v-if="id !== null" label="ID" :value="id" />
         <el-form-item v-if="id === null" label="テナント名" prop="tenantName">
           <el-input v-model="form.tenantName" />
@@ -32,6 +32,7 @@
           style="width: 100%;"
           inactive-text="禁止"
           active-text="許可"
+          class="left-margin"
         />
       </el-form-item>
 
@@ -55,11 +56,11 @@
 
 <script>
 import KqiDialog from '@/components/KqiDialog'
-import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
 import KqiDisplayError from '@/components/KqiDisplayError'
-import KqiGitEndpointSelector from '@/components/selector/KqiGitEndpointSelector.vue'
-import KqiRegistryEndpointSelector from '@/components/selector/KqiRegistryEndpointSelector.vue'
-import KqiStorageEndpointSelector from '@/components/selector/KqiStorageEndpointSelector.vue'
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
+import KqiStorageEndpointSelector from '@/components/selector/KqiStorageEndpointSelector'
+import KqiGitEndpointSelector from '@/components/selector/KqiGitEndpointSelector'
+import KqiRegistryEndpointSelector from '@/components/selector/KqiRegistryEndpointSelector'
 import { mapGetters, mapActions } from 'vuex'
 import validator from '@/util/validator'
 
@@ -72,11 +73,11 @@ const formRule = {
 export default {
   components: {
     KqiDialog,
-    KqiDisplayTextForm,
     KqiDisplayError,
+    KqiDisplayTextForm,
+    KqiStorageEndpointSelector,
     KqiGitEndpointSelector,
     KqiRegistryEndpointSelector,
-    KqiStorageEndpointSelector,
   },
   props: {
     id: {
@@ -230,7 +231,7 @@ export default {
   font-weight: bold !important;
 }
 
-.margin {
+.left-margin {
   padding-left: 30px;
 }
 

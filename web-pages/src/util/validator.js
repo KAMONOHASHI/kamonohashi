@@ -10,11 +10,7 @@ export default class Validator {
 
   // KqiGitModelSelectorで利用
   static gitModelValidator = (rule, value, callback) => {
-    if (
-      value.git === null ||
-      value.repository === null ||
-      value.branch === null
-    ) {
+    if (value.git === null || value.repository === null) {
       callback(new Error('必須項目です'))
     } else {
       callback()

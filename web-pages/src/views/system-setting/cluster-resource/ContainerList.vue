@@ -4,6 +4,7 @@
       <el-pagination layout="total" :total="containerLists.length" />
     </el-col>
     <el-table
+      height="calc(100vh - 270px)"
       :data="containerLists"
       class="table pl-index-table"
       border

@@ -4,16 +4,16 @@
       <el-card class="box-card frame">
         <el-row>
           <el-col :span="11" class="frame-image">
-            <span style="font-size:250px;vertical-align: middle;"></span>
+            <span style="font-size: 250px; vertical-align: middle;" />
             <img
-              v-if="status == 404"
+              v-if="status === 404"
               class="img"
               src="@/assets/error_404.png"
               width="300px"
               alt=""
             />
             <img
-              v-else-if="status == 503"
+              v-else-if="status === 503"
               class="img"
               src="@/assets/error_503.png"
               width="300px"

@@ -9,7 +9,12 @@
       />
       <el-col class="right-top-button" :span="8">
         <div>
-          <el-button @click="openPreprocessingDialog">前処理実行</el-button>
+          <el-button
+            v-if="$store.getters['account/isAvailablePreprocessing']"
+            @click="openPreprocessingDialog"
+          >
+            前処理実行
+          </el-button>
           <el-button
             icon="el-icon-edit-outline"
             type="primary"
@@ -38,7 +43,7 @@
         @row-click="openEditDialog"
         @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="55px"></el-table-column>
+        <el-table-column type="selection" width="55px" />
         <el-table-column prop="id" label="ID" width="120px" />
         <el-table-column prop="name" label="データ名" width="auto" />
         <el-table-column label="元データ名" width="120px">
@@ -51,13 +56,18 @@
         </el-table-column>
         <el-table-column prop="createdAt" label="登録日時" width="200px" />
         <el-table-column prop="createdBy" label="登録者" width="120px" />
-        <el-table-column prop="memo" label="メモ" width="auto" />
+        <el-table-column
+          prop="memo"
+          label="メモ"
+          width="auto"
+          class-name="memo-column"
+        />
         <el-table-column prop="tag" label="タグ" width="120px">
           <template slot-scope="scope">
             <span
               v-for="(tag, index) in scope.row.tags"
               :key="index"
-              style="padding-left:10px"
+              style="padding-left: 10px;"
             >
               <el-tag size="mini">
                 {{ tag }}
@@ -86,15 +96,15 @@
 
 <script>
 import KqiPagination from '@/components/KqiPagination'
-import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index.vue'
+import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('data')
 
 export default {
   title: 'データ管理',
   components: {
-    KqiSmartSearchInput,
     KqiPagination,
+    KqiSmartSearchInput,
   },
 
   data() {
@@ -187,6 +197,10 @@ export default {
 .search {
   text-align: right;
   padding-top: 10px;
+}
+
+.el-table /deep/ .memo-column div.cell {
+  white-space: pre-wrap;
 }
 
 .pagination /deep/ .el-input {

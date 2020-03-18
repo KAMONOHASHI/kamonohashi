@@ -110,21 +110,21 @@
 
 <script>
 import KqiDisplayError from '@/components/KqiDisplayError'
-import GitTokenSetting from '@/views/account/GitTokenSetting'
-import RegistryTokenSetting from '@/views/account/RegistryTokenSetting'
 import TenantInfo from './TenantInfo'
 import DefaultTenantSetting from './DefaultTenantSetting'
 import AccessTokenSetting from './AccessTokenSetting'
+import GitTokenSetting from '@/views/account/GitTokenSetting'
+import RegistryTokenSetting from '@/views/account/RegistryTokenSetting'
 import PasswordSetting from './PasswordSetting'
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
   title: 'ユーザ情報設定',
   components: {
+    KqiDisplayError,
     TenantInfo,
     DefaultTenantSetting,
     AccessTokenSetting,
-    KqiDisplayError,
     GitTokenSetting,
     RegistryTokenSetting,
     PasswordSetting,
@@ -239,6 +239,8 @@ export default {
           },
         }
         await this['account/putGitToken'](params)
+        // storeで保持するgit tokenの情報を更新する
+        await this['gitSelector/fetchGits']()
         this.showSuccessMessage()
         this.gitTokenError = null
       } catch (error) {
@@ -256,6 +258,8 @@ export default {
           },
         }
         await this['account/putRegistryToken'](params)
+        // storeで保持するregistry tokenの情報を更新する
+        await this['registrySelector/fetchRegistries']()
         this.showSuccessMessage()
         this.registryTokenError = null
       } catch (error) {
