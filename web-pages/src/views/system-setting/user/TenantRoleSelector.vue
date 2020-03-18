@@ -192,10 +192,6 @@ export default {
           tenant.default = true
         }
       })
-      // let index = select.selectedTenants.findIndex(tenant => {
-      //   return tenant.tenantId === row.tenantId
-      // })
-      // this.$set(select.selectedTenants, index, row)
       this.$emit('input', select)
     },
   },

@@ -458,9 +458,6 @@ export default {
                 ? this.form.gitModel.commit.commitId
                 : this.commits[0].commitId
             }
-            this.form.gitModel.commit
-              ? this.form.gitModel.commit.commitId
-              : this.commits[0].commitId
             let params = {
               Name: this.form.name,
               DataSetId: this.form.dataSetId,

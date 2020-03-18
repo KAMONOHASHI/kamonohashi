@@ -130,7 +130,6 @@ export default {
     },
     handleCopy(id) {
       this.$router.push('/dataset/create/' + id)
-      // this.$router.go({ path: '/dataset/create/' + id, force: true })
     },
     async search() {
       this.pageStatus.currentPage = 1
