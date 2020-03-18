@@ -489,7 +489,7 @@ export default {
         await this.selectBranch(this.detail.gitModel.branch)
         // commitsから該当commitを抽出
         this.form.gitModel.commit = this.commits.find(commit => {
-          return commit.commitId == this.detail.gitModel.commitId
+          return commit.commitId === this.detail.gitModel.commitId
         })
       }
     }
