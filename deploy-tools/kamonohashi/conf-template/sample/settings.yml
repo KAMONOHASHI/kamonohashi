@@ -2,9 +2,7 @@ ingress:
   controller:
     nodeSelector:
       kubernetes.io/hostname: "kqi-node1"
-    service:
-      externalIPs:
-       - "10.1.1.1"
+    hostNetwork: true
 
 virtualHosts:
   - "kqi-node1"

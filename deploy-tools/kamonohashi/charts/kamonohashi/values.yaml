@@ -4,6 +4,7 @@ ingress:
     create: true
   controller:
     defaultBackendService: "kqi-system/platypus-web-pages"
+    hostNetwork: true
     scope:
       enabled: true
       namespace: kqi-system

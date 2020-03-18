@@ -1,6 +1,6 @@
 #!/bin/bash
 
-readonly HELM_VERSION="v2.13.0"
+readonly HELM_VERSION="v2.16.1"
 readonly SCRIPT_DIR=$(cd $(dirname $0); pwd)
 
 show_help() {

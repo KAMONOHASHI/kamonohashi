@@ -4,7 +4,7 @@ metadata:
   name: ingress
   namespace: kqi-system
   annotations:
-    "nginx.org/websocket-services": "platypus-web-api-ws"
+    nginx.org/websocket-services: "platypus-web-api-ws"
 spec:
   rules:
 {{- range .Values.virtualHosts }}

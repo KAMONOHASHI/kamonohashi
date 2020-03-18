@@ -7,13 +7,16 @@ data:
   POSTGRES_USER: platypus
   POSTGRES_DB: platypusdb
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: postgres
   namespace: kqi-system
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
   template:
     metadata:
       name: postgres
@@ -22,11 +25,7 @@ spec:
         app: postgres
     spec:
       nodeSelector:
-{{if .Values.kqi_node}}
         kubernetes.io/hostname: {{ .Values.kqi_node }}
-{{ else }}
-{{ toYaml .Values.postgres.nodeSelector | indent 8 }}
-{{end}}
       volumes:
       - name: host-dir
         hostPath:

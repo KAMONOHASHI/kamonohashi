@@ -3,9 +3,7 @@ ingress:
   controller:
     nodeSelector:
       kubernetes.io/hostname: "${INGRESS_NODE}"
-    service:
-      externalIPs:
-       - "${INGRESS_NODE_IP}"
+    hostNetwork: true
 # 外部からkamonohashiのweb画面にブラウザアクセスする際のhost名
 virtualHosts:
   - "${VIRTUAL_HOST}"
