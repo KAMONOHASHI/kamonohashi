@@ -43,7 +43,7 @@ export default class GitSelectorUtil {
         }
         form.gitModel.repository = argRepository
       } else {
-        //構文エラー
+        // 構文エラー
         form.gitModel.repository = null
         throw '{owner}/{name}の形式で入力してください。例：KAMONOHASHI/tutorial'
       }
