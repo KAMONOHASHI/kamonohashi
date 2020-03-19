@@ -6,7 +6,6 @@
         <span @click="openPreprocessing">
           前処理管理
         </span>
-        <el-button type="text" @click="openPreprocessing" />
         <i class="el-icon-arrow-right" />
         <span>{{ id }}</span>
       </el-col>
@@ -43,10 +42,10 @@
                   (scope.row.status === 'Completed')
               "
             >
-              <i class="el-icon-success" style="color: #67C23A" />
+              <i class="el-icon-success" style="color: #67C23A;" />
             </div>
             <div v-else>
-              <i class="el-icon-warning" style="color: #E6A23C" />
+              <i class="el-icon-warning" style="color: #E6A23C;" />
             </div>
           </div>
         </el-table-column>
@@ -66,16 +65,16 @@
 </template>
 
 <script>
-import KqiPagination from '@/components/KqiPagination'
 import KqiDisplayError from '@/components/KqiDisplayError'
+import KqiPagination from '@/components/KqiPagination'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('preprocessing')
 
 export default {
   title: '前処理履歴',
   components: {
-    KqiPagination,
     KqiDisplayError,
+    KqiPagination,
   },
   props: {
     id: {

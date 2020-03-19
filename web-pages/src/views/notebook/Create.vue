@@ -90,10 +90,40 @@
       <el-row :gutter="20">
         <div class="element">
           <el-form v-if="active === 0">
-            <el-col :span="18" :offset="3">
+            <el-col :span="12">
+              <kqi-training-history-selector
+                v-model="form.selectedParent"
+                :histories="trainingHistories"
+                multiple
+              />
+              <kqi-data-set-selector
+                v-model="form.dataSetId"
+                :data-sets="dataSets"
+              />
+              <kqi-container-selector
+                v-model="form.containerImage"
+                :registries="registries"
+                :images="images"
+                :tags="tags"
+                @selectRegistry="selectRegistry"
+                @selectImage="selectImage"
+              />
+              <kqi-git-selector
+                v-model="form.gitModel"
+                :gits="gits"
+                :repositories="repositories"
+                :branches="branches"
+                :commits="commits"
+                :loading-repositories="loadingRepositories"
+                @selectGit="selectGit"
+                @selectRepository="selectRepository"
+                @selectBranch="selectBranch"
+              />
+            </el-col>
+            <el-col :span="12">
               <kqi-resource-selector v-model="form.resource" />
             </el-col>
-            <el-col :span="18" :offset="3">
+            <el-col :span="12">
               <div v-if="availableInfiniteTime">
                 <el-form-item label="起動期間設定">
                   <el-switch
@@ -115,17 +145,6 @@
                   />
                 </el-form-item>
               </div>
-            </el-col>
-            <el-col :span="18" :offset="3">
-              <kqi-training-history-selector
-                v-model="form.selectedParent"
-                :histories="trainingHistories"
-                multiple
-              />
-              <kqi-data-set-selector
-                v-model="form.dataSetId"
-                :data-sets="dataSets"
-              />
             </el-col>
           </el-form>
         </div>
@@ -279,28 +298,28 @@
 </template>
 
 <script>
+import KqiDisplayError from '@/components/KqiDisplayError'
 import KqiDataSetSelector from '@/components/selector/KqiDataSetSelector'
 import KqiTrainingHistorySelector from '@/components/selector/KqiTrainingHistorySelector'
 import KqiContainerSelector from '@/components/selector/KqiContainerSelector'
 import KqiGitSelector from '@/components/selector/KqiGitSelector'
-import KqiPartitionSelector from '@/components/selector/KqiPartitionSelector'
 import KqiResourceSelector from '@/components/selector/KqiResourceSelector'
 import KqiEnvironmentVariables from '@/components/KqiEnvironmentVariables'
-import KqiDisplayError from '@/components/KqiDisplayError'
+import KqiPartitionSelector from '@/components/selector/KqiPartitionSelector'
 import registrySelectorUtil from '@/util/registrySelectorUtil'
 import gitSelectorUtil from '@/util/gitSelectorUtil'
 import { mapActions, mapGetters } from 'vuex'
 
 export default {
   components: {
+    KqiDisplayError,
     KqiDataSetSelector,
-    KqiResourceSelector,
     KqiTrainingHistorySelector,
+    KqiResourceSelector,
     KqiContainerSelector,
     KqiGitSelector,
-    KqiPartitionSelector,
     KqiEnvironmentVariables,
-    KqiDisplayError,
+    KqiPartitionSelector,
   },
   props: {
     originId: {
@@ -404,11 +423,32 @@ export default {
     await this['notebook/fetchAvailableInfiniteTime']()
 
     // コピー実行時はコピー元情報を各項目を設定
-    if (this.isCopyCreation) {
+    // 再実行時は親、データセット、Git情報、コンテナ情報、リソース情報をコピー
+    if (this.isCopyCreation || this.isReRunCreation) {
       await this['notebook/fetchDetail'](this.originId)
 
-      this.form.name = this.detail.name
-      this.form.memo = this.detail.memo
+      if (this.isCopyCreation) {
+        this.form.name = this.detail.name
+        this.form.memo = this.detail.memo
+        this.form.variables =
+          this.detail.options.length === 0
+            ? [{ key: '', value: '' }]
+            : this.detail.options
+        this.form.partition = this.detail.partition
+      }
+
+      this.form.resource.cpu = this.detail.cpu
+      this.form.resource.memory = this.detail.memory
+      this.form.resource.gpu = this.detail.gpu
+      if (this.detail.expiresIn === 0) {
+        if (this.availableInfiniteTime) {
+          this.form.withExpiresInSetting = false
+        }
+        this.form.expiresIn = 8
+      } else {
+        this.form.expiresIn = this.detail.expiresIn / 60 / 60
+      }
+
       this.form.selectedParent = []
       if (this.detail.parents) {
         this.trainingHistories.forEach(history => {
@@ -449,55 +489,8 @@ export default {
         await this.selectBranch(this.detail.gitModel.branch)
         // commitsから該当commitを抽出
         this.form.gitModel.commit = this.commits.find(commit => {
-          return commit.commitId == this.detail.gitModel.commitId
+          return commit.commitId === this.detail.gitModel.commitId
         })
-      }
-
-      this.form.resource.cpu = this.detail.cpu
-      this.form.resource.memory = this.detail.memory
-      this.form.resource.gpu = this.detail.gpu
-      if (this.detail.expiresIn === 0) {
-        if (this.availableInfiniteTime) {
-          this.form.withExpiresInSetting = false
-        }
-        this.form.expiresIn = 8
-      } else {
-        this.form.expiresIn = this.detail.expiresIn / 60 / 60
-      }
-
-      this.form.variables =
-        this.detail.options.length === 0
-          ? [{ key: '', value: '' }]
-          : this.detail.options
-      this.form.partition = this.detail.partition
-    } else if (this.isReRunCreation) {
-      // 再実行時は親、データセット、リソース情報をコピー
-      await this['notebook/fetchDetail'](this.originId)
-
-      this.form.selectedParent = []
-      if (this.detail.parents) {
-        this.trainingHistories.forEach(history => {
-          this.detail.parents.forEach(parent => {
-            if (history.id === parent.id) {
-              this.form.selectedParent.push(parent)
-            }
-          })
-        })
-      }
-
-      if (this.detail.dataSet) {
-        this.form.dataSetId = String(this.detail.dataSet.id)
-      }
-      this.form.resource.cpu = this.detail.cpu
-      this.form.resource.memory = this.detail.memory
-      this.form.resource.gpu = this.detail.gpu
-      if (this.detail.expiresIn === 0) {
-        if (this.availableInfiniteTime) {
-          this.form.withExpiresInSetting = false
-        }
-        this.form.expiresIn = 8
-      } else {
-        this.form.expiresIn = this.detail.expiresIn / 60 / 60
       }
     }
   },
@@ -534,6 +527,8 @@ export default {
           let params = {
             dataSetId: this.form.dataSetId,
             parentIds: selectedParentIds,
+            ContainerImage: this.setContainerImage(),
+            GitModel: this.setGitModel(),
             cpu: this.form.resource.cpu,
             memory: this.form.resource.memory,
             gpu: this.form.resource.gpu,
@@ -567,44 +562,6 @@ export default {
               if (!this.form.withExpiresInSetting) {
                 this.form.expiresIn = 0
               }
-              // コンテナイメージの指定
-              // イメージとタグが指定されている場合、コンテナイメージを指定して登録
-              // イメージとタグが指定されていない場合、コンテナイメージは未指定(null)として登録
-              let containerImage = null
-              if (
-                this.form.containerImage.image !== null &&
-                this.form.containerImage.tag !== null
-              ) {
-                containerImage = {
-                  registryId: this.form.containerImage.registry.id,
-                  image: this.form.containerImage.image,
-                  tag: this.form.containerImage.tag,
-                }
-              }
-
-              // gitモデルの指定
-              // リポジトリが指定されている場合、gitモデルを指定して登録
-              // リポジトリが指定されていない場合、gitモデルは未指定(null)として登録
-              let gitModel = null
-              if (this.form.gitModel.repository !== null) {
-                // ブランチ未指定の際はcommitIdも未指定で実行
-                // ブランチ指定時、HEADが指定された際はcommitsの先頭要素をcommitIDに指定する。コピー実行時の再現性を担保するため
-                let commitId = null
-                if (this.form.gitModel.branch) {
-                  commitId = this.form.gitModel.commit
-                    ? this.form.gitModel.commit.commitId
-                    : this.commits[0].commitId
-                }
-                gitModel = {
-                  gitId: this.form.gitModel.git.id,
-                  repository: this.form.gitModel.repository.name,
-                  owner: this.form.gitModel.repository.owner,
-                  branch: this.form.gitModel.branch
-                    ? this.form.gitModel.branch.branchName
-                    : null,
-                  commitId: commitId,
-                }
-              }
               // training history ObjectのリストからIDのみを抜き出して格納
               let selectedParentIds = []
               this.form.selectedParent.forEach(parent => {
@@ -614,8 +571,8 @@ export default {
                 name: this.form.name,
                 dataSetId: this.form.dataSetId,
                 parentIds: selectedParentIds,
-                ContainerImage: containerImage,
-                GitModel: gitModel,
+                ContainerImage: this.setContainerImage(),
+                GitModel: this.setGitModel(),
                 cpu: this.form.resource.cpu,
                 memory: this.form.resource.memory,
                 gpu: this.form.resource.gpu,
@@ -717,6 +674,51 @@ export default {
         this['gitSelector/fetchCommits'],
         branchName,
       )
+    },
+
+    // コンテナイメージの指定
+    setContainerImage() {
+      // イメージとタグが指定されている場合、コンテナイメージを指定して登録
+      // イメージとタグが指定されていない場合、コンテナイメージは未指定(null)として登録
+      let containerImage = null
+      if (
+        this.form.containerImage.image !== null &&
+        this.form.containerImage.tag !== null
+      ) {
+        containerImage = {
+          registryId: this.form.containerImage.registry.id,
+          image: this.form.containerImage.image,
+          tag: this.form.containerImage.tag,
+        }
+      }
+      return containerImage
+    },
+
+    // gitモデルの指定
+    setGitModel() {
+      // リポジトリが指定されている場合、gitモデルを指定して登録
+      // リポジトリが指定されていない場合、gitモデルは未指定(null)として登録
+      let gitModel = null
+      if (this.form.gitModel.repository !== null) {
+        // ブランチ未指定の際はcommitIdも未指定で実行
+        // ブランチ指定時、HEADが指定された際はcommitsの先頭要素をcommitIDに指定する。コピー実行時の再現性を担保するため
+        let commitId = null
+        if (this.form.gitModel.branch) {
+          commitId = this.form.gitModel.commit
+            ? this.form.gitModel.commit.commitId
+            : this.commits[0].commitId
+        }
+        gitModel = {
+          gitId: this.form.gitModel.git.id,
+          repository: this.form.gitModel.repository.name,
+          owner: this.form.gitModel.repository.owner,
+          branch: this.form.gitModel.branch
+            ? this.form.gitModel.branch.branchName
+            : null,
+          commitId: commitId,
+        }
+      }
+      return gitModel
     },
   },
 }

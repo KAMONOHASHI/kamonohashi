@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import KqiDataSetDetails from '@/components/selector/KqiDataSetDetails.vue'
+import KqiDataSetDetails from '@/components/selector/KqiDataSetDetails'
 
 export default {
   components: {

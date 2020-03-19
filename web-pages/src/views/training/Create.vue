@@ -231,14 +231,14 @@
 </template>
 
 <script>
-import KqiDataSetSelector from '@/components/selector/KqiDataSetSelector.vue'
-import KqiTrainingHistorySelector from '@/components/selector/KqiTrainingHistorySelector.vue'
-import KqiContainerSelector from '@/components/selector/KqiContainerSelector.vue'
-import KqiGitSelector from '@/components/selector/KqiGitSelector.vue'
-import KqiPartitionSelector from '@/components/selector/KqiPartitionSelector.vue'
+import KqiDisplayError from '@/components/KqiDisplayError'
+import KqiDataSetSelector from '@/components/selector/KqiDataSetSelector'
+import KqiTrainingHistorySelector from '@/components/selector/KqiTrainingHistorySelector'
+import KqiContainerSelector from '@/components/selector/KqiContainerSelector'
+import KqiGitSelector from '@/components/selector/KqiGitSelector'
 import KqiResourceSelector from '@/components/selector/KqiResourceSelector'
 import KqiEnvironmentVariables from '@/components/KqiEnvironmentVariables'
-import KqiDisplayError from '@/components/KqiDisplayError'
+import KqiPartitionSelector from '@/components/selector/KqiPartitionSelector'
 import validator from '@/util/validator'
 import registrySelectorUtil from '@/util/registrySelectorUtil'
 import gitSelectorUtil from '@/util/gitSelectorUtil'
@@ -252,14 +252,14 @@ const formRule = {
 
 export default {
   components: {
+    KqiDisplayError,
     KqiDataSetSelector,
     KqiTrainingHistorySelector,
     KqiContainerSelector,
     KqiGitSelector,
-    KqiPartitionSelector,
-    KqiEnvironmentVariables,
-    KqiDisplayError,
     KqiResourceSelector,
+    KqiEnvironmentVariables,
+    KqiPartitionSelector,
   },
   props: {
     originId: {
@@ -382,6 +382,14 @@ export default {
           }
         })
       }
+      this.form.resource.cpu = this.detail.cpu
+      this.form.resource.memory = this.detail.memory
+      this.form.resource.gpu = this.detail.gpu
+      this.form.variables =
+        this.detail.options.length === 0
+          ? [{ key: '', value: '' }]
+          : this.detail.options
+      this.form.partition = this.detail.partition
 
       // レジストリの設定
       this.form.containerImage.registry = {
@@ -405,18 +413,8 @@ export default {
       await this.selectBranch(this.detail.gitModel.branch)
       // commitsから該当commitを抽出
       this.form.gitModel.commit = this.commits.find(commit => {
-        return commit.commitId == this.detail.gitModel.commitId
+        return commit.commitId === this.detail.gitModel.commitId
       })
-
-      this.form.resource.cpu = this.detail.cpu
-      this.form.resource.memory = this.detail.memory
-      this.form.resource.gpu = this.detail.gpu
-
-      this.form.variables =
-        this.detail.options.length === 0
-          ? [{ key: '', value: '' }]
-          : this.detail.options
-      this.form.partition = this.detail.partition
     }
   },
   methods: {
@@ -460,9 +458,6 @@ export default {
                 ? this.form.gitModel.commit.commitId
                 : this.commits[0].commitId
             }
-            this.form.gitModel.commit
-              ? this.form.gitModel.commit.commitId
-              : this.commits[0].commitId
             let params = {
               Name: this.form.name,
               DataSetId: this.form.dataSetId,

@@ -44,7 +44,6 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex'
-
 const { mapGetters, mapActions } = createNamespacedHelpers('training')
 
 export default {

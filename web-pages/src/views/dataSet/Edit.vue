@@ -36,8 +36,8 @@
         </el-col>
         <el-col v-if="isEditDialog" :offset="1" :span="11">
           <el-form-item label="編集可否">
-            <kqi-display-text-form v-if="detail.isLocked" value="不可" />
-            <kqi-display-text-form v-else value="可能" />
+            <kqi-display-text-form v-if="isLocked" value="不可" />
+            <kqi-display-text-form v-else value="可" />
           </el-form-item>
           <el-form-item label="登録者">
             <kqi-display-text-form v-model="detail.createdBy" />
@@ -48,13 +48,14 @@
         </el-col>
       </el-row>
 
-      <el-form-item label="データ" prop="entries"> </el-form-item>
+      <el-form-item label="データ" prop="entries" />
       <el-form-item>
         <pl-dataset-transfer
           v-if="form.entries"
           v-model="form.entries"
+          :disabled="isLocked"
           @showData="handleShowData"
-        ></pl-dataset-transfer>
+        />
       </el-form-item>
     </el-form>
   </kqi-dialog>
@@ -62,10 +63,9 @@
 
 <script>
 import KqiDialog from '@/components/KqiDialog'
-import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
 import KqiDisplayError from '@/components/KqiDisplayError'
-
-import DataSetTransfer from './DatasetTransfer/Index.vue'
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
+import DataSetTransfer from './DatasetTransfer/Index'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapMutations, mapActions } = createNamespacedHelpers(
   'dataSet',
@@ -74,8 +74,8 @@ const { mapGetters, mapMutations, mapActions } = createNamespacedHelpers(
 export default {
   components: {
     KqiDialog,
-    KqiDisplayTextForm,
     KqiDisplayError,
+    KqiDisplayTextForm,
     'pl-dataset-transfer': DataSetTransfer,
   },
   props: {
@@ -95,6 +95,7 @@ export default {
       isCreateDialog: false,
       isCopyCreation: false,
       isEditDialog: false,
+      isLocked: false,
       dialogVisible: true,
       error: null,
       rules: {
@@ -136,7 +137,14 @@ export default {
   },
 
   methods: {
-    ...mapActions(['fetchDetail', 'fetchDataTypes', 'post', 'put', 'delete']),
+    ...mapActions([
+      'fetchDetail',
+      'fetchDataTypes',
+      'post',
+      'put',
+      'patch',
+      'delete',
+    ]),
     ...mapMutations(['setDataTypes']),
     async initialize() {
       let url = this.$route.path
@@ -147,6 +155,7 @@ export default {
           this.isCreateDialog = true
           this.isCopyCreation = this.id !== null
           this.isEditDialog = false
+          this.isLocked = false
           break
 
         case 'edit':
@@ -189,6 +198,11 @@ export default {
           types.push({ name: key })
         }
         this.form.entries = ent
+        if (this.isEditDialog) {
+          // 編集時は編集可否を設定
+          this.isLocked = this.detail.isLocked
+        }
+
         this.setDataTypes(types)
         this.error = null
       } catch (e) {
@@ -231,7 +245,13 @@ export default {
         await this.post(params)
       } else {
         // 編集
-        await this.put({ id: this.id, params: params })
+        if (this.isLocked) {
+          // 編集不可の時は、名前とメモのみ編集可
+          await this.patch({ id: this.id, params: params })
+        } else {
+          // 編集可の時は、データも編集可
+          await this.put({ id: this.id, params: params })
+        }
       }
     },
 

@@ -10,7 +10,7 @@
         <router-link :to="menu.url">
           <el-card
             class="menu"
-            style="border:solid 1px #ebeef5; width:360px;height: 200px; border-left: 5px solid rgba(26, 191, 213, 0.7);"
+            style="border: solid 1px #ebeef5; width: 360px; height: 200px; border-left: 5px solid rgba(26, 191, 213, 0.7);"
           >
             <div class="menu-name">
               <icon
@@ -21,7 +21,10 @@
               />
               {{ menu.name }}
             </div>
-            <div class="menu-description" style="padding:10px;font-size:14px;">
+            <div
+              class="menu-description"
+              style="padding: 10px; font-size: 14px;"
+            >
               {{ menu.description }}
             </div>
           </el-card>
@@ -35,6 +38,7 @@
     </div>
   </div>
 </template>
+
 <script>
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('account')
@@ -71,6 +75,7 @@ export default {
   },
 }
 </script>
+
 <style lang="scss" scoped>
 a {
   text-decoration: none;

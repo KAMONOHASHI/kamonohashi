@@ -56,11 +56,11 @@
 
 <script>
 import KqiDialog from '@/components/KqiDialog'
-import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
 import KqiDisplayError from '@/components/KqiDisplayError'
-import KqiGitEndpointSelector from '@/components/selector/KqiGitEndpointSelector.vue'
-import KqiRegistryEndpointSelector from '@/components/selector/KqiRegistryEndpointSelector.vue'
-import KqiStorageEndpointSelector from '@/components/selector/KqiStorageEndpointSelector.vue'
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
+import KqiStorageEndpointSelector from '@/components/selector/KqiStorageEndpointSelector'
+import KqiGitEndpointSelector from '@/components/selector/KqiGitEndpointSelector'
+import KqiRegistryEndpointSelector from '@/components/selector/KqiRegistryEndpointSelector'
 import { mapGetters, mapActions } from 'vuex'
 import validator from '@/util/validator'
 
@@ -73,11 +73,11 @@ const formRule = {
 export default {
   components: {
     KqiDialog,
-    KqiDisplayTextForm,
     KqiDisplayError,
+    KqiDisplayTextForm,
+    KqiStorageEndpointSelector,
     KqiGitEndpointSelector,
     KqiRegistryEndpointSelector,
-    KqiStorageEndpointSelector,
   },
   props: {
     id: {

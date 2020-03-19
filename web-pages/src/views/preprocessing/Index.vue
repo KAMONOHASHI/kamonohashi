@@ -87,8 +87,8 @@ const { mapGetters, mapActions } = createNamespacedHelpers('preprocessing')
 export default {
   title: '前処理管理',
   components: {
-    KqiSmartSearchInput,
     KqiPagination,
+    KqiSmartSearchInput,
   },
   data() {
     return {

@@ -1,7 +1,7 @@
 <template>
   <el-form-item label="Dockerレジストリ情報" prop="registry">
     <div class="left-margin">
-      <el-row></el-row>
+      <el-row />
       <el-col :span="6">レジストリ</el-col>
       <el-select
         class="selectRegistry"
@@ -17,8 +17,8 @@
           :label="item.name"
           :value="item.id"
         >
-          <span style="float: left">{{ item.name }}</span>
-          <span style="float: right; color: #8492a6; font-size: 13px">
+          <span style="float: left;">{{ item.name }}</span>
+          <span style="float: right; color: #8492a6; font-size: 13px;">
             {{ item.registryPath }}
           </span>
         </el-option>
@@ -37,8 +37,8 @@
           :label="item.name"
           :value="item.id"
         >
-          <span style="float: left">{{ item.name }}</span>
-          <span style="float: right; color: #8492a6; font-size: 13px">
+          <span style="float: left;">{{ item.name }}</span>
+          <span style="float: right; color: #8492a6; font-size: 13px;">
             {{ item.registryPath }}
           </span>
         </el-option>

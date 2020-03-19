@@ -58,9 +58,8 @@
 </template>
 
 <script>
-import { createNamespacedHelpers } from 'vuex'
 import KqiDisplayError from '@/components/KqiDisplayError'
-
+import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('quota')
 
 export default {

@@ -40,7 +40,7 @@
             <i v-if="scope.row.favorite" class="el-icon-star-on favorite" />
           </div>
         </el-table-column>
-        <el-table-column prop="id" label="ノートブックID" width="120px" />
+        <el-table-column prop="id" label="ID" width="120px" />
         <el-table-column prop="name" label="ノートブック名" width="240px" />
         <el-table-column prop="createdAt" label="作成日時" width="200px" />
         <el-table-column
@@ -57,10 +57,10 @@
                   (scope.row.status === 'Completed')
               "
             >
-              <i class="el-icon-success" style="color: #67C23A" />
+              <i class="el-icon-success" style="color: #67C23A;" />
             </div>
             <div v-else>
-              <i class="el-icon-warning" style="color: #E6A23C" />
+              <i class="el-icon-warning" style="color: #E6A23C;" />
             </div>
           </div>
         </el-table-column>
@@ -111,15 +111,15 @@
 
 <script>
 import KqiPagination from '@/components/KqiPagination'
-import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index.vue'
+import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('notebook')
 
 export default {
   title: 'ノートブック管理',
   components: {
-    KqiSmartSearchInput,
     KqiPagination,
+    KqiSmartSearchInput,
   },
   data() {
     return {
@@ -129,7 +129,7 @@ export default {
       },
       searchCondition: {},
       searchConfigs: [
-        { prop: 'id', name: 'ノートブックID', type: 'number' },
+        { prop: 'id', name: 'ID', type: 'number' },
         { prop: 'name', name: 'ノートブック名', type: 'text' },
         { prop: 'createdAt', name: '作成日時', type: 'date' },
         { prop: 'createdBy', name: '作成者', type: 'text' },

@@ -58,15 +58,15 @@
 
 <script>
 import KqiPagination from '@/components/KqiPagination'
-import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index.vue'
+import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('dataSet')
 
 export default {
   title: 'データセット管理',
   components: {
-    KqiSmartSearchInput,
     KqiPagination,
+    KqiSmartSearchInput,
   },
   data() {
     return {
@@ -130,7 +130,6 @@ export default {
     },
     handleCopy(id) {
       this.$router.push('/dataset/create/' + id)
-      // this.$router.go({ path: '/dataset/create/' + id, force: true })
     },
     async search() {
       this.pageStatus.currentPage = 1

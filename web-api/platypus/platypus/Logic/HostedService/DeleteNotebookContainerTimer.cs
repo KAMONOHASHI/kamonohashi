@@ -52,7 +52,7 @@ namespace Nssol.Platypus.Logic.HostedService
         /// タイマーとして各種データが設定されているかをチェックします。
         /// もし、false を返却したならタイマーが生成されません。
         /// </summary>
-        protected override bool isValid()
+        protected override bool IsValid()
         {
             bool ret = true;
             if (string.IsNullOrEmpty(kubernetesToken))

@@ -7,7 +7,7 @@
       placeholder="Please input"
       size="mini"
       format="yyyy-MM-dd"
-      style="width: 150px"
+      style="width: 150px;"
       @change="handleChange"
       @blur="handleBlur"
     />
@@ -21,9 +21,9 @@
         <el-table-column prop="name" width="100" />
         <el-table-column prop="name" width="100" align="right">
           <template slot-scope="scope">
-            <span style="color:grey;font-size:85%;">{{
-              scope.row.detail
-            }}</span>
+            <span style="color: grey; font-size: 85%;">
+              {{ scope.row.detail }}
+            </span>
           </template>
         </el-table-column>
       </el-table>

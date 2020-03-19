@@ -68,11 +68,11 @@
 
 <script>
 import KqiDialog from '@/components/KqiDialog'
-import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
-import KqiResourceSelector from '@/components/selector/KqiResourceSelector'
-import KqiContainerSelector from '@/components/selector/KqiContainerSelector.vue'
-import KqiGitSelector from '@/components/selector/KqiGitSelector.vue'
 import KqiDisplayError from '@/components/KqiDisplayError'
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
+import KqiContainerSelector from '@/components/selector/KqiContainerSelector'
+import KqiGitSelector from '@/components/selector/KqiGitSelector'
+import KqiResourceSelector from '@/components/selector/KqiResourceSelector'
 import registrySelectorUtil from '@/util/registrySelectorUtil'
 import gitSelectorUtil from '@/util/gitSelectorUtil'
 import { mapActions, mapGetters } from 'vuex'
@@ -80,8 +80,8 @@ import { mapActions, mapGetters } from 'vuex'
 export default {
   components: {
     KqiDialog,
-    KqiDisplayTextForm,
     KqiDisplayError,
+    KqiDisplayTextForm,
     KqiContainerSelector,
     KqiGitSelector,
     KqiResourceSelector,
@@ -246,12 +246,12 @@ export default {
           this.form.gitModel.repository = `${this.detail.gitModel.owner}/${this.detail.gitModel.repository}`
           await this.selectRepository(this.form.gitModel.repository)
           this.form.gitModel.branch = this.branches.find(branch => {
-            return branch.branchName == this.detail.gitModel.branch
+            return branch.branchName === this.detail.gitModel.branch
           })
           await this.selectBranch(this.detail.gitModel.branch)
           // commitsから該当commitを抽出
           this.form.gitModel.commit = this.commits.find(commit => {
-            return commit.commitId == this.detail.gitModel.commitId
+            return commit.commitId === this.detail.gitModel.commitId
           })
         }
 

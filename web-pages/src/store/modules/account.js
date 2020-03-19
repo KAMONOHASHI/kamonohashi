@@ -33,10 +33,22 @@ const getters = {
       return menu.url === '/data'
     })
   },
+  // データセット管理のアクセス権があるかどうか
+  isAvailableDataSet(state) {
+    return state.menuTree.some(menu => {
+      return menu.url === '/dataset'
+    })
+  },
   // 前処理管理のアクセス権があるかどうか
   isAvailablePreprocessing(state) {
     return state.menuTree.some(menu => {
       return menu.url === '/preprocessing'
+    })
+  },
+  // 学習管理のアクセス権があるかどうか
+  isAvailableTraining(state) {
+    return state.menuTree.some(menu => {
+      return menu.url === '/training'
     })
   },
   // 推論管理のアクセス権があるかどうか

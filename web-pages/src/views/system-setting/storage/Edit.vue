@@ -33,6 +33,7 @@
     </el-form>
   </kqi-dialog>
 </template>
+
 <script>
 import KqiDialog from '@/components/KqiDialog'
 import KqiDisplayError from '@/components/KqiDisplayError'

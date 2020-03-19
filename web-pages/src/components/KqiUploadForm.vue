@@ -21,8 +21,8 @@
 </template>
 
 <script>
-import MultiPartUpload from '@/util/multipart-upload.js'
-import Util from '@/util/util.js'
+import MultiPartUpload from '@/util/multipart-upload'
+import Util from '@/util/util'
 
 export default {
   name: 'UploadForm',

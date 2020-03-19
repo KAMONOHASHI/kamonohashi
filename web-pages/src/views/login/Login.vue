@@ -32,7 +32,7 @@
             />
           </el-form-item>
           <el-form-item class="button-group">
-            <el-button style="width: 100%" type="primary" native-type="submit">
+            <el-button style="width: 100%;" type="primary" native-type="submit">
               {{ 'ログイン' }}
             </el-button>
           </el-form-item>

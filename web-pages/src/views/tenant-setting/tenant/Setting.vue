@@ -55,9 +55,9 @@
 
 <script>
 import KqiDisplayError from '@/components/KqiDisplayError'
-import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
-import KqiGitEndpointSelector from '@/components/selector/KqiGitEndpointSelector.vue'
-import KqiRegistryEndpointSelector from '@/components/selector/KqiRegistryEndpointSelector.vue'
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
+import KqiGitEndpointSelector from '@/components/selector/KqiGitEndpointSelector'
+import KqiRegistryEndpointSelector from '@/components/selector/KqiRegistryEndpointSelector'
 import { mapGetters, mapActions } from 'vuex'
 import validator from '@/util/validator'
 

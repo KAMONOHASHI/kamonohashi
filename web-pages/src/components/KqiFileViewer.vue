@@ -28,7 +28,7 @@
     </el-row>
 
     <hr />
-    <el-row style="height: 500px; overflow: auto">
+    <el-row style="height: 500px; overflow: auto;">
       <el-col :span="24">
         <el-table :data="fileList">
           <el-table-column label="" width="35px">
@@ -50,7 +50,7 @@
                   :download="scope.row.name"
                   style="margin-left: 5px;"
                 >
-                  <el-button icon="el-icon-download" size="mini"></el-button>
+                  <el-button icon="el-icon-download" size="mini" />
                 </a>
               </span>
             </template>
@@ -104,6 +104,7 @@ export default {
   },
 }
 </script>
+
 <style lang="scss" scoped>
 .dialog /deep/ .el-dialog {
   min-width: 800px;

@@ -25,7 +25,7 @@
 <script>
 import KqiDialog from '@/components/KqiDialog'
 import KqiDisplayError from '@/components/KqiDisplayError'
-import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
 import KqiRoleSelector from '@/components/selector/KqiRoleSelector'
 import { mapGetters, mapActions } from 'vuex'
 
