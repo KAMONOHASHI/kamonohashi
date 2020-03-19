@@ -101,7 +101,21 @@
           <el-row :gutter="20">
             <div class="element">
               <el-form v-if="active===0">
-                <el-col :span="18" :offset="3">
+                <el-col :span="12">
+                  <el-form-item label="マウントする学習" prop="parentIds">
+                    <pl-training-history-multiple-selector v-model="parentIds"/>
+                  </el-form-item>
+                  <el-form-item label="データセット" prop="dataSet" >
+                    <pl-dataset-selector v-model="dataSet"/>
+                  </el-form-item>
+                  <el-form-item label="コンテナイメージ" >
+                    <pl-container-selector v-model="containerImage"/>
+                  </el-form-item>
+                  <el-form-item label="モデル">
+                    <pl-git-selector v-model="git"/>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="12">
                   <el-form-item label="CPU" required>
                     <el-slider
                       class="el-input"
@@ -129,8 +143,7 @@
                       show-input>
                     </el-slider>
                   </el-form-item>
-                </el-col>
-                <el-col :span="18" :offset="3">
+
                   <div v-if="availableInfiniteTimeNotebook === true">
                     <el-form-item label="起動期間設定">
                       <el-switch v-model="withExpiresInSetting"
@@ -150,14 +163,6 @@
                     </el-slider>
                   </el-form-item>
                 </div>
-                </el-col>
-                <el-col :span="18" :offset="3">
-                  <el-form-item label="マウントする学習" prop="parentIds">
-                    <pl-training-history-multiple-selector v-model="parentIds"/>
-                  </el-form-item>
-                  <el-form-item label="データセット" prop="dataSet" >
-                    <pl-dataset-selector v-model="dataSet"/>
-                  </el-form-item>
                 </el-col>
               </el-form>
             </div>
@@ -384,10 +389,10 @@
 
               let param = {
                 name: this.name,
-                containerImage: this.containerImage,
                 dataSetId: this.dataSet ? this.dataSet.id : null,
                 parentIds: this.parentIds,
-                gitModel: this.git,
+                containerImage: this.containerImage && this.containerImage.image ? this.containerImage : null,
+                gitModel: this.git && this.git.repository ? this.git : null,
                 options: options,
                 cpu: this.cpu,
                 memory: this.memory,
@@ -418,6 +423,8 @@
               let param = {
                   dataSetId: this.dataSet ? this.dataSet.id : null,
                   parentIds: this.parentIds,
+                  containerImage: this.containerImage && this.containerImage.image ? this.containerImage : null,
+                  gitModel: this.git && this.git.repository ? this.git : null,
                   cpu: this.cpu,
                   memory: this.memory,
                   gpu: this.gpu,

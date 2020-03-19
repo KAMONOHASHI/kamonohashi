@@ -187,7 +187,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="filter">検索条件</param>
         [HttpGet("mount")]
-        [Filters.PermissionFilter(MenuCode.Training, MenuCode.Inference)]
+        [Filters.PermissionFilter(MenuCode.Training, MenuCode.Inference, MenuCode.Notebook)]
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetTrainingToMount(MountInputModel filter)
         {

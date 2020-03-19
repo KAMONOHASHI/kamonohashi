@@ -221,7 +221,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="preprocessHistoryRepository">DIされる前処理履歴リポジトリ</param>
         [HttpPut("{id}")]
         [PermissionFilter(MenuCode.Preprocess)]
-        [ProducesResponseType(typeof(DetailsOutputModel), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> EditDetails(long? id, [FromBody]CreateInputModel model, [FromServices]IPreprocessHistoryRepository preprocessHistoryRepository)
         {
             //データの入力チェック
@@ -255,14 +255,7 @@ namespace Nssol.Platypus.Controllers.spa
             }
             unitOfWork.Commit();
 
-            var result = new DetailsOutputModel(preprocessing);
-            //Gitの表示用URLを作る
-            if (preprocessing.RepositoryGitId != null)
-            {
-                result.GitModel.Url = gitLogic.GetTreeUiUrl(preprocessing.RepositoryGitId.Value, preprocessing.RepositoryName, preprocessing.RepositoryOwner, preprocessing.RepositoryCommitId);
-            }
-
-            return JsonOK(result);
+            return JsonOK(new IndexOutputModel(preprocessing));
         }
 
         /// <summary>
