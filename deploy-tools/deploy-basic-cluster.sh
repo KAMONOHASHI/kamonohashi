@@ -1,63 +1,33 @@
 #!/bin/bash
+readonly DEEPOPS_VER=20.02
+
 
 readonly HELP_URL="https://kamonohashi.ai/docs/install-and-update"
 readonly SCRIPT_DIR=$(cd $(dirname $0); pwd)
 
+readonly DEEPOPS_DIR=$SCRIPT_DIR/deepops
+readonly HELM_DIR=$SCRIPT_DIR/kamonohashi
+readonly FILES_DIR=$SCRIPT_DIR/files
+
+# deepopsの設定ファイル
+readonly INFRA_CONF_DIR=$DEEPOPS_DIR/config
+readonly INVENTORY=$INFRA_CONF_DIR/inventory
+readonly GROUP_VARS_DIR=$INFRA_CONF_DIR/group_vars
+readonly GROUP_VARS_ALL=$GROUP_VARS_DIR/all.yml
+readonly GROUP_VARS_K8S=$GROUP_VARS_DIR/k8s-cluster.yml
+
+# KAMONOHASHI Helmの設定ファイル
+readonly APP_CONF_DIR=$HELM_DIR/conf
+readonly APP_CONF_FILE=$APP_CONF_DIR/settings.yml
+
 # 関数定義
-
-show_logo(){
-echo -e "\e[36;1m"
-cat << "EOD"
---------------------------------------------------------------------------------------------
-            ..NNNMMMMNNgJ..         #   #      ##     #     #    #####    #      #    ##### 
-        ..NMMMMMMMMMMMMMMMMNa,      #  #       ##     ##   ##   #     #   ##     #   #     #
-      .dMMMMMMMMMMMMMMMMMMMM"!      # #       #  #    # # # #   #     #   # #    #   #     #
-    .dMMMMMMMMMMMMMMMMMMMD`         ###       #  #    # # # #   #     #   #  #   #   #     #
-   .MMMMMMMMMMMMMMMMMMM'`           # #      #    #   #  #  #   #     #   #   #  #   #     #
-  .MMMMMMMMMMMMMMMMMMM'    .MM      #  #     ######   #     #   #     #   #    # #   #     #
-  MMMMMMMH""MMMMMMMMMM{    MMM'     #   #    #    #   #     #   #     #   #     ##   #     #
- .MMMMM'       _7"WMMY"             #    #   #    #   #     #    #####    #      #    ##### 
- dMMMM!                                                                                     
- dMMM#                              #    #     ##       ####     #    #      #              
- JMMMN                              #    #     ##      #         #    #      #              
- .MMMMp                             #    #    #  #     #         #    #      #              
-  ?MMMMMNJ..                        ######    #  #      ##       ######      #              
-   TMMMMMMMMMMMMMMMMMMMMMMMMNN..    #    #   #    #       ##     #    #      #              
-    ?MMMMMMMMMMMMMMMMMMMMMMMMMMMMt  #    #   ######         #    #    #      #              
-      TMMMMMMMMMMMMMMMMMMMMMMMMM!   #    #   #    #    #    #    #    #      #              
-        7MMMMMMMMMMMMMMMMMMMM"`     #    #   #    #    #####     #    #      #              
-           ?YMMMMMMMMMMMMB"`                                               クラスタ構築ツール                  
---------------------------------------------------------------------------------------------
-EOD
-echo -e "\e[m"
-}
-
-show_step(){
-  echo ""
-  echo -e "\e[36;1m##################################################"
-  echo "$1"
-  echo -e "##################################################\e[m"
-  echo ""
-  sleep 2
-}
 
 ask_node_conf(){
   echo -en "\e[33mKubernetes masterをデプロイするサーバ名: \e[m"; read KUBE_MASTER
   echo -en "\e[33mKAMONOHASHIをデプロイするサーバ名: \e[m"; read KQI_NODE
   echo -en "\e[33mStorageをデプロイするサーバ名: \e[m"; read STORAGE
   echo -en "\e[33mGPU サーバ名(,区切りで複数可): \e[m"; read GPU_NODES_COMMA
-}
-
-ask_ssh_conf(){
-  echo -en "\e[33mSSHユーザー名: \e[m"; read SSH_USER
-  echo -en "\e[33mSSHパスワード(キーを使用する場合は未入力でEnter): \e[m"; read -s SSH_PASS
-  echo "" # read -sは改行しないので改行 
-  echo -en "\e[33mSUDOパスワード(不要なら未入力でEnter): \e[m"; read -s SUDO_PASS
-  echo "" # read -sは改行しないので改行 
-}
-
-ask_admin_conf(){
-  echo -en "\e[33mKAMONOHASHIのadminパスワード(8文字以上): \e[m"; read -s PASSWORD  
+  echo -en "\e[33m各nodeにSSHする際のユーザー名: \e[m"; read SSH_USER
 }
 
 ask_proxy_conf(){
@@ -66,15 +36,7 @@ ask_proxy_conf(){
    [Yy]* ) 
      echo -en "\e[33mhttp_proxy: \e[m"; read HTTP_PROXY
      echo -en "\e[33mhttps_proxy: \e[m"; read HTTPS_PROXY
-
-     echo -en "\e[33m no_proxy が自動生成されます。proxy除外対象を追記しますか？ [y/N]: \e[m"; read NO_PROXY_FLG
-     case $NO_PROXY_FLG in
-       [Yy]* ) 
-           echo -en "\e[33m追記するproxy除外対象: \e[m"; read ADDITIONAL_NO_PROXY
-       ;;
-       *) 
-       ;;
-     esac
+     echo -en "\e[33mno_proxy: \e[m"; read ADDITIONAL_NO_PROXY
      ;;   
    *) ;;
   esac
@@ -85,45 +47,22 @@ ask_conf(){
   echo "詳細は ${HELP_URL} を参照してください"
 
   ask_node_conf
-  ask_ssh_conf
   ask_proxy_conf
-  ask_admin_conf
-}
-
-# インベントリを引数で扱うのは困難なので、ファイル生成する
-generate_ansible_inventory(){
-
-  GPU_NODES=$(echo -e "${GPU_NODES_COMMA//,/\\n}")
-
-  KUBE_MASTER=$KUBE_MASTER \
-  ETCD=$KUBE_MASTER \
-  KQI_NODE=$KQI_NODE \
-  OBJECT_STORAGE=$STORAGE \
-  NFS=$STORAGE \
-  GPU_NODES=$GPU_NODES \
-  SSH_USER=$SSH_USER \
-  envsubst < infra/conf-template/inventory > infra/conf/inventory
 }
 
 append_proxy_ansible_vars(){
   # 改行の挿入
-  echo "" >> infra/conf/vars.yml
+  echo "" >> $GROUP_VARS_ALL
   if [ ! -z "$HTTP_PROXY" ]; then
-    echo "http_proxy: $HTTP_PROXY" >> infra/conf/vars.yml
+    echo "http_proxy: $HTTP_PROXY" >> $GROUP_VARS_ALL
   fi
   if [ ! -z "$HTTPS_PROXY" ]; then
-    echo "https_proxy: $HTTPS_PROXY" >> infra/conf/vars.yml
+    echo "https_proxy: $HTTPS_PROXY" >> $GROUP_VARS_ALL
   fi
   # ansible側でno_proxyは組み立てる
   if [ ! -z "$ADDITIONAL_NO_PROXY" ]; then
-    echo "additional_no_proxy: $ADDITIONAL_NO_PROXY" >> infra/conf/vars.yml
+    echo "additional_no_proxy: $ADDITIONAL_NO_PROXY" >> $GROUP_VARS_ALL
   fi
-}
-
-generate_ansible_conf(){
-  generate_ansible_inventory
-  cp infra/conf-template/vars.yml infra/conf/vars.yml
-  append_proxy_ansible_vars
 }
 
 get_ip(){
@@ -140,12 +79,12 @@ get_ip(){
 
 append_proxy_helm_conf(){
   # 改行の挿入
-  echo "" >> kamonohashi/conf/settings.yml
+  echo "" >> $APP_CONF_FILE
   if [ ! -z "$HTTP_PROXY" ]; then
-    echo "http_proxy: '$HTTP_PROXY'" >> kamonohashi/conf/settings.yml
+    echo "http_proxy: '$HTTP_PROXY'" >>  $APP_CONF_FILE
   fi
   if [ ! -z "$HTTPS_PROXY" ]; then
-    echo "https_proxy: '$HTTPS_PROXY'" >> kamonohashi/conf/settings.yml
+    echo "https_proxy: '$HTTPS_PROXY'" >> $APP_CONF_FILE
   fi  
   if [ ! -z "$HTTP_PROXY" ] || [ ! -z "$HTTPS_PROXY" ]; then
     # kamonohashiコンテナに設定するNO_PROXYの生成
@@ -155,17 +94,48 @@ append_proxy_helm_conf(){
     if [ ! -z "$ADDITIONAL_NO_PROXY" ]; then
       NO_PROXY=$NO_PROXY,$ADDITIONAL_NO_PROXY
     fi
-    echo "no_proxy: '$NO_PROXY'" >> kamonohashi/conf/settings.yml
+    echo "no_proxy: '$NO_PROXY'" >>  $APP_CONF_FILE
   fi
 }
 
-generate_helm_conf(){
-  INGRESS_NODE_IP=$(get_ip $KQI_NODE) 
-  mkdir -p kamonohashi/conf/ 
+generate_nfs_vars(){
+  echo "software_extra_packages: [nfs-common]" >> $GROUP_VARS_ALL
+  cp $FILES_DIR/deepops/nfs-server.yml $GROUP_VARS_DIR
+}
 
+# kubesprayのhelmはバグでデプロイできないのでdeepopsと別でインストールする
+replace_group_vars(){
+  sed -i 's/helm_enabled: true/helm_enabled: false/g' $GROUP_VARS_K8S
+}
+
+generate_deepops_inventory(){
+  # ,区切り => 改行
+  GPU_NODES=$(echo -e "${GPU_NODES_COMMA//,/\\n}")
+
+  ALL_NODES=$(echo -e "${KUBE_MASTER}\n${KQI_NODE}\n${STORAGE}\n${GPU_NODES}")  
+  KUBE_NODES=$(echo -e "${KQI_NODE}\n${STORAGE}\n${GPU_NODES}")  
+  # 重複排除
+  ALL_NODES=$( IFS=$'\n' ; echo "${ALL_NODES[*]}" | sort | uniq ) 
+  KUBE_NODES=$( IFS=$'\n' ; echo "${KUBE_NODES[*]}" | sort | uniq ) 
+
+  for HOST in $ALL_NODES
+  do
+    NODE_IP=$(get_ip $HOST)
+    ALL=$(echo -e "$HOST ansible_host=$NODE_IP\n$ALL\n")
+  done
+
+  ALL=$ALL \
+  KUBE_MASTER=$KUBE_MASTER \
+  ETCD=$KUBE_MASTER \
+  KUBE_NODES=$KUBE_NODES \
+  NFS=$STORAGE \
+  SSH_USER=$SSH_USER \
+  envsubst < $FILES_DIR/deepops/inventory.template > $INVENTORY
+}
+
+generate_helm_conf(){
   KQI_NODE=$KQI_NODE \
   INGRESS_NODE=$KQI_NODE \
-  INGRESS_NODE_IP=$INGRESS_NODE_IP \
   VIRTUAL_HOST=$KQI_NODE \
   NODES=${GPU_NODES_COMMA} \
   OBJECT_STORAGE=$STORAGE \
@@ -173,86 +143,107 @@ generate_helm_conf(){
   OBJECT_STORAGE_ACCESSKEY=admin \
   NFS_STORAGE=$STORAGE \
   NFS_PATH=/var/lib/kamonohashi/nfs \
-  envsubst < kamonohashi/conf-template/settings.yml > kamonohashi/conf/settings.yml
-    
+  envsubst < $FILES_DIR/kamonohashi-helm/settings.yml > $APP_CONF_FILE
+
   append_proxy_helm_conf
 }
 
 generate_conf(){
-  generate_ansible_conf
+  generate_nfs_vars
+  generate_deepops_inventory
+  replace_group_vars
   generate_helm_conf
 }
 
-wait_helm_ready(){
-  NEXT_WAIT_TIME=0
-  until helm list 2>/dev/null || [ $NEXT_WAIT_TIME -eq 40 ]; do
-     NEXT_WAIT_TIME=$(expr $NEXT_WAIT_TIME + 1)
-     sleep 5
-  done 
-  if [ $NEXT_WAIT_TIME -eq 40 ]; then
-    echo "ERROR: Helm Tiller Serverへ接続できませんでした"
-    exit 1
-  fi
+prepare_deepops(){
+  git clone https://github.com/NVIDIA/deepops.git -b $DEEPOPS_VER
+  cd $DEEPOPS_DIR
+  ./scripts/setup.sh
 }
 
-deploy(){ 
-  show_logo
-  show_step "STEP[1/5] クラスタ設定の入力"
-  
-  if [ -e conf/settings ]; then
-    echo -e "\e[33m過去の設定ファイルが残っています。\e[m";
-    echo -en "\e[33mクラスタを削除して再作成しますか？ [y/n]: \e[m"; read answer
-     case $answer in
-       [Yy]* )
-         # インフラの削除 エラーが起きても「|| /bin/true」によりset -eで終了しない
-         infra/deploy-kqi-infra.sh clean || /bin/true ;;
-       *) echo -e "\e[33m終了します\e[m" &&  exit 0 ;;
-     esac  
-  fi
-  
+# prepareでは設定ディレクトリのみ用意
+prepare_helm(){
+  cd $HELM_DIR
+  mkdir -p kamonohashi/conf
+}
+
+prepare(){
+  prepare_deepops
+  prepare_helm
+}
+
+configure(){
   ask_conf
   generate_conf
-
-  export http_proxy=$HTTP_PROXY
-  export https_proxy=$HTTPS_PROXY
-  export no_proxy=$NO_PROXY
-
-  show_step "STEP[2/5] インフラ部分構築用ツールのインストール"
-  infra/deploy-kqi-infra.sh prepare
-  
-  show_step "STEP[3/5] インフラ部分構築(20分ほどお待ちください)"
-  PASSWORD=$PASSWORD SSH_PASS="$SSH_PASS" SUDO_PASS="$SUDO_PASS" infra/deploy-kqi-infra.sh deploy
-  
-  show_step "STEP[4/5] KAMONOHASHI構築用ツールのインストール"
-  kamonohashi/deploy-kqi.sh prepare
-  wait_helm_ready
-
-  show_step "STEP[5/5] KAMONOHASHI構築"
-  PASSWORD=$PASSWORD DB_PASSWORD=$PASSWORD STORAGE_PASSWORD=$PASSWORD kamonohashi/deploy-kqi.sh credentials
-  kamonohashi/deploy-kqi.sh deploy
-  
-  show_step "構築完了"
-  echo -e "\e[33m http://${KQI_NODE} にブラウザでアクセスしてください\e[m"
 }
 
 clean(){
-  infra/deploy-kqi-infra.sh clean
+  case $1 in
+    app)     
+      cd $HELM_DIR
+      ./deploy-kqi.sh clean
+    ;;
+    all)
+      cd $DEEPOPS_DIR
+      ansible-playbook kubespray/remove-node.yml --extra-vars "node=k8s-cluster" ${@:2}
+    ;;
+    *)
+      echo "不明なcleanの引数: $1"
+      exit 1
+    ;;
+  esac
 }
 
-show_help(){
-  "available args: deploy, clean, help"
+deploy_nfs(){
+  cd $DEEPOPS_DIR
+  ansible-playbook -l nfs-server playbooks/nfs-server.yml $@
+}
+
+deploy_k8s(){
+  cd $DEEPOPS_DIR
+  ansible-playbook -l k8s-cluster playbooks/k8s-cluster.yml $@
+}
+
+deploy_kqi_helm(){
+  cd $HELM_DIR
+  ./deploy-kqi.sh prepare
+  PASSWORD=$1 DB_PASSWORD=$1 STORAGE_PASSWORD=$1 ./deploy-kqi.sh credentials
+  ./deploy-kqi.sh deploy
+}
+
+# deploy <sub command> <deepopsのコマンドに渡す引数>
+deploy(){
+  case $1 in
+    infra) deploy_k8s ${@:2} && deploy_nfs ;; 
+    nfs) deploy_nfs ${@:2} ;;
+    k8s) deploy_k8s ${@:2} ;;
+    app) deploy_kqi_helm ;;
+    all) 
+      echo -en "Admin Passwordを入力: "; read -s PASSWORD
+      echo "" # read -s は改行しないため、echoで改行
+      deploy_k8s ${@:2} &&
+      deploy_nfs &&
+      deploy_kqi_helm $PASSWORD
+      ;;
+    *)
+      echo "deployの引数は all, infra, nfs, k8s, app が指定可能です"
+      echo "不明なdeployの引数: $1"
+      exit 1
+    ;;
+  esac
 }
 
 main(){
+  cd $SCRIPT_DIR
   set -e
   case $1 in
-    deploy) deploy ;;
-    clean) clean ;;
+    prepare) prepare;;
+    configure) configure ;;
+    deploy) deploy ${@:2};;
+    clean) clean ${@:2};;
     help) show_help ;;
     *) show_help ;;
   esac
 }
 
-# このスクリプトをどこから実行しても大丈夫なように
-# main実行時のみSCRIPT_DIRに移動
-(cd $SCRIPT_DIR && main $1)
+main $@

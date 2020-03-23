@@ -7,14 +7,11 @@ show_help() {
     echo "available args: prepare, deploy, clean, update, credentials, upgrade, help"
 }
 
-
 prepare(){
-    # helmのインストール
+    kubectl apply -f helm-rbac-config.yml
     curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash /dev/stdin --version $HELM_VERSION
-    kubectl create -f helm-rbac-config.yml
-    helm init --service-account tiller --upgrade
-    # kqi-system namespaceの作成
-    kubectl create namespace kqi-system
+    helm init --service-account tiller --upgrade --force-upgrade --wait
+    kubectl apply -f kqi-namespace.yml
 }
 
 set_credentials(){
@@ -25,12 +22,12 @@ set_credentials(){
       echo "" # read -sは改行しないので改行 
     fi  
     SET_ARGS="password=$PASSWORD,db_password=$DB_PASSWORD,storage_secretkey=$STORAGE_PASSWORD"
-    helm install charts/kamonohashi-credentials --set $SET_ARGS -n kamonohashi-credentials --namespace kqi-system
+    helm upgrade kamonohashi-credentials charts/kamonohashi-credentials -i --set $SET_ARGS --namespace kqi-system
 }
 
 deploy(){
     helm dependency update charts/kamonohashi
-    helm install charts/kamonohashi -f conf/settings.yml -n kamonohashi --namespace kqi-system
+    helm upgrade kamonohashi charts/kamonohashi -f conf/settings.yml -i --namespace kqi-system
 }
 
 update(){
@@ -43,6 +40,7 @@ clean(){
 }
 
 main(){
+  cd $SCRIPT_DIR
   case $1 in
     prepare) prepare ;;
     deploy) deploy ;;
@@ -54,6 +52,4 @@ main(){
   esac
 }
 
-# このスクリプトをどこから実行しても大丈夫なように
-# main実行時のみSCRIPT_DIRに移動
-(cd $SCRIPT_DIR && main $1)
+main $@
