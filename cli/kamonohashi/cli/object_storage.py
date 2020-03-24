@@ -7,10 +7,23 @@ import os
 import os.path
 
 import click
+
+from kamonohashi.cli import util
 from kamonohashi.op import rest
 from kamonohashi.op.rest.rest import ApiException
 
-from kamonohashi.cli import util
+
+def progressbar(length, label):
+    bar = click.progressbar(length=length, label=label)
+    bar.short_limit = -1
+    return bar
+
+
+def to_int(s):
+    try:
+        return int(s)
+    except (TypeError, ValueError):
+        return None
 
 
 def upload_file(api_client, file_path, file_type):
@@ -24,17 +37,17 @@ def upload_file(api_client, file_path, file_type):
     length = (os.path.getsize(file_path) - 1) // chunk_size + 1
 
     api = rest.StorageApi(api_client)
-    upload_info = api.get_upload_paramater(os.path.basename(file_path), length, file_type)
+    upload_parameter = api.get_upload_paramater(os.path.basename(file_path), length, file_type)
 
     part_e_tags = []
     pool_manager = api_client.rest_client.pool_manager
-    with click.progressbar(length=length, label=os.path.basename(file_path)) as bar:
+    with progressbar(length=length, label=os.path.basename(file_path)) as bar:
         logging.info('open %s', file_path)
         with open(file_path, 'rb') as f:
             logging.info('begin io %s', file_path)
             for i in range(length):
                 data = f.read(chunk_size)
-                response = pool_manager.request('PUT', upload_info.uris[i], body=data,
+                response = pool_manager.request('PUT', upload_parameter.uris[i], body=data,
                                                 headers={'Content-Type': 'application/x-www-form-urlencoded'})
                 e_tag = response.getheader('ETag')
                 if not (200 <= response.status <= 299 and e_tag):
@@ -44,12 +57,12 @@ def upload_file(api_client, file_path, file_type):
             logging.info('end io %s', file_path)
 
     model = rest.StorageLogicModelsCompleteMultiplePartUploadInputModel(
-        key=upload_info.key,
+        key=upload_parameter.key,
         part_e_tags=part_e_tags,
-        upload_id=upload_info.upload_id,
+        upload_id=upload_parameter.upload_id,
     )
     api.complete_upload(model=model)
-    return upload_info
+    return upload_parameter
 
 
 def download_file(pool_manager, url, dir_path, file_name):
@@ -70,10 +83,10 @@ def download_file(pool_manager, url, dir_path, file_name):
         if not 200 <= response.status <= 299:
             raise ApiException(http_resp=response)
 
-        content_length = response.getheader('Content-Length')
-        if content_length:
-            length = (int(content_length) - 1) // chunk_size + 1
-            with click.progressbar(length=length, label=file_name) as bar:
+        content_length = to_int(response.getheader('Content-Length'))
+        if content_length is not None:
+            length = (content_length - 1) // chunk_size + 1
+            with progressbar(length=length, label=file_name) as bar:
                 logging.info('open %s', file_path)
                 with open(file_path, 'wb') as f:
                     logging.info('begin io %s', file_path)
