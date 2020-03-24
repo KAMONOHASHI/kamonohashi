@@ -53,7 +53,7 @@
             :branches="branches"
             :commits="commits"
             :loading-repositories="loadingRepositories"
-            :heading="heading"
+            heading="スクリプト"
             @selectGit="selectGit"
             @selectRepository="selectRepository"
             @selectBranch="selectBranch"
@@ -123,7 +123,6 @@ export default {
       isCopyCreation: false,
       isEditDialog: false,
       isPatch: false, // 利用済み前処理の場合name, memo, resourceのみ更新可能
-      heading: 'スクリプト',
 
       rules: {
         name: [{ required: true, trigger: 'blur', message: '必須項目です' }],
