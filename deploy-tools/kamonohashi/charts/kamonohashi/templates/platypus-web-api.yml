@@ -29,7 +29,14 @@ spec:
           hostPath:
             path: /var/log/kamonohashi/platypus-web-api
       securityContext:
-        fsGroup: 0    
+        fsGroup: 800  
+      initContainers:
+        - name: prepare-log-dir
+          image: busybox
+          command: ["sh", "-c", "chown 800:800 /log"]
+          volumeMounts:
+            - name: kamonohashi-log
+              mountPath: /log  
       containers:
         - name: platypus-web-api
           image: kamonohashi/web-api:{{ .Values.image_tag | default .Chart.Version }}

@@ -206,12 +206,19 @@ deploy_k8s(){
 
 deploy_kqi_helm(){
   cd $HELM_DIR
+  if [ -z "$1" ]; then
+    echo -en "Admin Passwordを入力: "; read -s PASSWORD
+    echo "" # read -s は改行しないため、echoで改行
+  else
+    PASSWORD=$1
+  fi
+
   ./deploy-kqi.sh prepare
-  PASSWORD=$1 DB_PASSWORD=$1 STORAGE_PASSWORD=$1 ./deploy-kqi.sh credentials
+  PASSWORD=$PASSWORD DB_PASSWORD=$PASSWORD STORAGE_PASSWORD=$PASSWORD ./deploy-kqi.sh credentials
   ./deploy-kqi.sh deploy
 }
 
-# deploy <sub command> <deepopsのコマンドに渡す引数>
+# 呼び出しフォーマット: deploy <sub command> <deepopsのコマンドに渡す引数群(${@:2})>
 deploy(){
   case $1 in
     infra) deploy_k8s ${@:2} && deploy_nfs ;; 
