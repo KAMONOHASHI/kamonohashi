@@ -65,7 +65,7 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             var model = new DetailsOutputModel(role);
-            if(model.TenantId != null)
+            if (model.TenantId != null)
             {
                 model.TenantName = tenantRepository.Get(model.TenantId.Value).Name;
             }
@@ -141,6 +141,13 @@ namespace Nssol.Platypus.Controllers.spa
                 {
                     return JsonBadRequest($"Role ID {id.Value} is not editable. Only the sort order is allowed to edit.");
                 }
+            }
+
+            //同じ名前のロールは登録できないので、確認する
+            Role registeredRole = (await roleRepository.GetAllRolesAsync()).FirstOrDefault(r => r.Name == model.Name);
+            if (registeredRole != null)
+            {
+                return JsonConflict($"Role {model.Name} already exists: ID = {registeredRole.Id}");
             }
 
             role.Name = model.Name;
@@ -241,7 +248,7 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonNotFound($"Role Id {id.Value} is not found.");
             }
 
-            if(role.IsSystemRole == true || (role.TenantId != null && role.TenantId != CurrentUserInfo.SelectedTenant.Id))
+            if (role.IsSystemRole == true || (role.TenantId != null && role.TenantId != CurrentUserInfo.SelectedTenant.Id))
             {
                 //参照不可のロールにアクセスしようとしている
                 LogWarning($"Role {role.Name} is not allowed to read by the current user.");
@@ -249,7 +256,7 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             var model = new DetailsOutputModel(role);
-            if(model.TenantId != null)
+            if (model.TenantId != null)
             {
                 model.TenantName = CurrentUserInfo.SelectedTenant.Name;
             }
@@ -315,6 +322,13 @@ namespace Nssol.Platypus.Controllers.spa
                 //参照不可のロールにアクセスしようとしている
                 LogWarning($"Role {role.Name} is not allowed to edit by the current user.");
                 return JsonNotFound($"Role Id {id.Value} is not found."); //エラーメッセージは404と変えない
+            }
+
+            //同じ名前のロールは登録できないので、確認する
+            Role registeredRole = (await roleRepository.GetAllRolesAsync()).FirstOrDefault(r => r.Name == model.Name);
+            if (registeredRole != null)
+            {
+                return JsonConflict($"Role {model.Name} already exists: ID = {registeredRole.Id}");
             }
 
             role.Name = model.Name;
