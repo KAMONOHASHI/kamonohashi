@@ -28,7 +28,7 @@ ask_node_conf(){
   echo -en "\e[33mKubernetes masterをデプロイするサーバ名: \e[m"; read KUBE_MASTER
   echo -en "\e[33mKAMONOHASHIをデプロイするサーバ名: \e[m"; read KQI_NODE
   echo -en "\e[33mStorageをデプロイするサーバ名: \e[m"; read STORAGE
-  echo -en "\e[33mGPU サーバ名(,区切りで複数可): \e[m"; read GPU_NODES_COMMA
+  echo -en "\e[33m計算ノード名(,区切りで複数可): \e[m"; read COMPUTE_NODES_COMMA
   echo -en "\e[33m各nodeにSSHする際のユーザー名: \e[m"; read SSH_USER
 }
 
@@ -112,10 +112,10 @@ replace_group_vars(){
 
 generate_deepops_inventory(){
   # ,区切り => 改行
-  GPU_NODES=$(echo -e "${GPU_NODES_COMMA//,/\\n}")
+  COMPUTE_NODES=$(echo -e "${COMPUTE_NODES_COMMA//,/\\n}")
 
-  ALL_NODES=$(echo -e "${KUBE_MASTER}\n${KQI_NODE}\n${STORAGE}\n${GPU_NODES}")  
-  KUBE_NODES=$(echo -e "${KQI_NODE}\n${STORAGE}\n${GPU_NODES}")  
+  ALL_NODES=$(echo -e "${KUBE_MASTER}\n${KQI_NODE}\n${STORAGE}\n${COMPUTE_NODES}")  
+  KUBE_NODES=$(echo -e "${KQI_NODE}\n${STORAGE}\n${COMPUTE_NODES}")  
   # 重複排除
   ALL_NODES=$( IFS=$'\n' ; echo "${ALL_NODES[*]}" | sort | uniq ) 
   KUBE_NODES=$( IFS=$'\n' ; echo "${KUBE_NODES[*]}" | sort | uniq ) 
@@ -139,7 +139,7 @@ generate_helm_conf(){
   KQI_NODE=$KQI_NODE \
   INGRESS_NODE=$KQI_NODE \
   VIRTUAL_HOST=$KQI_NODE \
-  NODES=${GPU_NODES_COMMA} \
+  NODES=${COMPUTE_NODES_COMMA} \
   OBJECT_STORAGE=$STORAGE \
   OBJECT_STORAGE_PORT=9000 \
   OBJECT_STORAGE_ACCESSKEY=admin \
