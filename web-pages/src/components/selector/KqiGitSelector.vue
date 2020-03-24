@@ -2,7 +2,7 @@
 <!--description: リポジトリ名、ブランチ名を指定するドロップダウンをそれぞれ表示する。そのままだとHEADになるので、任意でコミットIDも直接指定可能,-->
 
 <template>
-  <el-form-item label="モデル" prop="gitModel">
+  <el-form-item :label="heading" prop="gitModel">
     <el-row />
     <el-row>
       <!-- サーバの選択 -->
@@ -198,6 +198,10 @@ export default {
           commit: null,
         }
       },
+    },
+    heading: {
+      type: String,
+      default: 'モデル',
     },
     // リポジトリ取得中フラグ
     loadingRepositories: {
