@@ -1,6 +1,8 @@
 #!/bin/bash
 readonly DEEPOPS_VER=20.02
 
+readonly LOG_DIR=/var/log/kamonohashi/deploy-tools
+readonly LOG_FILE=$LOG_DIR/deploy_$(date '+%Y%m%d-%H%M%S').log
 
 readonly HELP_URL="https://kamonohashi.ai/docs/install-and-update"
 readonly SCRIPT_DIR=$(cd $(dirname $0); pwd)
@@ -253,4 +255,6 @@ main(){
   esac
 }
 
-main $@
+mkdir -p $LOG_DIR
+echo "command: $0 $@" >> $LOG_FILE
+main $@ |& tee -a $LOG_FILE
