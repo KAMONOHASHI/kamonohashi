@@ -289,8 +289,8 @@ namespace Nssol.Platypus.Services
                     Message = i.Message,
                     Details = i.Reason,
                     IsError = i.Type != "Normal",
-                    FirstTimestamp = DateTime.Parse(i.FirstTimestamp).ToLocalFormatedString(),
-                    LastTimestamp = DateTime.Parse(i.LastTimestamp).ToLocalFormatedString()
+                    FirstTimestamp = i.FirstTimestamp != null ? DateTime.Parse(i.FirstTimestamp).ToLocalFormatedString() : null,
+                    LastTimestamp = i.LastTimestamp != null ? DateTime.Parse(i.LastTimestamp).ToLocalFormatedString() : null
                 });
                 return Result<IEnumerable<ContainerEventInfo>, ContainerStatus>.CreateResult(events);
             }
