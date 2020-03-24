@@ -12,7 +12,7 @@ spec:
   type: NodePort
   ports:
   - port: 5432
-    nodePort: 35432
+    nodePort: 30000
 EOF
 
-echo "use port 35432"
+echo "use port 30000"
