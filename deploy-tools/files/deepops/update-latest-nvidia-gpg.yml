@@ -1,0 +1,6 @@
+- hosts: kube-node
+  become: true
+  become_method: sudo
+  tasks:
+  - name: Add or update nvidia docker Apt signing key, uses whichever key is at the URL
+    shell: curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -

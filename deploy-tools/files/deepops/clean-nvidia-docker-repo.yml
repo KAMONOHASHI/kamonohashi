@@ -1,0 +1,8 @@
+- hosts: kube-node
+  become: true
+  become_method: sudo
+  tasks:
+    - name: remove nvidia repo
+      file:
+        path: /etc/apt/sources.list.d/nvidia-docker.list
+        state: absent
