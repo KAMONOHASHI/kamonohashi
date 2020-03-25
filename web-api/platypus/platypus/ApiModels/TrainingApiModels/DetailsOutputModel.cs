@@ -7,8 +7,15 @@ using System.Globalization;
 
 namespace Nssol.Platypus.ApiModels.TrainingApiModels
 {
+    /// <summary>
+    /// 学習履歴の詳細情報モデル
+    /// </summary>
     public class DetailsOutputModel : IndexOutputModel
     {
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="history">学習履歴</param>
         public DetailsOutputModel(TrainingHistory history) : base(history)
         {
             Key = history.Key;
@@ -31,7 +38,18 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
             CompletedAt = history.CompletedAt?.ToFormatedString();
             StartedAt = history.StartedAt?.ToFormatedString();
             LogSummary = history.LogSummary;
-            Parent = history.Parent == null ? null : new SimpleOutputModel(history.Parent);
+
+            if (history.ParentMaps != null && history.ParentMaps.Count > 0)
+            {
+                List<SimpleOutputModel> parents = new List<SimpleOutputModel>();
+                foreach (TrainingHistoryParentMap parentMap in history.ParentMaps)
+                {
+                    parents.Add(new SimpleOutputModel(parentMap.Parent));
+                }
+                // 1件目のみ格納
+                Parent = parents[0];
+            }
+
             Node = history.Node;
 
             EntryPoint = history.EntryPoint;
@@ -61,15 +79,18 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         /// 学習モデルGit情報
         /// </summary>
         public GitCommitOutputModel GitModel { get; set; }
+
         /// <summary>
         /// オプション。
         /// ViewModelではDictionaryを使わないという規約のため、KVPのリストで返す。
         /// </summary>
         public List<KeyValuePair<string, string>> Options { get; set; }
+
         /// <summary>
         /// コンテナイメージ
         /// </summary>
         public ContainerImageOutputModel ContainerImage { get; set; }
+
         /// <summary>
         /// 親学習履歴情報。
         /// </summary>
@@ -77,10 +98,12 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         /// <see cref="IndexOutputModel"/>にするとDataSetの再問い合わせが必要になるため、簡略化
         /// </remarks>
         public SimpleOutputModel Parent { get; set; }
+
         /// <summary>
         /// 完了日時
         /// </summary>
         public string CompletedAt { get; set; }
+
         /// <summary>
         /// 開始日時
         /// </summary>
@@ -90,6 +113,7 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         /// コンテナが実行されたノード名
         /// </summary>
         public string Node { get; set; }
+
         /// <summary>
         /// ログ要約
         /// </summary>

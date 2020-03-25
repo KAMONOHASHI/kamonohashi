@@ -1,17 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
 using Nssol.Platypus.Infrastructure;
-using Nssol.Platypus.Models;
 using Nssol.Platypus.Models.TenantModels;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace Nssol.Platypus.DataAccess.Core
 {
+    /// <summary>
+    /// テナント向けテーブルにアクセスするための基本リポジトリクラス
+    /// </summary>
     public abstract class RepositoryForTenantBase<TModel> : IRepositoryForTenant<TModel>
         where TModel : TenantModelBase
     {
@@ -39,7 +38,12 @@ namespace Nssol.Platypus.DataAccess.Core
         {
             return DataContext.Set<T>();
         }
-        
+
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="context">DBコンテキスト</param>
+        /// <param name="accessor">HTTPコンテキストアクセサ</param>
         protected RepositoryForTenantBase(CommonDbContext context, Microsoft.AspNetCore.Http.IHttpContextAccessor accessor)
         {
             DataContext = context;
@@ -50,6 +54,7 @@ namespace Nssol.Platypus.DataAccess.Core
         /// <summary>
         /// 新規エントリを追加
         /// </summary>
+        /// <param name="entity">追加するエントリ</param>
         public virtual void Add(TModel entity)
         {
             AddModel(entity, false);
@@ -58,6 +63,8 @@ namespace Nssol.Platypus.DataAccess.Core
         /// <summary>
         /// 新規エントリを追加
         /// </summary>
+        /// <param name="entity">追加するエントリ</param>
+        /// <param name="force">他テナントに対する追加を許可するか</param>
         public void Add(TModel entity, bool force)
         {
             AddModel(entity, force);
@@ -66,6 +73,8 @@ namespace Nssol.Platypus.DataAccess.Core
         /// <summary>
         /// 新規エントリを追加
         /// </summary>
+        /// <param name="entity">追加するエントリ</param>
+        /// <param name="force">他テナントに対する追加を許可するか</param>
         protected void AddModel<T>(T entity, bool force = false) where T : TenantModelBase
         {
             if (force == false)
@@ -85,6 +94,7 @@ namespace Nssol.Platypus.DataAccess.Core
         /// <summary>
         /// 新規エントリを一括追加
         /// </summary>
+        /// <param name="entities">追加するエントリ</param>
         public virtual void AddRange(IQueryable<TModel> entities)
         {
             AddModelRange(entities);
@@ -93,6 +103,7 @@ namespace Nssol.Platypus.DataAccess.Core
         /// <summary>
         /// 新規エントリを一括追加
         /// </summary>
+        /// <param name="entities">追加するエントリ</param>
         protected void AddModelRange<T>(IQueryable<T> entities) where T : TenantModelBase
         {
             if (entities == null)
@@ -108,6 +119,7 @@ namespace Nssol.Platypus.DataAccess.Core
         /// <summary>
         /// 既存エントリを更新
         /// </summary>
+        /// <param name="entity">更新するエントリ</param>
         public virtual void Update(TModel entity)
         {
             UpdateModel(entity, false);
@@ -116,6 +128,8 @@ namespace Nssol.Platypus.DataAccess.Core
         /// <summary>
         /// 既存エントリを更新
         /// </summary>
+        /// <param name="entity">更新するエントリ</param>
+        /// <param name="force">他テナントに対する変更を許可するか</param>
         public void Update(TModel entity, bool force)
         {
             UpdateModel(entity, force);
@@ -124,6 +138,8 @@ namespace Nssol.Platypus.DataAccess.Core
         /// <summary>
         /// 既存エントリを更新
         /// </summary>
+        /// <param name="entity">更新するエントリ</param>
+        /// <param name="force">他テナントに対する変更を許可するか</param>
         protected void UpdateModel<T>(T entity, bool force = false) where T : TenantModelBase
         {
             if (!force && entity.TenantId != CurrentTenantId)
@@ -137,6 +153,7 @@ namespace Nssol.Platypus.DataAccess.Core
         /// <summary>
         /// 既存エントリを削除
         /// </summary>
+        /// <param name="entity">削除するエントリ</param>
         public virtual void Delete(TModel entity)
         {
             this.DeleteModel(entity, false);
@@ -145,6 +162,7 @@ namespace Nssol.Platypus.DataAccess.Core
         /// <summary>
         /// 既存エントリを削除
         /// </summary>
+        /// <param name="id">削除対象のID</param>
         public async virtual Task DeleteByIdAsync(long id)
         {
             var entity = await GetByIdAsync(id);
@@ -154,6 +172,8 @@ namespace Nssol.Platypus.DataAccess.Core
         /// <summary>
         /// 既存エントリを削除
         /// </summary>
+        /// <param name="entity">削除するエントリ</param>
+        /// <param name="force">他テナントに対する削除を許可するか</param>
         public void Delete(TModel entity, bool force)
         {
             this.DeleteModel(entity, force);
@@ -162,6 +182,8 @@ namespace Nssol.Platypus.DataAccess.Core
         /// <summary>
         /// 既存エントリを削除
         /// </summary>
+        /// <param name="id">削除対象のID</param>
+        /// <param name="force">他テナントに対する削除を許可するか</param>
         public async Task DeleteByIdAsync(long id, bool force)
         {
             var entity = await GetByIdAsync(id);
@@ -171,6 +193,8 @@ namespace Nssol.Platypus.DataAccess.Core
         /// <summary>
         /// 既存エントリを削除
         /// </summary>
+        /// <param name="entity">削除するエントリ</param>
+        /// <param name="force">他テナントに対する削除を許可するか</param>
         protected void DeleteModel<T>(T entity, bool force = false) where T : TenantModelBase
         {
             if (!force && entity.TenantId != CurrentTenantId)
@@ -183,6 +207,7 @@ namespace Nssol.Platypus.DataAccess.Core
         /// <summary>
         /// 条件を満たす既存エントリを一括削除
         /// </summary>
+        /// <param name="where">削除条件</param>
         public virtual void DeleteAll(Expression<Func<TModel, bool>> where)
         {
             this.DeleteModelAll(where, false);
@@ -191,6 +216,8 @@ namespace Nssol.Platypus.DataAccess.Core
         /// <summary>
         /// 条件を満たす既存エントリを一括削除
         /// </summary>
+        /// <param name="where">削除条件</param>
+        /// <param name="force">他テナントに対する削除を許可するか</param>
         public void DeleteAll(Expression<Func<TModel, bool>> where, bool force)
         {
             this.DeleteModelAll(where, force);
@@ -199,6 +226,8 @@ namespace Nssol.Platypus.DataAccess.Core
         /// <summary>
         /// 条件を満たす既存エントリを一括削除
         /// </summary>
+        /// <param name="where">削除条件</param>
+        /// <param name="force">他テナントに対する削除を許可するか</param>
         protected void DeleteModelAll<T>(Expression<Func<T, bool>> where, bool force = false) where T : TenantModelBase
         {
             IQueryable<T> entries = GetModelAll<T>(force).Where(where);
@@ -208,6 +237,7 @@ namespace Nssol.Platypus.DataAccess.Core
         /// <summary>
         /// 既存エントリを一括削除
         /// </summary>
+        /// <param name="entities">削除するエントリ</param>
         public virtual void DeleteRange(IQueryable<TModel> entities)
         {
             DeleteModelRange(entities);
@@ -216,6 +246,7 @@ namespace Nssol.Platypus.DataAccess.Core
         /// <summary>
         /// 既存エントリを一括削除
         /// </summary>
+        /// <param name="entities">削除するエントリ</param>
         protected void DeleteModelRange<T>(IQueryable<T> entities) where T : TenantModelBase
         {
             if (entities == null)
@@ -239,6 +270,7 @@ namespace Nssol.Platypus.DataAccess.Core
         /// <summary>
         /// 条件を満たすエントリの数を取得する。
         /// </summary>
+        /// <param name="where">取得条件</param>
         public async Task<long> Count(Expression<Func<TModel, bool>> where)
         {
             return await FindAll(where).LongCountAsync();
@@ -247,6 +279,7 @@ namespace Nssol.Platypus.DataAccess.Core
         /// <summary>
         /// 条件を満たすエントリが存在するか確認する。
         /// </summary>
+        /// <param name="where">取得条件</param>
         public async virtual Task<bool> ExistsAsync(Expression<Func<TModel, bool>> where)
         {
             return await GetAll().AnyAsync(where);
@@ -254,6 +287,8 @@ namespace Nssol.Platypus.DataAccess.Core
         /// <summary>
         /// 条件を満たすエントリが存在するか確認する。
         /// </summary>
+        /// <param name="where">取得条件</param>
+        /// <param name="force">他テナントに対する取得を許可するか</param>
         protected async Task<bool> ExistsModelAsync<T>(Expression<Func<T, bool>> where, bool force = false) where T : TenantModelBase
         {
             return await GetModelAll<T>(force).AnyAsync(where);
@@ -263,6 +298,7 @@ namespace Nssol.Platypus.DataAccess.Core
         /// PKから既存エントリを取得する。
         /// 外部参照がある場合、そのインスタンスは含まれない。
         /// </summary>
+        /// <param name="id">取得対象のID</param>
         public virtual async Task<TModel> GetByIdAsync(long id)
         {
             return await GetModelByIdAsync<TModel>(id);
@@ -272,6 +308,8 @@ namespace Nssol.Platypus.DataAccess.Core
         /// PKから既存エントリを取得する。
         /// 外部参照がある場合、そのインスタンスは含まれない。
         /// </summary>
+        /// <param name="id">取得対象のID</param>
+        /// <param name="force">他テナントに対する取得を許可するか</param>
         public async Task<TModel> GetByIdAsync(long id, bool force)
         {
             return await GetModelByIdAsync<TModel>(id, force);
@@ -281,6 +319,8 @@ namespace Nssol.Platypus.DataAccess.Core
         /// PKから既存エントリを取得する。
         /// 外部参照がある場合、そのインスタンスは含まれない。
         /// </summary>
+        /// <param name="id">取得対象のID</param>
+        /// <param name="force">他テナントに対する取得を許可するか</param>
         protected async Task<T> GetModelByIdAsync<T>(long id, bool force = false) where T : TenantModelBase
         {
             T model = await DataContext.Set<T>().FindAsync(id);
@@ -310,6 +350,7 @@ namespace Nssol.Platypus.DataAccess.Core
         /// 外部参照がある場合、そのインスタンスは含まれない。
         /// エントリが存在しない場合、nullではなく空のコレクションが返る。
         /// </summary>
+        /// <param name="force">他テナントに対する取得を許可するか</param>
         protected IQueryable<T> GetModelAll<T>(bool force = false) where T : TenantModelBase
         {
             if (force)
@@ -359,6 +400,7 @@ namespace Nssol.Platypus.DataAccess.Core
         /// 条件を満たす既存エントリを一つ取得する。
         /// 外部参照がある場合、そのインスタンスは含まれない。
         /// </summary>
+        /// <param name="where">取得条件</param>
         public virtual TModel Find(Expression<Func<TModel, bool>> where)
         {
             return FindModel<TModel>(where);
@@ -368,6 +410,8 @@ namespace Nssol.Platypus.DataAccess.Core
         /// 条件を満たす既存エントリを一つ取得する。
         /// 外部参照がある場合、そのインスタンスは含まれない。
         /// </summary>
+        /// <param name="where">取得条件</param>
+        /// <param name="force">他テナントに対する取得を許可するか</param>
         protected T FindModel<T>(Expression<Func<T, bool>> where, bool force = false) where T : TenantModelBase
         {
             return FindModelAll(where, force).FirstOrDefault<T>();
@@ -378,6 +422,7 @@ namespace Nssol.Platypus.DataAccess.Core
         /// 外部参照がある場合、そのインスタンスは含まれない。
         /// エントリが存在しない場合、nullではなく空のコレクションが返る。
         /// </summary>
+        /// <param name="where">取得条件</param>
         public virtual IQueryable<TModel> FindAll(Expression<Func<TModel, bool>> where)
         {
             return FindModelAll<TModel>(where);
@@ -388,6 +433,8 @@ namespace Nssol.Platypus.DataAccess.Core
         /// 外部参照がある場合、そのインスタンスは含まれない。
         /// エントリが存在しない場合、nullではなく空のコレクションが返る。
         /// </summary>
+        /// <param name="where">取得条件</param>
+        /// <param name="force">他テナントに対する取得を許可するか</param>
         public IQueryable<TModel> FindAll(Expression<Func<TModel, bool>> where, bool force)
         {
             return FindModelAll<TModel>(where, force);
@@ -398,6 +445,8 @@ namespace Nssol.Platypus.DataAccess.Core
         /// 外部参照がある場合、そのインスタンスは含まれない。
         /// エントリが存在しない場合、nullではなく空のコレクションが返る。
         /// </summary>
+        /// <param name="where">取得条件</param>
+        /// <param name="force">他テナントに対する取得を許可するか</param>
         protected IQueryable<T> FindModelAll<T>(Expression<Func<T, bool>> where, bool force = false) where T : TenantModelBase
         {
             return GetModelAll<T>(force).Where(where);
@@ -408,6 +457,9 @@ namespace Nssol.Platypus.DataAccess.Core
         /// 外部参照がある場合、そのインスタンスは含まれない。
         /// エントリが存在しない場合、nullではなく空のコレクションが返る。
         /// </summary>
+        /// <param name="where">取得条件</param>
+        /// <param name="keySelector">並び順を表す式</param>
+        /// <param name="asc">昇順の場合はtrue, 降順ならfalse</param>
         public virtual IQueryable<TModel> FindAllWithOrderby<TKey>(Expression<Func<TModel, bool>> where, Expression<Func<TModel, TKey>> keySelector, bool asc)
         {
             return FindModelAllWithOrderby<TModel, TKey>(where, keySelector, asc);
@@ -418,6 +470,10 @@ namespace Nssol.Platypus.DataAccess.Core
         /// 外部参照がある場合、そのインスタンスは含まれない。
         /// エントリが存在しない場合、nullではなく空のコレクションが返る。
         /// </summary>
+        /// <param name="where">取得条件</param>
+        /// <param name="keySelector">並び順を表す式</param>
+        /// <param name="asc">昇順の場合はtrue, 降順ならfalse</param>
+        /// <param name="force">他テナントに対する取得を許可するか</param>
         public IQueryable<TModel> FindAllWithOrderby<TKey>(Expression<Func<TModel, bool>> where, Expression<Func<TModel, TKey>> keySelector, bool asc, bool force)
         {
             return FindModelAllWithOrderby<TModel, TKey>(where, keySelector, asc, force);
@@ -428,6 +484,10 @@ namespace Nssol.Platypus.DataAccess.Core
         /// 外部参照がある場合、そのインスタンスは含まれない。
         /// エントリが存在しない場合、nullではなく空のコレクションが返る。
         /// </summary>
+        /// <param name="where">取得条件</param>
+        /// <param name="keySelector">並び順を表す式</param>
+        /// <param name="asc">昇順の場合はtrue, 降順ならfalse</param>
+        /// <param name="force">他テナントに対する取得を許可するか</param>
         protected IQueryable<T> FindModelAllWithOrderby<T, TKey>(Expression<Func<T, bool>> where, Expression<Func<T, TKey>> keySelector, bool asc, bool force = false) where T : TenantModelBase
         {
             var set = FindModelAll(where, force);

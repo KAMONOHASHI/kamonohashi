@@ -1,10 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Nssol.Platypus.Models;
 using Nssol.Platypus.Models.CustomModels;
 using Nssol.Platypus.Models.TenantModels;
 using System;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -147,6 +145,10 @@ namespace Nssol.Platypus.DataAccess
         /// </summary>
         public virtual DbSet<TrainingHistory> TrainingHistories { get; set; }
         /// <summary>
+        /// 学習履歴と親学習履歴の中間テーブル
+        /// </summary>
+        public virtual DbSet<TrainingHistoryParentMap> TrainingHistoryParentMaps { get; set; }
+        /// <summary>
         /// 学習履歴添付ファイル
         /// </summary>
         public virtual DbSet<TrainingHistoryAttachedFile> TrainingHistoryAttachedFiles { get; set; }
@@ -154,6 +156,10 @@ namespace Nssol.Platypus.DataAccess
         /// 推論履歴
         /// </summary>
         public virtual DbSet<InferenceHistory> InferenceHistories { get; set; }
+        /// <summary>
+        /// 推論履歴と親学習履歴の中間テーブル
+        /// </summary>
+        public virtual DbSet<InferenceHistoryParentMap> InferenceHistoryParentMaps { get; set; }
         /// <summary>
         /// 推論履歴添付ファイル
         /// </summary>
@@ -244,6 +250,12 @@ namespace Nssol.Platypus.DataAccess
                     .IsUnique();
             modelBuilder.Entity<UserTenantRegistryMap>()
                     .HasIndex(e => new { e.UserId, e.TenantRegistryMapId })
+                    .IsUnique();
+            modelBuilder.Entity<TrainingHistoryParentMap>()
+                    .HasIndex(e => new { e.TenantId, e.TrainingHistoryId, e.ParentId })
+                    .IsUnique();
+            modelBuilder.Entity<InferenceHistoryParentMap>()
+                    .HasIndex(e => new { e.TenantId, e.InferenceHistoryId, e.ParentId })
                     .IsUnique();
             modelBuilder.Entity<NotebookHistoryParentTrainingMap>()
                     .HasIndex(e => new { e.TenantId, e.NotebookHistoryId, e.ParentId })

@@ -1,9 +1,4 @@
 ﻿using Nssol.Platypus.Models.TenantModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Nssol.Platypus.Infrastructure;
 
 namespace Nssol.Platypus.ApiModels.TrainingApiModels
 {
@@ -12,6 +7,10 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
     /// </summary>
     public class IndexOutputModel : SimpleOutputModel
     {
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="history">学習履歴</param>
         public IndexOutputModel(TrainingHistory history) : base(history)
         {
             DataSet = new DataSetApiModels.IndexOutputModel(history.DataSet);
@@ -22,6 +21,7 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         /// データセット
         /// </summary>
         public DataSetApiModels.IndexOutputModel DataSet { get; set; }
+
         /// <summary>
         /// ジョブ実行コマンド
         /// </summary>

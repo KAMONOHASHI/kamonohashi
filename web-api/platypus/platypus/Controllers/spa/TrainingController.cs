@@ -38,6 +38,9 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly IClusterManagementLogic clusterManagementLogic;
         private readonly IUnitOfWork unitOfWork;
 
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
         public TrainingController(
           ITrainingHistoryRepository trainingHistoryRepository,
           IInferenceHistoryRepository inferenceHistoryRepository,
@@ -105,6 +108,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// ステータスを更新して、出力モデルに変換する
         /// </summary>
+        /// <param name="history">学習履歴</param>
         private async Task<IndexOutputModel> GetUpdatedIndexOutputModelAsync(TrainingHistory history)
         {
             var model = new IndexOutputModel(history);
@@ -130,6 +134,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// データ件数を取得する
         /// </summary>
+        /// <param name="filter">検索条件</param>
         private int GetTotalCount(SearchInputModel filter)
         {
             IQueryable<TrainingHistory> histories;
@@ -150,6 +155,8 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 検索条件の追加
         /// </summary>
+        /// <param name="sourceData">加工前の検索結果</param>
+        /// <param name="filter">検索条件</param>
         private static IQueryable<TrainingHistory> Search(IQueryable<TrainingHistory> sourceData, SearchInputModel filter)
         {
             IQueryable<TrainingHistory> data = sourceData;
@@ -273,6 +280,8 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 新規に学習を開始する
         /// </summary>
+        /// <param name="model">新規学習実行内容</param>
+        /// <param name="nodeRepository">DI用</param>
         [HttpPost("run")]
         [Filters.PermissionFilter(MenuCode.Training)]
         [ProducesResponseType(typeof(SimpleOutputModel), (int)HttpStatusCode.Created)]
@@ -288,14 +297,6 @@ namespace Nssol.Platypus.Controllers.spa
             if (dataSet == null)
             {
                 return JsonNotFound($"DataSet ID {model.DataSetId} is not found.");
-            }
-            if (model.ParentId.HasValue)
-            {
-                var parent = await trainingHistoryRepository.GetByIdAsync(model.ParentId.Value);
-                if (parent == null)
-                {
-                    return JsonNotFound($"Training ID {model.ParentId.Value} is not found.");
-                }
             }
             if (string.IsNullOrEmpty(model.Partition) == false)
             {
@@ -352,7 +353,6 @@ namespace Nssol.Platypus.Controllers.spa
                 ModelBranch = branch,
                 ModelCommitId = commitId,
                 OptionDic = model.Options ?? new Dictionary<string, string>(), //オプションはnullの可能性があるので、その時は初期化
-                ParentId = model.ParentId,
                 Memo = model.Memo,
                 Cpu = model.Cpu.Value,
                 Memory = model.Memory.Value,
@@ -364,6 +364,25 @@ namespace Nssol.Platypus.Controllers.spa
             if (trainingHistory.OptionDic.ContainsKey("")) //空文字は除外する
             {
                 trainingHistory.OptionDic.Remove("");
+            }
+            // 親学習が指定されていれば存在チェック
+            if (model.ParentId.HasValue)
+            {
+                var maps = new List<TrainingHistoryParentMap>();
+
+                var parent = await trainingHistoryRepository.GetByIdAsync(model.ParentId.Value);
+                if (parent == null)
+                {
+                    return JsonNotFound($"Training ID {model.ParentId.Value} is not found.");
+                }
+                // 学習履歴に親学習を紐づける
+                var map = trainingHistoryRepository.AttachParentAsync(trainingHistory, parent);
+                if (map != null)
+                {
+                    maps.Add(map);
+                }
+
+                trainingHistory.ParentMaps = maps;
             }
             trainingHistoryRepository.Add(trainingHistory);
             if (dataSet.IsLocked == false)
@@ -743,7 +762,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 学習を終了させる。
         /// </summary>
-        /// <param name="id">Training ID</param>
+        /// <param name="id">学習履歴ID</param>
         /// <param name="status">変更後のステータス</param>
         /// <returns></returns>
         private async Task<IActionResult> ExitAsync(long? id, ContainerStatus status)
@@ -801,17 +820,17 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             //派生した学習履歴があったら消せない
-            var child = trainingHistoryRepository.Find(t => t.ParentId == trainingHistory.Id);
-            if(child != null)
+            var child = (await trainingHistoryRepository.GetChildrenAsync(trainingHistory.Id)).FirstOrDefault();
+            if (child != null)
             {
                 return JsonConflict($"There is another training which is derived from training {trainingHistory.Id}.");
             }
 
             //学習結果を利用した推論ジョブがあったら消せない
-            var inference = inferenceHistoryRepository.Find(t => t.ParentId == trainingHistory.Id);
-            if(inference != null)
+            var inferenceHistory = (await inferenceHistoryRepository.GetMountedTrainingAsync(trainingHistory.Id)).FirstOrDefault();
+            if (inferenceHistory != null)
             {
-                return JsonConflict($"Training training {trainingHistory.Id} has been used by inference.");
+                return JsonConflict($"Training {trainingHistory.Id} has been used by inference.");
             }
 
             if (status.Exist())

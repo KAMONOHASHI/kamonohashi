@@ -1,9 +1,4 @@
-﻿using Nssol.Platypus.Infrastructure;
-using Nssol.Platypus.Models.TenantModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Nssol.Platypus.Models.TenantModels;
 
 namespace Nssol.Platypus.ApiModels.TrainingApiModels
 {
@@ -12,6 +7,10 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
     /// </summary>
     public class SimpleOutputModel : Components.OutputModelBase
     {
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="history">学習履歴</param>
         public SimpleOutputModel(TrainingHistory history) : base(history)
         {
             Id = history.Id;
@@ -27,18 +26,22 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         /// ID
         /// </summary>
         public long Id { get; set; }
+
         /// <summary>
         /// 表示用ID
         /// </summary>
         public long? DisplayId { get; set; }
+
         /// <summary>
         /// 名前
         /// </summary>
         public string Name { get; set; }
+
         /// <summary>
         /// メモ
         /// </summary>
         public string Memo { get; set; }
+
         /// <summary>
         /// ステータス
         /// </summary>

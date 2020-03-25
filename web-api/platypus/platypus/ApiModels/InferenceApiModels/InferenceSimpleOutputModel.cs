@@ -7,6 +7,10 @@ namespace Nssol.Platypus.ApiModels.InferenceApiModels
     /// </summary>
     public class InferenceSimpleOutputModel : Components.OutputModelBase
     {
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="history">推論履歴</param>
         public InferenceSimpleOutputModel(InferenceHistory history) : base(history)
         {
             Id = history.Id;
@@ -22,18 +26,22 @@ namespace Nssol.Platypus.ApiModels.InferenceApiModels
         /// ID
         /// </summary>
         public long Id { get; set; }
+
         /// <summary>
         /// 表示用ID
         /// </summary>
         public long? DisplayId { get; set; }
+
         /// <summary>
         /// 名前
         /// </summary>
         public string Name { get; set; }
+
         /// <summary>
         /// メモ
         /// </summary>
         public string Memo { get; set; }
+
         /// <summary>
         /// ステータス
         /// </summary>

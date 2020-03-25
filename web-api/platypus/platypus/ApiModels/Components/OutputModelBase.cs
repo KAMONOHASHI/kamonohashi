@@ -1,14 +1,17 @@
 ﻿using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Nssol.Platypus.ApiModels.Components
 {
+    /// <summary>
+    /// 共通の出力モデル
+    /// </summary>
     public class OutputModelBase
     {
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="model">共通モデル</param>
         public OutputModelBase(ModelBase model)
         {
             CreatedBy = model.CreatedBy;
@@ -16,6 +19,10 @@ namespace Nssol.Platypus.ApiModels.Components
             ModifiedBy = model.ModifiedBy;
             ModifiedAt = model.ModifiedAt.ToFormatedString();
         }
+
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
         public OutputModelBase()
         {
         }

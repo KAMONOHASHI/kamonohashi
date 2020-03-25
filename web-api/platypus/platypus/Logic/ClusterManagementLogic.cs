@@ -443,7 +443,7 @@ namespace Nssol.Platypus.Logic
             {
                 { "DATASET_ID", trainHistory.DataSetId.ToString()},
                 { "TRAINING_ID", trainHistory.Id.ToString()},
-                { "PARENT_ID", trainHistory.ParentId?.ToString()},
+                { "PARENT_ID", trainHistory.ParentMaps != null ? string.Join(",", trainHistory.ParentMaps.Select(t => t.ParentId)) : ""},
                 { "MODEL_REPOSITORY", gitEndpoint.FullUrl},
                 { "MODEL_REPOSITORY_URL", gitEndpoint.Url},
                 { "MODEL_REPOSITORY_TOKEN", gitEndpoint.Token},
@@ -512,13 +512,13 @@ namespace Nssol.Platypus.Logic
                 IsNodePort = true
             };
             // 親を指定した場合は親の出力結果を/kqi/parentにマウント
-            if (trainHistory.ParentId != null)
+            if (trainHistory.ParentMaps != null)
             {
                 inputModel.NfsVolumeMounts.Add(new NfsVolumeMountModel()
                 {
                     Name = "nfs-parent",
                     MountPath = "/kqi/parent",
-                    SubPath = trainHistory.ParentId.ToString(),
+                    SubPath = trainHistory.ParentMaps.First().ParentId.ToString(),
                     Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
                     ServerPath = CurrentUserInfo.SelectedTenant.TrainingContainerOutputNfsPath,
                     ReadOnly = true
@@ -608,7 +608,7 @@ namespace Nssol.Platypus.Logic
             {
                 { "DATASET_ID", inferenceHistory.DataSetId.ToString()},
                 { "INFERENCE_ID", inferenceHistory.Id.ToString()},
-                { "PARENT_ID", inferenceHistory.ParentId?.ToString()},
+                { "PARENT_ID", inferenceHistory.ParentMaps != null ? string.Join(",", inferenceHistory.ParentMaps.Select(t => t.ParentId)) : ""},
                 { "MODEL_REPOSITORY", gitEndpoint.FullUrl},
                 { "MODEL_REPOSITORY_URL", gitEndpoint.Url},
                 { "MODEL_REPOSITORY_TOKEN", gitEndpoint.Token},
@@ -678,13 +678,13 @@ namespace Nssol.Platypus.Logic
             };
             // 親を指定した場合は親の出力結果を/kqi/parentにマウント
             // 推論ジョブにおける親ジョブは学習ジョブとなるので、SubPathとServerPathの指定に注意
-            if (inferenceHistory.ParentId != null)
+            if (inferenceHistory.ParentMaps != null)
             {
                 inputModel.NfsVolumeMounts.Add(new NfsVolumeMountModel()
                 {
                     Name = "nfs-parent",
                     MountPath = "/kqi/parent",
-                    SubPath = inferenceHistory.ParentId.ToString(),
+                    SubPath = inferenceHistory.ParentMaps.First().ParentId.ToString(),
                     Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
                     ServerPath = CurrentUserInfo.SelectedTenant.TrainingContainerOutputNfsPath,
                     ReadOnly = true
