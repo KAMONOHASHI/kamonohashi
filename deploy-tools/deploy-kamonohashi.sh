@@ -212,7 +212,8 @@ configure(){
       generate_conf
     ;;
     *)
-
+      echo "configureの引数は cluster, single-node が指定可能です" >&2
+      echo "不明なconfigureの引数: $1" >&2
     ;;
   esac  
 
@@ -229,7 +230,8 @@ clean(){
       ANSIBLE_LOG_PATH=$LOG_FILE ansible-playbook kubespray/remove-node.yml --extra-vars "node=k8s-cluster" ${@:2}
     ;;
     *)
-      echo "不明なcleanの引数: $1"
+      echo "cleanの引数は all, app が指定可能です" >&2
+      echo "不明なcleanの引数: $1" >&2
       exit 1
     ;;
   esac
@@ -274,8 +276,8 @@ deploy(){
       deploy_kqi_helm $PASSWORD |& tee -a $LOG_FILE
       ;;
     *)
-      echo "deployの引数は all, infra, nfs, k8s, app が指定可能です"
-      echo "不明なdeployの引数: $1"
+      echo "deployの引数は all, infra, nfs, k8s, app が指定可能です" >&2
+      echo "不明なdeployの引数: $1" >&2
       exit 1
     ;;
   esac
