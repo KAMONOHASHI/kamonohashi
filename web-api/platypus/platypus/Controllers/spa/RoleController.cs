@@ -65,7 +65,7 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             var model = new DetailsOutputModel(role);
-            if(model.TenantId != null)
+            if (model.TenantId != null)
             {
                 model.TenantName = tenantRepository.Get(model.TenantId.Value).Name;
             }
@@ -81,17 +81,19 @@ namespace Nssol.Platypus.Controllers.spa
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.Created)]
         public async Task<IActionResult> CreateForAdmin([FromBody]CreateInputModel model, [FromServices] ITenantRepository tenantRepository)
         {
-            //データの入力チェック
+            // データの入力チェック
             if (!ModelState.IsValid)
             {
                 return JsonBadRequest("Invalid inputs.");
             }
+
             if (model.IsSystemRole && model.TenantId != null)
             {
-                //Admin向けなのにテナント固有にしてあったら入力ミス
+                // Admin向けなのにテナント固有にしてあったら入力ミス
                 return JsonBadRequest($"Invalid inputs. the role is for admin, but set to specific tenant { model.TenantId }");
             }
-            //データの存在チェック
+
+            // データの存在チェック
             if (model.TenantId != null && tenantRepository.Get(model.TenantId.Value) == null)
             {
                 return JsonNotFound($"Tenant ID {model.TenantId.Value} is not found.");
@@ -108,39 +110,51 @@ namespace Nssol.Platypus.Controllers.spa
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> EditForAdmin(long? id, [FromBody]EditInputModel model, [FromServices] ITenantRepository tenantRepository)
         {
-            //データの入力チェック
+            // データの入力チェック
             if (!ModelState.IsValid || !id.HasValue)
             {
                 return JsonBadRequest("Invalid inputs.");
             }
+
             if (model.IsSystemRole && model.TenantId != null)
             {
-                //Admin向けなのにテナント固有にしてあったら入力ミス
+                // Admin向けなのにテナント固有にしてあったら入力ミス
                 return JsonBadRequest($"Invalid inputs. The role is for admin, but set to specific tenant { model.TenantId }");
             }
-            //データの存在チェック
+
+            // データの存在チェック
             Role role = await roleRepository.GetRoleForUpdateAsync(id.Value);
             if (role == null)
             {
                 return JsonNotFound($"Role ID {id.Value} is not found.");
             }
+
             if (model.TenantId != null && tenantRepository.Get(model.TenantId.Value) == null)
             {
                 return JsonNotFound($"Tenant ID {model.TenantId.Value} is not found.");
             }
+
             if (role.IsSystemRole != model.IsSystemRole)
             {
-                //ロールの種類は変更できない
+                // ロールの種類は変更できない
                 return JsonBadRequest("Invalid inputs. The role type is not allowed to change.");
             }
-            //データの編集可否チェック
+
+            // データの編集可否チェック
             if (role.IsNotEditable)
             {
-                //名称と表示名の変更は許可しない。ソート順の変更のみ許可する。
+                // 名称と表示名の変更は許可しない。ソート順の変更のみ許可する。
                 if (role.Name != model.Name || role.DisplayName != model.DisplayName)
                 {
                     return JsonBadRequest($"Role ID {id.Value} is not editable. Only the sort order is allowed to edit.");
                 }
+            }
+
+            // 同じ名前のロールは登録できないので、確認する
+            Role registeredRole = (await roleRepository.GetAllRolesAsync()).FirstOrDefault(r => r.Name == model.Name);
+            if (role != null)
+            {
+                return JsonConflict($"Role {model.Name} already exists: ID = {registeredRole.Id}");
             }
 
             role.Name = model.Name;
@@ -171,18 +185,20 @@ namespace Nssol.Platypus.Controllers.spa
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         public async Task<IActionResult> DeleteForAdmin(long? id, [FromServices] ITenantRepository tenantRepository)
         {
-            //データの入力チェック
+            // データの入力チェック
             if (id == null)
             {
                 return JsonBadRequest("Invalid inputs.");
             }
-            //データの存在チェック
+
+            // データの存在チェック
             var role = await roleRepository.GetRoleAsync(id.Value);
             if (role == null)
             {
                 return JsonNotFound($"Role ID {id.Value} is not found.");
             }
-            //データの編集可否チェック
+
+            // データの編集可否チェック
             if (role.IsNotEditable)
             {
                 return JsonBadRequest($"Role ID {id.Value} is not allowed to delete.");
@@ -206,15 +222,15 @@ namespace Nssol.Platypus.Controllers.spa
         /// システムロール以外の共通ロールと、テナント用カスタムロールが対象。
         /// </remarks>
         [HttpGet]
-        [PermissionFilter(MenuCode.TenantRole, MenuCode.TenantUser)] //テナントユーザ画面からも参照する
+        [PermissionFilter(MenuCode.TenantRole, MenuCode.TenantUser)] // テナントユーザ画面からも参照する
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetAllForTenant()
         {
             var roles = await roleRepository.GetAllRolesAsync();
 
-            //テナントで使用可能なロールの条件
-            // - Adminロールでない
-            // - TenantIdがNULLまたは現在選択中のテナントと一致
+            // テナントで使用可能なロールの条件
+            //  - Adminロールでない
+            //  - TenantIdがNULLまたは現在選択中のテナントと一致
             var rolesForCurrentTenant = roles.Where(
                 r => r.IsSystemRole == false &&
                 (r.TenantId == null || r.TenantId == CurrentUserInfo.SelectedTenant.Id));
@@ -235,21 +251,22 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonBadRequest("Role ID is required.");
             }
+
             var role = await roleRepository.GetRoleAsync(id.Value);
             if (role == null)
             {
                 return JsonNotFound($"Role Id {id.Value} is not found.");
             }
 
-            if(role.IsSystemRole == true || (role.TenantId != null && role.TenantId != CurrentUserInfo.SelectedTenant.Id))
+            if (role.IsSystemRole == true || (role.TenantId != null && role.TenantId != CurrentUserInfo.SelectedTenant.Id))
             {
-                //参照不可のロールにアクセスしようとしている
+                // 参照不可のロールにアクセスしようとしている
                 LogWarning($"Role {role.Name} is not allowed to read by the current user.");
-                return JsonNotFound($"Role Id {id.Value} is not found."); //エラーメッセージは404と変えない
+                return JsonNotFound($"Role Id {id.Value} is not found."); // エラーメッセージは404と変えない
             }
 
             var model = new DetailsOutputModel(role);
-            if(model.TenantId != null)
+            if (model.TenantId != null)
             {
                 model.TenantName = CurrentUserInfo.SelectedTenant.Name;
             }
@@ -265,11 +282,12 @@ namespace Nssol.Platypus.Controllers.spa
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.Created)]
         public async Task<IActionResult> CreateForTenant([FromBody]CreateForTenantInputModel model)
         {
-            //データの入力チェック
+            // データの入力チェック
             if (!ModelState.IsValid)
             {
                 return JsonBadRequest("Invalid inputs.");
             }
+
             return await CreateAsync(new CreateInputModel()
             {
                 Name = model.Name,
@@ -288,33 +306,42 @@ namespace Nssol.Platypus.Controllers.spa
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> EditForTenant(long? id, [FromBody]EditForTenantInputModel model)
         {
-            //データの入力チェック
+            // データの入力チェック
             if (!ModelState.IsValid || !id.HasValue)
             {
                 return JsonBadRequest("Invalid inputs.");
             }
-            //データの存在チェック
+
+            // データの存在チェック
             Role role = await roleRepository.GetRoleForUpdateAsync(id.Value);
             if (role == null)
             {
                 return JsonNotFound($"Role ID {id.Value} is not found.");
             }
-            //データの編集可否チェック
+
+            // データの編集可否チェック
             if (role.IsNotEditable)
             {
-                //名称と表示名の変更は許可しない。ソート順の変更のみ許可する。
+                // 名称と表示名の変更は許可しない。ソート順の変更のみ許可する。
                 if (role.Name != model.Name || role.DisplayName != model.DisplayName)
                 {
                     return JsonBadRequest($"Role ID {id.Value} is not editable. Only the sort order is allowed to edit.");
                 }
             }
 
-            //システムロール、共通テナントロール、他のテナントのテナントロールは編集不可
+            // システムロール、共通テナントロール、他のテナントのテナントロールは編集不可
             if (role.IsSystemRole == true || role.TenantId == null || role.TenantId != CurrentUserInfo.SelectedTenant.Id)
             {
-                //参照不可のロールにアクセスしようとしている
+                // 参照不可のロールにアクセスしようとしている
                 LogWarning($"Role {role.Name} is not allowed to edit by the current user.");
-                return JsonNotFound($"Role Id {id.Value} is not found."); //エラーメッセージは404と変えない
+                return JsonNotFound($"Role Id {id.Value} is not found."); // エラーメッセージは404と変えない
+            }
+
+            // 同じ名前のロールは登録できないので、確認する
+            Role registeredRole = (await roleRepository.GetAllRolesAsync()).FirstOrDefault(r => r.Name == model.Name);
+            if (role != null)
+            {
+                return JsonConflict($"Role {model.Name} already exists: ID = {registeredRole.Id}");
             }
 
             role.Name = model.Name;
@@ -335,29 +362,31 @@ namespace Nssol.Platypus.Controllers.spa
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         public async Task<IActionResult> DeleteForTenant(long? id)
         {
-            //データの入力チェック
+            // データの入力チェック
             if (id == null)
             {
                 return JsonBadRequest("Invalid inputs.");
             }
-            //データの存在チェック
+
+            // データの存在チェック
             var role = await roleRepository.GetRoleAsync(id.Value);
             if (role == null)
             {
                 return JsonNotFound($"Role ID {id.Value} is not found.");
             }
-            //データの編集可否チェック
+
+            // データの編集可否チェック
             if (role.IsNotEditable)
             {
                 return JsonBadRequest($"Role ID {id.Value} is not allowed to delete.");
             }
 
-            //システムロール、共通テナントロール、他のテナントのテナントロールは削除不可
+            // システムロール、共通テナントロール、他のテナントのテナントロールは削除不可
             if (role.IsSystemRole == true || role.TenantId == null || role.TenantId != CurrentUserInfo.SelectedTenant.Id)
             {
-                //参照不可のロールにアクセスしようとしている
+                // 参照不可のロールにアクセスしようとしている
                 LogWarning($"Role {role.Name} is not allowed to delete by the current user.");
-                return JsonNotFound($"Role Id {id.Value} is not found."); //エラーメッセージは404と変えない
+                return JsonNotFound($"Role Id {id.Value} is not found."); // エラーメッセージは404と変えない
             }
 
             await roleRepository.DeleteAsync(id.Value, unitOfWork);
@@ -375,7 +404,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         private async Task<IActionResult> CreateAsync(CreateInputModel model)
         {
-            //同じ名前のロールは登録できないので、確認する
+            // 同じ名前のロールは登録できないので、確認する
             Role role = (await roleRepository.GetAllRolesAsync()).FirstOrDefault(r => r.Name == model.Name);
             if (role != null)
             {
