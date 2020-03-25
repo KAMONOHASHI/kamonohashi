@@ -181,6 +181,12 @@ generate_conf(){
 prepare_deepops(){
   git clone https://github.com/NVIDIA/deepops.git -b $DEEPOPS_VER
 
+  # 古いansibleがある場合に
+  # ModuleNotFoundError: No module named 'ansible'となることのワークアラウンド。
+  if type "ansible" > /dev/null 2>&1
+  then
+    pip unintall ansible
+  fi
   cd $DEEPOPS_DIR
   ./scripts/setup.sh
 }
