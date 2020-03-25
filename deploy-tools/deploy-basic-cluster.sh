@@ -165,8 +165,7 @@ prepare_deepops(){
 
 # prepareでは設定ディレクトリのみ用意
 prepare_helm(){
-  cd $HELM_DIR
-  mkdir -p kamonohashi/conf
+  mkdir -p $APP_CONF_DIR
 }
 
 prepare(){
