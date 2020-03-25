@@ -185,7 +185,7 @@ prepare_deepops(){
   # ModuleNotFoundError: No module named 'ansible'となることのワークアラウンド。
   if type "ansible" > /dev/null 2>&1
   then
-    pip uninstall ansible
+    pip uninstall -y ansible
   fi
   cd $DEEPOPS_DIR
   ./scripts/setup.sh
