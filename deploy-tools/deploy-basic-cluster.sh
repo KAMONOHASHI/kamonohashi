@@ -187,7 +187,7 @@ clean(){
     ;;
     all)
       cd $DEEPOPS_DIR
-      ansible-playbook kubespray/remove-node.yml --extra-vars "node=k8s-cluster" ${@:2}
+      ANSIBLE_LOG_PATH=$LOG_FILE ansible-playbook kubespray/remove-node.yml --extra-vars "node=k8s-cluster" ${@:2}
     ;;
     *)
       echo "不明なcleanの引数: $1"
@@ -198,12 +198,12 @@ clean(){
 
 deploy_nfs(){
   cd $DEEPOPS_DIR
-  ansible-playbook -l nfs-server playbooks/nfs-server.yml $@
+  ANSIBLE_LOG_PATH=$LOG_FILE ansible-playbook -l nfs-server playbooks/nfs-server.yml $@
 }
 
 deploy_k8s(){
   cd $DEEPOPS_DIR
-  ansible-playbook -l k8s-cluster playbooks/k8s-cluster.yml $@
+  ANSIBLE_LOG_PATH=$LOG_FILE ansible-playbook -l k8s-cluster playbooks/k8s-cluster.yml $@
 }
 
 deploy_kqi_helm(){
@@ -226,13 +226,13 @@ deploy(){
     infra) deploy_k8s ${@:2} && deploy_nfs ;; 
     nfs) deploy_nfs ${@:2} ;;
     k8s) deploy_k8s ${@:2} ;;
-    app) deploy_kqi_helm ;;
+    app) deploy_kqi_helm |& tee -a $LOG_FILE ;;
     all) 
       echo -en "Admin Passwordを入力: "; read -s PASSWORD
       echo "" # read -s は改行しないため、echoで改行
       deploy_k8s ${@:2} &&
       deploy_nfs &&
-      deploy_kqi_helm $PASSWORD
+      deploy_kqi_helm $PASSWORD |& tee -a $LOG_FILE
       ;;
     *)
       echo "deployの引数は all, infra, nfs, k8s, app が指定可能です"
@@ -257,4 +257,4 @@ main(){
 
 mkdir -p $LOG_DIR
 echo "command: $0 $@" >> $LOG_FILE
-main $@ |& tee -a $LOG_FILE
+main $@
