@@ -185,7 +185,7 @@ prepare_deepops(){
   # ModuleNotFoundError: No module named 'ansible'となることのワークアラウンド。
   if type "ansible" > /dev/null 2>&1
   then
-    pip unintall ansible
+    pip uninstall ansible
   fi
   cd $DEEPOPS_DIR
   ./scripts/setup.sh
@@ -219,18 +219,23 @@ configure(){
 
 }
 
+
 clean(){
   case $1 in
     app)     
       cd $HELM_DIR
       ./deploy-kqi-app.sh clean
     ;;
+    nvidia-repo)
+      cd $DEEPOPS_DIR
+      ANSIBLE_LOG_PATH=$LOG_FILE ansible-playbook -l k8s-cluster $FILES_DIR/deepops/clean-nvidia-docker-repo.yml ${@:2}
+    ;;
     all)
       cd $DEEPOPS_DIR
       ANSIBLE_LOG_PATH=$LOG_FILE ansible-playbook kubespray/remove-node.yml --extra-vars "node=k8s-cluster" ${@:2}
     ;;
     *)
-      echo "cleanの引数は all, app が指定可能です" >&2
+      echo "cleanの引数は all, app, nvidia-repo が指定可能です" >&2
       echo "不明なcleanの引数: $1" >&2
       exit 1
     ;;
@@ -240,6 +245,12 @@ clean(){
 deploy_nfs(){
   cd $DEEPOPS_DIR
   ANSIBLE_LOG_PATH=$LOG_FILE ansible-playbook -l nfs-server playbooks/nfs-server.yml $@
+}
+
+# ansibleの更新チェック誤作動でgpgの更新が効かない場合に実行する
+deploy_nvidia_gpg(){
+  cd $DEEPOPS_DIR
+  ANSIBLE_LOG_PATH=$LOG_FILE ansible-playbook -l k8s-cluster $FILES_DIR/deepops/update-latest-nvidia-gpg.yml $@
 }
 
 deploy_k8s(){
@@ -268,6 +279,7 @@ deploy(){
     nfs) deploy_nfs ${@:2} ;;
     k8s) deploy_k8s ${@:2} ;;
     app) deploy_kqi_helm |& tee -a $LOG_FILE ;;
+    nvidia-gpg-key) deploy_nvidia_gpg ${@:2} ;;
     all) 
       echo -en "Admin Passwordを入力: "; read -s PASSWORD
       echo "" # read -s は改行しないため、echoで改行
@@ -276,7 +288,7 @@ deploy(){
       deploy_kqi_helm $PASSWORD |& tee -a $LOG_FILE
       ;;
     *)
-      echo "deployの引数は all, infra, nfs, k8s, app が指定可能です" >&2
+      echo "deployの引数は all, infra, nfs, k8s, app, nvidia-gpg-key が指定可能です" >&2
       echo "不明なdeployの引数: $1" >&2
       exit 1
     ;;
