@@ -16,21 +16,20 @@ import './icon'
 Vue.config.productionTip = false
 
 Vue.use(VueI18n)
-const i18n = new VueI18n({locale: 'ja', messages: message})
+const i18n = new VueI18n({ locale: 'ja', messages: message })
 
-Vue.use(ElementUI, {i18n: (key, value) => i18n.t(key, value)})
+Vue.use(ElementUI, { i18n: (key, value) => i18n.t(key, value) })
 Vue.use(lineClamp, {})
 
 Vue.mixin(componentExt)
 
 Vue.component('icon', Icon)
 
-/* eslint-disable no-new */
 new Vue({
   store,
   el: '#app',
   router,
   i18n,
-  components: {App},
-  template: '<App/>'
+  components: { App },
+  template: '<App/>',
 })

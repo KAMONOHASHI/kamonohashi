@@ -6,9 +6,9 @@ import * as ext from '@/util/axios-ext'
 // axiosの拡張
 // テストでモックさせるためaxiosをexport
 let axios = axiosRoot.create({
-  // API_HOST: webpackのdefine pluginから渡ってくる。 config/*.env.jsに定義がある。
-  baseURL: 'http://' + (process.env.API_HOST || ''),
-  headers: {'Content-Type': 'application/json'}
+  // VUE_APP_API_HOST: .envから取得
+  baseURL: 'http://' + (process.env.VUE_APP_API_HOST || ''),
+  headers: { 'Content-Type': 'application/json' },
 })
 ext.axiosLoggerInterceptors(axios)
 ext.axiosAuthInterceptors(axios)
@@ -18,9 +18,8 @@ gen.setAxios(axios)
 
 // -----------------------------------------------------------------------
 // HTTP Method の拡張
-/* eslint-disable */
-let simpleStringBody = function (func, paramName) {
-  return async function (params) {
+let simpleStringBody = function(func, paramName) {
+  return async function(params) {
     if (paramName in params) {
       params[paramName] = '"' + params[paramName] + '"'
     }
@@ -38,31 +37,31 @@ let api = {
     admin: {
       getQuotas: gen.ApiV1AdminQuotasGet,
       postQuota: gen.ApiV1AdminQuotasPost,
-      deleteTensorboards: gen.ApiV1AdminTensorboardsDelete
-    }
+      deleteTensorboards: gen.ApiV1AdminTensorboardsDelete,
+    },
   },
 
   menu: {
     admin: {
       get: gen.ApiV1AdminMenusGet,
       put: gen.ApiV1AdminMenusByIdPut,
-      getTypes: gen.ApiV1AdminMenu_typesGet
+      getTypes: gen.ApiV1AdminMenu_typesGet,
     },
 
     tenant: {
       get: gen.ApiV1TenantMenusGet,
       put: gen.ApiV1TenantMenusByIdPut,
-      getTypes: gen.ApiV1TenantMenu_typesGet
-    }
+      getTypes: gen.ApiV1TenantMenu_typesGet,
+    },
   },
 
   menuList: {
-    getMenuList: gen.ApiV1AccountMenusListGet
+    getMenuList: gen.ApiV1AccountMenusListGet,
   },
 
   quotas: {
     get: gen.ApiV1AdminQuotasGet,
-    post: gen.ApiV1AdminQuotasPost
+    post: gen.ApiV1AdminQuotasPost,
   },
 
   nodes: {
@@ -73,8 +72,8 @@ let api = {
       put: gen.ApiV1AdminNodesByIdPut,
       delete: gen.ApiV1AdminNodesByIdDelete,
       postSyncFromDb: gen.ApiV1AdminNodesSync_cluster_from_dbPost,
-      getAccessLevel: gen.ApiV1AdminNode_access_levelsGet
-    }
+      getAccessLevel: gen.ApiV1AdminNode_access_levelsGet,
+    },
   },
   registry: {
     admin: {
@@ -83,13 +82,13 @@ let api = {
       getType: gen.ApiV1AdminRegistryTypesGet,
       post: gen.ApiV1AdminRegistryEndpointsPost,
       putById: gen.ApiV1AdminRegistryEndpointsByIdPut,
-      deleteById: gen.ApiV1AdminRegistryEndpointsByIdDelete
+      deleteById: gen.ApiV1AdminRegistryEndpointsByIdDelete,
     },
     tenant: {
-      getEndpoints: gen.ApiV1TenantRegistryEndpointsGet
+      getEndpoints: gen.ApiV1TenantRegistryEndpointsGet,
     },
     getImages: gen.ApiV1RegistriesByRegistryIdImagesGet,
-    getTags: gen.ApiV1RegistriesByRegistryIdImagesByImageTagsGet
+    getTags: gen.ApiV1RegistriesByRegistryIdImagesByImageTagsGet,
   },
 
   account: {
@@ -103,7 +102,7 @@ let api = {
     getRegistries: gen.ApiV1AccountRegistriesGet,
     putRegistries: gen.ApiV1AccountRegistriesPut,
     getGits: gen.ApiV1AccountGitsGet,
-    putGits: gen.ApiV1AccountGitsPut
+    putGits: gen.ApiV1AccountGitsPut,
   },
 
   role: {
@@ -112,15 +111,15 @@ let api = {
       post: gen.ApiV1AdminRolesPost,
       getById: gen.ApiV1AdminRolesByIdGet,
       put: gen.ApiV1AdminRolesByIdPut,
-      delete: gen.ApiV1AdminRolesByIdDelete
+      delete: gen.ApiV1AdminRolesByIdDelete,
     },
     tenant: {
       get: gen.ApiV1TenantRolesGet,
       post: gen.ApiV1TenantRolesPost,
       getById: gen.ApiV1TenantRolesByIdGet,
       put: gen.ApiV1TenantRolesByIdPut,
-      delete: gen.ApiV1TenantRolesByIdDelete
-    }
+      delete: gen.ApiV1TenantRolesByIdDelete,
+    },
   },
 
   data: {
@@ -133,7 +132,7 @@ let api = {
     getFilesById: gen.ApiV1DataByIdFilesGet,
     putFilesById: gen.ApiV1DataByIdFilesPost,
     deleteFilesById: gen.ApiV1DataByIdFilesByFileIdDelete,
-    getDataTags: gen.ApiV1DataDatatagsGet
+    getDataTags: gen.ApiV1DataDatatagsGet,
   },
 
   datasets: {
@@ -144,7 +143,7 @@ let api = {
     delete: gen.ApiV1DatasetsByIdDelete,
     patch: gen.ApiV1DatasetsByIdPatch,
     getFiles: gen.ApiV1DataByIdFilesGet,
-    getDatatypes: gen.ApiV1DatatypesGet
+    getDatatypes: gen.ApiV1DatatypesGet,
   },
 
   git: {
@@ -154,14 +153,14 @@ let api = {
       putEndpoint: gen.ApiV1AdminGitEndpointsByIdPut,
       getById: gen.ApiV1AdminGitEndpointsByIdGet,
       deleteById: gen.ApiV1AdminGitEndpointsByIdDelete,
-      getTypes: gen.ApiV1AdminGitTypesGet
+      getTypes: gen.ApiV1AdminGitTypesGet,
     },
     tenant: {
-      getEndpoints: gen.ApiV1TenantGitEndpointsGet
+      getEndpoints: gen.ApiV1TenantGitEndpointsGet,
     },
     getRepos: gen.ApiV1GitByGitIdReposGet,
     getBranches: gen.ApiV1GitByGitIdReposByOwnerByRepositoryNameBranchesGet,
-    getCommits: gen.ApiV1GitByGitIdReposByOwnerByRepositoryNameCommitsGet
+    getCommits: gen.ApiV1GitByGitIdReposByOwnerByRepositoryNameCommitsGet,
     // GET /spa/git/repos/{segments}
   },
 
@@ -177,7 +176,7 @@ let api = {
     getHistroyById: gen.ApiV1PreprocessingsByIdHistoriesByDataIdGet,
     deleteHistroyById: gen.ApiV1PreprocessingsByIdHistoriesByDataIdDelete,
     getEventsById: gen.ApiV1PreprocessingsByIdHistoriesByDataIdEventsGet,
-    runById: gen.ApiV1PreprocessingsByIdRunPost
+    runById: gen.ApiV1PreprocessingsByIdRunPost,
   },
 
   resource: {
@@ -186,16 +185,19 @@ let api = {
       getTenants: gen.ApiV1AdminResourceTenantsGet,
       getContainers: gen.ApiV1AdminResourceContainersGet,
       getContainerByName: gen.ApiV1AdminResourceContainersByTenantIdByNameGet,
-      deleteContainerByName: gen.ApiV1AdminResourceContainersByTenantIdByNameDelete,
-      getContainerLogByName: gen.ApiV1AdminResourceContainersByTenantIdByNameLogGet,
-      getContainerEventsByName: gen.ApiV1AdminResourceContainersByTenantIdByNameEventsGet
+      deleteContainerByName:
+        gen.ApiV1AdminResourceContainersByTenantIdByNameDelete,
+      getContainerLogByName:
+        gen.ApiV1AdminResourceContainersByTenantIdByNameLogGet,
+      getContainerEventsByName:
+        gen.ApiV1AdminResourceContainersByTenantIdByNameEventsGet,
     },
     tenant: {
       getContainers: gen.ApiV1TenantResourceContainersGet,
       getContainerByName: gen.ApiV1TenantResourceContainersByNameGet,
       deleteContainerByName: gen.ApiV1TenantResourceContainersByNameDelete,
-      getContainerLogByName: gen.ApiV1TenantResourceContainersByNameLogGet
-    }
+      getContainerLogByName: gen.ApiV1TenantResourceContainersByNameLogGet,
+    },
   },
 
   training: {
@@ -216,7 +218,7 @@ let api = {
     postHaltById: gen.ApiV1TrainingByIdHaltPost,
     postUserCancelById: gen.ApiV1TrainingByIdUser_cancelPost,
     getEventsById: gen.ApiV1TrainingByIdEventsGet,
-    getMount: gen.ApiV1TrainingMountGet
+    getMount: gen.ApiV1TrainingMountGet,
   },
 
   notebook: {
@@ -232,7 +234,7 @@ let api = {
     getEndpointById: gen.ApiV1NotebookByIdEndpointGet,
     getFilesById: gen.ApiV1NotebookByIdContainer_filesGet,
     postRerun: gen.ApiV1NotebookByIdRerunPost,
-    getAvailableInfiniteTime: gen.ApiV1NotebookAvailable_infinite_timeGet
+    getAvailableInfiniteTime: gen.ApiV1NotebookAvailable_infinite_timeGet,
   },
 
   inference: {
@@ -249,7 +251,7 @@ let api = {
     deleteByIdFilesByFileId: gen.ApiV1InferencesByIdFilesByFileIdDelete,
     postHaltById: gen.ApiV1InferencesByIdHaltPost,
     postUserCancelById: gen.ApiV1InferencesByIdUser_cancelPost,
-    getEventsById: gen.ApiV1InferencesByIdEventsGet
+    getEventsById: gen.ApiV1InferencesByIdEventsGet,
   },
 
   storage: {
@@ -258,11 +260,11 @@ let api = {
       post: gen.ApiV1AdminStorageEndpointsPost,
       getById: gen.ApiV1AdminStorageEndpointsByIdGet,
       put: gen.ApiV1AdminStorageEndpointsByIdPut,
-      delete: gen.ApiV1AdminStorageEndpointsByIdDelete
+      delete: gen.ApiV1AdminStorageEndpointsByIdDelete,
     },
     getUploadParameter: gen.ApiV1UploadParameterGet,
     postUploadComplete: gen.ApiV1UploadCompletePost,
-    getDownloadUrl: gen.ApiV1DownloadUrlGet
+    getDownloadUrl: gen.ApiV1DownloadUrlGet,
   },
 
   tenant: {
@@ -271,10 +273,10 @@ let api = {
       post: gen.ApiV1AdminTenantsPost,
       getById: gen.ApiV1AdminTenantsByIdGet,
       put: gen.ApiV1AdminTenantsByIdPut,
-      delete: gen.ApiV1AdminTenantsByIdDelete
+      delete: gen.ApiV1AdminTenantsByIdDelete,
     },
     get: gen.ApiV1TenantGet,
-    put: gen.ApiV1TenantPut
+    put: gen.ApiV1TenantPut,
   },
 
   user: {
@@ -284,29 +286,32 @@ let api = {
       getById: gen.ApiV1AdminUsersByIdGet,
       delete: gen.ApiV1AdminUsersByIdDelete,
       put: gen.ApiV1AdminUsersByIdPut,
-      putPassword: simpleStringBody(gen.ApiV1AdminUsersByIdPasswordPut, 'password')
+      putPassword: simpleStringBody(
+        gen.ApiV1AdminUsersByIdPasswordPut,
+        'password',
+      ),
     },
 
     tenant: {
       get: gen.ApiV1TenantUsersGet,
       getById: gen.ApiV1TenantUsersByIdGet,
       delete: gen.ApiV1TenantUsersByIdDelete,
-      putRoles: gen.ApiV1TenantUsersByIdRolesPut
-    }
+      putRoles: gen.ApiV1TenantUsersByIdRolesPut,
+    },
   },
   version: {
-    get: gen.ApiV1VersionGet
+    get: gen.ApiV1VersionGet,
   },
 
   // dataを取り出すメソッド
   f: {
-    data (response) {
+    data(response) {
       return [response.data]
     },
-    dataTotal (response) {
+    dataTotal(response) {
       return [response.data, response.headers['x-total-count']]
-    }
-  }
+    },
+  },
 }
 
-export {api as default}
+export { api as default }
