@@ -24,12 +24,15 @@ readonly APP_CONF_FILE=$APP_CONF_DIR/settings.yml
 
 # 関数定義
 
-ask_node_conf(){
+ask_ssh_user(){
+  echo -en "\e[33mSSHで利用するユーザー名: \e[m"; read SSH_USER
+}
+
+ask_cluster_node_conf(){
   echo -en "\e[33mKubernetes masterをデプロイするサーバ名: \e[m"; read KUBE_MASTER
   echo -en "\e[33mKAMONOHASHIをデプロイするサーバ名: \e[m"; read KQI_NODE
   echo -en "\e[33mStorageをデプロイするサーバ名: \e[m"; read STORAGE
   echo -en "\e[33m計算ノード名(,区切りで複数可): \e[m"; read COMPUTE_NODES_COMMA
-  echo -en "\e[33m各nodeにSSHする際のユーザー名: \e[m"; read SSH_USER
 }
 
 ask_proxy_conf(){
@@ -44,11 +47,29 @@ ask_proxy_conf(){
   esac
 }
 
-ask_conf(){
+ask_cluster_conf(){
   echo "クラスタの構成情報を入力してください"
   echo "詳細は ${HELP_URL} を参照してください"
 
-  ask_node_conf
+  ask_cluster_node_conf
+  ask_ssh_user
+  ask_proxy_conf
+}
+
+set_single_node_conf(){
+  local HOST=$(hostname)
+  KUBE_MASTER=$HOST
+  KQI_NODE=$HOST
+  STORAGE=$HOST
+  COMPUTE_NODES_COMMA=$HOST
+}
+
+ask_single_node_conf(){
+  echo "クラスタの構成情報を入力してください"
+  echo "詳細は ${HELP_URL} を参照してください"
+
+  ask_ssh_user
+  set_single_node_conf
   ask_proxy_conf
 }
 
@@ -159,6 +180,7 @@ generate_conf(){
 
 prepare_deepops(){
   git clone https://github.com/NVIDIA/deepops.git -b $DEEPOPS_VER
+
   cd $DEEPOPS_DIR
   ./scripts/setup.sh
 }
@@ -174,15 +196,27 @@ prepare(){
 }
 
 configure(){
-  ask_conf
-  generate_conf
+  case $1 in
+    cluster)  
+      ask_cluster_conf
+      generate_conf
+    ;;
+    single-node)  
+      ask_single_node_conf
+      generate_conf
+    ;;
+    *)
+
+    ;;
+  esac  
+
 }
 
 clean(){
   case $1 in
     app)     
       cd $HELM_DIR
-      ./deploy-kqi.sh clean
+      ./deploy-kqi-app.sh clean
     ;;
     all)
       cd $DEEPOPS_DIR
@@ -214,9 +248,9 @@ deploy_kqi_helm(){
     PASSWORD=$1
   fi
 
-  ./deploy-kqi.sh prepare
-  PASSWORD=$PASSWORD DB_PASSWORD=$PASSWORD STORAGE_PASSWORD=$PASSWORD ./deploy-kqi.sh credentials
-  ./deploy-kqi.sh deploy
+  ./deploy-kqi-app.sh prepare
+  PASSWORD=$PASSWORD DB_PASSWORD=$PASSWORD STORAGE_PASSWORD=$PASSWORD ./deploy-kqi-app.sh credentials
+  ./deploy-kqi-app.sh deploy
 }
 
 # 呼び出しフォーマット: deploy <sub command> <deepopsのコマンドに渡す引数群(${@:2})>
@@ -246,7 +280,7 @@ main(){
   set -e
   case $1 in
     prepare) prepare;;
-    configure) configure ;;
+    configure) configure ${@:2};;
     deploy) deploy ${@:2};;
     clean) clean ${@:2};;
     help) show_help ;;
