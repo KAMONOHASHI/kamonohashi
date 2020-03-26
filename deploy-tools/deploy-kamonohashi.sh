@@ -291,6 +291,9 @@ deploy(){
       deploy_k8s ${@:2} &&
       deploy_nfs &&
       deploy_kqi_helm $PASSWORD |& tee -a $LOG_FILE
+      echo -e "\n\n 構築が完了しました"
+      echo "http://${KQI_NODE}"
+      echo "にアクセスしてください"
       ;;
     *)
       echo "deployの引数は all, infra, nfs, k8s, app, nvidia-gpg-key が指定可能です" >&2
