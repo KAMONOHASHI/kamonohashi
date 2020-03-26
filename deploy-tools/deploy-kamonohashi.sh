@@ -1,6 +1,8 @@
 #!/bin/bash
 readonly DEEPOPS_VER=20.02
 
+readonly THIS_SCRIPT_VER=2.0.0
+
 readonly LOG_DIR=/var/log/kamonohashi/deploy-tools
 readonly LOG_FILE=$LOG_DIR/deploy_$(date '+%Y%m%d-%H%M%S').log
 
@@ -213,7 +215,9 @@ configure(){
     ;;
     *)
       echo "configureの引数は cluster, single-node が指定可能です" >&2
+      echo "詳細は ${HELP_URL} で確認してください" >&2
       echo "不明なconfigureの引数: $1" >&2
+      exit 1
     ;;
   esac  
 
@@ -236,6 +240,7 @@ clean(){
     ;;
     *)
       echo "cleanの引数は all, app, nvidia-repo が指定可能です" >&2
+      echo "詳細は ${HELP_URL} で確認してください" >&2
       echo "不明なcleanの引数: $1" >&2
       exit 1
     ;;
@@ -289,10 +294,29 @@ deploy(){
       ;;
     *)
       echo "deployの引数は all, infra, nfs, k8s, app, nvidia-gpg-key が指定可能です" >&2
+      echo "詳細は ${HELP_URL} で確認してください" >&2
       echo "不明なdeployの引数: $1" >&2
       exit 1
     ;;
   esac
+}
+
+show_help(){
+cat <<EOF
+Usage: ./deploy-kamonohashi.sh COMMAND [ARGS] [OPTIONS]
+
+  KAMONOHASHI デプロイスクリプト: ${THIS_SCRIPT_VER}
+
+Commands:
+  prepare    構築に利用するツールのインストールを行います
+  configure  構築の設定を行います
+  deploy     構築します
+  clean      アンインストールします
+  help       このヘルプを表示します
+
+詳細は ${HELP_URL} で確認してください
+
+EOF
 }
 
 main(){
