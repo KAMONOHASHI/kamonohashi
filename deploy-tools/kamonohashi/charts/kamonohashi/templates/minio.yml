@@ -24,6 +24,13 @@ spec:
           path: {{ .Values.appsettings.DeployOptions__NfsPath }}
       containers:
       - name: minio
+        resources:
+          limits:
+            cpu: {{ .Values.resources.minio.cpu }}
+            memory: {{ .Values.resources.minio.memory }}
+          requests:
+            cpu: {{ .Values.resources.minio.cpu }}
+            memory: {{ .Values.resources.minio.memory }}
         volumeMounts:
         - name: nfs-data
           mountPath: "/data"

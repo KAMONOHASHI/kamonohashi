@@ -8,24 +8,30 @@ appsettings:
   DeployOptions__ObjectStorageAccessKey: "${OBJECT_STORAGE_ACCESSKEY}"
   DeployOptions__NfsStorage: "${NFS_STORAGE}"
   DeployOptions__NfsPath: "${NFS_PATH}"
+  BackupPostgresTimerOptions__WeeklyTimeSchedule: "Sun=01:00:00"
+  BackupPostgresTimerOptions__MaxNumberOfBackupFiles: "1"
 #   ActiveDirectoryOptions__Domain: ""
 #   ActiveDirectoryOptions__BaseDn: ""
 #   ActiveDirectoryOptions__BaseOu: "\"\""
 #   ActiveDirectoryOptions__Server: ""
-#   BackupPostgresTimerOptions__WeeklyTimeSchedule: "Sun=01:00:00"
-#   BackupPostgresTimerOptions__MaxNumberOfBackupFiles: "1"
 
 # 各コンテナのリソース割り当て
-# resources:
-# platypus_web_api:
-#  cpu: 2
-#  memory: 1024Mi
-# platypus_web_pages:
-#   cpu: 0.3
-#   memory: 512Mi
-# postgres:
-#  cpu: 2
-#  memory: 2048Mi
+resources:
+  platypus_web_api:
+    cpu: 250m
+    memory: 512Mi
+  platypus_web_pages:
+    cpu: 100m
+    memory: 256Mi
+  postgres:
+    cpu: 250m
+    memory: 1024Mi
+  minio:
+    cpu: 100m
+    memory: 256Mi
+  nginx:
+    cpu: 100m
+    memory: 128Mi
 
 # コンテナに指定するプロキシ
 # http_proxy:
