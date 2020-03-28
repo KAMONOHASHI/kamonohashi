@@ -1,16 +1,3 @@
-
-ingress:
-  rbac:
-    create: true
-  controller:
-    defaultBackendService: "kqi-system/platypus-web-pages"
-    hostNetwork: true
-    scope:
-      enabled: true
-      namespace: kqi-system
-  defaultBackend:
-    enabled: false
-
 resources:
   platypus_web_api:
     cpu: 1.5

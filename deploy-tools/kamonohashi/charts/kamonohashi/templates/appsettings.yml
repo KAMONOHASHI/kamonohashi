@@ -15,5 +15,5 @@ data:
 {{end}}
   DeployOptions__Mode: "production"
   ContainerManageOptions__DataSetServerUrl: "http://platypus-web-api.kqi-system.svc.cluster.local:8090"
-  ContainerManageOptions__WebEndPoint: {{ index .Values.virtualHosts 0 }}
+  ContainerManageOptions__WebEndPoint: ""
 {{ toYaml .Values.appsettings | indent 2}}

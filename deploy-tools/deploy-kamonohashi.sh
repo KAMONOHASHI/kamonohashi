@@ -160,8 +160,6 @@ generate_deepops_inventory(){
 
 generate_helm_conf(){
   KQI_NODE=$KQI_NODE \
-  INGRESS_NODE=$KQI_NODE \
-  VIRTUAL_HOST=$KQI_NODE \
   NODES=${COMPUTE_NODES_COMMA} \
   OBJECT_STORAGE=$STORAGE \
   OBJECT_STORAGE_PORT=9000 \

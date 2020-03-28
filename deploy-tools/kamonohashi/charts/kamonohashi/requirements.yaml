@@ -1,5 +1,0 @@
-dependencies:
-- name: nginx-ingress
-  version: "1.33.5"
-  repository: "@stable"
-  alias: ingress
