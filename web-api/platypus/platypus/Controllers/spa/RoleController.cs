@@ -151,8 +151,8 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             // 同じ名前のロールは登録できないので、確認する
-            Role registeredRole = (await roleRepository.GetAllRolesAsync()).FirstOrDefault(r => r.Name == model.Name);
-            if (role != null)
+            Role registeredRole = (await roleRepository.GetAllRolesAsync()).FirstOrDefault(r => r.Name == model.Name && r.Id != id.Value);
+            if (registeredRole != null)
             {
                 return JsonConflict($"Role {model.Name} already exists: ID = {registeredRole.Id}");
             }
@@ -338,8 +338,8 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             // 同じ名前のロールは登録できないので、確認する
-            Role registeredRole = (await roleRepository.GetAllRolesAsync()).FirstOrDefault(r => r.Name == model.Name);
-            if (role != null)
+            Role registeredRole = (await roleRepository.GetAllRolesAsync()).FirstOrDefault(r => r.Name == model.Name && r.Id != id.Value);
+            if (registeredRole != null)
             {
                 return JsonConflict($"Role {model.Name} already exists: ID = {registeredRole.Id}");
             }
