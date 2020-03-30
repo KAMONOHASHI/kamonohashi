@@ -18,7 +18,7 @@ setup(
     license='Apache License 2.0',
     packages=find_packages(),
     install_requires=[
-        'click == 6.7',
+        'click >= 7.1.1',
         'urllib3 >= 1.23',
         'six >= 1.10',
         'kamonohashi-sdk == ' + version,
