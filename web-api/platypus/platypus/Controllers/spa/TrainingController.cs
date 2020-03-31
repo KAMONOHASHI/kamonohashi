@@ -648,15 +648,18 @@ namespace Nssol.Platypus.Controllers.spa
             return JsonOK(new TensorBoardOutputModel(container, status, options.Value.WebEndPoint));
         }
 
+        #region TensorBoard
+
         /// <summary>
         /// 指定した学習のTensor Boardを立てる
         /// </summary>
         /// <param name="id">対象の学習履歴ID</param>
+        /// <param name="model">起動モデル</param>
         /// <param name="options">DI用</param>
         [HttpPut("{id}/tensorboard")] //TensorBoardはIDをユーザに通知するわけではないので、POSTではなくPUTで扱う
         [Filters.PermissionFilter(MenuCode.Training)]
         [ProducesResponseType(typeof(TensorBoardOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> RunTensorBoard(long id, [FromServices] IOptions<ContainerManageOptions> options)
+        public async Task<IActionResult> RunTensorBoard(long id, [FromBody]TensorBoardInputModel model, [FromServices] IOptions<ContainerManageOptions> options)
         {
             //データの存在チェック
             var trainingHistory = await trainingHistoryRepository.GetByIdAsync(id);
@@ -674,8 +677,16 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonOK(new TensorBoardOutputModel(container, status, options.Value.WebEndPoint));
             }
 
+            // コンテナ生存期間
+            int expiresIn = 0; // 無期限だが、DeleteTensorBoardContainerTimerの動作タイミングで削除する
+            if (model.ExpiresIn.HasValue)
+            {
+                // 値が存在する場合、その期間起動させる
+                expiresIn = model.ExpiresIn.Value;
+            }
+
             //新規にTensorBoardコンテナを起動する。
-            var result = await clusterManagementLogic.RunTensorBoardContainerAsync(trainingHistory);
+            var result = await clusterManagementLogic.RunTensorBoardContainerAsync(trainingHistory, expiresIn);
             if (result == null || result.Status.Succeed() == false)
             {
                 //起動に失敗した場合、ステータス Failed で返す。
@@ -690,7 +701,8 @@ namespace Nssol.Platypus.Controllers.spa
                 TenantId = CurrentUserInfo.SelectedTenant.Id,
                 TrainingHistoryId = id,
                 Host = result.Host,
-                PortNo = result.Port
+                PortNo = result.Port,
+                ExpiresIn = expiresIn
             };
 
             // コンテナテーブルにInsertする
@@ -721,6 +733,8 @@ namespace Nssol.Platypus.Controllers.spa
 
             return JsonNoContent();
         }
+
+        # endregion
 
         /// <summary>
         /// 学習を途中で強制終了させる。
