@@ -21,12 +21,22 @@
         <el-button type="danger" size="small" plain @click="deleteTensorBoard">
           停止
         </el-button>
+        <kqi-display-text-form label="残り時間" :value="remainingTime" />
       </div>
       <div v-else>
         利用可能リソース待機中...
       </div>
     </span>
     <span v-else-if="statusName === 'None'">
+      <el-form-item label="起動期間(h)" required>
+        <el-slider
+          v-model="expiresIn"
+          class="el-input"
+          :min="0"
+          :max="24"
+          show-input
+        />
+      </el-form-item>
       <el-button type="primary" @click="runTensorBoard">起動</el-button>
     </span>
     <span v-else-if="statusName === 'Starting'">
@@ -43,10 +53,14 @@
 </template>
 
 <script>
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('training')
 
 export default {
+  components: {
+    KqiDisplayTextForm,
+  },
   props: {
     id: {
       type: String,
@@ -59,6 +73,8 @@ export default {
       statusName: null, // 現在のステータス。スクリプト中から適宜変更できるようにstatusとは切り離す。
       intervalId: -1, // ポーリングを止めるためにIDを退避しておく
       polling: false, // ポーリング中かの判定フラグ
+      expiresIn: 0, // 生存期間(h)
+      remainingTime: 0, // 残存時間
     }
   },
   computed: {
@@ -91,6 +107,7 @@ export default {
 
       await this.fetchTensorboard(this.id)
       this.statusName = this.tensorboard.statusType
+      this.remainingTime = this.tensorboard.remainingTime
 
       this.polling = false
     },
@@ -98,7 +115,14 @@ export default {
     async runTensorBoard() {
       // statusNameを変更し、"起動中"と表示する
       this.statusName = 'Starting'
-      await this.putTensorboard(this.id)
+
+      let params = {
+        id: this.id,
+        model: {
+          expiresIn: this.expiresIn * 60 * 60,
+        },
+      }
+      await this.putTensorboard(params)
     },
     // TensorBoardを開く
     openTensorBoard() {
