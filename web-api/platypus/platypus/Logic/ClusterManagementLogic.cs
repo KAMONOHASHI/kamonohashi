@@ -786,6 +786,7 @@ namespace Nssol.Platypus.Logic
                 Memory = 1, //メモリは1GBで仮決め
                 Gpu = 0,
                 KqiImage = "kamonohashi/cli:" + versionLogic.GetVersion(),
+                KqiToken = loginLogic.GenerateToken().AccessToken,
                 NfsVolumeMounts = new List<NfsVolumeMountModel>()
                 {
                     // 結果が保存されているディレクトリ
