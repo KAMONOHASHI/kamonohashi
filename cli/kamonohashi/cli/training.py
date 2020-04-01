@@ -220,3 +220,12 @@ def complete(id):
     api = rest.TrainingApi(configuration.get_api_client())
     result = api.complete_training(id)
     print('completed', result.id)
+
+
+@training.command('tensorboard-halt')
+@click.argument('id', type=int)
+def tensorboard_halt(id):
+    """Halt tensorboard"""
+    api = rest.TrainingApi(configuration.get_api_client())
+    api.halt_tensorboard(id)
+    print('halted', id)
