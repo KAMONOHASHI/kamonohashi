@@ -28,16 +28,16 @@
       </div>
     </span>
     <span v-else-if="statusName === 'None'">
-      <el-form-item label="起動期間(h)" required>
+      <el-button type="primary" @click="runTensorBoard">起動</el-button>
+      <el-form-item label="起動期間(h)">
         <el-slider
           v-model="expiresIn"
           class="el-input"
-          :min="0"
+          :min="1"
           :max="24"
           show-input
         />
       </el-form-item>
-      <el-button type="primary" @click="runTensorBoard">起動</el-button>
     </span>
     <span v-else-if="statusName === 'Starting'">
       起動中...
@@ -73,8 +73,8 @@ export default {
       statusName: null, // 現在のステータス。スクリプト中から適宜変更できるようにstatusとは切り離す。
       intervalId: -1, // ポーリングを止めるためにIDを退避しておく
       polling: false, // ポーリング中かの判定フラグ
-      expiresIn: 0, // 生存期間(h)
-      remainingTime: 0, // 残存時間
+      expiresIn: 3, // 生存期間(h)
+      remainingTime: null, // 残存時間の文字列表記('0d 1h 0m')
     }
   },
   computed: {
