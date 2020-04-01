@@ -47,7 +47,7 @@
     </span>
     <span v-else>
       <span>起動失敗</span>
-      <el-button type="primary" @click="runTensorBoard">再実行</el-button>
+      <el-button type="primary" @click="runTensorBoard">再起動</el-button>
     </span>
   </div>
 </template>
@@ -73,8 +73,8 @@ export default {
       statusName: null, // 現在のステータス。スクリプト中から適宜変更できるようにstatusとは切り離す。
       intervalId: -1, // ポーリングを止めるためにIDを退避しておく
       polling: false, // ポーリング中かの判定フラグ
-      expiresIn: 3, // 生存期間(h)
-      remainingTime: null, // 残存時間の文字列表記('0d 1h 0m')
+      expiresIn: 3, // 起動期間(h)
+      remainingTime: null, // 残り起動期間の文字列表記('0d 1h 0m')
     }
   },
   computed: {
