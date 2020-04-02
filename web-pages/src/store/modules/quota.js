@@ -17,6 +17,11 @@ const actions = {
   async fetchQuotas({ commit }) {
     let response = await await api.quotas.get()
     let quotas = response.data
+    quotas.sort((a, b) => {
+      a = a.tenantName.toString().toLowerCase()
+      b = b.tenantName.toString().toLowerCase()
+      return a < b ? -1 : 1
+    })
     commit('setQuotas', { quotas })
   },
 

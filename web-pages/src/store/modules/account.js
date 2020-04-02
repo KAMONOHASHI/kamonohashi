@@ -64,6 +64,11 @@ const actions = {
   async fetchAccount({ commit }) {
     let response = await api.account.get()
     let account = response.data
+    account.tenants.sort((a, b) => {
+      a = a.displayName.toString().toLowerCase()
+      b = b.displayName.toString().toLowerCase()
+      return a < b ? -1 : 1
+    })
     commit('setAccount', { account })
   },
 

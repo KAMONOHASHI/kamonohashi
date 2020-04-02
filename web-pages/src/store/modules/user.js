@@ -31,11 +31,23 @@ const getters = {
 const actions = {
   async fetchUsers({ commit }) {
     let users = (await api.user.admin.get()).data
+    users.forEach(user => {
+      user.tenants.sort((a, b) => {
+        a = a.displayName.toString().toLowerCase()
+        b = b.displayName.toString().toLowerCase()
+        return a < b ? -1 : 1
+      })
+    })
     commit('setUsers', { users })
   },
 
   async fetchDetail({ commit }, id) {
     let detail = (await api.user.admin.getById({ id: id })).data
+    detail.tenants.sort((a, b) => {
+      a = a.displayName.toString().toLowerCase()
+      b = b.displayName.toString().toLowerCase()
+      return a < b ? -1 : 1
+    })
     commit('setDetail', { detail })
   },
 

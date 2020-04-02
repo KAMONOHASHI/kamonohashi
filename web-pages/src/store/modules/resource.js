@@ -50,18 +50,35 @@ const actions = {
   async fetchNodes({ commit }) {
     let response = await api.resource.admin.getNodes()
     let nodes = response.data
+    nodes.forEach(node => {
+      node.containerResourceList.sort((a, b) => {
+        a = a.tenantName.toString().toLowerCase()
+        b = b.tenantName.toString().toLowerCase()
+        return a < b ? -1 : 1
+      })
+    })
     commit('setNodes', { nodes })
   },
 
   async fetchTenants({ commit }) {
     let response = await api.resource.admin.getTenants()
     let tenants = response.data
+    tenants.sort((a, b) => {
+      a = a.name.toString().toLowerCase()
+      b = b.name.toString().toLowerCase()
+      return a < b ? -1 : 1
+    })
     commit('setTenants', { tenants })
   },
 
   async fetchContainerLists({ commit }) {
     let response = await api.resource.admin.getContainers()
     let containerLists = response.data
+    containerLists.sort((a, b) => {
+      a = a.tenantName.toString().toLowerCase()
+      b = b.tenantName.toString().toLowerCase()
+      return a < b ? -1 : 1
+    })
     commit('setContainerLists', { containerLists })
   },
 
