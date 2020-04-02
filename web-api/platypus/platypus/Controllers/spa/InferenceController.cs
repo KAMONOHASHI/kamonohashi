@@ -363,20 +363,23 @@ namespace Nssol.Platypus.Controllers.spa
                 inferenceHistory.OptionDic.Remove("");
             }
             // 親学習が指定されていれば存在チェック
-            if (model.ParentId.HasValue)
+            if (model.ParentIds != null)
             {
                 var maps = new List<InferenceHistoryParentMap>();
 
-                var parent = await trainingHistoryRepository.GetByIdAsync(model.ParentId.Value);
-                if (parent == null)
+                foreach (var parentId in model.ParentIds)
                 {
-                    return JsonNotFound($"Training ID {model.ParentId.Value} is not found.");
-                }
-                // 推論履歴に親学習を紐づける
-                var map = inferenceHistoryRepository.AttachParentAsync(inferenceHistory, parent);
-                if (map != null)
-                {
-                    maps.Add(map);
+                    var parent = await trainingHistoryRepository.GetByIdAsync(parentId);
+                    if (parent == null)
+                    {
+                        return JsonNotFound($"Training ID {parentId} is not found.");
+                    }
+                    // 推論履歴に親学習を紐づける
+                    var map = inferenceHistoryRepository.AttachParentAsync(inferenceHistory, parent);
+                    if (map != null)
+                    {
+                        maps.Add(map);
+                    }
                 }
 
                 inferenceHistory.ParentMaps = maps;

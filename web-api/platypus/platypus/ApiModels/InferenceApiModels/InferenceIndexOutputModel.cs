@@ -18,13 +18,12 @@ namespace Nssol.Platypus.ApiModels.InferenceApiModels
             EntryPoint = history.EntryPoint;
             if (history.ParentMaps != null && history.ParentMaps.Count > 0)
             {
-                List<string> parentName = new List<string>();
+                List<string> parentNameList = new List<string>();
                 foreach (InferenceHistoryParentMap parentMap in history.ParentMaps)
                 {
-                    parentName.Add(parentMap.Parent.Name);
+                    parentNameList.Add(parentMap.Parent.Name);
                 }
-                // 1件目のみ格納
-                ParentName = parentName[0];
+                ParentNameList = parentNameList;
             }
         }
 
@@ -41,7 +40,7 @@ namespace Nssol.Platypus.ApiModels.InferenceApiModels
         /// <summary>
         /// 親学習ジョブ名
         /// </summary>
-        public string ParentName { get; set; }
+        public List<string> ParentNameList { get; set; }
 
         /// <summary>
         /// 出力値
