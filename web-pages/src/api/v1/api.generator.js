@@ -2442,6 +2442,7 @@ e.g.（比較文字列は半角でOK）
      * @param memo - メモ
      * @param status - ステータス
      * @param entryPoint - 実行コマンド
+     * @param parentId - マウントした学習ID
      * @param parentName - マウントした学習名
      * @param perPage - 表示件数。指定がない場合は上限(1000件)。
      * @param page - ページ番号。デフォルトは1。
@@ -2474,6 +2475,9 @@ export const ApiV1InferencesGet = function(parameters = {}) {
   }
   if (parameters['entryPoint'] !== undefined) {
     queryParameters['EntryPoint'] = parameters['entryPoint']
+  }
+  if (parameters['parentId'] !== undefined) {
+    queryParameters['ParentId'] = parameters['parentId']
   }
   if (parameters['parentName'] !== undefined) {
     queryParameters['ParentName'] = parameters['parentName']
@@ -2524,6 +2528,9 @@ export const ApiV1InferencesGetURL = function(parameters = {}) {
   }
   if (parameters['entryPoint'] !== undefined) {
     queryParameters['EntryPoint'] = parameters['entryPoint']
+  }
+  if (parameters['parentId'] !== undefined) {
+    queryParameters['ParentId'] = parameters['parentId']
   }
   if (parameters['parentName'] !== undefined) {
     queryParameters['ParentName'] = parameters['parentName']
