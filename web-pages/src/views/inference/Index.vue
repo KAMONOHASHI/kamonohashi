@@ -48,11 +48,16 @@
         <el-table-column prop="id" label="ID" width="120px" />
         <el-table-column prop="name" label="推論名" width="150px" />
         <el-table-column prop="createdAt" label="開始日時" width="100px" />
-        <el-table-column
-          prop="parentName"
-          label="マウントした学習"
-          width="200px"
-        />
+        <el-table-column label="マウントした学習" width="200px">
+          <template slot-scope="scope">
+            <span
+              v-for="(ParentName, index) in scope.row.parentFullNameList"
+              :key="index"
+            >
+              {{ ParentName }}
+            </span>
+          </template>
+        </el-table-column>
         <el-table-column
           prop="dataSet.name"
           label="データセット"
