@@ -229,7 +229,7 @@ namespace Nssol.Platypus.Controllers.spa
             if (status.Exist())
             {
                 //コンテナがまだ存在している場合、情報を更新する
-                var details = await clusterManagementLogic.GetContainerDetailsInfoAsync(history.Key, CurrentUserInfo.SelectedTenant.Name, false);
+                var details = await clusterManagementLogic.GetContainerEndpointInfoAsync(history.Key, CurrentUserInfo.SelectedTenant.Name, false);
                 model.Status = details.Status.Name;
                 model.StatusType = details.Status.StatusType;
 
@@ -238,6 +238,13 @@ namespace Nssol.Platypus.Controllers.spa
                 unitOfWork.Commit();
 
                 model.ConditionNote = details.ConditionNote;
+                if (details.Status.IsRunning())
+                {
+                    foreach (var endpoint in details.EndPoints)
+                    {
+                        model.NodePorts.Add(new KeyValuePair<int, int>(int.Parse(endpoint.Key), endpoint.Port));
+                    }                    
+                }
             }
 
             //Gitの表示用URLを作る
@@ -358,6 +365,7 @@ namespace Nssol.Platypus.Controllers.spa
                 Memory = model.Memory.Value,
                 Gpu = model.Gpu.Value,
                 Partition = model.Partition,
+                PortList = model.Ports,
                 Status = ContainerStatus.Running.Key,
                 Zip = model.Zip
             };
