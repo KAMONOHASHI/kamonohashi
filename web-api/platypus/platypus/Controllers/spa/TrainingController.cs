@@ -88,7 +88,7 @@ namespace Nssol.Platypus.Controllers.spa
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetAll([FromQuery]SearchInputModel filter, [FromQuery]int? perPage, [FromQuery] int page = 1, bool withTotal = false)
         {
-            var data = trainingHistoryRepository.GetAllIncludeDataSetWithOrdering();
+            var data = trainingHistoryRepository.GetAllIncludeDataSetAndParentWithOrdering();
             data = Search(data, filter);
 
             //未指定、あるいは1000件以上であれば、1000件に指定
@@ -179,6 +179,17 @@ namespace Nssol.Platypus.Controllers.spa
                     data = data.Where(d => d.DataSet != null && d.DataSet.Name != null && d.DataSet.Name.Contains(filter.DataSet));
                 }
             }
+            if (string.IsNullOrEmpty(filter.ParentName) == false)
+            {
+                if (filter.ParentName.StartsWith("!"))
+                {
+                    data = data.Where(d => d.ParentMaps == null || d.ParentMaps.Count == 0 || d.ParentMaps.Any(m => m.Parent == null || string.IsNullOrEmpty(m.Parent.Name) || m.Parent.Name.Contains(filter.ParentName.Substring(1)) == false));
+                }
+                else
+                {
+                    data = data.Where(d => d.ParentMaps != null && d.ParentMaps.Any(m => m.Parent != null && m.Parent.Name != null && m.Parent.Name.Contains(filter.ParentName)));
+                }
+            }
             return data;
         }
 
@@ -191,7 +202,7 @@ namespace Nssol.Platypus.Controllers.spa
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetTrainingToMount(MountInputModel filter)
         {
-            var data = trainingHistoryRepository.GetAllIncludeDataSetWithOrdering();
+            var data = trainingHistoryRepository.GetAllIncludeDataSetAndParentWithOrdering();
 
             // ステータスを限定する
             if (filter.Status != null)
