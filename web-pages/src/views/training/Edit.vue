@@ -211,6 +211,15 @@
             />
           </el-form-item>
 
+          <el-form-item label="コンテナアクセス">
+            <el-table :data="detail.nodePorts" stripe style="width: 100%">
+              <el-table-column prop="key" label="Target Port" width="180">
+              </el-table-column>
+              <el-table-column prop="value" label="Node Port" width="180">
+              </el-table-column>
+            </el-table>
+          </el-form-item>
+
           <el-form-item label="コンテナ出力ファイル">
             <br />
             <el-button @click="emitFiles">ファイル一覧</el-button>
@@ -338,6 +347,7 @@ export default {
     },
     async retrieveData() {
       await this.fetchDetail(this.id)
+      console.log(this.detail)
       await this.fetchUploadedFiles(this.detail.id)
       if (
         this.detail.statusType === 'Running' ||
