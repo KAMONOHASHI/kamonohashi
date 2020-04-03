@@ -125,6 +125,8 @@ export default {
       searchConfigs: [
         { prop: 'id', name: 'ID', type: 'number' },
         { prop: 'name', name: '学習名', type: 'text' },
+        { prop: 'parentId', name: '親学習ID', type: 'number' },
+        { prop: 'parentName', name: '親学習名', type: 'text' },
         { prop: 'startedAt', name: '開始日時', type: 'date' },
         { prop: 'dataSet', name: 'データセット', type: 'text' },
         { prop: 'entryPoint', name: '実行コマンド', type: 'text' },

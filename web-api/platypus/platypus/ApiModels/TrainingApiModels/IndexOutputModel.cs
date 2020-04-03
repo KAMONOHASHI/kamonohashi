@@ -15,6 +15,7 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         {
             DataSet = new DataSetApiModels.IndexOutputModel(history.DataSet);
             EntryPoint = history.EntryPoint;
+            ParentMaps = history.ParentMaps;
         }
 
         /// <summary>
@@ -26,5 +27,10 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         /// ジョブ実行コマンド
         /// </summary>
         public string EntryPoint { get; set; }
+
+        /// <summary>
+        /// 親学習
+        /// </summary>
+        public System.Collections.Generic.ICollection<TrainingHistoryParentMap> ParentMaps { get; set;  }
     }
 }

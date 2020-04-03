@@ -2735,7 +2735,7 @@ export const ApiV1InferencesByIdEventsGetURL = function(parameters = {}) {
  * url: ApiV1InferencesRunPostURL
  * method: ApiV1InferencesRunPost_TYPE
  * raw_url: ApiV1InferencesRunPost_RAW_URL
- * @param model - 
+ * @param model - 新規推論実行内容
  */
 export const ApiV1InferencesRunPost = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -7364,6 +7364,8 @@ export const ApiV1TrainingSimpleGetURL = function(parameters = {}) {
      * @param id - IDの検索条件。
 比較文字列＋数値の形式。
      * @param name - 名前
+     * @param parentId - 親学習ID
+     * @param parentName - 親学習名
      * @param startedAt - 実行時刻の検索条件。
 比較文字列＋時刻の形式。
 e.g.（比較文字列は半角でOK）
@@ -7390,6 +7392,12 @@ export const ApiV1TrainingGet = function(parameters = {}) {
   }
   if (parameters['name'] !== undefined) {
     queryParameters['Name'] = parameters['name']
+  }
+  if (parameters['parentId'] !== undefined) {
+    queryParameters['ParentId'] = parameters['parentId']
+  }
+  if (parameters['parentName'] !== undefined) {
+    queryParameters['ParentName'] = parameters['parentName']
   }
   if (parameters['startedAt'] !== undefined) {
     queryParameters['StartedAt'] = parameters['startedAt']
@@ -7437,6 +7445,12 @@ export const ApiV1TrainingGetURL = function(parameters = {}) {
   }
   if (parameters['name'] !== undefined) {
     queryParameters['Name'] = parameters['name']
+  }
+  if (parameters['parentId'] !== undefined) {
+    queryParameters['ParentId'] = parameters['parentId']
+  }
+  if (parameters['parentName'] !== undefined) {
+    queryParameters['ParentName'] = parameters['parentName']
   }
   if (parameters['startedAt'] !== undefined) {
     queryParameters['StartedAt'] = parameters['startedAt']
@@ -7706,7 +7720,7 @@ export const ApiV1TrainingByIdEventsGetURL = function(parameters = {}) {
  * url: ApiV1TrainingRunPostURL
  * method: ApiV1TrainingRunPost_TYPE
  * raw_url: ApiV1TrainingRunPost_RAW_URL
- * @param model - 
+ * @param model - 新規学習実行内容
  */
 export const ApiV1TrainingRunPost = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
