@@ -55,7 +55,8 @@ class TrainingApiModelsDetailsOutputModel(object):
         'name': 'str',
         'node': 'str',
         'options': 'list[SystemCollectionsGenericKeyValuePair]',
-        'parent': 'TrainingApiModelsSimpleOutputModel',
+        'parent_full_name_list': 'list[str]',
+        'parents': 'list[TrainingApiModelsSimpleOutputModel]',
         'partition': 'str',
         'started_at': 'str',
         'status': 'str',
@@ -89,7 +90,8 @@ class TrainingApiModelsDetailsOutputModel(object):
         'name': 'name',
         'node': 'node',
         'options': 'options',
-        'parent': 'parent',
+        'parent_full_name_list': 'parentFullNameList',
+        'parents': 'parents',
         'partition': 'partition',
         'started_at': 'startedAt',
         'status': 'status',
@@ -98,7 +100,7 @@ class TrainingApiModelsDetailsOutputModel(object):
         'zip': 'zip'
     }
 
-    def __init__(self, completed_at=None, condition_note=None, container_image=None, cpu=None, created_at=None, created_by=None, data_set=None, display_id=None, entry_point=None, execution_time=None, favorite=None, full_name=None, git_model=None, gpu=None, id=None, key=None, log_summary=None, memo=None, memory=None, modified_at=None, modified_by=None, name=None, node=None, options=None, parent=None, partition=None, started_at=None, status=None, status_type=None, waiting_time=None, zip=None):  # noqa: E501
+    def __init__(self, completed_at=None, condition_note=None, container_image=None, cpu=None, created_at=None, created_by=None, data_set=None, display_id=None, entry_point=None, execution_time=None, favorite=None, full_name=None, git_model=None, gpu=None, id=None, key=None, log_summary=None, memo=None, memory=None, modified_at=None, modified_by=None, name=None, node=None, options=None, parent_full_name_list=None, parents=None, partition=None, started_at=None, status=None, status_type=None, waiting_time=None, zip=None):  # noqa: E501
         """TrainingApiModelsDetailsOutputModel - a model defined in Swagger"""  # noqa: E501
 
         self._completed_at = None
@@ -125,7 +127,8 @@ class TrainingApiModelsDetailsOutputModel(object):
         self._name = None
         self._node = None
         self._options = None
-        self._parent = None
+        self._parent_full_name_list = None
+        self._parents = None
         self._partition = None
         self._started_at = None
         self._status = None
@@ -182,8 +185,10 @@ class TrainingApiModelsDetailsOutputModel(object):
             self.node = node
         if options is not None:
             self.options = options
-        if parent is not None:
-            self.parent = parent
+        if parent_full_name_list is not None:
+            self.parent_full_name_list = parent_full_name_list
+        if parents is not None:
+            self.parents = parents
         if partition is not None:
             self.partition = partition
         if started_at is not None:
@@ -702,25 +707,46 @@ class TrainingApiModelsDetailsOutputModel(object):
         self._options = options
 
     @property
-    def parent(self):
-        """Gets the parent of this TrainingApiModelsDetailsOutputModel.  # noqa: E501
+    def parent_full_name_list(self):
+        """Gets the parent_full_name_list of this TrainingApiModelsDetailsOutputModel.  # noqa: E501
 
 
-        :return: The parent of this TrainingApiModelsDetailsOutputModel.  # noqa: E501
-        :rtype: TrainingApiModelsSimpleOutputModel
+        :return: The parent_full_name_list of this TrainingApiModelsDetailsOutputModel.  # noqa: E501
+        :rtype: list[str]
         """
-        return self._parent
+        return self._parent_full_name_list
 
-    @parent.setter
-    def parent(self, parent):
-        """Sets the parent of this TrainingApiModelsDetailsOutputModel.
+    @parent_full_name_list.setter
+    def parent_full_name_list(self, parent_full_name_list):
+        """Sets the parent_full_name_list of this TrainingApiModelsDetailsOutputModel.
 
 
-        :param parent: The parent of this TrainingApiModelsDetailsOutputModel.  # noqa: E501
-        :type: TrainingApiModelsSimpleOutputModel
+        :param parent_full_name_list: The parent_full_name_list of this TrainingApiModelsDetailsOutputModel.  # noqa: E501
+        :type: list[str]
         """
 
-        self._parent = parent
+        self._parent_full_name_list = parent_full_name_list
+
+    @property
+    def parents(self):
+        """Gets the parents of this TrainingApiModelsDetailsOutputModel.  # noqa: E501
+
+
+        :return: The parents of this TrainingApiModelsDetailsOutputModel.  # noqa: E501
+        :rtype: list[TrainingApiModelsSimpleOutputModel]
+        """
+        return self._parents
+
+    @parents.setter
+    def parents(self, parents):
+        """Sets the parents of this TrainingApiModelsDetailsOutputModel.
+
+
+        :param parents: The parents of this TrainingApiModelsDetailsOutputModel.  # noqa: E501
+        :type: list[TrainingApiModelsSimpleOutputModel]
+        """
+
+        self._parents = parents
 
     @property
     def partition(self):
