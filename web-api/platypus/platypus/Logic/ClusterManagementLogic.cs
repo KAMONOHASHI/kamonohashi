@@ -516,7 +516,7 @@ namespace Nssol.Platypus.Logic
             {
                 if (trainHistory.ParentMaps.Count() > 1)
                 {
-                    // 親学習が複数の場合、/kqi/parent/{parentId}にマウントする
+                    // 親が複数の場合、/kqi/parent/{parentId}にマウントする
                     foreach (var parentMap in trainHistory.ParentMaps)
                     {
                         inputModel.NfsVolumeMounts.Add(new NfsVolumeMountModel()
@@ -530,9 +530,9 @@ namespace Nssol.Platypus.Logic
                         });
                     }
                 }
-                else
+                else if(trainHistory.ParentMaps.Count() == 1)
                 {
-                    // 親学習が1件のみの場合、過去の再現性を担保するため、/kqi/parent直下にマウントする
+                    // 親が1件のみの場合、過去の再現性を担保するため、/kqi/parent直下にマウントする
                     inputModel.NfsVolumeMounts.Add(new NfsVolumeMountModel()
                     {
                         Name = "nfs-parent",
@@ -716,7 +716,7 @@ namespace Nssol.Platypus.Logic
                         });
                     }
                 }
-                else
+                else if (inferenceHistory.ParentMaps.Count() == 1)
                 {
                     // 親ジョブが1件のみの場合、過去の再現性を担保するため/kqi/parent直下にマウントする
                     inputModel.NfsVolumeMounts.Add(new NfsVolumeMountModel()
