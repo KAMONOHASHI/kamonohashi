@@ -47,6 +47,18 @@
         <el-table-column prop="id" label="ID" width="120px" />
         <el-table-column prop="name" label="学習名" width="120px" />
         <el-table-column prop="createdAt" label="開始日時" width="200px" />
+        <el-table-column label="マウントした学習" width="200px">
+          <template slot-scope="scope">
+            <span
+              v-for="(ParentName, index) in scope.row.parentFullNameList"
+              :key="index"
+            >
+              <span class="parent">
+                {{ ParentName }}
+              </span>
+            </span>
+          </template>
+        </el-table-column>
         <el-table-column
           prop="dataSet.name"
           label="データセット"
@@ -277,5 +289,9 @@ export default {
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   display: -webkit-box;
+}
+
+.parent {
+  margin-right: 5px;
 }
 </style>

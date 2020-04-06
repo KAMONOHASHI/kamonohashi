@@ -54,7 +54,9 @@
               v-for="(ParentName, index) in scope.row.parentFullNameList"
               :key="index"
             >
-              {{ ParentName }}
+              <span class="parent">
+                {{ ParentName }}
+              </span>
             </span>
           </template>
         </el-table-column>
@@ -295,6 +297,10 @@ export default {
 
 .favorite {
   color: rgb(230, 162, 60);
+}
+
+.parent {
+  margin-right: 5px;
 }
 </style>
 
