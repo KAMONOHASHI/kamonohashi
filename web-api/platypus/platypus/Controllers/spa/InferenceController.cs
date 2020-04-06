@@ -188,7 +188,7 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 if (filter.ParentName.StartsWith("!"))
                 {
-                    data = data.Where(d => d.ParentMaps == null || d.ParentMaps.Count == 0 || d.ParentMaps.Any(m => m.Parent == null || string.IsNullOrEmpty(m.Parent.Name) || m.Parent.Name.Contains(filter.ParentName.Substring(1)) == false));
+                    data = data.Where(d => d.ParentMaps == null || d.ParentMaps.Count == 0 || d.ParentMaps.All(m => m.Parent.Name.Contains(filter.ParentName.Substring(1)) == false));
                 }
                 else
                 {
