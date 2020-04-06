@@ -168,26 +168,76 @@ namespace Nssol.Platypus.Controllers.spa
                 .SearchString(d => d.EntryPoint, filter.EntryPoint)
                 .SearchString(d => d.GetStatus().ToString(), filter.Status);
 
+            // データセット名の検索
             if (string.IsNullOrEmpty(filter.DataSet) == false)
             {
-                if (filter.DataSet.StartsWith("!"))
+                if (filter.DataSet.StartsWith("!", StringComparison.CurrentCulture))
                 {
-                    data = data.Where(d => d.DataSet != null && d.DataSet.Name != null && d.DataSet.Name.Contains(filter.DataSet.Substring(1)) == false);
+                    data = data.Where(d => d.DataSet != null && d.DataSet.Name != null && d.DataSet.Name.Contains(filter.DataSet.Substring(1), StringComparison.CurrentCulture) == false);
                 }
                 else
                 {
-                    data = data.Where(d => d.DataSet != null && d.DataSet.Name != null && d.DataSet.Name.Contains(filter.DataSet));
+                    data = data.Where(d => d.DataSet != null && d.DataSet.Name != null && d.DataSet.Name.Contains(filter.DataSet, StringComparison.CurrentCulture));
                 }
             }
-            if (string.IsNullOrEmpty(filter.ParentName) == false)
+
+            // 親学習IDの検索
+            if (string.IsNullOrEmpty(filter.ParentId) == false)
             {
-                if (filter.ParentName.StartsWith("!"))
+                if (filter.ParentId.StartsWith(">=", StringComparison.CurrentCulture))
                 {
-                    data = data.Where(d => d.ParentMaps == null || d.ParentMaps.Count == 0 || d.ParentMaps.All(m => m.Parent.Name.Contains(filter.ParentName.Substring(1)) == false));
+                    if (long.TryParse(filter.ParentId.Substring(2), out long target))
+                    {
+                        data = data.Where(d => d.ParentMaps != null && d.ParentMaps.Any(m => m.ParentId >= target));
+                    }
+                }
+                else if (filter.ParentId.StartsWith(">", StringComparison.CurrentCulture))
+                {
+                    if (long.TryParse(filter.ParentId.Substring(1), out long target))
+                    {
+                        data = data.Where(d => d.ParentMaps != null && d.ParentMaps.Any(m => m.ParentId > target));
+                    }
+                }
+                else if (filter.ParentId.StartsWith("<=", StringComparison.CurrentCulture))
+                {
+                    if (long.TryParse(filter.ParentId.Substring(2), out long target))
+                    {
+                        data = data.Where(d => d.ParentMaps != null && d.ParentMaps.Any(m => m.ParentId <= target));
+                    }
+                }
+                else if (filter.ParentId.StartsWith("<", StringComparison.CurrentCulture))
+                {
+                    if (long.TryParse(filter.ParentId.Substring(1), out long target))
+                    {
+                        data = data.Where(d => d.ParentMaps != null && d.ParentMaps.Any(m => m.ParentId < target));
+                    }
+                }
+                else if (filter.ParentId.StartsWith("=", StringComparison.CurrentCulture))
+                {
+                    if (long.TryParse(filter.ParentId.Substring(1), out long target))
+                    {
+                        data = data.Where(d => d.ParentMaps != null && d.ParentMaps.Any(m => m.ParentId == target));
+                    }
                 }
                 else
                 {
-                    data = data.Where(d => d.ParentMaps != null && d.ParentMaps.Any(m => m.Parent != null && m.Parent.Name != null && m.Parent.Name.Contains(filter.ParentName)));
+                    if (long.TryParse(filter.ParentId, out long target))
+                    {
+                        data = data.Where(d => d.ParentMaps != null && d.ParentMaps.Any(m => m.ParentId == target));
+                    }
+                }
+            }
+
+            // 親学習名の検索
+            if (string.IsNullOrEmpty(filter.ParentName) == false)
+            {
+                if (filter.ParentName.StartsWith("!", StringComparison.CurrentCulture))
+                {
+                    data = data.Where(d => d.ParentMaps == null || d.ParentMaps.Count == 0 || d.ParentMaps.All(m => m.Parent.Name.Contains(filter.ParentName.Substring(1), StringComparison.CurrentCulture) == false));
+                }
+                else
+                {
+                    data = data.Where(d => d.ParentMaps != null && d.ParentMaps.Any(m => m.Parent.Name.Contains(filter.ParentName, StringComparison.CurrentCulture)));
                 }
             }
             return data;
@@ -527,10 +577,10 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             // 検索path文字列の先頭・末尾が/でない場合はつける
-            if (!path.StartsWith("/")) {
+            if (!path.StartsWith("/", StringComparison.CurrentCulture)) {
                 path = "/" + path;
             }
-            if (!path.EndsWith("/")) {
+            if (!path.EndsWith("/", StringComparison.CurrentCulture)) {
                 path = path + "/";
             }
 
@@ -693,7 +743,7 @@ namespace Nssol.Platypus.Controllers.spa
             if (result == null || result.Status.Succeed() == false)
             {
                 //起動に失敗した場合、ステータス Failed で返す。
-                return JsonError(System.Net.HttpStatusCode.ServiceUnavailable, $"Failed to run tensorboard container: {result.Status}");
+                return JsonError(HttpStatusCode.ServiceUnavailable, $"Failed to run tensorboard container: {result.Status}");
             }
 
             container = new TensorBoardContainer()

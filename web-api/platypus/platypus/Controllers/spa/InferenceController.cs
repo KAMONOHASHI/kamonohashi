@@ -12,6 +12,7 @@ using Nssol.Platypus.Infrastructure.Infos;
 using Nssol.Platypus.Infrastructure.Types;
 using Nssol.Platypus.Logic.Interfaces;
 using Nssol.Platypus.Models.TenantModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -173,26 +174,76 @@ namespace Nssol.Platypus.Controllers.spa
                 .SearchString(d => d.EntryPoint, filter.EntryPoint)
                 .SearchString(d => d.GetStatus().ToString(), filter.Status);
 
+            // データセット名の検索
             if (string.IsNullOrEmpty(filter.DataSet) == false)
             {
-                if (filter.DataSet.StartsWith("!"))
+                if (filter.DataSet.StartsWith("!", StringComparison.CurrentCulture))
                 {
-                    data = data.Where(d => d.DataSet != null && d.DataSet.Name != null && d.DataSet.Name.Contains(filter.DataSet.Substring(1)) == false);
+                    data = data.Where(d => d.DataSet != null && d.DataSet.Name != null && d.DataSet.Name.Contains(filter.DataSet.Substring(1), StringComparison.CurrentCulture) == false);
                 }
                 else
                 {
-                    data = data.Where(d => d.DataSet != null && d.DataSet.Name != null && d.DataSet.Name.Contains(filter.DataSet));
+                    data = data.Where(d => d.DataSet != null && d.DataSet.Name != null && d.DataSet.Name.Contains(filter.DataSet, StringComparison.CurrentCulture));
                 }
             }
-            if (string.IsNullOrEmpty(filter.ParentName) == false)
+
+            // マウントした学習IDの検索
+            if (string.IsNullOrEmpty(filter.ParentId) == false)
             {
-                if (filter.ParentName.StartsWith("!"))
+                if (filter.ParentId.StartsWith(">=", StringComparison.CurrentCulture))
                 {
-                    data = data.Where(d => d.ParentMaps == null || d.ParentMaps.Count == 0 || d.ParentMaps.All(m => m.Parent.Name.Contains(filter.ParentName.Substring(1)) == false));
+                    if (long.TryParse(filter.ParentId.Substring(2), out long target))
+                    {
+                        data = data.Where(d => d.ParentMaps != null && d.ParentMaps.Any(m => m.ParentId >= target));
+                    }
+                }
+                else if (filter.ParentId.StartsWith(">", StringComparison.CurrentCulture))
+                {
+                    if (long.TryParse(filter.ParentId.Substring(1), out long target))
+                    {
+                        data = data.Where(d => d.ParentMaps != null && d.ParentMaps.Any(m => m.ParentId > target));
+                    }
+                }
+                else if (filter.ParentId.StartsWith("<=", StringComparison.CurrentCulture))
+                {
+                    if (long.TryParse(filter.ParentId.Substring(2), out long target))
+                    {
+                        data = data.Where(d => d.ParentMaps != null && d.ParentMaps.Any(m => m.ParentId <= target));
+                    }
+                }
+                else if (filter.ParentId.StartsWith("<", StringComparison.CurrentCulture))
+                {
+                    if (long.TryParse(filter.ParentId.Substring(1), out long target))
+                    {
+                        data = data.Where(d => d.ParentMaps != null && d.ParentMaps.Any(m => m.ParentId < target));
+                    }
+                }
+                else if (filter.ParentId.StartsWith("=", StringComparison.CurrentCulture))
+                {
+                    if (long.TryParse(filter.ParentId.Substring(1), out long target))
+                    {
+                        data = data.Where(d => d.ParentMaps != null && d.ParentMaps.Any(m => m.ParentId == target));
+                    }
                 }
                 else
                 {
-                    data = data.Where(d => d.ParentMaps != null && d.ParentMaps.Any(m => m.Parent != null && m.Parent.Name != null && m.Parent.Name.Contains(filter.ParentName)));
+                    if (long.TryParse(filter.ParentId, out long target))
+                    {
+                        data = data.Where(d => d.ParentMaps != null && d.ParentMaps.Any(m => m.ParentId == target));
+                    }
+                }
+            }
+
+            // マウントした学習名の検索
+            if (string.IsNullOrEmpty(filter.ParentName) == false)
+            {
+                if (filter.ParentName.StartsWith("!", StringComparison.CurrentCulture))
+                {
+                    data = data.Where(d => d.ParentMaps == null || d.ParentMaps.Count == 0 || d.ParentMaps.All(m => m.Parent.Name.Contains(filter.ParentName.Substring(1), StringComparison.CurrentCulture) == false));
+                }
+                else
+                {
+                    data = data.Where(d => d.ParentMaps != null && d.ParentMaps.Any(m => m.Parent.Name.Contains(filter.ParentName, StringComparison.CurrentCulture)));
                 }
             }
             return data;
