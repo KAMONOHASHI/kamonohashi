@@ -132,6 +132,17 @@
               </el-row>
             </div>
           </el-form-item>
+          <el-form-item v-if="detail.ports" label="開放ポート番号">
+            <div class="el-input">
+              <span
+                v-for="port in detail.ports"
+                :key="port"
+                style="margin: 0 5px"
+              >
+                {{ port }}
+              </span>
+            </div>
+          </el-form-item>
 
           <kqi-display-text-form label="実行者" :value="detail.createdBy" />
           <kqi-display-text-form label="開始日時" :value="detail.createdAt" />
@@ -201,6 +212,26 @@
                 <div class="el-input" style="padding: 10px 0;">
                   <el-button @click="emitShell">Shell起動</el-button>
                 </div>
+                <el-form-item label="コンテナアクセス">
+                  <el-table :data="detail.nodePorts" stripe style="width: 100%">
+                    <el-table-column prop="key" label="Target Port" width="100">
+                    </el-table-column>
+                    <el-table-column prop="value" label="Node Port">
+                      <template slot-scope="scope">
+                        {{ scope.row.value }}
+                        <el-tooltip content="copy" placement="right">
+                          <el-button
+                            v-clipboard:copy="scope.row.value"
+                            circle
+                            size="mini"
+                            icon="el-icon-copy-document"
+                          >
+                          </el-button>
+                        </el-tooltip>
+                      </template>
+                    </el-table-column>
+                  </el-table>
+                </el-form-item>
               </div>
             </el-form-item>
           </div>
@@ -209,15 +240,6 @@
               :id="String(detail.id)"
               :visible="dialogVisible"
             />
-          </el-form-item>
-
-          <el-form-item label="コンテナアクセス">
-            <el-table :data="detail.nodePorts" stripe style="width: 100%">
-              <el-table-column prop="key" label="Target Port" width="180">
-              </el-table-column>
-              <el-table-column prop="value" label="Node Port" width="180">
-              </el-table-column>
-            </el-table>
           </el-form-item>
 
           <el-form-item label="コンテナ出力ファイル">
@@ -347,7 +369,6 @@ export default {
     },
     async retrieveData() {
       await this.fetchDetail(this.id)
-      console.log(this.detail)
       await this.fetchUploadedFiles(this.detail.id)
       if (
         this.detail.statusType === 'Running' ||
