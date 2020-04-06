@@ -202,15 +202,16 @@ namespace Nssol.Platypus.Controllers.spa
             // SQLが多重実行されることを防ぐため、ToListで即時発行させたうえで、結果を生成
             return JsonOK(data.ToList().Select(history => GetUpdatedIndexOutputModelAsync(history).Result));
         }
-        
         /// <summary>
         /// 指定されたIDの学習履歴の詳細情報を取得。
         /// </summary>
         /// <param name="id">学習履歴ID</param>
+        /// <param name="options">DI用</param>
+        /// 
         [HttpGet("{id}")]
         [Filters.PermissionFilter(MenuCode.Training, MenuCode.Inference)]
         [ProducesResponseType(typeof(DetailsOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetDetail(long? id)
+        public async Task<IActionResult> GetDetail(long? id, [FromServices] IOptions<ContainerManageOptions> options)
         {
             if(id == null)
             {
@@ -242,8 +243,11 @@ namespace Nssol.Platypus.Controllers.spa
                 {
                     foreach (var endpoint in details.EndPoints)
                     {
-                        model.NodePorts.Add(new KeyValuePair<int, int>(int.Parse(endpoint.Key), endpoint.Port));
-                    }                    
+                        //リバプロなどでノードのホスト名ではなく、共通のエンドポイントを使える場合は、そっちを使う
+                        string host = string.IsNullOrEmpty(options.Value.WebEndPoint) ? endpoint.Host : options.Value.WebEndPoint;
+                        string url = host + ":" + endpoint.Port.ToString();
+                        model.NodePorts.Add(new KeyValuePair<int, string>(int.Parse(endpoint.Key), url));
+                    }
                 }
             }
 
