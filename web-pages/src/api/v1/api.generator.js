@@ -2735,7 +2735,7 @@ export const ApiV1InferencesByIdEventsGetURL = function(parameters = {}) {
  * url: ApiV1InferencesRunPostURL
  * method: ApiV1InferencesRunPost_TYPE
  * raw_url: ApiV1InferencesRunPost_RAW_URL
- * @param model - 
+ * @param model - 新規推論実行内容
  */
 export const ApiV1InferencesRunPost = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -7706,7 +7706,7 @@ export const ApiV1TrainingByIdEventsGetURL = function(parameters = {}) {
  * url: ApiV1TrainingRunPostURL
  * method: ApiV1TrainingRunPost_TYPE
  * raw_url: ApiV1TrainingRunPost_RAW_URL
- * @param model - 
+ * @param model - 新規学習実行内容
  */
 export const ApiV1TrainingRunPost = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
