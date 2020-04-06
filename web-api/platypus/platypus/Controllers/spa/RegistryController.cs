@@ -65,7 +65,7 @@ namespace Nssol.Platypus.Controllers.spa
         public IActionResult GetAllTypes()
         {
             var registryTypes = Enum.GetValues(typeof(RegistryServiceType)) as RegistryServiceType[];
-            //Noneは除外して返却
+            // Noneは除外して返却
             return JsonOK(registryTypes.Where(r => r != RegistryServiceType.None).Select(r => new EnumInfo() { Id = (int)r, Name = r.ToString() }));
         }
 
@@ -102,13 +102,13 @@ namespace Nssol.Platypus.Controllers.spa
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.Created)]
         public IActionResult Create([FromBody]CreateInputModel model)
         {
-            //データの入力チェック
+            // データの入力チェック
             if (!ModelState.IsValid)
             {
                 return JsonBadRequest("Invalid inputs.");
             }
 
-            //同じ名前のレジストリは登録できないので、確認する
+            // 同じ名前のレジストリは登録できないので、確認する
             var registry = registryRepository.GetRegistryAll().FirstOrDefault(r => r.Name == model.Name);
             if (registry != null)
             {
@@ -143,24 +143,26 @@ namespace Nssol.Platypus.Controllers.spa
         public async Task<IActionResult> Edit(long? id, [FromBody]CreateInputModel model, //EditとCreateで項目が同じなので、入力モデルを使いまわし
             [FromServices] IClusterManagementLogic clusterManagementLogic)
         {
-            //データの入力チェック
+            // データの入力チェック
             if (!ModelState.IsValid || !id.HasValue)
             {
                 return JsonBadRequest("Invalid inputs.");
             }
-            //データの存在チェック
+
+            // データの存在チェック
             var registry = await registryRepository.GetByIdAsync(id.Value);
             if (registry == null)
             {
                 return JsonNotFound($"Registry ID {id.Value} is not found.");
             }
-            //データの編集可否チェック
+
+            // データの編集可否チェック
             if (registry.IsNotEditable)
             {
                 return JsonBadRequest($"Registry ID {id.Value} is not allowed to edit.");
             }
 
-            //同じ名前のレジストリは登録できないので、自分の他に同名の物がいないか、確認する
+            // 同じ名前のレジストリは登録できないので、自分の他に同名の物がいないか、確認する
             var otherRegistry = registryRepository.GetRegistryAll().FirstOrDefault(r => r.Name == model.Name && r.Id != id);
             if (otherRegistry != null)
             {
@@ -189,39 +191,65 @@ namespace Nssol.Platypus.Controllers.spa
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         public async Task<IActionResult> Delete(long? id,
             [FromServices] IClusterManagementLogic clusterManagementLogic,
-            [FromServices] DataAccess.Repositories.Interfaces.TenantRepositories.ITrainingHistoryRepository trainingHistoryRepository)
+            [FromServices] DataAccess.Repositories.Interfaces.TenantRepositories.IPreprocessRepository preprocessRepository,
+            [FromServices] DataAccess.Repositories.Interfaces.TenantRepositories.INotebookHistoryRepository notebookHistoryRepository,
+            [FromServices] DataAccess.Repositories.Interfaces.TenantRepositories.ITrainingHistoryRepository trainingHistoryRepository,
+            [FromServices] DataAccess.Repositories.Interfaces.TenantRepositories.IInferenceHistoryRepository inferenceHistoryRepository
+            )
         {
-            //データの入力チェック
+            // データの入力チェック
             if (id == null)
             {
                 return JsonBadRequest("Invalid inputs.");
             }
-            //データの存在チェック
+
+            // データの存在チェック
             var registry = await registryRepository.GetByIdAsync(id.Value);
             if (registry == null)
             {
                 return JsonNotFound($"Registry ID {id.Value} is not found.");
             }
-            //データの編集可否チェック
+
+            // データの編集可否チェック
             if (registry.IsNotEditable)
             {
                 return JsonBadRequest($"Registry ID {id.Value} is not allowed to delete.");
             }
 
-            //このレジストリを登録しているテナントがいた場合、削除はできない
+            // このレジストリを登録しているテナントがいた場合、削除はできない
             var tenant = registryRepository.GetTenant(registry.Id);
             if (tenant != null)
             {
                 return JsonConflict($"Registry {registry.Id}:{registry.Name} is used at Tenant {tenant.Id}:{tenant.Name}.");
             }
-            //このレジストリを使った履歴がある場合、削除はできない
+
+            // このレジストリを使った履歴がある場合、削除はできない
+            // 前処理
+            var preprocessing = preprocessRepository.Find(p => p.ContainerRegistryId == registry.Id);
+            if (preprocessing != null)
+            {
+                return JsonConflict($"Registry {registry.Id}:{registry.Name} is used at preprocessing {preprocessing.Id} in Tenant {preprocessing.TenantId}.");
+            }
+            // ノートブック
+            var notebook = notebookHistoryRepository.Find(n => n.ContainerRegistryId == registry.Id);
+            if (notebook != null)
+            {
+                return JsonConflict($"Registry {registry.Id}:{registry.Name} is used at notebook {notebook.Id} in Tenant {notebook.TenantId}.");
+            }
+            // 学習
             var training = trainingHistoryRepository.Find(t => t.ContainerRegistryId == registry.Id);
             if (training != null)
             {
                 return JsonConflict($"Registry {registry.Id}:{registry.Name} is used at training {training.Id} in Tenant {training.TenantId}.");
             }
+            // 推論
+            var inference = inferenceHistoryRepository.Find(i => i.ContainerRegistryId == registry.Id);
+            if (inference != null)
+            {
+                return JsonConflict($"Registry {registry.Id}:{registry.Name} is used at inference {inference.Id} in Tenant {inference.TenantId}.");
+            }
 
-            //クラスタ管理サービス側の登録情報は特に削除しない（残っていても問題ない）
+            // クラスタ管理サービス側の登録情報は特に削除しない（残っていても問題ない）
             registryRepository.Delete(registry);
             unitOfWork.Commit();
 
@@ -328,13 +356,13 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonNotFound();
             }
 
-            //最後がtagsでなければならない
+            // 最後がtagsでなければならない
             if(segmentsArray[segmentsArray.Length - 1] != "tags")
             {
                 return JsonNotFound();
             }
 
-            //それ以外がイメージ名
+            // それ以外がイメージ名
             string image = string.Join("/", segmentsArray.Take(segmentsArray.Length - 1));
 
             return await GetTagsAsync(registryId, image);
