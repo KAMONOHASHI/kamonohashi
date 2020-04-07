@@ -4,6 +4,7 @@ using Nssol.Platypus.ApiModels.RegistryApiModels;
 using Nssol.Platypus.Controllers.Util;
 using Nssol.Platypus.DataAccess.Core;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces;
+using Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories;
 using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Infrastructure.Infos;
 using Nssol.Platypus.Infrastructure.Types;
@@ -24,23 +25,22 @@ namespace Nssol.Platypus.Controllers.spa
     public class RegistryController : PlatypusApiControllerBase
     {
         private readonly IRegistryLogic registryLogic;
-        private readonly ITenantRepository tenantRepository;
         private readonly IRegistryRepository registryRepository;
         private readonly IUnitOfWork unitOfWork;
 
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
         public RegistryController(
             IRegistryLogic registryLogic,
-            ITenantRepository tenantRepository,
             IRegistryRepository registryRepository,
             IUnitOfWork unitOfWork,
             IHttpContextAccessor accessor) : base(accessor)
         {
             this.registryLogic = registryLogic;
-            this.tenantRepository = tenantRepository;
             this.registryRepository = registryRepository;
             this.unitOfWork = unitOfWork;
         }
-
 
         #region レジストリ登録
         /// <summary>
@@ -72,7 +72,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 指定されたIDのDockerレジストリ エンドポイント情報を取得
         /// </summary>
-        /// <param name="id">GitエンドポイントID</param>
+        /// <param name="id">レジストリID</param>
         [HttpGet("endpoints/{id}")]
         [Filters.PermissionFilter(MenuCode.Registry)]
         [ProducesResponseType(typeof(DetailsOutputModel), (int)HttpStatusCode.OK)]
@@ -97,6 +97,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 新規にDockerレジストリ エンドポイントを登録する
         /// </summary>
+        /// <param name="model">新規作成モデル</param>
         [HttpPost("endpoints")]
         [Filters.PermissionFilter(MenuCode.Registry)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.Created)]
@@ -137,11 +138,12 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// Dockerレジストリ エンドポイント情報の編集
         /// </summary>
+        /// <param name="id">編集対象レジストリID</param>
+        /// <param name="model">編集モデル</param>
         [HttpPut("endpoints/{id}")]
         [Filters.PermissionFilter(MenuCode.Registry)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> Edit(long? id, [FromBody]CreateInputModel model, //EditとCreateで項目が同じなので、入力モデルを使いまわし
-            [FromServices] IClusterManagementLogic clusterManagementLogic)
+        public async Task<IActionResult> Edit(long? id, [FromBody]CreateInputModel model) //EditとCreateで項目が同じなので、入力モデルを使いまわし
         {
             // データの入力チェック
             if (!ModelState.IsValid || !id.HasValue)
@@ -186,15 +188,19 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// Dockerレジストリ エンドポイント情報の削除
         /// </summary>
+        /// <param name="id">削除対象レジストリID</param>
+        /// <param name="preprocessRepository">DI用</param>
+        /// <param name="notebookHistoryRepository">DI用</param>
+        /// <param name="trainingHistoryRepository">DI用</param>
+        /// <param name="inferenceHistoryRepository">DI用</param>
         [HttpDelete("endpoints/{id}")]
         [Filters.PermissionFilter(MenuCode.Registry)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         public async Task<IActionResult> Delete(long? id,
-            [FromServices] IClusterManagementLogic clusterManagementLogic,
-            [FromServices] DataAccess.Repositories.Interfaces.TenantRepositories.IPreprocessRepository preprocessRepository,
-            [FromServices] DataAccess.Repositories.Interfaces.TenantRepositories.INotebookHistoryRepository notebookHistoryRepository,
-            [FromServices] DataAccess.Repositories.Interfaces.TenantRepositories.ITrainingHistoryRepository trainingHistoryRepository,
-            [FromServices] DataAccess.Repositories.Interfaces.TenantRepositories.IInferenceHistoryRepository inferenceHistoryRepository
+            [FromServices] IPreprocessRepository preprocessRepository,
+            [FromServices] INotebookHistoryRepository notebookHistoryRepository,
+            [FromServices] ITrainingHistoryRepository trainingHistoryRepository,
+            [FromServices] IInferenceHistoryRepository inferenceHistoryRepository
             )
         {
             // データの入力チェック
@@ -224,25 +230,25 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             // このレジストリを使った履歴がある場合、削除はできない
-            // 前処理
+            // 前処理チェック
             var preprocessing = preprocessRepository.Find(p => p.ContainerRegistryId == registry.Id);
             if (preprocessing != null)
             {
                 return JsonConflict($"Registry {registry.Id}:{registry.Name} is used at preprocessing {preprocessing.Id} in Tenant {preprocessing.TenantId}.");
             }
-            // ノートブック
+            // ノートブック履歴チェック
             var notebook = notebookHistoryRepository.Find(n => n.ContainerRegistryId == registry.Id);
             if (notebook != null)
             {
                 return JsonConflict($"Registry {registry.Id}:{registry.Name} is used at notebook {notebook.Id} in Tenant {notebook.TenantId}.");
             }
-            // 学習
+            // 学習履歴チェック
             var training = trainingHistoryRepository.Find(t => t.ContainerRegistryId == registry.Id);
             if (training != null)
             {
                 return JsonConflict($"Registry {registry.Id}:{registry.Name} is used at training {training.Id} in Tenant {training.TenantId}.");
             }
-            // 推論
+            // 推論履歴チェック
             var inference = inferenceHistoryRepository.Find(i => i.ContainerRegistryId == registry.Id);
             if (inference != null)
             {

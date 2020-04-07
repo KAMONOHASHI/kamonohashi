@@ -4,6 +4,7 @@ using Nssol.Platypus.ApiModels.GitApiModels;
 using Nssol.Platypus.Controllers.Util;
 using Nssol.Platypus.DataAccess.Core;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces;
+using Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories;
 using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Infrastructure.Infos;
 using Nssol.Platypus.Infrastructure.Types;
@@ -24,19 +25,19 @@ namespace Nssol.Platypus.Controllers.spa
     public class GitController : PlatypusApiControllerBase
     {
         private readonly IGitLogic gitLogic;
-        private readonly ITenantRepository tenantRepository;
         private readonly IGitRepository gitRepository;
         private readonly IUnitOfWork unitOfWork;
 
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
         public GitController(
             IGitLogic gitLogic,
-            ITenantRepository tenantRepository,
             IGitRepository gitRepository,
             IUnitOfWork unitOfWork,
             IHttpContextAccessor accessor) : base(accessor)
         {
             this.gitLogic = gitLogic;
-            this.tenantRepository = tenantRepository;
             this.gitRepository = gitRepository;
             this.unitOfWork = unitOfWork;
         }
@@ -96,6 +97,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 新規にGitエンドポイントを登録する
         /// </summary>
+        /// <param name="model">新規作成モデル</param>
         [HttpPost("/api/v1/admin/git/endpoints")]
         [Filters.PermissionFilter(MenuCode.Git)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.Created)]
@@ -126,6 +128,8 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// Gitエンドポイント情報の編集
         /// </summary>
+        /// <param name="id">編集対象GitID</param>
+        /// <param name="model">編集モデル</param>
         [HttpPut("/api/v1/admin/git/endpoints/{id}")]
         [Filters.PermissionFilter(MenuCode.Git)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.OK)]
@@ -162,14 +166,19 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// Gitエンドポイント情報の削除
         /// </summary>
+        /// <param name="id">削除対象GitID</param>
+        /// <param name="preprocessRepository">DI用</param>
+        /// <param name="notebookHistoryRepository">DI用</param>
+        /// <param name="trainingHistoryRepository">DI用</param>
+        /// <param name="inferenceHistoryRepository">DI用</param>
         [HttpDelete("/api/v1/admin/git/endpoints/{id}")]
         [Filters.PermissionFilter(MenuCode.Git)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         public async Task<IActionResult> Delete(long? id,
-            [FromServices] DataAccess.Repositories.Interfaces.TenantRepositories.IPreprocessRepository preprocessRepository,
-            [FromServices] DataAccess.Repositories.Interfaces.TenantRepositories.INotebookHistoryRepository notebookHistoryRepository,
-            [FromServices] DataAccess.Repositories.Interfaces.TenantRepositories.ITrainingHistoryRepository trainingHistoryRepository,
-            [FromServices] DataAccess.Repositories.Interfaces.TenantRepositories.IInferenceHistoryRepository inferenceHistoryRepository
+            [FromServices] IPreprocessRepository preprocessRepository,
+            [FromServices] INotebookHistoryRepository notebookHistoryRepository,
+            [FromServices] ITrainingHistoryRepository trainingHistoryRepository,
+            [FromServices] IInferenceHistoryRepository inferenceHistoryRepository
             )
         {
             // データの入力チェック
@@ -199,25 +208,25 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             // このGitを使った履歴がある場合、削除はできない
-            // 前処理
+            // 前処理チェック
             var preprocessing = preprocessRepository.Find(p => p.RepositoryGitId == git.Id);
             if (preprocessing != null)
             {
                 return JsonConflict($"Git {git.Id}:{git.Name} is used at preprocessing {preprocessing.Id} in Tenant {preprocessing.TenantId}.");
             }
-            // ノートブック
+            // ノートブック履歴チェック
             var notebook = notebookHistoryRepository.Find(n => n.ModelGitId == git.Id);
             if (notebook != null)
             {
                 return JsonConflict($"Git {git.Id}:{git.Name} is used at notebook {notebook.Id} in Tenant {notebook.TenantId}.");
             }
-            // 学習
+            // 学習履歴チェック
             var training = trainingHistoryRepository.Find(t => t.ModelGitId == git.Id);
             if (training != null)
             {
                 return JsonConflict($"Git {git.Id}:{git.Name} is used at training {training.Id} in Tenant {training.TenantId}.");
             }
-            // 推論
+            // 推論履歴チェック
             var inference = inferenceHistoryRepository.Find(i => i.ModelGitId == git.Id);
             if (inference != null)
             {
