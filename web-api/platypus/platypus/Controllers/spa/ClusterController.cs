@@ -73,7 +73,7 @@ namespace Nssol.Platypus.Controllers.spa
         [ProducesResponseType(typeof(IEnumerable<QuotaOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetQuotas([FromServices] ITenantRepository tenantRepository)
         {
-            var result = tenantRepository.GetAllTenants().Select(t => new QuotaOutputModel(t));
+            var result = tenantRepository.GetAllTenants().OrderBy(t => t.DisplayName).Select(t => new QuotaOutputModel(t));
             return JsonOK(result);
         }
 

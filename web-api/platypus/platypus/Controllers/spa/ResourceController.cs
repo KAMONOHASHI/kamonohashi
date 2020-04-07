@@ -59,7 +59,7 @@ namespace Nssol.Platypus.Controllers.spa
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<NodeResourceOutputModel>))]
         public async Task<IActionResult> GetResourceByNode([FromServices] INodeRepository nodeRepository)
         {
-            var nodes = nodeRepository.GetAll();
+            var nodes = nodeRepository.GetAll().OrderBy(n => n.Name);
             var nodeInfos = (await clusterManagementLogic.GetAllNodesAsync())?.ToList(); //Removeできるように、Listにしておく
             if(nodeInfos == null)
             {
@@ -120,6 +120,14 @@ namespace Nssol.Platypus.Controllers.spa
                         result.Add(container.NodeName, model);
                     }
                 }
+
+                foreach (var node in result.Values)
+                {
+                    // テナント名（表示名）を昇順で並び替える
+                    node.ContainerResourceList = node.ContainerResourceList.OrderBy(c => c.TenantName).ToList();
+                }
+
+
                 return JsonOK(result.Values);
             }
             else
@@ -137,7 +145,7 @@ namespace Nssol.Platypus.Controllers.spa
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<TenantResourceOutputModel>))]
         public async Task<IActionResult> GetResourceByTenant()
         {
-            var result = tenantRepository.GetAllTenants().ToDictionary(t => t.Name, t => new TenantResourceOutputModel(t));
+            var result = tenantRepository.GetAllTenants().OrderBy(t => t.DisplayName).ToDictionary(t => t.Name, t => new TenantResourceOutputModel(t));
             
             var response = await clusterManagementLogic.GetAllContainerDetailsInfosAsync();
             if (response.IsSuccess)
@@ -164,6 +172,12 @@ namespace Nssol.Platypus.Controllers.spa
                         result.Add(container.TenantName, unknownModel);
                     }
                 }
+                
+                foreach (var tenant in result.Values)
+                {
+                    // ノード名の昇順に並び替える
+                    tenant.ContainerResourceList = tenant.ContainerResourceList.OrderBy(c => c.NodeName).ToList();
+                }
                 return JsonOK(result.Values);
             }
             else
@@ -184,7 +198,8 @@ namespace Nssol.Platypus.Controllers.spa
             var result = await clusterManagementLogic.GetAllContainerDetailsInfosAsync();
             if (result.IsSuccess)
             {
-                return JsonOK(result.Value.Select(info => CreateContainerDetailsOutputModel(info)));
+                // ノード名（昇順）、テナント名（昇順）で並び替える
+                return JsonOK(result.Value.Select(info => CreateContainerDetailsOutputModel(info)).OrderBy(c => c.NodeName).ThenBy(c => c.TenantName));
             }
             else
             {
