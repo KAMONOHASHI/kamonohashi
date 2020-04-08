@@ -214,8 +214,11 @@
                 </div>
                 <el-form-item label="コンテナアクセス">
                   <el-table :data="detail.nodePorts" stripe style="width: 100%">
-                    <el-table-column prop="key" label="Target Port" width="100">
-                    </el-table-column>
+                    <el-table-column
+                      prop="key"
+                      label="Target Port"
+                      width="100px"
+                    />
                     <el-table-column prop="value" label="Node Port">
                       <template slot-scope="scope">
                         {{ scope.row.value }}
@@ -225,8 +228,7 @@
                             circle
                             size="mini"
                             icon="el-icon-copy-document"
-                          >
-                          </el-button>
+                          />
                         </el-tooltip>
                       </template>
                     </el-table-column>

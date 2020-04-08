@@ -54,7 +54,7 @@
             <kqi-resource-selector v-model="form.resource" />
 
             <kqi-environment-variables v-model="form.variables" />
-            <kqi-expose-ports v-model="form.ports"></kqi-expose-ports>
+            <kqi-expose-ports v-model="form.ports" />
             <el-form-item label="結果Zip圧縮">
               <el-switch
                 v-model="form.zip"
@@ -176,7 +176,7 @@
           >
             <el-col>
               <kqi-environment-variables v-model="form.variables" />
-              <kqi-expose-ports v-model="form.ports"></kqi-expose-ports>
+              <kqi-expose-ports v-model="form.ports" />
               <el-form-item label="結果Zip圧縮">
                 <el-switch
                   v-model="form.zip"

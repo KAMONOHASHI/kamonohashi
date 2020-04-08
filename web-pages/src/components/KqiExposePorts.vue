@@ -20,9 +20,9 @@
       @blur="handleInputConfirm"
     >
     </el-input>
-    <el-button v-else class="button-new-port" size="small" @click="showInput"
-      >+ Port</el-button
-    >
+    <el-button v-else class="button-new-port" size="small" @click="showInput">
+      + Port
+    </el-button>
   </el-form-item>
 </template>
 
