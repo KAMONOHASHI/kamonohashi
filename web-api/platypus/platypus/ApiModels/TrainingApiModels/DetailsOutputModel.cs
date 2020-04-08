@@ -21,7 +21,7 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
             Key = history.Key;
             Options = new List<KeyValuePair<string, string>>();
             Ports = new List<int>();
-            NodePorts = new List<KeyValuePair<int, string>>();
+            NodePorts = new List<KeyValuePair<string, string>>();
             GitModel = new GitCommitOutputModel()
             {
                 GitId = history.ModelGitId,
@@ -154,7 +154,7 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         /// <summary>
         /// TargetPort(int)とNodePort(host:portのstring)のペア
         /// </summary>
-        public List<KeyValuePair<int, string>> NodePorts { get; set; }
+        public List<KeyValuePair<string, string>> NodePorts { get; set; }
 
 
         /// <summary>

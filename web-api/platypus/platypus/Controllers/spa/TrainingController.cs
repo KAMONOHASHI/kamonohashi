@@ -246,7 +246,7 @@ namespace Nssol.Platypus.Controllers.spa
                         //リバプロなどでノードのホスト名ではなく、共通のエンドポイントを使える場合は、そっちを使う
                         string host = string.IsNullOrEmpty(options.Value.WebEndPoint) ? endpoint.Host : options.Value.WebEndPoint;
                         string url = host + ":" + endpoint.Port.ToString();
-                        model.NodePorts.Add(new KeyValuePair<int, string>(int.Parse(endpoint.Key), url));
+                        model.NodePorts.Add(new KeyValuePair<string, string>(endpoint.Key, url));
                     }
                 }
             }
