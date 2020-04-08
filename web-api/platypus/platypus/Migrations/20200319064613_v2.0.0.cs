@@ -148,6 +148,12 @@ namespace Nssol.Platypus.Migrations
             migrationBuilder.DropColumn(
                 name: "ParentId",
                 table: "InferenceHistories");
+
+            // 開放ポート番号保持用カラム
+            migrationBuilder.AddColumn<string>(
+                name: "Ports",
+                table: "TrainingHistories",
+                nullable: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -199,6 +205,10 @@ namespace Nssol.Platypus.Migrations
 
             migrationBuilder.DropTable(
                 name: "TrainingHistoryParentMaps");
+
+            migrationBuilder.DropColumn(
+                name: "Ports",
+                table: "TrainingHistories");
         }
     }
 }
