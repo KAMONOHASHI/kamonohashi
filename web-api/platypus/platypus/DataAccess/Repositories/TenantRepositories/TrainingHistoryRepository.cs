@@ -88,6 +88,10 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
             {
                 entity.Options = JsonConvert.SerializeObject(entity.OptionDic);
             }
+            if(entity.PortList != null && entity.PortList.Count > 0)
+            {
+                entity.Ports = JsonConvert.SerializeObject(entity.PortList);
+            }
             base.Add(entity);
         }
 

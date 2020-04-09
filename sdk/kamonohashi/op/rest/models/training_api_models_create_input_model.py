@@ -43,6 +43,7 @@ class TrainingApiModelsCreateInputModel(object):
         'options': 'dict(str, str)',
         'parent_ids': 'list[int]',
         'partition': 'str',
+        'ports': 'list[int]',
         'zip': 'bool'
     }
 
@@ -59,10 +60,11 @@ class TrainingApiModelsCreateInputModel(object):
         'options': 'options',
         'parent_ids': 'parentIds',
         'partition': 'partition',
+        'ports': 'ports',
         'zip': 'zip'
     }
 
-    def __init__(self, container_image=None, cpu=None, data_set_id=None, entry_point=None, git_model=None, gpu=None, memo=None, memory=None, name=None, options=None, parent_ids=None, partition=None, zip=None):  # noqa: E501
+    def __init__(self, container_image=None, cpu=None, data_set_id=None, entry_point=None, git_model=None, gpu=None, memo=None, memory=None, name=None, options=None, parent_ids=None, partition=None, ports=None, zip=None):  # noqa: E501
         """TrainingApiModelsCreateInputModel - a model defined in Swagger"""  # noqa: E501
 
         self._container_image = None
@@ -77,6 +79,7 @@ class TrainingApiModelsCreateInputModel(object):
         self._options = None
         self._parent_ids = None
         self._partition = None
+        self._ports = None
         self._zip = None
         self.discriminator = None
 
@@ -96,6 +99,8 @@ class TrainingApiModelsCreateInputModel(object):
             self.parent_ids = parent_ids
         if partition is not None:
             self.partition = partition
+        if ports is not None:
+            self.ports = ports
         if zip is not None:
             self.zip = zip
 
@@ -368,6 +373,27 @@ class TrainingApiModelsCreateInputModel(object):
         """
 
         self._partition = partition
+
+    @property
+    def ports(self):
+        """Gets the ports of this TrainingApiModelsCreateInputModel.  # noqa: E501
+
+
+        :return: The ports of this TrainingApiModelsCreateInputModel.  # noqa: E501
+        :rtype: list[int]
+        """
+        return self._ports
+
+    @ports.setter
+    def ports(self, ports):
+        """Sets the ports of this TrainingApiModelsCreateInputModel.
+
+
+        :param ports: The ports of this TrainingApiModelsCreateInputModel.  # noqa: E501
+        :type: list[int]
+        """
+
+        self._ports = ports
 
     @property
     def zip(self):

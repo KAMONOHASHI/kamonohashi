@@ -71,6 +71,10 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         public string Partition { get; set; }
 
         /// <summary>
+        /// 開放ポート番号
+        /// </summary>
+        public List<int> Ports { get; set; }
+        /// <summary>
         /// メモ
         /// </summary>
         public string Memo { get; set; }

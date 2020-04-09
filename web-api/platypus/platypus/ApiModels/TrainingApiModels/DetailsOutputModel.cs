@@ -20,6 +20,8 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         {
             Key = history.Key;
             Options = new List<KeyValuePair<string, string>>();
+            Ports = new List<int>();
+            NodePorts = new List<KeyValuePair<string, string>>();
             GitModel = new GitCommitOutputModel()
             {
                 GitId = history.ModelGitId,
@@ -63,6 +65,11 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
             foreach (var option in history.GetOptionDic())
             {
                 Options.Add(new KeyValuePair<string, string>(option.Key, option.Value));
+            }
+
+            foreach(var port in history.GetPortList())
+            {
+                Ports.Add(port);
             }
 
             // 待機時間と実行時間の設定
@@ -137,6 +144,17 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         /// パーティション
         /// </summary>
         public string Partition { get; set; }
+
+        /// <summary>
+        /// 開放ポート番号
+        /// </summary>
+        public List<int> Ports { get; set; }
+
+        /// <summary>
+        /// TargetPort(int)とNodePort(host:portのstring)のペア
+        /// </summary>
+        public List<KeyValuePair<string, string>> NodePorts { get; set; }
+
 
         /// <summary>
         /// ステータスの種類。

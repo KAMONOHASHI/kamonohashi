@@ -55,6 +55,7 @@
             <kqi-resource-selector v-model="form.resource" />
 
             <kqi-environment-variables v-model="form.variables" />
+            <kqi-expose-ports v-model="form.ports" />
             <el-form-item label="結果Zip圧縮">
               <el-switch
                 v-model="form.zip"
@@ -177,6 +178,7 @@
           >
             <el-col>
               <kqi-environment-variables v-model="form.variables" />
+              <kqi-expose-ports v-model="form.ports" />
               <el-form-item label="結果Zip圧縮">
                 <el-switch
                   v-model="form.zip"
@@ -240,6 +242,7 @@ import KqiContainerSelector from '@/components/selector/KqiContainerSelector'
 import KqiGitSelector from '@/components/selector/KqiGitSelector'
 import KqiResourceSelector from '@/components/selector/KqiResourceSelector'
 import KqiEnvironmentVariables from '@/components/KqiEnvironmentVariables'
+import KqiExposePorts from '@/components/KqiExposePorts'
 import KqiPartitionSelector from '@/components/selector/KqiPartitionSelector'
 import validator from '@/util/validator'
 import registrySelectorUtil from '@/util/registrySelectorUtil'
@@ -261,6 +264,7 @@ export default {
     KqiGitSelector,
     KqiResourceSelector,
     KqiEnvironmentVariables,
+    KqiExposePorts,
     KqiPartitionSelector,
   },
   props: {
@@ -293,6 +297,7 @@ export default {
           gpu: 0,
         },
         variables: [{ key: '', value: '' }],
+        ports: [],
         partition: null,
         zip: true,
         memo: null,
@@ -393,6 +398,7 @@ export default {
         this.detail.options.length === 0
           ? [{ key: '', value: '' }]
           : this.detail.options
+      this.form.ports = this.detail.ports
       this.form.partition = this.detail.partition
 
       // レジストリの設定
@@ -485,6 +491,7 @@ export default {
               Memory: this.form.resource.memory,
               Gpu: this.form.resource.gpu,
               Options: options,
+              Ports: this.form.ports,
               Zip: this.form.zip,
               Partition: this.form.partition,
               Memo: this.form.memo,

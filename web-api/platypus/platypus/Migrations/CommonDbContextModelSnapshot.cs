@@ -16,7 +16,7 @@ namespace Nssol.Platypus.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
-                .HasAnnotation("ProductVersion", "2.1.11-servicing-32099")
+                .HasAnnotation("ProductVersion", "2.1.14-servicing-32113")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             modelBuilder.Entity("Nssol.Platypus.Models.Git", b =>
@@ -1158,6 +1158,8 @@ namespace Nssol.Platypus.Migrations
                     b.Property<string>("Options");
 
                     b.Property<string>("Partition");
+
+                    b.Property<string>("Ports");
 
                     b.Property<DateTime?>("StartedAt");
 

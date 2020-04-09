@@ -545,6 +545,24 @@ namespace Nssol.Platypus.Logic
                 }
             }
 
+            // 開放するポート番号を指定
+            if (trainHistory.PortList != null)
+            { 
+                var portMappingList = new List<PortMappingModel>();
+                foreach (var port in trainHistory.PortList)
+                {
+                    var portMappingModel = new PortMappingModel()
+                    {
+                        Protocol = "TCP",
+                        Port = port,
+                        TargetPort = port,
+                        Name = port.ToString()
+                    };
+                    portMappingList.Add(portMappingModel);
+                }
+                inputModel.PortMappings = portMappingList.ToArray();
+            }
+
             // ユーザの任意追加環境変数をマージする
             AddEnvListToInputModel(trainHistory.OptionDic, inputModel.MainContainerEnvList);
 

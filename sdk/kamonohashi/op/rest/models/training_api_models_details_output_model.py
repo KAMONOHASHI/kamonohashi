@@ -54,10 +54,12 @@ class TrainingApiModelsDetailsOutputModel(object):
         'modified_by': 'str',
         'name': 'str',
         'node': 'str',
+        'node_ports': 'list[SystemCollectionsGenericKeyValuePair]',
         'options': 'list[SystemCollectionsGenericKeyValuePair]',
         'parent_full_name_list': 'list[str]',
         'parents': 'list[TrainingApiModelsSimpleOutputModel]',
         'partition': 'str',
+        'ports': 'list[int]',
         'started_at': 'str',
         'status': 'str',
         'status_type': 'str',
@@ -89,10 +91,12 @@ class TrainingApiModelsDetailsOutputModel(object):
         'modified_by': 'modifiedBy',
         'name': 'name',
         'node': 'node',
+        'node_ports': 'nodePorts',
         'options': 'options',
         'parent_full_name_list': 'parentFullNameList',
         'parents': 'parents',
         'partition': 'partition',
+        'ports': 'ports',
         'started_at': 'startedAt',
         'status': 'status',
         'status_type': 'statusType',
@@ -100,7 +104,7 @@ class TrainingApiModelsDetailsOutputModel(object):
         'zip': 'zip'
     }
 
-    def __init__(self, completed_at=None, condition_note=None, container_image=None, cpu=None, created_at=None, created_by=None, data_set=None, display_id=None, entry_point=None, execution_time=None, favorite=None, full_name=None, git_model=None, gpu=None, id=None, key=None, log_summary=None, memo=None, memory=None, modified_at=None, modified_by=None, name=None, node=None, options=None, parent_full_name_list=None, parents=None, partition=None, started_at=None, status=None, status_type=None, waiting_time=None, zip=None):  # noqa: E501
+    def __init__(self, completed_at=None, condition_note=None, container_image=None, cpu=None, created_at=None, created_by=None, data_set=None, display_id=None, entry_point=None, execution_time=None, favorite=None, full_name=None, git_model=None, gpu=None, id=None, key=None, log_summary=None, memo=None, memory=None, modified_at=None, modified_by=None, name=None, node=None, node_ports=None, options=None, parent_full_name_list=None, parents=None, partition=None, ports=None, started_at=None, status=None, status_type=None, waiting_time=None, zip=None):  # noqa: E501
         """TrainingApiModelsDetailsOutputModel - a model defined in Swagger"""  # noqa: E501
 
         self._completed_at = None
@@ -126,10 +130,12 @@ class TrainingApiModelsDetailsOutputModel(object):
         self._modified_by = None
         self._name = None
         self._node = None
+        self._node_ports = None
         self._options = None
         self._parent_full_name_list = None
         self._parents = None
         self._partition = None
+        self._ports = None
         self._started_at = None
         self._status = None
         self._status_type = None
@@ -183,6 +189,8 @@ class TrainingApiModelsDetailsOutputModel(object):
             self.name = name
         if node is not None:
             self.node = node
+        if node_ports is not None:
+            self.node_ports = node_ports
         if options is not None:
             self.options = options
         if parent_full_name_list is not None:
@@ -191,6 +199,8 @@ class TrainingApiModelsDetailsOutputModel(object):
             self.parents = parents
         if partition is not None:
             self.partition = partition
+        if ports is not None:
+            self.ports = ports
         if started_at is not None:
             self.started_at = started_at
         if status is not None:
@@ -686,6 +696,27 @@ class TrainingApiModelsDetailsOutputModel(object):
         self._node = node
 
     @property
+    def node_ports(self):
+        """Gets the node_ports of this TrainingApiModelsDetailsOutputModel.  # noqa: E501
+
+
+        :return: The node_ports of this TrainingApiModelsDetailsOutputModel.  # noqa: E501
+        :rtype: list[SystemCollectionsGenericKeyValuePair]
+        """
+        return self._node_ports
+
+    @node_ports.setter
+    def node_ports(self, node_ports):
+        """Sets the node_ports of this TrainingApiModelsDetailsOutputModel.
+
+
+        :param node_ports: The node_ports of this TrainingApiModelsDetailsOutputModel.  # noqa: E501
+        :type: list[SystemCollectionsGenericKeyValuePair]
+        """
+
+        self._node_ports = node_ports
+
+    @property
     def options(self):
         """Gets the options of this TrainingApiModelsDetailsOutputModel.  # noqa: E501
 
@@ -768,6 +799,27 @@ class TrainingApiModelsDetailsOutputModel(object):
         """
 
         self._partition = partition
+
+    @property
+    def ports(self):
+        """Gets the ports of this TrainingApiModelsDetailsOutputModel.  # noqa: E501
+
+
+        :return: The ports of this TrainingApiModelsDetailsOutputModel.  # noqa: E501
+        :rtype: list[int]
+        """
+        return self._ports
+
+    @ports.setter
+    def ports(self, ports):
+        """Sets the ports of this TrainingApiModelsDetailsOutputModel.
+
+
+        :param ports: The ports of this TrainingApiModelsDetailsOutputModel.  # noqa: E501
+        :type: list[int]
+        """
+
+        self._ports = ports
 
     @property
     def started_at(self):
