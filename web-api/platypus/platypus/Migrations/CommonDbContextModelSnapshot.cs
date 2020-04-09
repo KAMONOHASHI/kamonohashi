@@ -1162,6 +1162,8 @@ namespace Nssol.Platypus.Migrations
 
                     b.Property<string>("Partition");
 
+                    b.Property<string>("Ports");
+
                     b.Property<DateTime?>("StartedAt");
 
                     b.Property<string>("Status")

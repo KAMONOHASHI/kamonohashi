@@ -9,6 +9,7 @@ import store from './store'
 import componentExt from './util/component-ext'
 import VueI18n from 'vue-i18n'
 import lineClamp from 'vue-line-clamp'
+import VueClipboard from 'vue-clipboard2'
 import message from './message/index'
 import Icon from 'vue-awesome/components/Icon'
 import './icon'
@@ -20,6 +21,7 @@ const i18n = new VueI18n({ locale: 'ja', messages: message })
 
 Vue.use(ElementUI, { i18n: (key, value) => i18n.t(key, value) })
 Vue.use(lineClamp, {})
+Vue.use(VueClipboard)
 
 Vue.mixin(componentExt)
 

@@ -127,6 +127,21 @@ namespace Nssol.Platypus.Models.TenantModels
         public string Partition { get; set; }
 
         /// <summary>
+        /// ポート
+        /// </summary>
+        public string Ports { get; set; }
+        
+        /// <summary>
+        /// <see cref="Ports"/> のリスト表現
+        /// </summary>
+        /// <remarks>
+        /// <see cref="DataAccess.Repositories.TenantRepositories.TrainingHistoryRepository.Add(TrainingHistory)"/> の実行時、
+        /// <see cref="Ports"/> への変換を行う。更新はされないので、そこだけでいいはず。
+        /// </remarks>
+        [NotMapped]
+        public List<int> PortList { get; set; }
+
+        /// <summary>
         /// コンテナの設定値（起動したときのJson）
         /// </summary>
         //[Required] TODO:学習実行が自動化されるまではNULLを許可する
@@ -231,6 +246,20 @@ namespace Nssol.Platypus.Models.TenantModels
             }
             OptionDic = JsonConvert.DeserializeObject<Dictionary<string, string>>(Options);
             return OptionDic;
+        }
+
+        /// <summary>
+        /// ポート番号のリスト表現
+        /// </summary>
+        /// <returns>開放するポート番号</returns>
+        public List<int> GetPortList()
+        {
+            if(Ports == null)
+            {
+                return new List<int>();
+            }
+            PortList = JsonConvert.DeserializeObject<List<int>>(Ports);
+            return PortList;
         }
 
         /// <summary>
