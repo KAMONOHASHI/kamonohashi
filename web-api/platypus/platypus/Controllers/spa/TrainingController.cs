@@ -243,10 +243,8 @@ namespace Nssol.Platypus.Controllers.spa
                 {
                     foreach (var endpoint in details.EndPoints)
                     {
-                        //リバプロなどでノードのホスト名ではなく、共通のエンドポイントを使える場合は、そっちを使う
-                        string host = string.IsNullOrEmpty(options.Value.WebEndPoint) ? endpoint.Host : options.Value.WebEndPoint;
-                        string url = host + ":" + endpoint.Port.ToString();
-                        model.NodePorts.Add(new KeyValuePair<string, string>(endpoint.Key, url));
+                        //ノードポート番号を返す
+                        model.NodePorts.Add(new KeyValuePair<string, string>(endpoint.Key, endpoint.Port.ToString()));
                     }
                 }
             }
