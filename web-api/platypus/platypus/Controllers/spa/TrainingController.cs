@@ -230,7 +230,7 @@ namespace Nssol.Platypus.Controllers.spa
             if (status.Exist())
             {
                 //コンテナがまだ存在している場合、情報を更新する
-                var details = await clusterManagementLogic.GetContainerEndpointInfoAsync(history.Key, CurrentUserInfo.SelectedTenant.Name, false);
+                var details = await clusterManagementLogic.GetContainerDetailsInfoAsync(history.Key, CurrentUserInfo.SelectedTenant.Name, false);
                 model.Status = details.Status.Name;
                 model.StatusType = details.Status.StatusType;
 
@@ -241,7 +241,8 @@ namespace Nssol.Platypus.Controllers.spa
                 model.ConditionNote = details.ConditionNote;
                 if (details.Status.IsRunning())
                 {
-                    foreach (var endpoint in details.EndPoints)
+                    var endpointInfo = await clusterManagementLogic.GetContainerEndpointInfoAsync(history.Key, CurrentUserInfo.SelectedTenant.Name, false);
+                    foreach (var endpoint in endpointInfo.EndPoints ?? new List<EndPointInfo>())
                     {
                         //ノードポート番号を返す
                         model.NodePorts.Add(new KeyValuePair<string, string>(endpoint.Key, endpoint.Port.ToString()));

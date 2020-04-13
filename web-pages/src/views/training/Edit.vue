@@ -212,7 +212,10 @@
                 <div class="el-input" style="padding: 10px 0;">
                   <el-button @click="emitShell">Shell起動</el-button>
                 </div>
-                <el-form-item label="コンテナアクセス">
+                <el-form-item
+                  v-if="detail.nodePorts && detail.nodePorts.length !== 0"
+                  label="コンテナアクセス"
+                >
                   <el-table :data="detail.nodePorts" stripe style="width: 100%">
                     <el-table-column
                       prop="key"
