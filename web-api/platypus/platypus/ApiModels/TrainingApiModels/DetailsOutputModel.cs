@@ -152,7 +152,7 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         public List<int> Ports { get; set; }
 
         /// <summary>
-        /// TargetPort(int)とNodePort(host:portのstring)のペア
+        /// TargetPortとNodePortのペア
         /// </summary>
         public List<KeyValuePair<string, string>> NodePorts { get; set; }
 

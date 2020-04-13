@@ -221,10 +221,10 @@
                     />
                     <el-table-column prop="value" label="Node Port">
                       <template slot-scope="scope">
-                        {{ scope.row.value }}
+                        {{ `${kqiHost}:${scope.row.value}` }}
                         <el-tooltip content="copy" placement="right">
                           <el-button
-                            v-clipboard:copy="scope.row.value"
+                            v-clipboard:copy="`${kqiHost}:${scope.row.value}`"
                             circle
                             size="mini"
                             icon="el-icon-copy-document"
@@ -335,6 +335,7 @@ export default {
       title: '',
       dialogVisible: true,
       error: null,
+      kqiHost: process.env.VUE_APP_KAMONOHASHI_HOST || window.location.hostname,
     }
   },
   computed: {

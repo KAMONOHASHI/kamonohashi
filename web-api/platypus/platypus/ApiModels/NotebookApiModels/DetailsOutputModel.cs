@@ -154,9 +154,14 @@ namespace Nssol.Platypus.ApiModels.NotebookApiModels
         public string StatusType { get; set; }
 
         /// <summary>
-        /// エンドポイント
+        /// ノードポート番号
         /// </summary>
-        public string NotebookEndpoint { get; set; }
+        public string NotebookNodePort { get; set; }
+
+        /// <summary>
+        /// トークン
+        /// </summary>
+        public string NotebookToken { get; set; }
 
         /// <summary>
         /// コンテナの状態に対する注釈。何か異常が発生している際は注釈が表示される。

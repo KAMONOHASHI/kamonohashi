@@ -203,7 +203,8 @@ namespace Nssol.Platypus.Controllers.spa
                 //コンテナが正常動作している場合、notebookのエンドポイントを取得
                 if (details.Status.IsRunning())
                 {
-                    model.NotebookEndpoint = await GetNotebookEndpointUrlAsync(notebookHistory.Id, details.EndPoints, options.Value.WebEndPoint);
+                    model.NotebookNodePort = GetNotebookNodePort(details.EndPoints);
+                    model.NotebookToken = await GetNotebookTokenAsync(notebookHistory.Id);
                 }
             }
 
@@ -216,13 +217,29 @@ namespace Nssol.Platypus.Controllers.spa
         }
 
         /// <summary>
-        /// ノートブックのエンドポイントURLを取得する
+        /// ノートブックのノードポート番号を取得する
+        /// </summary>
+        /// <param name="endPoints">エンドポイント</param>
+        /// <returns></returns>
+        private string GetNotebookNodePort(IEnumerable<EndPointInfo> endPoints)
+        {
+            // ノードのendpoint情報を取得し、tokenと繋ぎ合わせてmodelに設定
+            var endPoint = endPoints.Where(name => name.Key == "notebook").FirstOrDefault();
+            if (endPoint != null)
+            {
+                //ノードポート番号+tokenを返す
+                return endPoint.Port.ToString();
+            }
+            return "";
+        }
+
+        /// <summary>
+        /// ノートブックのトークンを取得する
         /// </summary>
         /// <param name="historyId">ノートブック履歴ID</param>
-        /// <param name="endPoints">エンドポイント</param>
         /// <param name="webEndpoint">Webエンドポイント</param>
         /// <returns></returns>
-        private async Task<string> GetNotebookEndpointUrlAsync(long historyId, IEnumerable<EndPointInfo> endPoints, string webEndpoint = null)
+        private async Task<string> GetNotebookTokenAsync(long historyId)
         {
             //notebook起動時のログをストレージから取得し、token情報を抜き出す。
             var outputFileName = ".notebook.log";   //値を読み込むファイル名
@@ -232,15 +249,7 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 // ?token=...という文字列を抜き出す
                 var token = Regex.Match(content, @"\?token=.*").Value;
-
-                // ノードのendpoint情報を取得し、tokenと繋ぎ合わせてmodelに設定
-                var nodeEndPoint = endPoints.Where(name => name.Key == "notebook").FirstOrDefault();
-                if (nodeEndPoint != null)
-                {
-                    // リバプロなどでノードのホスト名ではなく、共通のエンドポイントを使える場合は、そちらを使用する
-                    string host = string.IsNullOrEmpty(webEndpoint) ? nodeEndPoint.Host : webEndpoint;
-                    return new UriBuilder("http", host, (int)nodeEndPoint.Port).ToString() + token;
-                }
+                return token;
             }
             return "";
         }
@@ -372,8 +381,9 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonNotFound($"Notebook ID {id} is not found.");
             }
 
-            //URLを取得する
-            string url = "";
+            //ノードポート番号およびアクセストークンを取得する
+            string nodePort = "";
+            string token = "";
             var status = notebookHistory.GetStatus();
             //ステータスを確認
             if (status.Exist())
@@ -392,7 +402,8 @@ namespace Nssol.Platypus.Controllers.spa
                 //コンテナが正常動作している場合、notebookのエンドポイントを取得
                 if (details.Status.IsRunning())
                 {
-                    url = await GetNotebookEndpointUrlAsync(notebookHistory.Id, details.EndPoints, options.Value.WebEndPoint);
+                    nodePort = GetNotebookNodePort(details.EndPoints);
+                    token = await GetNotebookTokenAsync(notebookHistory.Id);
                 }
             }
             else
@@ -400,7 +411,7 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonBadRequest($"A container for Notebook ID {id} does not exist.");
             }
 
-            return JsonOK(new EndPointOutputModel(url));
+            return JsonOK(new EndPointOutputModel(nodePort, token));
         }
 
         /// <summary>

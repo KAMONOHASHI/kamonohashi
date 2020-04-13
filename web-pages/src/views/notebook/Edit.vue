@@ -234,6 +234,7 @@ import KqiDataSetDetails from '@/components/selector/KqiDataSetDetails'
 import KqiTrainingHistoryDetails from '@/components/selector/KqiTrainingHistoryDetails'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('notebook')
+const kqiHost = process.env.VUE_APP_KAMONOHASHI_HOST || window.location.hostname
 
 export default {
   components: {
@@ -337,7 +338,9 @@ export default {
     },
     async openNotebook() {
       await this.fetchEndpoint(this.detail.id)
-      window.open(this.endpoint)
+      window.open(
+        `http://${kqiHost}:${this.endpoint.nodePort}${this.endpoint.token}`,
+      )
     },
 
     // 親ジョブ履歴の表示

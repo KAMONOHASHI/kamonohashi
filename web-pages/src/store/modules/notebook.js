@@ -7,7 +7,7 @@ const state = {
   total: 0,
   detail: {},
   availableInfiniteTime: false,
-  endpoint: null,
+  endpoint: {},
   events: {},
   partitions: [],
   fileList: [],
@@ -67,7 +67,7 @@ const actions = {
 
   async fetchEndpoint({ commit }, id) {
     let endpoint = (await api.notebook.getEndpointById({ id: id })).data
-    commit('setEndpoint', endpoint.url)
+    commit('setEndpoint', endpoint)
   },
 
   async fetchEvents({ commit }, id) {
