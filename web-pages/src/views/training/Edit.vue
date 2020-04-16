@@ -173,7 +173,7 @@
             :value="detail.partition"
           />
           <el-form-item label="タグ">
-            <tag-editor v-model="form.tags" :registered-tags="tenantTags" />
+            <kqi-tag-editor v-model="form.tags" :registered-tags="tenantTags" />
           </el-form-item>
           <!-- status: スクリプトがこけたときなどに"failed"になる -->
           <!-- statusType: コンテナの生死等 -->
@@ -300,7 +300,7 @@ import KqiJobStopButton from '@/components/KqiJobStopButton'
 import KqiFileManager from '@/components/KqiFileManager'
 import KqiDataSetDetails from '@/components/selector/KqiDataSetDetails'
 import KqiTrainingHistoryDetails from '@/components/selector/KqiTrainingHistoryDetails'
-import TagEditor from '../data/TagEditor'
+import KqiTagEditor from '@/components/KqiTagEditor'
 import KqiTensorboardHandler from './KqiTensorboardHandler'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('training')
@@ -314,7 +314,7 @@ export default {
     KqiFileManager,
     KqiDataSetDetails,
     KqiTrainingHistoryDetails,
-    TagEditor,
+    KqiTagEditor,
     KqiTensorboardHandler,
   },
   props: {

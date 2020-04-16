@@ -56,7 +56,10 @@
             <kqi-environment-variables v-model="form.variables" />
             <kqi-expose-ports v-model="form.ports" />
             <el-form-item label="タグ">
-              <tag-editor v-model="form.tags" :registered-tags="tenantTags" />
+              <kqi-tag-editor
+                v-model="form.tags"
+                :registered-tags="tenantTags"
+              />
             </el-form-item>
             <el-form-item label="結果Zip圧縮">
               <el-switch
@@ -181,7 +184,10 @@
               <kqi-environment-variables v-model="form.variables" />
               <kqi-expose-ports v-model="form.ports" />
               <el-form-item label="タグ">
-                <tag-editor v-model="form.tags" :registered-tags="tenantTags" />
+                <kqi-tag-editor
+                  v-model="form.tags"
+                  :registered-tags="tenantTags"
+                />
               </el-form-item>
               <el-form-item label="結果Zip圧縮">
                 <el-switch
@@ -247,7 +253,7 @@ import KqiGitSelector from '@/components/selector/KqiGitSelector'
 import KqiResourceSelector from '@/components/selector/KqiResourceSelector'
 import KqiEnvironmentVariables from '@/components/KqiEnvironmentVariables'
 import KqiExposePorts from '@/components/KqiExposePorts'
-import TagEditor from '../data/TagEditor'
+import KqiTagEditor from '@/components/KqiTagEditor'
 import KqiPartitionSelector from '@/components/selector/KqiPartitionSelector'
 import validator from '@/util/validator'
 import registrySelectorUtil from '@/util/registrySelectorUtil'
@@ -270,7 +276,7 @@ export default {
     KqiResourceSelector,
     KqiEnvironmentVariables,
     KqiExposePorts,
-    TagEditor,
+    KqiTagEditor,
     KqiPartitionSelector,
   },
   props: {
