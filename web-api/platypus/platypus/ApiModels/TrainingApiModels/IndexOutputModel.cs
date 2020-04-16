@@ -1,4 +1,5 @@
 ﻿using Nssol.Platypus.Models.TenantModels;
+using System.Collections.Generic;
 
 namespace Nssol.Platypus.ApiModels.TrainingApiModels
 {
@@ -15,6 +16,7 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         {
             DataSet = new DataSetApiModels.IndexOutputModel(history.DataSet);
             EntryPoint = history.EntryPoint;
+            Tags = history.Tags;
         }
 
         /// <summary>
@@ -26,5 +28,10 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         /// ジョブ実行コマンド
         /// </summary>
         public string EntryPoint { get; set; }
+
+        /// <summary>
+        /// タグ
+        /// </summary>
+        public IEnumerable<string> Tags { get; set; }
     }
 }

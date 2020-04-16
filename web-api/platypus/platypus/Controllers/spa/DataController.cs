@@ -6,6 +6,7 @@ using Nssol.Platypus.Controllers.Util;
 using Nssol.Platypus.DataAccess.Core;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories;
 using Nssol.Platypus.Infrastructure;
+using Nssol.Platypus.Infrastructure.Types;
 using Nssol.Platypus.Logic.Interfaces;
 using Nssol.Platypus.Models.TenantModels;
 using System.Collections.Generic;
@@ -27,7 +28,6 @@ namespace Nssol.Platypus.Controllers.spa
 
         public DataController(
             IDataRepository dataRepository,
-            IDataSetRepository dataSetRepository,
             IPreprocessHistoryRepository preprocessHistoryRepository,
             IDataLogic dataLogic,
             ITagLogic tagLogic,
@@ -145,7 +145,7 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonNotFound($"Data Id {id.Value} is not found.");
             }
             var model = new DetailsOutputModel(data);
-            model.Tags = tagLogic.GetAllTags(data.Id).Select(t => t.Name);
+            model.Tags = tagLogic.GetAllDataTag(data.Id).Select(t => t.Name);
             var parent = await preprocessHistoryRepository.GetInputDataAsync(data.Id);
             if (parent != null)
             {
@@ -189,7 +189,7 @@ namespace Nssol.Platypus.Controllers.spa
             //タグの登録
             if (model.Tags != null && model.Tags.Count() > 0)
             {
-                tagLogic.Create(newData, model.Tags);
+                tagLogic.CreateDataTags(newData, model.Tags);
             }
 
             dataRepository.Add(newData);
@@ -241,12 +241,12 @@ namespace Nssol.Platypus.Controllers.spa
                 if (model.Tags.Count() > 0)
                 {
                     //タグが一つでも指定されていたら、全部上書き
-                    await tagLogic.EditAsync(data.Id, model.Tags);
+                    await tagLogic.EditDataTagsAsync(data.Id, model.Tags);
                 }
                 else
                 {
                     //タグがゼロなら全削除
-                    tagLogic.Delete(data.Id);
+                    tagLogic.DeleteDataTags(data.Id);
                 }
             }
 
@@ -254,7 +254,7 @@ namespace Nssol.Platypus.Controllers.spa
             unitOfWork.Commit();
 
             // 未使用タグ削除
-            tagRepository.DeleteUnUsedTags();
+            tagRepository.DeleteUnUsedDataTags();
 
             // DBへタグ削除結果のコミット
             unitOfWork.Commit();
@@ -277,7 +277,7 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonNotFound($"Data ID {id} is not found.");
             }
 
-            await tagRepository.AddAsync(data.Id, tag);
+            await tagRepository.AddDataTagAsync(data.Id, tag);
 
             //結果を取り直す
             var result = await dataRepository.GetDataIncludeAllAsync(data.Id);
@@ -300,7 +300,7 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonNotFound($"Data ID {id} is not found.");
             }
 
-            tagRepository.Delete(data.Id, tag);
+            tagRepository.DeleteDataTag(data.Id, tag);
 
             return JsonNoContent();
         }
@@ -481,7 +481,7 @@ namespace Nssol.Platypus.Controllers.spa
             unitOfWork.Commit();
 
             // 未使用タグ削除
-            tagRepository.DeleteUnUsedTags();
+            tagRepository.DeleteUnUsedDataTags();
 
             // DBへタグ削除結果のコミット
             unitOfWork.Commit();
@@ -524,14 +524,15 @@ namespace Nssol.Platypus.Controllers.spa
         }
 
         /// <summary>
-        /// 選択中のテナントに登録されているタグを表示する
+        /// 選択中のテナントに登録されているデータ管理で使用できるタグを表示する
         /// </summary>
         [HttpGet("datatags")]
         [Filters.PermissionFilter(MenuCode.Data)]
         [ProducesResponseType(typeof(IEnumerable<string>), (int)HttpStatusCode.OK)]
         public IActionResult GetTags()
         {
-            var tags = tagLogic.GetAllTags();
+            // タグ種別がデータのものに限定する
+            var tags = tagLogic.GetAllTags().Where(t => t.Type == TagType.Data);
             return JsonOK(tags.Select(t => t.Name));
         }
 
@@ -540,7 +541,7 @@ namespace Nssol.Platypus.Controllers.spa
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         public IActionResult DeleteUnUsedTags([FromServices] ITagRepository tagRepository)
         {
-            tagRepository.DeleteUnUsedTags();
+            tagRepository.DeleteUnUsedDataTags();
             unitOfWork.Commit();
             return JsonNoContent();
         }

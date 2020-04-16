@@ -38,7 +38,9 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
         /// </summary>
         public IQueryable<TrainingHistory> GetAllIncludeDataSetWithOrdering()
         {
-            return GetAll().OrderByDescending(t => t.Favorite).ThenByDescending(t => t.Id).Include(t => t.DataSet);
+            return GetAll().OrderByDescending(t => t.Favorite).ThenByDescending(t => t.Id)
+                .Include(t => t.DataSet)
+                .Include(t => t.TagMaps).ThenInclude(t => t.Tag);
         }
 
         /// <summary>

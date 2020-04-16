@@ -1367,7 +1367,7 @@ export const ApiV1DataByIdFilesByFileIdDeleteURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
- * 選択中のテナントに登録されているタグを表示する
+ * 選択中のテナントに登録されているデータ管理で使用できるタグを表示する
  * request: ApiV1DataDatatagsGet
  * url: ApiV1DataDatatagsGetURL
  * method: ApiV1DataDatatagsGet_TYPE
@@ -7374,6 +7374,7 @@ e.g.（比較文字列は半角でOK）
      * @param memo - メモ
      * @param status - ステータス
      * @param entryPoint - 実行コマンド
+     * @param tag - タグ
      * @param perPage - 表示件数。指定がない場合は上限(1000件)。
      * @param page - ページ番号。デフォルトは1。
      * @param withTotal - 合計件数をレスポンスヘッダ(X-Total-Count)に含めるか。デフォルトはfalse。
@@ -7405,6 +7406,9 @@ export const ApiV1TrainingGet = function(parameters = {}) {
   }
   if (parameters['entryPoint'] !== undefined) {
     queryParameters['EntryPoint'] = parameters['entryPoint']
+  }
+  if (parameters['tag'] !== undefined) {
+    queryParameters['tag'] = parameters['tag']
   }
   if (parameters['perPage'] !== undefined) {
     queryParameters['perPage'] = parameters['perPage']
@@ -7452,6 +7456,9 @@ export const ApiV1TrainingGetURL = function(parameters = {}) {
   }
   if (parameters['entryPoint'] !== undefined) {
     queryParameters['EntryPoint'] = parameters['entryPoint']
+  }
+  if (parameters['tag'] !== undefined) {
+    queryParameters['tag'] = parameters['tag']
   }
   if (parameters['perPage'] !== undefined) {
     queryParameters['perPage'] = parameters['perPage']
@@ -8218,6 +8225,45 @@ export const ApiV1TrainingByIdCompletePostURL = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v1/training/{id}/complete'
   path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 選択中のテナントに登録されている学習管理で使用するタグを表示する
+ * request: ApiV1TrainingTagsGet
+ * url: ApiV1TrainingTagsGetURL
+ * method: ApiV1TrainingTagsGet_TYPE
+ * raw_url: ApiV1TrainingTagsGet_RAW_URL
+ */
+export const ApiV1TrainingTagsGet = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v1/training/tags'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV1TrainingTagsGet_RAW_URL = function() {
+  return '/api/v1/training/tags'
+}
+export const ApiV1TrainingTagsGet_TYPE = function() {
+  return 'get'
+}
+export const ApiV1TrainingTagsGetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v1/training/tags'
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]
