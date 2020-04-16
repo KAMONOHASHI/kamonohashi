@@ -109,6 +109,15 @@
             :value="detail.containerImage ? detail.containerImage.url : ''"
           />
 
+          <el-form-item label="実行コマンド">
+            <el-input
+              v-model="detail.entryPoint"
+              type="textarea"
+              :autosize="{ minRows: 2 }"
+              :readonly="true"
+            />
+          </el-form-item>
+
           <el-form-item label="メモ">
             <el-input
               v-model="form.memo"

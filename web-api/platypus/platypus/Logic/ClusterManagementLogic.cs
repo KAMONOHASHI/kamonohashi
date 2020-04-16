@@ -1016,7 +1016,8 @@ namespace Nssol.Platypus.Logic
                 },
                 ClusterManagerToken = token,
                 RegistryTokenName = notebookHistory.ContainerRegistryId.HasValue ? registryMap.RegistryTokenKey : null,
-                IsNodePort = true
+                IsNodePort = true,
+                EntryPoint = notebookHistory.EntryPoint
             };
 
             // データセットの未指定も許可するため、その判定
@@ -1085,6 +1086,8 @@ namespace Nssol.Platypus.Logic
                 inputModel.ConstraintList.Add(containerOptions.ContainerLabelPartition, new List<string> { notebookHistory.Partition });
             }
 
+            // スクリプトの実行をしない場合ヌルコマンドを挿入
+            inputModel.EntryPoint = inputModel.EntryPoint != "" ? inputModel.EntryPoint : ":";
             var outModel = await clusterManagementService.RunContainerAsync(inputModel);
             if (outModel.IsSuccess == false)
             {

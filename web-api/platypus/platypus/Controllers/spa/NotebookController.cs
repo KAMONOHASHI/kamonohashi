@@ -486,7 +486,8 @@ namespace Nssol.Platypus.Controllers.spa
                 Memo = model.Memo,
                 Status = ContainerStatus.Running.Key,
                 StartedAt = DateTime.Now,
-                ExpiresIn = model.ExpiresIn
+                ExpiresIn = model.ExpiresIn,
+                EntryPoint = model.EntryPoint
             };
 
             //コンテナが指定されているかチェック
@@ -821,6 +822,7 @@ namespace Nssol.Platypus.Controllers.spa
             notebookHistory.StartedAt = DateTime.Now;
             notebookHistory.CompletedAt = null;
             notebookHistory.ExpiresIn = model.ExpiresIn;
+            notebookHistory.EntryPoint = model.EntryPoint;
 
             notebookHistoryRepository.Update(notebookHistory);
             unitOfWork.Commit();

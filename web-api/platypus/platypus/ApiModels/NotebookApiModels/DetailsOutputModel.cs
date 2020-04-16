@@ -75,6 +75,8 @@ namespace Nssol.Platypus.ApiModels.NotebookApiModels
 
             // 待機時間と実行時間の設定
             SetWaitingAndExecutionTimes(history);
+
+            EntryPoint = history.EntryPoint;
         }
 
         /// <summary>
@@ -244,5 +246,12 @@ namespace Nssol.Platypus.ApiModels.NotebookApiModels
             TimeSpan span = finshedTime.Value - startingTime.Value;
             return span.ToString(@"%d'd '%h'h '%m'm'", CultureInfo.InvariantCulture);
         }
+
+
+        /// <summary>
+        /// エントリポイント.
+        /// ノートブック起動時に実行されるスクリプト。
+        /// </summary>
+        public string EntryPoint { get; set; }
     }
 }

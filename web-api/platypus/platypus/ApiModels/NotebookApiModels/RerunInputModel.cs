@@ -52,5 +52,12 @@ namespace Nssol.Platypus.ApiModels.NotebookApiModels
         /// </summary>
         [Required]
         public int? ExpiresIn { get; set; }
+
+
+        /// <summary>
+        /// エントリポイント.
+        /// ノートブック起動時に実行されるスクリプト。
+        /// </summary>
+        public string EntryPoint { get; set; }
     }
 }

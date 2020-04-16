@@ -44,6 +44,13 @@
                 @selectRepository="selectRepository"
                 @selectBranch="selectBranch"
               />
+              <el-form-item label="実行コマンド" prop="entryPoint">
+                <el-input
+                  v-model="form.entryPoint"
+                  type="textarea"
+                  :autosize="{ minRows: 2 }"
+                />
+              </el-form-item>
             </el-col>
             <el-col :span="12">
               <kqi-resource-selector v-model="form.resource" />
@@ -119,6 +126,13 @@
                 @selectRepository="selectRepository"
                 @selectBranch="selectBranch"
               />
+              <el-form-item label="実行コマンド" prop="entryPoint">
+                <el-input
+                  v-model="form.entryPoint"
+                  type="textarea"
+                  :autosize="{ minRows: 2 }"
+                />
+              </el-form-item>
             </el-col>
             <el-col :span="12">
               <kqi-resource-selector v-model="form.resource" />
@@ -229,6 +243,13 @@
               />
             </el-col>
             <el-col :span="18" :offset="3">
+              <el-form-item label="実行コマンド" prop="entryPoint">
+                <el-input
+                  v-model="form.entryPoint"
+                  type="textarea"
+                  :autosize="{ minRows: 2 }"
+                />
+              </el-form-item>
               <kqi-training-history-selector
                 v-model="form.selectedParent"
                 :histories="trainingHistories"
@@ -354,6 +375,7 @@ export default {
         variables: [{ key: '', value: '' }],
         partition: null,
         memo: null,
+        entryPoint: '',
       },
       rules: {
         name: [
@@ -492,6 +514,7 @@ export default {
           return commit.commitId === this.detail.gitModel.commitId
         })
       }
+      this.form.entryPoint = this.detail.entryPoint
     }
   },
 
@@ -533,6 +556,7 @@ export default {
             memory: this.form.resource.memory,
             gpu: this.form.resource.gpu,
             expiresIn: this.form.expiresIn * 60 * 60,
+            entryPoint: this.form.entryPoint,
           }
           await this['notebook/postRerun']({
             id: this.originId,
@@ -580,6 +604,7 @@ export default {
                 options: options,
                 partition: this.form.partition,
                 memo: this.form.memo,
+                entryPoint: this.form.entryPoint,
               }
               await this['notebook/post'](params)
               this.emitDone()
