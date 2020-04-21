@@ -43,7 +43,8 @@ class TrainingApiModelsIndexOutputModel(object):
         'modified_at': 'str',
         'modified_by': 'str',
         'name': 'str',
-        'status': 'str'
+        'status': 'str',
+        'tags': 'list[str]'
     }
 
     attribute_map = {
@@ -59,10 +60,11 @@ class TrainingApiModelsIndexOutputModel(object):
         'modified_at': 'modifiedAt',
         'modified_by': 'modifiedBy',
         'name': 'name',
-        'status': 'status'
+        'status': 'status',
+        'tags': 'tags'
     }
 
-    def __init__(self, created_at=None, created_by=None, data_set=None, display_id=None, entry_point=None, favorite=None, full_name=None, id=None, memo=None, modified_at=None, modified_by=None, name=None, status=None):  # noqa: E501
+    def __init__(self, created_at=None, created_by=None, data_set=None, display_id=None, entry_point=None, favorite=None, full_name=None, id=None, memo=None, modified_at=None, modified_by=None, name=None, status=None, tags=None):  # noqa: E501
         """TrainingApiModelsIndexOutputModel - a model defined in Swagger"""  # noqa: E501
 
         self._created_at = None
@@ -78,6 +80,7 @@ class TrainingApiModelsIndexOutputModel(object):
         self._modified_by = None
         self._name = None
         self._status = None
+        self._tags = None
         self.discriminator = None
 
         if created_at is not None:
@@ -106,6 +109,8 @@ class TrainingApiModelsIndexOutputModel(object):
             self.name = name
         if status is not None:
             self.status = status
+        if tags is not None:
+            self.tags = tags
 
     @property
     def created_at(self):
@@ -379,6 +384,27 @@ class TrainingApiModelsIndexOutputModel(object):
         """
 
         self._status = status
+
+    @property
+    def tags(self):
+        """Gets the tags of this TrainingApiModelsIndexOutputModel.  # noqa: E501
+
+
+        :return: The tags of this TrainingApiModelsIndexOutputModel.  # noqa: E501
+        :rtype: list[str]
+        """
+        return self._tags
+
+    @tags.setter
+    def tags(self, tags):
+        """Sets the tags of this TrainingApiModelsIndexOutputModel.
+
+
+        :param tags: The tags of this TrainingApiModelsIndexOutputModel.  # noqa: E501
+        :type: list[str]
+        """
+
+        self._tags = tags
 
     def to_dict(self):
         """Returns the model properties as a dict"""
