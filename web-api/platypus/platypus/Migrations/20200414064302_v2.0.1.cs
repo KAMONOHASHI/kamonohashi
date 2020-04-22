@@ -9,8 +9,14 @@ namespace Nssol.Platypus.Migrations
             migrationBuilder.AddColumn<string>(
                 name: "EntryPoint",
                 table: "NotebookHistories",
-                nullable: false,
-                defaultValue: "");
+                nullable: true);
+        }
+
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.DropColumn(
+                name: "EntryPoint",
+                table: "NotebookHistories");
         }
     }
 }
