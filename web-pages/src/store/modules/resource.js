@@ -8,6 +8,8 @@ const state = {
   detail: {},
   events: [],
   containerLog: [],
+  tenantQuota: [],
+  tenantNodes: [],
   tenantContainerLists: [],
   tenantDetail: {},
   tenantContainerLog: [],
@@ -32,6 +34,12 @@ const getters = {
   },
   containerLog(state) {
     return state.containerLog
+  },
+  tenantQuota(state) {
+    return state.tenantQuota
+  },
+  tenantNodes(state) {
+    return state.tenantNodes
   },
   tenantContainerLists(state) {
     return state.tenantContainerLists
@@ -85,6 +93,16 @@ const actions = {
   },
 
   // tenant系
+  async fetchTenantQuota({ commit }) {
+    let tenantQuota = (await api.resource.tenant.getQuota()).data
+    commit('setTenantQuota', { tenantQuota })
+  },
+
+  async fetchTenantNodes({ commit }) {
+    let tenantNodes = (await api.resource.tenant.getNodes()).data
+    commit('setTenantNodes', { tenantNodes })
+  },
+
   async fetchTenantContainerLists({ commit }) {
     let tenantContainerLists = (await api.resource.tenant.getContainers()).data
     commit('setTenantContainerLists', { tenantContainerLists })
@@ -128,6 +146,12 @@ const mutations = {
   },
   setContainerLog(state, { containerLog }) {
     state.containerLog = containerLog
+  },
+  setTenantQuota(state, { tenantQuota }) {
+    state.tenantQuota = tenantQuota
+  },
+  setTenantNodes(state, { tenantNodes }) {
+    state.tenantNodes = tenantNodes
   },
   setTenantContainerLists(state, { tenantContainerLists }) {
     state.tenantContainerLists = tenantContainerLists

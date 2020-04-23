@@ -6172,6 +6172,45 @@ export const ApiV1TenantResourceContainersByNameLogGetURL = function(parameters 
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * 指定コンテナのクォーター情報を取得
+ * request: ApiV1TenantResourceQuotaGet
+ * url: ApiV1TenantResourceQuotaGetURL
+ * method: ApiV1TenantResourceQuotaGet_TYPE
+ * raw_url: ApiV1TenantResourceQuotaGet_RAW_URL
+ */
+export const ApiV1TenantResourceQuotaGet = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v1/tenant/resource/quota'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV1TenantResourceQuotaGet_RAW_URL = function() {
+  return '/api/v1/tenant/resource/quota'
+}
+export const ApiV1TenantResourceQuotaGet_TYPE = function() {
+  return 'get'
+}
+export const ApiV1TenantResourceQuotaGetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v1/tenant/resource/quota'
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * 全ロール一覧を取得
  * request: ApiV1AdminRolesGet
  * url: ApiV1AdminRolesGetURL

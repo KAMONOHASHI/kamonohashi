@@ -193,6 +193,8 @@ let api = {
         gen.ApiV1AdminResourceContainersByTenantIdByNameEventsGet,
     },
     tenant: {
+      getQuota: gen.ApiV1TenantResourceQuotaGet,
+      getNodes: gen.ApiV1TenantResourceNodesGet,
       getContainers: gen.ApiV1TenantResourceContainersGet,
       getContainerByName: gen.ApiV1TenantResourceContainersByNameGet,
       deleteContainerByName: gen.ApiV1TenantResourceContainersByNameDelete,

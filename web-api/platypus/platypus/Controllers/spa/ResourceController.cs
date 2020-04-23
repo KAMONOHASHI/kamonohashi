@@ -761,5 +761,18 @@ namespace Nssol.Platypus.Controllers.spa
 
             return await DeleteContainerAsync(tenant, name, false);
         }
+
+        /// <summary>
+        /// 指定コンテナのクォーター情報を取得
+        /// </summary>
+        [HttpGet("/api/v1/tenant/resource/quota")]
+        [PermissionFilter(MenuCode.TenantResource)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(TenantQuotaOutputModel))]
+        public async Task<IActionResult> GetQuotaForTenantAsync()
+        {
+            var tenant = tenantRepository.Get(CurrentUserInfo.SelectedTenant.Id);
+            var result = new TenantQuotaOutputModel(tenant);
+            return JsonOK(result);
+        }
     }
 }
