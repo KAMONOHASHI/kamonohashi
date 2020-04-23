@@ -187,6 +187,12 @@ namespace Nssol.Platypus.ApiModels.NotebookApiModels
         public int? ExpiresIn { get; set; }
 
         /// <summary>
+        /// エントリポイント。
+        /// ノートブック起動時に実行されるスクリプト。
+        /// </summary>
+        public string EntryPoint { get; set; }
+
+        /// <summary>
         /// 引数 NotebookHistory history の属性 CreatedAt/StartedA/CompletedAt の値に従い、
         ///   待機時間(WaitingTime)と実行時間(ExecutionTime)を設定する。
         /// StartedAt == null 時におては、CompletedAt == null なら Pending 中、
@@ -246,12 +252,5 @@ namespace Nssol.Platypus.ApiModels.NotebookApiModels
             TimeSpan span = finshedTime.Value - startingTime.Value;
             return span.ToString(@"%d'd '%h'h '%m'm'", CultureInfo.InvariantCulture);
         }
-
-
-        /// <summary>
-        /// エントリポイント.
-        /// ノートブック起動時に実行されるスクリプト。
-        /// </summary>
-        public string EntryPoint { get; set; }
     }
 }

@@ -54,7 +54,7 @@ namespace Nssol.Platypus.Models.TenantModels
         public string ModelCommitId { get; set; }
 
         /// <summary>
-        /// エントリポイント.
+        /// エントリポイント。
         /// ノートブック起動時に実行されるスクリプト。
         /// </summary>
         public string EntryPoint { get; set; }
