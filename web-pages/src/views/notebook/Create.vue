@@ -25,6 +25,13 @@
                 v-model="form.dataSetId"
                 :data-sets="dataSets"
               />
+              <el-form-item label="起動時実行コマンド" prop="entryPoint">
+                <el-input
+                  v-model="form.entryPoint"
+                  type="textarea"
+                  :autosize="{ minRows: 2 }"
+                />
+              </el-form-item>
               <kqi-container-selector
                 v-model="form.containerImage"
                 :registries="registries"
@@ -44,13 +51,6 @@
                 @selectRepository="selectRepository"
                 @selectBranch="selectBranch"
               />
-              <el-form-item label="実行コマンド" prop="entryPoint">
-                <el-input
-                  v-model="form.entryPoint"
-                  type="textarea"
-                  :autosize="{ minRows: 2 }"
-                />
-              </el-form-item>
             </el-col>
             <el-col :span="12">
               <kqi-resource-selector v-model="form.resource" />
@@ -107,6 +107,13 @@
                 v-model="form.dataSetId"
                 :data-sets="dataSets"
               />
+              <el-form-item label="起動時実行コマンド" prop="entryPoint">
+                <el-input
+                  v-model="form.entryPoint"
+                  type="textarea"
+                  :autosize="{ minRows: 2 }"
+                />
+              </el-form-item>
               <kqi-container-selector
                 v-model="form.containerImage"
                 :registries="registries"
@@ -126,13 +133,6 @@
                 @selectRepository="selectRepository"
                 @selectBranch="selectBranch"
               />
-              <el-form-item label="実行コマンド" prop="entryPoint">
-                <el-input
-                  v-model="form.entryPoint"
-                  type="textarea"
-                  :autosize="{ minRows: 2 }"
-                />
-              </el-form-item>
             </el-col>
             <el-col :span="12">
               <kqi-resource-selector v-model="form.resource" />
@@ -243,13 +243,6 @@
               />
             </el-col>
             <el-col :span="18" :offset="3">
-              <el-form-item label="実行コマンド" prop="entryPoint">
-                <el-input
-                  v-model="form.entryPoint"
-                  type="textarea"
-                  :autosize="{ minRows: 2 }"
-                />
-              </el-form-item>
               <kqi-training-history-selector
                 v-model="form.selectedParent"
                 :histories="trainingHistories"
@@ -265,6 +258,13 @@
           <!-- step 4 -->
           <el-form v-if="active === 3" ref="form3" :model="form" :rules="rules">
             <el-col>
+              <el-form-item label="起動時実行コマンド" prop="entryPoint">
+                <el-input
+                  v-model="form.entryPoint"
+                  type="textarea"
+                  :autosize="{ minRows: 2 }"
+                />
+              </el-form-item>
               <kqi-environment-variables v-model="form.variables" />
               <kqi-partition-selector
                 v-model="form.partition"
