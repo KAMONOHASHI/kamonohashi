@@ -6,7 +6,7 @@
     />
     <kqi-display-text-form
       label="メモリ"
-      :value="quota.memory ? quota.memory : '無制限'"
+      :value="quota.memory ? quota.memory + ' GB' : '無制限'"
     />
     <kqi-display-text-form
       label="GPU"
