@@ -72,7 +72,7 @@ export default {
   computed: {
     ...mapGetters(['tenantNodes']),
     columnWidth: function() {
-      return '150px'
+      return '200px'
     },
   },
   async created() {
