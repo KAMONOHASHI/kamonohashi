@@ -1,6 +1,10 @@
 <template>
   <div>
+    <el-col class="pagination" :span="10">
+      <el-pagination layout="total" :total="tenantContainerLists.length" />
+    </el-col>
     <el-table
+      height="calc(100vh - 270px)"
       :data="tenantContainerLists"
       class="table pl-index-table"
       border

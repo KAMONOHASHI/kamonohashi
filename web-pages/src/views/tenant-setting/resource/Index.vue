@@ -1,14 +1,6 @@
 <template>
   <div>
     <h2>テナントリソース管理</h2>
-    <br />
-    <h3>クォーター情報</h3>
-    <el-table class="data-table pl-index-table" :data="form" border>
-      <el-table-column prop="limitCpu" label="CPU" width="200px" />
-      <el-table-column prop="limitMemory" label="Memory" width="200px" />
-      <el-table-column prop="limitGpu" label="GPU" width="200px" />
-    </el-table>
-    <br />
     <el-row>
       <el-col :span="12">
         <el-radio-group
@@ -20,46 +12,48 @@
           <el-radio-button label="container-list">コンテナ一覧</el-radio-button>
         </el-radio-group>
       </el-col>
+      <el-col :span="12" align="right">
+        <el-popover
+          ref="QuotaInfo"
+          title="クォータ情報"
+          trigger="hover"
+          width="350"
+        >
+          <kqi-quota-info :quota="quota" />
+        </el-popover>
+        <el-button v-popover:QuotaInfo icon="el-icon-info" type="primary" plain>
+          クォータ情報
+        </el-button>
+      </el-col>
     </el-row>
     <router-view />
   </div>
 </template>
 
 <script>
+import KqiQuotaInfo from '@/components/KqiQuotaInfo'
 import { createNamespacedHelpers } from 'vuex'
-const { mapGetters, mapActions } = createNamespacedHelpers('resource')
+const { mapGetters, mapActions } = createNamespacedHelpers('cluster')
 
 export default {
   title: 'テナントリソース管理',
+  components: {
+    KqiQuotaInfo,
+  },
   data: function() {
     return {
-      form: [
-        {
-          limitCpu: null,
-          limitMemory: null,
-          limitGpu: null,
-        },
-      ],
       mode: '',
     }
   },
   computed: {
-    ...mapGetters(['tenantQuota']),
+    ...mapGetters(['quota']),
   },
   async created() {
-    await this.fetchTenantQuota()
-    this.form[0].limitCpu =
-      this.tenantQuota.limitCpu != null ? this.tenantQuota.limitCpu : '無制限'
-    this.form[0].limitMemory =
-      this.tenantQuota.limitMemory != null
-        ? this.tenantQuota.limitMemory
-        : '無制限'
-    this.form[0].limitGpu =
-      this.tenantQuota.limitGpu != null ? this.tenantQuota.limitGpu : '無制限'
+    await this.fetchQuota()
     this.setMode()
   },
   methods: {
-    ...mapActions(['fetchTenantQuota']),
+    ...mapActions(['fetchQuota']),
     setMode() {
       let path = this.$route.path
       let lastElement = path.split('/').pop() // urlの最後の要素を取り出す
@@ -83,4 +77,8 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.switch-group {
+  margin-bottom: 20px;
+}
+</style>
