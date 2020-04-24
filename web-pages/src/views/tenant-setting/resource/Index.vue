@@ -13,12 +13,7 @@
         </el-radio-group>
       </el-col>
       <el-col :span="12" align="right">
-        <el-popover
-          ref="QuotaInfo"
-          title="クォータ情報"
-          trigger="hover"
-          width="350"
-        >
+        <el-popover ref="QuotaInfo" title="クォータ情報" trigger="hover">
           <kqi-quota-info :quota="quota" />
         </el-popover>
         <el-button v-popover:QuotaInfo icon="el-icon-info" type="primary" plain>
