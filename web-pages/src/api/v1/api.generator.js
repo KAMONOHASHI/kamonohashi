@@ -679,6 +679,45 @@ export const ApiV1AdminQuotasPostURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * 接続中テナントのクォータ情報を取得
+ * request: ApiV1TenantQuotaGet
+ * url: ApiV1TenantQuotaGetURL
+ * method: ApiV1TenantQuotaGet_TYPE
+ * raw_url: ApiV1TenantQuotaGet_RAW_URL
+ */
+export const ApiV1TenantQuotaGet = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v1/tenant/quota'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV1TenantQuotaGet_RAW_URL = function() {
+  return '/api/v1/tenant/quota'
+}
+export const ApiV1TenantQuotaGet_TYPE = function() {
+  return 'get'
+}
+export const ApiV1TenantQuotaGetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v1/tenant/quota'
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * REST APIとして定時バッチから実行される想定。
  * request: ApiV1AdminTensorboardsDelete
  * url: ApiV1AdminTensorboardsDeleteURL
@@ -6163,45 +6202,6 @@ export const ApiV1TenantResourceContainersByNameLogGetURL = function(parameters 
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v1/tenant/resource/containers/{name}/log'
   path = path.replace('{name}', `${parameters['name']}`)
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
- * 指定コンテナのクォーター情報を取得
- * request: ApiV1TenantResourceQuotaGet
- * url: ApiV1TenantResourceQuotaGetURL
- * method: ApiV1TenantResourceQuotaGet_TYPE
- * raw_url: ApiV1TenantResourceQuotaGet_RAW_URL
- */
-export const ApiV1TenantResourceQuotaGet = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/api/v1/tenant/resource/quota'
-  let body
-  let queryParameters = {}
-  let form = {}
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('get', domain + path, body, queryParameters, form, config)
-}
-export const ApiV1TenantResourceQuotaGet_RAW_URL = function() {
-  return '/api/v1/tenant/resource/quota'
-}
-export const ApiV1TenantResourceQuotaGet_TYPE = function() {
-  return 'get'
-}
-export const ApiV1TenantResourceQuotaGetURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/api/v1/tenant/resource/quota'
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]
