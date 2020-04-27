@@ -51,7 +51,7 @@
             />
           </el-col>
           <el-col :span="12">
-            <kqi-resource-selector v-model="form.resource" />
+            <kqi-resource-selector v-model="form.resource" :quota="quota" />
 
             <kqi-environment-variables v-model="form.variables" />
             <el-form-item label="結果Zip圧縮">
@@ -162,7 +162,7 @@
             :rules="rules"
           >
             <el-col :span="18" :offset="3">
-              <kqi-resource-selector v-model="form.resource" />
+              <kqi-resource-selector v-model="form.resource" :quota="quota" />
             </el-col>
           </el-form>
 
@@ -333,6 +333,7 @@ export default {
       loadingRepositories: ['gitSelector/loadingRepositories'],
       inferenceDetail: ['inference/detail'],
       partitions: ['cluster/partitions'],
+      quota: ['cluster/quota'],
     }),
   },
   async created() {
@@ -347,6 +348,7 @@ export default {
       status: ['Completed', 'UserCanceled'],
     })
     await this['cluster/fetchPartitions']()
+    await this['cluster/fetchQuota']()
     await this['dataSet/fetchDataSets']()
 
     // レジストリ一覧を取得し、デフォルトレジストリを設定
@@ -444,6 +446,7 @@ export default {
       'inference/fetchDetail',
       'inference/post',
       'cluster/fetchPartitions',
+      'cluster/fetchQuota',
       'dataSet/fetchDataSets',
       'registrySelector/fetchRegistries',
       'registrySelector/fetchImages',
