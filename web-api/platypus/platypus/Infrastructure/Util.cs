@@ -71,7 +71,15 @@ namespace Nssol.Platypus.Infrastructure
             }
             if (query.StartsWith("!"))
             {
-                return data.Where((d) => string.IsNullOrEmpty(keySelector(d)) || keySelector(d).Contains(query.Substring(1)) == false);
+                if (query.Length == 1 || query.IndexOf("!", 1) != 1)
+                {
+                    return data.Where((d) => keySelector(d) != null && keySelector(d).Contains(query));
+                }
+                else
+                {
+                    return data.Where((d) => string.IsNullOrEmpty(keySelector(d)) || keySelector(d).Contains(query.Substring(1)) == false);
+
+                }
             }
             return data.Where((d) => keySelector(d) != null && keySelector(d).Contains(query));
         }
