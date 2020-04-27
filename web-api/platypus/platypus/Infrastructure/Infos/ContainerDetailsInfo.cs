@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Infrastructure.Infos
 {
+    /// <summary>
+    /// コンテナ詳細情報
+    /// </summary>
     public class ContainerDetailsInfo
     {
         /// <summary>
@@ -26,14 +26,17 @@ namespace Nssol.Platypus.Infrastructure.Infos
         /// コンテナへのアクセス先ホスト
         /// </summary>
         public string NodeIpAddress { get; set; }
+
         /// <summary>
         /// ノード名
         /// </summary>
         public string NodeName { get; set; }
+
         /// <summary>
         /// 実行者
         /// </summary>
         public string CreatedBy { get; set; }
+
         /// <summary>
         /// 実行日時
         /// </summary>
@@ -53,10 +56,12 @@ namespace Nssol.Platypus.Infrastructure.Infos
         /// CPUコア数
         /// </summary>
         public float Cpu { get; set; }
+
         /// <summary>
-        /// メモリ容量（GiB）
+        /// メモリ容量（GB）
         /// </summary>
         public float Memory { get; set; }
+
         /// <summary>
         /// GPU数
         /// </summary>

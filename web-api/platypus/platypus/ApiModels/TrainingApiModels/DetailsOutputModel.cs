@@ -74,7 +74,7 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
             }
 
             // 待機時間と実行時間の設定
-            setWaitingAndExecutionTimes(history);
+            SetWaitingAndExecutionTimes(history);
         }
 
         /// <summary>
@@ -132,7 +132,7 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         public int Cpu { get; set; }
 
         /// <summary>
-        /// メモリ容量（GiB）
+        /// メモリ容量（GB）
         /// </summary>
         public int Memory { get; set; }
 
@@ -203,34 +203,34 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         /// 
         /// </summary>
         /// <param name="history">学習履歴</param>
-        private void setWaitingAndExecutionTimes(TrainingHistory history)
+        private void SetWaitingAndExecutionTimes(TrainingHistory history)
         {
             if (history.StartedAt == null)
             {
                 if (history.CompletedAt == null)
                 {
                     // 学習コンテナの起動前 (すなわち Pending 中)
-                    WaitingTime = getElapsedTime(DateTime.Now, history.CreatedAt);
+                    WaitingTime = GetElapsedTime(DateTime.Now, history.CreatedAt);
                     ExecutionTime = null;
                 }
                 else
                 {
                     // 学習コンテナの起動前(Pending 中)にジョブをキャンセルした場合
-                    WaitingTime = getElapsedTime(history.CompletedAt, history.CreatedAt);
+                    WaitingTime = GetElapsedTime(history.CompletedAt, history.CreatedAt);
                     ExecutionTime = null;
                 }
             }
             else if (history.CompletedAt == null)
             {
                 // 学習コンテナの起動中
-                WaitingTime = getElapsedTime(history.StartedAt, history.CreatedAt);
-                ExecutionTime = getElapsedTime(DateTime.Now, history.StartedAt);
+                WaitingTime = GetElapsedTime(history.StartedAt, history.CreatedAt);
+                ExecutionTime = GetElapsedTime(DateTime.Now, history.StartedAt);
             }
             else
             {
                 // 学習コンテナの起動完了
-                WaitingTime = getElapsedTime(history.StartedAt, history.CreatedAt);
-                ExecutionTime = getElapsedTime(history.CompletedAt, history.StartedAt);
+                WaitingTime = GetElapsedTime(history.StartedAt, history.CreatedAt);
+                ExecutionTime = GetElapsedTime(history.CompletedAt, history.StartedAt);
             }
         }
 
@@ -239,7 +239,7 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         /// </summary>
         /// <param name="finshedTime">終了時刻</param>
         /// <param name="startingTime">開始時刻</param>
-        private string getElapsedTime(DateTime? finshedTime, DateTime? startingTime)
+        private string GetElapsedTime(DateTime? finshedTime, DateTime? startingTime)
         {
             if (finshedTime == null || startingTime == null)
             {
