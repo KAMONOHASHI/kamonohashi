@@ -146,6 +146,9 @@
           コミットIDを指定
         </el-button>
       </el-col>
+      <el-col :span="16" :offset="7" style="line-height: normal;">
+        {{ commitIdMsg }}
+      </el-col>
     </el-row>
   </el-form-item>
 </template>
@@ -223,6 +226,25 @@ export default {
       repositoryCreated: false,
       repositoryValueKey: 'fullName',
     }
+  },
+  computed: {
+    // コミットIDのバージョンメッセージを作成
+    commitIdMsg: function() {
+      let msg = ''
+      if (this.commits.length > 0 && this.value.commit) {
+        let index = this.commits.findIndex(
+          commit => commit === this.value.commit,
+        )
+        if (index === 0) {
+          msg = '最新コミットです。'
+        } else if (index > 0) {
+          msg = '最新から' + index + 'コミット前のIDです。'
+        } else {
+          msg = '最新から' + this.commits.length + 'コミットより前のIDです。'
+        }
+      }
+      return msg
+    },
   },
 
   methods: {
