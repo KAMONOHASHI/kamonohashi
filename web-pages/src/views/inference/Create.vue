@@ -17,6 +17,7 @@
             <kqi-training-history-selector
               v-model="form.selectedParent"
               :histories="trainingHistories"
+              multiple
             />
             <kqi-data-set-selector
               v-model="form.dataSetId"
@@ -105,6 +106,7 @@
               <kqi-training-history-selector
                 v-model="form.selectedParent"
                 :histories="trainingHistories"
+                multiple
               />
             </el-col>
             <el-col :span="12">
@@ -392,11 +394,13 @@ export default {
         this.form.zip = detail.zip
         this.form.memo = detail.memo
         this.form.selectedParent = []
-        if (detail.parent) {
+        if (detail.parents) {
           this.trainingHistories.forEach(history => {
-            if (history.id === detail.parent.id) {
-              this.form.selectedParent = [history]
-            }
+            detail.parents.forEach(parent => {
+              if (history.id === parent.id) {
+                this.form.selectedParent.push(parent)
+              }
+            })
           })
         }
         this.form.resource.cpu = detail.cpu
@@ -479,11 +483,11 @@ export default {
             this.form.variables.forEach(kvp => {
               options[kvp.key] = kvp.value
             })
-            // 親学習IDを取得(1つのみマウント可)
-            let parentId = null
-            if (this.form.selectedParent.length > 0) {
-              parentId = this.form.selectedParent[0].id
-            }
+            // training history ObjectのリストからIDのみを抜き出して格納
+            let selectedParentIds = []
+            this.form.selectedParent.forEach(parent => {
+              selectedParentIds.push(parent.id)
+            })
             // ブランチ未指定の際はcommitIdも未指定で実行
             // ブランチ指定時、HEADが指定された際はcommitsの先頭要素をcommitIDに指定する。コピー実行時の再現性を担保するため
             let commitId = null
@@ -495,7 +499,7 @@ export default {
             let params = {
               Name: this.form.name,
               DataSetId: this.form.dataSetId,
-              ParentId: parentId,
+              ParentIds: selectedParentIds,
               ContainerImage: {
                 registryId: this.form.containerImage.registry.id,
                 image: this.form.containerImage.image,

@@ -4,6 +4,7 @@ using Nssol.Platypus.ApiModels.GitApiModels;
 using Nssol.Platypus.Controllers.Util;
 using Nssol.Platypus.DataAccess.Core;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces;
+using Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories;
 using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Infrastructure.Infos;
 using Nssol.Platypus.Infrastructure.Types;
@@ -24,19 +25,19 @@ namespace Nssol.Platypus.Controllers.spa
     public class GitController : PlatypusApiControllerBase
     {
         private readonly IGitLogic gitLogic;
-        private readonly ITenantRepository tenantRepository;
         private readonly IGitRepository gitRepository;
         private readonly IUnitOfWork unitOfWork;
 
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
         public GitController(
             IGitLogic gitLogic,
-            ITenantRepository tenantRepository,
             IGitRepository gitRepository,
             IUnitOfWork unitOfWork,
             IHttpContextAccessor accessor) : base(accessor)
         {
             this.gitLogic = gitLogic;
-            this.tenantRepository = tenantRepository;
             this.gitRepository = gitRepository;
             this.unitOfWork = unitOfWork;
         }
@@ -64,7 +65,7 @@ namespace Nssol.Platypus.Controllers.spa
         public IActionResult GetAllTypes()
         {
             var gitTypes = Enum.GetValues(typeof(GitServiceType)) as GitServiceType[];
-            //Noneは除外して返却
+            // Noneは除外して返却
             return JsonOK(gitTypes.Where(r => r != GitServiceType.None).Select(g => new EnumInfo() { Id = (int)g, Name = g.ToString() }));
         }
 
@@ -96,12 +97,13 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 新規にGitエンドポイントを登録する
         /// </summary>
+        /// <param name="model">新規作成モデル</param>
         [HttpPost("/api/v1/admin/git/endpoints")]
         [Filters.PermissionFilter(MenuCode.Git)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.Created)]
         public IActionResult Create([FromBody]CreateInputModel model)
         {
-            //データの入力チェック
+            // データの入力チェック
             if (!ModelState.IsValid)
             {
                 return JsonBadRequest("Invalid inputs.");
@@ -126,23 +128,25 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// Gitエンドポイント情報の編集
         /// </summary>
+        /// <param name="id">編集対象GitID</param>
+        /// <param name="model">編集モデル</param>
         [HttpPut("/api/v1/admin/git/endpoints/{id}")]
         [Filters.PermissionFilter(MenuCode.Git)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> Edit(long? id, [FromBody]CreateInputModel model) //EditとCreateで項目が同じなので、入力モデルを使いまわし
         {
-            //データの入力チェック
+            // データの入力チェック
             if (!ModelState.IsValid || !id.HasValue)
             {
                 return JsonBadRequest("Invalid inputs.");
             }
-            //データの存在チェック
+            // データの存在チェック
             var git = await gitRepository.GetByIdAsync(id.Value);
             if (git == null)
             {
                 return JsonNotFound($"Git ID {id.Value} is not found.");
             }
-            //データの編集可否チェック
+            // データの編集可否チェック
             if (git.IsNotEditable)
             {
                 return JsonBadRequest($"Git ID {id.Value} is not allowed to edit.");
@@ -162,40 +166,71 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// Gitエンドポイント情報の削除
         /// </summary>
+        /// <param name="id">削除対象GitID</param>
+        /// <param name="preprocessRepository">DI用</param>
+        /// <param name="notebookHistoryRepository">DI用</param>
+        /// <param name="trainingHistoryRepository">DI用</param>
+        /// <param name="inferenceHistoryRepository">DI用</param>
         [HttpDelete("/api/v1/admin/git/endpoints/{id}")]
         [Filters.PermissionFilter(MenuCode.Git)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         public async Task<IActionResult> Delete(long? id,
-            [FromServices] DataAccess.Repositories.Interfaces.TenantRepositories.ITrainingHistoryRepository trainingHistoryRepository)
+            [FromServices] IPreprocessRepository preprocessRepository,
+            [FromServices] INotebookHistoryRepository notebookHistoryRepository,
+            [FromServices] ITrainingHistoryRepository trainingHistoryRepository,
+            [FromServices] IInferenceHistoryRepository inferenceHistoryRepository
+            )
         {
-            //データの入力チェック
+            // データの入力チェック
             if (id == null)
             {
                 return JsonBadRequest("Invalid inputs.");
             }
-            //データの存在チェック
+
+            // データの存在チェック
             var git = await gitRepository.GetByIdAsync(id.Value);
             if (git == null)
             {
                 return JsonNotFound($"Git ID {id.Value} is not found.");
             }
-            //データの編集可否チェック
+
+            // データの編集可否チェック
             if (git.IsNotEditable)
             {
                 return JsonBadRequest($"Git ID {id.Value} is not allowed to delete.");
             }
 
-            //このGitを登録しているテナントがいた場合、削除はできない
+            // このGitを登録しているテナントがいた場合、削除はできない
             var tenant = gitRepository.GetTenant(git.Id);
             if (tenant != null)
             {
                 return JsonConflict($"Git {git.Id}:{git.Name} is used at Tenant {tenant.Id}:{tenant.Name}.");
             }
-            //このGitを使った履歴がある場合、削除はできない
+
+            // このGitを使った履歴がある場合、削除はできない
+            // 前処理チェック
+            var preprocessing = preprocessRepository.Find(p => p.RepositoryGitId == git.Id);
+            if (preprocessing != null)
+            {
+                return JsonConflict($"Git {git.Id}:{git.Name} is used at preprocessing {preprocessing.Id} in Tenant {preprocessing.TenantId}.");
+            }
+            // ノートブック履歴チェック
+            var notebook = notebookHistoryRepository.Find(n => n.ModelGitId == git.Id);
+            if (notebook != null)
+            {
+                return JsonConflict($"Git {git.Id}:{git.Name} is used at notebook {notebook.Id} in Tenant {notebook.TenantId}.");
+            }
+            // 学習履歴チェック
             var training = trainingHistoryRepository.Find(t => t.ModelGitId == git.Id);
             if (training != null)
             {
                 return JsonConflict($"Git {git.Id}:{git.Name} is used at training {training.Id} in Tenant {training.TenantId}.");
+            }
+            // 推論履歴チェック
+            var inference = inferenceHistoryRepository.Find(i => i.ModelGitId == git.Id);
+            if (inference != null)
+            {
+                return JsonConflict($"Git {git.Id}:{git.Name} is used at inference {inference.Id} in Tenant {inference.TenantId}.");
             }
 
             gitRepository.Delete(git);
@@ -351,11 +386,11 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonNotFound();
             }
 
-            //最後の一つがリソース
+            // 最後の一つがリソース
             string resource = segmentsArray[segmentsArray.Length - 1];
-            //その一つ前がリポジトリ
+            // その一つ前がリポジトリ
             string repository = segmentsArray[segmentsArray.Length - 2];
-            //それ以外がオーナー
+            // それ以外がオーナー
             string owner = string.Join("/", segmentsArray.Take(segmentsArray.Length - 2));
 
             switch(resource)

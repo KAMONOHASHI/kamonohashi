@@ -33,6 +33,7 @@ let simpleStringBody = function(func, paramName) {
 let api = {
   cluster: {
     getPartitions: gen.ApiV1TenantPartitionsGet,
+    getQuota: gen.ApiV1TenantQuotaGet,
 
     admin: {
       getQuotas: gen.ApiV1AdminQuotasGet,
@@ -195,6 +196,7 @@ let api = {
         gen.ApiV1AdminResourceContainersByTenantIdByNameEventsGet,
     },
     tenant: {
+      getNodes: gen.ApiV1TenantResourceNodesGet,
       getContainers: gen.ApiV1TenantResourceContainersGet,
       getContainerByName: gen.ApiV1TenantResourceContainersByNameGet,
       deleteContainerByName: gen.ApiV1TenantResourceContainersByNameDelete,

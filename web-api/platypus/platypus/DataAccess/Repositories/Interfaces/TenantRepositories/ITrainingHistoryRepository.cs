@@ -20,9 +20,9 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories
         IQueryable<TrainingHistory> GetAllIncludeDataSet();
 
         /// <summary>
-        /// 全学習履歴（データセットを含む）を並べ替えありで取得します。
+        /// 全学習履歴（データセット、親学習を含む）を並べ替えありで取得します。
         /// </summary>
-        IQueryable<TrainingHistory> GetAllIncludeDataSetWithOrdering();
+        IQueryable<TrainingHistory> GetAllIncludeDataSetAndParentWithOrdering();
 
         /// <summary>
         /// 全学習履歴の名前とIDのみ取得する
