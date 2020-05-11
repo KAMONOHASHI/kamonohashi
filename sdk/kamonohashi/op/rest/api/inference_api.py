@@ -235,6 +235,7 @@ class InferenceApi(object):
         :param str memo:
         :param str status:
         :param str entry_point:
+        :param str parent_id:
         :param str parent_name:
         :param int per_page:
         :param int page:
@@ -266,6 +267,7 @@ class InferenceApi(object):
         :param str memo:
         :param str status:
         :param str entry_point:
+        :param str parent_id:
         :param str parent_name:
         :param int per_page:
         :param int page:
@@ -275,7 +277,7 @@ class InferenceApi(object):
                  returns the request thread.
         """
 
-        all_params = ['id', 'name', 'started_at', 'data_set', 'memo', 'status', 'entry_point', 'parent_name', 'per_page', 'page', 'with_total']  # noqa: E501
+        all_params = ['id', 'name', 'started_at', 'data_set', 'memo', 'status', 'entry_point', 'parent_id', 'parent_name', 'per_page', 'page', 'with_total']  # noqa: E501
         all_params.append('async_req')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -310,6 +312,8 @@ class InferenceApi(object):
             query_params.append(('Status', params['status']))  # noqa: E501
         if 'entry_point' in params:
             query_params.append(('EntryPoint', params['entry_point']))  # noqa: E501
+        if 'parent_id' in params:
+            query_params.append(('ParentId', params['parent_id']))  # noqa: E501
         if 'parent_name' in params:
             query_params.append(('ParentName', params['parent_name']))  # noqa: E501
         if 'per_page' in params:

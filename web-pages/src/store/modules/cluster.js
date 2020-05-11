@@ -3,12 +3,16 @@ import api from '@/api/v1/api'
 // initial state
 const state = {
   partitions: [],
+  quota: {},
 }
 
 // getters
 const getters = {
   partitions(state) {
     return state.partitions
+  },
+  quota(state) {
+    return state.quota
   },
 }
 
@@ -18,12 +22,20 @@ const actions = {
     let partitions = (await api.cluster.getPartitions()).data
     commit('setPartitions', { partitions })
   },
+
+  async fetchQuota({ commit }) {
+    let quota = (await api.cluster.getQuota()).data
+    commit('setQuota', { quota })
+  },
 }
 
 // mutations
 const mutations = {
   setPartitions(state, { partitions }) {
     state.partitions = partitions
+  },
+  setQuota(state, { quota }) {
+    state.quota = quota
   },
 }
 

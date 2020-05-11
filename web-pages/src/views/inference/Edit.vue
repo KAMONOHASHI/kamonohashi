@@ -36,28 +36,31 @@
           <el-form-item label="推論名" prop="name">
             <el-input v-model="form.name" />
           </el-form-item>
-          <div v-if="detail.parent">
-            <el-form-item label="親学習">
-              <el-popover
-                ref="parent-popover"
-                title="親学習詳細"
-                trigger="hover"
-                width="350"
-                placement="right"
-              >
-                <kqi-training-history-details :training="detail.parent" />
-              </el-popover>
-              <el-button
-                v-if="$store.getters['account/isAvailableTraining']"
-                v-popover:parent-popover
-                class="el-input"
-                @click="showParent"
-              >
-                {{ detail.parent.fullName }}
-              </el-button>
-              <el-button v-else v-popover:parent-popover class="el-input">
-                {{ detail.parent.fullName }}
-              </el-button>
+
+          <div v-if="detail.parents && detail.parents.length > 0">
+            <el-form-item label="マウントした学習">
+              <div v-for="parent in detail.parents" :key="parent.id">
+                <el-popover
+                  ref="parentDetail"
+                  title="マウントした学習詳細"
+                  trigger="hover"
+                  width="350"
+                  placement="right"
+                >
+                  <kqi-training-history-details :training="parent" />
+                  <el-button
+                    v-if="$store.getters['account/isAvailableTraining']"
+                    slot="reference"
+                    class="el-input"
+                    @click="showParent(parent.id)"
+                  >
+                    {{ parent.fullName }}
+                  </el-button>
+                  <el-button v-else slot="reference" class="el-input">
+                    {{ parent.fullName }}
+                  </el-button>
+                </el-popover>
+              </div>
             </el-form-item>
           </div>
 
@@ -406,8 +409,8 @@ export default {
       }
     },
     // 親ジョブ履歴の表示指示
-    async showParent() {
-      this.$router.push('/training/' + this.detail.parent.id)
+    async showParent(parentId) {
+      this.$router.push('/training/' + parentId)
     },
     redirectEditDataSet() {
       this.$router.push('/dataset/edit/' + this.detail.dataSet.id)

@@ -22,6 +22,17 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         public string Name { get; set; }
 
         /// <summary>
+        /// 親学習ID
+        /// </summary>
+        public string ParentId { get; set; }
+
+
+        /// <summary>
+        /// 親学習名
+        /// </summary>
+        public string ParentName { get; set; }
+
+        /// <summary>
         /// 実行時刻の検索条件。
         /// 比較文字列＋時刻の形式。
         /// e.g.（比較文字列は半角でOK）

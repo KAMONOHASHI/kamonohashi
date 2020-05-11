@@ -16,6 +16,15 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         {
             DataSet = new DataSetApiModels.IndexOutputModel(history.DataSet);
             EntryPoint = history.EntryPoint;
+            if (history.ParentMaps != null && history.ParentMaps.Count > 0)
+            {
+                List<string> parentFullNameList = new List<string>();
+                foreach (TrainingHistoryParentMap parentMap in history.ParentMaps)
+                {
+                    parentFullNameList.Add($"{parentMap.Parent.Id}:{parentMap.Parent.Name}");
+                }
+                ParentFullNameList = parentFullNameList;
+            }
             Tags = history.Tags;
         }
 
@@ -28,6 +37,11 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         /// ジョブ実行コマンド
         /// </summary>
         public string EntryPoint { get; set; }
+
+        /// <summary>
+        /// 親学習名（表示用）
+        /// </summary>
+        public List<string> ParentFullNameList { get; set; }
 
         /// <summary>
         /// タグ

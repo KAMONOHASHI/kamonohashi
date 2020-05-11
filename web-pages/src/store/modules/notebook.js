@@ -9,7 +9,6 @@ const state = {
   availableInfiniteTime: false,
   endpoint: {},
   events: {},
-  partitions: [],
   fileList: [],
 }
 
@@ -32,9 +31,6 @@ const getters = {
   },
   events(state) {
     return state.events
-  },
-  partitions(state) {
-    return state.partitions
   },
   fileList(state) {
     return state.fileList
@@ -73,11 +69,6 @@ const actions = {
   async fetchEvents({ commit }, id) {
     let events = (await api.notebook.getEventsById({ id: id })).data
     commit('setEvents', { events })
-  },
-
-  async fetchPartitions({ commit }) {
-    let partitions = (await api.cluster.getPartitions()).data
-    commit('setPartitions', { partitions })
   },
 
   // eslint-disable-next-line no-unused-vars
@@ -155,10 +146,6 @@ const mutations = {
 
   clearDetail(state) {
     state.detail = {}
-  },
-
-  setPartitions(state, { partitions }) {
-    state.partitions = partitions
   },
 
   setFileList(state, fileList) {

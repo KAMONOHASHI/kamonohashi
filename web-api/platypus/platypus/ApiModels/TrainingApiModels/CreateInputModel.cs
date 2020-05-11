@@ -32,7 +32,7 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         /// <summary>
         /// 親学習履歴ID
         /// </summary>
-        public long? ParentId { get; set; }
+        public IEnumerable<long> ParentIds { get; set; }
 
         /// <summary>
         /// 学習モデルGit情報

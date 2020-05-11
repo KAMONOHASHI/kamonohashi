@@ -34,12 +34,13 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
         }
 
         /// <summary>
-        /// 全学習履歴（データセットを含む）を並べ替えありで取得します。
+        /// 全学習履歴（データセット、親学習を含む）を並べ替えありで取得します。
         /// </summary>
-        public IQueryable<TrainingHistory> GetAllIncludeDataSetWithOrdering()
+        public IQueryable<TrainingHistory> GetAllIncludeDataSetAndParentWithOrdering()
         {
             return GetAll().OrderByDescending(t => t.Favorite).ThenByDescending(t => t.Id)
                 .Include(t => t.DataSet)
+                .Include(t => t.ParentMaps).ThenInclude(map => map.Parent)
                 .Include(t => t.TagMaps).ThenInclude(t => t.Tag);
         }
 
