@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Models.TenantModels
 {
@@ -49,6 +46,12 @@ namespace Nssol.Platypus.Models.TenantModels
         /// </summary>
         [Required]
         public DateTime StartedAt { get; set; }
+
+        /// <summary>
+        /// コンテナの生存期間(秒)
+        /// </summary>
+        [Required]
+        public int? ExpiresIn { get; set; }
 
         /// <summary>
         /// 学習履歴

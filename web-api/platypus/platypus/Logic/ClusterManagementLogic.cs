@@ -789,8 +789,9 @@ namespace Nssol.Platypus.Logic
         /// 成功した場合は作成結果が、失敗した場合はnullが返る。
         /// </summary>
         /// <param name="trainingHistory">対象の学習履歴</param>
+        /// <param name="expiresIn">生存期間(秒)</param>
         /// <returns>作成したコンテナのステータス</returns>
-        public async Task<ContainerInfo> RunTensorBoardContainerAsync(TrainingHistory trainingHistory)
+        public async Task<ContainerInfo> RunTensorBoardContainerAsync(TrainingHistory trainingHistory, int expiresIn)
         {
             //コンテナ名は自動生成
             //使用できる文字など、命名規約はコンテナ管理サービス側によるが、
@@ -815,6 +816,7 @@ namespace Nssol.Platypus.Logic
             // 上書き不可の環境変数
             var notEditableEnvList = new Dictionary<string, string>()
             {
+                { "TRAINING_ID", trainingHistory.Id.ToString()},
                 { "KQI_SERVER", containerOptions.WebServerUrl },
                 { "KQI_TOKEN", loginLogic.GenerateToken().AccessToken },
                 { "http_proxy", containerOptions.Proxy },
@@ -825,7 +827,8 @@ namespace Nssol.Platypus.Logic
                 { "NO_PROXY", containerOptions.NoProxy },
                 { "PYTHONUNBUFFERED", "true" }, // python実行時の標準出力・エラーのバッファリングをなくす
                 { "LC_ALL", "C.UTF-8"}, // python実行時のエラー回避
-                { "LANG", "C.UTF-8"}  // python実行時のエラー回避
+                { "LANG", "C.UTF-8"},  // python実行時のエラー回避
+                { "EXPIRES_IN", expiresIn != 0 ? expiresIn.ToString() : "infinity"}  // コンテナ生存期間
             };
 
             //コンテナを起動するために必要な設定値をインスタンス化
@@ -841,6 +844,7 @@ namespace Nssol.Platypus.Logic
                 Memory = 1, //メモリは1GBで仮決め
                 Gpu = 0,
                 KqiImage = "kamonohashi/cli:" + versionLogic.GetVersion(),
+                KqiToken = loginLogic.GenerateToken().AccessToken,
                 NfsVolumeMounts = new List<NfsVolumeMountModel>()
                 {
                     // 結果が保存されているディレクトリ

@@ -1905,7 +1905,7 @@ export const ApiV1AdminGitEndpointsGetURL = function(parameters = {}) {
  * url: ApiV1AdminGitEndpointsPostURL
  * method: ApiV1AdminGitEndpointsPost_TYPE
  * raw_url: ApiV1AdminGitEndpointsPost_RAW_URL
- * @param model - 
+ * @param model - 新規作成モデル
  */
 export const ApiV1AdminGitEndpointsPost = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -2032,8 +2032,8 @@ export const ApiV1AdminGitEndpointsByIdGetURL = function(parameters = {}) {
  * url: ApiV1AdminGitEndpointsByIdPutURL
  * method: ApiV1AdminGitEndpointsByIdPut_TYPE
  * raw_url: ApiV1AdminGitEndpointsByIdPut_RAW_URL
- * @param id - 
- * @param model - 
+ * @param id - 編集対象GitID
+ * @param model - 編集モデル
  */
 export const ApiV1AdminGitEndpointsByIdPut = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -2081,7 +2081,7 @@ export const ApiV1AdminGitEndpointsByIdPutURL = function(parameters = {}) {
  * url: ApiV1AdminGitEndpointsByIdDeleteURL
  * method: ApiV1AdminGitEndpointsByIdDelete_TYPE
  * raw_url: ApiV1AdminGitEndpointsByIdDelete_RAW_URL
- * @param id - 
+ * @param id - 削除対象GitID
  */
 export const ApiV1AdminGitEndpointsByIdDelete = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -5203,7 +5203,7 @@ export const ApiV1AdminRegistryEndpointsGetURL = function(parameters = {}) {
  * url: ApiV1AdminRegistryEndpointsPostURL
  * method: ApiV1AdminRegistryEndpointsPost_TYPE
  * raw_url: ApiV1AdminRegistryEndpointsPost_RAW_URL
- * @param model - 
+ * @param model - 新規作成モデル
  */
 export const ApiV1AdminRegistryEndpointsPost = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -5285,7 +5285,7 @@ export const ApiV1AdminRegistryTypesGetURL = function(parameters = {}) {
  * url: ApiV1AdminRegistryEndpointsByIdGetURL
  * method: ApiV1AdminRegistryEndpointsByIdGet_TYPE
  * raw_url: ApiV1AdminRegistryEndpointsByIdGet_RAW_URL
- * @param id - GitエンドポイントID
+ * @param id - レジストリID
  */
 export const ApiV1AdminRegistryEndpointsByIdGet = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -5330,8 +5330,8 @@ export const ApiV1AdminRegistryEndpointsByIdGetURL = function(parameters = {}) {
  * url: ApiV1AdminRegistryEndpointsByIdPutURL
  * method: ApiV1AdminRegistryEndpointsByIdPut_TYPE
  * raw_url: ApiV1AdminRegistryEndpointsByIdPut_RAW_URL
- * @param id - 
- * @param model - 
+ * @param id - 編集対象レジストリID
+ * @param model - 編集モデル
  */
 export const ApiV1AdminRegistryEndpointsByIdPut = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -5379,7 +5379,7 @@ export const ApiV1AdminRegistryEndpointsByIdPutURL = function(parameters = {}) {
  * url: ApiV1AdminRegistryEndpointsByIdDeleteURL
  * method: ApiV1AdminRegistryEndpointsByIdDelete_TYPE
  * raw_url: ApiV1AdminRegistryEndpointsByIdDelete_RAW_URL
- * @param id - 
+ * @param id - 削除対象レジストリID
  */
 export const ApiV1AdminRegistryEndpointsByIdDelete = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -8028,6 +8028,7 @@ export const ApiV1TrainingByIdTensorboardGetURL = function(parameters = {}) {
  * method: ApiV1TrainingByIdTensorboardPut_TYPE
  * raw_url: ApiV1TrainingByIdTensorboardPut_RAW_URL
  * @param id - 対象の学習履歴ID
+ * @param model - 起動モデル
  */
 export const ApiV1TrainingByIdTensorboardPut = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -8039,6 +8040,9 @@ export const ApiV1TrainingByIdTensorboardPut = function(parameters = {}) {
   path = path.replace('{id}', `${parameters['id']}`)
   if (parameters['id'] === undefined) {
     return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  if (parameters['model'] !== undefined) {
+    body = parameters['model']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
