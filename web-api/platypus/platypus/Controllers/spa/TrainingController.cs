@@ -37,6 +37,7 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly IGitLogic gitLogic;
         private readonly IClusterManagementLogic clusterManagementLogic;
         private readonly IUnitOfWork unitOfWork;
+        private readonly ITenantRepository tenantRepository;
 
         /// <summary>
         /// コンストラクタ
@@ -51,6 +52,7 @@ namespace Nssol.Platypus.Controllers.spa
           IGitLogic gitLogic,
           IClusterManagementLogic clusterManagementLogic,
           IUnitOfWork unitOfWork,
+          ITenantRepository tenantRepository,
           IHttpContextAccessor accessor) : base(accessor)
         {
             this.clusterManagementLogic = clusterManagementLogic;
@@ -62,6 +64,7 @@ namespace Nssol.Platypus.Controllers.spa
             this.storageLogic = storageLogic;
             this.gitLogic = gitLogic;
             this.unitOfWork = unitOfWork;
+            this.tenantRepository = tenantRepository;
         }
 
         /// <summary>
@@ -345,6 +348,24 @@ namespace Nssol.Platypus.Controllers.spa
                     //コミットIDが特定できなかったらエラー
                     return JsonNotFound($"The branch {branch} for {gitId.Value}/{model.GitModel.Owner}/{model.GitModel.Repository} is not found.");
                 }
+            }
+
+            // 各リソースの超過チェック
+            var quota = tenantRepository.GetFromTenantName(CurrentUserInfo.SelectedTenant.Name);
+            // CPU
+            if (quota.LimitCpu != null && model.Cpu > quota.LimitCpu)
+            {
+                return JsonError(HttpStatusCode.InsufficientStorage, "The set CPU exceeds the upper limit.");
+            }
+            // メモリ
+            if (quota.LimitMemory != null && quota.LimitCpu != null && model.Memory > quota.LimitMemory)
+            {
+                return JsonError(HttpStatusCode.InsufficientStorage, "The set Memory exceeds the upper limit.");
+            }
+            // GPU
+            if (quota.LimitGpu != null && model.Gpu > quota.LimitGpu)
+            {
+                return JsonError(HttpStatusCode.InsufficientStorage, "The set GPU exceeds the upper limit.");
             }
 
             //コンテナの実行前に、学習履歴を作成する（コンテナの実行に失敗した場合、そのステータスをユーザに表示するため）

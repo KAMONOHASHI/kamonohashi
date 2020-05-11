@@ -15,6 +15,7 @@ using Nssol.Platypus.ApiModels.PreprocessingApiModels;
 using Nssol.Platypus.Filters;
 using Nssol.Platypus.Infrastructure.Types;
 using System.Text.RegularExpressions;
+using Nssol.Platypus.DataAccess.Repositories.Interfaces;
 
 namespace Nssol.Platypus.Controllers.spa
 {
@@ -26,6 +27,7 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly IGitLogic gitLogic;
         private readonly IStorageLogic storageLogic;
         private readonly IUnitOfWork unitOfWork;
+        private readonly ITenantRepository tenantRepository;
 
         public PreprocessingController(
             IPreprocessRepository preprocessRepository,
@@ -33,6 +35,7 @@ namespace Nssol.Platypus.Controllers.spa
             IGitLogic gitLogic,
             IStorageLogic storageLogic,
             IUnitOfWork unitOfWork,
+            ITenantRepository tenantRepository,
             IHttpContextAccessor accessor) : base(accessor)
         {
             this.preprocessRepository = preprocessRepository;
@@ -40,6 +43,7 @@ namespace Nssol.Platypus.Controllers.spa
             this.gitLogic = gitLogic;
             this.storageLogic = storageLogic;
             this.unitOfWork = unitOfWork;
+            this.tenantRepository = tenantRepository;
         }
 
         #region 前処理
@@ -621,6 +625,24 @@ namespace Nssol.Platypus.Controllers.spa
             if (string.IsNullOrEmpty(preprocess.ContainerImage) || string.IsNullOrEmpty(preprocess.ContainerTag))
             {
                 return Result<PreprocessHistory, IActionResult>.CreateErrorResult(JsonNotFound($"Preprocessing {preprocess.Name} can not be run because a container image has not been selected properly yet."));
+            }
+
+            // 各リソースの超過チェック
+            var quota = tenantRepository.GetFromTenantName(CurrentUserInfo.SelectedTenant.Name);
+            // CPU
+            if (quota.LimitCpu != null && preprocess.Cpu > quota.LimitCpu)
+            {
+                return Result<PreprocessHistory, IActionResult>.CreateErrorResult(JsonError(HttpStatusCode.InsufficientStorage, "The set CPU exceeds the upper limit."));
+            }
+            // メモリ
+            if (quota.LimitMemory != null && quota.LimitCpu != null && preprocess.Memory > quota.LimitMemory)
+            {
+                return Result<PreprocessHistory, IActionResult>.CreateErrorResult(JsonError(HttpStatusCode.InsufficientStorage, "The set Memory exceeds the upper limit."));
+            }
+            // GPU
+            if (quota.LimitGpu != null && preprocess.Gpu > quota.LimitGpu)
+            {
+                return Result<PreprocessHistory, IActionResult>.CreateErrorResult(JsonError(HttpStatusCode.InsufficientStorage, "The set GPU exceeds the upper limit."));
             }
 
             //前処理が既に実行中か確認する
