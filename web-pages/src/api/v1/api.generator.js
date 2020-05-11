@@ -2442,6 +2442,7 @@ e.g.（比較文字列は半角でOK）
      * @param memo - メモ
      * @param status - ステータス
      * @param entryPoint - 実行コマンド
+     * @param parentId - マウントした学習ID
      * @param parentName - マウントした学習名
      * @param perPage - 表示件数。指定がない場合は上限(1000件)。
      * @param page - ページ番号。デフォルトは1。
@@ -2474,6 +2475,9 @@ export const ApiV1InferencesGet = function(parameters = {}) {
   }
   if (parameters['entryPoint'] !== undefined) {
     queryParameters['EntryPoint'] = parameters['entryPoint']
+  }
+  if (parameters['parentId'] !== undefined) {
+    queryParameters['ParentId'] = parameters['parentId']
   }
   if (parameters['parentName'] !== undefined) {
     queryParameters['ParentName'] = parameters['parentName']
@@ -2524,6 +2528,9 @@ export const ApiV1InferencesGetURL = function(parameters = {}) {
   }
   if (parameters['entryPoint'] !== undefined) {
     queryParameters['EntryPoint'] = parameters['entryPoint']
+  }
+  if (parameters['parentId'] !== undefined) {
+    queryParameters['ParentId'] = parameters['parentId']
   }
   if (parameters['parentName'] !== undefined) {
     queryParameters['ParentName'] = parameters['parentName']
@@ -7364,6 +7371,8 @@ export const ApiV1TrainingSimpleGetURL = function(parameters = {}) {
      * @param id - IDの検索条件。
 比較文字列＋数値の形式。
      * @param name - 名前
+     * @param parentId - 親学習ID
+     * @param parentName - 親学習名
      * @param startedAt - 実行時刻の検索条件。
 比較文字列＋時刻の形式。
 e.g.（比較文字列は半角でOK）
@@ -7390,6 +7399,12 @@ export const ApiV1TrainingGet = function(parameters = {}) {
   }
   if (parameters['name'] !== undefined) {
     queryParameters['Name'] = parameters['name']
+  }
+  if (parameters['parentId'] !== undefined) {
+    queryParameters['ParentId'] = parameters['parentId']
+  }
+  if (parameters['parentName'] !== undefined) {
+    queryParameters['ParentName'] = parameters['parentName']
   }
   if (parameters['startedAt'] !== undefined) {
     queryParameters['StartedAt'] = parameters['startedAt']
@@ -7437,6 +7452,12 @@ export const ApiV1TrainingGetURL = function(parameters = {}) {
   }
   if (parameters['name'] !== undefined) {
     queryParameters['Name'] = parameters['name']
+  }
+  if (parameters['parentId'] !== undefined) {
+    queryParameters['ParentId'] = parameters['parentId']
+  }
+  if (parameters['parentName'] !== undefined) {
+    queryParameters['ParentName'] = parameters['parentName']
   }
   if (parameters['startedAt'] !== undefined) {
     queryParameters['StartedAt'] = parameters['startedAt']

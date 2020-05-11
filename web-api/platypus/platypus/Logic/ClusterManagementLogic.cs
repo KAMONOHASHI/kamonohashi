@@ -514,15 +514,35 @@ namespace Nssol.Platypus.Logic
             // 親を指定した場合は親の出力結果を/kqi/parentにマウント
             if (trainHistory.ParentMaps != null)
             {
-                inputModel.NfsVolumeMounts.Add(new NfsVolumeMountModel()
+                if (trainHistory.ParentMaps.Count() > 1)
                 {
-                    Name = "nfs-parent",
-                    MountPath = "/kqi/parent",
-                    SubPath = trainHistory.ParentMaps.First().ParentId.ToString(),
-                    Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
-                    ServerPath = CurrentUserInfo.SelectedTenant.TrainingContainerOutputNfsPath,
-                    ReadOnly = true
-                });
+                    // 親が複数の場合、/kqi/parent/{parentId}にマウントする
+                    foreach (var parentMap in trainHistory.ParentMaps)
+                    {
+                        inputModel.NfsVolumeMounts.Add(new NfsVolumeMountModel()
+                        {
+                            Name = "nfs-parent-" + parentMap.ParentId.ToString(),
+                            MountPath = "/kqi/parent/" + parentMap.ParentId.ToString(),
+                            SubPath = parentMap.ParentId.ToString(),
+                            Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
+                            ServerPath = CurrentUserInfo.SelectedTenant.TrainingContainerOutputNfsPath,
+                            ReadOnly = true
+                        });
+                    }
+                }
+                else if(trainHistory.ParentMaps.Count() == 1)
+                {
+                    // 親が1件のみの場合、過去の再現性を担保するため、/kqi/parent直下にマウントする
+                    inputModel.NfsVolumeMounts.Add(new NfsVolumeMountModel()
+                    {
+                        Name = "nfs-parent",
+                        MountPath = "/kqi/parent",
+                        SubPath = trainHistory.ParentMaps.First().ParentId.ToString(),
+                        Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
+                        ServerPath = CurrentUserInfo.SelectedTenant.TrainingContainerOutputNfsPath,
+                        ReadOnly = true
+                    });
+                }
             }
 
             // 開放するポート番号を指定
@@ -698,15 +718,35 @@ namespace Nssol.Platypus.Logic
             // 推論ジョブにおける親ジョブは学習ジョブとなるので、SubPathとServerPathの指定に注意
             if (inferenceHistory.ParentMaps != null)
             {
-                inputModel.NfsVolumeMounts.Add(new NfsVolumeMountModel()
+                if (inferenceHistory.ParentMaps.Count() > 1)
                 {
-                    Name = "nfs-parent",
-                    MountPath = "/kqi/parent",
-                    SubPath = inferenceHistory.ParentMaps.First().ParentId.ToString(),
-                    Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
-                    ServerPath = CurrentUserInfo.SelectedTenant.TrainingContainerOutputNfsPath,
-                    ReadOnly = true
-                });
+                    // 親ジョブが複数の場合、/kqi/parent/{parentId}にマウントする
+                    foreach (var parentMap in inferenceHistory.ParentMaps)
+                    {
+                        inputModel.NfsVolumeMounts.Add(new NfsVolumeMountModel()
+                        {
+                            Name = "nfs-parent-" + parentMap.ParentId.ToString(),
+                            MountPath = "/kqi/parent/" + parentMap.ParentId.ToString(),
+                            SubPath = parentMap.ParentId.ToString(),
+                            Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
+                            ServerPath = CurrentUserInfo.SelectedTenant.TrainingContainerOutputNfsPath,
+                            ReadOnly = true
+                        });
+                    }
+                }
+                else if (inferenceHistory.ParentMaps.Count() == 1)
+                {
+                    // 親ジョブが1件のみの場合、過去の再現性を担保するため/kqi/parent直下にマウントする
+                    inputModel.NfsVolumeMounts.Add(new NfsVolumeMountModel()
+                    {
+                        Name = "nfs-parent",
+                        MountPath = "/kqi/parent",
+                        SubPath = inferenceHistory.ParentMaps.First().ParentId.ToString(),
+                        Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
+                        ServerPath = CurrentUserInfo.SelectedTenant.TrainingContainerOutputNfsPath,
+                        ReadOnly = true
+                    });
+                }
             }
 
             // ユーザの任意追加環境変数をマージする
