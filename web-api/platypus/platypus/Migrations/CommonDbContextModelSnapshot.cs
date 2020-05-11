@@ -1062,6 +1062,9 @@ namespace Nssol.Platypus.Migrations
                     b.Property<string>("CreatedBy")
                         .IsRequired();
 
+                    b.Property<int?>("ExpiresIn")
+                        .IsRequired();
+
                     b.Property<string>("Host");
 
                     b.Property<DateTime>("ModifiedAt");

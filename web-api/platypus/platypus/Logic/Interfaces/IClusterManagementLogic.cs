@@ -28,8 +28,9 @@ namespace Nssol.Platypus.Logic.Interfaces
         /// 新規にTensorBoard表示用のコンテナを作成する。
         /// </summary>
         /// <param name="trainingHistory">対象の学習履歴</param>
+        /// <param name="expiresIn">生存期間(秒)</param>
         /// <returns>作成したコンテナのステータス</returns>
-        Task<ContainerInfo> RunTensorBoardContainerAsync(TrainingHistory trainingHistory);
+        Task<ContainerInfo> RunTensorBoardContainerAsync(TrainingHistory trainingHistory, int expiresIn);
 
         /// <summary>
         /// 新規に画像認識の訓練用コンテナを作成する。
