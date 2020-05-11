@@ -47,8 +47,13 @@ const actions = {
 
   async fetchRepositories({ commit }, gitId) {
     commit('setLoadingRepositories', true)
-    let repositories = (await api.git.getRepos({ gitId: gitId })).data
-    commit('setRepositories', { repositories })
+    try {
+      let repositories = (await api.git.getRepos({ gitId: gitId })).data
+      commit('setRepositories', { repositories })
+    } catch {
+      // gitサーバに接続できないエラーはaxios-ext側でハンドリングし、表示する
+      commit('setRepositories', [])
+    }
     commit('setLoadingRepositories', false)
   },
 
@@ -74,8 +79,12 @@ const actions = {
       owner: repository.owner,
       repositoryName: repository.name,
     }
-    let branches = (await api.git.getBranches(params)).data
-    context.commit('setBranches', { branches })
+    try {
+      let branches = (await api.git.getBranches(params)).data
+      context.commit('setBranches', { branches })
+    } catch {
+      context.commit('setBranches', [])
+    }
   },
 
   async fetchCommits({ commit }, { gitId, repository, branchName }) {
@@ -85,8 +94,12 @@ const actions = {
       repositoryName: repository.name,
       branch: branchName,
     }
-    let commits = (await api.git.getCommits(params)).data
-    commit('setCommits', { commits })
+    try {
+      let commits = (await api.git.getCommits(params)).data
+      commit('setCommits', { commits })
+    } catch {
+      commit('setCommits', [])
+    }
   },
 }
 

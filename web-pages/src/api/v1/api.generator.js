@@ -1905,7 +1905,7 @@ export const ApiV1AdminGitEndpointsGetURL = function(parameters = {}) {
  * url: ApiV1AdminGitEndpointsPostURL
  * method: ApiV1AdminGitEndpointsPost_TYPE
  * raw_url: ApiV1AdminGitEndpointsPost_RAW_URL
- * @param model - 
+ * @param model - 新規作成モデル
  */
 export const ApiV1AdminGitEndpointsPost = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -2032,8 +2032,8 @@ export const ApiV1AdminGitEndpointsByIdGetURL = function(parameters = {}) {
  * url: ApiV1AdminGitEndpointsByIdPutURL
  * method: ApiV1AdminGitEndpointsByIdPut_TYPE
  * raw_url: ApiV1AdminGitEndpointsByIdPut_RAW_URL
- * @param id - 
- * @param model - 
+ * @param id - 編集対象GitID
+ * @param model - 編集モデル
  */
 export const ApiV1AdminGitEndpointsByIdPut = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -2081,7 +2081,7 @@ export const ApiV1AdminGitEndpointsByIdPutURL = function(parameters = {}) {
  * url: ApiV1AdminGitEndpointsByIdDeleteURL
  * method: ApiV1AdminGitEndpointsByIdDelete_TYPE
  * raw_url: ApiV1AdminGitEndpointsByIdDelete_RAW_URL
- * @param id - 
+ * @param id - 削除対象GitID
  */
 export const ApiV1AdminGitEndpointsByIdDelete = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -2442,6 +2442,7 @@ e.g.（比較文字列は半角でOK）
      * @param memo - メモ
      * @param status - ステータス
      * @param entryPoint - 実行コマンド
+     * @param parentId - マウントした学習ID
      * @param parentName - マウントした学習名
      * @param perPage - 表示件数。指定がない場合は上限(1000件)。
      * @param page - ページ番号。デフォルトは1。
@@ -2474,6 +2475,9 @@ export const ApiV1InferencesGet = function(parameters = {}) {
   }
   if (parameters['entryPoint'] !== undefined) {
     queryParameters['EntryPoint'] = parameters['entryPoint']
+  }
+  if (parameters['parentId'] !== undefined) {
+    queryParameters['ParentId'] = parameters['parentId']
   }
   if (parameters['parentName'] !== undefined) {
     queryParameters['ParentName'] = parameters['parentName']
@@ -2524,6 +2528,9 @@ export const ApiV1InferencesGetURL = function(parameters = {}) {
   }
   if (parameters['entryPoint'] !== undefined) {
     queryParameters['EntryPoint'] = parameters['entryPoint']
+  }
+  if (parameters['parentId'] !== undefined) {
+    queryParameters['ParentId'] = parameters['parentId']
   }
   if (parameters['parentName'] !== undefined) {
     queryParameters['ParentName'] = parameters['parentName']
@@ -5196,7 +5203,7 @@ export const ApiV1AdminRegistryEndpointsGetURL = function(parameters = {}) {
  * url: ApiV1AdminRegistryEndpointsPostURL
  * method: ApiV1AdminRegistryEndpointsPost_TYPE
  * raw_url: ApiV1AdminRegistryEndpointsPost_RAW_URL
- * @param model - 
+ * @param model - 新規作成モデル
  */
 export const ApiV1AdminRegistryEndpointsPost = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -5278,7 +5285,7 @@ export const ApiV1AdminRegistryTypesGetURL = function(parameters = {}) {
  * url: ApiV1AdminRegistryEndpointsByIdGetURL
  * method: ApiV1AdminRegistryEndpointsByIdGet_TYPE
  * raw_url: ApiV1AdminRegistryEndpointsByIdGet_RAW_URL
- * @param id - GitエンドポイントID
+ * @param id - レジストリID
  */
 export const ApiV1AdminRegistryEndpointsByIdGet = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -5323,8 +5330,8 @@ export const ApiV1AdminRegistryEndpointsByIdGetURL = function(parameters = {}) {
  * url: ApiV1AdminRegistryEndpointsByIdPutURL
  * method: ApiV1AdminRegistryEndpointsByIdPut_TYPE
  * raw_url: ApiV1AdminRegistryEndpointsByIdPut_RAW_URL
- * @param id - 
- * @param model - 
+ * @param id - 編集対象レジストリID
+ * @param model - 編集モデル
  */
 export const ApiV1AdminRegistryEndpointsByIdPut = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -5372,7 +5379,7 @@ export const ApiV1AdminRegistryEndpointsByIdPutURL = function(parameters = {}) {
  * url: ApiV1AdminRegistryEndpointsByIdDeleteURL
  * method: ApiV1AdminRegistryEndpointsByIdDelete_TYPE
  * raw_url: ApiV1AdminRegistryEndpointsByIdDelete_RAW_URL
- * @param id - 
+ * @param id - 削除対象レジストリID
  */
 export const ApiV1AdminRegistryEndpointsByIdDelete = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -7364,6 +7371,8 @@ export const ApiV1TrainingSimpleGetURL = function(parameters = {}) {
      * @param id - IDの検索条件。
 比較文字列＋数値の形式。
      * @param name - 名前
+     * @param parentId - 親学習ID
+     * @param parentName - 親学習名
      * @param startedAt - 実行時刻の検索条件。
 比較文字列＋時刻の形式。
 e.g.（比較文字列は半角でOK）
@@ -7390,6 +7399,12 @@ export const ApiV1TrainingGet = function(parameters = {}) {
   }
   if (parameters['name'] !== undefined) {
     queryParameters['Name'] = parameters['name']
+  }
+  if (parameters['parentId'] !== undefined) {
+    queryParameters['ParentId'] = parameters['parentId']
+  }
+  if (parameters['parentName'] !== undefined) {
+    queryParameters['ParentName'] = parameters['parentName']
   }
   if (parameters['startedAt'] !== undefined) {
     queryParameters['StartedAt'] = parameters['startedAt']
@@ -7437,6 +7452,12 @@ export const ApiV1TrainingGetURL = function(parameters = {}) {
   }
   if (parameters['name'] !== undefined) {
     queryParameters['Name'] = parameters['name']
+  }
+  if (parameters['parentId'] !== undefined) {
+    queryParameters['ParentId'] = parameters['parentId']
+  }
+  if (parameters['parentName'] !== undefined) {
+    queryParameters['ParentName'] = parameters['parentName']
   }
   if (parameters['startedAt'] !== undefined) {
     queryParameters['StartedAt'] = parameters['startedAt']

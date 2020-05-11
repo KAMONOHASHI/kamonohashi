@@ -42,24 +42,26 @@
           <el-form-item label="学習名" prop="name">
             <el-input v-model="form.name" />
           </el-form-item>
-          <div v-if="detail.parent">
-            <el-form-item label="親学習">
-              <el-popover
-                ref="parent-popover"
-                title="親学習詳細"
-                trigger="hover"
-                width="350"
-                placement="right"
-              >
-                <kqi-training-history-details :training="detail.parent" />
-              </el-popover>
-              <el-button
-                v-popover:parent-popover
-                class="el-input"
-                @click="showParent"
-              >
-                {{ detail.parent.fullName }}
-              </el-button>
+          <div v-if="detail.parents && detail.parents.length > 0">
+            <el-form-item label="マウントした学習">
+              <div v-for="parent in detail.parents" :key="parent.id">
+                <el-popover
+                  ref="parentDetail"
+                  title="マウントした学習詳細"
+                  trigger="hover"
+                  width="350"
+                  placement="right"
+                >
+                  <kqi-training-history-details :training="parent" />
+                  <el-button
+                    slot="reference"
+                    class="el-input"
+                    @click="showParent(parent.id)"
+                  >
+                    {{ parent.fullName }}
+                  </el-button>
+                </el-popover>
+              </div>
             </el-form-item>
           </div>
 
@@ -212,7 +214,10 @@
                 <div class="el-input" style="padding: 10px 0;">
                   <el-button @click="emitShell">Shell起動</el-button>
                 </div>
-                <el-form-item label="コンテナアクセス">
+                <el-form-item
+                  v-if="detail.nodePorts && detail.nodePorts.length !== 0"
+                  label="コンテナアクセス"
+                >
                   <el-table :data="detail.nodePorts" stripe style="width: 100%">
                     <el-table-column
                       prop="key"
@@ -221,10 +226,10 @@
                     />
                     <el-table-column prop="value" label="Node Port">
                       <template slot-scope="scope">
-                        {{ scope.row.value }}
+                        {{ `${kqiHost}:${scope.row.value}` }}
                         <el-tooltip content="copy" placement="right">
                           <el-button
-                            v-clipboard:copy="scope.row.value"
+                            v-clipboard:copy="`${kqiHost}:${scope.row.value}`"
                             circle
                             size="mini"
                             icon="el-icon-copy-document"
@@ -335,6 +340,7 @@ export default {
       title: '',
       dialogVisible: true,
       error: null,
+      kqiHost: process.env.VUE_APP_KAMONOHASHI_HOST || window.location.hostname,
     }
   },
   computed: {
@@ -466,8 +472,8 @@ export default {
       }
     },
     // 親ジョブ履歴の表示指示
-    async showParent() {
-      this.$router.push('/training/' + this.detail.parent.id)
+    async showParent(parentId) {
+      this.$router.push('/training/' + parentId)
     },
     redirectEditDataSet() {
       this.$router.push('/dataset/edit/' + this.detail.dataSet.id)

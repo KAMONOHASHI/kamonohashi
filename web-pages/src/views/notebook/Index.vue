@@ -114,6 +114,7 @@ import KqiPagination from '@/components/KqiPagination'
 import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('notebook')
+const kqiHost = process.env.VUE_APP_KAMONOHASHI_HOST || window.location.hostname
 
 export default {
   title: 'ノートブック管理',
@@ -206,7 +207,9 @@ export default {
     },
     async openNotebook(selectedRow) {
       await this.fetchEndpoint(selectedRow.id)
-      window.open(this.endpoint)
+      window.open(
+        `http://${kqiHost}:${this.endpoint.nodePort}${this.endpoint.token}`,
+      )
     },
     async search() {
       this.pageStatus.currentPage = 1

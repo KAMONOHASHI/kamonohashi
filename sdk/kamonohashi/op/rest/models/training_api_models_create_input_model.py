@@ -41,7 +41,7 @@ class TrainingApiModelsCreateInputModel(object):
         'memory': 'int',
         'name': 'str',
         'options': 'dict(str, str)',
-        'parent_id': 'int',
+        'parent_ids': 'list[int]',
         'partition': 'str',
         'ports': 'list[int]',
         'zip': 'bool'
@@ -58,13 +58,13 @@ class TrainingApiModelsCreateInputModel(object):
         'memory': 'memory',
         'name': 'name',
         'options': 'options',
-        'parent_id': 'parentId',
+        'parent_ids': 'parentIds',
         'partition': 'partition',
         'ports': 'ports',
         'zip': 'zip'
     }
 
-    def __init__(self, container_image=None, cpu=None, data_set_id=None, entry_point=None, git_model=None, gpu=None, memo=None, memory=None, name=None, options=None, parent_id=None, partition=None, ports=None, zip=None):  # noqa: E501
+    def __init__(self, container_image=None, cpu=None, data_set_id=None, entry_point=None, git_model=None, gpu=None, memo=None, memory=None, name=None, options=None, parent_ids=None, partition=None, ports=None, zip=None):  # noqa: E501
         """TrainingApiModelsCreateInputModel - a model defined in Swagger"""  # noqa: E501
 
         self._container_image = None
@@ -77,7 +77,7 @@ class TrainingApiModelsCreateInputModel(object):
         self._memory = None
         self._name = None
         self._options = None
-        self._parent_id = None
+        self._parent_ids = None
         self._partition = None
         self._ports = None
         self._zip = None
@@ -95,8 +95,8 @@ class TrainingApiModelsCreateInputModel(object):
         self.name = name
         if options is not None:
             self.options = options
-        if parent_id is not None:
-            self.parent_id = parent_id
+        if parent_ids is not None:
+            self.parent_ids = parent_ids
         if partition is not None:
             self.partition = partition
         if ports is not None:
@@ -333,25 +333,25 @@ class TrainingApiModelsCreateInputModel(object):
         self._options = options
 
     @property
-    def parent_id(self):
-        """Gets the parent_id of this TrainingApiModelsCreateInputModel.  # noqa: E501
+    def parent_ids(self):
+        """Gets the parent_ids of this TrainingApiModelsCreateInputModel.  # noqa: E501
 
 
-        :return: The parent_id of this TrainingApiModelsCreateInputModel.  # noqa: E501
-        :rtype: int
+        :return: The parent_ids of this TrainingApiModelsCreateInputModel.  # noqa: E501
+        :rtype: list[int]
         """
-        return self._parent_id
+        return self._parent_ids
 
-    @parent_id.setter
-    def parent_id(self, parent_id):
-        """Sets the parent_id of this TrainingApiModelsCreateInputModel.
+    @parent_ids.setter
+    def parent_ids(self, parent_ids):
+        """Sets the parent_ids of this TrainingApiModelsCreateInputModel.
 
 
-        :param parent_id: The parent_id of this TrainingApiModelsCreateInputModel.  # noqa: E501
-        :type: int
+        :param parent_ids: The parent_ids of this TrainingApiModelsCreateInputModel.  # noqa: E501
+        :type: list[int]
         """
 
-        self._parent_id = parent_id
+        self._parent_ids = parent_ids
 
     @property
     def partition(self):

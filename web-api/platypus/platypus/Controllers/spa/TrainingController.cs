@@ -88,7 +88,7 @@ namespace Nssol.Platypus.Controllers.spa
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetAll([FromQuery]SearchInputModel filter, [FromQuery]int? perPage, [FromQuery] int page = 1, bool withTotal = false)
         {
-            var data = trainingHistoryRepository.GetAllIncludeDataSetWithOrdering();
+            var data = trainingHistoryRepository.GetAllIncludeDataSetAndParentWithOrdering();
             data = Search(data, filter);
 
             //未指定、あるいは1000件以上であれば、1000件に指定
@@ -168,15 +168,76 @@ namespace Nssol.Platypus.Controllers.spa
                 .SearchString(d => d.EntryPoint, filter.EntryPoint)
                 .SearchString(d => d.GetStatus().ToString(), filter.Status);
 
+            // データセット名の検索
             if (string.IsNullOrEmpty(filter.DataSet) == false)
             {
-                if (filter.DataSet.StartsWith("!"))
+                if (filter.DataSet.StartsWith("!", StringComparison.CurrentCulture))
                 {
-                    data = data.Where(d => d.DataSet != null && d.DataSet.Name != null && d.DataSet.Name.Contains(filter.DataSet.Substring(1)) == false);
+                    data = data.Where(d => d.DataSet != null && d.DataSet.Name != null && d.DataSet.Name.Contains(filter.DataSet.Substring(1), StringComparison.CurrentCulture) == false);
                 }
                 else
                 {
-                    data = data.Where(d => d.DataSet != null && d.DataSet.Name != null && d.DataSet.Name.Contains(filter.DataSet));
+                    data = data.Where(d => d.DataSet != null && d.DataSet.Name != null && d.DataSet.Name.Contains(filter.DataSet, StringComparison.CurrentCulture));
+                }
+            }
+
+            // 親学習IDの検索
+            if (string.IsNullOrEmpty(filter.ParentId) == false)
+            {
+                if (filter.ParentId.StartsWith(">=", StringComparison.CurrentCulture))
+                {
+                    if (long.TryParse(filter.ParentId.Substring(2), out long target))
+                    {
+                        data = data.Where(d => d.ParentMaps != null && d.ParentMaps.Any(m => m.ParentId >= target));
+                    }
+                }
+                else if (filter.ParentId.StartsWith(">", StringComparison.CurrentCulture))
+                {
+                    if (long.TryParse(filter.ParentId.Substring(1), out long target))
+                    {
+                        data = data.Where(d => d.ParentMaps != null && d.ParentMaps.Any(m => m.ParentId > target));
+                    }
+                }
+                else if (filter.ParentId.StartsWith("<=", StringComparison.CurrentCulture))
+                {
+                    if (long.TryParse(filter.ParentId.Substring(2), out long target))
+                    {
+                        data = data.Where(d => d.ParentMaps != null && d.ParentMaps.Any(m => m.ParentId <= target));
+                    }
+                }
+                else if (filter.ParentId.StartsWith("<", StringComparison.CurrentCulture))
+                {
+                    if (long.TryParse(filter.ParentId.Substring(1), out long target))
+                    {
+                        data = data.Where(d => d.ParentMaps != null && d.ParentMaps.Any(m => m.ParentId < target));
+                    }
+                }
+                else if (filter.ParentId.StartsWith("=", StringComparison.CurrentCulture))
+                {
+                    if (long.TryParse(filter.ParentId.Substring(1), out long target))
+                    {
+                        data = data.Where(d => d.ParentMaps != null && d.ParentMaps.Any(m => m.ParentId == target));
+                    }
+                }
+                else
+                {
+                    if (long.TryParse(filter.ParentId, out long target))
+                    {
+                        data = data.Where(d => d.ParentMaps != null && d.ParentMaps.Any(m => m.ParentId == target));
+                    }
+                }
+            }
+
+            // 親学習名の検索
+            if (string.IsNullOrEmpty(filter.ParentName) == false)
+            {
+                if (filter.ParentName.StartsWith("!", StringComparison.CurrentCulture))
+                {
+                    data = data.Where(d => d.ParentMaps == null || d.ParentMaps.Count == 0 || d.ParentMaps.All(m => m.Parent.Name.Contains(filter.ParentName.Substring(1), StringComparison.CurrentCulture) == false));
+                }
+                else
+                {
+                    data = data.Where(d => d.ParentMaps != null && d.ParentMaps.Any(m => m.Parent.Name.Contains(filter.ParentName, StringComparison.CurrentCulture)));
                 }
             }
             return data;
@@ -191,7 +252,7 @@ namespace Nssol.Platypus.Controllers.spa
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetTrainingToMount(MountInputModel filter)
         {
-            var data = trainingHistoryRepository.GetAllIncludeDataSetWithOrdering();
+            var data = trainingHistoryRepository.GetAllIncludeDataSetAndParentWithOrdering();
 
             // ステータスを限定する
             if (filter.Status != null)
@@ -230,7 +291,7 @@ namespace Nssol.Platypus.Controllers.spa
             if (status.Exist())
             {
                 //コンテナがまだ存在している場合、情報を更新する
-                var details = await clusterManagementLogic.GetContainerEndpointInfoAsync(history.Key, CurrentUserInfo.SelectedTenant.Name, false);
+                var details = await clusterManagementLogic.GetContainerDetailsInfoAsync(history.Key, CurrentUserInfo.SelectedTenant.Name, false);
                 model.Status = details.Status.Name;
                 model.StatusType = details.Status.StatusType;
 
@@ -241,12 +302,11 @@ namespace Nssol.Platypus.Controllers.spa
                 model.ConditionNote = details.ConditionNote;
                 if (details.Status.IsRunning())
                 {
-                    foreach (var endpoint in details.EndPoints)
+                    var endpointInfo = await clusterManagementLogic.GetContainerEndpointInfoAsync(history.Key, CurrentUserInfo.SelectedTenant.Name, false);
+                    foreach (var endpoint in endpointInfo.EndPoints ?? new List<EndPointInfo>())
                     {
-                        //リバプロなどでノードのホスト名ではなく、共通のエンドポイントを使える場合は、そっちを使う
-                        string host = string.IsNullOrEmpty(options.Value.WebEndPoint) ? endpoint.Host : options.Value.WebEndPoint;
-                        string url = host + ":" + endpoint.Port.ToString();
-                        model.NodePorts.Add(new KeyValuePair<string, string>(endpoint.Key, url));
+                        //ノードポート番号を返す
+                        model.NodePorts.Add(new KeyValuePair<string, string>(endpoint.Key, endpoint.Port.ToString()));
                     }
                 }
             }
@@ -378,21 +438,24 @@ namespace Nssol.Platypus.Controllers.spa
                 trainingHistory.OptionDic.Remove("");
             }
             // 親学習が指定されていれば存在チェック
-            if (model.ParentId.HasValue)
+            if (model.ParentIds != null)
             {
                 var maps = new List<TrainingHistoryParentMap>();
 
-                var parent = await trainingHistoryRepository.GetByIdAsync(model.ParentId.Value);
-                if (parent == null)
+                foreach(var parentId in model.ParentIds)
                 {
-                    return JsonNotFound($"Training ID {model.ParentId.Value} is not found.");
-                }
-                // 学習履歴に親学習を紐づける
-                var map = trainingHistoryRepository.AttachParentAsync(trainingHistory, parent);
-                if (map != null)
-                {
-                    maps.Add(map);
-                }
+                    var parent = await trainingHistoryRepository.GetByIdAsync(parentId);
+                    if (parent == null)
+                    {
+                        return JsonNotFound($"Training ID {parentId} is not found.");
+                    }
+                    // 学習履歴に親学習を紐づける
+                    var map = trainingHistoryRepository.AttachParentAsync(trainingHistory, parent);
+                    if (map != null)
+                    {
+                        maps.Add(map);
+                    }
+                }                
 
                 trainingHistory.ParentMaps = maps;
             }
@@ -525,10 +588,10 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             // 検索path文字列の先頭・末尾が/でない場合はつける
-            if (!path.StartsWith("/")) {
+            if (!path.StartsWith("/", StringComparison.CurrentCulture)) {
                 path = "/" + path;
             }
-            if (!path.EndsWith("/")) {
+            if (!path.EndsWith("/", StringComparison.CurrentCulture)) {
                 path = path + "/";
             }
 
@@ -702,7 +765,7 @@ namespace Nssol.Platypus.Controllers.spa
             if (result == null || result.Status.Succeed() == false)
             {
                 //起動に失敗した場合、ステータス Failed で返す。
-                return JsonError(System.Net.HttpStatusCode.ServiceUnavailable, $"Failed to run tensorboard container: {result.Status}");
+                return JsonError(HttpStatusCode.ServiceUnavailable, $"Failed to run tensorboard container: {result.Status}");
             }
 
             container = new TensorBoardContainer()

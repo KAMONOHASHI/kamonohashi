@@ -14,7 +14,7 @@
       状態確認中...
     </span>
     <span v-else-if="statusName === 'Running'">
-      <div v-if="tensorboard.url" class="tensorBoardlink">
+      <div v-if="tensorboardUrl" class="tensorBoardlink">
         <el-button type="primary" size="small" plain @click="openTensorBoard">
           開く
         </el-button>
@@ -56,6 +56,7 @@
 import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('training')
+const kqiHost = process.env.VUE_APP_KAMONOHASHI_HOST || window.location.hostname
 
 export default {
   components: {
@@ -71,6 +72,7 @@ export default {
   data() {
     return {
       statusName: null, // 現在のステータス。スクリプト中から適宜変更できるようにstatusとは切り離す。
+      tensorboardUrl: null, // tensorboardへのアクセスURL
       intervalId: -1, // ポーリングを止めるためにIDを退避しておく
       polling: false, // ポーリング中かの判定フラグ
       expiresIn: 3, // 起動期間(h)
@@ -108,6 +110,9 @@ export default {
       await this.fetchTensorboard(this.id)
       this.statusName = this.tensorboard.statusType
       this.remainingTime = this.tensorboard.remainingTime
+      this.tensorboardUrl = this.tensorboard.nodePort
+        ? `http://${kqiHost}:${this.tensorboard.nodePort}`
+        : null
 
       this.polling = false
     },
@@ -126,7 +131,7 @@ export default {
     },
     // TensorBoardを開く
     openTensorBoard() {
-      window.open(this.tensorboard.url)
+      window.open(this.tensorboardUrl)
     },
     // TensorBoard削除
     async deleteTensorBoard() {

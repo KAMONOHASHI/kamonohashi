@@ -156,6 +156,7 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 model.Children = children.Select(p => new PreprocessHistoryOutputModel(p));
             }
+
             return JsonOK(model);
         }
 
@@ -343,7 +344,7 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonNotFound($"Data ID {id} is not found.");
             }
 
-            return JsonOK(dataLogic.GetDataFiles(id, withUrl));
+            return JsonOK(dataLogic.GetDataFiles(id, withUrl).OrderBy(df => df.FileName));
         }
 
         /// <summary>

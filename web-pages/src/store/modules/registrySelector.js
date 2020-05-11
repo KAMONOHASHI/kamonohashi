@@ -35,17 +35,28 @@ const actions = {
   },
 
   async fetchImages({ commit }, registryId) {
-    let images = (await api.registry.getImages({ registryId: registryId })).data
-    commit('setImages', { images })
+    try {
+      let images = (await api.registry.getImages({ registryId: registryId }))
+        .data
+      commit('setImages', { images })
+    } catch {
+      // トークン未設定などで発生したエラーはaxios-ext側でハンドリングし、表示する
+      commit('setImages', [])
+    }
   },
 
   async fetchTags({ commit }, { registryId, image }) {
-    let params = {
-      registryId: registryId,
-      image: image,
+    try {
+      let params = {
+        registryId: registryId,
+        image: image,
+      }
+      let tags = (await api.registry.getTags(params)).data
+      commit('setTags', { tags })
+    } catch {
+      // 存在しないイメージ名をコピー実行した際のエラーはaxios-ext側でハンドリングし、表示する
+      commit('setTags', [])
     }
-    let tags = (await api.registry.getTags(params)).data
-    commit('setTags', { tags })
   },
 }
 

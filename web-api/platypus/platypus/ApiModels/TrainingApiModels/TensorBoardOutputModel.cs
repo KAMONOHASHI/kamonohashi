@@ -20,9 +20,8 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
                 Name = container.Name;
                 if (status.Exist() && string.IsNullOrEmpty(container.Host) == false)
                 {
-                    //リバプロなどでノードのホスト名ではなく、共通のエンドポイントを使える場合は、そっちを使う
-                    string host = string.IsNullOrEmpty(endpoint) ? container.Host : endpoint;
-                    Url = new UriBuilder("http", host, (int)container.PortNo).ToString();
+                    //ノードポート番号を返す
+                    NodePort = container.PortNo.ToString();
                 }
 
                 // 残り生存時間を計算する
@@ -63,9 +62,9 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         public string StatusType { get; set; }
 
         /// <summary>
-        /// アクセスURL
+        /// ノードポート番号
         /// </summary>
-        public string Url { get; set; }
+        public string NodePort { get; set; }
 
         /// <summary>
         /// コンテナの残存時間(%d d %h h %m m)
