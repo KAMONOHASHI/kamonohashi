@@ -32,6 +32,7 @@ namespace Nssol.Platypus.Logic
         /// <summary>
         /// リポジトリ一覧を取得する。
         /// </summary>
+        /// <param name="gitId">Git ID</param>
         /// <returns>リポジトリ一覧</returns>
         public async Task<Result<IEnumerable<RepositoryModel>, string>> GetAllRepositoriesAsync(long gitId)
         {
@@ -70,7 +71,7 @@ namespace Nssol.Platypus.Logic
         }
 
         /// <summary>
-        /// コミット一覧を取得する
+        /// コミット一覧を取得する。
         /// </summary>
         /// <param name="gitId">Git ID</param>
         /// <param name="repositoryName">リポジトリ名</param>
@@ -92,9 +93,14 @@ namespace Nssol.Platypus.Logic
         }
 
         /// <summary>
-        /// 指定したブランチ名のHEADリビジョンに一致するCommitIdを取得する。
+        /// 指定したブランチ名のHEADリビジョンに一致するコミットIDを取得する。
         /// 失敗した場合はnullを返す。
         /// </summary>
+        /// <param name="gitId">Git ID</param>
+        /// <param name="repositoryName">リポジトリ名</param>
+        /// <param name="owner">オーナー名</param>
+        /// <param name="branchName">ブランチ名</param>
+        /// <returns>コミットID</returns>
         public async Task<string> GetCommitIdAsync(long gitId, string repositoryName, string owner, string branchName)
         {
             UserTenantGitMap map = GetCurrentGitMap(gitId);
@@ -111,8 +117,33 @@ namespace Nssol.Platypus.Logic
         }
 
         /// <summary>
+        /// 指定したコミットIDのコミット詳細を取得する。
+        /// 失敗した場合はnullを返す。
+        /// </summary>
+        /// <param name="gitId">Git ID</param>
+        /// <param name="repositoryName">リポジトリ名</param>
+        /// <param name="owner">オーナー名</param>
+        /// <param name="commitId">コミットID</param>
+        /// <returns>コミット詳細</returns>
+        public async Task<Result<CommitModel, string>> GetCommitAsync(long gitId, string repositoryName, string owner, string commitId)
+        {
+            UserTenantGitMap map = GetCurrentGitMap(gitId);
+            IGitService gitService = GetGitService(map?.Git);
+            if (gitService != null)
+            {
+                return await gitService.GetCommitByIdAsync(map, repositoryName, owner, commitId);
+                
+            }
+            return Result<CommitModel, string>.CreateErrorResult("The selected tenant isn't related to proper git service."); ;
+        }
+
+        /// <summary>
         /// git pullするためのURLを取得する。
         /// </summary>
+        /// <param name="gitId">Git ID</param>
+        /// <param name="repositoryName">リポジトリ名</param>
+        /// <param name="owner">オーナー名</param>
+        /// <returns>git pullするためのURL</returns>
         public GitEndpointModel GetPullUrl(long gitId, string repositoryName, string owner)
         {
             if (string.IsNullOrEmpty(repositoryName) || string.IsNullOrEmpty(owner))
@@ -149,6 +180,11 @@ namespace Nssol.Platypus.Logic
         /// コミット内容の差分表示を参照できるWebUI URLを取得する。
         /// ページがない場合nullが返る。
         /// </summary>
+        /// <param name="gitId">Git ID</param>
+        /// <param name="repositoryName">リポジトリ名</param>
+        /// <param name="owner">オーナー名</param>
+        /// <param name="commitId">コミットID</param>
+        /// <returns>WebUI URL</returns>
         public string GetCommitUiUrl(long gitId, string repositoryName, string owner, string commitId)
         {
             if (string.IsNullOrEmpty(repositoryName) || string.IsNullOrEmpty(owner) || string.IsNullOrEmpty(commitId))
@@ -169,6 +205,11 @@ namespace Nssol.Platypus.Logic
         /// コミット内容のTree表示を参照できるWebUI URLを取得する。
         /// ページがない場合nullが返る。
         /// </summary>
+        /// <param name="gitId">Git ID</param>
+        /// <param name="repositoryName">リポジトリ名</param>
+        /// <param name="owner">オーナー名</param>
+        /// <param name="commitId">コミットID</param>
+        /// <returns>WebUI URL</returns>
         public string GetTreeUiUrl(long gitId, string repositoryName, string owner, string commitId)
         {
             if(string.IsNullOrEmpty(repositoryName) || string.IsNullOrEmpty(owner) || string.IsNullOrEmpty(commitId))
@@ -188,7 +229,8 @@ namespace Nssol.Platypus.Logic
         /// <summary>
         /// ログインユーザ＆テナントに紐付くGitMap情報を取得する
         /// </summary>
-        /// <returns></returns>
+        /// <param name="gitId">Git ID</param>
+        /// <returns>Gitマップ情報</returns>
         private UserTenantGitMap GetCurrentGitMap(long gitId)
         {
             var tenant = CurrentUserInfo?.SelectedTenant;
@@ -202,6 +244,8 @@ namespace Nssol.Platypus.Logic
         /// <summary>
         /// 現在のテナントに紐付くGitサービスインスタンスを取得する
         /// </summary>
+        /// <param name="git">Git情報</param>
+        /// <returns>Gitサービスインスタンス</returns>
         private IGitService GetGitService(Git git)
         {
             if (git != null)

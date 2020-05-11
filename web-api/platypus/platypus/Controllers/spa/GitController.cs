@@ -308,6 +308,35 @@ namespace Nssol.Platypus.Controllers.spa
         }
 
         /// <summary>
+        /// 指定したコミットIDのコミット詳細を取得する
+        /// </summary>
+        /// <param name="gitId">GitId</param>
+        /// <param name="repositoryName">リポジトリ名</param>
+        /// <param name="owner">オーナー名</param>
+        /// <param name="commitId">コミットID</param>
+        [HttpGet("{gitId}/repos/{owner}/{repositoryName}/commits/{commitId}")]
+        [Filters.PermissionFilter(MenuCode.Training, MenuCode.Preprocess, MenuCode.Inference, MenuCode.Notebook)]
+        [ProducesResponseType(typeof(ServiceModels.Git.CommitModel), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetCommitAsync([FromRoute] long gitId, [FromRoute] string owner, [FromRoute] string repositoryName, string commitId)
+        {
+            long? selectedGitId = gitId == -1 ? CurrentUserInfo.SelectedTenant.DefaultGitId : gitId;
+            if (selectedGitId == null)
+            {
+                return JsonNotFound($"There is no git server you can use. Please contact a user administrator.");
+            }
+            var result = await gitLogic.GetCommitAsync(selectedGitId.Value, repositoryName, owner, commitId);
+            if (result.IsSuccess == false)
+            {
+                return JsonError(HttpStatusCode.ServiceUnavailable, $"Failed to access a git service: {result.Error}");
+            }
+            if (result.Value == null)
+            {
+                return JsonNotFound($"Commit {commitId} is not found.");
+            }
+            return JsonOK(result.Value);
+        }
+
+        /// <summary>
         /// 階層化されたURLを吸収するためのダミーAPI。
         /// 製品版のSwaggerからは削除する。
         /// </summary>
