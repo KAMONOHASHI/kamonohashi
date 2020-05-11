@@ -10,7 +10,6 @@ const state = {
   detail: {},
   events: {},
   uploadedFiles: [],
-  partitions: [],
   tensorboard: {},
   fileList: [],
 }
@@ -37,9 +36,6 @@ const getters = {
   },
   uploadedFiles(state) {
     return state.uploadedFiles
-  },
-  partitions(state) {
-    return state.partitions
   },
   tensorboard(state) {
     return state.tensorboard
@@ -85,11 +81,6 @@ const actions = {
       })
     ).data
     commit('setUploadedFiles', { uploadedFiles })
-  },
-
-  async fetchPartitions({ commit }) {
-    let partitions = (await api.cluster.getPartitions()).data
-    commit('setPartitions', { partitions })
   },
 
   // eslint-disable-next-line no-unused-vars
@@ -148,8 +139,8 @@ const actions = {
   },
 
   // eslint-disable-next-line no-unused-vars
-  async putTensorboard({ commit }, id) {
-    await api.training.putTensorboardById({ id: id })
+  async putTensorboard({ commit }, params) {
+    await api.training.putTensorboardById(params)
   },
 
   // eslint-disable-next-line no-unused-vars
@@ -211,10 +202,6 @@ const mutations = {
 
   clearDetail(state) {
     state.detail = {}
-  },
-
-  setPartitions(state, { partitions }) {
-    state.partitions = partitions
   },
 
   setTensorboard(state, { tensorboard }) {

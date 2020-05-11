@@ -1,21 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Nssol.Platypus.Infrastructure;
+using Nssol.Platypus.ApiModels.ClusterApiModels;
 using Nssol.Platypus.Controllers.Util;
 using Nssol.Platypus.DataAccess.Core;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories;
-using Nssol.Platypus.Logic.Interfaces;
-using Nssol.Platypus.Models.TenantModels;
-using Nssol.Platypus.Models;
-using Nssol.Platypus.ApiModels.ClusterApiModels;
+using Nssol.Platypus.Filters;
+using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Infrastructure.Infos;
 using Nssol.Platypus.Infrastructure.Types;
+using Nssol.Platypus.Logic.Interfaces;
+using Nssol.Platypus.Models;
+using Nssol.Platypus.Models.TenantModels;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Controllers.spa
 {
@@ -27,10 +27,10 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly IUnitOfWork unitOfWork;
 
         public ClusterController(
-          ITensorBoardContainerRepository tensorBoardContainerRepository,
-          IClusterManagementLogic clusterManagementLogic,
-          IUnitOfWork unitOfWork,
-          IHttpContextAccessor accessor) : base(accessor)
+            ITensorBoardContainerRepository tensorBoardContainerRepository,
+            IClusterManagementLogic clusterManagementLogic,
+            IUnitOfWork unitOfWork,
+            IHttpContextAccessor accessor) : base(accessor)
         {
             this.tensorBoardContainerRepository = tensorBoardContainerRepository;
             this.clusterManagementLogic = clusterManagementLogic;
@@ -41,7 +41,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// 接続中のテナントに有効なパーティションの一覧を取得する。
         /// </summary>
         [HttpGet("tenant/partitions")]
-        [Filters.PermissionFilter(MenuCode.Training, MenuCode.Preprocess, MenuCode.Inference, MenuCode.Notebook)]
+        [PermissionFilter(MenuCode.Training, MenuCode.Preprocess, MenuCode.Inference, MenuCode.Notebook)]
         [ProducesResponseType(typeof(IEnumerable<string>), (int)HttpStatusCode.OK)]
         public IActionResult GetPartitions([FromServices] INodeRepository nodeRepository)
         {
@@ -55,7 +55,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// パーティションの一覧を取得する。
         /// </summary>
         [HttpGet("admin/partitions")]
-        [Filters.PermissionFilter(MenuCode.Node)]
+        [PermissionFilter(MenuCode.Node)]
         [ProducesResponseType(typeof(IEnumerable<string>), (int)HttpStatusCode.OK)]
         public IActionResult GetPartitionsForAdmin([FromServices] INodeRepository nodeRepository)
         {
@@ -69,11 +69,11 @@ namespace Nssol.Platypus.Controllers.spa
         /// クォータ設定を取得する。
         /// </summary>
         [HttpGet("admin/quotas")]
-        [Filters.PermissionFilter(MenuCode.Quota)]
+        [PermissionFilter(MenuCode.Quota)]
         [ProducesResponseType(typeof(IEnumerable<QuotaOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetQuotas([FromServices] ITenantRepository tenantRepository)
         {
-            var result = tenantRepository.GetAllTenants().Select(t => new QuotaOutputModel(t));
+            var result = tenantRepository.GetAllTenants().OrderBy(t => t.DisplayName).Select(t => new QuotaOutputModel(t));
             return JsonOK(result);
         }
 
@@ -84,7 +84,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// 0が指定された場合、上限なしを示す。また、指定のなかったテナントは更新しない。
         /// </remarks>
         [HttpPost("admin/quotas")]
-        [Filters.PermissionFilter(MenuCode.Quota)]
+        [PermissionFilter(MenuCode.Quota)]
         [ProducesResponseType(typeof(IEnumerable<QuotaOutputModel>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> EditQuotas([FromBody] IEnumerable<QuotaInputModel> models, [FromServices] ITenantRepository tenantRepository)
         {
@@ -121,13 +121,25 @@ namespace Nssol.Platypus.Controllers.spa
         }
 
         /// <summary>
+        /// 接続中テナントのクォータ情報を取得
+        /// </summary>
+        [HttpGet("/api/v1/tenant/quota")]
+        [PermissionFilter(MenuCode.TenantResource, MenuCode.Training, MenuCode.Preprocess, MenuCode.Inference, MenuCode.Notebook)]
+        [ProducesResponseType(typeof(QuotaOutputModel), (int)HttpStatusCode.OK)]
+        public IActionResult GetQuotaForTenantAsync([FromServices] ITenantRepository tenantRepository)
+        {
+            var tenant = tenantRepository.Get(CurrentUserInfo.SelectedTenant.Id);
+            return JsonOK(new QuotaOutputModel(tenant));
+        }
+
+        /// <summary>
         /// DB上の全てのTensorBoardコンテナ情報を対応する実コンテナごと削除する。
         /// </summary>
         /// <remarks>
         /// REST APIとして定時バッチから実行される想定。
         /// </remarks>
         [HttpDelete("admin/tensorboards")]
-        [Filters.PermissionFilter(MenuCode.Node)]
+        [PermissionFilter(MenuCode.Node)]
         [ProducesResponseType(typeof(int), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> DeleteAll()
         {
@@ -179,7 +191,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="name">コンテナ名</param>
         /// <param name="tenantRepository">DI用</param>
         [HttpGet("admin/events/{id}")]
-        [Filters.PermissionFilter(MenuCode.Tenant)]
+        [PermissionFilter(MenuCode.Tenant)]
         [ProducesResponseType(typeof(IEnumerable<ContainerEventInfo>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetEvents([FromRoute] long? id, [FromQuery] string name, [FromServices] ITenantRepository tenantRepository)
         {
