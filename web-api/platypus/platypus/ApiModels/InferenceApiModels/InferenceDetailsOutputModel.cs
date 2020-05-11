@@ -45,8 +45,7 @@ namespace Nssol.Platypus.ApiModels.InferenceApiModels
                 {
                     parents.Add(new SimpleOutputModel(parentMap.Parent));
                 }
-                // 1件目のみ格納
-                Parent = parents[0];
+                Parents = parents;
             }
 
             Node = history.Node;
@@ -93,7 +92,7 @@ namespace Nssol.Platypus.ApiModels.InferenceApiModels
         /// <remarks>
         /// <see cref="IndexOutputModel"/>にするとDataSetの再問い合わせが必要になるため、簡略化
         /// </remarks>
-        public SimpleOutputModel Parent { get; set; }
+        public List<SimpleOutputModel> Parents { get; set; }
 
         /// <summary>
         /// 完了日時

@@ -21,6 +21,7 @@
         <el-button type="danger" size="small" plain @click="deleteTensorBoard">
           停止
         </el-button>
+        <kqi-display-text-form label="残り時間" :value="remainingTime" />
       </div>
       <div v-else>
         利用可能リソース待機中...
@@ -28,6 +29,15 @@
     </span>
     <span v-else-if="statusName === 'None'">
       <el-button type="primary" @click="runTensorBoard">起動</el-button>
+      <el-form-item label="起動期間(h)">
+        <el-slider
+          v-model="expiresIn"
+          class="el-input"
+          :min="1"
+          :max="24"
+          show-input
+        />
+      </el-form-item>
     </span>
     <span v-else-if="statusName === 'Starting'">
       起動中...
@@ -37,17 +47,21 @@
     </span>
     <span v-else>
       <span>起動失敗</span>
-      <el-button type="primary" @click="runTensorBoard">再実行</el-button>
+      <el-button type="primary" @click="runTensorBoard">再起動</el-button>
     </span>
   </div>
 </template>
 
 <script>
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('training')
 const kqiHost = process.env.VUE_APP_KAMONOHASHI_HOST || window.location.hostname
 
 export default {
+  components: {
+    KqiDisplayTextForm,
+  },
   props: {
     id: {
       type: String,
@@ -61,6 +75,8 @@ export default {
       tensorboardUrl: null, // tensorboardへのアクセスURL
       intervalId: -1, // ポーリングを止めるためにIDを退避しておく
       polling: false, // ポーリング中かの判定フラグ
+      expiresIn: 3, // 起動期間(h)
+      remainingTime: null, // 残り起動期間の文字列表記('0d 1h 0m')
     }
   },
   computed: {
@@ -93,6 +109,7 @@ export default {
 
       await this.fetchTensorboard(this.id)
       this.statusName = this.tensorboard.statusType
+      this.remainingTime = this.tensorboard.remainingTime
       this.tensorboardUrl = this.tensorboard.nodePort
         ? `http://${kqiHost}:${this.tensorboard.nodePort}`
         : null
@@ -103,7 +120,14 @@ export default {
     async runTensorBoard() {
       // statusNameを変更し、"起動中"と表示する
       this.statusName = 'Starting'
-      await this.putTensorboard(this.id)
+
+      let params = {
+        id: this.id,
+        model: {
+          expiresIn: this.expiresIn * 60 * 60,
+        },
+      }
+      await this.putTensorboard(params)
     },
     // TensorBoardを開く
     openTensorBoard() {

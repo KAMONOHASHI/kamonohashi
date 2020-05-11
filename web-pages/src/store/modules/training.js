@@ -139,8 +139,8 @@ const actions = {
   },
 
   // eslint-disable-next-line no-unused-vars
-  async putTensorboard({ commit }, id) {
-    await api.training.putTensorboardById({ id: id })
+  async putTensorboard({ commit }, params) {
+    await api.training.putTensorboardById(params)
   },
 
   // eslint-disable-next-line no-unused-vars
