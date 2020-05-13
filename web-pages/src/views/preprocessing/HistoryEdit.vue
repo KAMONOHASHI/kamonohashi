@@ -47,6 +47,24 @@
           </el-collapse-item>
         </el-collapse>
       </div>
+      <div v-if="outputDataIds">
+        <el-form-item label="出力データID" />
+        <div v-if="outputDataIds.length >= 11">
+          <el-button type="primary" @click="viewDataIds = !viewDataIds">
+            {{ viewDataIds ? 'Hide DataIds' : 'View All DataIds' }}
+          </el-button>
+        </div>
+        <el-card v-if="outputDataIds.length <= 10 || viewDataIds">
+          <div v-for="(outputDataId, index) in outputDataIds" :key="index">
+            <a
+              href="javascript:void(0)"
+              @click="redirectDataEdit(outputDataId)"
+            >
+              {{ outputDataId }}
+            </a>
+          </div>
+        </el-card>
+      </div>
       <el-row>
         <el-col class="button-group">
           <el-button
@@ -96,6 +114,8 @@ export default {
     return {
       dialogVisible: true,
       preprocessingId: null,
+      viewDataIds: false,
+      outputDataIds: null,
       error: null,
     }
   },
@@ -146,6 +166,7 @@ export default {
           this.error = e
         }
       }
+      this.outputDataIds = this.historyDetail.outputDataIds
     },
 
     async handleRemove() {
@@ -166,6 +187,9 @@ export default {
     },
     emitLog() {
       this.$emit('log', { id: this.id, dataId: this.dataId })
+    },
+    redirectDataEdit(row) {
+      this.$router.push('/data/edit/' + row)
     },
 
     emitCancel() {
