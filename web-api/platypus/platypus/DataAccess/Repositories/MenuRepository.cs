@@ -52,12 +52,11 @@ namespace Nssol.Platypus.DataAccess.Repositories
 
         /// <summary>
         /// 指定したメニューに共通で割り当てられたロールIDを取得する。
-        /// 特定のテナント固有の設定は含まれない。
         /// </summary>
         public IEnumerable<Role> GetAttachedRoles(MenuCode menuCode)
         {
             return FindModelAll<MenuRoleMap>(map => map.MenuCode == menuCode.ToString()).Include(map => map.Role)
-                .Where(map => map.Role.TenantId == null).Select(map => map.Role);
+                .Select(map => map.Role);
         }
 
         /// <summary>

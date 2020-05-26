@@ -257,6 +257,7 @@ export default {
         this.error = e
       }
     },
+
     emitDone() {
       this.$emit('done')
     },

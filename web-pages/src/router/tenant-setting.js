@@ -1,6 +1,9 @@
 import ManageTenant from '@/views/tenant-setting/tenant/Setting'
+import ManageRoleIndex from '@/views/tenant-setting/role/Index'
+import ManageRoleEdit from '@/views/tenant-setting/role/Edit'
 import ManageUserIndex from '@/views/tenant-setting/user/Index'
 import ManageUserEdit from '@/views/tenant-setting/user/Edit'
+import ManageMenuIndex from '@/views/tenant-setting/menu/Index'
 import ManageResourceIndex from '@/views/tenant-setting/resource/Index'
 import ManageResourceNode from '@/views/tenant-setting/resource/Node'
 import ManageResourceContainerList from '@/views/tenant-setting/resource/ContainerList'
@@ -10,6 +13,17 @@ export default [
   {
     path: '/manage/tenant',
     component: ManageTenant,
+  },
+  {
+    path: '/manage/role',
+    component: ManageRoleIndex,
+    children: [
+      {
+        path: 'edit/:id?',
+        component: ManageRoleEdit,
+        props: true,
+      },
+    ],
   },
   {
     path: '/manage/user',
@@ -49,5 +63,9 @@ export default [
         ],
       },
     ],
+  },
+  {
+    path: '/manage/menu',
+    component: ManageMenuIndex,
   },
 ]

@@ -92,7 +92,7 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             //まずは関係するロールマップをすべて削除
-            await menuRepository.DeleteMenuMapAsync(menu, CurrentUserInfo.SelectedTenant.Id);
+            menuRepository.DeleteMenuMap(menu);
 
             foreach (var roleId in roleIds)
             {
@@ -110,7 +110,7 @@ namespace Nssol.Platypus.Controllers.spa
                 }
                 else
                 {
-                    if (role.TenantId != CurrentUserInfo.SelectedTenant.Id)
+                    if (role.TenantId != null && role.TenantId != CurrentUserInfo.SelectedTenant.Id)
                     {
                         //別のテナントのカスタムロールを編集しようとしている。警告出して404扱い。
                         LogWarning($"Role {role.Name} is not allowed to edit by the current user.");

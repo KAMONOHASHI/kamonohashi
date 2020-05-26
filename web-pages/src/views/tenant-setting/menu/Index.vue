@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>メニューアクセス管理</h2>
+    <h2>テナントメニュー管理</h2>
     <kqi-display-error :error="error" />
     <el-row>
       <el-table
@@ -43,22 +43,7 @@
                   v-for="r in roleTypes"
                   :key="r.id"
                   :label="r.id"
-                  :disabled="r.isSystemRole"
-                >
-                  {{ r.displayName }}
-                </el-checkbox-button>
-              </el-checkbox-group>
-            </div>
-            <div v-else-if="prop.row.menuType === 3">
-              <el-checkbox-group
-                v-model="prop.row.roles"
-                style="white-space: nowrap;"
-              >
-                <el-checkbox-button
-                  v-for="r in roleTypes"
-                  :key="r.id"
-                  :label="r.id"
-                  :disabled="!r.isSystemRole"
+                  :disabled="!r.tenantId"
                 >
                   {{ r.displayName }}
                 </el-checkbox-button>
@@ -90,9 +75,8 @@
 <script>
 import KqiDisplayError from '@/components/KqiDisplayError'
 import { mapGetters, mapActions } from 'vuex'
-
 export default {
-  title: 'メニューアクセス管理',
+  title: 'テナントメニュー管理',
   components: {
     KqiDisplayError,
   },
@@ -105,9 +89,9 @@ export default {
   },
   computed: {
     ...mapGetters({
-      menus: ['menu/menus'],
-      menuTypes: ['menu/types'],
-      roles: ['role/roles'],
+      menus: ['menu/tenantMenus'],
+      menuTypes: ['menu/tenantTypes'],
+      roles: ['role/tenantRoles'],
     }),
   },
   async created() {
@@ -115,25 +99,26 @@ export default {
   },
   methods: {
     ...mapActions([
-      'menu/fetchMenus',
-      'menu/fetchTypes',
-      'menu/put',
-      'role/fetchRoles',
+      'menu/fetchTenantMenus',
+      'menu/fetchTenantTypes',
+      'menu/tenantPut',
+      'role/fetchTenantRoles',
     ]),
+
     async retrieveData() {
+      // メニュー種別の取得
+      await this['menu/fetchTenantTypes']()
+
+      // メニューとロールのマッピング情報の取得
+      await this['menu/fetchTenantMenus']()
+      this.tableData = this.menus
+
       // ロールの取得
-      await this['role/fetchRoles']()
+      await this['role/fetchTenantRoles']()
       this.roleTypes = []
       this.roles.forEach(role => {
         this.roleTypes.push(role)
       })
-
-      // メニュー種別の取得
-      await this['menu/fetchTypes']()
-
-      // メニューとロールのマッピング情報の取得
-      await this['menu/fetchMenus']()
-      this.tableData = this.menus
     },
 
     async handleUpdate() {
@@ -143,7 +128,7 @@ export default {
             id: data.id,
             roleIds: data.roles,
           }
-          await this['menu/put'](params)
+          await this['menu/tenantPut'](params)
         }
         this.showSuccessMessage()
         this.error = null

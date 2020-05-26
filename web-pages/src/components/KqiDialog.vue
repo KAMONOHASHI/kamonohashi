@@ -15,7 +15,7 @@
         </el-button>
       </div>
       <div v-else>
-        <el-col :span="12">
+        <el-col v-if="deleteDisapproval == false" :span="12">
           <div v-if="deleteButtonParams.isDanger">
             <kqi-danger-button
               :warning-text="deleteButtonParams.warningText"
@@ -30,7 +30,11 @@
             />
           </div>
         </el-col>
-        <el-col :span="12" class="right-button-group">
+        <el-col
+          v-if="deleteDisapproval == false"
+          :span="12"
+          class="right-button-group"
+        >
           <el-button @click="emitClose">キャンセル</el-button>
           <el-button
             type="primary"
@@ -39,6 +43,11 @@
           >
             保存
           </el-button>
+        </el-col>
+        <el-col v-if="deleteDisapproval == true">
+          <el-button class="pull-right" @click="emitClose"
+            >キャンセル</el-button
+          >
         </el-col>
       </div>
     </el-row>
@@ -86,6 +95,10 @@ export default {
         }
       },
     },
+    deleteDisapproval: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return { dialogVisible: true }
@@ -119,5 +132,9 @@ export default {
 
 .footer {
   padding-top: 40px;
+}
+
+.pull-right {
+  float: right !important;
 }
 </style>

@@ -13,7 +13,20 @@
           :key="item.id"
           :label="item.displayName"
           :value="item.id"
-        />
+        >
+          <div v-if="!item.isSystemRole">
+            <span style="float: left;">{{ item.displayName }}</span>
+            <span
+              v-if="item.tenantId === null"
+              style="float: right; color: #8492a6; font-size: 13px;"
+            >
+              共通
+            </span>
+            <span v-else style="float: right; color: #8492a6; font-size: 13px;">
+              カスタム
+            </span>
+          </div>
+        </el-option>
       </template>
     </el-select>
   </span>

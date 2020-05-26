@@ -2,7 +2,8 @@
   <kqi-dialog
     :title="title"
     :type="id === null ? 'CREATE' : 'EDIT'"
-    :disabled-params="disabledParams"
+    :disabled="form.tenantId"
+    :delete-disapproval="deleteDisapproval"
     submit-text="作成"
     @submit="submit"
     @delete="deleteRole"
@@ -17,17 +18,13 @@
         <el-input v-model="form.displayName" :disabled="isNotEditable" />
       </el-form-item>
       <el-form-item label="種別" prop="isSystemRole">
-        <el-input
-          v-if="form.tenantName"
-          v-model="form.tenantName"
-          :disabled="id !== null"
-        />
+        <el-input v-if="form.tenantName" v-model="form.tenantName" disabled />
         <el-select
           v-else
-          v-model="form.isSystemRole"
+          v-model="form.isCostomRole"
           placeholder="Select"
           style="width: 100%;"
-          :disabled="id !== null"
+          disabled
         >
           <el-option
             v-for="item in form.roleTypes"
@@ -44,6 +41,7 @@
           controls-position="right"
           style="vertical-align: middle;"
           :min="0"
+          :disabled="isNotEditable"
         />
         並び順。小さいほど前に表示される。一意性は不要。
       </el-form-item>
@@ -79,12 +77,12 @@ export default {
       form: {
         name: null,
         displayName: null,
-        isSystemRole: false,
+        isCostomRole: false,
         sortOrder: 0,
         tenantName: null,
         roleTypes: [
           { label: 'テナント(共通)', value: false },
-          { label: 'システム', value: true },
+          { label: 'テナント(カスタム)', value: true },
         ],
       },
       title: '',
@@ -93,35 +91,34 @@ export default {
       rules: {
         name: [formRule],
         displayName: [formRule],
-        isSystemRole: [formRule],
         sortOrder: [formRule],
       },
+      deleteDisapproval: false,
     }
   },
   computed: {
     ...mapGetters(['detail']),
-    disabledParams() {
-      return {
-        deleteButton: this.isNotEditable,
-        submitButton: false, // ロールの表示順のみ変更する場合に備えて、保存ボタンはdisableにしない
-      }
-    },
   },
   async created() {
     if (this.id === null) {
       this.title = 'ロール作成'
+      this.form.isCostomRole = true
     } else {
       this.title = 'ロール編集'
       try {
         await this.fetchDetail(this.id)
         this.form.name = this.detail.name
         this.form.displayName = this.detail.displayName
-        this.form.isSystemRole = this.detail.isSystemRole
         this.form.sortOrder = this.detail.sortOrder
         this.error = null
         this.isNotEditable = this.detail.isNotEditable
         if (this.detail.tenantName) {
-          this.form.tenantName = `テナント(カスタム) / ${this.detail.tenantName}`
+          this.form.tenantName = `テナント(カスタム)`
+          this.form.isCostomRole = true
+        } else {
+          this.title = 'ロール詳細'
+          this.deleteDisapproval = true
+          this.isNotEditable = true
         }
       } catch (e) {
         this.error = e
@@ -130,7 +127,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(['fetchDetail', 'post', 'put', 'delete']),
+    ...mapActions(['fetchDetail', 'tenantPost', 'tenantPut', 'tenantDelete']),
     async submit() {
       let form = this.$refs.updateForm
       await form.validate(async valid => {
@@ -139,13 +136,12 @@ export default {
             let params = {
               name: this.form.name,
               displayName: this.form.displayName,
-              isSystemRole: this.form.isSystemRole,
               sortOrder: this.form.sortOrder,
             }
             if (this.id === null) {
-              await this.post(params)
+              await this.tenantPost(params)
             } else {
-              await this.put({ id: this.id, params: params })
+              await this.tenantPut({ id: this.id, params: params })
             }
             this.error = null
             this.emitDone()
@@ -157,7 +153,7 @@ export default {
     },
     async deleteRole() {
       try {
-        await this.delete(this.id)
+        await this.tenantDelete(this.id)
         this.error = null
         this.emitDone()
       } catch (e) {

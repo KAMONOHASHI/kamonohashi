@@ -4,6 +4,8 @@ import api from '@/api/v1/api'
 const state = {
   menus: [],
   types: [],
+  tenantMenus: [],
+  tenantTypes: [],
 }
 
 // getters
@@ -13,6 +15,12 @@ const getters = {
   },
   types(state) {
     return state.types
+  },
+  tenantMenus(state) {
+    return state.tenantMenus
+  },
+  tenantTypes(state) {
+    return state.tenantTypes
   },
 }
 
@@ -44,6 +52,34 @@ const actions = {
   async put({ commit }, params) {
     return await api.menu.admin.put(params)
   },
+
+  // tenant系
+  async fetchTenantMenus({ commit }) {
+    let response = await api.menu.tenant.get()
+    let tenantMenus = response.data
+
+    // roleオブジェクトの配列であるrolesから、idを抜き出して設定
+    tenantMenus.forEach(menu => {
+      let roles = []
+      menu.roles.forEach(role => {
+        roles.push(role.id)
+      })
+      menu.roles = roles
+    })
+
+    commit('setTenantMenus', { tenantMenus })
+  },
+
+  async fetchTenantTypes({ commit }) {
+    let response = await api.menu.tenant.getTypes()
+    let tenantTypes = response.data
+    commit('setTenantTypes', { tenantTypes })
+  },
+
+  // eslint-disable-next-line no-unused-vars
+  async tenantPut({ commit }, params) {
+    return await api.menu.tenant.put(params)
+  },
 }
 
 // mutations
@@ -53,6 +89,12 @@ const mutations = {
   },
   setTypes(state, { types }) {
     state.types = types
+  },
+  setTenantMenus(state, { tenantMenus }) {
+    state.tenantMenus = tenantMenus
+  },
+  setTenantTypes(state, { tenantTypes }) {
+    state.tenantTypes = tenantTypes
   },
 }
 

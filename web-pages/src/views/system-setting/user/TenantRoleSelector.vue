@@ -31,7 +31,7 @@
             </el-radio>
           </template>
         </el-table-column>
-        <el-table-column label="ロール" width="auto">
+        <el-table-column label="ロール" :width="getRoleDisplayWidth()">
           <template slot-scope="prop">
             <el-checkbox-group
               v-model="prop.row.selectedRoleIds"
@@ -99,6 +99,18 @@ export default {
           this.roles.forEach(role => {
             if (!role.isSystemRole) {
               tmpRoles.push(role)
+            }
+          })
+          // カスタムロールの判別
+          tmpRoles = tmpRoles.filter(
+            role => role.tenantId == null || role.tenantId == tenant.id,
+          )
+          tmpRoles.forEach(role => {
+            if (
+              role.tenantId != null &&
+              role.displayName.indexOf('(カスタム)') == -1
+            ) {
+              role.displayName = role.displayName + '(カスタム)'
             }
           })
 
@@ -193,6 +205,15 @@ export default {
         }
       })
       this.$emit('input', select)
+    },
+
+    // ロールの文字数に応じて表示幅を取得する
+    getRoleDisplayWidth() {
+      let wordCount = 0
+      for (let i = 0; i < this.roles.length; i++) {
+        wordCount = wordCount + this.roles[i].displayName.length
+      }
+      return wordCount * 10
     },
   },
 }

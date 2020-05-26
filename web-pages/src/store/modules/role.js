@@ -53,6 +53,21 @@ const actions = {
     let tenantRoles = (await api.role.tenant.get()).data
     commit('setTenantRoles', { tenantRoles })
   },
+
+  // eslint-disable-next-line no-unused-vars
+  async tenantPost({ commit }, params) {
+    return await api.role.tenant.post({ model: params })
+  },
+
+  // eslint-disable-next-line no-unused-vars
+  async tenantPut({ commit }, { id, params }) {
+    return await api.role.tenant.put({ id: id, model: params })
+  },
+
+  // eslint-disable-next-line no-unused-vars
+  async tenantDelete({ commit }, id) {
+    return await api.role.tenant.delete({ id: id })
+  },
 }
 
 // mutations
