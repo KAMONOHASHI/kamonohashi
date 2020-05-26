@@ -10,11 +10,27 @@ data:
     bash /kqi/scripts/common/prepare-git
     
     echo "------------------------- [KAMONOHASHI Prepare] deploy dataset $DATASET_ID into /kqi/input . -------------------------"
-    kqi dataset download-files -d /kqi/input $DATASET_ID && kqi dataset get -d /kqi/input/meta.json $DATASET_ID
+    kqi dataset get -d /kqi/input/meta.json $DATASET_ID && kqi dataset list-path-pairs $DATASET_ID >/kqi/tmp/datapairs.txt
     if [ $? -ne 0 ]; then
-        echo "dataset download-files failed"
+        echo "dataset get failed"
         kqi inference halt $INFERENCE_ID
     fi
+
+    # default: create symlink to raw-data, $LOCAL_DATASET = True : copy raw-data to local
+    prepare_cmd='ln -s "/kqi/raw/${stored_path}" "/kqi/input/${file_path}"'
+    if [ ${LOCAL_DATASET} = "True" ]; then
+        prepare_cmd='cp "/kqi/raw/${stored_path}" "/kqi/input/${file_path}"'
+    fi
+    while read file_path stored_path
+    do
+        mkdir -p "/kqi/input/$(dirname ${file_path})" && eval ${prepare_cmd}
+        if [ $? -ne 0 ]; then
+            echo "create dataset failed"
+            kqi inference halt $TRAINING_ID
+            exit 0
+        fi
+    done </kqi/tmp/datapairs.txt
+
   main: |
     bash /kqi/scripts/common/wait-ready
     cd /kqi/git
