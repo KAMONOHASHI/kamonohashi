@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Nssol.Platypus.DataAccess.Core;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces;
@@ -493,6 +493,17 @@ namespace Nssol.Platypus.Logic
                         Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
                         ServerPath = CurrentUserInfo.SelectedTenant.TrainingContainerAttachedNfsPath,
                         ReadOnly = false
+                    },
+                    
+                    // データをマウントするディレクトリ
+                    // テナントのDataディレクトリを/kqi/rawにマウントする
+                    new NfsVolumeMountModel()
+                    {
+                        Name = "nfs-data",
+                        MountPath = "/kqi/raw",
+                        Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
+                        ServerPath = CurrentUserInfo.SelectedTenant.DataNfsPath,
+                        ReadOnly = true
                     }
                 },
                 ContainerSharedPath = new Dictionary<string, string>()
