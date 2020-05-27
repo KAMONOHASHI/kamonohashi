@@ -187,6 +187,56 @@ namespace Nssol.Platypus.Controllers.spa
         }
 
         /// <summary>
+        /// 指定したIDのデータセットに含まれるデータとNFS上のデータ名のペア情報を取得する。
+        /// </summary>
+        /// <param name="id">データセットID</param>
+        [HttpGet("{id}/pathpairs")]
+        [Filters.PermissionFilter(MenuCode.DataSet, MenuCode.Training, MenuCode.Inference, MenuCode.Notebook)]
+        [ProducesResponseType(typeof(IEnumerable<PathPairOutputModel>), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetFilePaths([FromRoute] long? id)
+        {
+            if (id == null)
+            {
+                return JsonBadRequest("DataSet ID is required.");
+            }
+            var dataSet = await dataSetRepository.GetDataSetIncludeDataSetEntryAndDataAsync(id.Value);
+            if (dataSet == null)
+            {
+                return JsonNotFound($"DataSet Id {id.Value} is not found.");
+            }
+
+            if (dataSet.DataSetEntries == null)
+            {
+                return JsonNoContent();
+            }
+
+
+            // training, testingといったデータタイプの種類を取得する
+            Dictionary<long, string> dataTypes = new Dictionary<long, string>();
+            foreach (var dataType in dataTypeRepository.GetAllWithOrderby(d => d.SortOrder, true))
+            {
+                dataTypes[dataType.Id] = dataType.Name;
+            }
+
+            //エントリを並列で取得し、データのパスとデータ名のペアを作る
+            List<PathPairOutputModel> pathPairs = new List<PathPairOutputModel>();
+            dataSet.DataSetEntries.AsParallel().ForAll(entry =>
+            {
+                string dataTypeName = dataTypes[entry.DataTypeId];
+                foreach (var data in entry.Data.DataProperties)
+                {
+                    lock (pathPairs)
+                    {
+                        pathPairs.Add(new PathPairOutputModel($"{dataTypeName}/{entry.DataId}/{data.Key}", data.DataFile.StoredPath));
+                    }
+                }
+            });
+
+            return JsonOK(pathPairs);
+        }
+
+
+        /// <summary>
         /// データセットを新規作成する
         /// </summary>
         [HttpPost]
