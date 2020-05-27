@@ -192,6 +192,12 @@ namespace Nssol.Platypus.Models.TenantModels
         public bool Zip { get; set; }
 
         /// <summary>
+        /// データセットををローカルコピーするか否か。
+        /// true：ローカルコピーする　false：ローカルコピーしない(シンボリックリンクを作成する)
+        /// </summary>
+        public bool LocalDataset { get; set; }
+
+        /// <summary>
         /// データセット
         /// </summary>
         [ForeignKey(nameof(DataSetId))]
