@@ -41,6 +41,18 @@ namespace Nssol.Platypus.Models
         public string StorageBucket { get; set; }
 
         /// <summary>
+        /// データ用のNFSマウント元パス
+        /// </summary>
+        [NotMapped]
+        public string DataNfsPath
+        {
+            get
+            {
+                return $"{Storage.NfsRootPath}{StorageBucket}/{ResourceType.Data}";
+            }
+        }
+        
+        /// <summary>
         /// コンテナ出力ファイル用のNFSマウント元パス
         /// </summary>
         [NotMapped]
