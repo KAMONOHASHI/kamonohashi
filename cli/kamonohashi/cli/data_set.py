@@ -181,6 +181,14 @@ def download_files(id, destination, data_type):
                 destination_dir_path = os.path.join(destination, entry.type, str(file.id))
                 object_storage.download_file(pool_manager, file.url, destination_dir_path, file.file_name)
 
+@data_set.command('list-path-pairs')
+@click.argument('id', type=int)
+def list_path_pairs(id):
+    """List path pairs of a dataset"""
+    api = rest.DataSetApi(configuration.get_api_client())
+    result = api.list_dataset_pathpairs(id)
+    for x in result:
+      print(x.data_path + " " + x.stored_path)
 
 @data_set.command('list-data-types')
 def list_data_types():
