@@ -147,6 +147,7 @@ export default {
         { prop: 'id', name: 'ID', type: 'number' },
         { prop: 'name', name: '推論名', type: 'text' },
         { prop: 'startedAt', name: '開始日時', type: 'date' },
+        { prop: 'startedBy', name: '実行者', type: 'text' },
         { prop: 'parentId', name: 'マウントした学習ID', type: 'number' },
         { prop: 'parentName', name: 'マウントした学習名', type: 'text' },
         { prop: 'dataSet', name: 'データセット', type: 'text' },

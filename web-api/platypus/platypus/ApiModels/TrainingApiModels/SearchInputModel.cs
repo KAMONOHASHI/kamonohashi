@@ -38,6 +38,11 @@
         /// "＜2018/01/01" → 2018/01/01 00:00:00 以前
         /// </summary>
         public string StartedAt { get; set; }
+
+        /// <summary>
+        /// 実行者
+        /// </summary>
+        public string StartedBy { get; set; }
         
         /// <summary>
         /// データセット名

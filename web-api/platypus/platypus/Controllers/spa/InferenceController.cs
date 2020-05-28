@@ -170,6 +170,7 @@ namespace Nssol.Platypus.Controllers.spa
                 .SearchLong(d => d.Id, filter.Id)
                 .SearchString(d => d.Name, filter.Name)
                 .SearchTime(d => d.CreatedAt, filter.StartedAt)
+                .SearchString(d => d.CreatedBy, filter.StartedBy)
                 .SearchString(d => d.Memo, filter.Memo)
                 .SearchString(d => d.EntryPoint, filter.EntryPoint)
                 .SearchString(d => d.GetStatus().ToString(), filter.Status);
