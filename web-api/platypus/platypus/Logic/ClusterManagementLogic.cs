@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Nssol.Platypus.DataAccess.Core;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces;
@@ -453,7 +453,8 @@ namespace Nssol.Platypus.Logic
                 { "PYTHONUNBUFFERED", "true" }, // python実行時の標準出力・エラーのバッファリングをなくす
                 { "LC_ALL", "C.UTF-8"},  // python実行時のエラー回避
                 { "LANG", "C.UTF-8"},  // python実行時のエラー回避
-                { "ZIP_FILE_CREATED", trainHistory.Zip.ToString() }  // 結果をzip圧縮するか否か
+                { "ZIP_FILE_CREATED", trainHistory.Zip.ToString() },  // 結果をzip圧縮するか否か
+                { "LOCAL_DATASET", trainHistory.LocalDataSet.ToString() }  // ローカルにデータをコピーするか否か
             };
 
             //コンテナを起動するために必要な設定値をインスタンス化
@@ -667,7 +668,8 @@ namespace Nssol.Platypus.Logic
                 { "PYTHONUNBUFFERED", "true" }, // python実行時の標準出力・エラーのバッファリングをなくす
                 { "LC_ALL", "C.UTF-8"},  // python実行時のエラー回避
                 { "LANG", "C.UTF-8"},  // python実行時のエラー回避
-                { "ZIP_FILE_CREATED", inferenceHistory.Zip.ToString() }  // 結果をzip圧縮するか否か
+                { "ZIP_FILE_CREATED", inferenceHistory.Zip.ToString() },  // 結果をzip圧縮するか否か
+                { "LOCAL_DATASET", inferenceHistory.LocalDataSet.ToString() }  // ローカルにデータをコピーするか否か
             };
 
             //コンテナを起動するために必要な設定値をインスタンス化
@@ -707,6 +709,16 @@ namespace Nssol.Platypus.Logic
                         Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
                         ServerPath = CurrentUserInfo.SelectedTenant.InferenceContainerAttachedNfsPath,
                         ReadOnly = false
+                    },
+                    // データをマウントするディレクトリ
+                    // テナントのDataディレクトリを/kqi/rawにマウントする
+                    new NfsVolumeMountModel()
+                    {
+                        Name = "nfs-data",
+                        MountPath = "/kqi/raw",
+                        Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
+                        ServerPath = CurrentUserInfo.SelectedTenant.DataNfsPath,
+                        ReadOnly = true
                     }
                 },
                 ContainerSharedPath = new Dictionary<string, string>()
@@ -1012,7 +1024,8 @@ namespace Nssol.Platypus.Logic
                 { "PYTHONUNBUFFERED", "true" }, // python実行時の標準出力・エラーのバッファリングをなくす
                 { "LC_ALL", "C.UTF-8"},  // python実行時のエラー回避
                 { "LANG", "C.UTF-8"},  // python実行時のエラー回避
-                { "EXPIRES_IN", notebookHistory.ExpiresIn != 0 ? notebookHistory.ExpiresIn.ToString() : "infinity"}  // コンテナ生存期間
+                { "EXPIRES_IN", notebookHistory.ExpiresIn != 0 ? notebookHistory.ExpiresIn.ToString() : "infinity"},  // コンテナ生存期間
+                { "LOCAL_DATASET", notebookHistory.LocalDataSet.ToString() }  // ローカルにデータをコピーするか否か
             };
 
             //コンテナを起動するために必要な設定値をインスタンス化
@@ -1051,6 +1064,16 @@ namespace Nssol.Platypus.Logic
                         Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
                         ServerPath = CurrentUserInfo.SelectedTenant.NotebookContainerAttachedNfsPath,
                         ReadOnly = false
+                    },
+                    // データをマウントするディレクトリ
+                    // テナントのDataディレクトリを/kqi/rawにマウントする
+                    new NfsVolumeMountModel()
+                    {
+                        Name = "nfs-data",
+                        MountPath = "/kqi/raw",
+                        Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
+                        ServerPath = CurrentUserInfo.SelectedTenant.DataNfsPath,
+                        ReadOnly = true
                     }
                 },
                 ContainerSharedPath = new Dictionary<string, string>()

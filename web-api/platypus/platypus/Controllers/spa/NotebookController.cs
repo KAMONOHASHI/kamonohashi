@@ -486,7 +486,8 @@ namespace Nssol.Platypus.Controllers.spa
                 Memo = model.Memo,
                 Status = ContainerStatus.Running.Key,
                 StartedAt = DateTime.Now,
-                ExpiresIn = model.ExpiresIn
+                ExpiresIn = model.ExpiresIn,
+                LocalDataSet = model.LocalDataSet,
             };
 
             //コンテナが指定されているかチェック

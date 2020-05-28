@@ -431,7 +431,8 @@ namespace Nssol.Platypus.Controllers.spa
                 Partition = model.Partition,
                 PortList = model.Ports,
                 Status = ContainerStatus.Running.Key,
-                Zip = model.Zip
+                Zip = model.Zip,
+                LocalDataSet = model.LocalDataSet,
             };
             if (trainingHistory.OptionDic.ContainsKey("")) //空文字は除外する
             {
