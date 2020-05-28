@@ -180,7 +180,7 @@ namespace Nssol.Platypus.Models.TenantModels
         /// データセットををローカルコピーするか否か。
         /// true：ローカルコピーする　false：ローカルコピーしない(シンボリックリンクを作成する)
         /// </summary>
-        public bool LocalDataset { get; set; }
+        public bool LocalDataSet { get; set; }
 
         /// <summary>
         /// データセット
