@@ -84,5 +84,12 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         /// true：zip圧縮する　false：zip圧縮しない
         /// </summary>
         public bool Zip { get; set; }
+
+        /// <summary>
+        /// データセットをローカルコピーするか否か。
+        /// true：ローカルコピーする　false：ローカルコピーしない(シンボリックリンクを作成する)
+        /// </summary>
+        public bool LocalDataSet { get; set; }
+
     }
 }

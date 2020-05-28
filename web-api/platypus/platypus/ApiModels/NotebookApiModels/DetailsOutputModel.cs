@@ -67,6 +67,7 @@ namespace Nssol.Platypus.ApiModels.NotebookApiModels
             Partition = history.Partition;
 
             ExpiresIn = history.ExpiresIn;
+            LocalDataSet = history.LocalDataSet;
 
             foreach (var option in history.GetOptionDic())
             {
@@ -183,6 +184,12 @@ namespace Nssol.Platypus.ApiModels.NotebookApiModels
         /// コンテナの生存期間(秒)
         /// </summary>
         public int? ExpiresIn { get; set; }
+
+        /// <summary>
+        /// データセットをローカルコピーするか否か。
+        /// true：ローカルコピーする　false：ローカルコピーしない(シンボリックリンクを作成する)
+        /// </summary>
+        public bool LocalDataSet { get; set; }
 
         /// <summary>
         /// 引数 NotebookHistory history の属性 CreatedAt/StartedA/CompletedAt の値に従い、

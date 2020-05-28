@@ -74,5 +74,11 @@ namespace Nssol.Platypus.ApiModels.NotebookApiModels
         /// </summary>
         [Required]
         public int? ExpiresIn { get; set; }
+
+        /// <summary>
+        /// データセットをローカルコピーするか否か。
+        /// true：ローカルコピーする　false：ローカルコピーしない(シンボリックリンクを作成する)
+        /// </summary>
+        public bool LocalDataSet { get; set; }
     }
 }
