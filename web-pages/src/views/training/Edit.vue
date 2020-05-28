@@ -270,6 +270,12 @@
               <span v-else>圧縮しない</span>
             </div>
           </el-form-item>
+          <el-form-item label="データセットのローカルコピー">
+            <div class="el-input">
+              <span v-if="detail.localDataSet">作成する</span>
+              <span v-else>作成しない</span>
+            </div>
+          </el-form-item>
           <el-form-item label="添付ファイル">
             <br />
             <el-button size="mini" @click="emitLog">ログファイル閲覧</el-button>
