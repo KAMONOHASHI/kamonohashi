@@ -69,6 +69,14 @@
                 </el-form-item>
               </div>
               <kqi-environment-variables v-model="form.variables" />
+              <el-form-item label="データセットのローカルコピー">
+                <el-switch
+                  v-model="form.localDataSet"
+                  style="width: 100%;"
+                  inactive-text="作成しない"
+                  active-text="作成する"
+                />
+              </el-form-item>
               <kqi-partition-selector
                 v-model="form.partition"
                 :partitions="partitions"
@@ -145,6 +153,14 @@
                   />
                 </el-form-item>
               </div>
+              <el-form-item label="データセットのローカルコピー">
+                <el-switch
+                  v-model="form.localDataSet"
+                  style="width: 100%;"
+                  inactive-text="作成しない"
+                  active-text="作成する"
+                />
+              </el-form-item>
             </el-col>
           </el-form>
         </div>
@@ -245,6 +261,14 @@
           <el-form v-if="active === 3" ref="form3" :model="form" :rules="rules">
             <el-col>
               <kqi-environment-variables v-model="form.variables" />
+              <el-form-item label="データセットのローカルコピー">
+                <el-switch
+                  v-model="form.localDataSet"
+                  style="width: 100%;"
+                  inactive-text="作成しない"
+                  active-text="作成する"
+                />
+              </el-form-item>
               <kqi-partition-selector
                 v-model="form.partition"
                 :partitions="partitions"
@@ -350,6 +374,7 @@ export default {
           gpu: 0,
         },
         expiresIn: 8,
+        localDataSet: false,
         withExpiresInSetting: true,
         variables: [{ key: '', value: '' }],
         partition: null,
@@ -448,6 +473,7 @@ export default {
       } else {
         this.form.expiresIn = this.detail.expiresIn / 60 / 60
       }
+      this.form.localDataSet = this.detail.localDataSet
 
       this.form.selectedParent = []
       if (this.detail.parents) {
@@ -577,6 +603,7 @@ export default {
                 memory: this.form.resource.memory,
                 gpu: this.form.resource.gpu,
                 expiresIn: this.form.expiresIn * 60 * 60,
+                localDataSet: this.form.localDataSet,
                 options: options,
                 partition: this.form.partition,
                 memo: this.form.memo,

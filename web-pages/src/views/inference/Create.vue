@@ -63,6 +63,14 @@
                 active-text="圧縮する"
               />
             </el-form-item>
+            <el-form-item label="データセットのローカルコピー">
+              <el-switch
+                v-model="form.localDataSet"
+                style="width: 100%;"
+                inactive-text="作成しない"
+                active-text="作成する"
+              />
+            </el-form-item>
             <kqi-partition-selector
               v-model="form.partition"
               :partitions="partitions"
@@ -185,6 +193,14 @@
                   active-text="圧縮する"
                 />
               </el-form-item>
+              <el-form-item label="データセットのローカルコピー">
+                <el-switch
+                  v-model="form.localDataSet"
+                  style="width: 100%;"
+                  inactive-text="作成しない"
+                  active-text="作成する"
+                />
+              </el-form-item>
               <kqi-partition-selector
                 v-model="form.partition"
                 :partitions="partitions"
@@ -295,6 +311,7 @@ export default {
         variables: [{ key: '', value: '' }],
         partition: null,
         zip: true,
+        localDataSet: false,
         memo: null,
       },
       rules: {
@@ -391,6 +408,7 @@ export default {
         this.form.name = detail.name
         this.form.entryPoint = detail.entryPoint
         this.form.zip = detail.zip
+        this.form.localDataSet = detail.localDataSet
         this.form.memo = detail.memo
         this.form.selectedParent = []
         if (detail.parents) {
@@ -507,6 +525,7 @@ export default {
               Gpu: this.form.resource.gpu,
               Options: options,
               Zip: this.form.zip,
+              LocalDataSet: this.form.localDataSet,
               Partition: this.form.partition,
               Memo: this.form.memo,
             }

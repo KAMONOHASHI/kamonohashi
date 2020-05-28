@@ -215,6 +215,12 @@
             <br />
             <el-button @click="emitFiles">ファイル一覧</el-button>
           </el-form-item>
+          <el-form-item label="データセットのローカルコピー">
+            <div class="el-input">
+              <span v-if="detail.localDataSet">作成する</span>
+              <span v-else>作成しない</span>
+            </div>
+          </el-form-item>
           <el-form-item label="ログファイル">
             <br />
             <el-button size="mini" @click="emitLog">ログファイル閲覧</el-button>
