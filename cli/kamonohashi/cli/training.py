@@ -23,11 +23,12 @@ def training():
 @click.option('--id', help='id')
 @click.option('--name', help='name')
 @click.option('--started-at', help='started at')
+@click.option('--started-by', help='started by')
 @click.option('--data-set', help='data set')
 @click.option('--memo', help='memo')
 @click.option('--status', help='status')
 @click.option('--entry-point', help='entry point')
-def list_training(count, id, name, started_at, data_set, memo, status, entry_point):
+def list_training(count, id, name, started_at, started_by, data_set, memo, status, entry_point):
     """List training filtered by conditions"""
     api = rest.TrainingApi(configuration.get_api_client())
     per_page = 1000
@@ -35,6 +36,7 @@ def list_training(count, id, name, started_at, data_set, memo, status, entry_poi
         'id': id,
         'name': name,
         'started_at': started_at,
+        'started_by': started_by,
         'data_set': data_set,
         'memo': memo,
         'status': status,
@@ -52,8 +54,8 @@ def list_training(count, id, name, started_at, data_set, memo, status, entry_poi
             if len(page_result) < per_page:
                 break
 
-    pprint.pp_table(['id', 'name', 'started_at', 'dataset', 'memo', 'status'],
-                    [[x.id, x.name, x.created_at, x.data_set.name, x.memo, x.status] for x in result[:count]])
+    pprint.pp_table(['id', 'name', 'started_at', 'started_by', 'dataset', 'memo', 'status'],
+                    [[x.id, x.name, x.created_at, x.created_by, x.data_set.name, x.memo, x.status] for x in result[:count]])
 
 
 @training.command()
