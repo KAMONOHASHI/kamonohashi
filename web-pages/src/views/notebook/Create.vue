@@ -25,6 +25,17 @@
                 v-model="form.dataSetId"
                 :data-sets="dataSets"
               />
+              <el-form-item
+                v-show="form.dataSetId"
+                label="データセットのローカルコピー"
+              >
+                <el-switch
+                  v-model="form.localDataSet"
+                  style="width: 100%;"
+                  inactive-text="作成しない"
+                  active-text="作成する"
+                />
+              </el-form-item>
               <kqi-container-selector
                 v-model="form.containerImage"
                 :registries="registries"
@@ -69,14 +80,6 @@
                 </el-form-item>
               </div>
               <kqi-environment-variables v-model="form.variables" />
-              <el-form-item label="データセットのローカルコピー">
-                <el-switch
-                  v-model="form.localDataSet"
-                  style="width: 100%;"
-                  inactive-text="作成しない"
-                  active-text="作成する"
-                />
-              </el-form-item>
               <kqi-partition-selector
                 v-model="form.partition"
                 :partitions="partitions"
@@ -108,6 +111,17 @@
                 v-model="form.dataSetId"
                 :data-sets="dataSets"
               />
+              <el-form-item
+                v-show="form.dataSetId"
+                label="データセットのローカルコピー"
+              >
+                <el-switch
+                  v-model="form.localDataSet"
+                  style="width: 100%;"
+                  inactive-text="作成しない"
+                  active-text="作成する"
+                />
+              </el-form-item>
               <kqi-container-selector
                 v-model="form.containerImage"
                 :registries="registries"
@@ -153,14 +167,6 @@
                   />
                 </el-form-item>
               </div>
-              <el-form-item label="データセットのローカルコピー">
-                <el-switch
-                  v-model="form.localDataSet"
-                  style="width: 100%;"
-                  inactive-text="作成しない"
-                  active-text="作成する"
-                />
-              </el-form-item>
             </el-col>
           </el-form>
         </div>
@@ -254,14 +260,10 @@
                 v-model="form.dataSetId"
                 :data-sets="dataSets"
               />
-            </el-col>
-          </el-form>
-
-          <!-- step 4 -->
-          <el-form v-if="active === 3" ref="form3" :model="form" :rules="rules">
-            <el-col>
-              <kqi-environment-variables v-model="form.variables" />
-              <el-form-item label="データセットのローカルコピー">
+              <el-form-item
+                v-show="form.dataSetId"
+                label="データセットのローカルコピー"
+              >
                 <el-switch
                   v-model="form.localDataSet"
                   style="width: 100%;"
@@ -269,6 +271,13 @@
                   active-text="作成する"
                 />
               </el-form-item>
+            </el-col>
+          </el-form>
+
+          <!-- step 4 -->
+          <el-form v-if="active === 3" ref="form3" :model="form" :rules="rules">
+            <el-col>
+              <kqi-environment-variables v-model="form.variables" />
               <kqi-partition-selector
                 v-model="form.partition"
                 :partitions="partitions"
