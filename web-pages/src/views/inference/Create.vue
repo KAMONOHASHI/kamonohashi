@@ -63,12 +63,12 @@
                 active-text="圧縮する"
               />
             </el-form-item>
-            <el-form-item label="データセットのローカルコピー">
+            <el-form-item label="データセット作成方式">
               <el-switch
                 v-model="form.localDataSet"
                 style="width: 100%;"
-                inactive-text="作成しない"
-                active-text="作成する"
+                inactive-text="シンボリックリンク"
+                active-text="ローカルコピー"
               />
             </el-form-item>
             <kqi-partition-selector
@@ -193,12 +193,12 @@
                   active-text="圧縮する"
                 />
               </el-form-item>
-              <el-form-item label="データセットのローカルコピー">
+              <el-form-item label="データセット作成方式">
                 <el-switch
                   v-model="form.localDataSet"
                   style="width: 100%;"
-                  inactive-text="作成しない"
-                  active-text="作成する"
+                  inactive-text="シンボリックリンク"
+                  active-text="ローカルコピー"
                 />
               </el-form-item>
               <kqi-partition-selector
