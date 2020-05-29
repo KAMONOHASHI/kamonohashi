@@ -822,6 +822,7 @@ namespace Nssol.Platypus.Controllers.spa
             notebookHistory.StartedAt = DateTime.Now;
             notebookHistory.CompletedAt = null;
             notebookHistory.ExpiresIn = model.ExpiresIn;
+            notebookHistory.LocalDataSet = model.LocalDataSet;
 
             notebookHistoryRepository.Update(notebookHistory);
             unitOfWork.Commit();

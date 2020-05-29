@@ -568,6 +568,7 @@ export default {
             memory: this.form.resource.memory,
             gpu: this.form.resource.gpu,
             expiresIn: this.form.expiresIn * 60 * 60,
+            localDataSet: this.form.localDataSet,
           }
           await this['notebook/postRerun']({
             id: this.originId,
