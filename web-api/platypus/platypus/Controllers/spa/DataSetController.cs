@@ -218,9 +218,9 @@ namespace Nssol.Platypus.Controllers.spa
                 dataTypes[dataType.Id] = dataType.Name;
             }
 
-            //エントリを並列で取得し、データのパスとデータ名のペアを作る
+            //エントリを取得し、データのパスとデータ名のペアを作る
             List<PathPairOutputModel> pathPairs = new List<PathPairOutputModel>();
-            dataSet.DataSetEntries.AsParallel().ForAll(entry =>
+            foreach(var entry in dataSet.DataSetEntries)
             {
                 string dataTypeName = dataTypes[entry.DataTypeId];
                 foreach (var data in entry.Data.DataProperties)
@@ -230,8 +230,7 @@ namespace Nssol.Platypus.Controllers.spa
                         pathPairs.Add(new PathPairOutputModel($"{dataTypeName}/{entry.DataId}/{data.Key}", data.DataFile.StoredPath));
                     }
                 }
-            });
-
+            }
             return JsonOK(pathPairs);
         }
 
