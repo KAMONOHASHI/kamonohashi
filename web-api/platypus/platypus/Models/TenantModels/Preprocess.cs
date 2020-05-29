@@ -79,12 +79,6 @@ namespace Nssol.Platypus.Models.TenantModels
         public int Gpu { get; set; }
 
         /// <summary>
-        /// データセットををローカルコピーするか否か。
-        /// true：ローカルコピーする　false：ローカルコピーしない(シンボリックリンクを作成する)
-        /// </summary>
-        public bool LocalDataSet { get; set; }
-
-        /// <summary>
         /// コンテナレジストリ
         /// </summary>
         [ForeignKey(nameof(ContainerRegistryId))]
