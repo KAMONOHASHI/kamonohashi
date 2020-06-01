@@ -37,6 +37,7 @@ class TrainingApiModelsCreateInputModel(object):
         'entry_point': 'str',
         'git_model': 'ComponentsGitCommitInputModel',
         'gpu': 'int',
+        'local_data_set': 'bool',
         'memo': 'str',
         'memory': 'int',
         'name': 'str',
@@ -54,6 +55,7 @@ class TrainingApiModelsCreateInputModel(object):
         'entry_point': 'entryPoint',
         'git_model': 'gitModel',
         'gpu': 'gpu',
+        'local_data_set': 'localDataSet',
         'memo': 'memo',
         'memory': 'memory',
         'name': 'name',
@@ -64,7 +66,7 @@ class TrainingApiModelsCreateInputModel(object):
         'zip': 'zip'
     }
 
-    def __init__(self, container_image=None, cpu=None, data_set_id=None, entry_point=None, git_model=None, gpu=None, memo=None, memory=None, name=None, options=None, parent_ids=None, partition=None, ports=None, zip=None):  # noqa: E501
+    def __init__(self, container_image=None, cpu=None, data_set_id=None, entry_point=None, git_model=None, gpu=None, local_data_set=None, memo=None, memory=None, name=None, options=None, parent_ids=None, partition=None, ports=None, zip=None):  # noqa: E501
         """TrainingApiModelsCreateInputModel - a model defined in Swagger"""  # noqa: E501
 
         self._container_image = None
@@ -73,6 +75,7 @@ class TrainingApiModelsCreateInputModel(object):
         self._entry_point = None
         self._git_model = None
         self._gpu = None
+        self._local_data_set = None
         self._memo = None
         self._memory = None
         self._name = None
@@ -89,6 +92,8 @@ class TrainingApiModelsCreateInputModel(object):
         self.entry_point = entry_point
         self.git_model = git_model
         self.gpu = gpu
+        if local_data_set is not None:
+            self.local_data_set = local_data_set
         if memo is not None:
             self.memo = memo
         self.memory = memory
@@ -241,6 +246,27 @@ class TrainingApiModelsCreateInputModel(object):
             raise ValueError("Invalid value for `gpu`, must not be `None`")  # noqa: E501
 
         self._gpu = gpu
+
+    @property
+    def local_data_set(self):
+        """Gets the local_data_set of this TrainingApiModelsCreateInputModel.  # noqa: E501
+
+
+        :return: The local_data_set of this TrainingApiModelsCreateInputModel.  # noqa: E501
+        :rtype: bool
+        """
+        return self._local_data_set
+
+    @local_data_set.setter
+    def local_data_set(self, local_data_set):
+        """Sets the local_data_set of this TrainingApiModelsCreateInputModel.
+
+
+        :param local_data_set: The local_data_set of this TrainingApiModelsCreateInputModel.  # noqa: E501
+        :type: bool
+        """
+
+        self._local_data_set = local_data_set
 
     @property
     def memo(self):
