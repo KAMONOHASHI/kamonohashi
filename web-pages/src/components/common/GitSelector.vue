@@ -208,7 +208,7 @@
       if (this.value) {
         this.setSelectedParameter()
       }
-      await this.getGits()
+      await this.getData()
     },
 
     // 親コンポーネントで、this.valueが変更された場合に呼ばれる処理
@@ -251,6 +251,8 @@
         }
       },
       async getData () {
+        await this.getGits()
+
         if (this.selectedGitId !== null) {
           await this.getRepositories() // リポジトリ一覧の再取得
         }
