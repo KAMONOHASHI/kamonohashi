@@ -22,12 +22,17 @@ title
             {{ user.userName }} / {{ user.selectedTenant.displayName }}
             <i class="el-icon-caret-bottom" />
           </span>
-          <el-dropdown-menu slot="dropdown">
+          <el-dropdown-menu
+            slot="dropdown"
+            :class="{ scroll: user.tenants.length > 10 }"
+          >
             <el-dropdown-item
               v-for="(tenant, index) in user.tenants"
               :key="index"
               :command="tenant.id"
-              :class="{ activeTenant: user.selectedTenant.id === tenant.id }"
+              :class="{
+                activeTenant: user.selectedTenant.id === tenant.id,
+              }"
             >
               {{ tenant.displayName }}
             </el-dropdown-item>
@@ -170,6 +175,11 @@ export default {
 
 .activeTenant {
   font-weight: bold;
+}
+
+.scroll {
+  height: 425px;
+  overflow-y: scroll;
 }
 
 .user-label {
