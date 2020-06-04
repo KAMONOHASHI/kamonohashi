@@ -45,6 +45,9 @@ data:
     fi
     cd /kqi/git
     @Raw(Model.EntryPoint)
+    if [ $? -ne 0 ]; then
+        echo "The execution of startup command is failed. Please review it and run again."
+    fi
     jupyter lab --ip=0.0.0.0 --allow-root --notebook-dir=/kqi/output --no-browser > /kqi/attach/.notebook.log 2>&1 &
     bash /kqi/scripts/common/wait-ready
   finish: |
