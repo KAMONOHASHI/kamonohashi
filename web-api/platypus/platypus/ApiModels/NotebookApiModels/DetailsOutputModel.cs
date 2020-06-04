@@ -129,7 +129,7 @@ namespace Nssol.Platypus.ApiModels.NotebookApiModels
         public int? Cpu { get; set; }
 
         /// <summary>
-        /// メモリ容量（GiB）
+        /// メモリ容量（GB）
         /// </summary>
         public int? Memory { get; set; }
 

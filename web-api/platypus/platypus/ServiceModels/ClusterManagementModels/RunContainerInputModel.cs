@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Nssol.Platypus.ServiceModels.ClusterManagementModels
 {
@@ -43,7 +40,7 @@ namespace Nssol.Platypus.ServiceModels.ClusterManagementModels
         public int Cpu { get; set; }
 
         /// <summary>
-        /// メモリ容量（MB）
+        /// メモリ容量（GB）
         /// </summary>
         public int Memory { get; set; }
 

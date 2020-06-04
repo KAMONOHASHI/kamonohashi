@@ -321,7 +321,7 @@ namespace Nssol.Platypus.Services
                 Name = "prepare",
                 ContainerImage = inModel.KqiImage,
                 Cpu = inModel.Cpu,
-                Memory = inModel.Memory + "Gi",
+                Memory = inModel.Memory + "G",
                 Gpu = 0,
                 PortMappings = inModel.PortMappings,
                 NfsVolumeMounts = inModel.NfsVolumeMounts,
@@ -335,7 +335,7 @@ namespace Nssol.Platypus.Services
                 Name = "main",
                 ContainerImage = inModel.ContainerImage,
                 Cpu = inModel.Cpu,
-                Memory = inModel.Memory + "Gi",
+                Memory = inModel.Memory + "G",
                 Gpu = inModel.Gpu,
                 PortMappings = inModel.PortMappings,
                 NfsVolumeMounts = inModel.NfsVolumeMounts,
@@ -349,7 +349,7 @@ namespace Nssol.Platypus.Services
                 Name = "finish",
                 ContainerImage = inModel.KqiImage,
                 Cpu = "0.2",
-                Memory = "200Mi",
+                Memory = "200M",
                 Gpu = 0,
                 PortMappings = inModel.PortMappings,
                 NfsVolumeMounts = inModel.NfsVolumeMounts,
@@ -1731,7 +1731,7 @@ namespace Nssol.Platypus.Services
         /// 0が指定された場合、無制限となる。
         /// </summary>
         /// <param name="cpu">CPUコア数</param>
-        /// <param name="memory">メモリ容量（GiB）</param>
+        /// <param name="memory">メモリ容量（GB）</param>
         /// <param name="gpu">GPU数</param>
         /// <param name="tenantName">テナント名</param>
         public async Task<bool> SetQuotaAsync(string tenantName, int cpu, int memory, int gpu)
@@ -1743,7 +1743,7 @@ namespace Nssol.Platypus.Services
             {
                 Name = name,
                 Cpu = cpu,
-                Memory = memory > 0 ? $"{memory}Gi" : null,
+                Memory = memory > 0 ? $"{memory}G" : null,
                 Gpu = gpu
             });
 
