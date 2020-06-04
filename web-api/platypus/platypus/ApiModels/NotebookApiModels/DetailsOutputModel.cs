@@ -75,6 +75,8 @@ namespace Nssol.Platypus.ApiModels.NotebookApiModels
 
             // 待機時間と実行時間の設定
             SetWaitingAndExecutionTimes(history);
+
+            EntryPoint = history.EntryPoint;
         }
 
         /// <summary>
@@ -183,6 +185,12 @@ namespace Nssol.Platypus.ApiModels.NotebookApiModels
         /// コンテナの生存期間(秒)
         /// </summary>
         public int? ExpiresIn { get; set; }
+
+        /// <summary>
+        /// エントリポイント。
+        /// ノートブック起動時に実行されるスクリプト。
+        /// </summary>
+        public string EntryPoint { get; set; }
 
         /// <summary>
         /// 引数 NotebookHistory history の属性 CreatedAt/StartedA/CompletedAt の値に従い、
