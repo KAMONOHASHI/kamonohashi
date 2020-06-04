@@ -3,10 +3,7 @@ using Nssol.Platypus.Infrastructure.Infos;
 using Nssol.Platypus.Infrastructure.Types;
 using Nssol.Platypus.Models;
 using Nssol.Platypus.ServiceModels.ClusterManagementModels;
-using Nssol.Platypus.ServiceModels.KubernetesModels;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
 
@@ -112,7 +109,7 @@ namespace Nssol.Platypus.Services.Interfaces
         /// 0が指定された場合、無制限となる。
         /// </summary>
         /// <param name="cpu">CPUコア数</param>
-        /// <param name="memory">メモリ容量（GiB）</param>
+        /// <param name="memory">メモリ容量（GB）</param>
         /// <param name="gpu">GPU数</param>
         /// <param name="tenantName">テナント名</param>
         Task<bool> SetQuotaAsync(string tenantName, int cpu, int memory, int gpu);

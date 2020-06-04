@@ -43,10 +43,15 @@ data:
             echo "You need to change the name of '/kqi/output/parent' or delete it. After that, please run again."
         fi
     fi
+    cd /kqi/git
+    @Raw(Model.EntryPoint)
+    if [ $? -ne 0 ]; then
+        echo "The execution of startup command is failed. Please review it and run again."
+    fi
     jupyter lab --ip=0.0.0.0 --allow-root --notebook-dir=/kqi/output --no-browser > /kqi/attach/.notebook.log 2>&1 &
     bash /kqi/scripts/common/wait-ready
   finish: |
-    bash /kqi/scripts/common/prepare-kqi-conf
     sleep $EXPIRES_IN
+    bash /kqi/scripts/common/prepare-kqi-conf
     echo "------------------------- [KAMONOHASHI Finish] -------------------------"
     kqi notebook halt $NOTEBOOK_ID

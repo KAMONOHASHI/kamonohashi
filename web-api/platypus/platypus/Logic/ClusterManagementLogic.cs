@@ -1060,7 +1060,10 @@ namespace Nssol.Platypus.Logic
                 },
                 ClusterManagerToken = token,
                 RegistryTokenName = notebookHistory.ContainerRegistryId.HasValue ? registryMap.RegistryTokenKey : null,
-                IsNodePort = true
+                IsNodePort = true,
+
+                // スクリプトの実行をしない場合ヌルコマンドを挿入
+                EntryPoint = string.IsNullOrEmpty(notebookHistory.EntryPoint) ? ":" : notebookHistory.EntryPoint
             };
 
             // データセットの未指定も許可するため、その判定
