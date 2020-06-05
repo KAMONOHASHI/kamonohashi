@@ -1,11 +1,12 @@
 ﻿using Nssol.Platypus.ApiModels.Components;
+using Nssol.Platypus.Controllers.Util;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Nssol.Platypus.ApiModels.TrainingApiModels
 {
     /// <summary>
-    /// 学習作成の入力モデル
+    /// 新規学習実行モデル
     /// </summary>
     public class CreateInputModel
     {
@@ -44,7 +45,7 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         /// </summary>
         [Required]
         public string EntryPoint { get; set; }
-
+        
         /// <summary>
         /// 追加環境変数
         /// </summary>
@@ -82,6 +83,12 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         /// メモ
         /// </summary>
         public string Memo { get; set; }
+
+        /// <summary>
+        /// タグ
+        /// </summary>
+        [ValidInputAsTag]
+        public IEnumerable<string> Tags { get; set; }
 
         /// <summary>
         /// zip圧縮するか否か。

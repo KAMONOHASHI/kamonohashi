@@ -1,7 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Nssol.Platypus.Controllers.Util;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Nssol.Platypus.ApiModels.TrainingApiModels
 {
+    /// <summary>
+    /// 学習履歴編集モデル
+    /// </summary>
     public class EditInputModel
     {
         /// <summary>
@@ -19,5 +24,11 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         /// お気に入り
         /// </summary>
         public bool? Favorite { get; set; }
+
+        /// <summary>
+        /// タグ
+        /// </summary>
+        [ValidInputAsTag]
+        public IEnumerable<string> Tags { get; set; }
     }
 }

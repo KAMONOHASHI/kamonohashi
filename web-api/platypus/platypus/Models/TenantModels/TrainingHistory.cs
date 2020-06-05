@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 
 namespace Nssol.Platypus.Models.TenantModels
 {
@@ -215,6 +216,11 @@ namespace Nssol.Platypus.Models.TenantModels
         public virtual ICollection<TrainingHistoryAttachedFile> TrainingHistoryAttachedFile { get; set; }
 
         /// <summary>
+        /// タグのマッピング
+        /// </summary>
+        public virtual ICollection<TrainingHistoryTagMap> TagMaps { get; set; }
+
+        /// <summary>
         /// コンテナ起動時に使用する名前
         /// </summary>
         public string Key
@@ -269,6 +275,21 @@ namespace Nssol.Platypus.Models.TenantModels
         public ContainerStatus GetStatus()
         {
             return ContainerStatus.Convert(Status);
+        }
+
+        /// <summary>
+        /// タグ
+        /// </summary>
+        public IEnumerable<string> Tags
+        {
+            get
+            {
+                if (TagMaps == null)
+                {
+                    return null;
+                }
+                return TagMaps.Select(tm => tm.Tag?.Name);
+            }
         }
     }
 }

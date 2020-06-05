@@ -695,13 +695,13 @@ namespace Nssol.Platypus.Controllers.spa
             //タグの登録
             if (model.Tags != null && model.Tags.Count() > 0)
             {
-                tagLogic.Create(newData, model.Tags);
+                tagLogic.CreateDataTags(newData, model.Tags);
             }
             else
             {
                 //タグが未指定であれば、前処理名を付ける
                 List<string> tags = new List<string>() { preprocessHistory.Preprocess.Name };
-                tagLogic.Create(newData, tags);
+                tagLogic.CreateDataTags(newData, tags);
             }
 
             preprocessHistoryRepository.AddOutputData(preprocessHistory.Id, newData);

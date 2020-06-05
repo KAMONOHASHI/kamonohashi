@@ -25,6 +25,7 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
                 }
                 ParentFullNameList = parentFullNameList;
             }
+            Tags = history.Tags;
         }
 
         /// <summary>
@@ -41,5 +42,10 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         /// 親学習名（表示用）
         /// </summary>
         public List<string> ParentFullNameList { get; set; }
+
+        /// <summary>
+        /// タグ
+        /// </summary>
+        public IEnumerable<string> Tags { get; set; }
     }
 }
