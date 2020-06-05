@@ -36,7 +36,7 @@ namespace Nssol.Platypus.ApiModels.NotebookApiModels
         public int? Cpu { get; set; }
 
         /// <summary>
-        /// メモリ数(GiB)
+        /// メモリ数(GB)
         /// </summary>
         [Required]
         public int? Memory { get; set; }
@@ -58,5 +58,11 @@ namespace Nssol.Platypus.ApiModels.NotebookApiModels
         /// true：ローカルコピーする　false：ローカルコピーしない(シンボリックリンクを作成する)
         /// </summary>
         public bool LocalDataSet { get; set; }
+
+        /// <summary>
+        /// エントリポイント。
+        /// ノートブック起動時に実行されるスクリプト。
+        /// </summary>
+        public string EntryPoint { get; set; }
     }
 }

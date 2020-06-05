@@ -36,6 +36,13 @@
                   active-text="ローカルコピー"
                 />
               </el-form-item>
+              <el-form-item label="起動時実行コマンド" prop="entryPoint">
+                <el-input
+                  v-model="form.entryPoint"
+                  type="textarea"
+                  :autosize="{ minRows: 2 }"
+                />
+              </el-form-item>
               <kqi-container-selector
                 v-model="form.containerImage"
                 :registries="registries"
@@ -120,6 +127,13 @@
                   style="width: 100%;"
                   inactive-text="シンボリックリンク"
                   active-text="ローカルコピー"
+                />
+              </el-form-item>
+              <el-form-item label="起動時実行コマンド" prop="entryPoint">
+                <el-input
+                  v-model="form.entryPoint"
+                  type="textarea"
+                  :autosize="{ minRows: 2 }"
                 />
               </el-form-item>
               <kqi-container-selector
@@ -277,6 +291,13 @@
           <!-- step 4 -->
           <el-form v-if="active === 3" ref="form3" :model="form" :rules="rules">
             <el-col>
+              <el-form-item label="起動時実行コマンド" prop="entryPoint">
+                <el-input
+                  v-model="form.entryPoint"
+                  type="textarea"
+                  :autosize="{ minRows: 2 }"
+                />
+              </el-form-item>
               <kqi-environment-variables v-model="form.variables" />
               <kqi-partition-selector
                 v-model="form.partition"
@@ -388,6 +409,7 @@ export default {
         variables: [{ key: '', value: '' }],
         partition: null,
         memo: null,
+        entryPoint: '',
       },
       rules: {
         name: [
@@ -483,6 +505,7 @@ export default {
         this.form.expiresIn = this.detail.expiresIn / 60 / 60
       }
       this.form.localDataSet = this.detail.localDataSet
+      this.form.entryPoint = this.detail.entryPoint
 
       this.form.selectedParent = []
       if (this.detail.parents) {
@@ -569,6 +592,7 @@ export default {
             gpu: this.form.resource.gpu,
             expiresIn: this.form.expiresIn * 60 * 60,
             localDataSet: this.form.localDataSet,
+            entryPoint: this.form.entryPoint,
           }
           await this['notebook/postRerun']({
             id: this.originId,
@@ -617,6 +641,7 @@ export default {
                 options: options,
                 partition: this.form.partition,
                 memo: this.form.memo,
+                entryPoint: this.form.entryPoint,
               }
               await this['notebook/post'](params)
               this.emitDone()

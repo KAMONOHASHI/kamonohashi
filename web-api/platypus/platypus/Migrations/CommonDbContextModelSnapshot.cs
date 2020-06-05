@@ -798,6 +798,8 @@ namespace Nssol.Platypus.Migrations
 
                     b.Property<long?>("DisplayId");
 
+                    b.Property<string>("EntryPoint");
+
                     b.Property<int?>("ExpiresIn")
                         .IsRequired();
 

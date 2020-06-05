@@ -4,6 +4,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Nssol.Platypus.ApiModels.TrainingApiModels
 {
+    /// <summary>
+    /// 学習作成の入力モデル
+    /// </summary>
     public class CreateInputModel
     {
         /// <summary>
@@ -54,7 +57,7 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         public int? Cpu { get; set; }
 
         /// <summary>
-        /// メモリ数(GiB)
+        /// メモリ数(GB)
         /// </summary>
         [Required]
         public int? Memory { get; set; }
@@ -74,6 +77,7 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         /// 開放ポート番号
         /// </summary>
         public List<int> Ports { get; set; }
+
         /// <summary>
         /// メモ
         /// </summary>
