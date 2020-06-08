@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Models.TenantModels
 {
@@ -13,22 +9,25 @@ namespace Nssol.Platypus.Models.TenantModels
     public class TrainingHistoryTagMap : TenantModelBase
     {
         /// <summary>
-        /// データID。
+        /// 学習履歴ID
         /// </summary>
         [Required]
         public long TrainingHistoryId { get; set; }
+
         /// <summary>
         /// タグID（FK）
         /// </summary>
         [Required]
         public long TagId { get; set; }
+
         /// <summary>
         /// タグの実体
         /// </summary>
         [ForeignKey(nameof(TagId))]
         public virtual Tag Tag { get; set; }
+        
         /// <summary>
-        /// データの実体
+        /// 学習履歴の実体
         /// </summary>
         [ForeignKey(nameof(TrainingHistoryId))]
         public virtual TrainingHistory TrainingHistory { get; set; }

@@ -514,15 +514,35 @@ namespace Nssol.Platypus.Logic
             // 親を指定した場合は親の出力結果を/kqi/parentにマウント
             if (trainHistory.ParentMaps != null)
             {
-                inputModel.NfsVolumeMounts.Add(new NfsVolumeMountModel()
+                if (trainHistory.ParentMaps.Count() > 1)
                 {
-                    Name = "nfs-parent",
-                    MountPath = "/kqi/parent",
-                    SubPath = trainHistory.ParentMaps.First().ParentId.ToString(),
-                    Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
-                    ServerPath = CurrentUserInfo.SelectedTenant.TrainingContainerOutputNfsPath,
-                    ReadOnly = true
-                });
+                    // 親が複数の場合、/kqi/parent/{parentId}にマウントする
+                    foreach (var parentMap in trainHistory.ParentMaps)
+                    {
+                        inputModel.NfsVolumeMounts.Add(new NfsVolumeMountModel()
+                        {
+                            Name = "nfs-parent-" + parentMap.ParentId.ToString(),
+                            MountPath = "/kqi/parent/" + parentMap.ParentId.ToString(),
+                            SubPath = parentMap.ParentId.ToString(),
+                            Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
+                            ServerPath = CurrentUserInfo.SelectedTenant.TrainingContainerOutputNfsPath,
+                            ReadOnly = true
+                        });
+                    }
+                }
+                else if(trainHistory.ParentMaps.Count() == 1)
+                {
+                    // 親が1件のみの場合、過去の再現性を担保するため、/kqi/parent直下にマウントする
+                    inputModel.NfsVolumeMounts.Add(new NfsVolumeMountModel()
+                    {
+                        Name = "nfs-parent",
+                        MountPath = "/kqi/parent",
+                        SubPath = trainHistory.ParentMaps.First().ParentId.ToString(),
+                        Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
+                        ServerPath = CurrentUserInfo.SelectedTenant.TrainingContainerOutputNfsPath,
+                        ReadOnly = true
+                    });
+                }
             }
 
             // 開放するポート番号を指定
@@ -698,15 +718,35 @@ namespace Nssol.Platypus.Logic
             // 推論ジョブにおける親ジョブは学習ジョブとなるので、SubPathとServerPathの指定に注意
             if (inferenceHistory.ParentMaps != null)
             {
-                inputModel.NfsVolumeMounts.Add(new NfsVolumeMountModel()
+                if (inferenceHistory.ParentMaps.Count() > 1)
                 {
-                    Name = "nfs-parent",
-                    MountPath = "/kqi/parent",
-                    SubPath = inferenceHistory.ParentMaps.First().ParentId.ToString(),
-                    Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
-                    ServerPath = CurrentUserInfo.SelectedTenant.TrainingContainerOutputNfsPath,
-                    ReadOnly = true
-                });
+                    // 親ジョブが複数の場合、/kqi/parent/{parentId}にマウントする
+                    foreach (var parentMap in inferenceHistory.ParentMaps)
+                    {
+                        inputModel.NfsVolumeMounts.Add(new NfsVolumeMountModel()
+                        {
+                            Name = "nfs-parent-" + parentMap.ParentId.ToString(),
+                            MountPath = "/kqi/parent/" + parentMap.ParentId.ToString(),
+                            SubPath = parentMap.ParentId.ToString(),
+                            Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
+                            ServerPath = CurrentUserInfo.SelectedTenant.TrainingContainerOutputNfsPath,
+                            ReadOnly = true
+                        });
+                    }
+                }
+                else if (inferenceHistory.ParentMaps.Count() == 1)
+                {
+                    // 親ジョブが1件のみの場合、過去の再現性を担保するため/kqi/parent直下にマウントする
+                    inputModel.NfsVolumeMounts.Add(new NfsVolumeMountModel()
+                    {
+                        Name = "nfs-parent",
+                        MountPath = "/kqi/parent",
+                        SubPath = inferenceHistory.ParentMaps.First().ParentId.ToString(),
+                        Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
+                        ServerPath = CurrentUserInfo.SelectedTenant.TrainingContainerOutputNfsPath,
+                        ReadOnly = true
+                    });
+                }
             }
 
             // ユーザの任意追加環境変数をマージする
@@ -749,8 +789,9 @@ namespace Nssol.Platypus.Logic
         /// 成功した場合は作成結果が、失敗した場合はnullが返る。
         /// </summary>
         /// <param name="trainingHistory">対象の学習履歴</param>
+        /// <param name="expiresIn">生存期間(秒)</param>
         /// <returns>作成したコンテナのステータス</returns>
-        public async Task<ContainerInfo> RunTensorBoardContainerAsync(TrainingHistory trainingHistory)
+        public async Task<ContainerInfo> RunTensorBoardContainerAsync(TrainingHistory trainingHistory, int expiresIn)
         {
             //コンテナ名は自動生成
             //使用できる文字など、命名規約はコンテナ管理サービス側によるが、
@@ -775,6 +816,7 @@ namespace Nssol.Platypus.Logic
             // 上書き不可の環境変数
             var notEditableEnvList = new Dictionary<string, string>()
             {
+                { "TRAINING_ID", trainingHistory.Id.ToString()},
                 { "KQI_SERVER", containerOptions.WebServerUrl },
                 { "KQI_TOKEN", loginLogic.GenerateToken().AccessToken },
                 { "http_proxy", containerOptions.Proxy },
@@ -785,7 +827,8 @@ namespace Nssol.Platypus.Logic
                 { "NO_PROXY", containerOptions.NoProxy },
                 { "PYTHONUNBUFFERED", "true" }, // python実行時の標準出力・エラーのバッファリングをなくす
                 { "LC_ALL", "C.UTF-8"}, // python実行時のエラー回避
-                { "LANG", "C.UTF-8"}  // python実行時のエラー回避
+                { "LANG", "C.UTF-8"},  // python実行時のエラー回避
+                { "EXPIRES_IN", expiresIn != 0 ? expiresIn.ToString() : "infinity"}  // コンテナ生存期間
             };
 
             //コンテナを起動するために必要な設定値をインスタンス化
@@ -801,6 +844,7 @@ namespace Nssol.Platypus.Logic
                 Memory = 1, //メモリは1GBで仮決め
                 Gpu = 0,
                 KqiImage = "kamonohashi/cli:" + versionLogic.GetVersion(),
+                KqiToken = loginLogic.GenerateToken().AccessToken,
                 NfsVolumeMounts = new List<NfsVolumeMountModel>()
                 {
                     // 結果が保存されているディレクトリ
@@ -1016,7 +1060,10 @@ namespace Nssol.Platypus.Logic
                 },
                 ClusterManagerToken = token,
                 RegistryTokenName = notebookHistory.ContainerRegistryId.HasValue ? registryMap.RegistryTokenKey : null,
-                IsNodePort = true
+                IsNodePort = true,
+
+                // スクリプトの実行をしない場合ヌルコマンドを挿入
+                EntryPoint = string.IsNullOrEmpty(notebookHistory.EntryPoint) ? ":" : notebookHistory.EntryPoint
             };
 
             // データセットの未指定も許可するため、その判定

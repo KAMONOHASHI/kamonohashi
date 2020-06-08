@@ -17,6 +17,7 @@
             <kqi-training-history-selector
               v-model="form.selectedParent"
               :histories="trainingHistories"
+              multiple
             />
             <kqi-data-set-selector
               v-model="form.dataSetId"
@@ -55,6 +56,12 @@
 
             <kqi-environment-variables v-model="form.variables" />
             <kqi-expose-ports v-model="form.ports" />
+            <el-form-item label="タグ">
+              <kqi-tag-editor
+                v-model="form.tags"
+                :registered-tags="tenantTags"
+              />
+            </el-form-item>
             <el-form-item label="結果Zip圧縮">
               <el-switch
                 v-model="form.zip"
@@ -106,6 +113,7 @@
               <kqi-training-history-selector
                 v-model="form.selectedParent"
                 :histories="trainingHistories"
+                multiple
               />
             </el-col>
             <el-col :span="12">
@@ -177,6 +185,12 @@
             <el-col>
               <kqi-environment-variables v-model="form.variables" />
               <kqi-expose-ports v-model="form.ports" />
+              <el-form-item label="タグ">
+                <kqi-tag-editor
+                  v-model="form.tags"
+                  :registered-tags="tenantTags"
+                />
+              </el-form-item>
               <el-form-item label="結果Zip圧縮">
                 <el-switch
                   v-model="form.zip"
@@ -241,6 +255,7 @@ import KqiGitSelector from '@/components/selector/KqiGitSelector'
 import KqiResourceSelector from '@/components/selector/KqiResourceSelector'
 import KqiEnvironmentVariables from '@/components/KqiEnvironmentVariables'
 import KqiExposePorts from '@/components/KqiExposePorts'
+import KqiTagEditor from '@/components/KqiTagEditor'
 import KqiPartitionSelector from '@/components/selector/KqiPartitionSelector'
 import validator from '@/util/validator'
 import registrySelectorUtil from '@/util/registrySelectorUtil'
@@ -263,6 +278,7 @@ export default {
     KqiResourceSelector,
     KqiEnvironmentVariables,
     KqiExposePorts,
+    KqiTagEditor,
     KqiPartitionSelector,
   },
   props: {
@@ -338,6 +354,7 @@ export default {
       detail: ['training/detail'],
       partitions: ['cluster/partitions'],
       quota: ['cluster/quota'],
+      tenantTags: ['training/tenantTags'],
     }),
   },
   async created() {
@@ -357,6 +374,7 @@ export default {
     await this['cluster/fetchPartitions']()
     await this['cluster/fetchQuota']()
     await this['dataSet/fetchDataSets']()
+    await this['training/fetchTenantTags']()
 
     // レジストリ一覧を取得し、デフォルトレジストリを設定
     await this['registrySelector/fetchRegistries']()
@@ -382,11 +400,13 @@ export default {
       this.form.zip = this.detail.zip
       this.form.memo = this.detail.memo
       this.form.selectedParent = []
-      if (this.detail.parent) {
+      if (this.detail.parents) {
         this.trainingHistories.forEach(history => {
-          if (history.id === this.detail.parent.id) {
-            this.form.selectedParent = [history]
-          }
+          this.detail.parents.forEach(parent => {
+            if (history.id === parent.id) {
+              this.form.selectedParent.push(parent)
+            }
+          })
         })
       }
       this.form.resource.cpu = this.detail.cpu
@@ -398,6 +418,7 @@ export default {
           : this.detail.options
       this.form.ports = this.detail.ports
       this.form.partition = this.detail.partition
+      this.form.tags = this.detail.tags
 
       // レジストリの設定
       this.form.containerImage.registry = {
@@ -429,6 +450,7 @@ export default {
     ...mapActions([
       'training/fetchHistoriesToMount',
       'training/fetchDetail',
+      'training/fetchTenantTags',
       'training/post',
       'cluster/fetchPartitions',
       'cluster/fetchQuota',
@@ -454,11 +476,11 @@ export default {
             this.form.variables.forEach(kvp => {
               options[kvp.key] = kvp.value
             })
-            // 親学習IDを取得(1つのみマウント可)
-            let parentId = null
-            if (this.form.selectedParent.length > 0) {
-              parentId = this.form.selectedParent[0].id
-            }
+            // training history ObjectのリストからIDのみを抜き出して格納
+            let selectedParentIds = []
+            this.form.selectedParent.forEach(parent => {
+              selectedParentIds.push(parent.id)
+            })
             // ブランチ未指定の際はcommitIdも未指定で実行
             // ブランチ指定時、HEADが指定された際はcommitsの先頭要素をcommitIDに指定する。コピー実行時の再現性を担保するため
             let commitId = null
@@ -470,7 +492,7 @@ export default {
             let params = {
               Name: this.form.name,
               DataSetId: this.form.dataSetId,
-              ParentId: parentId,
+              ParentIds: selectedParentIds,
               ContainerImage: {
                 registryId: this.form.containerImage.registry.id,
                 image: this.form.containerImage.image,
@@ -494,6 +516,7 @@ export default {
               Zip: this.form.zip,
               Partition: this.form.partition,
               Memo: this.form.memo,
+              tags: this.form.tags,
             }
             await this['training/post'](params)
             this.emitDone()

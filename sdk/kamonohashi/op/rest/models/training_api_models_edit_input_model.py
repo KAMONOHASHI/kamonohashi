@@ -33,21 +33,24 @@ class TrainingApiModelsEditInputModel(object):
     swagger_types = {
         'favorite': 'bool',
         'memo': 'str',
-        'name': 'str'
+        'name': 'str',
+        'tags': 'list[str]'
     }
 
     attribute_map = {
         'favorite': 'favorite',
         'memo': 'memo',
-        'name': 'name'
+        'name': 'name',
+        'tags': 'tags'
     }
 
-    def __init__(self, favorite=None, memo=None, name=None):  # noqa: E501
+    def __init__(self, favorite=None, memo=None, name=None, tags=None):  # noqa: E501
         """TrainingApiModelsEditInputModel - a model defined in Swagger"""  # noqa: E501
 
         self._favorite = None
         self._memo = None
         self._name = None
+        self._tags = None
         self.discriminator = None
 
         if favorite is not None:
@@ -56,6 +59,8 @@ class TrainingApiModelsEditInputModel(object):
             self.memo = memo
         if name is not None:
             self.name = name
+        if tags is not None:
+            self.tags = tags
 
     @property
     def favorite(self):
@@ -121,6 +126,27 @@ class TrainingApiModelsEditInputModel(object):
             raise ValueError("Invalid value for `name`, length must be greater than or equal to `1`")  # noqa: E501
 
         self._name = name
+
+    @property
+    def tags(self):
+        """Gets the tags of this TrainingApiModelsEditInputModel.  # noqa: E501
+
+
+        :return: The tags of this TrainingApiModelsEditInputModel.  # noqa: E501
+        :rtype: list[str]
+        """
+        return self._tags
+
+    @tags.setter
+    def tags(self, tags):
+        """Sets the tags of this TrainingApiModelsEditInputModel.
+
+
+        :param tags: The tags of this TrainingApiModelsEditInputModel.  # noqa: E501
+        :type: list[str]
+        """
+
+        self._tags = tags
 
     def to_dict(self):
         """Returns the model properties as a dict"""

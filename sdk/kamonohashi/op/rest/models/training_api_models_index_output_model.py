@@ -43,7 +43,9 @@ class TrainingApiModelsIndexOutputModel(object):
         'modified_at': 'str',
         'modified_by': 'str',
         'name': 'str',
-        'status': 'str'
+        'parent_full_name_list': 'list[str]',
+        'status': 'str',
+        'tags': 'list[str]'
     }
 
     attribute_map = {
@@ -59,10 +61,12 @@ class TrainingApiModelsIndexOutputModel(object):
         'modified_at': 'modifiedAt',
         'modified_by': 'modifiedBy',
         'name': 'name',
-        'status': 'status'
+        'parent_full_name_list': 'parentFullNameList',
+        'status': 'status',
+        'tags': 'tags'
     }
 
-    def __init__(self, created_at=None, created_by=None, data_set=None, display_id=None, entry_point=None, favorite=None, full_name=None, id=None, memo=None, modified_at=None, modified_by=None, name=None, status=None):  # noqa: E501
+    def __init__(self, created_at=None, created_by=None, data_set=None, display_id=None, entry_point=None, favorite=None, full_name=None, id=None, memo=None, modified_at=None, modified_by=None, name=None, parent_full_name_list=None, status=None, tags=None):  # noqa: E501
         """TrainingApiModelsIndexOutputModel - a model defined in Swagger"""  # noqa: E501
 
         self._created_at = None
@@ -77,7 +81,9 @@ class TrainingApiModelsIndexOutputModel(object):
         self._modified_at = None
         self._modified_by = None
         self._name = None
+        self._parent_full_name_list = None
         self._status = None
+        self._tags = None
         self.discriminator = None
 
         if created_at is not None:
@@ -104,8 +110,12 @@ class TrainingApiModelsIndexOutputModel(object):
             self.modified_by = modified_by
         if name is not None:
             self.name = name
+        if parent_full_name_list is not None:
+            self.parent_full_name_list = parent_full_name_list
         if status is not None:
             self.status = status
+        if tags is not None:
+            self.tags = tags
 
     @property
     def created_at(self):
@@ -360,6 +370,27 @@ class TrainingApiModelsIndexOutputModel(object):
         self._name = name
 
     @property
+    def parent_full_name_list(self):
+        """Gets the parent_full_name_list of this TrainingApiModelsIndexOutputModel.  # noqa: E501
+
+
+        :return: The parent_full_name_list of this TrainingApiModelsIndexOutputModel.  # noqa: E501
+        :rtype: list[str]
+        """
+        return self._parent_full_name_list
+
+    @parent_full_name_list.setter
+    def parent_full_name_list(self, parent_full_name_list):
+        """Sets the parent_full_name_list of this TrainingApiModelsIndexOutputModel.
+
+
+        :param parent_full_name_list: The parent_full_name_list of this TrainingApiModelsIndexOutputModel.  # noqa: E501
+        :type: list[str]
+        """
+
+        self._parent_full_name_list = parent_full_name_list
+
+    @property
     def status(self):
         """Gets the status of this TrainingApiModelsIndexOutputModel.  # noqa: E501
 
@@ -379,6 +410,27 @@ class TrainingApiModelsIndexOutputModel(object):
         """
 
         self._status = status
+
+    @property
+    def tags(self):
+        """Gets the tags of this TrainingApiModelsIndexOutputModel.  # noqa: E501
+
+
+        :return: The tags of this TrainingApiModelsIndexOutputModel.  # noqa: E501
+        :rtype: list[str]
+        """
+        return self._tags
+
+    @tags.setter
+    def tags(self, tags):
+        """Sets the tags of this TrainingApiModelsIndexOutputModel.
+
+
+        :param tags: The tags of this TrainingApiModelsIndexOutputModel.  # noqa: E501
+        :type: list[str]
+        """
+
+        self._tags = tags
 
     def to_dict(self):
         """Returns the model properties as a dict"""
