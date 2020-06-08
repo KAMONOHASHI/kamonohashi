@@ -53,7 +53,7 @@
               />
             </el-col>
             <el-col :span="12">
-              <kqi-resource-selector v-model="form.resource" />
+              <kqi-resource-selector v-model="form.resource" :quota="quota" />
               <div v-if="availableInfiniteTime">
                 <el-form-item label="起動期間設定">
                   <el-switch
@@ -135,7 +135,7 @@
               />
             </el-col>
             <el-col :span="12">
-              <kqi-resource-selector v-model="form.resource" />
+              <kqi-resource-selector v-model="form.resource" :quota="quota" />
             </el-col>
             <el-col :span="12">
               <div v-if="availableInfiniteTime">
@@ -190,7 +190,7 @@
           <!-- step 2 -->
           <el-form v-if="active === 1" ref="form1" :model="form" :rules="rules">
             <el-col :span="18" :offset="3">
-              <kqi-resource-selector v-model="form.resource" />
+              <kqi-resource-selector v-model="form.resource" :quota="quota" />
             </el-col>
             <el-col :span="18" :offset="3">
               <div v-if="availableInfiniteTime">
@@ -410,6 +410,7 @@ export default {
       availableInfiniteTime: ['notebook/availableInfiniteTime'],
       detail: ['notebook/detail'],
       partitions: ['cluster/partitions'],
+      quota: ['cluster/quota'],
     }),
   },
   async created() {
@@ -426,6 +427,7 @@ export default {
       status: ['Completed', 'UserCanceled', 'Killed'],
     })
     await this['cluster/fetchPartitions']()
+    await this['cluster/fetchQuota']()
     await this['dataSet/fetchDataSets']()
 
     // レジストリ一覧を取得し、デフォルトレジストリを設定
@@ -526,6 +528,7 @@ export default {
       'notebook/postRerun',
       'notebook/fetchAvailableInfiniteTime',
       'cluster/fetchPartitions',
+      'cluster/fetchQuota',
       'dataSet/fetchDataSets',
       'registrySelector/fetchRegistries',
       'registrySelector/fetchImages',
