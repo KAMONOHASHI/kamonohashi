@@ -1047,6 +1047,8 @@ namespace Nssol.Platypus.Migrations
 
                     b.Property<long>("TenantId");
 
+                    b.Property<int>("Type");
+
                     b.HasKey("Id");
 
                     b.HasIndex("TenantId");
@@ -1837,7 +1839,7 @@ namespace Nssol.Platypus.Migrations
             modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.TrainingHistoryTagMap", b =>
                 {
                     b.HasOne("Nssol.Platypus.Models.TenantModels.Tag", "Tag")
-                        .WithMany()
+                        .WithMany("TrainingHistoryMaps")
                         .HasForeignKey("TagId")
                         .OnDelete(DeleteBehavior.Cascade);
 

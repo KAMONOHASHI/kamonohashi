@@ -35,7 +35,7 @@
         <el-input v-model="form.name" />
       </el-form-item>
       <el-form-item label="タグ">
-        <tag-editor v-model="form.tags" :registered-tags="tenantTags" />
+        <kqi-tag-editor v-model="form.tags" :registered-tags="tenantTags" />
       </el-form-item>
       <el-form-item label="メモ">
         <el-input v-model="form.memo" type="textarea" />
@@ -75,7 +75,7 @@ import KqiDialog from '@/components/KqiDialog'
 import KqiDisplayError from '@/components/KqiDisplayError'
 import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
 import KqiFileManager from '@/components/KqiFileManager'
-import TagEditor from './TagEditor'
+import KqiTagEditor from '@/components/KqiTagEditor'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapMutations, mapActions } = createNamespacedHelpers('data')
 
@@ -85,7 +85,7 @@ export default {
     KqiDisplayError,
     KqiDisplayTextForm,
     KqiFileManager,
-    TagEditor,
+    KqiTagEditor,
   },
   props: {
     id: {

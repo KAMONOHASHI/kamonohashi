@@ -221,6 +221,7 @@ let api = {
     postUserCancelById: gen.ApiV1TrainingByIdUser_cancelPost,
     getEventsById: gen.ApiV1TrainingByIdEventsGet,
     getMount: gen.ApiV1TrainingMountGet,
+    getTags: gen.ApiV1TrainingTagsGet,
   },
 
   notebook: {

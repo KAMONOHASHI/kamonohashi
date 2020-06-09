@@ -45,6 +45,7 @@ class TrainingApiModelsCreateInputModel(object):
         'parent_ids': 'list[int]',
         'partition': 'str',
         'ports': 'list[int]',
+        'tags': 'list[str]',
         'zip': 'bool'
     }
 
@@ -63,10 +64,11 @@ class TrainingApiModelsCreateInputModel(object):
         'parent_ids': 'parentIds',
         'partition': 'partition',
         'ports': 'ports',
+        'tags': 'tags',
         'zip': 'zip'
     }
 
-    def __init__(self, container_image=None, cpu=None, data_set_id=None, entry_point=None, git_model=None, gpu=None, local_data_set=None, memo=None, memory=None, name=None, options=None, parent_ids=None, partition=None, ports=None, zip=None):  # noqa: E501
+    def __init__(self, container_image=None, cpu=None, data_set_id=None, entry_point=None, git_model=None, gpu=None, local_data_set=None, memo=None, memory=None, name=None, options=None, parent_ids=None, partition=None, ports=None, tags=None, zip=None):  # noqa: E501
         """TrainingApiModelsCreateInputModel - a model defined in Swagger"""  # noqa: E501
 
         self._container_image = None
@@ -83,6 +85,7 @@ class TrainingApiModelsCreateInputModel(object):
         self._parent_ids = None
         self._partition = None
         self._ports = None
+        self._tags = None
         self._zip = None
         self.discriminator = None
 
@@ -106,6 +109,8 @@ class TrainingApiModelsCreateInputModel(object):
             self.partition = partition
         if ports is not None:
             self.ports = ports
+        if tags is not None:
+            self.tags = tags
         if zip is not None:
             self.zip = zip
 
@@ -420,6 +425,27 @@ class TrainingApiModelsCreateInputModel(object):
         """
 
         self._ports = ports
+
+    @property
+    def tags(self):
+        """Gets the tags of this TrainingApiModelsCreateInputModel.  # noqa: E501
+
+
+        :return: The tags of this TrainingApiModelsCreateInputModel.  # noqa: E501
+        :rtype: list[str]
+        """
+        return self._tags
+
+    @tags.setter
+    def tags(self, tags):
+        """Sets the tags of this TrainingApiModelsCreateInputModel.
+
+
+        :param tags: The tags of this TrainingApiModelsCreateInputModel.  # noqa: E501
+        :type: list[str]
+        """
+
+        self._tags = tags
 
     @property
     def zip(self):

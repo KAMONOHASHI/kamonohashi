@@ -174,6 +174,9 @@
             label="パーティション"
             :value="detail.partition"
           />
+          <el-form-item label="タグ">
+            <kqi-tag-editor v-model="form.tags" :registered-tags="tenantTags" />
+          </el-form-item>
           <!-- status: スクリプトがこけたときなどに"failed"になる -->
           <!-- statusType: コンテナの生死等 -->
           <kqi-display-text-form
@@ -305,6 +308,7 @@ import KqiJobStopButton from '@/components/KqiJobStopButton'
 import KqiFileManager from '@/components/KqiFileManager'
 import KqiDataSetDetails from '@/components/selector/KqiDataSetDetails'
 import KqiTrainingHistoryDetails from '@/components/selector/KqiTrainingHistoryDetails'
+import KqiTagEditor from '@/components/KqiTagEditor'
 import KqiTensorboardHandler from './KqiTensorboardHandler'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('training')
@@ -318,6 +322,7 @@ export default {
     KqiFileManager,
     KqiDataSetDetails,
     KqiTrainingHistoryDetails,
+    KqiTagEditor,
     KqiTensorboardHandler,
   },
   props: {
@@ -342,6 +347,7 @@ export default {
         name: null,
         favorite: false,
         memo: null,
+        tags: [],
       },
       title: '',
       dialogVisible: true,
@@ -350,7 +356,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['detail', 'events', 'uploadedFiles']),
+    ...mapGetters(['detail', 'events', 'uploadedFiles', 'tenantTags']),
   },
   watch: {
     async $route() {
@@ -367,6 +373,7 @@ export default {
       'fetchDetail',
       'fetchEvents',
       'fetchUploadedFiles',
+      'fetchTenantTags',
       'postHalt',
       'postUserCancel',
       'postFiles',
@@ -380,6 +387,9 @@ export default {
       this.form.name = this.detail.name
       this.form.favorite = this.detail.favorite
       this.form.memo = this.detail.memo
+      this.form.tags = this.detail.tags
+      // ここでいいのか要確認
+      await this.fetchTenantTags()
     },
     async retrieveData() {
       await this.fetchDetail(this.id)
@@ -398,6 +408,7 @@ export default {
           name: this.form.name,
           memo: this.form.memo,
           favorite: this.form.favorite,
+          tags: this.form.tags,
         },
       }
       await this.put(params)

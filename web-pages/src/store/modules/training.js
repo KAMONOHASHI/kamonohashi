@@ -10,6 +10,7 @@ const state = {
   detail: {},
   events: {},
   uploadedFiles: [],
+  tenantTags: [],
   tensorboard: {},
   fileList: [],
 }
@@ -36,6 +37,9 @@ const getters = {
   },
   uploadedFiles(state) {
     return state.uploadedFiles
+  },
+  tenantTags(state) {
+    return state.tenantTags
   },
   tensorboard(state) {
     return state.tensorboard
@@ -81,6 +85,11 @@ const actions = {
       })
     ).data
     commit('setUploadedFiles', { uploadedFiles })
+  },
+
+  async fetchTenantTags({ commit }) {
+    let tenantTags = (await api.training.getTags()).data
+    commit('setTenantTags', tenantTags)
   },
 
   // eslint-disable-next-line no-unused-vars
@@ -202,6 +211,10 @@ const mutations = {
 
   clearDetail(state) {
     state.detail = {}
+  },
+
+  setTenantTags(state, tenantTags) {
+    state.tenantTags = tenantTags
   },
 
   setTensorboard(state, { tensorboard }) {

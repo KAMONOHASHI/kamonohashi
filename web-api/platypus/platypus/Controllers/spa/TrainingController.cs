@@ -32,6 +32,7 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly IInferenceHistoryRepository inferenceHistoryRepository;
         private readonly ITensorBoardContainerRepository tensorBoardContainerRepository;
         private readonly IDataSetRepository dataSetRepository;
+        private readonly ITagLogic tagLogic;
         private readonly ITrainingLogic trainingLogic;
         private readonly IStorageLogic storageLogic;
         private readonly IGitLogic gitLogic;
@@ -42,22 +43,24 @@ namespace Nssol.Platypus.Controllers.spa
         /// コンストラクタ
         /// </summary>
         public TrainingController(
-          ITrainingHistoryRepository trainingHistoryRepository,
-          IInferenceHistoryRepository inferenceHistoryRepository,
-          ITensorBoardContainerRepository tensorBoardContainerRepository,
-          IDataSetRepository dataSetRepository,
-          ITrainingLogic trainingLogic,
-          IStorageLogic storageLogic,
-          IGitLogic gitLogic,
-          IClusterManagementLogic clusterManagementLogic,
-          IUnitOfWork unitOfWork,
-          IHttpContextAccessor accessor) : base(accessor)
+            ITrainingHistoryRepository trainingHistoryRepository,
+            IInferenceHistoryRepository inferenceHistoryRepository,
+            ITensorBoardContainerRepository tensorBoardContainerRepository,
+            IDataSetRepository dataSetRepository,
+            ITagLogic tagLogic,
+            ITrainingLogic trainingLogic,
+            IStorageLogic storageLogic,
+            IGitLogic gitLogic,
+            IClusterManagementLogic clusterManagementLogic,
+            IUnitOfWork unitOfWork,
+            IHttpContextAccessor accessor) : base(accessor)
         {
             this.clusterManagementLogic = clusterManagementLogic;
             this.trainingHistoryRepository = trainingHistoryRepository;
             this.inferenceHistoryRepository = inferenceHistoryRepository;
             this.tensorBoardContainerRepository = tensorBoardContainerRepository;
             this.dataSetRepository = dataSetRepository;
+            this.tagLogic = tagLogic;
             this.trainingLogic = trainingLogic;
             this.storageLogic = storageLogic;
             this.gitLogic = gitLogic;
@@ -240,6 +243,25 @@ namespace Nssol.Platypus.Controllers.spa
                     data = data.Where(d => d.ParentMaps != null && d.ParentMaps.Any(m => m.Parent.Name.Contains(filter.ParentName, StringComparison.CurrentCulture)));
                 }
             }
+
+            // タグの検索
+            if (filter.Tags != null)
+            {
+                foreach (var tag in filter.Tags)
+                {
+                    if (string.IsNullOrEmpty(tag) == false)
+                    {
+                        if (tag.StartsWith("!", StringComparison.CurrentCulture))
+                        {
+                            data = data.Where(d => d.TagMaps == null || d.TagMaps.Count == 0 || d.TagMaps.All(m => m.Tag.Name.Contains(tag.Substring(1), StringComparison.CurrentCulture) == false));    
+                        }
+                        else
+                        {
+                            data = data.Where(d => d.TagMaps != null && d.TagMaps.Any(m => m.Tag.Name.Contains(tag, StringComparison.CurrentCulture)));
+                        }
+                    }
+                }
+            }
             return data;
         }
 
@@ -268,7 +290,6 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="id">学習履歴ID</param>
         /// <param name="options">DI用</param>
-        /// 
         [HttpGet("{id}")]
         [Filters.PermissionFilter(MenuCode.Training, MenuCode.Inference)]
         [ProducesResponseType(typeof(DetailsOutputModel), (int)HttpStatusCode.OK)]
@@ -285,6 +306,7 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             var model = new DetailsOutputModel(history);
+            model.Tags = tagLogic.GetAllTrainingHistoryTag(history.Id).Select(t => t.Name);
 
             var status = history.GetStatus();
             model.StatusType = status.StatusType;
@@ -460,6 +482,12 @@ namespace Nssol.Platypus.Controllers.spa
 
                 trainingHistory.ParentMaps = maps;
             }
+            //タグの登録
+            if (model.Tags != null && model.Tags.Count() > 0)
+            {
+                tagLogic.CreateTrainingHistoryTags(trainingHistory, model.Tags);
+            }
+
             trainingHistoryRepository.Add(trainingHistory);
             if (dataSet.IsLocked == false)
             {
@@ -499,10 +527,11 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="id">変更対象の学習履歴ID</param>
         /// <param name="model">変更内容</param>
+        /// <param name="tagRepository">Di用</param>
         [HttpPut("{id}")]
         [Filters.PermissionFilter(MenuCode.Training)]
         [ProducesResponseType(typeof(SimpleOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> Edit(long? id, [FromBody]EditInputModel model)
+        public async Task<IActionResult> Edit(long? id, [FromBody]EditInputModel model, [FromServices] ITagRepository tagRepository)
         {
             //データの入力チェック
             if (!ModelState.IsValid || ! id.HasValue)
@@ -519,6 +548,28 @@ namespace Nssol.Platypus.Controllers.spa
             history.Name = EditColumnNotEmpty(model.Name, history.Name);
             history.Memo = EditColumn(model.Memo, history.Memo);
             history.Favorite = EditColumn(model.Favorite, history.Favorite);
+            
+            //タグの編集。指定がない場合は変更なしと見なして何もしない。
+            if (model.Tags != null)
+            {
+                if (model.Tags.Count() > 0)
+                {
+                    //タグが一つでも指定されていたら、全部上書き
+                    await tagLogic.EditTrainingHistoryTagsAsync(history.Id, model.Tags);
+                }
+                else
+                {
+                    //タグがゼロなら全削除
+                    tagLogic.DeleteTrainingHistoryTags(history.Id);
+                }
+            }
+
+            unitOfWork.Commit();
+
+            // 未使用タグ削除
+            tagRepository.DeleteUnUsedTrainingHistoryTags();
+
+            // DBへタグ削除結果のコミット
             unitOfWork.Commit();
 
             return JsonOK(new SimpleOutputModel(history));
@@ -883,10 +934,11 @@ namespace Nssol.Platypus.Controllers.spa
         /// 学習履歴を削除する。
         /// </summary>
         /// <param name="id">学習履歴ID</param>
+        /// <param name="tagRepository">Di用</param>
         [HttpDelete("{id}")]
         [Filters.PermissionFilter(MenuCode.Training)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        public async Task<IActionResult> Delete(long? id)
+        public async Task<IActionResult> Delete(long? id, [FromServices] ITagRepository tagRepository)
         {
             //データの入力チェック
             if (id == null)
@@ -947,7 +999,16 @@ namespace Nssol.Platypus.Controllers.spa
                 await storageLogic.DeleteFileAsync(ResourceType.TrainingHistoryAttachedFiles, file.StoredPath);
             }
 
+            // タグマップを削除
+            tagLogic.DeleteTrainingHistoryTags(trainingHistory.Id);
+
             trainingHistoryRepository.Delete(trainingHistory);
+            unitOfWork.Commit();
+
+            // 未使用タグ削除
+            tagRepository.DeleteUnUsedTrainingHistoryTags();
+
+            // DBへタグ削除結果のコミット
             unitOfWork.Commit();
 
             // ストレージ内の学習データを削除する
@@ -955,6 +1016,19 @@ namespace Nssol.Platypus.Controllers.spa
             await storageLogic.DeleteResultsAsync(ResourceType.TrainingContainerOutputFiles, trainingHistory.Id);
 
             return JsonNoContent();
+        }
+
+        /// <summary>
+        /// 選択中のテナントに登録されている学習管理で使用するタグを表示する
+        /// </summary>
+        [HttpGet("tags")]
+        [Filters.PermissionFilter(MenuCode.Training)]
+        [ProducesResponseType(typeof(IEnumerable<string>), (int)HttpStatusCode.OK)]
+        public IActionResult GetTags()
+        {
+            // タグ種別が学習のものに限定する
+            var tags = tagLogic.GetAllTags().Where(t => t.Type == TagType.Training);
+            return JsonOK(tags.Select(t => t.Name));
         }
     }
 }
