@@ -21,10 +21,11 @@ namespace Nssol.Platypus.Services
             Logic.Interfaces.ICommonDiLogic commonDiLogic) : base(commonDiLogic)
         {
         }
-        
+
         /// <summary>
         /// リポジトリ一覧を取得する。
         /// </summary>
+        /// <param name="gitMap">Git情報</param>
         /// <returns>リポジトリ一覧</returns>
         public async override Task<Result<IEnumerable<RepositoryModel>, string>> GetAllRepositoriesAsync(UserTenantGitMap gitMap)
         {
@@ -43,6 +44,10 @@ namespace Nssol.Platypus.Services
         /// なので、この変換を行うためのAPI呼び出しが必要。
         /// ちなみに、逆にWebUIを参照する際はオーナー名が必要という仕様。
         /// </remarks>
+        /// <param name="gitMap">Git情報</param>
+        /// <param name="repositoryName">リポジトリ名</param>
+        /// <param name="owner">オーナー名</param>
+        /// <returns>プロジェクトID</returns>
         protected async override Task<Result<string, string>> GetProjectIdAsync(UserTenantGitMap gitMap, string repositoryName, string owner)
         {
             // オーナー名＆リポジトリ名を指定して取得する

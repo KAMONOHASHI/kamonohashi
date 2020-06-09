@@ -162,6 +162,8 @@ let api = {
     getRepos: gen.ApiV1GitByGitIdReposGet,
     getBranches: gen.ApiV1GitByGitIdReposByOwnerByRepositoryNameBranchesGet,
     getCommits: gen.ApiV1GitByGitIdReposByOwnerByRepositoryNameCommitsGet,
+    getCommit:
+      gen.ApiV1GitByGitIdReposByOwnerByRepositoryNameCommitsByCommitIdGet,
     // GET /spa/git/repos/{segments}
   },
 
