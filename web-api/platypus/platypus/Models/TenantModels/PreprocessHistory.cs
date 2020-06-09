@@ -1,9 +1,8 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Models.TenantModels
 {
@@ -17,18 +16,22 @@ namespace Nssol.Platypus.Models.TenantModels
         /// </summary>
         [Required]
         public long InputDataId { get; set; }
+
         /// <summary>
         /// 前処理方法ID
         /// </summary>
         public long? PreprocessId { get; set; }
+
         /// <summary>
         /// 実行開始日時
         /// </summary>
         public DateTime? StartedAt { get; set; }
+
         /// <summary>
         /// 実行完了日時
         /// </summary>
         public DateTime? CompletedAt { get; set; }
+
         /// <summary>
         /// ステータス
         /// </summary>
@@ -57,6 +60,7 @@ namespace Nssol.Platypus.Models.TenantModels
         /// }
         /// </remarks>
         public string Options { get; set; }
+
         /// <summary>
         /// <see cref="Options"/> のディクショナリ表現。
         /// </summary>
@@ -71,14 +75,17 @@ namespace Nssol.Platypus.Models.TenantModels
         /// CPUコア数
         /// </summary>
         public int? Cpu { get; set; }
+
         /// <summary>
-        /// メモリ容量（GiB）
+        /// メモリ容量（GB）
         /// </summary>
         public int? Memory { get; set; }
+
         /// <summary>
         /// GPU数
         /// </summary>
         public int? Gpu { get; set; }
+
         /// <summary>
         /// パーティション
         /// </summary>
@@ -89,6 +96,7 @@ namespace Nssol.Platypus.Models.TenantModels
         /// </summary>
         [ForeignKey(nameof(InputDataId))]
         public virtual Data InputData { get; set; }
+
         /// <summary>
         /// 前処理方法
         /// </summary>
@@ -112,13 +120,17 @@ namespace Nssol.Platypus.Models.TenantModels
             }
         }
 
+        /// <summary>
+        /// 環境変数のディクショナリ表現
+        /// </summary>
+        /// <returns>環境変数</returns>
         public Dictionary<string, string> GetOptionDic()
         {
             if (Options == null)
             {
                 return new Dictionary<string, string>();
             }
-            OptionDic = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string>>(Options);
+            OptionDic = JsonConvert.DeserializeObject<Dictionary<string, string>>(Options);
             return OptionDic;
         }
     }

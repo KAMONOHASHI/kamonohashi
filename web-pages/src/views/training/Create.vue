@@ -52,10 +52,16 @@
             />
           </el-col>
           <el-col :span="12">
-            <kqi-resource-selector v-model="form.resource" />
+            <kqi-resource-selector v-model="form.resource" :quota="quota" />
 
             <kqi-environment-variables v-model="form.variables" />
             <kqi-expose-ports v-model="form.ports" />
+            <el-form-item label="タグ">
+              <kqi-tag-editor
+                v-model="form.tags"
+                :registered-tags="tenantTags"
+              />
+            </el-form-item>
             <el-form-item label="結果Zip圧縮">
               <el-switch
                 v-model="form.zip"
@@ -165,7 +171,7 @@
             :rules="rules"
           >
             <el-col :span="18" :offset="3">
-              <kqi-resource-selector v-model="form.resource" />
+              <kqi-resource-selector v-model="form.resource" :quota="quota" />
             </el-col>
           </el-form>
 
@@ -179,6 +185,12 @@
             <el-col>
               <kqi-environment-variables v-model="form.variables" />
               <kqi-expose-ports v-model="form.ports" />
+              <el-form-item label="タグ">
+                <kqi-tag-editor
+                  v-model="form.tags"
+                  :registered-tags="tenantTags"
+                />
+              </el-form-item>
               <el-form-item label="結果Zip圧縮">
                 <el-switch
                   v-model="form.zip"
@@ -243,6 +255,7 @@ import KqiGitSelector from '@/components/selector/KqiGitSelector'
 import KqiResourceSelector from '@/components/selector/KqiResourceSelector'
 import KqiEnvironmentVariables from '@/components/KqiEnvironmentVariables'
 import KqiExposePorts from '@/components/KqiExposePorts'
+import KqiTagEditor from '@/components/KqiTagEditor'
 import KqiPartitionSelector from '@/components/selector/KqiPartitionSelector'
 import validator from '@/util/validator'
 import registrySelectorUtil from '@/util/registrySelectorUtil'
@@ -265,6 +278,7 @@ export default {
     KqiResourceSelector,
     KqiEnvironmentVariables,
     KqiExposePorts,
+    KqiTagEditor,
     KqiPartitionSelector,
   },
   props: {
@@ -340,6 +354,8 @@ export default {
       loadingRepositories: ['gitSelector/loadingRepositories'],
       detail: ['training/detail'],
       partitions: ['cluster/partitions'],
+      quota: ['cluster/quota'],
+      tenantTags: ['training/tenantTags'],
     }),
   },
   async created() {
@@ -357,7 +373,9 @@ export default {
       ],
     })
     await this['cluster/fetchPartitions']()
+    await this['cluster/fetchQuota']()
     await this['dataSet/fetchDataSets']()
+    await this['training/fetchTenantTags']()
 
     // レジストリ一覧を取得し、デフォルトレジストリを設定
     await this['registrySelector/fetchRegistries']()
@@ -401,6 +419,7 @@ export default {
           : this.detail.options
       this.form.ports = this.detail.ports
       this.form.partition = this.detail.partition
+      this.form.tags = this.detail.tags
 
       // レジストリの設定
       this.form.containerImage.registry = {
@@ -443,8 +462,10 @@ export default {
     ...mapActions([
       'training/fetchHistoriesToMount',
       'training/fetchDetail',
+      'training/fetchTenantTags',
       'training/post',
       'cluster/fetchPartitions',
+      'cluster/fetchQuota',
       'dataSet/fetchDataSets',
       'registrySelector/fetchRegistries',
       'registrySelector/fetchImages',
@@ -508,6 +529,7 @@ export default {
               Zip: this.form.zip,
               Partition: this.form.partition,
               Memo: this.form.memo,
+              tags: this.form.tags,
             }
             await this['training/post'](params)
             this.emitDone()

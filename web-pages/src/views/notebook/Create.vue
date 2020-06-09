@@ -25,6 +25,13 @@
                 v-model="form.dataSetId"
                 :data-sets="dataSets"
               />
+              <el-form-item label="起動時実行コマンド" prop="entryPoint">
+                <el-input
+                  v-model="form.entryPoint"
+                  type="textarea"
+                  :autosize="{ minRows: 2 }"
+                />
+              </el-form-item>
               <kqi-container-selector
                 v-model="form.containerImage"
                 :registries="registries"
@@ -46,7 +53,7 @@
               />
             </el-col>
             <el-col :span="12">
-              <kqi-resource-selector v-model="form.resource" />
+              <kqi-resource-selector v-model="form.resource" :quota="quota" />
               <div v-if="availableInfiniteTime">
                 <el-form-item label="起動期間設定">
                   <el-switch
@@ -100,6 +107,13 @@
                 v-model="form.dataSetId"
                 :data-sets="dataSets"
               />
+              <el-form-item label="起動時実行コマンド" prop="entryPoint">
+                <el-input
+                  v-model="form.entryPoint"
+                  type="textarea"
+                  :autosize="{ minRows: 2 }"
+                />
+              </el-form-item>
               <kqi-container-selector
                 v-model="form.containerImage"
                 :registries="registries"
@@ -121,7 +135,7 @@
               />
             </el-col>
             <el-col :span="12">
-              <kqi-resource-selector v-model="form.resource" />
+              <kqi-resource-selector v-model="form.resource" :quota="quota" />
             </el-col>
             <el-col :span="12">
               <div v-if="availableInfiniteTime">
@@ -176,7 +190,7 @@
           <!-- step 2 -->
           <el-form v-if="active === 1" ref="form1" :model="form" :rules="rules">
             <el-col :span="18" :offset="3">
-              <kqi-resource-selector v-model="form.resource" />
+              <kqi-resource-selector v-model="form.resource" :quota="quota" />
             </el-col>
             <el-col :span="18" :offset="3">
               <div v-if="availableInfiniteTime">
@@ -244,6 +258,13 @@
           <!-- step 4 -->
           <el-form v-if="active === 3" ref="form3" :model="form" :rules="rules">
             <el-col>
+              <el-form-item label="起動時実行コマンド" prop="entryPoint">
+                <el-input
+                  v-model="form.entryPoint"
+                  type="textarea"
+                  :autosize="{ minRows: 2 }"
+                />
+              </el-form-item>
               <kqi-environment-variables v-model="form.variables" />
               <kqi-partition-selector
                 v-model="form.partition"
@@ -354,6 +375,7 @@ export default {
         variables: [{ key: '', value: '' }],
         partition: null,
         memo: null,
+        entryPoint: '',
       },
       rules: {
         name: [
@@ -389,6 +411,7 @@ export default {
       availableInfiniteTime: ['notebook/availableInfiniteTime'],
       detail: ['notebook/detail'],
       partitions: ['cluster/partitions'],
+      quota: ['cluster/quota'],
     }),
   },
   async created() {
@@ -405,6 +428,7 @@ export default {
       status: ['Completed', 'UserCanceled', 'Killed'],
     })
     await this['cluster/fetchPartitions']()
+    await this['cluster/fetchQuota']()
     await this['dataSet/fetchDataSets']()
 
     // レジストリ一覧を取得し、デフォルトレジストリを設定
@@ -504,6 +528,7 @@ export default {
           this.form.gitModel.commit = this.commitDetail
         }
       }
+      this.form.entryPoint = this.detail.entryPoint
     }
   },
 
@@ -515,6 +540,7 @@ export default {
       'notebook/postRerun',
       'notebook/fetchAvailableInfiniteTime',
       'cluster/fetchPartitions',
+      'cluster/fetchQuota',
       'dataSet/fetchDataSets',
       'registrySelector/fetchRegistries',
       'registrySelector/fetchImages',
@@ -546,6 +572,7 @@ export default {
             memory: this.form.resource.memory,
             gpu: this.form.resource.gpu,
             expiresIn: this.form.expiresIn * 60 * 60,
+            entryPoint: this.form.entryPoint,
           }
           await this['notebook/postRerun']({
             id: this.originId,
@@ -593,6 +620,7 @@ export default {
                 options: options,
                 partition: this.form.partition,
                 memo: this.form.memo,
+                entryPoint: this.form.entryPoint,
               }
               await this['notebook/post'](params)
               this.emitDone()

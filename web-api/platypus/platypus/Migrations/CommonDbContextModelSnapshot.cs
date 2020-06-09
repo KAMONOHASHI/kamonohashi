@@ -796,6 +796,8 @@ namespace Nssol.Platypus.Migrations
 
                     b.Property<long?>("DisplayId");
 
+                    b.Property<string>("EntryPoint");
+
                     b.Property<int?>("ExpiresIn")
                         .IsRequired();
 
@@ -1042,6 +1044,8 @@ namespace Nssol.Platypus.Migrations
                         .IsRequired();
 
                     b.Property<long>("TenantId");
+
+                    b.Property<int>("Type");
 
                     b.HasKey("Id");
 
@@ -1833,7 +1837,7 @@ namespace Nssol.Platypus.Migrations
             modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.TrainingHistoryTagMap", b =>
                 {
                     b.HasOne("Nssol.Platypus.Models.TenantModels.Tag", "Tag")
-                        .WithMany()
+                        .WithMany("TrainingHistoryMaps")
                         .HasForeignKey("TagId")
                         .OnDelete(DeleteBehavior.Cascade);
 
@@ -1843,7 +1847,7 @@ namespace Nssol.Platypus.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Nssol.Platypus.Models.TenantModels.TrainingHistory", "TrainingHistory")
-                        .WithMany()
+                        .WithMany("TagMaps")
                         .HasForeignKey("TrainingHistoryId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });

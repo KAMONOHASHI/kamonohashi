@@ -54,6 +54,12 @@ namespace Nssol.Platypus.Models.TenantModels
         public string ModelCommitId { get; set; }
 
         /// <summary>
+        /// エントリポイント。
+        /// ノートブック起動時に実行されるスクリプト。
+        /// </summary>
+        public string EntryPoint { get; set; }
+
+        /// <summary>
         /// Dockerレジストリ
         /// </summary>
         public long? ContainerRegistryId { get; set; }
@@ -100,7 +106,7 @@ namespace Nssol.Platypus.Models.TenantModels
         public int Cpu { get; set; }
 
         /// <summary>
-        /// メモリ容量（GiB）
+        /// メモリ容量（GB）
         /// </summary>
         [Required]
         public int Memory { get; set; }

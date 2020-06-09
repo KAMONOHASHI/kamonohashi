@@ -60,7 +60,7 @@
           />
         </el-col>
         <el-col :span="12">
-          <kqi-resource-selector v-model="form.resource" />
+          <kqi-resource-selector v-model="form.resource" :quota="quota" />
         </el-col>
       </el-row>
     </el-form>
@@ -144,6 +144,7 @@ export default {
       loadingRepositories: ['gitSelector/loadingRepositories'],
       detail: ['preprocessing/detail'],
       histories: ['preprocessing/histories'],
+      quota: ['cluster/quota'],
     }),
   },
   watch: {
@@ -171,6 +172,7 @@ export default {
       'gitSelector/fetchBranches',
       'gitSelector/fetchCommits',
       'gitSelector/fetchCommitDetail',
+      'cluster/fetchQuota',
     ]),
     async initialize() {
       let url = this.$route.path
@@ -190,6 +192,9 @@ export default {
           this.isEditDialog = true
           break
       }
+
+      // クォータ情報を取得
+      await this['cluster/fetchQuota']()
 
       // 指定に必要な情報を取得
       // レジストリ一覧を取得し、デフォルトレジストリを設定

@@ -1,9 +1,13 @@
 ﻿using Nssol.Platypus.ApiModels.Components;
+using Nssol.Platypus.Controllers.Util;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Nssol.Platypus.ApiModels.TrainingApiModels
 {
+    /// <summary>
+    /// 新規学習実行モデル
+    /// </summary>
     public class CreateInputModel
     {
         /// <summary>
@@ -41,7 +45,7 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         /// </summary>
         [Required]
         public string EntryPoint { get; set; }
-
+        
         /// <summary>
         /// 追加環境変数
         /// </summary>
@@ -54,7 +58,7 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         public int? Cpu { get; set; }
 
         /// <summary>
-        /// メモリ数(GiB)
+        /// メモリ数(GB)
         /// </summary>
         [Required]
         public int? Memory { get; set; }
@@ -74,10 +78,17 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         /// 開放ポート番号
         /// </summary>
         public List<int> Ports { get; set; }
+
         /// <summary>
         /// メモ
         /// </summary>
         public string Memo { get; set; }
+
+        /// <summary>
+        /// タグ
+        /// </summary>
+        [ValidInputAsTag]
+        public IEnumerable<string> Tags { get; set; }
 
         /// <summary>
         /// zip圧縮するか否か。
