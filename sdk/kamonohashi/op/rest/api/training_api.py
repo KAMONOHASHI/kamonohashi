@@ -800,6 +800,7 @@ class TrainingApi(object):
         :param str memo:
         :param str status:
         :param str entry_point:
+        :param list[str] tag:
         :param int per_page:
         :param int page:
         :param bool with_total:
@@ -833,6 +834,7 @@ class TrainingApi(object):
         :param str memo:
         :param str status:
         :param str entry_point:
+        :param list[str] tag:
         :param int per_page:
         :param int page:
         :param bool with_total:
@@ -841,7 +843,7 @@ class TrainingApi(object):
                  returns the request thread.
         """
 
-        all_params = ['id', 'name', 'parent_id', 'parent_name', 'started_at', 'started_by', 'data_set', 'memo', 'status', 'entry_point', 'per_page', 'page', 'with_total']  # noqa: E501
+        all_params = ['id', 'name', 'parent_id', 'parent_name', 'started_at', 'started_by', 'data_set', 'memo', 'status', 'entry_point', 'tag', 'per_page', 'page', 'with_total']  # noqa: E501
         all_params.append('async_req')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -882,6 +884,9 @@ class TrainingApi(object):
             query_params.append(('Status', params['status']))  # noqa: E501
         if 'entry_point' in params:
             query_params.append(('EntryPoint', params['entry_point']))  # noqa: E501
+        if 'tag' in params:
+            query_params.append(('tag', params['tag']))  # noqa: E501
+            collection_formats['tag'] = 'multi'  # noqa: E501
         if 'per_page' in params:
             query_params.append(('perPage', params['per_page']))  # noqa: E501
         if 'page' in params:

@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-using Nssol.Platypus.Controllers.Util;
+﻿using Nssol.Platypus.Controllers.Util;
 
 namespace Nssol.Platypus.ApiModels.PreprocessingApiModels
 {
+    /// <summary>
+    /// 前処理編集の入力モデル
+    /// </summary>
     public class EditInputModel
     {
         /// <summary>
@@ -23,10 +21,12 @@ namespace Nssol.Platypus.ApiModels.PreprocessingApiModels
         /// CPUコア数のデフォルト値
         /// </summary>
         public int? Cpu { get; set; }
+
         /// <summary>
-        /// メモリ容量（GiB）のデフォルト値
+        /// メモリ容量（GB）のデフォルト値
         /// </summary>
         public int? Memory { get; set; }
+
         /// <summary>
         /// GPU数のデフォルト値
         /// </summary>

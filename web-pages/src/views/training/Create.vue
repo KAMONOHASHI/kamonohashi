@@ -23,6 +23,14 @@
               v-model="form.dataSetId"
               :data-sets="dataSets"
             />
+            <el-form-item label="データセット作成方式">
+              <el-switch
+                v-model="form.localDataSet"
+                style="width: 100%;"
+                inactive-text="シンボリックリンク"
+                active-text="ローカルコピー"
+              />
+            </el-form-item>
 
             <el-form-item label="実行コマンド" prop="entryPoint">
               <el-input
@@ -52,10 +60,16 @@
             />
           </el-col>
           <el-col :span="12">
-            <kqi-resource-selector v-model="form.resource" />
+            <kqi-resource-selector v-model="form.resource" :quota="quota" />
 
             <kqi-environment-variables v-model="form.variables" />
             <kqi-expose-ports v-model="form.ports" />
+            <el-form-item label="タグ">
+              <kqi-tag-editor
+                v-model="form.tags"
+                :registered-tags="tenantTags"
+              />
+            </el-form-item>
             <el-form-item label="結果Zip圧縮">
               <el-switch
                 v-model="form.zip"
@@ -115,6 +129,14 @@
                 v-model="form.dataSetId"
                 :data-sets="dataSets"
               />
+              <el-form-item label="データセット作成方式">
+                <el-switch
+                  v-model="form.localDataSet"
+                  style="width: 100%;"
+                  inactive-text="シンボリックリンク"
+                  active-text="ローカルコピー"
+                />
+              </el-form-item>
             </el-col>
           </el-form>
 
@@ -165,7 +187,7 @@
             :rules="rules"
           >
             <el-col :span="18" :offset="3">
-              <kqi-resource-selector v-model="form.resource" />
+              <kqi-resource-selector v-model="form.resource" :quota="quota" />
             </el-col>
           </el-form>
 
@@ -179,6 +201,12 @@
             <el-col>
               <kqi-environment-variables v-model="form.variables" />
               <kqi-expose-ports v-model="form.ports" />
+              <el-form-item label="タグ">
+                <kqi-tag-editor
+                  v-model="form.tags"
+                  :registered-tags="tenantTags"
+                />
+              </el-form-item>
               <el-form-item label="結果Zip圧縮">
                 <el-switch
                   v-model="form.zip"
@@ -243,6 +271,7 @@ import KqiGitSelector from '@/components/selector/KqiGitSelector'
 import KqiResourceSelector from '@/components/selector/KqiResourceSelector'
 import KqiEnvironmentVariables from '@/components/KqiEnvironmentVariables'
 import KqiExposePorts from '@/components/KqiExposePorts'
+import KqiTagEditor from '@/components/KqiTagEditor'
 import KqiPartitionSelector from '@/components/selector/KqiPartitionSelector'
 import validator from '@/util/validator'
 import registrySelectorUtil from '@/util/registrySelectorUtil'
@@ -265,6 +294,7 @@ export default {
     KqiResourceSelector,
     KqiEnvironmentVariables,
     KqiExposePorts,
+    KqiTagEditor,
     KqiPartitionSelector,
   },
   props: {
@@ -300,6 +330,7 @@ export default {
         ports: [],
         partition: null,
         zip: true,
+        localDataSet: false,
         memo: null,
       },
       rules: {
@@ -339,6 +370,8 @@ export default {
       loadingRepositories: ['gitSelector/loadingRepositories'],
       detail: ['training/detail'],
       partitions: ['cluster/partitions'],
+      quota: ['cluster/quota'],
+      tenantTags: ['training/tenantTags'],
     }),
   },
   async created() {
@@ -356,7 +389,9 @@ export default {
       ],
     })
     await this['cluster/fetchPartitions']()
+    await this['cluster/fetchQuota']()
     await this['dataSet/fetchDataSets']()
+    await this['training/fetchTenantTags']()
 
     // レジストリ一覧を取得し、デフォルトレジストリを設定
     await this['registrySelector/fetchRegistries']()
@@ -380,6 +415,7 @@ export default {
       this.form.dataSetId = String(this.detail.dataSet.id)
       this.form.entryPoint = this.detail.entryPoint
       this.form.zip = this.detail.zip
+      this.form.localDataSet = this.detail.localDataSet
       this.form.memo = this.detail.memo
       this.form.selectedParent = []
       if (this.detail.parents) {
@@ -400,6 +436,7 @@ export default {
           : this.detail.options
       this.form.ports = this.detail.ports
       this.form.partition = this.detail.partition
+      this.form.tags = this.detail.tags
 
       // レジストリの設定
       this.form.containerImage.registry = {
@@ -431,8 +468,10 @@ export default {
     ...mapActions([
       'training/fetchHistoriesToMount',
       'training/fetchDetail',
+      'training/fetchTenantTags',
       'training/post',
       'cluster/fetchPartitions',
+      'cluster/fetchQuota',
       'dataSet/fetchDataSets',
       'registrySelector/fetchRegistries',
       'registrySelector/fetchImages',
@@ -493,8 +532,10 @@ export default {
               Options: options,
               Ports: this.form.ports,
               Zip: this.form.zip,
+              LocalDataSet: this.form.localDataSet,
               Partition: this.form.partition,
               Memo: this.form.memo,
+              tags: this.form.tags,
             }
             await this['training/post'](params)
             this.emitDone()

@@ -23,6 +23,14 @@
               v-model="form.dataSetId"
               :data-sets="dataSets"
             />
+            <el-form-item label="データセット作成方式">
+              <el-switch
+                v-model="form.localDataSet"
+                style="width: 100%;"
+                inactive-text="シンボリックリンク"
+                active-text="ローカルコピー"
+              />
+            </el-form-item>
 
             <el-form-item label="実行コマンド" prop="entryPoint">
               <el-input
@@ -52,7 +60,7 @@
             />
           </el-col>
           <el-col :span="12">
-            <kqi-resource-selector v-model="form.resource" />
+            <kqi-resource-selector v-model="form.resource" :quota="quota" />
 
             <kqi-environment-variables v-model="form.variables" />
             <el-form-item label="結果Zip圧縮">
@@ -114,6 +122,14 @@
                 v-model="form.dataSetId"
                 :data-sets="dataSets"
               />
+              <el-form-item label="データセット作成方式">
+                <el-switch
+                  v-model="form.localDataSet"
+                  style="width: 100%;"
+                  inactive-text="シンボリックリンク"
+                  active-text="ローカルコピー"
+                />
+              </el-form-item>
             </el-col>
           </el-form>
 
@@ -164,7 +180,7 @@
             :rules="rules"
           >
             <el-col :span="18" :offset="3">
-              <kqi-resource-selector v-model="form.resource" />
+              <kqi-resource-selector v-model="form.resource" :quota="quota" />
             </el-col>
           </el-form>
 
@@ -295,6 +311,7 @@ export default {
         variables: [{ key: '', value: '' }],
         partition: null,
         zip: true,
+        localDataSet: false,
         memo: null,
       },
       rules: {
@@ -335,6 +352,7 @@ export default {
       loadingRepositories: ['gitSelector/loadingRepositories'],
       inferenceDetail: ['inference/detail'],
       partitions: ['cluster/partitions'],
+      quota: ['cluster/quota'],
     }),
   },
   async created() {
@@ -349,6 +367,7 @@ export default {
       status: ['Completed', 'UserCanceled'],
     })
     await this['cluster/fetchPartitions']()
+    await this['cluster/fetchQuota']()
     await this['dataSet/fetchDataSets']()
 
     // レジストリ一覧を取得し、デフォルトレジストリを設定
@@ -391,6 +410,7 @@ export default {
         this.form.name = detail.name
         this.form.entryPoint = detail.entryPoint
         this.form.zip = detail.zip
+        this.form.localDataSet = detail.localDataSet
         this.form.memo = detail.memo
         this.form.selectedParent = []
         if (detail.parents) {
@@ -448,6 +468,7 @@ export default {
       'inference/fetchDetail',
       'inference/post',
       'cluster/fetchPartitions',
+      'cluster/fetchQuota',
       'dataSet/fetchDataSets',
       'registrySelector/fetchRegistries',
       'registrySelector/fetchImages',
@@ -507,6 +528,7 @@ export default {
               Gpu: this.form.resource.gpu,
               Options: options,
               Zip: this.form.zip,
+              LocalDataSet: this.form.localDataSet,
               Partition: this.form.partition,
               Memo: this.form.memo,
             }
