@@ -795,6 +795,7 @@ class TrainingApi(object):
         :param str parent_id:
         :param str parent_name:
         :param str started_at:
+        :param str started_by:
         :param str data_set:
         :param str memo:
         :param str status:
@@ -828,6 +829,7 @@ class TrainingApi(object):
         :param str parent_id:
         :param str parent_name:
         :param str started_at:
+        :param str started_by:
         :param str data_set:
         :param str memo:
         :param str status:
@@ -841,7 +843,7 @@ class TrainingApi(object):
                  returns the request thread.
         """
 
-        all_params = ['id', 'name', 'parent_id', 'parent_name', 'started_at', 'data_set', 'memo', 'status', 'entry_point', 'tag', 'per_page', 'page', 'with_total']  # noqa: E501
+        all_params = ['id', 'name', 'parent_id', 'parent_name', 'started_at', 'started_by', 'data_set', 'memo', 'status', 'entry_point', 'tag', 'per_page', 'page', 'with_total']  # noqa: E501
         all_params.append('async_req')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -872,6 +874,8 @@ class TrainingApi(object):
             query_params.append(('ParentName', params['parent_name']))  # noqa: E501
         if 'started_at' in params:
             query_params.append(('StartedAt', params['started_at']))  # noqa: E501
+        if 'started_by' in params:
+            query_params.append(('StartedBy', params['started_by']))  # noqa: E501
         if 'data_set' in params:
             query_params.append(('DataSet', params['data_set']))  # noqa: E501
         if 'memo' in params:

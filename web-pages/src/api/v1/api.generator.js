@@ -2585,6 +2585,7 @@ e.g.（比較文字列は半角でOK）
 "2018/01/01" → 2018/01/01 00:00:00 以降 ～ 2018/01/02 00:00:00 より前
 "＞2018/01/01" → 2018/01/01 00:00:00 以降
 "＜2018/01/01" → 2018/01/01 00:00:00 以前
+     * @param startedBy - 実行者
      * @param dataSet - データセット名
      * @param memo - メモ
      * @param status - ステータス
@@ -2610,6 +2611,9 @@ export const ApiV1InferencesGet = function(parameters = {}) {
   }
   if (parameters['startedAt'] !== undefined) {
     queryParameters['StartedAt'] = parameters['startedAt']
+  }
+  if (parameters['startedBy'] !== undefined) {
+    queryParameters['StartedBy'] = parameters['startedBy']
   }
   if (parameters['dataSet'] !== undefined) {
     queryParameters['DataSet'] = parameters['dataSet']
@@ -2663,6 +2667,9 @@ export const ApiV1InferencesGetURL = function(parameters = {}) {
   }
   if (parameters['startedAt'] !== undefined) {
     queryParameters['StartedAt'] = parameters['startedAt']
+  }
+  if (parameters['startedBy'] !== undefined) {
+    queryParameters['StartedBy'] = parameters['startedBy']
   }
   if (parameters['dataSet'] !== undefined) {
     queryParameters['DataSet'] = parameters['dataSet']
@@ -7526,6 +7533,7 @@ e.g.（比較文字列は半角でOK）
 "2018/01/01" → 2018/01/01 00:00:00 以降 ～ 2018/01/02 00:00:00 より前
 "＞2018/01/01" → 2018/01/01 00:00:00 以降
 "＜2018/01/01" → 2018/01/01 00:00:00 以前
+     * @param startedBy - 実行者
      * @param dataSet - データセット名
      * @param memo - メモ
      * @param status - ステータス
@@ -7556,6 +7564,9 @@ export const ApiV1TrainingGet = function(parameters = {}) {
   }
   if (parameters['startedAt'] !== undefined) {
     queryParameters['StartedAt'] = parameters['startedAt']
+  }
+  if (parameters['startedBy'] !== undefined) {
+    queryParameters['StartedBy'] = parameters['startedBy']
   }
   if (parameters['dataSet'] !== undefined) {
     queryParameters['DataSet'] = parameters['dataSet']
@@ -7612,6 +7623,9 @@ export const ApiV1TrainingGetURL = function(parameters = {}) {
   }
   if (parameters['startedAt'] !== undefined) {
     queryParameters['StartedAt'] = parameters['startedAt']
+  }
+  if (parameters['startedBy'] !== undefined) {
+    queryParameters['StartedBy'] = parameters['startedBy']
   }
   if (parameters['dataSet'] !== undefined) {
     queryParameters['DataSet'] = parameters['dataSet']
