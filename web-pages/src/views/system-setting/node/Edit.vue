@@ -55,9 +55,8 @@
 <script>
 import KqiDialog from '@/components/KqiDialog'
 import KqiDisplayError from '@/components/KqiDisplayError'
-import { createNamespacedHelpers } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 
-const { mapGetters, mapActions } = createNamespacedHelpers('node')
 const formRules = {
   required: true,
   trigger: 'blur',
@@ -95,10 +94,18 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['detail', 'tenants']),
+    ...mapGetters({
+      detail: ['node/detail'],
+      tenants: ['tenant/tenants'],
+    }),
   },
   async created() {
-    await this.fetchTenants()
+    await this['tenant/fetchTenants']()
+    this.tenants.sort((a, b) => {
+      a = a.displayName.toString().toLowerCase()
+      b = b.displayName.toString().toLowerCase()
+      return a < b ? -1 : 1
+    })
     this.tenants.forEach(t => {
       this.displayTenants.push({
         key: t.id,
@@ -111,7 +118,7 @@ export default {
     } else {
       this.title = 'ノード編集'
       try {
-        await this.fetchDetail(this.id)
+        await this['node/fetchDetail'](this.id)
         this.form.name = this.detail.name
         this.form.memo = this.detail.memo
         this.form.partition = this.detail.partition
@@ -129,7 +136,13 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['fetchDetail', 'fetchTenants', 'post', 'put', 'delete']),
+    ...mapActions([
+      'node/fetchDetail',
+      'node/post',
+      'node/put',
+      'node/delete',
+      'tenant/fetchTenants',
+    ]),
     async submit() {
       let form = this.$refs.createForm
       await form.validate(async valid => {
@@ -146,9 +159,9 @@ export default {
               notebookEnabled: this.form.notebookEnabled,
             }
             if (this.id === null) {
-              await this.post(params)
+              await this['node/post'](params)
             } else {
-              await this.put({ id: this.id, params: params })
+              await this['node/put']({ id: this.id, params: params })
             }
             this.$emit('done')
             this.error = null
@@ -161,7 +174,7 @@ export default {
 
     async deleteNode() {
       try {
-        await this.delete(this.id)
+        await this['node/delete'](this.id)
         this.error = null
         this.$emit('done', 'delete')
       } catch (e) {

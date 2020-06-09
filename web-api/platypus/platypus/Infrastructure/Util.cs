@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Infrastructure
 {
@@ -69,11 +66,11 @@ namespace Nssol.Platypus.Infrastructure
             {
                 return data;
             }
-            if (query.StartsWith("!"))
+            if (query.StartsWith("!", StringComparison.CurrentCulture))
             {
-                return data.Where((d) => string.IsNullOrEmpty(keySelector(d)) || keySelector(d).Contains(query.Substring(1)) == false);
+                return data.Where((d) => string.IsNullOrEmpty(keySelector(d)) || keySelector(d).Contains(query.Substring(1), StringComparison.CurrentCulture) == false);
             }
-            return data.Where((d) => keySelector(d) != null && keySelector(d).Contains(query));
+            return data.Where((d) => keySelector(d) != null && keySelector(d).Contains(query, StringComparison.CurrentCulture));
         }
 
         /// <summary>
@@ -89,35 +86,35 @@ namespace Nssol.Platypus.Infrastructure
             {
                 return data;
             }
-            if (query.StartsWith(">="))
+            if (query.StartsWith(">=", StringComparison.CurrentCulture))
             {
                 if (long.TryParse(query.Substring(2), out long target))
                 {
                     return data.Where(d => keySelector(d) >= target);
                 }
             }
-            else if (query.StartsWith(">"))
+            else if (query.StartsWith(">", StringComparison.CurrentCulture))
             {
                 if (long.TryParse(query.Substring(1), out long target))
                 {
                     return data.Where(d => keySelector(d) > target);
                 }
             }
-            else if (query.StartsWith("<="))
+            else if (query.StartsWith("<=", StringComparison.CurrentCulture))
             {
                 if (long.TryParse(query.Substring(2), out long target))
                 {
                     return data.Where(d => keySelector(d) <= target);
                 }
             }
-            else if (query.StartsWith("<"))
+            else if (query.StartsWith("<", StringComparison.CurrentCulture))
             {
                 if (long.TryParse(query.Substring(1), out long target))
                 {
                     return data.Where(d => keySelector(d) < target);
                 }
             }
-            else if (query.StartsWith("="))
+            else if (query.StartsWith("=", StringComparison.CurrentCulture))
             {
                 if (long.TryParse(query.Substring(1), out long target))
                 {
@@ -154,35 +151,35 @@ namespace Nssol.Platypus.Infrastructure
             {
                 return data;
             }
-            if (query.StartsWith(">="))
+            if (query.StartsWith(">=", StringComparison.CurrentCulture))
             {
                 if (DateTime.TryParse(query.Substring(2), out DateTime createdSince))
                 {
                     return data.Where(d => keySelector(d) >= createdSince);
                 }
             }
-            if (query.StartsWith(">"))
+            if (query.StartsWith(">", StringComparison.CurrentCulture))
             {
                 if (DateTime.TryParse(query.Substring(1), out DateTime createdSince))
                 {
                     return data.Where(d => keySelector(d) > createdSince);
                 }
             }
-            else if (query.StartsWith("<="))
+            else if (query.StartsWith("<=", StringComparison.CurrentCulture))
             {
                 if (DateTime.TryParse(query.Substring(2), out DateTime createdBy))
                 {
                     return data.Where(d => keySelector(d) <= createdBy);
                 }
             }
-            else if (query.StartsWith("<"))
+            else if (query.StartsWith("<", StringComparison.CurrentCulture))
             {
                 if (DateTime.TryParse(query.Substring(1), out DateTime createdBy))
                 {
                     return data.Where(d => keySelector(d) < createdBy);
                 }
             }
-            else if (query.StartsWith("="))
+            else if (query.StartsWith("=", StringComparison.CurrentCulture))
             {
                 if (DateTime.TryParse(query.Substring(1), out DateTime createdAt))
                 {

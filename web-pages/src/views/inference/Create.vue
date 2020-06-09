@@ -17,11 +17,20 @@
             <kqi-training-history-selector
               v-model="form.selectedParent"
               :histories="trainingHistories"
+              multiple
             />
             <kqi-data-set-selector
               v-model="form.dataSetId"
               :data-sets="dataSets"
             />
+            <el-form-item label="データセット作成方式">
+              <el-switch
+                v-model="form.localDataSet"
+                style="width: 100%;"
+                inactive-text="シンボリックリンク"
+                active-text="ローカルコピー"
+              />
+            </el-form-item>
 
             <el-form-item label="実行コマンド" prop="entryPoint">
               <el-input
@@ -51,7 +60,7 @@
             />
           </el-col>
           <el-col :span="12">
-            <kqi-resource-selector v-model="form.resource" />
+            <kqi-resource-selector v-model="form.resource" :quota="quota" />
 
             <kqi-environment-variables v-model="form.variables" />
             <el-form-item label="結果Zip圧縮">
@@ -105,6 +114,7 @@
               <kqi-training-history-selector
                 v-model="form.selectedParent"
                 :histories="trainingHistories"
+                multiple
               />
             </el-col>
             <el-col :span="12">
@@ -112,6 +122,14 @@
                 v-model="form.dataSetId"
                 :data-sets="dataSets"
               />
+              <el-form-item label="データセット作成方式">
+                <el-switch
+                  v-model="form.localDataSet"
+                  style="width: 100%;"
+                  inactive-text="シンボリックリンク"
+                  active-text="ローカルコピー"
+                />
+              </el-form-item>
             </el-col>
           </el-form>
 
@@ -162,7 +180,7 @@
             :rules="rules"
           >
             <el-col :span="18" :offset="3">
-              <kqi-resource-selector v-model="form.resource" />
+              <kqi-resource-selector v-model="form.resource" :quota="quota" />
             </el-col>
           </el-form>
 
@@ -293,6 +311,7 @@ export default {
         variables: [{ key: '', value: '' }],
         partition: null,
         zip: true,
+        localDataSet: false,
         memo: null,
       },
       rules: {
@@ -330,9 +349,11 @@ export default {
       repositories: ['gitSelector/repositories'],
       branches: ['gitSelector/branches'],
       commits: ['gitSelector/commits'],
+      commitDetail: ['gitSelector/commitDetail'],
       loadingRepositories: ['gitSelector/loadingRepositories'],
       inferenceDetail: ['inference/detail'],
       partitions: ['cluster/partitions'],
+      quota: ['cluster/quota'],
     }),
   },
   async created() {
@@ -347,6 +368,7 @@ export default {
       status: ['Completed', 'UserCanceled'],
     })
     await this['cluster/fetchPartitions']()
+    await this['cluster/fetchQuota']()
     await this['dataSet/fetchDataSets']()
 
     // レジストリ一覧を取得し、デフォルトレジストリを設定
@@ -389,13 +411,16 @@ export default {
         this.form.name = detail.name
         this.form.entryPoint = detail.entryPoint
         this.form.zip = detail.zip
+        this.form.localDataSet = detail.localDataSet
         this.form.memo = detail.memo
         this.form.selectedParent = []
-        if (detail.parent) {
+        if (detail.parents) {
           this.trainingHistories.forEach(history => {
-            if (history.id === detail.parent.id) {
-              this.form.selectedParent = [history]
-            }
+            detail.parents.forEach(parent => {
+              if (history.id === parent.id) {
+                this.form.selectedParent.push(parent)
+              }
+            })
           })
         }
         this.form.resource.cpu = detail.cpu
@@ -432,9 +457,20 @@ export default {
       this.form.gitModel.branch = detail.gitModel.branch
       await this.selectBranch(detail.gitModel.branch)
       // commitsから該当commitを抽出
-      this.form.gitModel.commit = this.commits.find(commit => {
+      let commit = this.commits.find(commit => {
         return commit.commitId === detail.gitModel.commitId
       })
+      if (commit) {
+        this.form.gitModel.commit = commit
+      } else {
+        // コミット一覧に含まれないコミットなので、コミット情報を新たに取得する
+        await this['gitSelector/fetchCommitDetail']({
+          gitId: this.form.gitModel.git.id,
+          repository: this.form.gitModel.repository,
+          commitId: detail.gitModel.commitId,
+        })
+        this.form.gitModel.commit = this.commitDetail
+      }
     }
   },
   methods: {
@@ -444,6 +480,7 @@ export default {
       'inference/fetchDetail',
       'inference/post',
       'cluster/fetchPartitions',
+      'cluster/fetchQuota',
       'dataSet/fetchDataSets',
       'registrySelector/fetchRegistries',
       'registrySelector/fetchImages',
@@ -452,6 +489,7 @@ export default {
       'gitSelector/fetchRepositories',
       'gitSelector/fetchBranches',
       'gitSelector/fetchCommits',
+      'gitSelector/fetchCommitDetail',
     ]),
     async runInference() {
       let form = this.$refs.runForm
@@ -466,11 +504,11 @@ export default {
             this.form.variables.forEach(kvp => {
               options[kvp.key] = kvp.value
             })
-            // 親学習IDを取得(1つのみマウント可)
-            let parentId = null
-            if (this.form.selectedParent.length > 0) {
-              parentId = this.form.selectedParent[0].id
-            }
+            // training history ObjectのリストからIDのみを抜き出して格納
+            let selectedParentIds = []
+            this.form.selectedParent.forEach(parent => {
+              selectedParentIds.push(parent.id)
+            })
             // ブランチ未指定の際はcommitIdも未指定で実行
             // ブランチ指定時、HEADが指定された際はcommitsの先頭要素をcommitIDに指定する。コピー実行時の再現性を担保するため
             let commitId = null
@@ -482,7 +520,7 @@ export default {
             let params = {
               Name: this.form.name,
               DataSetId: this.form.dataSetId,
-              ParentId: parentId,
+              ParentIds: selectedParentIds,
               ContainerImage: {
                 registryId: this.form.containerImage.registry.id,
                 image: this.form.containerImage.image,
@@ -503,6 +541,7 @@ export default {
               Gpu: this.form.resource.gpu,
               Options: options,
               Zip: this.form.zip,
+              LocalDataSet: this.form.localDataSet,
               Partition: this.form.partition,
               Memo: this.form.memo,
             }

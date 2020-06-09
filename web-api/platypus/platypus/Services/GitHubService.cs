@@ -7,10 +7,8 @@ using Nssol.Platypus.ServiceModels.Git;
 using Nssol.Platypus.ServiceModels.Git.GitHubModels;
 using Nssol.Platypus.ServiceModels.GitHubModels;
 using Nssol.Platypus.Services.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Services
@@ -37,6 +35,7 @@ namespace Nssol.Platypus.Services
         /// リポジトリ一覧を取得する。
         /// 特に範囲は限定せず、<see cref="Git.Token"/>の権限で参照可能なすべてのリポジトリが対象となる。
         /// </summary>
+        /// <param name="gitMap">Git情報</param>
         /// <returns>リポジトリ一覧</returns>
         public async Task<Result<IEnumerable<RepositoryModel>, string>> GetAllRepositoriesAsync(UserTenantGitMap gitMap)
         {
@@ -181,6 +180,47 @@ namespace Nssol.Platypus.Services
             }
         }
 
+        /// <summary>
+        /// 指定したコミットIDのコミット詳細を取得する。
+        /// 対象リポジトリが存在しない場合はnullが返る。
+        /// </summary>
+        /// <param name="gitMap">Git情報</param>
+        /// <param name="repositoryName">リポジトリ名</param>
+        /// <param name="owner">オーナー名</param>
+        /// <param name="commitId">コミットID</param>
+        /// <returns>コミット詳細</returns>
+        public async Task<Result<CommitModel, string>> GetCommitByIdAsync(UserTenantGitMap gitMap, string repositoryName, string owner, string commitId)
+        {
+            // API呼び出しパラメータ作成
+            RequestParam param = CreateRequestParam(gitMap);
+            param.ApiPath = $"/repos/{owner}/{repositoryName}/commits/{commitId}";
+
+            // API 呼び出し
+            Result<string, string> response = await this.SendGetRequestAsync(param);
+
+            if (response.IsSuccess)
+            {
+                var result = JsonConvert.DeserializeObject<GetCommitModel>(response.Value);
+                var commit = new CommitModel()
+                {
+                    CommitId = result.sha,
+                    Comment = result.commit?.message,
+                    CommitAt = result.commit?.author?.date.ToLocalFormatedString(),
+                    CommitterName = result.commit?.author?.name
+                };
+                return Result<CommitModel, string>.CreateResult(commit);
+            }
+            else
+            {
+                return Result<CommitModel, string>.CreateErrorResult(response.Error);
+            }
+        }
+
+        /// <summary>
+        /// 共通で使うパラメータを生成
+        /// </summary>
+        /// <param name="gitMap">Git情報</param>
+        /// <returns>リクエストパラメータ</returns>
         private RequestParam CreateRequestParam(UserTenantGitMap gitMap)
         {
             RequestParam param = new RequestParam()

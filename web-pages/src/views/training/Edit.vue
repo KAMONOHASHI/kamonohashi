@@ -42,24 +42,26 @@
           <el-form-item label="学習名" prop="name">
             <el-input v-model="form.name" />
           </el-form-item>
-          <div v-if="detail.parent">
-            <el-form-item label="親学習">
-              <el-popover
-                ref="parent-popover"
-                title="親学習詳細"
-                trigger="hover"
-                width="350"
-                placement="right"
-              >
-                <kqi-training-history-details :training="detail.parent" />
-              </el-popover>
-              <el-button
-                v-popover:parent-popover
-                class="el-input"
-                @click="showParent"
-              >
-                {{ detail.parent.fullName }}
-              </el-button>
+          <div v-if="detail.parents && detail.parents.length > 0">
+            <el-form-item label="マウントした学習">
+              <div v-for="parent in detail.parents" :key="parent.id">
+                <el-popover
+                  ref="parentDetail"
+                  title="マウントした学習詳細"
+                  trigger="hover"
+                  width="350"
+                  placement="right"
+                >
+                  <kqi-training-history-details :training="parent" />
+                  <el-button
+                    slot="reference"
+                    class="el-input"
+                    @click="showParent(parent.id)"
+                  >
+                    {{ parent.fullName }}
+                  </el-button>
+                </el-popover>
+              </div>
             </el-form-item>
           </div>
 
@@ -87,6 +89,12 @@
               </el-button>
             </el-form-item>
           </div>
+          <el-form-item label="データセット作成方式">
+            <div class="el-input">
+              <span v-if="detail.localDataSet">ローカルコピー</span>
+              <span v-else>シンボリックリンク</span>
+            </div>
+          </el-form-item>
 
           <el-form-item label="モデル">
             <div class="el-input">
@@ -172,6 +180,9 @@
             label="パーティション"
             :value="detail.partition"
           />
+          <el-form-item label="タグ">
+            <kqi-tag-editor v-model="form.tags" :registered-tags="tenantTags" />
+          </el-form-item>
           <!-- status: スクリプトがこけたときなどに"failed"になる -->
           <!-- statusType: コンテナの生死等 -->
           <kqi-display-text-form
@@ -297,6 +308,7 @@ import KqiJobStopButton from '@/components/KqiJobStopButton'
 import KqiFileManager from '@/components/KqiFileManager'
 import KqiDataSetDetails from '@/components/selector/KqiDataSetDetails'
 import KqiTrainingHistoryDetails from '@/components/selector/KqiTrainingHistoryDetails'
+import KqiTagEditor from '@/components/KqiTagEditor'
 import KqiTensorboardHandler from './KqiTensorboardHandler'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('training')
@@ -310,6 +322,7 @@ export default {
     KqiFileManager,
     KqiDataSetDetails,
     KqiTrainingHistoryDetails,
+    KqiTagEditor,
     KqiTensorboardHandler,
   },
   props: {
@@ -334,6 +347,7 @@ export default {
         name: null,
         favorite: false,
         memo: null,
+        tags: [],
       },
       title: '',
       dialogVisible: true,
@@ -342,7 +356,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['detail', 'events', 'uploadedFiles']),
+    ...mapGetters(['detail', 'events', 'uploadedFiles', 'tenantTags']),
   },
   watch: {
     async $route() {
@@ -359,6 +373,7 @@ export default {
       'fetchDetail',
       'fetchEvents',
       'fetchUploadedFiles',
+      'fetchTenantTags',
       'postHalt',
       'postUserCancel',
       'postFiles',
@@ -372,6 +387,9 @@ export default {
       this.form.name = this.detail.name
       this.form.favorite = this.detail.favorite
       this.form.memo = this.detail.memo
+      this.form.tags = this.detail.tags
+      // ここでいいのか要確認
+      await this.fetchTenantTags()
     },
     async retrieveData() {
       await this.fetchDetail(this.id)
@@ -390,6 +408,7 @@ export default {
           name: this.form.name,
           memo: this.form.memo,
           favorite: this.form.favorite,
+          tags: this.form.tags,
         },
       }
       await this.put(params)
@@ -470,8 +489,8 @@ export default {
       }
     },
     // 親ジョブ履歴の表示指示
-    async showParent() {
-      this.$router.push('/training/' + this.detail.parent.id)
+    async showParent(parentId) {
+      this.$router.push('/training/' + parentId)
     },
     redirectEditDataSet() {
       this.$router.push('/dataset/edit/' + this.detail.dataSet.id)
