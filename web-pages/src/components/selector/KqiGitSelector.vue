@@ -257,8 +257,10 @@ export default {
       if (this.value.commit) {
         if (this.commits.length > 0) {
           // コミット一覧に含まれていないコミットの場合、一覧に追加する。
-          let i = this.commits.findIndex(commit => commit === this.value.commit)
-          if (i < 0) {
+          let index = this.commits.findIndex(
+            commit => commit === this.value.commit,
+          )
+          if (index < 0) {
             this.commits.push(this.value.commit)
             this.containsPastCommit = true
           }
