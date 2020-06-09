@@ -225,6 +225,8 @@ export default {
       // リポジトリ名が手入力されたかどうかを表すフラグ
       repositoryCreated: false,
       repositoryValueKey: 'fullName',
+      // コミット一覧に、一覧取得で取得できない過去のコミットを追加したかどうかを表すフラグ
+      containsPastCommit: false,
     }
   },
   computed: {
@@ -236,11 +238,15 @@ export default {
           commit => commit === this.value.commit,
         )
         if (index === 0) {
-          msg = '最新コミットです。'
+          msg = `最新のコミットです。`
+        } else if (
+          this.containsPastCommit &&
+          index === this.commits.length - 1
+        ) {
+          // コミット一覧にコミットを追加しており、末尾にあるもの
+          msg = `最新から${this.commits.length - 1}コミットより前のIDです。`
         } else if (index > 0) {
-          msg = '最新から' + index + 'コミット前のIDです。'
-        } else {
-          msg = '最新から' + this.commits.length + 'コミットより前のIDです。'
+          msg = `最新から${index}コミット前のIDです。`
         }
       }
       return msg
@@ -254,6 +260,7 @@ export default {
           let i = this.commits.findIndex(commit => commit === this.value.commit)
           if (i < 0) {
             this.commits.push(this.value.commit)
+            this.containsPastCommit = true
           }
         }
       }
