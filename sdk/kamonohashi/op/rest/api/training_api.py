@@ -795,7 +795,7 @@ class TrainingApi(object):
         :param str parent_id:
         :param str parent_name:
         :param str started_at:
-        :param str started_by
+        :param str started_by:
         :param str data_set:
         :param str memo:
         :param str status:
