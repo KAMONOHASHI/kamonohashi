@@ -101,6 +101,5 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         /// true：ローカルコピーする　false：ローカルコピーしない(シンボリックリンクを作成する)
         /// </summary>
         public bool LocalDataSet { get; set; }
-
     }
 }

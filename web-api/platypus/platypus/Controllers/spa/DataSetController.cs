@@ -1,20 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Nssol.Platypus.ApiModels.DataSetApiModels;
 using Nssol.Platypus.Controllers.Util;
 using Nssol.Platypus.DataAccess.Core;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories;
 using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Logic.Interfaces;
 using Nssol.Platypus.Models.TenantModels;
-using Nssol.Platypus.ApiModels.DataSetApiModels;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Controllers.spa
 {
+    /// <summary>
+    /// データセット管理を扱うためのAPI集
+    /// </summary>
     [Route("api/v1/datasets")]
     public class DataSetController : PlatypusApiControllerBase
     {
@@ -24,6 +26,9 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly IDataLogic dataLogic;
         private readonly IUnitOfWork unitOfWork;
 
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
         public DataSetController(
             IDataRepository dataRepository,
             IDataSetRepository dataSetRepository,
@@ -70,6 +75,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// データセット件数を取得する
         /// </summary>
+        /// <param name="filter">検索条件</param>
         private int GetTotalCount(SearchInputModel filter)
         {
             var dataSet = dataSetRepository.GetAll();
@@ -80,6 +86,8 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 検索条件の追加
         /// </summary>
+        /// <param name="sourceData">加工前の検索結果</param>
+        /// <param name="query">検索条件</param>
         private IQueryable<DataSet> Search(IQueryable<DataSet> sourceData, SearchInputModel query)
         {
             IQueryable<DataSet> data = sourceData;
@@ -210,7 +218,6 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonNoContent();
             }
 
-
             // training, testingといったデータタイプの種類を取得する
             Dictionary<long, string> dataTypes = new Dictionary<long, string>();
             foreach (var dataType in dataTypeRepository.GetAllWithOrderby(d => d.SortOrder, true))
@@ -234,10 +241,10 @@ namespace Nssol.Platypus.Controllers.spa
             return JsonOK(pathPairs);
         }
 
-
         /// <summary>
         /// データセットを新規作成する
         /// </summary>
+        /// <param name="model">新規作成内容</param>
         [HttpPost]
         [Filters.PermissionFilter(MenuCode.DataSet)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.Created)]
@@ -295,6 +302,11 @@ namespace Nssol.Platypus.Controllers.spa
             return JsonOK(new IndexOutputModel(dataset));
         }
 
+        /// <summary>
+        /// データセット編集
+        /// </summary>
+        /// <param name="dataset">編集前のデータセット</param>
+        /// <param name="model">編集内容</param>
         private void EditDataSet(DataSet dataset, EditInputModel model)
         {
             //Nameは空文字禁止なので、空文字は変更なしと見なす
@@ -355,6 +367,9 @@ namespace Nssol.Platypus.Controllers.spa
         /// データセットに指定したエントリを紐づける。
         /// エントリが空になっている前提。
         /// </summary>
+        /// <param name="dataSet">データセット</param>
+        /// <param name="entries">エントリ</param>
+        /// <param name="isCreated">新規作成か否か</param>
         private async Task<IActionResult> InsertDataSetEntryAsync(DataSet dataSet, Dictionary<string, IEnumerable<CreateInputModel.Entry>> entries, bool isCreated)
         {
             //データ種別の指定が名前のため、名前からIDを引けるようにキャッシュしておく
@@ -400,6 +415,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// データセットを削除する
         /// </summary>
+        /// <param name="id">データセットID</param>
         [HttpDelete("{id}")]
         [Filters.PermissionFilter(MenuCode.DataSet)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]

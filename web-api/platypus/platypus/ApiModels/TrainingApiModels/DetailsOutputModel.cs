@@ -156,7 +156,6 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         /// </summary>
         public List<KeyValuePair<string, string>> NodePorts { get; set; }
 
-
         /// <summary>
         /// ステータスの種類。
         /// None: 存在しない。
