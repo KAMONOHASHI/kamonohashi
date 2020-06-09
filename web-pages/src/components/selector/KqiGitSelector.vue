@@ -146,6 +146,9 @@
           コミットIDを指定
         </el-button>
       </el-col>
+      <el-col :span="16" :offset="7" style="line-height: normal;">
+        {{ commitIdMsg }}
+      </el-col>
     </el-row>
   </el-form-item>
 </template>
@@ -222,16 +225,44 @@ export default {
       // リポジトリ名が手入力されたかどうかを表すフラグ
       repositoryCreated: false,
       repositoryValueKey: 'fullName',
+      // コミット一覧に、一覧取得で取得できない過去のコミットを追加したかどうかを表すフラグ
+      containsPastCommit: false,
     }
+  },
+  computed: {
+    // コミットIDのバージョンメッセージを作成
+    commitIdMsg: function() {
+      let msg = ''
+      if (this.commits.length > 0 && this.value.commit) {
+        let index = this.commits.findIndex(
+          commit => commit === this.value.commit,
+        )
+        if (index === 0) {
+          msg = `最新のコミットです。`
+        } else if (
+          this.containsPastCommit &&
+          index === this.commits.length - 1
+        ) {
+          // コミット一覧にコミットを追加しており、末尾にあるもの
+          msg = `最新から${this.commits.length - 1}コミットより前のIDです。`
+        } else if (index > 0) {
+          msg = `最新から${index}コミット前のIDです。`
+        }
+      }
+      return msg
+    },
   },
   watch: {
     'value.commit': function() {
       if (this.value.commit) {
         if (this.commits.length > 0) {
           // コミット一覧に含まれていないコミットの場合、一覧に追加する。
-          let i = this.commits.findIndex(commit => commit === this.value.commit)
-          if (i < 0) {
+          let index = this.commits.findIndex(
+            commit => commit === this.value.commit,
+          )
+          if (index < 0) {
             this.commits.push(this.value.commit)
+            this.containsPastCommit = true
           }
         }
       }
