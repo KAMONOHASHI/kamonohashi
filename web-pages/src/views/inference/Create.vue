@@ -23,6 +23,14 @@
               v-model="form.dataSetId"
               :data-sets="dataSets"
             />
+            <el-form-item label="データセット作成方式">
+              <el-switch
+                v-model="form.localDataSet"
+                style="width: 100%;"
+                inactive-text="シンボリックリンク"
+                active-text="ローカルコピー"
+              />
+            </el-form-item>
 
             <el-form-item label="実行コマンド" prop="entryPoint">
               <el-input
@@ -61,14 +69,6 @@
                 style="width: 100%;"
                 inactive-text="圧縮しない"
                 active-text="圧縮する"
-              />
-            </el-form-item>
-            <el-form-item label="データセット作成方式">
-              <el-switch
-                v-model="form.localDataSet"
-                style="width: 100%;"
-                inactive-text="シンボリックリンク"
-                active-text="ローカルコピー"
               />
             </el-form-item>
             <kqi-partition-selector
@@ -122,6 +122,14 @@
                 v-model="form.dataSetId"
                 :data-sets="dataSets"
               />
+              <el-form-item label="データセット作成方式">
+                <el-switch
+                  v-model="form.localDataSet"
+                  style="width: 100%;"
+                  inactive-text="シンボリックリンク"
+                  active-text="ローカルコピー"
+                />
+              </el-form-item>
             </el-col>
           </el-form>
 
@@ -191,14 +199,6 @@
                   style="width: 100%;"
                   inactive-text="圧縮しない"
                   active-text="圧縮する"
-                />
-              </el-form-item>
-              <el-form-item label="データセット作成方式">
-                <el-switch
-                  v-model="form.localDataSet"
-                  style="width: 100%;"
-                  inactive-text="シンボリックリンク"
-                  active-text="ローカルコピー"
                 />
               </el-form-item>
               <kqi-partition-selector

@@ -88,6 +88,12 @@
               </el-button>
             </el-form-item>
           </div>
+          <el-form-item label="データセット作成方式">
+            <div class="el-input">
+              <span v-if="detail.localDataSet">ローカルコピー</span>
+              <span v-else>シンボリックリンク</span>
+            </div>
+          </el-form-item>
 
           <el-form-item label="モデル">
             <div class="el-input">
@@ -218,12 +224,6 @@
             <div class="el-input">
               <span v-if="detail.zip">圧縮する</span>
               <span v-else>圧縮しない</span>
-            </div>
-          </el-form-item>
-          <el-form-item label="データセット作成方式">
-            <div class="el-input">
-              <span v-if="detail.localDataSet">ローカルコピー</span>
-              <span v-else>シンボリックリンク</span>
             </div>
           </el-form-item>
           <el-form-item label="添付ファイル">
