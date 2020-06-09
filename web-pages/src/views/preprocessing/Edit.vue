@@ -140,6 +140,7 @@ export default {
       repositories: ['gitSelector/repositories'],
       branches: ['gitSelector/branches'],
       commits: ['gitSelector/commits'],
+      commitDetail: ['gitSelector/commitDetail'],
       loadingRepositories: ['gitSelector/loadingRepositories'],
       detail: ['preprocessing/detail'],
       histories: ['preprocessing/histories'],
@@ -170,6 +171,7 @@ export default {
       'gitSelector/fetchRepositories',
       'gitSelector/fetchBranches',
       'gitSelector/fetchCommits',
+      'gitSelector/fetchCommitDetail',
       'cluster/fetchQuota',
     ]),
     async initialize() {
@@ -256,9 +258,20 @@ export default {
           })
           await this.selectBranch(this.detail.gitModel.branch)
           // commitsから該当commitを抽出
-          this.form.gitModel.commit = this.commits.find(commit => {
+          let commit = this.commits.find(commit => {
             return commit.commitId === this.detail.gitModel.commitId
           })
+          if (commit) {
+            this.form.gitModel.commit = commit
+          } else {
+            // コミット一覧に含まれないコミットなので、コミット情報を新たに取得する
+            await this['gitSelector/fetchCommitDetail']({
+              gitId: this.form.gitModel.git.id,
+              repository: this.form.gitModel.repository,
+              commitId: this.detail.gitModel.commitId,
+            })
+            this.form.gitModel.commit = this.commitDetail
+          }
         }
 
         this.form.resource.cpu = this.detail.cpu

@@ -2410,6 +2410,69 @@ export const ApiV1GitByGitIdReposByOwnerByRepositoryNameCommitsGetURL = function
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * 指定したコミットIDのコミット詳細を取得する
+ * request: ApiV1GitByGitIdReposByOwnerByRepositoryNameCommitsByCommitIdGet
+ * url: ApiV1GitByGitIdReposByOwnerByRepositoryNameCommitsByCommitIdGetURL
+ * method: ApiV1GitByGitIdReposByOwnerByRepositoryNameCommitsByCommitIdGet_TYPE
+ * raw_url: ApiV1GitByGitIdReposByOwnerByRepositoryNameCommitsByCommitIdGet_RAW_URL
+ * @param gitId - GitId
+ * @param owner - オーナー名
+ * @param repositoryName - リポジトリ名
+ * @param commitId - コミットID
+ */
+export const ApiV1GitByGitIdReposByOwnerByRepositoryNameCommitsByCommitIdGet = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v1/git/{gitId}/repos/{owner}/{repositoryName}/commits/{commitId}'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{gitId}', `${parameters['gitId']}`)
+  if (parameters['gitId'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: gitId'))
+  }
+  path = path.replace('{owner}', `${parameters['owner']}`)
+  if (parameters['owner'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: owner'))
+  }
+  path = path.replace('{repositoryName}', `${parameters['repositoryName']}`)
+  if (parameters['repositoryName'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: repositoryName'))
+  }
+  path = path.replace('{commitId}', `${parameters['commitId']}`)
+  if (parameters['commitId'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: commitId'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV1GitByGitIdReposByOwnerByRepositoryNameCommitsByCommitIdGet_RAW_URL = function() {
+  return '/api/v1/git/{gitId}/repos/{owner}/{repositoryName}/commits/{commitId}'
+}
+export const ApiV1GitByGitIdReposByOwnerByRepositoryNameCommitsByCommitIdGet_TYPE = function() {
+  return 'get'
+}
+export const ApiV1GitByGitIdReposByOwnerByRepositoryNameCommitsByCommitIdGetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v1/git/{gitId}/repos/{owner}/{repositoryName}/commits/{commitId}'
+  path = path.replace('{gitId}', `${parameters['gitId']}`)
+  path = path.replace('{owner}', `${parameters['owner']}`)
+  path = path.replace('{repositoryName}', `${parameters['repositoryName']}`)
+  path = path.replace('{commitId}', `${parameters['commitId']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
 * 階層化されたURLを吸収するためのダミーAPI。
 製品版のSwaggerからは削除する。
 * request: ApiV1GitByGitIdReposBySegmentsGet
