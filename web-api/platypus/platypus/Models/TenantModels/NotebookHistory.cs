@@ -160,6 +160,12 @@ namespace Nssol.Platypus.Models.TenantModels
         public bool Favorite { get; set; }
 
         /// <summary>
+        /// データセットををローカルコピーするか否か。
+        /// true：ローカルコピーする　false：ローカルコピーしない(シンボリックリンクを作成する)
+        /// </summary>
+        public bool LocalDataSet { get; set; }
+
+        /// <summary>
         /// コンテナの生存期間(秒)
         /// </summary>
         [Required]

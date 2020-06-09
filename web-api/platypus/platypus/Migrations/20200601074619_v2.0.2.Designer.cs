@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Nssol.Platypus.DataAccess;
@@ -9,9 +10,10 @@ using Nssol.Platypus.DataAccess;
 namespace Nssol.Platypus.Migrations
 {
     [DbContext(typeof(CommonDbContext))]
-    partial class CommonDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200601074619_v2.0.2")]
+    partial class v202
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -798,8 +800,6 @@ namespace Nssol.Platypus.Migrations
 
                     b.Property<long?>("DisplayId");
 
-                    b.Property<string>("EntryPoint");
-
                     b.Property<int?>("ExpiresIn")
                         .IsRequired();
 
@@ -1048,8 +1048,6 @@ namespace Nssol.Platypus.Migrations
                         .IsRequired();
 
                     b.Property<long>("TenantId");
-
-                    b.Property<int>("Type");
 
                     b.HasKey("Id");
 
@@ -1843,7 +1841,7 @@ namespace Nssol.Platypus.Migrations
             modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.TrainingHistoryTagMap", b =>
                 {
                     b.HasOne("Nssol.Platypus.Models.TenantModels.Tag", "Tag")
-                        .WithMany("TrainingHistoryMaps")
+                        .WithMany()
                         .HasForeignKey("TagId")
                         .OnDelete(DeleteBehavior.Cascade);
 
@@ -1853,7 +1851,7 @@ namespace Nssol.Platypus.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Nssol.Platypus.Models.TenantModels.TrainingHistory", "TrainingHistory")
-                        .WithMany("TagMaps")
+                        .WithMany()
                         .HasForeignKey("TrainingHistoryId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });

@@ -25,6 +25,17 @@
                 v-model="form.dataSetId"
                 :data-sets="dataSets"
               />
+              <el-form-item
+                v-show="form.dataSetId"
+                label="データセット作成方式"
+              >
+                <el-switch
+                  v-model="form.localDataSet"
+                  style="width: 100%;"
+                  inactive-text="シンボリックリンク"
+                  active-text="ローカルコピー"
+                />
+              </el-form-item>
               <el-form-item label="起動時実行コマンド" prop="entryPoint">
                 <el-input
                   v-model="form.entryPoint"
@@ -107,6 +118,17 @@
                 v-model="form.dataSetId"
                 :data-sets="dataSets"
               />
+              <el-form-item
+                v-show="form.dataSetId"
+                label="データセット作成方式"
+              >
+                <el-switch
+                  v-model="form.localDataSet"
+                  style="width: 100%;"
+                  inactive-text="シンボリックリンク"
+                  active-text="ローカルコピー"
+                />
+              </el-form-item>
               <el-form-item label="起動時実行コマンド" prop="entryPoint">
                 <el-input
                   v-model="form.entryPoint"
@@ -252,6 +274,17 @@
                 v-model="form.dataSetId"
                 :data-sets="dataSets"
               />
+              <el-form-item
+                v-show="form.dataSetId"
+                label="データセット作成方式"
+              >
+                <el-switch
+                  v-model="form.localDataSet"
+                  style="width: 100%;"
+                  inactive-text="シンボリックリンク"
+                  active-text="ローカルコピー"
+                />
+              </el-form-item>
             </el-col>
           </el-form>
 
@@ -371,6 +404,7 @@ export default {
           gpu: 0,
         },
         expiresIn: 8,
+        localDataSet: false,
         withExpiresInSetting: true,
         variables: [{ key: '', value: '' }],
         partition: null,
@@ -472,6 +506,8 @@ export default {
       } else {
         this.form.expiresIn = this.detail.expiresIn / 60 / 60
       }
+      this.form.localDataSet = this.detail.localDataSet
+      this.form.entryPoint = this.detail.entryPoint
 
       this.form.selectedParent = []
       if (this.detail.parents) {
@@ -516,7 +552,6 @@ export default {
           return commit.commitId === this.detail.gitModel.commitId
         })
       }
-      this.form.entryPoint = this.detail.entryPoint
     }
   },
 
@@ -559,6 +594,7 @@ export default {
             memory: this.form.resource.memory,
             gpu: this.form.resource.gpu,
             expiresIn: this.form.expiresIn * 60 * 60,
+            localDataSet: this.form.localDataSet,
             entryPoint: this.form.entryPoint,
           }
           await this['notebook/postRerun']({
@@ -604,6 +640,7 @@ export default {
                 memory: this.form.resource.memory,
                 gpu: this.form.resource.gpu,
                 expiresIn: this.form.expiresIn * 60 * 60,
+                localDataSet: this.form.localDataSet,
                 options: options,
                 partition: this.form.partition,
                 memo: this.form.memo,
