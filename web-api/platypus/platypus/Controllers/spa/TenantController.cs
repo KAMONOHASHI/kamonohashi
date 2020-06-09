@@ -70,7 +70,7 @@ namespace Nssol.Platypus.Controllers.spa
         {
             var tenants = tenantRepository.GetAllTenants();
 
-            return JsonOK(tenants.Select(t => new IndexOutputModel(t)));
+            return JsonOK(tenants.OrderBy(t => t.Name).Select(t => new IndexOutputModel(t)));
         }
 
         /// <summary>

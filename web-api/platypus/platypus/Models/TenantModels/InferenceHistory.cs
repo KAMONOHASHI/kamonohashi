@@ -112,7 +112,7 @@ namespace Nssol.Platypus.Models.TenantModels
         public int Cpu { get; set; }
 
         /// <summary>
-        /// メモリ容量（GiB）
+        /// メモリ容量（GB）
         /// </summary>
         public int Memory { get; set; }
 
@@ -175,6 +175,12 @@ namespace Nssol.Platypus.Models.TenantModels
         /// true：zip圧縮する　false：zip圧縮しない
         /// </summary>
         public bool Zip { get; set; }
+
+        /// <summary>
+        /// データセットををローカルコピーするか否か。
+        /// true：ローカルコピーする　false：ローカルコピーしない(シンボリックリンクを作成する)
+        /// </summary>
+        public bool LocalDataSet { get; set; }
 
         /// <summary>
         /// データセット

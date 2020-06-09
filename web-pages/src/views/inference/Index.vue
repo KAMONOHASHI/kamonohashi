@@ -48,11 +48,18 @@
         <el-table-column prop="id" label="ID" width="120px" />
         <el-table-column prop="name" label="推論名" width="150px" />
         <el-table-column prop="createdAt" label="開始日時" width="100px" />
-        <el-table-column
-          prop="parentName"
-          label="マウントした学習"
-          width="200px"
-        />
+        <el-table-column label="マウントした学習" width="200px">
+          <template slot-scope="scope">
+            <span
+              v-for="(ParentName, index) in scope.row.parentFullNameList"
+              :key="index"
+            >
+              <span class="parent">
+                {{ ParentName }}
+              </span>
+            </span>
+          </template>
+        </el-table-column>
         <el-table-column
           prop="dataSet.name"
           label="データセット"
@@ -140,7 +147,9 @@ export default {
         { prop: 'id', name: 'ID', type: 'number' },
         { prop: 'name', name: '推論名', type: 'text' },
         { prop: 'startedAt', name: '開始日時', type: 'date' },
-        { prop: 'parentName', name: 'マウントした学習', type: 'text' },
+        { prop: 'startedBy', name: '実行者', type: 'text' },
+        { prop: 'parentId', name: 'マウントした学習ID', type: 'number' },
+        { prop: 'parentName', name: 'マウントした学習名', type: 'text' },
         { prop: 'dataSet', name: 'データセット', type: 'text' },
         { prop: 'entryPoint', name: '実行コマンド', type: 'text' },
         { prop: 'memo', name: 'メモ', type: 'text' },
@@ -290,6 +299,10 @@ export default {
 
 .favorite {
   color: rgb(230, 162, 60);
+}
+
+.parent {
+  margin-right: 5px;
 }
 </style>
 

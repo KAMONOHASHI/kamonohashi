@@ -45,11 +45,6 @@ const actions = {
     commit('setDetail', { detail })
   },
 
-  async fetchTenants({ commit }) {
-    let tenants = (await api.tenant.admin.get()).data
-    commit('setTenants', { tenants })
-  },
-
   // eslint-disable-next-line no-unused-vars
   async post({ commit }, params) {
     return await api.nodes.admin.post({ model: params })

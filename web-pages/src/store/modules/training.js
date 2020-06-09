@@ -10,7 +10,7 @@ const state = {
   detail: {},
   events: {},
   uploadedFiles: [],
-  partitions: [],
+  tenantTags: [],
   tensorboard: {},
   fileList: [],
 }
@@ -38,8 +38,8 @@ const getters = {
   uploadedFiles(state) {
     return state.uploadedFiles
   },
-  partitions(state) {
-    return state.partitions
+  tenantTags(state) {
+    return state.tenantTags
   },
   tensorboard(state) {
     return state.tensorboard
@@ -87,9 +87,9 @@ const actions = {
     commit('setUploadedFiles', { uploadedFiles })
   },
 
-  async fetchPartitions({ commit }) {
-    let partitions = (await api.cluster.getPartitions()).data
-    commit('setPartitions', { partitions })
+  async fetchTenantTags({ commit }) {
+    let tenantTags = (await api.training.getTags()).data
+    commit('setTenantTags', tenantTags)
   },
 
   // eslint-disable-next-line no-unused-vars
@@ -148,8 +148,8 @@ const actions = {
   },
 
   // eslint-disable-next-line no-unused-vars
-  async putTensorboard({ commit }, id) {
-    await api.training.putTensorboardById({ id: id })
+  async putTensorboard({ commit }, params) {
+    await api.training.putTensorboardById(params)
   },
 
   // eslint-disable-next-line no-unused-vars
@@ -213,8 +213,8 @@ const mutations = {
     state.detail = {}
   },
 
-  setPartitions(state, { partitions }) {
-    state.partitions = partitions
+  setTenantTags(state, tenantTags) {
+    state.tenantTags = tenantTags
   },
 
   setTensorboard(state, { tensorboard }) {

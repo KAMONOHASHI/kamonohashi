@@ -1,13 +1,11 @@
-﻿using Nssol.Platypus.Infrastructure;
-using Nssol.Platypus.Infrastructure.Infos;
+﻿using Nssol.Platypus.Infrastructure.Infos;
 using Nssol.Platypus.Infrastructure.Types;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Nssol.Platypus.ApiModels.ResourceApiModels
 {
+    /// <summary>
+    /// テナントごとのコンテナ詳細の出力モデル
+    /// </summary>
     public class ContainerDetailsForTenantOutputModel
     {
         public ContainerDetailsForTenantOutputModel(ContainerDetailsInfo info)
@@ -27,10 +25,12 @@ namespace Nssol.Platypus.ApiModels.ResourceApiModels
         /// コンテナ名
         /// </summary>
         public string Name { get; set; }
+
         /// <summary>
         /// 実行者
         /// </summary>
         public string CreatedBy { get; set; }
+
         /// <summary>
         /// コンテナ種別
         /// </summary>
@@ -45,18 +45,22 @@ namespace Nssol.Platypus.ApiModels.ResourceApiModels
         /// CPUコア数
         /// </summary>
         public float Cpu { get; set; }
+
         /// <summary>
-        /// メモリ容量（GiB）
+        /// メモリ容量（GB）
         /// </summary>
         public float Memory { get; set; }
+
         /// <summary>
         /// GPU数
         /// </summary>
         public int Gpu { get; set; }
+
         /// <summary>
         /// ステータス種別
         /// </summary>
         public string StatusType { get; set; }
+
         /// <summary>
         /// ステータス
         /// </summary>

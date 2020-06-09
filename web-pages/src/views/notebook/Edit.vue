@@ -85,6 +85,12 @@
                 {{ detail.dataSet.name }}
               </el-button>
             </el-form-item>
+            <el-form-item label="データセット作成方式">
+              <div class="el-input">
+                <span v-if="detail.localDataSet">ローカルコピー</span>
+                <span v-else>シンボリックリンク</span>
+              </div>
+            </el-form-item>
           </div>
           <el-form-item label="モデル">
             <div class="el-input">
@@ -109,11 +115,12 @@
             :value="detail.containerImage ? detail.containerImage.url : ''"
           />
 
-          <el-form-item label="メモ">
+          <el-form-item label="起動時実行コマンド">
             <el-input
-              v-model="form.memo"
+              v-model="detail.entryPoint"
               type="textarea"
-              :autosize="{ minRows: 2, maxRows: 4 }"
+              :autosize="{ minRows: 2 }"
+              :readonly="true"
             />
           </el-form-item>
 
@@ -218,6 +225,13 @@
           <el-form-item label="ログファイル">
             <br />
             <el-button size="mini" @click="emitLog">ログファイル閲覧</el-button>
+          </el-form-item>
+          <el-form-item label="メモ">
+            <el-input
+              v-model="form.memo"
+              type="textarea"
+              :autosize="{ minRows: 2, maxRows: 4 }"
+            />
           </el-form-item>
         </el-col>
       </el-row>

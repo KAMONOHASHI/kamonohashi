@@ -17,11 +17,20 @@
             <kqi-training-history-selector
               v-model="form.selectedParent"
               :histories="trainingHistories"
+              multiple
             />
             <kqi-data-set-selector
               v-model="form.dataSetId"
               :data-sets="dataSets"
             />
+            <el-form-item label="データセット作成方式">
+              <el-switch
+                v-model="form.localDataSet"
+                style="width: 100%;"
+                inactive-text="シンボリックリンク"
+                active-text="ローカルコピー"
+              />
+            </el-form-item>
 
             <el-form-item label="実行コマンド" prop="entryPoint">
               <el-input
@@ -51,10 +60,16 @@
             />
           </el-col>
           <el-col :span="12">
-            <kqi-resource-selector v-model="form.resource" />
+            <kqi-resource-selector v-model="form.resource" :quota="quota" />
 
             <kqi-environment-variables v-model="form.variables" />
             <kqi-expose-ports v-model="form.ports" />
+            <el-form-item label="タグ">
+              <kqi-tag-editor
+                v-model="form.tags"
+                :registered-tags="tenantTags"
+              />
+            </el-form-item>
             <el-form-item label="結果Zip圧縮">
               <el-switch
                 v-model="form.zip"
@@ -106,6 +121,7 @@
               <kqi-training-history-selector
                 v-model="form.selectedParent"
                 :histories="trainingHistories"
+                multiple
               />
             </el-col>
             <el-col :span="12">
@@ -113,6 +129,14 @@
                 v-model="form.dataSetId"
                 :data-sets="dataSets"
               />
+              <el-form-item label="データセット作成方式">
+                <el-switch
+                  v-model="form.localDataSet"
+                  style="width: 100%;"
+                  inactive-text="シンボリックリンク"
+                  active-text="ローカルコピー"
+                />
+              </el-form-item>
             </el-col>
           </el-form>
 
@@ -163,7 +187,7 @@
             :rules="rules"
           >
             <el-col :span="18" :offset="3">
-              <kqi-resource-selector v-model="form.resource" />
+              <kqi-resource-selector v-model="form.resource" :quota="quota" />
             </el-col>
           </el-form>
 
@@ -177,6 +201,12 @@
             <el-col>
               <kqi-environment-variables v-model="form.variables" />
               <kqi-expose-ports v-model="form.ports" />
+              <el-form-item label="タグ">
+                <kqi-tag-editor
+                  v-model="form.tags"
+                  :registered-tags="tenantTags"
+                />
+              </el-form-item>
               <el-form-item label="結果Zip圧縮">
                 <el-switch
                   v-model="form.zip"
@@ -241,6 +271,7 @@ import KqiGitSelector from '@/components/selector/KqiGitSelector'
 import KqiResourceSelector from '@/components/selector/KqiResourceSelector'
 import KqiEnvironmentVariables from '@/components/KqiEnvironmentVariables'
 import KqiExposePorts from '@/components/KqiExposePorts'
+import KqiTagEditor from '@/components/KqiTagEditor'
 import KqiPartitionSelector from '@/components/selector/KqiPartitionSelector'
 import validator from '@/util/validator'
 import registrySelectorUtil from '@/util/registrySelectorUtil'
@@ -263,6 +294,7 @@ export default {
     KqiResourceSelector,
     KqiEnvironmentVariables,
     KqiExposePorts,
+    KqiTagEditor,
     KqiPartitionSelector,
   },
   props: {
@@ -298,6 +330,7 @@ export default {
         ports: [],
         partition: null,
         zip: true,
+        localDataSet: false,
         memo: null,
       },
       rules: {
@@ -334,9 +367,12 @@ export default {
       repositories: ['gitSelector/repositories'],
       branches: ['gitSelector/branches'],
       commits: ['gitSelector/commits'],
+      commitDetail: ['gitSelector/commitDetail'],
       loadingRepositories: ['gitSelector/loadingRepositories'],
       detail: ['training/detail'],
       partitions: ['cluster/partitions'],
+      quota: ['cluster/quota'],
+      tenantTags: ['training/tenantTags'],
     }),
   },
   async created() {
@@ -354,7 +390,9 @@ export default {
       ],
     })
     await this['cluster/fetchPartitions']()
+    await this['cluster/fetchQuota']()
     await this['dataSet/fetchDataSets']()
+    await this['training/fetchTenantTags']()
 
     // レジストリ一覧を取得し、デフォルトレジストリを設定
     await this['registrySelector/fetchRegistries']()
@@ -378,13 +416,16 @@ export default {
       this.form.dataSetId = String(this.detail.dataSet.id)
       this.form.entryPoint = this.detail.entryPoint
       this.form.zip = this.detail.zip
+      this.form.localDataSet = this.detail.localDataSet
       this.form.memo = this.detail.memo
       this.form.selectedParent = []
-      if (this.detail.parent) {
+      if (this.detail.parents) {
         this.trainingHistories.forEach(history => {
-          if (history.id === this.detail.parent.id) {
-            this.form.selectedParent = [history]
-          }
+          this.detail.parents.forEach(parent => {
+            if (history.id === parent.id) {
+              this.form.selectedParent.push(parent)
+            }
+          })
         })
       }
       this.form.resource.cpu = this.detail.cpu
@@ -396,6 +437,7 @@ export default {
           : this.detail.options
       this.form.ports = this.detail.ports
       this.form.partition = this.detail.partition
+      this.form.tags = this.detail.tags
 
       // レジストリの設定
       this.form.containerImage.registry = {
@@ -418,17 +460,30 @@ export default {
       this.form.gitModel.branch = this.detail.gitModel.branch
       await this.selectBranch(this.detail.gitModel.branch)
       // commitsから該当commitを抽出
-      this.form.gitModel.commit = this.commits.find(commit => {
+      let commit = this.commits.find(commit => {
         return commit.commitId === this.detail.gitModel.commitId
       })
+      if (commit) {
+        this.form.gitModel.commit = commit
+      } else {
+        // コミット一覧に含まれないコミットなので、コミット情報を新たに取得する
+        await this['gitSelector/fetchCommitDetail']({
+          gitId: this.form.gitModel.git.id,
+          repository: this.form.gitModel.repository,
+          commitId: this.detail.gitModel.commitId,
+        })
+        this.form.gitModel.commit = this.commitDetail
+      }
     }
   },
   methods: {
     ...mapActions([
       'training/fetchHistoriesToMount',
       'training/fetchDetail',
+      'training/fetchTenantTags',
       'training/post',
       'cluster/fetchPartitions',
+      'cluster/fetchQuota',
       'dataSet/fetchDataSets',
       'registrySelector/fetchRegistries',
       'registrySelector/fetchImages',
@@ -437,6 +492,7 @@ export default {
       'gitSelector/fetchRepositories',
       'gitSelector/fetchBranches',
       'gitSelector/fetchCommits',
+      'gitSelector/fetchCommitDetail',
     ]),
     async runTrain() {
       let form = this.$refs.runForm
@@ -451,11 +507,11 @@ export default {
             this.form.variables.forEach(kvp => {
               options[kvp.key] = kvp.value
             })
-            // 親学習IDを取得(1つのみマウント可)
-            let parentId = null
-            if (this.form.selectedParent.length > 0) {
-              parentId = this.form.selectedParent[0].id
-            }
+            // training history ObjectのリストからIDのみを抜き出して格納
+            let selectedParentIds = []
+            this.form.selectedParent.forEach(parent => {
+              selectedParentIds.push(parent.id)
+            })
             // ブランチ未指定の際はcommitIdも未指定で実行
             // ブランチ指定時、HEADが指定された際はcommitsの先頭要素をcommitIDに指定する。コピー実行時の再現性を担保するため
             let commitId = null
@@ -467,7 +523,7 @@ export default {
             let params = {
               Name: this.form.name,
               DataSetId: this.form.dataSetId,
-              ParentId: parentId,
+              ParentIds: selectedParentIds,
               ContainerImage: {
                 registryId: this.form.containerImage.registry.id,
                 image: this.form.containerImage.image,
@@ -489,8 +545,10 @@ export default {
               Options: options,
               Ports: this.form.ports,
               Zip: this.form.zip,
+              LocalDataSet: this.form.localDataSet,
               Partition: this.form.partition,
               Memo: this.form.memo,
+              tags: this.form.tags,
             }
             await this['training/post'](params)
             this.emitDone()

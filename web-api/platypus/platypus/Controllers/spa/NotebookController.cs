@@ -165,11 +165,10 @@ namespace Nssol.Platypus.Controllers.spa
         /// 指定されたIDのノートブック履歴の詳細情報を取得。
         /// </summary>
         /// <param name="id">ノートブック履歴ID</param>
-        /// <param name="options">DI用</param>
         [HttpGet("{id}")]
         [Filters.PermissionFilter(MenuCode.Notebook)]
         [ProducesResponseType(typeof(DetailsOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetDetail(long? id, [FromServices] IOptions<ContainerManageOptions> options)
+        public async Task<IActionResult> GetDetail(long? id)
         {
             if (id == null)
             {
@@ -223,7 +222,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// ノートブックのノードポート番号を取得する
         /// </summary>
         /// <param name="endPoints">エンドポイント</param>
-        /// <returns></returns>
+        /// <returns>ノードポート番号</returns>
         private string GetNotebookNodePort(IEnumerable<EndPointInfo> endPoints)
         {
             // ノードのendpoint情報を取得し、tokenと繋ぎ合わせてmodelに設定
@@ -240,7 +239,6 @@ namespace Nssol.Platypus.Controllers.spa
         /// ノートブックのトークンを取得する
         /// </summary>
         /// <param name="historyId">ノートブック履歴ID</param>
-        /// <param name="webEndpoint">Webエンドポイント</param>
         /// <returns></returns>
         private async Task<string> GetNotebookTokenAsync(long historyId)
         {
@@ -370,12 +368,11 @@ namespace Nssol.Platypus.Controllers.spa
         /// 指定されたノートブック履歴のエンドポイントを取得します。
         /// </summary>
         /// <param name="id">ノートブック履歴ID</param>
-        /// <param name="options">DI用</param>
         /// <returns>ノートブックURL</returns>
         [HttpGet("{id}/endpoint")]
         [Filters.PermissionFilter(MenuCode.Notebook)]
         [ProducesResponseType(typeof(EndPointOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetEndpointAsync(long id, [FromServices] IOptions<ContainerManageOptions> options)
+        public async Task<IActionResult> GetEndpointAsync(long id)
         {
             //データの存在チェック
             var notebookHistory = await notebookHistoryRepository.GetByIdAsync(id);
@@ -507,7 +504,9 @@ namespace Nssol.Platypus.Controllers.spa
                 Memo = model.Memo,
                 Status = ContainerStatus.Running.Key,
                 StartedAt = DateTime.Now,
-                ExpiresIn = model.ExpiresIn
+                ExpiresIn = model.ExpiresIn,
+                LocalDataSet = model.LocalDataSet,
+                EntryPoint = model.EntryPoint
             };
 
             //コンテナが指定されているかチェック
@@ -860,6 +859,8 @@ namespace Nssol.Platypus.Controllers.spa
             notebookHistory.StartedAt = DateTime.Now;
             notebookHistory.CompletedAt = null;
             notebookHistory.ExpiresIn = model.ExpiresIn;
+            notebookHistory.LocalDataSet = model.LocalDataSet;
+            notebookHistory.EntryPoint = model.EntryPoint;
 
             notebookHistoryRepository.Update(notebookHistory);
             unitOfWork.Commit();

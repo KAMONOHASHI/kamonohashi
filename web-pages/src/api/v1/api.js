@@ -33,6 +33,7 @@ let simpleStringBody = function(func, paramName) {
 let api = {
   cluster: {
     getPartitions: gen.ApiV1TenantPartitionsGet,
+    getQuota: gen.ApiV1TenantQuotaGet,
 
     admin: {
       getQuotas: gen.ApiV1AdminQuotasGet,
@@ -161,6 +162,8 @@ let api = {
     getRepos: gen.ApiV1GitByGitIdReposGet,
     getBranches: gen.ApiV1GitByGitIdReposByOwnerByRepositoryNameBranchesGet,
     getCommits: gen.ApiV1GitByGitIdReposByOwnerByRepositoryNameCommitsGet,
+    getCommit:
+      gen.ApiV1GitByGitIdReposByOwnerByRepositoryNameCommitsByCommitIdGet,
     // GET /spa/git/repos/{segments}
   },
 
@@ -193,6 +196,7 @@ let api = {
         gen.ApiV1AdminResourceContainersByTenantIdByNameEventsGet,
     },
     tenant: {
+      getNodes: gen.ApiV1TenantResourceNodesGet,
       getContainers: gen.ApiV1TenantResourceContainersGet,
       getContainerByName: gen.ApiV1TenantResourceContainersByNameGet,
       deleteContainerByName: gen.ApiV1TenantResourceContainersByNameDelete,
@@ -219,6 +223,7 @@ let api = {
     postUserCancelById: gen.ApiV1TrainingByIdUser_cancelPost,
     getEventsById: gen.ApiV1TrainingByIdEventsGet,
     getMount: gen.ApiV1TrainingMountGet,
+    getTags: gen.ApiV1TrainingTagsGet,
   },
 
   notebook: {

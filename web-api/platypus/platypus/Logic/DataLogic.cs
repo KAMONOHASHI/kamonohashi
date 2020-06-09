@@ -1,11 +1,9 @@
-﻿using Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories;
+﻿using Nssol.Platypus.ApiModels.DataApiModels;
+using Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories;
 using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Logic.Interfaces;
-using Nssol.Platypus.ApiModels.DataApiModels;
 using Nssol.Platypus.Models.TenantModels;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Logic
@@ -101,7 +99,7 @@ namespace Nssol.Platypus.Logic
             }
 
             // タグマップを削除
-            tagLogic.Delete(dataId);
+            tagLogic.DeleteDataTags(dataId);
 
             // オブジェクトストレージからファイルを削除
             return await storageLogic.DeleteFilesInDeleteListAsync();

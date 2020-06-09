@@ -1,16 +1,13 @@
 ﻿using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Models;
 using Nssol.Platypus.ServiceModels.Git;
-using Nssol.Platypus.ServiceModels.GitHubModels;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Services.Interfaces
 {
     /// <summary>
-    /// Gitサービス
+    /// Gitサービスインターフェース
     /// </summary>
     public interface IGitService
     {
@@ -18,6 +15,7 @@ namespace Nssol.Platypus.Services.Interfaces
         /// リポジトリ一覧を取得する。
         /// 特に範囲は限定せず、<see cref="Git.Token"/>の権限で参照可能なすべてのリポジトリが対象となる。
         /// </summary>
+        /// <param name="gitMap">Git情報</param>
         /// <returns>リポジトリ一覧</returns>
         Task<Result<IEnumerable<RepositoryModel>, string>> GetAllRepositoriesAsync(UserTenantGitMap gitMap);
 
@@ -51,5 +49,16 @@ namespace Nssol.Platypus.Services.Interfaces
         /// <param name="branchName">ブランチ名</param>
         /// <returns>コミット</returns>
         Task<Result<CommitModel, string>> GetCommitAsync(UserTenantGitMap gitMap, string repositoryName, string owner, string branchName);
+
+        /// <summary>
+        /// 指定したコミットIDのコミット詳細を取得する。
+        /// 対象リポジトリが存在しない場合はnullが返る。
+        /// </summary>
+        /// <param name="gitMap">Git情報</param>
+        /// <param name="repositoryName">リポジトリ名</param>
+        /// <param name="owner">オーナー名</param>
+        /// <param name="commitId">コミットID</param>
+        /// <returns>コミット詳細</returns>
+        Task<Result<CommitModel, string>> GetCommitByIdAsync(UserTenantGitMap gitMap, string repositoryName, string owner, string commitId);
     }
 }

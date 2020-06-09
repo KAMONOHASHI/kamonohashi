@@ -47,6 +47,18 @@
         <el-table-column prop="id" label="ID" width="120px" />
         <el-table-column prop="name" label="学習名" width="120px" />
         <el-table-column prop="createdAt" label="開始日時" width="200px" />
+        <el-table-column label="マウントした学習" width="200px">
+          <template slot-scope="scope">
+            <span
+              v-for="(ParentName, index) in scope.row.parentFullNameList"
+              :key="index"
+            >
+              <span class="parent">
+                {{ ParentName }}
+              </span>
+            </span>
+          </template>
+        </el-table-column>
         <el-table-column
           prop="dataSet.name"
           label="データセット"
@@ -64,6 +76,19 @@
           width="auto"
           class-name="memo-column"
         />
+        <el-table-column prop="tag" label="タグ" width="120px">
+          <template slot-scope="scope">
+            <span
+              v-for="(tag, index) in scope.row.tags"
+              :key="index"
+              style="padding-left: 10px;"
+            >
+              <el-tag size="mini">
+                {{ tag }}
+              </el-tag>
+            </span>
+          </template>
+        </el-table-column>
         <el-table-column width="25px">
           <div slot-scope="scope">
             <div
@@ -125,10 +150,14 @@ export default {
       searchConfigs: [
         { prop: 'id', name: 'ID', type: 'number' },
         { prop: 'name', name: '学習名', type: 'text' },
+        { prop: 'parentId', name: 'マウントした学習ID', type: 'number' },
+        { prop: 'parentName', name: 'マウントした学習名', type: 'text' },
         { prop: 'startedAt', name: '開始日時', type: 'date' },
+        { prop: 'startedBy', name: '実行者', type: 'text' },
         { prop: 'dataSet', name: 'データセット', type: 'text' },
         { prop: 'entryPoint', name: '実行コマンド', type: 'text' },
         { prop: 'memo', name: 'メモ', type: 'text' },
+        { prop: 'tag', name: 'タグ', type: 'text', multiple: true },
         {
           prop: 'status',
           name: 'ステータス',
@@ -275,5 +304,16 @@ export default {
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   display: -webkit-box;
+}
+
+.el-tag--mini {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.parent {
+  margin-right: 5px;
 }
 </style>

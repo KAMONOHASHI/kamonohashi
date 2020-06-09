@@ -7,6 +7,7 @@ const state = {
   repositories: [],
   branches: [],
   commits: [],
+  commitDetail: null,
 
   // リポジトリのロードは時間がかかる可能性があるためフラグを設けて管理
   loadingRepositories: false,
@@ -28,6 +29,9 @@ const getters = {
   },
   commits(state) {
     return state.commits
+  },
+  commitDetail(state) {
+    return state.commitDetail
   },
 
   loadingRepositories(state) {
@@ -101,6 +105,21 @@ const actions = {
       commit('setCommits', [])
     }
   },
+
+  async fetchCommitDetail({ commit }, { gitId, repository, commitId }) {
+    let params = {
+      gitId: gitId,
+      owner: repository.owner,
+      repositoryName: repository.name,
+      commitId: commitId,
+    }
+    try {
+      let commitDetail = (await api.git.getCommit(params)).data
+      commit('setCommitDetail', { commitDetail })
+    } catch {
+      commit('setCommitDetail', null)
+    }
+  },
 }
 
 // mutations
@@ -119,6 +138,9 @@ const mutations = {
   },
   setCommits(state, { commits }) {
     state.commits = commits
+  },
+  setCommitDetail(state, { commitDetail }) {
+    state.commitDetail = commitDetail
   },
 
   setLoadingRepositories(state, flag) {

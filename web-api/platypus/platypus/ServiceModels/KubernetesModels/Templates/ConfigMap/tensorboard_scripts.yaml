@@ -9,6 +9,7 @@ data:
     # requirement: use tensorboard/tensorboard image   
     mkdir /tensorboard
     /usr/local/bin/tensorboard --logdir /kqi/output
-  finish: 
-    # infinite sleep
-    tail -f /dev/null
+  finish: |
+    bash /kqi/scripts/common/prepare-kqi-conf
+    sleep $EXPIRES_IN
+    kqi training tensorboard-halt $TRAINING_ID

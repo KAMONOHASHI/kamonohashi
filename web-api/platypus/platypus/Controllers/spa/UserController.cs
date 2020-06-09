@@ -85,7 +85,7 @@ namespace Nssol.Platypus.Controllers.spa
 
             //ユーザのテナント情報（ロール含む）を取得
             var info = userRepository.GetUserInfo(user);
-            userModel.Tenants = info.TenantDic.Select(x => new TenantInfo(x.Key, x.Value, user.DefaultTenantId)).ToList();
+            userModel.Tenants = info.TenantDic.Select(x => new TenantInfo(x.Key, x.Value, user.DefaultTenantId)).OrderBy(t => t.DisplayName).ToList();
 
             //このユーザのシステムロールを取得
             userModel.SystemRoles = roleRepository.GetSystemRoles(user.Id).Select(r => new RoleInfo(r));
