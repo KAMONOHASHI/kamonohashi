@@ -23,6 +23,14 @@
               v-model="form.dataSetId"
               :data-sets="dataSets"
             />
+            <el-form-item label="データセット作成方式">
+              <el-switch
+                v-model="form.localDataSet"
+                style="width: 100%;"
+                inactive-text="シンボリックリンク"
+                active-text="ローカルコピー"
+              />
+            </el-form-item>
 
             <el-form-item label="実行コマンド" prop="entryPoint">
               <el-input
@@ -114,6 +122,14 @@
                 v-model="form.dataSetId"
                 :data-sets="dataSets"
               />
+              <el-form-item label="データセット作成方式">
+                <el-switch
+                  v-model="form.localDataSet"
+                  style="width: 100%;"
+                  inactive-text="シンボリックリンク"
+                  active-text="ローカルコピー"
+                />
+              </el-form-item>
             </el-col>
           </el-form>
 
@@ -295,6 +311,7 @@ export default {
         variables: [{ key: '', value: '' }],
         partition: null,
         zip: true,
+        localDataSet: false,
         memo: null,
       },
       rules: {
@@ -394,6 +411,7 @@ export default {
         this.form.name = detail.name
         this.form.entryPoint = detail.entryPoint
         this.form.zip = detail.zip
+        this.form.localDataSet = detail.localDataSet
         this.form.memo = detail.memo
         this.form.selectedParent = []
         if (detail.parents) {
@@ -523,6 +541,7 @@ export default {
               Gpu: this.form.resource.gpu,
               Options: options,
               Zip: this.form.zip,
+              LocalDataSet: this.form.localDataSet,
               Partition: this.form.partition,
               Memo: this.form.memo,
             }

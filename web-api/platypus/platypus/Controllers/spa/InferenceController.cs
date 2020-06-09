@@ -406,7 +406,8 @@ namespace Nssol.Platypus.Controllers.spa
                 Gpu = model.Gpu.Value,
                 Partition = model.Partition,
                 Status = ContainerStatus.Running.Key,
-                Zip = model.Zip
+                Zip = model.Zip,
+                LocalDataSet = model.LocalDataSet,
             };
 
             if (inferenceHistory.OptionDic.ContainsKey("")) //空文字は除外する

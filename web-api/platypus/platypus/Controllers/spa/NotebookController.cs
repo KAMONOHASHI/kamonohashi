@@ -484,6 +484,7 @@ namespace Nssol.Platypus.Controllers.spa
                 Status = ContainerStatus.Running.Key,
                 StartedAt = DateTime.Now,
                 ExpiresIn = model.ExpiresIn,
+                LocalDataSet = model.LocalDataSet,
                 EntryPoint = model.EntryPoint
             };
 
@@ -819,6 +820,7 @@ namespace Nssol.Platypus.Controllers.spa
             notebookHistory.StartedAt = DateTime.Now;
             notebookHistory.CompletedAt = null;
             notebookHistory.ExpiresIn = model.ExpiresIn;
+            notebookHistory.LocalDataSet = model.LocalDataSet;
             notebookHistory.EntryPoint = model.EntryPoint;
 
             notebookHistoryRepository.Update(notebookHistory);

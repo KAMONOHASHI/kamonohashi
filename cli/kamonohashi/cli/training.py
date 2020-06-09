@@ -95,13 +95,15 @@ def get(id):
 @click.option('-m', '--memo', help='A memo of this training.')
 @click.option('-t', '--tags', multiple=True, help='Attributes to the training  [multiple]')
 @click.option('-zip/-unzip', '--zip/--un-zip', default=True, show_default=True, help='Do you want to zip the training results')
+@click.option('-ld', '--local-data-set', is_flag=True, default=False, show_default=False, 
+              help='Whether to create the local data set or not. If this option is not set, create the symbolic links of the data set.')
 @click.option('-pid', '--parent-ids', multiple=True,
               help='A parent id of this training. Currently, the system only makes a relationship to the parent training but do nothing.  [multiple]')
 @click.option('-o', '--options', type=(str, str), multiple=True,
               help='Options of this training. The options are stored in the environment variables  [multiple]')
 def create(name, registry_image, registry_tag, data_set_id, entry_point,
            git_owner, git_repository, git_branch, git_commit, cpu, memory, gpu, partition, memo,
-           tags, zip, parent_ids, options, registry_id, git_id):
+           tags, zip, local_data_set, parent_ids, options, registry_id, git_id):
     """Submit new training"""
     api = rest.TrainingApi(configuration.get_api_client())
     container_image = rest.ComponentsContainerImageInputModel(image=registry_image, registry_id=registry_id, tag=registry_tag)
@@ -109,7 +111,7 @@ def create(name, registry_image, registry_tag, data_set_id, entry_point,
     option_dict = {key: value for key, value in options} if options else None
     model = rest.TrainingApiModelsCreateInputModel(
         container_image=container_image, cpu=cpu, data_set_id=data_set_id, entry_point=entry_point, git_model=git_model,
-        gpu=gpu, memo=memo, memory=memory, name=name, options=option_dict, parent_ids=list(parent_ids), partition=partition, tags=list(tags), zip=zip)
+        gpu=gpu, memo=memo, memory=memory, name=name, options=option_dict, parent_ids=list(parent_ids), partition=partition, tags=list(tags), zip=zip, local_data_set=local_data_set)
     result = api.create_training(model=model)
     print('created', result.id)
 

@@ -1583,7 +1583,7 @@ export const ApiV1DatasetsGetURL = function(parameters = {}) {
  * url: ApiV1DatasetsPostURL
  * method: ApiV1DatasetsPost_TYPE
  * raw_url: ApiV1DatasetsPost_RAW_URL
- * @param model - 
+ * @param model - 新規作成内容
  */
 export const ApiV1DatasetsPost = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -1720,7 +1720,7 @@ export const ApiV1DatasetsByIdPutURL = function(parameters = {}) {
  * url: ApiV1DatasetsByIdDeleteURL
  * method: ApiV1DatasetsByIdDelete_TYPE
  * raw_url: ApiV1DatasetsByIdDelete_RAW_URL
- * @param id - 
+ * @param id - データセットID
  */
 export const ApiV1DatasetsByIdDelete = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -1852,6 +1852,51 @@ export const ApiV1DatasetsByIdFilesGetURL = function(parameters = {}) {
   if (parameters['withUrl'] !== undefined) {
     queryParameters['withUrl'] = parameters['withUrl']
   }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 指定したIDのデータセットに含まれるデータとNFS上のデータ名のペア情報を取得する。
+ * request: ApiV1DatasetsByIdPathpairsGet
+ * url: ApiV1DatasetsByIdPathpairsGetURL
+ * method: ApiV1DatasetsByIdPathpairsGet_TYPE
+ * raw_url: ApiV1DatasetsByIdPathpairsGet_RAW_URL
+ * @param id - データセットID
+ */
+export const ApiV1DatasetsByIdPathpairsGet = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v1/datasets/{id}/pathpairs'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV1DatasetsByIdPathpairsGet_RAW_URL = function() {
+  return '/api/v1/datasets/{id}/pathpairs'
+}
+export const ApiV1DatasetsByIdPathpairsGet_TYPE = function() {
+  return 'get'
+}
+export const ApiV1DatasetsByIdPathpairsGetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v1/datasets/{id}/pathpairs'
+  path = path.replace('{id}', `${parameters['id']}`)
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]

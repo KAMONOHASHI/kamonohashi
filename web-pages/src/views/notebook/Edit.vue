@@ -85,6 +85,12 @@
                 {{ detail.dataSet.name }}
               </el-button>
             </el-form-item>
+            <el-form-item label="データセット作成方式">
+              <div class="el-input">
+                <span v-if="detail.localDataSet">ローカルコピー</span>
+                <span v-else>シンボリックリンク</span>
+              </div>
+            </el-form-item>
           </div>
           <el-form-item label="モデル">
             <div class="el-input">
