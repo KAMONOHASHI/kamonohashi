@@ -517,6 +517,13 @@ export default {
                 ? this.form.gitModel.commit.commitId
                 : this.commits[0].commitId
             }
+            // コピー時ブランチを切り替えずに実行
+            // パラメータに格納する際の形を統一するため整形を行う
+            if (typeof this.form.gitModel.branch.branchName === 'undefined') {
+              let branch = { branchName: this.form.gitModel.branch }
+              this.form.gitModel.branch = branch
+            }
+
             let params = {
               Name: this.form.name,
               DataSetId: this.form.dataSetId,
