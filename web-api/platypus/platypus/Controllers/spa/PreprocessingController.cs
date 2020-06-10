@@ -1,49 +1,68 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Nssol.Platypus.ApiModels.PreprocessingApiModels;
+using Nssol.Platypus.Controllers.Util;
+using Nssol.Platypus.DataAccess.Core;
+using Nssol.Platypus.DataAccess.Repositories.Interfaces;
+using Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories;
+using Nssol.Platypus.Filters;
+using Nssol.Platypus.Infrastructure;
+using Nssol.Platypus.Infrastructure.Types;
+using Nssol.Platypus.Logic.Interfaces;
+using Nssol.Platypus.Models;
+using Nssol.Platypus.Models.TenantModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Nssol.Platypus.Controllers.Util;
-using Nssol.Platypus.DataAccess.Core;
-using Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories;
-using Nssol.Platypus.Infrastructure;
-using Nssol.Platypus.Logic.Interfaces;
-using Nssol.Platypus.Models.TenantModels;
-using Nssol.Platypus.ApiModels.PreprocessingApiModels;
-using Nssol.Platypus.Filters;
-using Nssol.Platypus.Infrastructure.Types;
 using System.Text.RegularExpressions;
-using Nssol.Platypus.DataAccess.Repositories.Interfaces;
+using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Controllers.spa
 {
+    /// <summary>
+    /// 前処理管理を扱うためのAPI集
+    /// </summary>
     [Route("api/v1/preprocessings")]
     public class PreprocessingController : PlatypusApiControllerBase
     {
         private readonly IPreprocessRepository preprocessRepository;
         private readonly IPreprocessHistoryRepository preprocessHistoryRepository;
+        private readonly ITenantRepository tenantRepository;
+        private readonly IDataRepository dataRepository;
+        private readonly IPreprocessLogic preprocessLogic;
+        private readonly ITagLogic tagLogic;
         private readonly IGitLogic gitLogic;
         private readonly IStorageLogic storageLogic;
+        private readonly IClusterManagementLogic clusterManagementLogic;
         private readonly IUnitOfWork unitOfWork;
-        private readonly ITenantRepository tenantRepository;
 
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
         public PreprocessingController(
             IPreprocessRepository preprocessRepository,
             IPreprocessHistoryRepository preprocessHistoryRepository,
+            ITenantRepository tenantRepository,
+            IDataRepository dataRepository,
+            IPreprocessLogic preprocessLogic,
+            ITagLogic tagLogic,
             IGitLogic gitLogic,
             IStorageLogic storageLogic,
+            IClusterManagementLogic clusterManagementLogic,
             IUnitOfWork unitOfWork,
-            ITenantRepository tenantRepository,
             IHttpContextAccessor accessor) : base(accessor)
         {
             this.preprocessRepository = preprocessRepository;
             this.preprocessHistoryRepository = preprocessHistoryRepository;
+            this.tenantRepository = tenantRepository;
+            this.dataRepository = dataRepository;
+            this.preprocessLogic = preprocessLogic;
+            this.tagLogic = tagLogic;
             this.gitLogic = gitLogic;
             this.storageLogic = storageLogic;
+            this.clusterManagementLogic = clusterManagementLogic;
             this.unitOfWork = unitOfWork;
-            this.tenantRepository = tenantRepository;
         }
 
         #region 前処理
@@ -63,7 +82,7 @@ namespace Nssol.Platypus.Controllers.spa
             var preprocessings = preprocessRepository.GetAllWithOrderby(p => p.Id, false);
             preprocessings = Search(preprocessings, filter);
 
-            //未指定、あるいは1000件以上であれば、1000件に指定
+            // 未指定、あるいは1000件以上であれば、1000件に指定
             int pageCount = (perPage.HasValue && perPage.Value < 1000) ? perPage.Value : 1000;
             preprocessings = preprocessings.Paging(page, pageCount);
 
@@ -79,6 +98,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// データ件数を取得する
         /// </summary>
+        /// <param name="filter">検索条件</param>
         private int GetTotalCount(SearchInputModel filter)
         {
             IQueryable<Preprocess> preprocessings = preprocessRepository.GetAll();
@@ -89,6 +109,8 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 検索条件の追加
         /// </summary>
+        /// <param name="sourceData">加工前の検索結果</param>
+        /// <param name="filter">検索条件</param>
         private static IQueryable<Preprocess> Search(IQueryable<Preprocess> sourceData, SearchInputModel filter)
         {
             IQueryable<Preprocess> data = sourceData;
@@ -104,11 +126,10 @@ namespace Nssol.Platypus.Controllers.spa
         /// 指定されたIDの前処理の詳細情報を取得。
         /// </summary>
         /// <param name="id">前処理ID</param>
-        /// <param name="preprocessHistoryRepository">DIされる前処理履歴リポジトリ</param>
         [HttpGet("{id}")]
         [PermissionFilter(MenuCode.Preprocess)]
         [ProducesResponseType(typeof(DetailsOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetDetail(long? id, [FromServices]IPreprocessHistoryRepository preprocessHistoryRepository)
+        public async Task<IActionResult> GetDetail(long? id)
         {
             if (id == null)
             {
@@ -125,7 +146,7 @@ namespace Nssol.Platypus.Controllers.spa
                 IsLocked = await preprocessHistoryRepository.ExistsAsync(p => p.PreprocessId == id.Value)
             };
 
-            //Gitの表示用URLを作る
+            // Gitの表示用URLを作る
             if (preprocessing.RepositoryGitId != null)
             {
                 model.GitModel.Url = gitLogic.GetTreeUiUrl(preprocessing.RepositoryGitId.Value, preprocessing.RepositoryName, preprocessing.RepositoryOwner, preprocessing.RepositoryCommitId);
@@ -137,24 +158,32 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 新規に前処理を登録する
         /// </summary>
+        /// <param name="model">新規作成内容</param>
         [HttpPost]
         [PermissionFilter(MenuCode.Preprocess)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.Created)]
         public async Task<IActionResult> Create([FromBody]CreateInputModel model)
         {
-            //データの入力チェック
+            // データの入力チェック
             if (!ModelState.IsValid)
             {
                 return JsonBadRequest("Invalid inputs.");
             }
             if (string.IsNullOrWhiteSpace(model.Name))
             {
-                //名前に空文字は許可しない
+                // 名前に空文字は許可しない
                 return JsonBadRequest($"A name of Preprocessing is NOT allowed to set empty string.");
             }
             if (model.GitModel != null && model.GitModel.IsValid() == false)
             {
                 return JsonBadRequest($"The input about Git is not valid.");
+            }
+            // 各リソースの超過チェック
+            Tenant tenant = tenantRepository.Get(CurrentUserInfo.SelectedTenant.Id);
+            string errorMessage = clusterManagementLogic.CheckQuota(tenant, model.Cpu, model.Memory, model.Gpu);
+            if (errorMessage != null)
+            {
+                return JsonBadRequest(errorMessage);
             }
 
             Preprocess preprocessing = new Preprocess();
@@ -183,12 +212,12 @@ namespace Nssol.Platypus.Controllers.spa
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> Edit(long? id, [FromBody]EditInputModel model)
         {
-            //データの入力チェック
+            // データの入力チェック
             if (!ModelState.IsValid || !id.HasValue)
             {
                 return JsonBadRequest("Invalid inputs.");
             }
-            //データの存在チェック
+            // データの存在チェック
             var preprocessing = await preprocessRepository.GetByIdAsync(id.Value);
             if (preprocessing == null)
             {
@@ -199,7 +228,7 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 if (string.IsNullOrWhiteSpace(model.Name))
                 {
-                    //名前に空文字は許可しない
+                    // 名前に空文字は許可しない
                     return JsonBadRequest($"A name of Preprocessing is NOT allowed to set empty string.");
                 }
                 preprocessing.Name = model.Name;
@@ -208,6 +237,15 @@ namespace Nssol.Platypus.Controllers.spa
             preprocessing.Cpu = EditColumn(model.Cpu, preprocessing.Cpu);
             preprocessing.Memory = EditColumn(model.Memory, preprocessing.Memory);
             preprocessing.Gpu = EditColumn(model.Gpu, preprocessing.Gpu);
+
+            // 各リソースの超過チェック
+            // 変更がない場合、変更内容モデルの項目にはnullが設定されているので、DB設定値を用いてここでチェックをする。
+            Tenant tenant = tenantRepository.Get(CurrentUserInfo.SelectedTenant.Id);
+            string errorMessage = clusterManagementLogic.CheckQuota(tenant, preprocessing.Cpu, preprocessing.Memory, preprocessing.Gpu);
+            if (errorMessage != null)
+            {
+                return JsonBadRequest(errorMessage);
+            }
 
             unitOfWork.Commit();
 
@@ -222,13 +260,12 @@ namespace Nssol.Platypus.Controllers.spa
         /// </remarks>
         /// <param name="id">変更対象の前処理ID</param>
         /// <param name="model">変更内容</param>
-        /// <param name="preprocessHistoryRepository">DIされる前処理履歴リポジトリ</param>
         [HttpPut("{id}")]
         [PermissionFilter(MenuCode.Preprocess)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> EditDetails(long? id, [FromBody]CreateInputModel model, [FromServices]IPreprocessHistoryRepository preprocessHistoryRepository)
+        public async Task<IActionResult> EditDetails(long? id, [FromBody]CreateInputModel model)
         {
-            //データの入力チェック
+            // データの入力チェック
             if (!ModelState.IsValid || !id.HasValue)
             {
                 return JsonBadRequest("Invalid inputs.");
@@ -238,7 +275,7 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonBadRequest($"The input about Git is not valid.");
             }
 
-            //データの存在チェック
+            // データの存在チェック
             var preprocessing = await preprocessRepository.GetIncludeAllAsync(id.Value);
             if (preprocessing == null)
             {
@@ -248,7 +285,7 @@ namespace Nssol.Platypus.Controllers.spa
             var history = preprocessHistoryRepository.Find(p => p.PreprocessId == id.Value);
             if (history != null)
             {
-                //過去に前処理を実行済みなので、編集できない
+                // 過去に前処理を実行済みなので、編集できない
                 return JsonConflict($"Preprocessing ID {id.Value} is already executed. History ID = {history.Id} ");
             }
 
@@ -269,18 +306,17 @@ namespace Nssol.Platypus.Controllers.spa
         /// 一度でも前処理が実行されていた場合、削除不可
         /// </remarks>
         /// <param name="id">前処理ID</param>
-        /// <param name="preprocessHistoryRepository">DIされる前処理履歴リポジトリ</param>
         [HttpDelete("{id}")]
         [PermissionFilter(MenuCode.Preprocess)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        public async Task<IActionResult> Delete(long? id, [FromServices]IPreprocessHistoryRepository preprocessHistoryRepository)
+        public async Task<IActionResult> Delete(long? id)
         {
-            //データの入力チェック
+            // データの入力チェック
             if (id == null)
             {
                 return JsonBadRequest("Invalid inputs.");
             }
-            //データの存在チェック
+            // データの存在チェック
             var preprocessing = await preprocessRepository.GetByIdAsync(id.Value);
             if (preprocessing == null)
             {
@@ -290,7 +326,7 @@ namespace Nssol.Platypus.Controllers.spa
             var history = preprocessHistoryRepository.Find(p => p.PreprocessId == id.Value);
             if (history != null)
             {
-                //過去に前処理を実行済みなので、削除できない
+                // 過去に前処理を実行済みなので、削除できない
                 return JsonConflict($"Preprocessing ID {id.Value} is already executed. History ID = {history.Id} ");
             }
 
@@ -305,8 +341,18 @@ namespace Nssol.Platypus.Controllers.spa
         /// 成功時はnullを返す。エラーが発生したらエラー内容を返す。
         /// 事前に<see cref="CreateInputModel.GitModel"/>の入力チェックを行っておくこと。
         /// </summary>
+        /// <param name="preprocessing">前処理</param>
+        /// <param name="model">入力内容</param>
         private async Task<IActionResult> SetPreprocessDetailsAsync(Preprocess preprocessing, CreateInputModel model)
         {
+            // 各リソースの超過チェック
+            Tenant tenant = tenantRepository.Get(CurrentUserInfo.SelectedTenant.Id);
+            string errorMessage = clusterManagementLogic.CheckQuota(tenant, model.Cpu, model.Memory, model.Gpu);
+            if (errorMessage != null)
+            {
+                return JsonBadRequest(errorMessage);
+            }
+
             long? gitId = null;
             string repository = null;
             string owner = null;
@@ -319,13 +365,13 @@ namespace Nssol.Platypus.Controllers.spa
                 owner = model.GitModel.Owner;
                 branch = model.GitModel.Branch;
                 commitId = model.GitModel.CommitId;
-                //コミットIDが指定されていなければ、ブランチのHEADからコミットIDを取得する
+                // コミットIDが指定されていなければ、ブランチのHEADからコミットIDを取得する
                 if (string.IsNullOrEmpty(commitId))
                 {
                     commitId = await gitLogic.GetCommitIdAsync(gitId.Value, model.GitModel.Repository, model.GitModel.Owner, model.GitModel.Branch);
                     if (string.IsNullOrEmpty(commitId))
                     {
-                        //コミットIDが特定できなかったらエラー
+                        // コミットIDが特定できなかったらエラー
                         return JsonNotFound($"The branch {branch} for {gitId.Value}/{model.GitModel.Owner}/{model.GitModel.Repository} is not found.");
                     }
                 }
@@ -345,7 +391,7 @@ namespace Nssol.Platypus.Controllers.spa
             preprocessing.EntryPoint = model.EntryPoint;
             preprocessing.ContainerRegistryId = registryId;
             preprocessing.ContainerImage = image;
-            preprocessing.ContainerTag = tag; //latestは運用上使用されていないハズなので、そのまま直接代入
+            preprocessing.ContainerTag = tag; // latestは運用上使用されていないハズなので、そのまま直接代入
             preprocessing.RepositoryGitId = gitId;
             preprocessing.RepositoryName = repository;
             preprocessing.RepositoryOwner = owner;
@@ -367,11 +413,10 @@ namespace Nssol.Platypus.Controllers.spa
         /// 指定した前処理の履歴情報を取得する。
         /// </summary>
         /// <param name="id">前処理ID</param>
-        /// <param name="clusterManagementLogic">DI用</param>
         [HttpGet("{id}/histories")]
         [PermissionFilter(MenuCode.Preprocess)]
         [ProducesResponseType(typeof(IEnumerable<HistoriesOutputModel>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetHistories([FromRoute] long? id, [FromServices] IClusterManagementLogic clusterManagementLogic)
+        public async Task<IActionResult> GetHistories([FromRoute] long? id)
         {
             if (id == null)
             {
@@ -380,24 +425,26 @@ namespace Nssol.Platypus.Controllers.spa
 
             var preprocessingHistories = await preprocessHistoryRepository.GetPreprocessAllIncludeDataAndPreprocessAsync(id.Value);
 
-            return JsonOK(preprocessingHistories.ToList().Select(ph => GetUpdatedIndexOutputModelAsync(ph, new HistoriesOutputModel(ph), clusterManagementLogic).Result));
+            return JsonOK(preprocessingHistories.ToList().Select(ph => GetUpdatedIndexOutputModelAsync(ph, new HistoriesOutputModel(ph)).Result));
         }
 
         /// <summary>
         /// ステータスを更新して、出力モデルに変換する
         /// </summary>
-        private async Task<HistoriesOutputModel> GetUpdatedIndexOutputModelAsync(PreprocessHistory history, HistoriesOutputModel model, IClusterManagementLogic clusterManagementLogic)
+        /// <param name="history">前処理履歴</param>
+        /// <param name="model">出力モデル</param>
+        private async Task<HistoriesOutputModel> GetUpdatedIndexOutputModelAsync(PreprocessHistory history, HistoriesOutputModel model)
         {
             var status = ContainerStatus.Convert(history.Status);
             model.StatusType = status.StatusType;
             if (status.Exist())
             {
-                //コンテナがまだ存在している場合、情報を更新する
+                // コンテナがまだ存在している場合、情報を更新する
                 var newStatus = await clusterManagementLogic.GetContainerStatusAsync(history.Name, CurrentUserInfo.SelectedTenant.Name, false);
 
                 if (status.Key != newStatus.Key)
                 {
-                    //更新があったので、変更処理
+                    // 更新があったので、変更処理
                     history.Status = newStatus.Key;
                     unitOfWork.Commit();
 
@@ -413,11 +460,10 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="id">前処理ID</param>
         /// <param name="dataId">データID</param>
-        /// <param name="clusterManagementLogic">DI用</param>
         [HttpGet("{id}/histories/{dataId}")]
         [PermissionFilter(MenuCode.Preprocess)]
         [ProducesResponseType(typeof(HistoryDetailsOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetDetailHistory([FromRoute] long id, [FromRoute] long? dataId, [FromServices] IClusterManagementLogic clusterManagementLogic)
+        public async Task<IActionResult> GetDetailHistory([FromRoute] long id, [FromRoute] long? dataId)
         {
             if (dataId == null)
             {
@@ -431,7 +477,7 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             var result = new HistoryDetailsOutputModel(history);
-            result = await GetUpdatedIndexOutputModelAsync(history, result, clusterManagementLogic) as HistoryDetailsOutputModel;
+            result = await GetUpdatedIndexOutputModelAsync(history, result) as HistoryDetailsOutputModel;
 
             result.OutputDataIds = preprocessHistoryRepository.GetPreprocessOutputs(history.Id);
             return JsonOK(result);
@@ -443,12 +489,10 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="id">前処理ID</param>
         /// <param name="dataId">入力データID</param>
-        /// <param name="clusterManagementLogic">DI用</param>
         [HttpGet("{id}/histories/{dataId}/events")]
         [PermissionFilter(MenuCode.Preprocess)]
         [ProducesResponseType(typeof(HistoriesOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> UploadPreprocessImage([FromRoute]long id, [FromRoute]long dataId,
-            [FromServices] IClusterManagementLogic clusterManagementLogic)
+        public async Task<IActionResult> UploadPreprocessImage([FromRoute]long id, [FromRoute]long dataId)
         {
             var history = await preprocessHistoryRepository.GetPreprocessIncludeDataAndPreprocessAsync(id, dataId);
             if (history == null)
@@ -483,20 +527,18 @@ namespace Nssol.Platypus.Controllers.spa
         /// </remarks>
         /// <param name="id">前処理ID</param>
         /// <param name="dataId">入力データID</param>
-        /// <param name="dataRepository">DI用</param>
         [HttpPost("{id}/histories/{dataId}")]
         [PermissionFilter(MenuCode.Preprocess)]
         [ProducesResponseType(typeof(HistoriesOutputModel), (int)HttpStatusCode.Created)]
-        public async Task<IActionResult> CreatePreprocessHistory([FromRoute] long id, [FromRoute] long? dataId,
-            [FromServices] IDataRepository dataRepository)
+        public async Task<IActionResult> CreatePreprocessHistory([FromRoute] long id, [FromRoute] long? dataId)
         {
-            var result = await ValidateCreatePreprocessHistoryInputModelAsync(id, dataId, dataRepository);
+            var result = await ValidateCreatePreprocessHistoryInputModelAsync(id, dataId);
             if (result.IsSuccess == false)
             {
                 return result.Error;
             }
             PreprocessHistory preprocessHistory = result.Value;
-            //ステータスはRunningではなくOpenedにする。
+            // ステータスはRunningではなくOpenedにする。
             preprocessHistory.Status = ContainerStatus.Opened.Key;
 
             preprocessHistoryRepository.Add(preprocessHistory);
@@ -515,14 +557,10 @@ namespace Nssol.Platypus.Controllers.spa
         /// </remarks>
         /// <param name="id">前処理ID</param>
         /// <param name="model">実行設定</param>
-        /// <param name="dataRepository">DI用</param>
-        /// <param name="clusterManagementLogic">DI用</param>
         [HttpPost("{id}/run")]
         [PermissionFilter(MenuCode.Preprocess)]
         [ProducesResponseType(typeof(HistoriesOutputModel), (int)HttpStatusCode.Created)]
-        public async Task<IActionResult> RunPreprocessHistory([FromRoute]long id, [FromBody] RunPreprocessHistoryInputModel model,
-            [FromServices] IDataRepository dataRepository,
-            [FromServices] IClusterManagementLogic clusterManagementLogic)
+        public async Task<IActionResult> RunPreprocessHistory([FromRoute]long id, [FromBody] RunPreprocessHistoryInputModel model)
         {
             // 環境変数名のチェック
             if (model.Options != null && model.Options.Count > 0)
@@ -540,7 +578,15 @@ namespace Nssol.Platypus.Controllers.spa
                 }
             }
 
-            var validateResult = await ValidateCreatePreprocessHistoryInputModelAsync(id, model.DataId, dataRepository);
+            // 各リソースの超過チェック
+            Tenant tenant = tenantRepository.Get(CurrentUserInfo.SelectedTenant.Id);
+            string errorMessage = clusterManagementLogic.CheckQuota(tenant, model.Cpu.Value, model.Memory.Value, model.Gpu.Value);
+            if (errorMessage != null)
+            {
+                return JsonBadRequest(errorMessage);
+            }
+
+            var validateResult = await ValidateCreatePreprocessHistoryInputModelAsync(id, model.DataId);
             if (validateResult.IsSuccess == false)
             {
                 return validateResult.Error;
@@ -550,8 +596,8 @@ namespace Nssol.Platypus.Controllers.spa
             preprocessHistory.Memory = model.Memory;
             preprocessHistory.Gpu = model.Gpu;
             preprocessHistory.Partition = model.Partition;
-            preprocessHistory.OptionDic = model.Options ?? new Dictionary<string, string>(); //オプションはnullの可能性があるので、その時は初期化
-            if (preprocessHistory.OptionDic.ContainsKey("")) //空文字は除外する
+            preprocessHistory.OptionDic = model.Options ?? new Dictionary<string, string>(); // オプションはnullの可能性があるので、その時は初期化
+            if (preprocessHistory.OptionDic.ContainsKey("")) // 空文字は除外する
             {
                 preprocessHistory.OptionDic.Remove("");
             }
@@ -559,20 +605,20 @@ namespace Nssol.Platypus.Controllers.spa
             preprocessHistoryRepository.Add(preprocessHistory);
             unitOfWork.Commit();
 
-            //入力データの詳細情報がないので、取得
+            // 入力データの詳細情報がないので、取得
             preprocessHistory.InputData = await dataRepository.GetDataIncludeAllAsync(preprocessHistory.InputDataId);
 
             var result = await clusterManagementLogic.RunPreprocessingContainerAsync(preprocessHistory);
             if (result.IsSuccess == false)
             {
-                //コンテナの起動に失敗した状態。エラーを出力して、保存した学習履歴も削除する。
+                // コンテナの起動に失敗した状態。エラーを出力して、保存した学習履歴も削除する。
                 preprocessHistoryRepository.Delete(preprocessHistory);
 
                 return JsonError(HttpStatusCode.ServiceUnavailable, "Failed to run preprocessing. The message bellow may be help to resolve: " + result.Error);
             }
 
-            //結果に従い、学習結果を更新する。
-            //実行には時間がかかりうるので、DBから最新の情報を取ってくる
+            // 結果に従い、学習結果を更新する。
+            // 実行には時間がかかりうるので、DBから最新の情報を取ってくる
             preprocessHistory = await preprocessHistoryRepository.GetByIdAsync(preprocessHistory.Id);
             preprocessHistory.Status = result.Value.Status.Key;
             unitOfWork.Commit();
@@ -590,7 +636,9 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 前処理履歴作成の入力モデルのチェックを行う。
         /// </summary>
-        private async Task<Result<PreprocessHistory, IActionResult>> ValidateCreatePreprocessHistoryInputModelAsync(long preprocessId, long? inputDataId, IDataRepository dataRepository)
+        /// <param name="preprocessId">前処理ID</param>
+        /// <param name="inputDataId">入力データID</param>
+        private async Task<Result<PreprocessHistory, IActionResult>> ValidateCreatePreprocessHistoryInputModelAsync(long preprocessId, long? inputDataId)
         {
             if (inputDataId == null)
             {
@@ -627,25 +675,7 @@ namespace Nssol.Platypus.Controllers.spa
                 return Result<PreprocessHistory, IActionResult>.CreateErrorResult(JsonNotFound($"Preprocessing {preprocess.Name} can not be run because a container image has not been selected properly yet."));
             }
 
-            // 各リソースの超過チェック
-            var quota = tenantRepository.GetFromTenantName(CurrentUserInfo.SelectedTenant.Name);
-            // CPU
-            if (quota.LimitCpu != null && preprocess.Cpu > quota.LimitCpu)
-            {
-                return Result<PreprocessHistory, IActionResult>.CreateErrorResult(JsonError(HttpStatusCode.InsufficientStorage, "The set CPU exceeds the upper limit."));
-            }
-            // メモリ
-            if (quota.LimitMemory != null && quota.LimitCpu != null && preprocess.Memory > quota.LimitMemory)
-            {
-                return Result<PreprocessHistory, IActionResult>.CreateErrorResult(JsonError(HttpStatusCode.InsufficientStorage, "The set Memory exceeds the upper limit."));
-            }
-            // GPU
-            if (quota.LimitGpu != null && preprocess.Gpu > quota.LimitGpu)
-            {
-                return Result<PreprocessHistory, IActionResult>.CreateErrorResult(JsonError(HttpStatusCode.InsufficientStorage, "The set GPU exceeds the upper limit."));
-            }
-
-            //前処理が既に実行中か確認する
+            // 前処理が既に実行中か確認する
             var preprocessHistory = preprocessHistoryRepository.Find(pph => pph.InputDataId == inputDataId && pph.PreprocessId == preprocess.Id);
             if (preprocessHistory != null)
             {
@@ -671,22 +701,18 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="id">前処理ID</param>
         /// <param name="dataId">入力データID</param>
         /// <param name="model">データ情報</param>
-        /// <param name="tagLogic">DI用</param>
-        /// <param name="dataRepository">DI用</param>
         [HttpPost("{id}/histories/{dataId}/data")]
         [PermissionFilter(MenuCode.Preprocess)]
         [ProducesResponseType(typeof(HistoriesOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> UploadPreprocessImage([FromRoute]long id, [FromRoute]long dataId,
-            [FromBody] AddOutputDataInputModel model,
-            [FromServices] ITagLogic tagLogic,
-            [FromServices] IDataRepository dataRepository)
+            [FromBody] AddOutputDataInputModel model)
         {
             if (!ModelState.IsValid)
             {
                 return JsonBadRequest("Invalid inputs.");
             }
 
-            //データの存在チェック
+            // データの存在チェック
             var preprocessHistory = await preprocessHistoryRepository.GetPreprocessIncludeDataAndPreprocessAsync(id, dataId);
             if (preprocessHistory == null)
             {
@@ -695,14 +721,14 @@ namespace Nssol.Platypus.Controllers.spa
             var status = ContainerStatus.Convert(preprocessHistory.Status);
             if (status.IsOpened() == false)
             {
-                //追加できるのは開放中のコンテナだけ（ローカルの結果を追加することがあるので、Runningとは限らない）
+                // 追加できるのは開放中のコンテナだけ（ローカルの結果を追加することがあるので、Runningとは限らない）
                 return JsonBadRequest($"Preprocessing History {preprocessHistory.Id} is not opened.");
             }
 
-            //データを追加する
+            // データを追加する
             Data newData = new Data()
             {
-                //データ名が未指定であれば、デフォルトの値を入れる
+                // データ名が未指定であれば、デフォルトの値を入れる
                 Name = string.IsNullOrEmpty(model.Name) ? $"{preprocessHistory.InputData.Name}_{preprocessHistory.Preprocess.Name}" : model.Name,
                 Memo = model.Memo,
                 ParentDataId = preprocessHistory.InputDataId
@@ -714,14 +740,14 @@ namespace Nssol.Platypus.Controllers.spa
                 dataRepository.AddFile(newData, file.FileName, file.StoredPath);
             }
 
-            //タグの登録
+            // タグの登録
             if (model.Tags != null && model.Tags.Count() > 0)
             {
                 tagLogic.CreateDataTags(newData, model.Tags);
             }
             else
             {
-                //タグが未指定であれば、前処理名を付ける
+                // タグが未指定であれば、前処理名を付ける
                 List<string> tags = new List<string>() { preprocessHistory.Preprocess.Name };
                 tagLogic.CreateDataTags(newData, tags);
             }
@@ -739,14 +765,12 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="id">前処理ID</param>
         /// <param name="dataId">入力データID</param>
-        /// <param name="clusterManagementLogic">DI用</param>
         [HttpPost("{id}/histories/{dataId}/halt")]
         [PermissionFilter(MenuCode.Preprocess)]
         [ProducesResponseType(typeof(HistoriesOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> Halt([FromRoute] long id, [FromRoute]long dataId,
-            [FromServices] IClusterManagementLogic clusterManagementLogic)
+        public async Task<IActionResult> Halt([FromRoute] long id, [FromRoute]long dataId)
         {
-            return await ExitAsync(id, dataId, ContainerStatus.Killed, clusterManagementLogic);
+            return await ExitAsync(id, dataId, ContainerStatus.Killed);
         }
 
         /// <summary>
@@ -755,22 +779,23 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="id">前処理ID</param>
         /// <param name="dataId">入力データID</param>
-        /// <param name="clusterManagementLogic">DI用</param>
         [HttpPost("{id}/histories/{dataId}/complete")]
         [PermissionFilter(MenuCode.Preprocess)]
         [ProducesResponseType(typeof(HistoriesOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> Complete([FromRoute] long id, [FromRoute]long dataId,
-            [FromServices] IClusterManagementLogic clusterManagementLogic)
+        public async Task<IActionResult> Complete([FromRoute] long id, [FromRoute]long dataId)
         {
-            return await ExitAsync(id, dataId, ContainerStatus.Completed, clusterManagementLogic);
+            return await ExitAsync(id, dataId, ContainerStatus.Completed);
         }
 
         /// <summary>
         /// 前処理実行を終了させる。
         /// </summary>
-        private async Task<IActionResult> ExitAsync(long id, long dataId, ContainerStatus newStatus, IClusterManagementLogic clusterManagementLogic)
+        /// <param name="id">前処理ID</param>
+        /// <param name="dataId">入力データID</param>
+        /// <param name="newStatus">変更後のステータス</param>
+        private async Task<IActionResult> ExitAsync(long id, long dataId, ContainerStatus newStatus)
         {
-            //データの存在チェック
+            // データの存在チェック
             var preprocessHistory = await preprocessHistoryRepository.GetPreprocessIncludeDataAndPreprocessAsync(id, dataId);
             if (preprocessHistory == null)
             {
@@ -779,12 +804,12 @@ namespace Nssol.Platypus.Controllers.spa
             var status = ContainerStatus.Convert(preprocessHistory.Status);
             if (status.IsOpened() == false)
             {
-                //終了できるのは開放中のコンテナだけ（ローカルの結果を追加することがあるので、Runningとは限らない）
+                // 終了できるのは開放中のコンテナだけ（ローカルの結果を追加することがあるので、Runningとは限らない）
                 return JsonBadRequest($"Preprocessing History {preprocessHistory.Id} is not opened.");
             }
             if (status.Exist())
             {
-                //コンテナが動いていれば、停止する
+                // コンテナが動いていれば、停止する
                 await clusterManagementLogic.DeleteContainerAsync(
                     ContainerType.Preprocessing, preprocessHistory.Name, CurrentUserInfo.SelectedTenant.Name, false);
             }
@@ -807,7 +832,7 @@ namespace Nssol.Platypus.Controllers.spa
         [ProducesResponseType(typeof(PreprocessAttachedFileOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetAttachedFiles(long id, long dataId, bool withUrl)
         {
-            //データの存在チェック
+            // データの存在チェック
             var preprocessHistory = await preprocessHistoryRepository.GetPreprocessIncludeDataAndPreprocessAsync(id, dataId);
             if (preprocessHistory == null)
             {
@@ -824,41 +849,36 @@ namespace Nssol.Platypus.Controllers.spa
             return JsonOK(result);
         }
 
-
         /// <summary>
         /// 前処理履歴を削除する。生成された前処理済みデータもまとめて削除する。
         /// </summary>
         /// <param name="id">前処理ID</param>
         /// <param name="dataId">入力データID</param>
-        /// <param name="preprocessHistoryRepository">DI用</param>
-        /// <param name="preprocessLogic">DI用</param>
         [HttpDelete("{id}/histories/{dataId}")]
         [PermissionFilter(MenuCode.Preprocess)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        public async Task<IActionResult> DeleteHistory([FromRoute] long id, [FromRoute] long? dataId,
-            [FromServices] IPreprocessHistoryRepository preprocessHistoryRepository,
-            [FromServices] IPreprocessLogic preprocessLogic)
+        public async Task<IActionResult> DeleteHistory([FromRoute] long id, [FromRoute] long? dataId)
         {
             if (dataId == null)
             {
                 return JsonBadRequest("Data ID is requried.");
             }
 
-            //データの存在チェック
+            // データの存在チェック
             var preprocessHistory = await preprocessHistoryRepository.GetPreprocessIncludeDataAndPreprocessAsync(id, dataId.Value);
             if (preprocessHistory == null)
             {
                 return JsonNotFound($"Preprocessing History about Preprocess {id} to Data {dataId} is not found.");
             }
 
-            //出力データを削除できるか、確認
+            // 出力データを削除できるか、確認
             var lockedOutput = preprocessHistoryRepository.GetLockedOutput(preprocessHistory.Id);
             if(lockedOutput != null)
             {
                 return JsonConflict($"Preprocessing History about Preprocess {id} to Data {dataId} can NOT delete. The output data {lockedOutput.Id} is locked.");
             }
 
-            //前処理履歴の削除
+            // 前処理履歴の削除
             bool result = await preprocessLogic.DeleteAsync(preprocessHistory, false);
             if (result)
             {

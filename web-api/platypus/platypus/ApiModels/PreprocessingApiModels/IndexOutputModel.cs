@@ -7,6 +7,10 @@ namespace Nssol.Platypus.ApiModels.PreprocessingApiModels
     /// </summary>
     public class IndexOutputModel : Components.OutputModelBase
     {
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="preprocessing">前処理</param>
         public IndexOutputModel(Preprocess preprocessing) : base(preprocessing)
         {
             Id = preprocessing.Id;

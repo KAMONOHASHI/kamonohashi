@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using Nssol.Platypus.ApiModels.NotebookApiModels;
 using Nssol.Platypus.Controllers.Util;
 using Nssol.Platypus.DataAccess.Core;
@@ -8,7 +7,6 @@ using Nssol.Platypus.DataAccess.Repositories.Interfaces;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories;
 using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Infrastructure.Infos;
-using Nssol.Platypus.Infrastructure.Options;
 using Nssol.Platypus.Infrastructure.Types;
 using Nssol.Platypus.Logic.Interfaces;
 using Nssol.Platypus.Models;
@@ -31,12 +29,13 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly INotebookHistoryRepository notebookHistoryRepository;
         private readonly ITrainingHistoryRepository trainingHistoryRepository;
         private readonly IDataSetRepository dataSetRepository;
+        private readonly ITenantRepository tenantRepository;
+        private readonly INodeRepository nodeRepository;
         private readonly INotebookLogic notebookLogic;
         private readonly IStorageLogic storageLogic;
         private readonly IGitLogic gitLogic;
         private readonly IClusterManagementLogic clusterManagementLogic;
         private readonly IUnitOfWork unitOfWork;
-        private readonly ITenantRepository tenantRepository;
 
         /// <summary>
         /// コンストラクタ
@@ -45,23 +44,25 @@ namespace Nssol.Platypus.Controllers.spa
             INotebookHistoryRepository notebookHistoryRepository,
             ITrainingHistoryRepository trainingHistoryRepository,
             IDataSetRepository dataSetRepository,
+            ITenantRepository tenantRepository,
+            INodeRepository nodeRepository,
             INotebookLogic notebookLogic,
             IStorageLogic storageLogic,
             IGitLogic gitLogic,
             IClusterManagementLogic clusterManagementLogic,
             IUnitOfWork unitOfWork,
-            ITenantRepository tenantRepository,
             IHttpContextAccessor accessor) : base(accessor)
         {
             this.notebookHistoryRepository = notebookHistoryRepository;
             this.trainingHistoryRepository = trainingHistoryRepository;
             this.dataSetRepository = dataSetRepository;
+            this.tenantRepository = tenantRepository;
+            this.nodeRepository = nodeRepository;
             this.notebookLogic = notebookLogic;
             this.storageLogic = storageLogic;
             this.gitLogic = gitLogic;
             this.clusterManagementLogic = clusterManagementLogic;
             this.unitOfWork = unitOfWork;
-            this.tenantRepository = tenantRepository;
         }
 
         /// <summary>
@@ -418,12 +419,10 @@ namespace Nssol.Platypus.Controllers.spa
         /// 新規にノートブックコンテナを開始する
         /// </summary>
         /// <param name="model">新規実行内容</param>
-        /// <param name="nodeRepository">DI用</param>
-        /// <param name="tenantRepository">DI用</param>
         [HttpPost("run")]
         [Filters.PermissionFilter(MenuCode.Notebook)]
         [ProducesResponseType(typeof(SimpleOutputModel), (int)HttpStatusCode.Created)]
-        public async Task<IActionResult> Create([FromBody]CreateInputModel model, [FromServices]INodeRepository nodeRepository, [FromServices]ITenantRepository tenantRepository)
+        public async Task<IActionResult> Create([FromBody]CreateInputModel model)
         {
             //データの入力チェック
             if (!ModelState.IsValid)
@@ -473,21 +472,10 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             // 各リソースの超過チェック
-            var quota = tenantRepository.GetFromTenantName(CurrentUserInfo.SelectedTenant.Name);
-            // CPU
-            if (quota.LimitCpu != null && model.Cpu > quota.LimitCpu)
+            string errorMessage = clusterManagementLogic.CheckQuota(tenant, model.Cpu.Value, model.Memory.Value, model.Gpu.Value);
+            if (errorMessage != null)
             {
-                return JsonError(HttpStatusCode.InsufficientStorage, "The set CPU exceeds the upper limit.");
-            }
-            // メモリ
-            if (quota.LimitMemory != null && quota.LimitCpu != null && model.Memory > quota.LimitMemory)
-            {
-                return JsonError(HttpStatusCode.InsufficientStorage, "The set Memory exceeds the upper limit.");
-            }
-            // GPU
-            if (quota.LimitGpu != null && model.Gpu > quota.LimitGpu)
-            {
-                return JsonError(HttpStatusCode.InsufficientStorage, "The set GPU exceeds the upper limit.");
+                return JsonBadRequest(errorMessage);
             }
 
             //コンテナの実行前に、ノートブック履歴を作成する（コンテナの実行に失敗した場合、そのステータスをユーザに表示するため）
@@ -704,12 +692,10 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="id">ノートブック履歴ID</param>
         /// <param name="model">再起動内容</param>
-        /// <param name="nodeRepository">DI用</param>
-        /// <param name="tenantRepository">DI用</param>
         [HttpPost("{id}/rerun")]
         [Filters.PermissionFilter(MenuCode.Notebook)]
         [ProducesResponseType(typeof(SimpleOutputModel), (int)HttpStatusCode.Created)]
-        public async Task<IActionResult> Rerun(long? id, [FromBody]RerunInputModel model, [FromServices]INodeRepository nodeRepository, [FromServices]ITenantRepository tenantRepository)
+        public async Task<IActionResult> Rerun(long? id, [FromBody]RerunInputModel model)
         {
             // データの入力チェック
             if (!ModelState.IsValid)
@@ -808,21 +794,10 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             // 各リソースの超過チェック
-            var quota = tenantRepository.GetFromTenantName(CurrentUserInfo.SelectedTenant.Name);
-            // CPU
-            if (quota.LimitCpu != null && model.Cpu > quota.LimitCpu)
+            string errorMessage = clusterManagementLogic.CheckQuota(tenant, model.Cpu.Value, model.Memory.Value, model.Gpu.Value);
+            if (errorMessage != null)
             {
-                return JsonError(HttpStatusCode.InsufficientStorage, "The set CPU exceeds the upper limit.");
-            }
-            // メモリ
-            if (quota.LimitMemory != null && quota.LimitCpu != null && model.Memory > quota.LimitMemory)
-            {
-                return JsonError(HttpStatusCode.InsufficientStorage, "The set Memory exceeds the upper limit.");
-            }
-            // GPU
-            if (quota.LimitGpu != null && model.Gpu > quota.LimitGpu)
-            {
-                return JsonError(HttpStatusCode.InsufficientStorage, "The set GPU exceeds the upper limit.");
+                return JsonBadRequest(errorMessage);
             }
 
             // 現状のノートブック履歴IDに紐づいている親学習をすべて外す。
@@ -897,11 +872,10 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 選択中のテナントのノートブック無期限利用可否フラグを取得する
         /// </summary>
-        /// <param name="tenantRepository">DI用</param>
         [HttpGet("available-infinite-time")]
         [Filters.PermissionFilter(MenuCode.Notebook)]
         [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
-        public IActionResult GetAvailableInfiniteTime([FromServices]ITenantRepository tenantRepository)
+        public IActionResult GetAvailableInfiniteTime()
         {
             Tenant tenant = tenantRepository.Get(CurrentUserInfo.SelectedTenant.Id);
             if (tenant == null)
