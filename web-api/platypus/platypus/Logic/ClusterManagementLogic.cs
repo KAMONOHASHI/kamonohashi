@@ -1381,6 +1381,7 @@ namespace Nssol.Platypus.Logic
         /// <summary>
         /// 指定されたテナントのクォータ設定をクラスタに反映させる。
         /// </summary>
+        /// <param name="tenant">テナント</param>
         /// <returns>更新結果、更新できた場合、true</returns>
         public async Task<bool> SetQuotaAsync(Tenant tenant)
         {
@@ -1389,6 +1390,37 @@ namespace Nssol.Platypus.Logic
                 tenant.LimitCpu == null ? 0 : tenant.LimitCpu.Value,
                 tenant.LimitMemory == null ? 0 : tenant.LimitMemory.Value,
                 tenant.LimitGpu == null ? 0 : tenant.LimitGpu.Value);
+        }
+
+        /// <summary>
+        /// 実行要求の各リソース数がテナントのクォータ設定を超過しているかチェックする。
+        /// </summary>
+        /// <param name="tenant">テナント</param>
+        /// <param name="cpu">要求CPUコア数</param>
+        /// <param name="memory">要求メモリ容量（GB）</param>
+        /// <param name="gpu">要求GPU数</param>
+        /// <returns>超過の場合エラーメッセージ、問題ない場合null</returns>
+        public string CheckQuota(Tenant tenant, int cpu, int memory, int gpu)
+        {
+            // エラーメッセージ
+            string errorMessage = null;
+
+            // CPUコア数
+            if (tenant.LimitCpu != null && cpu >= tenant.LimitCpu)
+            {
+                errorMessage = "The set CPU exceeds the upper limit.";
+            }
+            // メモリ容量
+            else if (tenant.LimitMemory != null && memory >= tenant.LimitMemory)
+            {
+                errorMessage = "The set Memory exceeds the upper limit.";
+            }
+            // GPU数
+            else if (tenant.LimitGpu != null && gpu > tenant.LimitGpu)
+            {
+                errorMessage = "The set GPU exceeds the upper limit.";
+            }
+            return errorMessage;
         }
 
         #endregion
