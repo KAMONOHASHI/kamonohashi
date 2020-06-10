@@ -10,8 +10,8 @@ using Nssol.Platypus.DataAccess;
 namespace Nssol.Platypus.Migrations
 {
     [DbContext(typeof(CommonDbContext))]
-    [Migration("20200331040454_v2.0.1")]
-    partial class v201
+    [Migration("20200601074619_v2.0.2")]
+    partial class v202
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -647,6 +647,8 @@ namespace Nssol.Platypus.Migrations
 
                     b.Property<int>("Gpu");
 
+                    b.Property<bool>("LocalDataSet");
+
                     b.Property<string>("LogSummary");
 
                     b.Property<string>("Memo");
@@ -798,14 +800,14 @@ namespace Nssol.Platypus.Migrations
 
                     b.Property<long?>("DisplayId");
 
-                    b.Property<string>("EntryPoint");
-
                     b.Property<int?>("ExpiresIn")
                         .IsRequired();
 
                     b.Property<bool>("Favorite");
 
                     b.Property<int>("Gpu");
+
+                    b.Property<bool>("LocalDataSet");
 
                     b.Property<string>("Memo");
 
@@ -1047,8 +1049,6 @@ namespace Nssol.Platypus.Migrations
 
                     b.Property<long>("TenantId");
 
-                    b.Property<int>("Type");
-
                     b.HasKey("Id");
 
                     b.HasIndex("TenantId");
@@ -1134,6 +1134,8 @@ namespace Nssol.Platypus.Migrations
                     b.Property<bool>("Favorite");
 
                     b.Property<int>("Gpu");
+
+                    b.Property<bool>("LocalDataSet");
 
                     b.Property<string>("LogSummary");
 
@@ -1839,7 +1841,7 @@ namespace Nssol.Platypus.Migrations
             modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.TrainingHistoryTagMap", b =>
                 {
                     b.HasOne("Nssol.Platypus.Models.TenantModels.Tag", "Tag")
-                        .WithMany("TrainingHistoryMaps")
+                        .WithMany()
                         .HasForeignKey("TagId")
                         .OnDelete(DeleteBehavior.Cascade);
 

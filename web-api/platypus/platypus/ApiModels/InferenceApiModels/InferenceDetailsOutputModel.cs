@@ -58,6 +58,7 @@ namespace Nssol.Platypus.ApiModels.InferenceApiModels
             Partition = history.Partition;
 
             Zip = history.Zip;
+            LocalDataSet = history.LocalDataSet;
 
             foreach (var option in history.GetOptionDic())
             {
@@ -120,7 +121,7 @@ namespace Nssol.Platypus.ApiModels.InferenceApiModels
         public int Cpu { get; set; }
 
         /// <summary>
-        /// メモリ容量（GiB）
+        /// メモリ容量（GB）
         /// </summary>
         public int Memory { get; set; }
 
@@ -154,6 +155,12 @@ namespace Nssol.Platypus.ApiModels.InferenceApiModels
         /// true：zip圧縮する　false：zip圧縮しない
         /// </summary>
         public bool Zip { get; set; }
+
+        /// <summary>
+        /// データセットをローカルコピーするか否か。
+        /// true：ローカルコピーする　false：ローカルコピーしない(シンボリックリンクを作成する)
+        /// </summary>
+        public bool LocalDataSet { get; set; }
     }
 
 }

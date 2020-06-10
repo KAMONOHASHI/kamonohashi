@@ -23,11 +23,13 @@ def training():
 @click.option('--id', help='id')
 @click.option('--name', help='name')
 @click.option('--started-at', help='started at')
+@click.option('--started-by', help='started by')
 @click.option('--data-set', help='data set')
 @click.option('--memo', help='memo')
 @click.option('--status', help='status')
 @click.option('--entry-point', help='entry point')
-def list_training(count, id, name, started_at, data_set, memo, status, entry_point):
+@click.option('--tag', multiple=True, help='tag  [multiple]')
+def list_training(count, id, name, started_at, started_by, data_set, memo, status, entry_point, tag):
     """List training filtered by conditions"""
     api = rest.TrainingApi(configuration.get_api_client())
     per_page = 1000
@@ -35,10 +37,12 @@ def list_training(count, id, name, started_at, data_set, memo, status, entry_poi
         'id': id,
         'name': name,
         'started_at': started_at,
+        'started_by': started_by,
         'data_set': data_set,
         'memo': memo,
         'status': status,
         'entry_point': entry_point,
+        'tag': tag,
     }
     args = {key: value for key, value in command_args.items() if value is not None}
     if count <= per_page:
@@ -52,8 +56,8 @@ def list_training(count, id, name, started_at, data_set, memo, status, entry_poi
             if len(page_result) < per_page:
                 break
 
-    pprint.pp_table(['id', 'name', 'started_at', 'dataset', 'memo', 'status'],
-                    [[x.id, x.name, x.created_at, x.data_set.name, x.memo, x.status] for x in result[:count]])
+    pprint.pp_table(['id', 'name', 'started_at', 'started_by', 'dataset', 'memo', 'tags', 'status'],
+                    [[x.id, x.name, x.created_at, x.created_by, x.data_set.name, x.memo, x.tags, x.status] for x in result[:count]])
 
 
 @training.command()
@@ -91,14 +95,17 @@ def get(id):
 @click.option('-p', '--partition',
               help='A cluster partition. Partition is an arbitrary string but typically is a type of GPU or cluster.')
 @click.option('-m', '--memo', help='A memo of this training.')
+@click.option('-t', '--tags', multiple=True, help='Attributes to the training  [multiple]')
 @click.option('-zip/-unzip', '--zip/--un-zip', default=True, show_default=True, help='Do you want to zip the training results')
+@click.option('-ld', '--local-data-set', is_flag=True, default=False, show_default=False, 
+              help='Whether to create the local data set or not. If this option is not set, create the symbolic links of the data set.')
 @click.option('-pid', '--parent-ids', multiple=True,
               help='A parent id of this training. Currently, the system only makes a relationship to the parent training but do nothing.  [multiple]')
 @click.option('-o', '--options', type=(str, str), multiple=True,
               help='Options of this training. The options are stored in the environment variables  [multiple]')
 def create(name, registry_image, registry_tag, data_set_id, entry_point,
            git_owner, git_repository, git_branch, git_commit, cpu, memory, gpu, partition, memo,
-           zip, parent_ids, options, registry_id, git_id):
+           tags, zip, local_data_set, parent_ids, options, registry_id, git_id):
     """Submit new training"""
     api = rest.TrainingApi(configuration.get_api_client())
     container_image = rest.ComponentsContainerImageInputModel(image=registry_image, registry_id=registry_id, tag=registry_tag)
@@ -106,7 +113,7 @@ def create(name, registry_image, registry_tag, data_set_id, entry_point,
     option_dict = {key: value for key, value in options} if options else None
     model = rest.TrainingApiModelsCreateInputModel(
         container_image=container_image, cpu=cpu, data_set_id=data_set_id, entry_point=entry_point, git_model=git_model,
-        gpu=gpu, memo=memo, memory=memory, name=name, options=option_dict, parent_ids=list(parent_ids), partition=partition, zip=zip)
+        gpu=gpu, memo=memo, memory=memory, name=name, options=option_dict, parent_ids=list(parent_ids), partition=partition, tags=list(tags), zip=zip, local_data_set=local_data_set)
     result = api.create_training(model=model)
     print('created', result.id)
 
@@ -125,10 +132,11 @@ def delete(id):
 @click.option('-n', '--name', help='A name to update')
 @click.option('-m', '--memo', help='A memo to update')
 @click.option('-fav/-unfav', '--favorite/--un-favorite', default=None, help='A favorite to update')
-def update(id, name, memo, favorite):
+@click.option('-t', '--tags', multiple=True, help='Attributes to the training  [multiple]')
+def update(id, name, memo, favorite, tags):
     """Update training"""
     api = rest.TrainingApi(configuration.get_api_client())
-    model = rest.TrainingApiModelsEditInputModel(name=name, memo=memo, favorite=favorite)
+    model = rest.TrainingApiModelsEditInputModel(name=name, memo=memo, favorite=favorite, tags=list(tags))
     result = api.update_training(id, model=model)
     print('updated', result.id)
 

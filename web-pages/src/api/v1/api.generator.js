@@ -1406,7 +1406,7 @@ export const ApiV1DataByIdFilesByFileIdDeleteURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
- * 選択中のテナントに登録されているタグを表示する
+ * 選択中のテナントに登録されているデータ管理で使用できるタグを表示する
  * request: ApiV1DataDatatagsGet
  * url: ApiV1DataDatatagsGetURL
  * method: ApiV1DataDatatagsGet_TYPE
@@ -1583,7 +1583,7 @@ export const ApiV1DatasetsGetURL = function(parameters = {}) {
  * url: ApiV1DatasetsPostURL
  * method: ApiV1DatasetsPost_TYPE
  * raw_url: ApiV1DatasetsPost_RAW_URL
- * @param model - 
+ * @param model - 新規作成内容
  */
 export const ApiV1DatasetsPost = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -1720,7 +1720,7 @@ export const ApiV1DatasetsByIdPutURL = function(parameters = {}) {
  * url: ApiV1DatasetsByIdDeleteURL
  * method: ApiV1DatasetsByIdDelete_TYPE
  * raw_url: ApiV1DatasetsByIdDelete_RAW_URL
- * @param id - 
+ * @param id - データセットID
  */
 export const ApiV1DatasetsByIdDelete = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -1852,6 +1852,51 @@ export const ApiV1DatasetsByIdFilesGetURL = function(parameters = {}) {
   if (parameters['withUrl'] !== undefined) {
     queryParameters['withUrl'] = parameters['withUrl']
   }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 指定したIDのデータセットに含まれるデータとNFS上のデータ名のペア情報を取得する。
+ * request: ApiV1DatasetsByIdPathpairsGet
+ * url: ApiV1DatasetsByIdPathpairsGetURL
+ * method: ApiV1DatasetsByIdPathpairsGet_TYPE
+ * raw_url: ApiV1DatasetsByIdPathpairsGet_RAW_URL
+ * @param id - データセットID
+ */
+export const ApiV1DatasetsByIdPathpairsGet = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v1/datasets/{id}/pathpairs'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV1DatasetsByIdPathpairsGet_RAW_URL = function() {
+  return '/api/v1/datasets/{id}/pathpairs'
+}
+export const ApiV1DatasetsByIdPathpairsGet_TYPE = function() {
+  return 'get'
+}
+export const ApiV1DatasetsByIdPathpairsGetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v1/datasets/{id}/pathpairs'
+  path = path.replace('{id}', `${parameters['id']}`)
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]
@@ -2365,6 +2410,69 @@ export const ApiV1GitByGitIdReposByOwnerByRepositoryNameCommitsGetURL = function
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * 指定したコミットIDのコミット詳細を取得する
+ * request: ApiV1GitByGitIdReposByOwnerByRepositoryNameCommitsByCommitIdGet
+ * url: ApiV1GitByGitIdReposByOwnerByRepositoryNameCommitsByCommitIdGetURL
+ * method: ApiV1GitByGitIdReposByOwnerByRepositoryNameCommitsByCommitIdGet_TYPE
+ * raw_url: ApiV1GitByGitIdReposByOwnerByRepositoryNameCommitsByCommitIdGet_RAW_URL
+ * @param gitId - GitId
+ * @param owner - オーナー名
+ * @param repositoryName - リポジトリ名
+ * @param commitId - コミットID
+ */
+export const ApiV1GitByGitIdReposByOwnerByRepositoryNameCommitsByCommitIdGet = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v1/git/{gitId}/repos/{owner}/{repositoryName}/commits/{commitId}'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{gitId}', `${parameters['gitId']}`)
+  if (parameters['gitId'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: gitId'))
+  }
+  path = path.replace('{owner}', `${parameters['owner']}`)
+  if (parameters['owner'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: owner'))
+  }
+  path = path.replace('{repositoryName}', `${parameters['repositoryName']}`)
+  if (parameters['repositoryName'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: repositoryName'))
+  }
+  path = path.replace('{commitId}', `${parameters['commitId']}`)
+  if (parameters['commitId'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: commitId'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV1GitByGitIdReposByOwnerByRepositoryNameCommitsByCommitIdGet_RAW_URL = function() {
+  return '/api/v1/git/{gitId}/repos/{owner}/{repositoryName}/commits/{commitId}'
+}
+export const ApiV1GitByGitIdReposByOwnerByRepositoryNameCommitsByCommitIdGet_TYPE = function() {
+  return 'get'
+}
+export const ApiV1GitByGitIdReposByOwnerByRepositoryNameCommitsByCommitIdGetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v1/git/{gitId}/repos/{owner}/{repositoryName}/commits/{commitId}'
+  path = path.replace('{gitId}', `${parameters['gitId']}`)
+  path = path.replace('{owner}', `${parameters['owner']}`)
+  path = path.replace('{repositoryName}', `${parameters['repositoryName']}`)
+  path = path.replace('{commitId}', `${parameters['commitId']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
 * 階層化されたURLを吸収するためのダミーAPI。
 製品版のSwaggerからは削除する。
 * request: ApiV1GitByGitIdReposBySegmentsGet
@@ -2477,6 +2585,7 @@ e.g.（比較文字列は半角でOK）
 "2018/01/01" → 2018/01/01 00:00:00 以降 ～ 2018/01/02 00:00:00 より前
 "＞2018/01/01" → 2018/01/01 00:00:00 以降
 "＜2018/01/01" → 2018/01/01 00:00:00 以前
+     * @param startedBy - 実行者
      * @param dataSet - データセット名
      * @param memo - メモ
      * @param status - ステータス
@@ -2502,6 +2611,9 @@ export const ApiV1InferencesGet = function(parameters = {}) {
   }
   if (parameters['startedAt'] !== undefined) {
     queryParameters['StartedAt'] = parameters['startedAt']
+  }
+  if (parameters['startedBy'] !== undefined) {
+    queryParameters['StartedBy'] = parameters['startedBy']
   }
   if (parameters['dataSet'] !== undefined) {
     queryParameters['DataSet'] = parameters['dataSet']
@@ -2555,6 +2667,9 @@ export const ApiV1InferencesGetURL = function(parameters = {}) {
   }
   if (parameters['startedAt'] !== undefined) {
     queryParameters['StartedAt'] = parameters['startedAt']
+  }
+  if (parameters['startedBy'] !== undefined) {
+    queryParameters['StartedBy'] = parameters['startedBy']
   }
   if (parameters['dataSet'] !== undefined) {
     queryParameters['DataSet'] = parameters['dataSet']
@@ -7418,10 +7533,12 @@ e.g.（比較文字列は半角でOK）
 "2018/01/01" → 2018/01/01 00:00:00 以降 ～ 2018/01/02 00:00:00 より前
 "＞2018/01/01" → 2018/01/01 00:00:00 以降
 "＜2018/01/01" → 2018/01/01 00:00:00 以前
+     * @param startedBy - 実行者
      * @param dataSet - データセット名
      * @param memo - メモ
      * @param status - ステータス
      * @param entryPoint - 実行コマンド
+     * @param tag - タグ
      * @param perPage - 表示件数。指定がない場合は上限(1000件)。
      * @param page - ページ番号。デフォルトは1。
      * @param withTotal - 合計件数をレスポンスヘッダ(X-Total-Count)に含めるか。デフォルトはfalse。
@@ -7448,6 +7565,9 @@ export const ApiV1TrainingGet = function(parameters = {}) {
   if (parameters['startedAt'] !== undefined) {
     queryParameters['StartedAt'] = parameters['startedAt']
   }
+  if (parameters['startedBy'] !== undefined) {
+    queryParameters['StartedBy'] = parameters['startedBy']
+  }
   if (parameters['dataSet'] !== undefined) {
     queryParameters['DataSet'] = parameters['dataSet']
   }
@@ -7459,6 +7579,9 @@ export const ApiV1TrainingGet = function(parameters = {}) {
   }
   if (parameters['entryPoint'] !== undefined) {
     queryParameters['EntryPoint'] = parameters['entryPoint']
+  }
+  if (parameters['tag'] !== undefined) {
+    queryParameters['tag'] = parameters['tag']
   }
   if (parameters['perPage'] !== undefined) {
     queryParameters['perPage'] = parameters['perPage']
@@ -7501,6 +7624,9 @@ export const ApiV1TrainingGetURL = function(parameters = {}) {
   if (parameters['startedAt'] !== undefined) {
     queryParameters['StartedAt'] = parameters['startedAt']
   }
+  if (parameters['startedBy'] !== undefined) {
+    queryParameters['StartedBy'] = parameters['startedBy']
+  }
   if (parameters['dataSet'] !== undefined) {
     queryParameters['DataSet'] = parameters['dataSet']
   }
@@ -7512,6 +7638,9 @@ export const ApiV1TrainingGetURL = function(parameters = {}) {
   }
   if (parameters['entryPoint'] !== undefined) {
     queryParameters['EntryPoint'] = parameters['entryPoint']
+  }
+  if (parameters['tag'] !== undefined) {
+    queryParameters['tag'] = parameters['tag']
   }
   if (parameters['perPage'] !== undefined) {
     queryParameters['perPage'] = parameters['perPage']
@@ -8282,6 +8411,45 @@ export const ApiV1TrainingByIdCompletePostURL = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v1/training/{id}/complete'
   path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 選択中のテナントに登録されている学習管理で使用するタグを表示する
+ * request: ApiV1TrainingTagsGet
+ * url: ApiV1TrainingTagsGetURL
+ * method: ApiV1TrainingTagsGet_TYPE
+ * raw_url: ApiV1TrainingTagsGet_RAW_URL
+ */
+export const ApiV1TrainingTagsGet = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v1/training/tags'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV1TrainingTagsGet_RAW_URL = function() {
+  return '/api/v1/training/tags'
+}
+export const ApiV1TrainingTagsGet_TYPE = function() {
+  return 'get'
+}
+export const ApiV1TrainingTagsGetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v1/training/tags'
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]

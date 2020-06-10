@@ -21,11 +21,12 @@ namespace Nssol.Platypus.Services
             Logic.Interfaces.ICommonDiLogic commonDiLogic) : base(commonDiLogic)
         {
         }
-        
+
         /// <summary>
         /// リポジトリ一覧を取得する。
         /// 特に範囲は限定せず、<see cref="Git.Token"/>の権限で参照可能なすべてのリポジトリが対象となる。
         /// </summary>
+        /// <param name="gitMap">Git情報</param>
         /// <returns>リポジトリ一覧</returns>
         public async virtual Task<Result<IEnumerable<RepositoryModel>, string>> GetAllRepositoriesAsync(UserTenantGitMap gitMap)
         {
@@ -57,6 +58,10 @@ namespace Nssol.Platypus.Services
         /// なので、この変換を行うためのAPI呼び出しが必要。
         /// ちなみに、逆にWebUIを参照する際はオーナー名が必要という仕様。
         /// </remarks>
+        /// <param name="gitMap">Git情報</param>
+        /// <param name="repositoryName">リポジトリ名</param>
+        /// <param name="owner">オーナー名</param>
+        /// <returns>プロジェクトID</returns>
         protected async virtual Task<Result<string, string>> GetProjectIdAsync(UserTenantGitMap gitMap, string repositoryName, string owner)
         {
             //検索上限が100件だが、リポジトリ名でフィルタ（部分一致）をかけて検索するので、そこまでの件数にはならない想定
@@ -222,10 +227,57 @@ namespace Nssol.Platypus.Services
         }
 
         /// <summary>
+        /// 指定したコミットIDのコミット詳細を取得する。
+        /// 対象リポジトリが存在しない場合はnullが返る。
+        /// </summary>
+        /// <param name="gitMap">Git情報</param>
+        /// <param name="repositoryName">リポジトリ名</param>
+        /// <param name="owner">オーナー名</param>
+        /// <param name="commitId">コミットID</param>
+        /// <returns>コミット詳細</returns>
+        public async Task<Result<CommitModel, string>> GetCommitByIdAsync(UserTenantGitMap gitMap, string repositoryName, string owner, string commitId)
+        {
+            // API呼び出しパラメータ作成
+            var projectId = await GetProjectIdAsync(gitMap, repositoryName, owner);
+            if (projectId.IsSuccess == false)
+            {
+                return Result<CommitModel, string>.CreateErrorResult(projectId.Error);
+            }
+
+            RequestParam param = CreateRequestParam(gitMap);
+            param.ApiPath = $"/api/v4/projects/{projectId.Value}/repository/commits/{commitId}";
+
+            // API 呼び出し
+            Result<string, string> response = await this.SendGetRequestAsync(param);
+
+            if (response.IsSuccess)
+            {
+                var result = JsonConvert.DeserializeObject<GetCommitModel>(response.Value);
+                var commit = new CommitModel()
+                {
+                    CommitId = result.id,
+                    Comment = result.message,
+                    CommitAt = result.committed_date.ToLocalFormatedString(),
+                    CommitterName = result.committer_name
+                };
+                return Result<CommitModel, string>.CreateResult(commit);
+            }
+            else
+            {
+                LogError(response.Error);
+                return Result<CommitModel, string>.CreateErrorResult(response.Error);
+            }
+        }
+
+        /// <summary>
         /// GitLabは一度に100件しか結果を返してくれない。
         /// なので必要な数だけページングしながら結果を書き集めてくる。
         /// 引数の<paramref name="queryParams"/>は中で都度書き換えられるので注意。
         /// </summary>
+        /// <param name="apiPath">APIパス</param>
+        /// <param name="gitMap">Git情報</param>
+        /// <param name="queryParams">クエリパラメータ</param>
+        /// <returns>取得一覧</returns>
         private async Task<Result<List<T>, string>> SendGetFullPageRequestsAsync<T>(string apiPath, UserTenantGitMap gitMap, Dictionary<string, string> queryParams)
         {
             RequestParam param = CreateRequestParam(gitMap);
@@ -274,6 +326,8 @@ namespace Nssol.Platypus.Services
         /// <summary>
         /// 共通で使うパラメータを生成
         /// </summary>
+        /// <param name="gitMap">Git情報</param>
+        /// <returns>リクエストパラメータ</returns>
         protected RequestParam CreateRequestParam(UserTenantGitMap gitMap)
         {
             return new RequestParam()

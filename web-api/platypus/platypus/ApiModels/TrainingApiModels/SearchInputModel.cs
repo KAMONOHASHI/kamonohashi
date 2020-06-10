@@ -1,4 +1,7 @@
-﻿namespace Nssol.Platypus.ApiModels.TrainingApiModels
+﻿using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+
+namespace Nssol.Platypus.ApiModels.TrainingApiModels
 {
     /// <summary>
     /// 学習履歴検索の入力モデル。
@@ -12,7 +15,7 @@
         /// 比較文字列＋数値の形式。
         /// </summary>
         public string Id { get; set; }
-        
+
         /// <summary>
         /// 名前
         /// </summary>
@@ -38,17 +41,22 @@
         /// "＜2018/01/01" → 2018/01/01 00:00:00 以前
         /// </summary>
         public string StartedAt { get; set; }
+
+        /// <summary>
+        /// 実行者
+        /// </summary>
+        public string StartedBy { get; set; }
         
         /// <summary>
         /// データセット名
         /// </summary>
         public string DataSet { get; set; }
-        
+
         /// <summary>
         /// メモ
         /// </summary>
         public string Memo { get; set; }
-        
+
         /// <summary>
         /// ステータス
         /// </summary>
@@ -58,5 +66,11 @@
         /// 実行コマンド
         /// </summary>
         public string EntryPoint { get; set; }
+
+        /// <summary>
+        /// タグ
+        /// </summary>
+        [FromQuery(Name = "tag")]
+        public IEnumerable<string> Tags { get; set; }
     }
 }

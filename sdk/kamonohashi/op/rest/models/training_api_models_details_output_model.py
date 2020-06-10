@@ -47,6 +47,7 @@ class TrainingApiModelsDetailsOutputModel(object):
         'gpu': 'int',
         'id': 'int',
         'key': 'str',
+        'local_data_set': 'bool',
         'log_summary': 'str',
         'memo': 'str',
         'memory': 'int',
@@ -63,6 +64,7 @@ class TrainingApiModelsDetailsOutputModel(object):
         'started_at': 'str',
         'status': 'str',
         'status_type': 'str',
+        'tags': 'list[str]',
         'waiting_time': 'str',
         'zip': 'bool'
     }
@@ -84,6 +86,7 @@ class TrainingApiModelsDetailsOutputModel(object):
         'gpu': 'gpu',
         'id': 'id',
         'key': 'key',
+        'local_data_set': 'localDataSet',
         'log_summary': 'logSummary',
         'memo': 'memo',
         'memory': 'memory',
@@ -100,11 +103,12 @@ class TrainingApiModelsDetailsOutputModel(object):
         'started_at': 'startedAt',
         'status': 'status',
         'status_type': 'statusType',
+        'tags': 'tags',
         'waiting_time': 'waitingTime',
         'zip': 'zip'
     }
 
-    def __init__(self, completed_at=None, condition_note=None, container_image=None, cpu=None, created_at=None, created_by=None, data_set=None, display_id=None, entry_point=None, execution_time=None, favorite=None, full_name=None, git_model=None, gpu=None, id=None, key=None, log_summary=None, memo=None, memory=None, modified_at=None, modified_by=None, name=None, node=None, node_ports=None, options=None, parent_full_name_list=None, parents=None, partition=None, ports=None, started_at=None, status=None, status_type=None, waiting_time=None, zip=None):  # noqa: E501
+    def __init__(self, completed_at=None, condition_note=None, container_image=None, cpu=None, created_at=None, created_by=None, data_set=None, display_id=None, entry_point=None, execution_time=None, favorite=None, full_name=None, git_model=None, gpu=None, id=None, key=None, local_data_set=None, log_summary=None, memo=None, memory=None, modified_at=None, modified_by=None, name=None, node=None, node_ports=None, options=None, parent_full_name_list=None, parents=None, partition=None, ports=None, started_at=None, status=None, status_type=None, tags=None, waiting_time=None, zip=None):  # noqa: E501
         """TrainingApiModelsDetailsOutputModel - a model defined in Swagger"""  # noqa: E501
 
         self._completed_at = None
@@ -123,6 +127,7 @@ class TrainingApiModelsDetailsOutputModel(object):
         self._gpu = None
         self._id = None
         self._key = None
+        self._local_data_set = None
         self._log_summary = None
         self._memo = None
         self._memory = None
@@ -139,6 +144,7 @@ class TrainingApiModelsDetailsOutputModel(object):
         self._started_at = None
         self._status = None
         self._status_type = None
+        self._tags = None
         self._waiting_time = None
         self._zip = None
         self.discriminator = None
@@ -175,6 +181,8 @@ class TrainingApiModelsDetailsOutputModel(object):
             self.id = id
         if key is not None:
             self.key = key
+        if local_data_set is not None:
+            self.local_data_set = local_data_set
         if log_summary is not None:
             self.log_summary = log_summary
         if memo is not None:
@@ -207,6 +215,8 @@ class TrainingApiModelsDetailsOutputModel(object):
             self.status = status
         if status_type is not None:
             self.status_type = status_type
+        if tags is not None:
+            self.tags = tags
         if waiting_time is not None:
             self.waiting_time = waiting_time
         if zip is not None:
@@ -549,6 +559,27 @@ class TrainingApiModelsDetailsOutputModel(object):
         self._key = key
 
     @property
+    def local_data_set(self):
+        """Gets the local_data_set of this TrainingApiModelsDetailsOutputModel.  # noqa: E501
+
+
+        :return: The local_data_set of this TrainingApiModelsDetailsOutputModel.  # noqa: E501
+        :rtype: bool
+        """
+        return self._local_data_set
+
+    @local_data_set.setter
+    def local_data_set(self, local_data_set):
+        """Sets the local_data_set of this TrainingApiModelsDetailsOutputModel.
+
+
+        :param local_data_set: The local_data_set of this TrainingApiModelsDetailsOutputModel.  # noqa: E501
+        :type: bool
+        """
+
+        self._local_data_set = local_data_set
+
+    @property
     def log_summary(self):
         """Gets the log_summary of this TrainingApiModelsDetailsOutputModel.  # noqa: E501
 
@@ -883,6 +914,27 @@ class TrainingApiModelsDetailsOutputModel(object):
         """
 
         self._status_type = status_type
+
+    @property
+    def tags(self):
+        """Gets the tags of this TrainingApiModelsDetailsOutputModel.  # noqa: E501
+
+
+        :return: The tags of this TrainingApiModelsDetailsOutputModel.  # noqa: E501
+        :rtype: list[str]
+        """
+        return self._tags
+
+    @tags.setter
+    def tags(self, tags):
+        """Sets the tags of this TrainingApiModelsDetailsOutputModel.
+
+
+        :param tags: The tags of this TrainingApiModelsDetailsOutputModel.  # noqa: E501
+        :type: list[str]
+        """
+
+        self._tags = tags
 
     @property
     def waiting_time(self):

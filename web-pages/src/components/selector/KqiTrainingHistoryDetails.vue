@@ -16,6 +16,19 @@
       label="メモ"
       :value="training ? training.memo : ''"
     />
+    <el-form-item label="タグ">
+      <br clear="all" />
+      <span style="display: block; line-height: normal;">
+        <el-tag
+          v-for="(tag, i) in training.tags"
+          :key="i"
+          size="mini"
+          style="margin-right: 3px;"
+        >
+          {{ tag }}
+        </el-tag>
+      </span>
+    </el-form-item>
   </div>
 </template>
 
@@ -40,4 +53,11 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.el-tag--mini {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+</style>

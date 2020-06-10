@@ -29,6 +29,11 @@
         public string StartedAt { get; set; }
 
         /// <summary>
+        /// 実行者
+        /// </summary>
+        public string StartedBy { get; set; }
+
+        /// <summary>
         /// データセット名
         /// </summary>
         public string DataSet { get; set; }
