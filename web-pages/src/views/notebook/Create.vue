@@ -710,7 +710,7 @@ export default {
         }
         // コピー時ブランチを切り替えずに実行
         // パラメータに格納する際の形を統一するため整形を行う
-        if (typeof this.form.gitModel.branch.branchName == 'undefined') {
+        if (typeof this.form.gitModel.branch.branchName === 'undefined') {
           let branch = { branchName: this.form.gitModel.branch }
           this.form.gitModel.branch = branch
         }
