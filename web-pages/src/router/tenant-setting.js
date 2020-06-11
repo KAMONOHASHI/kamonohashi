@@ -37,6 +37,10 @@ export default [
     ],
   },
   {
+    path: '/manage/menu',
+    component: ManageMenuIndex,
+  },
+  {
     path: '/manage/resource',
     component: ManageResourceIndex,
     children: [
@@ -63,9 +67,5 @@ export default [
         ],
       },
     ],
-  },
-  {
-    path: '/manage/menu',
-    component: ManageMenuIndex,
   },
 ]
