@@ -33,6 +33,7 @@ namespace Nssol.Platypus.ApiModels.PreprocessingApiModels
         /// 前処理ソースコードGit情報
         /// </summary>
         public GitCommitNullableInputModel GitModel { get; set; }
+
         /// <summary>
         /// メモ
         /// </summary>

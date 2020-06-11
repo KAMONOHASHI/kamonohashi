@@ -172,8 +172,19 @@ namespace Nssol.Platypus.Logic.Interfaces
         /// <summary>
         /// 指定されたテナントのクォータ設定をクラスタに反映させる。
         /// </summary>
+        /// <param name="tenant">テナント</param>
         /// <returns>更新結果、更新できた場合、true</returns>
         Task<bool> SetQuotaAsync(Tenant tenant);
+
+        /// <summary>
+        /// 実行要求リソース数がテナントのクォータ設定を超過しているかチェックする。
+        /// </summary>
+        /// <param name="tenant">テナント</param>
+        /// <param name="cpu">実行要求CPU</param>
+        /// <param name="memory">実行要求メモリ</param>
+        /// <param name="gpu">実行要求GPU</param>
+        /// <returns>超過の場合エラーメッセージ、問題ない場合null</returns>
+        string CheckQuota(Tenant tenant, int cpu, int memory, int gpu);
         #endregion
 
         #region 権限管理
