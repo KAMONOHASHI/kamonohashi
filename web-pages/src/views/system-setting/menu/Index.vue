@@ -46,6 +46,9 @@
                   :disabled="r.isSystemRole"
                 >
                   {{ r.displayName }}
+                  <span v-if="r.tenantId">
+                    {{ r.tenantName }}
+                  </span>
                 </el-checkbox-button>
               </el-checkbox-group>
             </div>
