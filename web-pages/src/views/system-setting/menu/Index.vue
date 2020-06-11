@@ -45,10 +45,14 @@
                   :label="r.id"
                   :disabled="r.isSystemRole"
                 >
-                  {{ r.displayName }}
-                  <span v-if="r.tenantId">
-                    {{ r.tenantName }}
-                  </span>
+                  <div
+                    style="height: 30px; display: table-cell; vertical-align: middle;"
+                  >
+                    {{ r.displayName }}
+                    <span v-if="r.tenantId" class="css-br">
+                      {{ r.tenantName }}
+                    </span>
+                  </div>
                 </el-checkbox-button>
               </el-checkbox-group>
             </div>
@@ -180,5 +184,10 @@ export default {
 .right-buttom-button {
   text-align: right;
   padding-top: 10px;
+}
+
+.css-br::before {
+  content: '\A';
+  white-space: pre;
 }
 </style>
