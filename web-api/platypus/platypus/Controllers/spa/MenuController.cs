@@ -9,7 +9,6 @@ using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Infrastructure.Infos;
 using Nssol.Platypus.Infrastructure.Types;
 using Nssol.Platypus.Logic.Interfaces;
-using Nssol.Platypus.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,21 +17,30 @@ using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Controllers.spa
 {
+    /// <summary>
+    /// メニューアクセス管理を扱うためのAPI集
+    /// </summary>
     [Route("api/v1/menu")]
     public class MenuController : PlatypusApiControllerBase
     {
-        private readonly IMenuLogic menuLogic;
+        private readonly IMenuRepository menuRepository;
         private readonly IRoleRepository roleRepository;
+        private readonly IMenuLogic menuLogic;
         private readonly IUnitOfWork unitOfWork;
 
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
         public MenuController(
-            IMenuLogic menuLogic,
+            IMenuRepository menuRepository,
             IRoleRepository roleRepository,
+            IMenuLogic menuLogic,
             IUnitOfWork unitOfWork,
             IHttpContextAccessor accessor) : base(accessor)
         {
-            this.menuLogic = menuLogic;
+            this.menuRepository = menuRepository;
             this.roleRepository = roleRepository;
+            this.menuLogic = menuLogic;
             this.unitOfWork = unitOfWork;
         }
 
@@ -49,7 +57,7 @@ namespace Nssol.Platypus.Controllers.spa
 
             var results = new List<MenuForTenantOutputModel>();
 
-            //表示情報をロジック層から取得。ここではAPIモデルへの詰替えだけ。
+            // 表示情報をロジック層から取得。ここではAPIモデルへの詰替えだけ。
             var dict = menuLogic.GetRoleIdsForTenantDictionary(tenantId);
             foreach (var pair in dict)
             {
@@ -75,10 +83,12 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// テナント向けの、メニューとロールのマッピング情報を更新
         /// </summary>
+        /// <param name="id">メニューID</param>
+        /// <param name="roleIds">ロールIDリスト</param>
         [HttpPut("/api/v1/tenant/menus/{id}")]
         [PermissionFilter(MenuCode.TenantMenu)]
         [ProducesResponseType(typeof(MenuForTenantOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> EditMenuRoleMapForTenant([FromRoute] MenuCode? id, [FromBody] IEnumerable<long> roleIds, [FromServices] IMenuRepository menuRepository)
+        public async Task<IActionResult> EditMenuRoleMapForTenant([FromRoute] MenuCode? id, [FromBody] IEnumerable<long> roleIds)
         {
             if (id == null)
             {
@@ -91,8 +101,8 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonNotFound($"Menu Id {id.Value} is not found.");
             }
 
-            //まずは関係するロールマップをすべて削除
-            menuRepository.DeleteMenuMap(menu);
+            // まずは関係するロールマップをすべて削除
+            await menuRepository.DeleteMenuMapAsync(menu, CurrentUserInfo.SelectedTenant.Id);
 
             foreach (var roleId in roleIds)
             {
@@ -104,21 +114,27 @@ namespace Nssol.Platypus.Controllers.spa
 
                 if (role.IsSystemRole)
                 {
-                    //システムメニューはテナント側で紐づけできない。警告出して404扱い。
+                    // システムメニューはテナント側で紐づけできない。警告出して404扱い。
                     LogWarning($"Role {role.Name} is not allowed to edit by the current user.");
                     return JsonNotFound($"Role Id {roleId} is not found.");
                 }
                 else
                 {
+                    if (role.TenantId != null)
+                    {
+                        // テナント共通ロールの編集は許可しない。
+                        LogWarning($"Role {role.Name} is not allowed to edit by the current user.");
+                        return JsonBadRequest($"Role {role.Name} is a common tenant role and not allowed to edit.");
+                    }
                     if (role.TenantId != null && role.TenantId != CurrentUserInfo.SelectedTenant.Id)
                     {
-                        //別のテナントのカスタムロールを編集しようとしている。警告出して404扱い。
+                        // 別のテナントのカスタムロールを編集しようとしている。警告出して404扱い。
                         LogWarning($"Role {role.Name} is not allowed to edit by the current user.");
                         return JsonNotFound($"Role Id {roleId} is not found.");
                     }
                     if (menu.MenuType != MenuType.Tenant)
                     {
-                        //テナントメニュー以外は紐づけできない（Public/Internal/Unknownは紐づける必要がないから）
+                        // テナントメニュー以外は紐づけできない（Public/Internal/Unknownは紐づける必要がないから）
                         JsonConflict($"A tenant menu is only attached to a tenant role.");
                     }
                     menuRepository.AttachRole(menu, role);
@@ -126,9 +142,9 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             unitOfWork.Commit();
-            roleRepository.Refresh(); //キャッシュを破棄
+            roleRepository.Refresh(); // キャッシュを破棄
 
-            //表示情報を取得
+            // 表示情報を取得
             var result = new MenuForTenantOutputModel()
             {
                 Id = menu.Code,
@@ -172,7 +188,7 @@ namespace Nssol.Platypus.Controllers.spa
         {
             var results = new List<MenuForAdminOutputModel>();
 
-            //表示情報をロジック層から取得。ここではAPIモデルへの詰替えだけ。
+            // 表示情報をロジック層から取得。ここではAPIモデルへの詰替えだけ。
             var dict = menuLogic.GetRoleIdsForAdminDictionary();
             foreach (var pair in dict)
             {
@@ -198,10 +214,12 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 管理者向けの、メニューとロールのマッピング情報を更新
         /// </summary>
+        /// <param name="id">メニューID</param>
+        /// <param name="roleIds">ロールIDリスト</param>
         [HttpPut("/api/v1/admin/menus/{id}")]
         [PermissionFilter(MenuCode.Menu)]
         [ProducesResponseType(typeof(MenuForAdminOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> EditMenuRoleMapForAdmin([FromRoute] MenuCode? id, [FromBody] IEnumerable<long> roleIds, [FromServices] IMenuRepository menuRepository)
+        public async Task<IActionResult> EditMenuRoleMapForAdmin([FromRoute] MenuCode? id, [FromBody] IEnumerable<long> roleIds)
         {
             if (id == null)
             {
@@ -214,7 +232,7 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonNotFound($"Menu Id {id.Value} is not found.");
             }
 
-            //まずは関係するロールマップをすべて削除
+            // まずは関係するロールマップをすべて削除
             menuRepository.DeleteMenuMap(menu);
 
             foreach (var roleId in roleIds)
@@ -229,21 +247,16 @@ namespace Nssol.Platypus.Controllers.spa
                 {
                     if(menu.MenuType != MenuType.System)
                     {
-                        //システムメニュー以外はシステムロールを紐づけできない
+                        // システムメニュー以外はシステムロールを紐づけできない
                         return JsonConflict($"A system menu is only attached to the system role {role.Id}");
                     }
                     menuRepository.AttachRole(menu, role);
                 }
                 else
                 {
-                    if (role.TenantId != null)
-                    {
-                        //テナント用カスタムロールを管理者が編集可能か、というのは議論があるが、今はUI的に表示していないハズなので、不正と見なして弾く
-                        return JsonConflict($"Role {role.Name} is a custome tenant role for Tenant {role.TenantId}");
-                    }
                     if (menu.MenuType != MenuType.Tenant)
                     {
-                        //テナントメニュー以外は紐づけできない（Public/Internal/Unknownは紐づける必要がないから）
+                        // テナントメニュー以外は紐づけできない（Public/Internal/Unknownは紐づける必要がないから）
                         return JsonConflict($"A tenant menu is only attached to a tenant role.");
                     }
                     menuRepository.AttachRole(menu, role);
@@ -251,9 +264,9 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             unitOfWork.Commit();
-            roleRepository.Refresh(); //キャッシュを破棄
+            roleRepository.Refresh(); // キャッシュを破棄
 
-            //表示情報を取得
+            // 表示情報を取得
             var result = new MenuForAdminOutputModel()
             {
                 Id = menu.Code,
