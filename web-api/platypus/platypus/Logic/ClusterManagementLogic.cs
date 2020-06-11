@@ -1408,17 +1408,17 @@ namespace Nssol.Platypus.Logic
             // CPUコア数
             if (tenant.LimitCpu != null && cpu >= tenant.LimitCpu)
             {
-                errorMessage = "The set CPU exceeds the upper limit.";
+                errorMessage = "The request of CPU exceeds the upper limit.";
             }
             // メモリ容量
             else if (tenant.LimitMemory != null && memory >= tenant.LimitMemory)
             {
-                errorMessage = "The set Memory exceeds the upper limit.";
+                errorMessage = "The request of Memory exceeds the upper limit.";
             }
             // GPU数
             else if (tenant.LimitGpu != null && gpu > tenant.LimitGpu)
             {
-                errorMessage = "The set GPU exceeds the upper limit.";
+                errorMessage = "The request of GPU exceeds the upper limit.";
             }
             return errorMessage;
         }
