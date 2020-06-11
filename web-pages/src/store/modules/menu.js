@@ -26,6 +26,7 @@ const getters = {
 
 // action
 const actions = {
+  // admin
   async fetchMenus({ commit }) {
     let response = await api.menu.admin.get()
     let menus = response.data
@@ -53,7 +54,7 @@ const actions = {
     return await api.menu.admin.put(params)
   },
 
-  // tenant系
+  // tenant
   async fetchTenantMenus({ commit }) {
     let response = await api.menu.tenant.get()
     let tenantMenus = response.data
@@ -77,7 +78,7 @@ const actions = {
   },
 
   // eslint-disable-next-line no-unused-vars
-  async tenantPut({ commit }, params) {
+  async putTenant({ commit }, params) {
     return await api.menu.tenant.put(params)
   },
 }

@@ -5,6 +5,7 @@ const state = {
   roles: [],
   detail: {},
   tenantRoles: [],
+  tenantRoleDetail: {},
 }
 
 // getters
@@ -12,18 +13,20 @@ const getters = {
   roles(state) {
     return state.roles
   },
-
   detail(state) {
     return state.detail
   },
-
   tenantRoles(state) {
     return state.tenantRoles
+  },
+  tenantRoleDetail(state) {
+    return state.tenantRoleDetail
   },
 }
 
 // actions
 const actions = {
+  // admin
   async fetchRoles({ commit }) {
     let roles = (await api.role.admin.get()).data
     commit('setRoles', { roles })
@@ -49,23 +52,29 @@ const actions = {
     return await api.role.admin.delete({ id: id })
   },
 
+  // tenant
   async fetchTenantRoles({ commit }) {
     let tenantRoles = (await api.role.tenant.get()).data
     commit('setTenantRoles', { tenantRoles })
   },
 
+  async fetchTenantRoleDetail({ commit }, id) {
+    let tenantRoleDetail = (await api.role.tenant.getById({ id: id })).data
+    commit('setTenantRoleDetail', { tenantRoleDetail })
+  },
+
   // eslint-disable-next-line no-unused-vars
-  async tenantPost({ commit }, params) {
+  async postTenantRole({ commit }, params) {
     return await api.role.tenant.post({ model: params })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async tenantPut({ commit }, { id, params }) {
+  async putTenantRole({ commit }, { id, params }) {
     return await api.role.tenant.put({ id: id, model: params })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async tenantDelete({ commit }, id) {
+  async deleteTenantRole({ commit }, id) {
     return await api.role.tenant.delete({ id: id })
   },
 }
@@ -75,13 +84,14 @@ const mutations = {
   setRoles(state, { roles }) {
     state.roles = roles
   },
-
   setDetail(state, { detail }) {
     state.detail = detail
   },
-
   setTenantRoles(state, { tenantRoles }) {
     state.tenantRoles = tenantRoles
+  },
+  setTenantRoleDetail(state, { tenantRoleDetail }) {
+    state.tenantRoleDetail = tenantRoleDetail
   },
 }
 

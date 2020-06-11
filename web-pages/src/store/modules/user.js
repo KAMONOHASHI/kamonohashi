@@ -70,12 +70,12 @@ const actions = {
   },
 
   // eslint-disable-next-line no-unused-vars
-  async tenantRolesPut({ commit }, params) {
+  async putTenantRoles({ commit }, params) {
     return await api.user.tenant.putRoles(params)
   },
 
   // eslint-disable-next-line no-unused-vars
-  async tenantUserDelete({ commit }, id) {
+  async deleteTenantUser({ commit }, id) {
     return await api.user.tenant.delete({ id: id })
   },
 }
