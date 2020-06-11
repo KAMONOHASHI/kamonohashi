@@ -1,9 +1,7 @@
 ﻿using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Infrastructure.Infos;
 using Nssol.Platypus.Models;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Logic.Interfaces
@@ -40,11 +38,13 @@ namespace Nssol.Platypus.Logic.Interfaces
         /// <summary>
         /// 各メニューごとにアクセス許可されているテナント用ロールを取得する
         /// </summary>
+        /// <param name="tenantId">テナントID</param>
         Dictionary<MenuItemInfo, IEnumerable<Role>> GetRoleIdsForTenantDictionary(long tenantId);
 
         /// <summary>
         /// 指定したメニューコードに一致するメニュー情報を取得する
         /// </summary>
+        /// <param name="menuCode">メニューコード</param>
         MenuItemInfo GetMenu(MenuCode menuCode);
     }
 }

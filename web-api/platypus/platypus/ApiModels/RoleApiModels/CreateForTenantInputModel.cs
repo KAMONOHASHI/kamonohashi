@@ -1,12 +1,10 @@
-﻿using Nssol.Platypus.ApiModels.Components;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Nssol.Platypus.ApiModels.RoleApiModels
 {
+    /// <summary>
+    /// テナントロール管理用作成入力モデル
+    /// </summary>
     public class CreateForTenantInputModel
     {
         /// <summary>

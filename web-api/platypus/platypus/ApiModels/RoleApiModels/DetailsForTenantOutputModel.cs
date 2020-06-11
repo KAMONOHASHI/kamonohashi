@@ -1,17 +1,16 @@
-﻿using Newtonsoft.Json;
-using Nssol.Platypus.Infrastructure.Infos;
-using Nssol.Platypus.Infrastructure;
-using Nssol.Platypus.Models;
-using Nssol.Platypus.ApiModels.Components;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Nssol.Platypus.Models;
 
 namespace Nssol.Platypus.ApiModels.RoleApiModels
 {
+    /// <summary>
+    /// テナントロール管理用詳細出力モデル
+    /// </summary>
     public class DetailsForTenantOutputModel : IndexOutputModel
     {
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="role"></param>
         public DetailsForTenantOutputModel(Role role) : base(role)
         {
         }

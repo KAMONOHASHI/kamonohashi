@@ -53,6 +53,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// <summary>
         /// 指定したメニューに共通で割り当てられたロールIDを取得する。
         /// </summary>
+        /// <param name="menuCode">メニューコード</param>
         public IEnumerable<Role> GetAttachedRoles(MenuCode menuCode)
         {
             return FindModelAll<MenuRoleMap>(map => map.MenuCode == menuCode.ToString()).Include(map => map.Role)
@@ -63,6 +64,8 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// 指定したメニューに割り当てられたテナント用ロールIDを取得する。
         /// 管理者ロール、および他のテナント固有の設定は含まれない。
         /// </summary>
+        /// <param name="menuCode">メニューコード</param>
+        /// <param name="tenantId">テナントID</param>
         public IEnumerable<Role> GetAttachedRoles(MenuCode menuCode, long tenantId)
         {
             return FindModelAll<MenuRoleMap>(map => map.MenuCode == menuCode.ToString()).Include(map => map.Role)
@@ -72,6 +75,8 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// <summary>
         /// メニューとロールを紐づける
         /// </summary>
+        /// <param name="menu">メニュー</param>
+        /// <param name="role">ロール</param>
         public void AttachRole(MenuItemInfo menu, Role role)
         {
             var map = new MenuRoleMap()
@@ -85,6 +90,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// <summary>
         /// 指定したメニューに関するロールとのマップ情報をすべて削除する
         /// </summary>
+        /// <param name="menu">メニュー</param>
         public void DeleteMenuMap(MenuItemInfo menu)
         {
             DeleteModelAll<MenuRoleMap>(map => map.MenuCode == menu.Code.ToString());
@@ -93,6 +99,8 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// <summary>
         /// 指定したメニューに関する特定テナントのカスタムロールとのマップ情報をすべて削除する
         /// </summary>
+        /// <param name="menu">メニュー</param>
+        /// <param name="tenantId">テナントID</param>
         public async Task DeleteMenuMapAsync(MenuItemInfo menu, long tenantId)
         {
             var roleIds = (await roleRepository.GetCustomRolesAsync(tenantId)).Select(r => r.Id);

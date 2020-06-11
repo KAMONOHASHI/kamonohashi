@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Nssol.Platypus.ApiModels.RoleApiModels
 {
+    /// <summary>
+    /// ロール管理用編集入力モデル
+    /// </summary>
     public class EditInputModel
     {
         /// <summary>

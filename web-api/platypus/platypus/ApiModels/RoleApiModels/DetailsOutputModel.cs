@@ -2,8 +2,15 @@
 
 namespace Nssol.Platypus.ApiModels.RoleApiModels
 {
+    /// <summary>
+    /// ロール管理用詳細出力モデル
+    /// </summary>
     public class DetailsOutputModel : IndexOutputModel
     {
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="role">ロール</param>
         public DetailsOutputModel(Role role) : base(role)
         {
             IsNotEditable = role.IsNotEditable;

@@ -15,10 +15,12 @@ namespace Nssol.Platypus.Logic
     /// </summary>
     public class MenuLogic : PlatypusLogicBase, IMenuLogic
     {
-        private IRoleRepository roleRepository;
-        private ITenantRepository tenantRepository;
+        private readonly IRoleRepository roleRepository;
         private readonly IMenuRepository menuRepository;
 
+        /// <summary>
+        /// 静的コンストラクタ
+        /// </summary>
         static MenuLogic()
         {
             MenuList = new List<MenuItemInfo>()
@@ -64,12 +66,10 @@ namespace Nssol.Platypus.Logic
         /// </summary>
         public MenuLogic(
             IRoleRepository roleRepository,
-            ITenantRepository tenantRepository,
             IMenuRepository menuRepository,
             ICommonDiLogic commonDiLogic) : base(commonDiLogic)
         {
             this.roleRepository = roleRepository;
-            this.tenantRepository = tenantRepository;
             this.menuRepository = menuRepository;
         }
 
@@ -113,6 +113,7 @@ namespace Nssol.Platypus.Logic
         /// <summary>
         /// アクセス可能なメニューのみをツリー形式で取得するための再帰メソッド
         /// </summary>
+        /// <param name="sourceList">メニューリスト</param>
         private async Task<IEnumerable<MenuItemInfo>> GetAccessibleMenuTreeAsync(IEnumerable<MenuItemInfo> sourceList)
         {
             var targetList = new List<MenuItemInfo>();
@@ -229,6 +230,7 @@ namespace Nssol.Platypus.Logic
         /// <summary>
         /// 各メニューごとにアクセス許可されているテナント用ロールを取得する
         /// </summary>
+        /// <param name="tenantId">テナントID</param>
         public Dictionary<MenuItemInfo, IEnumerable<Role>> GetRoleIdsForTenantDictionary(long tenantId)
         {
             var result = new Dictionary<MenuItemInfo, IEnumerable<Role>>();
@@ -248,6 +250,7 @@ namespace Nssol.Platypus.Logic
         /// <summary>
         /// 指定したメニューコードに一致するメニュー情報を取得する
         /// </summary>
+        /// <param name="menuCode">メニューコード</param>
         public MenuItemInfo GetMenu(MenuCode menuCode)
         {
             return MenuList.Find(m => m.Code == menuCode);

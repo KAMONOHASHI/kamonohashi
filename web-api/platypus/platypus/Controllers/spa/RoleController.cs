@@ -14,18 +14,27 @@ using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Controllers.spa
 {
+    /// <summary>
+    /// ロール管理を扱うためのAPI集
+    /// </summary>
     [Route("api/v1/tenant/roles")]
     public class RoleController : PlatypusApiControllerBase
     {
         private readonly IRoleRepository roleRepository;
+        private readonly ITenantRepository tenantRepository;
         private readonly IUnitOfWork unitOfWork;
 
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
         public RoleController(
             IRoleRepository roleRepository,
+            ITenantRepository tenantRepository,
             IUnitOfWork unitOfWork,
             IHttpContextAccessor accessor) : base(accessor)
         {
             this.roleRepository = roleRepository;
+            this.tenantRepository = tenantRepository;
             this.unitOfWork = unitOfWork;
         }
 
@@ -48,11 +57,10 @@ namespace Nssol.Platypus.Controllers.spa
         /// 指定されたIDのロール情報を取得。
         /// </summary>
         /// <param name="id">ロールID</param>
-        /// <param name="tenantRepository">DI用</param>
         [HttpGet("/api/v1/admin/roles/{id}")]
         [PermissionFilter(MenuCode.Role)]
         [ProducesResponseType(typeof(DetailsOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetDetailForAdmin(long? id, [FromServices] ITenantRepository tenantRepository)
+        public async Task<IActionResult> GetDetailForAdmin(long? id)
         {
             if (id == null)
             {
@@ -76,10 +84,11 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 新規にロールを登録する
         /// </summary>
+        /// <param name="model">作成内容</param>
         [HttpPost("/api/v1/admin/roles")]
         [PermissionFilter(MenuCode.Role)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.Created)]
-        public async Task<IActionResult> CreateForAdmin([FromBody]CreateInputModel model, [FromServices] ITenantRepository tenantRepository)
+        public async Task<IActionResult> CreateForAdmin([FromBody]CreateInputModel model)
         {
             // データの入力チェック
             if (!ModelState.IsValid)
@@ -105,10 +114,12 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// ロール情報の編集
         /// </summary>
+        /// <param name="id">ロールID</param>
+        /// <param name="model">編集内容</param>
         [HttpPut("/api/v1/admin/roles/{id}")]
         [PermissionFilter(MenuCode.Role)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> EditForAdmin(long? id, [FromBody]EditInputModel model, [FromServices] ITenantRepository tenantRepository)
+        public async Task<IActionResult> EditForAdmin(long? id, [FromBody]EditInputModel model)
         {
             // データの入力チェック
             if (!ModelState.IsValid || !id.HasValue)
@@ -180,10 +191,11 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// ロールを削除する。
         /// </summary>
+        /// <param name="id">ロールID</param>
         [HttpDelete("/api/v1/admin/roles/{id}")]
         [PermissionFilter(MenuCode.Role)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        public async Task<IActionResult> DeleteForAdmin(long? id, [FromServices] ITenantRepository tenantRepository)
+        public async Task<IActionResult> DeleteForAdmin(long? id)
         {
             // データの入力チェック
             if (id == null)
@@ -277,6 +289,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 新規にロールを登録する
         /// </summary>
+        /// <param name="model">作成内容</param>
         [HttpPost]
         [PermissionFilter(MenuCode.TenantRole)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.Created)]
@@ -301,6 +314,8 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// テナント用カスタムロール情報の編集
         /// </summary>
+        /// <param name="id">ロールID</param>
+        /// <param name="model">編集内容</param>
         [HttpPut("{id}")]
         [PermissionFilter(MenuCode.TenantRole)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.OK)]
@@ -357,6 +372,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// テナント用カスタムロールを削除する。
         /// </summary>
+        /// <param name="id">ロールID</param>
         [HttpDelete("{id}")]
         [PermissionFilter(MenuCode.TenantRole)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
@@ -402,6 +418,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// 新規にロールを登録する。
         /// 単体での入力値チェックは事前にやっておくこと。
         /// </summary>
+        /// <param name="model">作成内容</param>
         private async Task<IActionResult> CreateAsync(CreateInputModel model)
         {
             // 同じ名前のロールは登録できないので、確認する
