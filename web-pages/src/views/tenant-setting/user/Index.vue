@@ -18,8 +18,13 @@
         </el-table-column>
         <el-table-column prop="roles" label="ロール" width="auto">
           <template slot-scope="scope">
-            <span v-for="role in scope.row.roles" :key="role.id">
-              <el-tag class="role-tag">{{ role.displayName }}</el-tag>
+            <span v-for="(role, index) in scope.row.roles" :key="index">
+              <el-tag v-if="role.isCustomed" type="success" class="role-tag">
+                {{ role.displayName }}
+              </el-tag>
+              <el-tag v-else type="" class="role-tag">
+                {{ role.displayName }}
+              </el-tag>
             </span>
           </template>
         </el-table-column>
@@ -69,5 +74,6 @@ export default {
 <style lang="scss" scoped>
 .role-tag {
   margin-right: 8px;
+  margin-bottom: 5px;
 }
 </style>

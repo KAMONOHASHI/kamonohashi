@@ -2,8 +2,7 @@
   <kqi-dialog
     :title="title"
     :type="id === null ? 'CREATE' : 'EDIT'"
-    :disabled="form.tenantId"
-    :delete-disapproval="deleteDisapproval"
+    :disabled-params="disabledParams"
     submit-text="作成"
     @submit="submit"
     @delete="deleteRole"
@@ -17,10 +16,8 @@
       <el-form-item label="表示名" prop="displayName">
         <el-input v-model="form.displayName" :disabled="isNotEditable" />
       </el-form-item>
-      <el-form-item label="種別" prop="isSystemRole">
-        <el-input v-if="form.tenantName" v-model="form.tenantName" disabled />
+      <el-form-item label="種別">
         <el-select
-          v-else
           v-model="form.isCostomRole"
           placeholder="Select"
           style="width: 100%;"
@@ -79,7 +76,6 @@ export default {
         displayName: null,
         isCostomRole: false,
         sortOrder: 0,
-        tenantName: null,
         roleTypes: [
           { label: 'テナント(共通)', value: false },
           { label: 'テナント(カスタム)', value: true },
@@ -93,33 +89,40 @@ export default {
         displayName: [formRule],
         sortOrder: [formRule],
       },
-      deleteDisapproval: false,
     }
   },
   computed: {
-    ...mapGetters(['detail']),
+    ...mapGetters(['tenantRoleDetail']),
+    disabledParams() {
+      return {
+        deleteButton: this.isNotEditable,
+        submitButton: this.isNotEditable,
+      }
+    },
   },
   async created() {
     if (this.id === null) {
-      this.title = 'ロール作成'
+      this.title = 'テナントロール作成'
       this.form.isCostomRole = true
     } else {
-      this.title = 'ロール編集'
+      this.title = 'テナントロール編集'
       try {
-        await this.fetchDetail(this.id)
-        this.form.name = this.detail.name
-        this.form.displayName = this.detail.displayName
-        this.form.sortOrder = this.detail.sortOrder
-        this.error = null
-        this.isNotEditable = this.detail.isNotEditable
-        if (this.detail.tenantName) {
-          this.form.tenantName = `テナント(カスタム)`
+        await this.fetchTenantRoleDetail(this.id)
+        this.form.name = this.tenantRoleDetail.name
+        this.form.displayName = this.tenantRoleDetail.displayName
+        this.form.sortOrder = this.tenantRoleDetail.sortOrder
+        this.isNotEditable = this.tenantRoleDetail.isNotEditable
+        if (this.tenantRoleDetail.tenantId) {
+          // テナント(カスタム)
           this.form.isCostomRole = true
         } else {
-          this.title = 'ロール詳細'
-          this.deleteDisapproval = true
+          this.title = 'テナントロール詳細'
+          // テナント(共通)
+          this.form.isCostomRole = false
+          // テナント(共通)は編集、削除ともにできない。
           this.isNotEditable = true
         }
+        this.error = null
       } catch (e) {
         this.error = e
       }
@@ -127,7 +130,12 @@ export default {
   },
 
   methods: {
-    ...mapActions(['fetchDetail', 'tenantPost', 'tenantPut', 'tenantDelete']),
+    ...mapActions([
+      'fetchTenantRoleDetail',
+      'postTenantRole',
+      'putTenantRole',
+      'deleteTenantRole',
+    ]),
     async submit() {
       let form = this.$refs.updateForm
       await form.validate(async valid => {
@@ -139,9 +147,9 @@ export default {
               sortOrder: this.form.sortOrder,
             }
             if (this.id === null) {
-              await this.tenantPost(params)
+              await this.postTenantRole(params)
             } else {
-              await this.tenantPut({ id: this.id, params: params })
+              await this.putTenantRole({ id: this.id, params: params })
             }
             this.error = null
             this.emitDone()
@@ -153,7 +161,7 @@ export default {
     },
     async deleteRole() {
       try {
-        await this.tenantDelete(this.id)
+        await this.deleteTenantRole(this.id)
         this.error = null
         this.emitDone()
       } catch (e) {

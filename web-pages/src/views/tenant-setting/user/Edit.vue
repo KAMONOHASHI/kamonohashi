@@ -106,8 +106,8 @@ export default {
   methods: {
     ...mapActions([
       'user/fetchTenantUserDetail',
-      'user/tenantRolesPut',
-      'user/tenantUserDelete',
+      'user/putTenantRoles',
+      'user/deleteTenantUser',
       'role/fetchTenantRoles',
     ]),
     async submit() {
@@ -119,7 +119,7 @@ export default {
               id: this.id,
               roleIds: this.form.tenantRoleIds,
             }
-            await this['user/tenantRolesPut'](params)
+            await this['user/putTenantRoles'](params)
             this.emitDone()
             this.error = null
           } catch (e) {
@@ -131,7 +131,7 @@ export default {
 
     async deleteUser() {
       try {
-        await this['user/tenantUserDelete'](this.id)
+        await this['user/deleteTenantUser'](this.id)
         this.emitDone()
         this.error = null
       } catch (e) {

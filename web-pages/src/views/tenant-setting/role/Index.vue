@@ -23,7 +23,8 @@
         <el-table-column prop="id" label="ID" width="120px" />
         <el-table-column prop="name" label="ロール名" width="auto" />
         <el-table-column prop="displayName" label="表示名" width="auto" />
-        <el-table-column prop="isSystemRole" label="種別" width="auto">
+        <!-- <el-table-column prop="isSystemRole" label="種別" width="auto"> -->
+        <el-table-column label="種別" width="auto">
           <template slot-scope="scope">
             <span v-if="scope.row.tenantId">テナント(カスタム)</span>
             <span v-else>テナント(共通)</span>

@@ -101,7 +101,7 @@ export default {
     ...mapActions([
       'menu/fetchTenantMenus',
       'menu/fetchTenantTypes',
-      'menu/tenantPut',
+      'menu/putTenant',
       'role/fetchTenantRoles',
     ]),
 
@@ -128,7 +128,7 @@ export default {
             id: data.id,
             roleIds: data.roles,
           }
-          await this['menu/tenantPut'](params)
+          await this['menu/putTenant'](params)
         }
         this.showSuccessMessage()
         this.error = null

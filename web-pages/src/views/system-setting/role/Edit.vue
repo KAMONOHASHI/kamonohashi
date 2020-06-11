@@ -81,6 +81,7 @@ export default {
         displayName: null,
         isSystemRole: false,
         sortOrder: 0,
+        tenantId: null,
         tenantName: null,
         roleTypes: [
           { label: 'テナント(共通)', value: false },
@@ -118,11 +119,12 @@ export default {
         this.form.displayName = this.detail.displayName
         this.form.isSystemRole = this.detail.isSystemRole
         this.form.sortOrder = this.detail.sortOrder
-        this.error = null
         this.isNotEditable = this.detail.isNotEditable
-        if (this.detail.tenantName) {
+        if (this.detail.tenantId) {
+          this.form.tenantId = this.detail.tenantId
           this.form.tenantName = `テナント(カスタム) / ${this.detail.tenantName}`
         }
+        this.error = null
       } catch (e) {
         this.error = e
       }
@@ -140,6 +142,7 @@ export default {
               name: this.form.name,
               displayName: this.form.displayName,
               isSystemRole: this.form.isSystemRole,
+              tenantId: this.form.tenantId,
               sortOrder: this.form.sortOrder,
             }
             if (this.id === null) {
