@@ -50,7 +50,13 @@ namespace Nssol.Platypus.Controllers.spa
         {
             var roles = await roleRepository.GetAllRolesAsync();
 
-            return JsonOK(roles.Select(r => new IndexOutputModel(r)));
+            var outputModels = roles.Select(r => new IndexOutputModel(r) 
+            {
+                // テナントIDがあれば、テナント名(表示名)を取得する。
+                TenantName = r.TenantId.HasValue ? tenantRepository.Get(r.TenantId.Value).DisplayName : null
+            });
+
+            return JsonOK(outputModels);
         }
 
         /// <summary>

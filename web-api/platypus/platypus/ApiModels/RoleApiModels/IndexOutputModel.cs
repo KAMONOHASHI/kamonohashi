@@ -50,6 +50,14 @@ namespace Nssol.Platypus.ApiModels.RoleApiModels
         public long? TenantId { get; set; }
 
         /// <summary>
+        /// 紐づけられているテナント名(表示名)。
+        /// </summary>
+        /// <remarks>
+        /// <see cref="IsSystemRole"/>がTrueの場合は、必ずNULL
+        /// </remarks>
+        public string TenantName { get; set; }
+
+        /// <summary>
         /// 並び順
         /// </summary>
         public int SortOrder { get; set; }
