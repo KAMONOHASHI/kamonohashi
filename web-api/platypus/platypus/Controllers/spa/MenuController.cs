@@ -120,7 +120,7 @@ namespace Nssol.Platypus.Controllers.spa
                 }
                 else
                 {
-                    if (role.TenantId != null)
+                    if (role.TenantId == null)
                     {
                         // テナント共通ロールの編集は許可しない。
                         LogWarning($"Role {role.Name} is not allowed to edit by the current user.");
