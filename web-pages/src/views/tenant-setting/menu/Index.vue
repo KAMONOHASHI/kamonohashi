@@ -124,9 +124,21 @@ export default {
     async handleUpdate() {
       try {
         for (const data of this.tableData) {
+          let roleIds = []
+          // 選択されたロールとロール情報を突き合わせて、
+          // テナントカスタムロールのみを取得する。
+          data.roles.forEach(role => {
+            this.roleTypes.forEach(type => {
+              if (role === type.id) {
+                if (type.tenantId) {
+                  roleIds.push(role)
+                }
+              }
+            })
+          })
           let params = {
             id: data.id,
-            roleIds: data.roles,
+            roleIds: roleIds,
           }
           await this['menu/putTenant'](params)
         }
