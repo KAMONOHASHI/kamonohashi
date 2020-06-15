@@ -4569,7 +4569,7 @@ export const ApiV1PreprocessingsGetURL = function(parameters = {}) {
  * url: ApiV1PreprocessingsPostURL
  * method: ApiV1PreprocessingsPost_TYPE
  * raw_url: ApiV1PreprocessingsPost_RAW_URL
- * @param model - 
+ * @param model - 新規作成内容
  */
 export const ApiV1PreprocessingsPost = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
