@@ -647,6 +647,8 @@ namespace Nssol.Platypus.Migrations
 
                     b.Property<int>("Gpu");
 
+					b.Property<bool>("LocalDataSet");
+
                     b.Property<string>("LogSummary");
 
                     b.Property<string>("Memo");
@@ -806,6 +808,8 @@ namespace Nssol.Platypus.Migrations
                     b.Property<bool>("Favorite");
 
                     b.Property<int>("Gpu");
+
+                    b.Property<bool>("LocalDataSet");
 
                     b.Property<string>("Memo");
 
@@ -1134,6 +1138,8 @@ namespace Nssol.Platypus.Migrations
                     b.Property<bool>("Favorite");
 
                     b.Property<int>("Gpu");
+
+                    b.Property<bool>("LocalDataSet");
 
                     b.Property<string>("LogSummary");
 
@@ -1849,7 +1855,7 @@ namespace Nssol.Platypus.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Nssol.Platypus.Models.TenantModels.TrainingHistory", "TrainingHistory")
-                        .WithMany()
+                        .WithMany("TagMaps")
                         .HasForeignKey("TrainingHistoryId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });

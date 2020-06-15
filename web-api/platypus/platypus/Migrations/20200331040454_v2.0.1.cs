@@ -29,6 +29,25 @@ namespace Nssol.Platypus.Migrations
 
             // 登録済みのタグはすべてデータ管理から登録されたものとする。
             migrationBuilder.Sql("UPDATE \"Tags\" SET \"Type\" = 1;");
+
+            // データセットをローカルコピーするか否かのカラムを追加
+            migrationBuilder.AddColumn<bool>(
+                name: "LocalDataSet",
+                table: "TrainingHistories",
+                nullable: false,
+                defaultValue: false);
+
+            migrationBuilder.AddColumn<bool>(
+                name: "LocalDataSet",
+                table: "NotebookHistories",
+                nullable: false,
+                defaultValue: false);
+
+            migrationBuilder.AddColumn<bool>(
+                name: "LocalDataSet",
+                table: "InferenceHistories",
+                nullable: false,
+                defaultValue: false);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -50,6 +69,19 @@ namespace Nssol.Platypus.Migrations
             migrationBuilder.DropColumn(
                 name: "Type",
                 table: "Tags");
+
+            // データセットをローカルコピーするか否かのカラムを削除
+            migrationBuilder.DropColumn(
+                name: "LocalDataSet",
+                table: "TrainingHistories");
+
+            migrationBuilder.DropColumn(
+                name: "LocalDataSet",
+                table: "NotebookHistories");
+
+            migrationBuilder.DropColumn(
+                name: "LocalDataSet",
+                table: "InferenceHistories");
         }
     }
 }
