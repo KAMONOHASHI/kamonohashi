@@ -1,0 +1,11 @@
+--- kamonohashi/op/rest/rest.py.org	2018-07-25 12:27:05.476776400 +0900
++++ kamonohashi/op/rest/rest.py	2018-07-24 18:53:24.043181400 +0900
+@@ -138,7 +138,7 @@
+         post_params = post_params or {}
+         headers = headers or {}
+ 
+-        timeout = None
++        timeout = self.pool_manager.connection_pool_kw.get('timeout')
+         if _request_timeout:
+             if isinstance(_request_timeout, (int, ) if six.PY3 else (int, long)):  # noqa: E501,F821
+                 timeout = urllib3.Timeout(total=_request_timeout)
