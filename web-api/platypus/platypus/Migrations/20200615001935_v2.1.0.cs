@@ -3,7 +3,7 @@ using Nssol.Platypus.Infrastructure.Types;
 
 namespace Nssol.Platypus.Migrations
 {
-    public partial class v201 : Migration
+    public partial class v210 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
