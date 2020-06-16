@@ -198,6 +198,18 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
             return map;
         }
 
+        /// <summary>
+        /// 学習履歴テーブルに追加マウントの履歴IDについて更新する
+        /// tensorboard起動時に追加した学習IDが入る
+        /// </summary>
+        /// <param name="id">学習履歴ID</param>
+        /// <param name="MountTrainingHistoryIds">マウントした学習履歴ID</param>
+        public async Task UpdateMountTrainingHistoryIdsAsync(long id, string MountTrainingHistoryIds)
+        {
+            var history = await this.GetByIdAsync(id, false);
+            history.MountTrainingHistoryIds = MountTrainingHistoryIds;
+            UpdateModel<TrainingHistory>(history, false);
+        }
         #region 添付ファイル操作
 
         /// <summary>

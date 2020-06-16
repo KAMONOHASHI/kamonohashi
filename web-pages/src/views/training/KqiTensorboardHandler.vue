@@ -68,6 +68,10 @@ export default {
       default: null,
     },
     visible: Boolean,
+    selectHistories: {
+      type: Array,
+      default: null,
+    },
   },
   data() {
     return {
@@ -121,10 +125,19 @@ export default {
       // statusNameを変更し、"起動中"と表示する
       this.statusName = 'Starting'
 
+      // 追加でマウントする学習がある場合
+      let selectHistoryIds = []
+      if (this.selectHistories) {
+        this.selectHistories.forEach(history => {
+          selectHistoryIds.push(history.id)
+        })
+      }
+
       let params = {
         id: this.id,
         model: {
           expiresIn: this.expiresIn * 60 * 60,
+          selectHistoryIds: selectHistoryIds,
         },
       }
       await this.putTensorboard(params)

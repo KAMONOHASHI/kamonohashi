@@ -82,6 +82,13 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories
         /// <param name="parent">親学習履歴</param>
         TrainingHistoryParentMap AttachParentAsync(TrainingHistory trainingHistory, TrainingHistory parent);
 
+        /// <summary>
+        /// 学習履歴テーブルに追加マウントの履歴IDについて更新する
+        /// tensorboard起動時に追加した学習IDが入る
+        /// </summary>
+        /// <param name="id">学習履歴ID</param>
+        /// <param name="MountTrainingHistoryIds">マウントした学習履歴ID</param>
+        Task UpdateMountTrainingHistoryIdsAsync(long id, string MountTrainingHistoryIds);
         #region 添付ファイル操作
 
         /// <summary>

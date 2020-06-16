@@ -8,7 +8,7 @@ data:
   main: |
     # requirement: use tensorboard/tensorboard image   
     mkdir /tensorboard
-    /usr/local/bin/tensorboard --logdir /kqi/output
+    @Raw(Model.EntryPoint)
   finish: |
     bash /kqi/scripts/common/prepare-kqi-conf
     sleep $EXPIRES_IN

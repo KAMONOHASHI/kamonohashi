@@ -270,5 +270,11 @@ namespace Nssol.Platypus.Models.TenantModels
         {
             return ContainerStatus.Convert(Status);
         }
+
+        /// <summary>
+        /// マウントした学習ID
+        /// tensorboard起動時に追加した学習IDが入る
+        /// </summary>
+        public string MountTrainingHistoryIds { get; set; }
     }
 }
