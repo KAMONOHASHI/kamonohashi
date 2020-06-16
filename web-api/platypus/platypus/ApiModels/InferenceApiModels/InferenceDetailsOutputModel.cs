@@ -40,10 +40,10 @@ namespace Nssol.Platypus.ApiModels.InferenceApiModels
 
             if (history.ParentMaps != null && history.ParentMaps.Count > 0)
             {
-                List<SimpleOutputModel> parents = new List<SimpleOutputModel>();
+                List<IndexOutputModel> parents = new List<IndexOutputModel>();
                 foreach (InferenceHistoryParentMap parentMap in history.ParentMaps)
                 {
-                    parents.Add(new SimpleOutputModel(parentMap.Parent));
+                    parents.Add(new IndexOutputModel(parentMap.Parent));
                 }
                 Parents = parents;
             }
@@ -58,6 +58,7 @@ namespace Nssol.Platypus.ApiModels.InferenceApiModels
             Partition = history.Partition;
 
             Zip = history.Zip;
+            LocalDataSet = history.LocalDataSet;
 
             foreach (var option in history.GetOptionDic())
             {
@@ -89,10 +90,7 @@ namespace Nssol.Platypus.ApiModels.InferenceApiModels
         /// <summary>
         /// 親学習履歴情報。
         /// </summary>
-        /// <remarks>
-        /// <see cref="IndexOutputModel"/>にするとDataSetの再問い合わせが必要になるため、簡略化
-        /// </remarks>
-        public List<SimpleOutputModel> Parents { get; set; }
+        public List<IndexOutputModel> Parents { get; set; }
 
         /// <summary>
         /// 完了日時
@@ -120,7 +118,7 @@ namespace Nssol.Platypus.ApiModels.InferenceApiModels
         public int Cpu { get; set; }
 
         /// <summary>
-        /// メモリ容量（GiB）
+        /// メモリ容量（GB）
         /// </summary>
         public int Memory { get; set; }
 
@@ -154,6 +152,12 @@ namespace Nssol.Platypus.ApiModels.InferenceApiModels
         /// true：zip圧縮する　false：zip圧縮しない
         /// </summary>
         public bool Zip { get; set; }
+
+        /// <summary>
+        /// データセットをローカルコピーするか否か。
+        /// true：ローカルコピーする　false：ローカルコピーしない(シンボリックリンクを作成する)
+        /// </summary>
+        public bool LocalDataSet { get; set; }
     }
 
 }

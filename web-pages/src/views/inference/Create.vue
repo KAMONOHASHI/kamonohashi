@@ -23,6 +23,14 @@
               v-model="form.dataSetId"
               :data-sets="dataSets"
             />
+            <el-form-item label="データセット作成方式">
+              <el-switch
+                v-model="form.localDataSet"
+                style="width: 100%;"
+                inactive-text="シンボリックリンク"
+                active-text="ローカルコピー"
+              />
+            </el-form-item>
 
             <el-form-item label="実行コマンド" prop="entryPoint">
               <el-input
@@ -52,7 +60,7 @@
             />
           </el-col>
           <el-col :span="12">
-            <kqi-resource-selector v-model="form.resource" />
+            <kqi-resource-selector v-model="form.resource" :quota="quota" />
 
             <kqi-environment-variables v-model="form.variables" />
             <el-form-item label="結果Zip圧縮">
@@ -114,6 +122,14 @@
                 v-model="form.dataSetId"
                 :data-sets="dataSets"
               />
+              <el-form-item label="データセット作成方式">
+                <el-switch
+                  v-model="form.localDataSet"
+                  style="width: 100%;"
+                  inactive-text="シンボリックリンク"
+                  active-text="ローカルコピー"
+                />
+              </el-form-item>
             </el-col>
           </el-form>
 
@@ -164,7 +180,7 @@
             :rules="rules"
           >
             <el-col :span="18" :offset="3">
-              <kqi-resource-selector v-model="form.resource" />
+              <kqi-resource-selector v-model="form.resource" :quota="quota" />
             </el-col>
           </el-form>
 
@@ -295,6 +311,7 @@ export default {
         variables: [{ key: '', value: '' }],
         partition: null,
         zip: true,
+        localDataSet: false,
         memo: null,
       },
       rules: {
@@ -332,9 +349,11 @@ export default {
       repositories: ['gitSelector/repositories'],
       branches: ['gitSelector/branches'],
       commits: ['gitSelector/commits'],
+      commitDetail: ['gitSelector/commitDetail'],
       loadingRepositories: ['gitSelector/loadingRepositories'],
       inferenceDetail: ['inference/detail'],
       partitions: ['cluster/partitions'],
+      quota: ['cluster/quota'],
     }),
   },
   async created() {
@@ -349,6 +368,7 @@ export default {
       status: ['Completed', 'UserCanceled'],
     })
     await this['cluster/fetchPartitions']()
+    await this['cluster/fetchQuota']()
     await this['dataSet/fetchDataSets']()
 
     // レジストリ一覧を取得し、デフォルトレジストリを設定
@@ -391,6 +411,7 @@ export default {
         this.form.name = detail.name
         this.form.entryPoint = detail.entryPoint
         this.form.zip = detail.zip
+        this.form.localDataSet = detail.localDataSet
         this.form.memo = detail.memo
         this.form.selectedParent = []
         if (detail.parents) {
@@ -436,9 +457,20 @@ export default {
       this.form.gitModel.branch = detail.gitModel.branch
       await this.selectBranch(detail.gitModel.branch)
       // commitsから該当commitを抽出
-      this.form.gitModel.commit = this.commits.find(commit => {
+      let commit = this.commits.find(commit => {
         return commit.commitId === detail.gitModel.commitId
       })
+      if (commit) {
+        this.form.gitModel.commit = commit
+      } else {
+        // コミット一覧に含まれないコミットなので、コミット情報を新たに取得する
+        await this['gitSelector/fetchCommitDetail']({
+          gitId: this.form.gitModel.git.id,
+          repository: this.form.gitModel.repository,
+          commitId: detail.gitModel.commitId,
+        })
+        this.form.gitModel.commit = this.commitDetail
+      }
     }
   },
   methods: {
@@ -448,6 +480,7 @@ export default {
       'inference/fetchDetail',
       'inference/post',
       'cluster/fetchPartitions',
+      'cluster/fetchQuota',
       'dataSet/fetchDataSets',
       'registrySelector/fetchRegistries',
       'registrySelector/fetchImages',
@@ -456,6 +489,7 @@ export default {
       'gitSelector/fetchRepositories',
       'gitSelector/fetchBranches',
       'gitSelector/fetchCommits',
+      'gitSelector/fetchCommitDetail',
     ]),
     async runInference() {
       let form = this.$refs.runForm
@@ -483,6 +517,13 @@ export default {
                 ? this.form.gitModel.commit.commitId
                 : this.commits[0].commitId
             }
+            // コピー時ブランチを切り替えずに実行
+            // パラメータに格納する際の形を統一するため整形を行う
+            if (typeof this.form.gitModel.branch.branchName === 'undefined') {
+              let branch = { branchName: this.form.gitModel.branch }
+              this.form.gitModel.branch = branch
+            }
+
             let params = {
               Name: this.form.name,
               DataSetId: this.form.dataSetId,
@@ -507,6 +548,7 @@ export default {
               Gpu: this.form.resource.gpu,
               Options: options,
               Zip: this.form.zip,
+              LocalDataSet: this.form.localDataSet,
               Partition: this.form.partition,
               Memo: this.form.memo,
             }

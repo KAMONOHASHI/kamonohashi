@@ -57,7 +57,7 @@
         </el-col>
 
         <el-col :span="12">
-          <kqi-resource-selector v-model="form.resource" />
+          <kqi-resource-selector v-model="form.resource" :quota="quota" />
           <el-form-item label="オプション">
             <br />
             <el-checkbox v-model="form.movePreprocessingPage" size="medium">
@@ -154,6 +154,7 @@ export default {
     ...mapGetters({
       preprocessings: ['preprocessing/preprocessings'],
       partitions: ['cluster/partitions'],
+      quota: ['cluster/quota'],
       data: ['data/data'],
     }),
   },
@@ -165,11 +166,13 @@ export default {
       await this['data/fetchData']()
     }
     await this['cluster/fetchPartitions']()
+    await this['cluster/fetchQuota']()
     await this['preprocessing/fetchPreprocessings']()
   },
   methods: {
     ...mapActions([
       'cluster/fetchPartitions',
+      'cluster/fetchQuota',
       'data/fetchData',
       'data/put',
       'preprocessing/fetchPreprocessings',

@@ -25,6 +25,24 @@
                 v-model="form.dataSetId"
                 :data-sets="dataSets"
               />
+              <el-form-item
+                v-show="form.dataSetId"
+                label="データセット作成方式"
+              >
+                <el-switch
+                  v-model="form.localDataSet"
+                  style="width: 100%;"
+                  inactive-text="シンボリックリンク"
+                  active-text="ローカルコピー"
+                />
+              </el-form-item>
+              <el-form-item label="起動時実行コマンド" prop="entryPoint">
+                <el-input
+                  v-model="form.entryPoint"
+                  type="textarea"
+                  :autosize="{ minRows: 2 }"
+                />
+              </el-form-item>
               <kqi-container-selector
                 v-model="form.containerImage"
                 :registries="registries"
@@ -46,7 +64,7 @@
               />
             </el-col>
             <el-col :span="12">
-              <kqi-resource-selector v-model="form.resource" />
+              <kqi-resource-selector v-model="form.resource" :quota="quota" />
               <div v-if="availableInfiniteTime">
                 <el-form-item label="起動期間設定">
                   <el-switch
@@ -100,6 +118,24 @@
                 v-model="form.dataSetId"
                 :data-sets="dataSets"
               />
+              <el-form-item
+                v-show="form.dataSetId"
+                label="データセット作成方式"
+              >
+                <el-switch
+                  v-model="form.localDataSet"
+                  style="width: 100%;"
+                  inactive-text="シンボリックリンク"
+                  active-text="ローカルコピー"
+                />
+              </el-form-item>
+              <el-form-item label="起動時実行コマンド" prop="entryPoint">
+                <el-input
+                  v-model="form.entryPoint"
+                  type="textarea"
+                  :autosize="{ minRows: 2 }"
+                />
+              </el-form-item>
               <kqi-container-selector
                 v-model="form.containerImage"
                 :registries="registries"
@@ -121,7 +157,7 @@
               />
             </el-col>
             <el-col :span="12">
-              <kqi-resource-selector v-model="form.resource" />
+              <kqi-resource-selector v-model="form.resource" :quota="quota" />
             </el-col>
             <el-col :span="12">
               <div v-if="availableInfiniteTime">
@@ -176,7 +212,7 @@
           <!-- step 2 -->
           <el-form v-if="active === 1" ref="form1" :model="form" :rules="rules">
             <el-col :span="18" :offset="3">
-              <kqi-resource-selector v-model="form.resource" />
+              <kqi-resource-selector v-model="form.resource" :quota="quota" />
             </el-col>
             <el-col :span="18" :offset="3">
               <div v-if="availableInfiniteTime">
@@ -238,12 +274,30 @@
                 v-model="form.dataSetId"
                 :data-sets="dataSets"
               />
+              <el-form-item
+                v-show="form.dataSetId"
+                label="データセット作成方式"
+              >
+                <el-switch
+                  v-model="form.localDataSet"
+                  style="width: 100%;"
+                  inactive-text="シンボリックリンク"
+                  active-text="ローカルコピー"
+                />
+              </el-form-item>
             </el-col>
           </el-form>
 
           <!-- step 4 -->
           <el-form v-if="active === 3" ref="form3" :model="form" :rules="rules">
             <el-col>
+              <el-form-item label="起動時実行コマンド" prop="entryPoint">
+                <el-input
+                  v-model="form.entryPoint"
+                  type="textarea"
+                  :autosize="{ minRows: 2 }"
+                />
+              </el-form-item>
               <kqi-environment-variables v-model="form.variables" />
               <kqi-partition-selector
                 v-model="form.partition"
@@ -350,10 +404,12 @@ export default {
           gpu: 0,
         },
         expiresIn: 8,
+        localDataSet: false,
         withExpiresInSetting: true,
         variables: [{ key: '', value: '' }],
         partition: null,
         memo: null,
+        entryPoint: '',
       },
       rules: {
         name: [
@@ -384,10 +440,12 @@ export default {
       repositories: ['gitSelector/repositories'],
       branches: ['gitSelector/branches'],
       commits: ['gitSelector/commits'],
+      commitDetail: ['gitSelector/commitDetail'],
       loadingRepositories: ['gitSelector/loadingRepositories'],
       availableInfiniteTime: ['notebook/availableInfiniteTime'],
       detail: ['notebook/detail'],
       partitions: ['cluster/partitions'],
+      quota: ['cluster/quota'],
     }),
   },
   async created() {
@@ -404,6 +462,7 @@ export default {
       status: ['Completed', 'UserCanceled', 'Killed'],
     })
     await this['cluster/fetchPartitions']()
+    await this['cluster/fetchQuota']()
     await this['dataSet/fetchDataSets']()
 
     // レジストリ一覧を取得し、デフォルトレジストリを設定
@@ -448,6 +507,8 @@ export default {
       } else {
         this.form.expiresIn = this.detail.expiresIn / 60 / 60
       }
+      this.form.localDataSet = this.detail.localDataSet
+      this.form.entryPoint = this.detail.entryPoint
 
       this.form.selectedParent = []
       if (this.detail.parents) {
@@ -488,9 +549,20 @@ export default {
         this.form.gitModel.branch = this.detail.gitModel.branch
         await this.selectBranch(this.detail.gitModel.branch)
         // commitsから該当commitを抽出
-        this.form.gitModel.commit = this.commits.find(commit => {
+        let commit = this.commits.find(commit => {
           return commit.commitId === this.detail.gitModel.commitId
         })
+        if (commit) {
+          this.form.gitModel.commit = commit
+        } else {
+          // コミット一覧に含まれないコミットなので、コミット情報を新たに取得する
+          await this['gitSelector/fetchCommitDetail']({
+            gitId: this.form.gitModel.git.id,
+            repository: this.form.gitModel.repository,
+            commitId: this.detail.gitModel.commitId,
+          })
+          this.form.gitModel.commit = this.commitDetail
+        }
       }
     }
   },
@@ -503,6 +575,7 @@ export default {
       'notebook/postRerun',
       'notebook/fetchAvailableInfiniteTime',
       'cluster/fetchPartitions',
+      'cluster/fetchQuota',
       'dataSet/fetchDataSets',
       'registrySelector/fetchRegistries',
       'registrySelector/fetchImages',
@@ -511,6 +584,7 @@ export default {
       'gitSelector/fetchRepositories',
       'gitSelector/fetchBranches',
       'gitSelector/fetchCommits',
+      'gitSelector/fetchCommitDetail',
     ]),
     async runNotebook() {
       if (this.isReRunCreation) {
@@ -533,6 +607,8 @@ export default {
             memory: this.form.resource.memory,
             gpu: this.form.resource.gpu,
             expiresIn: this.form.expiresIn * 60 * 60,
+            localDataSet: this.form.localDataSet,
+            entryPoint: this.form.entryPoint,
           }
           await this['notebook/postRerun']({
             id: this.originId,
@@ -577,9 +653,11 @@ export default {
                 memory: this.form.resource.memory,
                 gpu: this.form.resource.gpu,
                 expiresIn: this.form.expiresIn * 60 * 60,
+                localDataSet: this.form.localDataSet,
                 options: options,
                 partition: this.form.partition,
                 memo: this.form.memo,
+                entryPoint: this.form.entryPoint,
               }
               await this['notebook/post'](params)
               this.emitDone()
@@ -707,6 +785,12 @@ export default {
           commitId = this.form.gitModel.commit
             ? this.form.gitModel.commit.commitId
             : this.commits[0].commitId
+        }
+        // コピー時ブランチを切り替えずに実行
+        // パラメータに格納する際の形を統一するため整形を行う
+        if (typeof this.form.gitModel.branch.branchName === 'undefined') {
+          let branch = { branchName: this.form.gitModel.branch }
+          this.form.gitModel.branch = branch
         }
         gitModel = {
           gitId: this.form.gitModel.git.id,

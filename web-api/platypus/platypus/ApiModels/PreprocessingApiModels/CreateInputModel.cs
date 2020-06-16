@@ -1,10 +1,6 @@
 ﻿using Nssol.Platypus.ApiModels.Components;
 using Nssol.Platypus.Controllers.Util;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Nssol.Platypus.ApiModels.PreprocessingApiModels
 {
@@ -37,6 +33,7 @@ namespace Nssol.Platypus.ApiModels.PreprocessingApiModels
         /// 前処理ソースコードGit情報
         /// </summary>
         public GitCommitNullableInputModel GitModel { get; set; }
+
         /// <summary>
         /// メモ
         /// </summary>
@@ -46,10 +43,12 @@ namespace Nssol.Platypus.ApiModels.PreprocessingApiModels
         /// CPUコア数のデフォルト値
         /// </summary>
         public int Cpu { get; set; }
+
         /// <summary>
-        /// メモリ容量（GiB）のデフォルト値
+        /// メモリ容量（GB）のデフォルト値
         /// </summary>
         public int Memory { get; set; }
+
         /// <summary>
         /// GPU数のデフォルト値
         /// </summary>

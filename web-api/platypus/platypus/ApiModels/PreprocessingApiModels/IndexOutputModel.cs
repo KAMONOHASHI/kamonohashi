@@ -1,9 +1,4 @@
 ﻿using Nssol.Platypus.Models.TenantModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Nssol.Platypus.Infrastructure;
 
 namespace Nssol.Platypus.ApiModels.PreprocessingApiModels
 {
@@ -12,6 +7,10 @@ namespace Nssol.Platypus.ApiModels.PreprocessingApiModels
     /// </summary>
     public class IndexOutputModel : Components.OutputModelBase
     {
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="preprocessing">前処理</param>
         public IndexOutputModel(Preprocess preprocessing) : base(preprocessing)
         {
             Id = preprocessing.Id;
@@ -27,14 +26,17 @@ namespace Nssol.Platypus.ApiModels.PreprocessingApiModels
         /// 前処理ID
         /// </summary>
         public long Id { get; set; }
+
         ///// <summary>
         ///// 表示用ID
         ///// </summary>
         //public long? DisplayId { get; set; }
+
         /// <summary>
         /// 名前
         /// </summary>
         public string Name { get; set; }
+
         /// <summary>
         /// メモ
         /// </summary>
@@ -44,10 +46,12 @@ namespace Nssol.Platypus.ApiModels.PreprocessingApiModels
         /// CPUコア数のデフォルト値
         /// </summary>
         public int Cpu { get; set; }
+
         /// <summary>
-        /// メモリ容量（GiB）のデフォルト値
+        /// メモリ容量（GB）のデフォルト値
         /// </summary>
         public int Memory { get; set; }
+
         /// <summary>
         /// GPU数のデフォルト値
         /// </summary>

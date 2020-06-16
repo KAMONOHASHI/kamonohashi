@@ -11,6 +11,7 @@ using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Infrastructure.Infos;
 using Nssol.Platypus.Infrastructure.Types;
 using Nssol.Platypus.Logic.Interfaces;
+using Nssol.Platypus.Models;
 using Nssol.Platypus.Models.TenantModels;
 using System;
 using System.Collections.Generic;
@@ -30,6 +31,8 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly ITrainingHistoryRepository trainingHistoryRepository;
         private readonly IInferenceHistoryRepository inferenceHistoryRepository;
         private readonly IDataSetRepository dataSetRepository;
+        private readonly ITenantRepository tenantRepository;
+        private readonly INodeRepository nodeRepository;
         private readonly IInferenceLogic inferenceLogic;
         private readonly IStorageLogic storageLogic;
         private readonly IGitLogic gitLogic;
@@ -40,26 +43,29 @@ namespace Nssol.Platypus.Controllers.spa
         /// コンストラクタ
         /// </summary>
         public InferenceController(
-          ITrainingHistoryRepository trainingHistoryRepository,
-          IInferenceHistoryRepository inferenceHistoryRepository,
-          IDataSetRepository dataSetRepository,
-          IInferenceLogic inferenceLogic,
-          IStorageLogic storageLogic,
-          IGitLogic gitLogic,
-          IClusterManagementLogic clusterManagementLogic,
-          IUnitOfWork unitOfWork,
-          IHttpContextAccessor accessor): base(accessor)
+            ITrainingHistoryRepository trainingHistoryRepository,
+            IInferenceHistoryRepository inferenceHistoryRepository,
+            IDataSetRepository dataSetRepository,
+            ITenantRepository tenantRepository,
+            INodeRepository nodeRepository,
+            IInferenceLogic inferenceLogic,
+            IStorageLogic storageLogic,
+            IGitLogic gitLogic,
+            IClusterManagementLogic clusterManagementLogic,
+            IUnitOfWork unitOfWork,
+            IHttpContextAccessor accessor): base(accessor)
         {
             this.trainingHistoryRepository = trainingHistoryRepository;
             this.inferenceHistoryRepository = inferenceHistoryRepository;
             this.dataSetRepository = dataSetRepository;
+            this.tenantRepository = tenantRepository;
+            this.nodeRepository = nodeRepository;
             this.inferenceLogic = inferenceLogic;
             this.storageLogic = storageLogic;
             this.gitLogic = gitLogic;
             this.clusterManagementLogic = clusterManagementLogic;
             this.unitOfWork = unitOfWork;
         }
-
 
         /// <summary>
         /// 全推論履歴のIDと名前を取得
@@ -170,6 +176,7 @@ namespace Nssol.Platypus.Controllers.spa
                 .SearchLong(d => d.Id, filter.Id)
                 .SearchString(d => d.Name, filter.Name)
                 .SearchTime(d => d.CreatedAt, filter.StartedAt)
+                .SearchString(d => d.CreatedBy, filter.StartedBy)
                 .SearchString(d => d.Memo, filter.Memo)
                 .SearchString(d => d.EntryPoint, filter.EntryPoint)
                 .SearchString(d => d.GetStatus().ToString(), filter.Status);
@@ -327,11 +334,10 @@ namespace Nssol.Platypus.Controllers.spa
         /// 新規に推論を開始
         /// </summary>
         /// <param name="model">新規推論実行内容</param>
-        /// <param name="nodeRepository">DI用</param>
         [HttpPost("run")]
         [Filters.PermissionFilter(MenuCode.Inference)]
         [ProducesResponseType(typeof(InferenceSimpleOutputModel), (int)HttpStatusCode.Created)]
-        public async Task<IActionResult> Create([FromBody]CreateInputModel model, [FromServices]INodeRepository nodeRepository)
+        public async Task<IActionResult> Create([FromBody]CreateInputModel model)
         {
 
             //データの入力チェック
@@ -384,6 +390,14 @@ namespace Nssol.Platypus.Controllers.spa
                 }
             }
 
+            // 各リソースの超過チェック
+            Tenant tenant = tenantRepository.Get(CurrentUserInfo.SelectedTenant.Id);
+            string errorMessage = clusterManagementLogic.CheckQuota(tenant, model.Cpu.Value, model.Memory.Value, model.Gpu.Value);
+            if (errorMessage != null)
+            {
+                return JsonBadRequest(errorMessage);
+            }
+
             //コンテナの実行前に、推論履歴を作成する（コンテナの実行に失敗した場合、そのステータスをユーザに表示するため）
             var inferenceHistory = new InferenceHistory()
             {
@@ -406,7 +420,8 @@ namespace Nssol.Platypus.Controllers.spa
                 Gpu = model.Gpu.Value,
                 Partition = model.Partition,
                 Status = ContainerStatus.Running.Key,
-                Zip = model.Zip
+                Zip = model.Zip,
+                LocalDataSet = model.LocalDataSet,
             };
 
             if (inferenceHistory.OptionDic.ContainsKey("")) //空文字は除外する

@@ -453,7 +453,8 @@ namespace Nssol.Platypus.Logic
                 { "PYTHONUNBUFFERED", "true" }, // python実行時の標準出力・エラーのバッファリングをなくす
                 { "LC_ALL", "C.UTF-8"},  // python実行時のエラー回避
                 { "LANG", "C.UTF-8"},  // python実行時のエラー回避
-                { "ZIP_FILE_CREATED", trainHistory.Zip.ToString() }  // 結果をzip圧縮するか否か
+                { "ZIP_FILE_CREATED", trainHistory.Zip.ToString() },  // 結果をzip圧縮するか否か
+                { "LOCAL_DATASET", trainHistory.LocalDataSet.ToString() }  // ローカルにデータをコピーするか否か
             };
 
             //コンテナを起動するために必要な設定値をインスタンス化
@@ -493,6 +494,17 @@ namespace Nssol.Platypus.Logic
                         Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
                         ServerPath = CurrentUserInfo.SelectedTenant.TrainingContainerAttachedNfsPath,
                         ReadOnly = false
+                    },
+                    
+                    // データをマウントするディレクトリ
+                    // テナントのDataディレクトリを/kqi/rawにマウントする
+                    new NfsVolumeMountModel()
+                    {
+                        Name = "nfs-data",
+                        MountPath = "/kqi/raw",
+                        Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
+                        ServerPath = CurrentUserInfo.SelectedTenant.DataNfsPath,
+                        ReadOnly = true
                     }
                 },
                 ContainerSharedPath = new Dictionary<string, string>()
@@ -656,7 +668,8 @@ namespace Nssol.Platypus.Logic
                 { "PYTHONUNBUFFERED", "true" }, // python実行時の標準出力・エラーのバッファリングをなくす
                 { "LC_ALL", "C.UTF-8"},  // python実行時のエラー回避
                 { "LANG", "C.UTF-8"},  // python実行時のエラー回避
-                { "ZIP_FILE_CREATED", inferenceHistory.Zip.ToString() }  // 結果をzip圧縮するか否か
+                { "ZIP_FILE_CREATED", inferenceHistory.Zip.ToString() },  // 結果をzip圧縮するか否か
+                { "LOCAL_DATASET", inferenceHistory.LocalDataSet.ToString() }  // ローカルにデータをコピーするか否か
             };
 
             //コンテナを起動するために必要な設定値をインスタンス化
@@ -696,6 +709,16 @@ namespace Nssol.Platypus.Logic
                         Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
                         ServerPath = CurrentUserInfo.SelectedTenant.InferenceContainerAttachedNfsPath,
                         ReadOnly = false
+                    },
+                    // データをマウントするディレクトリ
+                    // テナントのDataディレクトリを/kqi/rawにマウントする
+                    new NfsVolumeMountModel()
+                    {
+                        Name = "nfs-data",
+                        MountPath = "/kqi/raw",
+                        Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
+                        ServerPath = CurrentUserInfo.SelectedTenant.DataNfsPath,
+                        ReadOnly = true
                     }
                 },
                 ContainerSharedPath = new Dictionary<string, string>()
@@ -1036,7 +1059,8 @@ namespace Nssol.Platypus.Logic
                 { "PYTHONUNBUFFERED", "true" }, // python実行時の標準出力・エラーのバッファリングをなくす
                 { "LC_ALL", "C.UTF-8"},  // python実行時のエラー回避
                 { "LANG", "C.UTF-8"},  // python実行時のエラー回避
-                { "EXPIRES_IN", notebookHistory.ExpiresIn != 0 ? notebookHistory.ExpiresIn.ToString() : "infinity"}  // コンテナ生存期間
+                { "EXPIRES_IN", notebookHistory.ExpiresIn != 0 ? notebookHistory.ExpiresIn.ToString() : "infinity"},  // コンテナ生存期間
+                { "LOCAL_DATASET", notebookHistory.LocalDataSet.ToString() }  // ローカルにデータをコピーするか否か
             };
 
             //コンテナを起動するために必要な設定値をインスタンス化
@@ -1075,6 +1099,16 @@ namespace Nssol.Platypus.Logic
                         Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
                         ServerPath = CurrentUserInfo.SelectedTenant.NotebookContainerAttachedNfsPath,
                         ReadOnly = false
+                    },
+                    // データをマウントするディレクトリ
+                    // テナントのDataディレクトリを/kqi/rawにマウントする
+                    new NfsVolumeMountModel()
+                    {
+                        Name = "nfs-data",
+                        MountPath = "/kqi/raw",
+                        Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
+                        ServerPath = CurrentUserInfo.SelectedTenant.DataNfsPath,
+                        ReadOnly = true
                     }
                 },
                 ContainerSharedPath = new Dictionary<string, string>()
@@ -1095,7 +1129,10 @@ namespace Nssol.Platypus.Logic
                 },
                 ClusterManagerToken = token,
                 RegistryTokenName = notebookHistory.ContainerRegistryId.HasValue ? registryMap.RegistryTokenKey : null,
-                IsNodePort = true
+                IsNodePort = true,
+
+                // スクリプトの実行をしない場合ヌルコマンドを挿入
+                EntryPoint = string.IsNullOrEmpty(notebookHistory.EntryPoint) ? ":" : notebookHistory.EntryPoint
             };
 
             // データセットの未指定も許可するため、その判定
@@ -1379,6 +1416,7 @@ namespace Nssol.Platypus.Logic
         /// <summary>
         /// 指定されたテナントのクォータ設定をクラスタに反映させる。
         /// </summary>
+        /// <param name="tenant">テナント</param>
         /// <returns>更新結果、更新できた場合、true</returns>
         public async Task<bool> SetQuotaAsync(Tenant tenant)
         {
@@ -1387,6 +1425,37 @@ namespace Nssol.Platypus.Logic
                 tenant.LimitCpu == null ? 0 : tenant.LimitCpu.Value,
                 tenant.LimitMemory == null ? 0 : tenant.LimitMemory.Value,
                 tenant.LimitGpu == null ? 0 : tenant.LimitGpu.Value);
+        }
+
+        /// <summary>
+        /// 実行要求の各リソース数がテナントのクォータ設定を超過しているかチェックする。
+        /// </summary>
+        /// <param name="tenant">テナント</param>
+        /// <param name="cpu">要求CPUコア数</param>
+        /// <param name="memory">要求メモリ容量（GB）</param>
+        /// <param name="gpu">要求GPU数</param>
+        /// <returns>超過の場合エラーメッセージ、問題ない場合null</returns>
+        public string CheckQuota(Tenant tenant, int cpu, int memory, int gpu)
+        {
+            // エラーメッセージ
+            string errorMessage = null;
+
+            // CPUコア数
+            if (tenant.LimitCpu != null && cpu >= tenant.LimitCpu)
+            {
+                errorMessage = "The request of CPU exceeds the upper limit.";
+            }
+            // メモリ容量
+            else if (tenant.LimitMemory != null && memory >= tenant.LimitMemory)
+            {
+                errorMessage = "The request of Memory exceeds the upper limit.";
+            }
+            // GPU数
+            else if (tenant.LimitGpu != null && gpu > tenant.LimitGpu)
+            {
+                errorMessage = "The request of GPU exceeds the upper limit.";
+            }
+            return errorMessage;
         }
 
         #endregion

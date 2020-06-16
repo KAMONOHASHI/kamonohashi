@@ -40,7 +40,8 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
         {
             return GetAll().OrderByDescending(t => t.Favorite).ThenByDescending(t => t.Id)
                 .Include(t => t.DataSet)
-                .Include(t => t.ParentMaps).ThenInclude(map => map.Parent);
+                .Include(t => t.ParentMaps).ThenInclude(map => map.Parent)
+                .Include(t => t.TagMaps).ThenInclude(t => t.Tag);
         }
 
         /// <summary>
@@ -61,6 +62,8 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
         {
             return await FindAll(t => t.Id == id).Include(t => t.DataSet)
                 .Include(t => t.ParentMaps).ThenInclude(map => map.Parent)
+                                           .ThenInclude(p => p.TagMaps)
+                                           .ThenInclude(map => map.Tag)
                 .Include(t => t.TrainingHistoryAttachedFile)
                 .Include(t => t.ContainerRegistry)
                 .SingleOrDefaultAsync();
