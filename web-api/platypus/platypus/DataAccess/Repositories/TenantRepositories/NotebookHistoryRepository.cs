@@ -52,7 +52,11 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
             return await FindAll(t => t.Id == id)
                             .Include(t => t.DataSet)
                             .Include(t => t.ContainerRegistry)
-                            .Include(t => t.ParentTrainingMaps).ThenInclude(map => map.Parent).ThenInclude(p => p.DataSet)
+                            .Include(t => t.ParentTrainingMaps).ThenInclude(map => map.Parent)
+                                                               .ThenInclude(p => p.DataSet)
+                            .Include(t => t.ParentTrainingMaps).ThenInclude(map => map.Parent)
+                                                               .ThenInclude(p => p.TagMaps)
+                                                               .ThenInclude(map => map.Tag)
                             .SingleOrDefaultAsync();
         }
 
