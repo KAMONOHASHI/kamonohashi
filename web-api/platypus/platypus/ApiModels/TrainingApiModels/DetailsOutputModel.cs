@@ -43,10 +43,10 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
 
             if (history.ParentMaps != null && history.ParentMaps.Count > 0)
             {
-                List<SimpleOutputModel> parents = new List<SimpleOutputModel>();
+                List<IndexOutputModel> parents = new List<IndexOutputModel>();
                 foreach (TrainingHistoryParentMap parentMap in history.ParentMaps)
                 {
-                    parents.Add(new SimpleOutputModel(parentMap.Parent));
+                    parents.Add(new IndexOutputModel(parentMap.Parent));
                 }
                 Parents = parents;
             }
@@ -101,10 +101,7 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         /// <summary>
         /// 親学習履歴情報。
         /// </summary>
-        /// <remarks>
-        /// <see cref="IndexOutputModel"/>にするとDataSetの再問い合わせが必要になるため、簡略化
-        /// </remarks>
-        public List<SimpleOutputModel> Parents { get; set; }
+        public List<IndexOutputModel> Parents { get; set; }
 
         /// <summary>
         /// 完了日時

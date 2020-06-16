@@ -48,21 +48,23 @@
         </el-collapse>
       </div>
       <el-form-item v-if="outputDataIds" label="出力データID">
-        <div v-if="outputDataIds.length >= 11">
-          <el-button type="primary" @click="viewDataIds = !viewDataIds">
-            {{ viewDataIds ? 'Hide DataIds' : 'View All DataIds' }}
-          </el-button>
-        </div>
-        <div v-if="outputDataIds.length <= 10 || viewDataIds">
-          <span
-            v-for="(outputDataId, index) in outputDataIds"
-            :key="index"
-            class="outputDataId"
-          >
-            <el-link type="primary" @click="redirectDataEdit(outputDataId)">{{
-              outputDataId
-            }}</el-link>
-          </span>
+        <div class="outputDataIds">
+          <div v-if="outputDataIds.length >= 11">
+            <el-button type="primary" @click="viewDataIds = !viewDataIds">
+              {{ viewDataIds ? 'Hide DataIds' : 'View All DataIds' }}
+            </el-button>
+          </div>
+          <div v-if="outputDataIds.length <= 10 || viewDataIds">
+            <span
+              v-for="(outputDataId, index) in outputDataIds"
+              :key="index"
+              class="outputDataId"
+            >
+              <el-link type="primary" @click="redirectDataEdit(outputDataId)">
+                {{ outputDataId }}
+              </el-link>
+            </span>
+          </div>
         </div>
       </el-form-item>
       <el-row>
@@ -224,5 +226,10 @@ export default {
 }
 .outputDataId {
   margin: 10px;
+}
+
+.outputDataIds {
+  display: inline-block;
+  width: 100%;
 }
 </style>

@@ -58,7 +58,7 @@ class TrainingApiModelsDetailsOutputModel(object):
         'node_ports': 'list[SystemCollectionsGenericKeyValuePair]',
         'options': 'list[SystemCollectionsGenericKeyValuePair]',
         'parent_full_name_list': 'list[str]',
-        'parents': 'list[TrainingApiModelsSimpleOutputModel]',
+        'parents': 'list[TrainingApiModelsIndexOutputModel]',
         'partition': 'str',
         'ports': 'list[int]',
         'started_at': 'str',
@@ -795,7 +795,7 @@ class TrainingApiModelsDetailsOutputModel(object):
 
 
         :return: The parents of this TrainingApiModelsDetailsOutputModel.  # noqa: E501
-        :rtype: list[TrainingApiModelsSimpleOutputModel]
+        :rtype: list[TrainingApiModelsIndexOutputModel]
         """
         return self._parents
 
@@ -805,7 +805,7 @@ class TrainingApiModelsDetailsOutputModel(object):
 
 
         :param parents: The parents of this TrainingApiModelsDetailsOutputModel.  # noqa: E501
-        :type: list[TrainingApiModelsSimpleOutputModel]
+        :type: list[TrainingApiModelsIndexOutputModel]
         """
 
         self._parents = parents
