@@ -74,7 +74,7 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
             }
 
             // 待機時間と実行時間の設定
-            setWaitingAndExecutionTimes(history);
+            SetWaitingAndExecutionTimes(history);
 
             MountTrainingHistoryIds = history.MountTrainingHistoryIds;
         }

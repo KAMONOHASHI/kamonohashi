@@ -10,8 +10,8 @@ using Nssol.Platypus.DataAccess;
 namespace Nssol.Platypus.Migrations
 {
     [DbContext(typeof(CommonDbContext))]
-    [Migration("20200611090734_v2.1.0")]
-    partial class v210
+    [Migration("20200616060005_v2.1.1")]
+    partial class v211
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -647,6 +647,8 @@ namespace Nssol.Platypus.Migrations
 
                     b.Property<int>("Gpu");
 
+                    b.Property<bool>("LocalDataSet");
+
                     b.Property<string>("LogSummary");
 
                     b.Property<string>("Memo");
@@ -798,12 +800,16 @@ namespace Nssol.Platypus.Migrations
 
                     b.Property<long?>("DisplayId");
 
+                    b.Property<string>("EntryPoint");
+
                     b.Property<int?>("ExpiresIn")
                         .IsRequired();
 
                     b.Property<bool>("Favorite");
 
                     b.Property<int>("Gpu");
+
+                    b.Property<bool>("LocalDataSet");
 
                     b.Property<string>("Memo");
 
@@ -1045,6 +1051,8 @@ namespace Nssol.Platypus.Migrations
 
                     b.Property<long>("TenantId");
 
+                    b.Property<int>("Type");
+
                     b.HasKey("Id");
 
                     b.HasIndex("TenantId");
@@ -1130,6 +1138,8 @@ namespace Nssol.Platypus.Migrations
                     b.Property<bool>("Favorite");
 
                     b.Property<int>("Gpu");
+
+                    b.Property<bool>("LocalDataSet");
 
                     b.Property<string>("LogSummary");
 
@@ -1837,7 +1847,7 @@ namespace Nssol.Platypus.Migrations
             modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.TrainingHistoryTagMap", b =>
                 {
                     b.HasOne("Nssol.Platypus.Models.TenantModels.Tag", "Tag")
-                        .WithMany()
+                        .WithMany("TrainingHistoryMaps")
                         .HasForeignKey("TagId")
                         .OnDelete(DeleteBehavior.Cascade);
 
@@ -1847,7 +1857,7 @@ namespace Nssol.Platypus.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Nssol.Platypus.Models.TenantModels.TrainingHistory", "TrainingHistory")
-                        .WithMany()
+                        .WithMany("TagMaps")
                         .HasForeignKey("TrainingHistoryId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
