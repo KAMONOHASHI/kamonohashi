@@ -38,6 +38,11 @@
           show-input
         />
       </el-form-item>
+      <kqi-training-history-selector
+        v-model="selectedMountHistories"
+        :histories="mountedHistories"
+        multiple
+      />
     </span>
     <span v-else-if="statusName === 'Starting'">
       起動中...
@@ -54,6 +59,7 @@
 
 <script>
 import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
+import KqiTrainingHistorySelector from '@/components/selector/KqiTrainingHistorySelector'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('training')
 const kqiHost = process.env.VUE_APP_KAMONOHASHI_HOST || window.location.hostname
@@ -61,6 +67,7 @@ const kqiHost = process.env.VUE_APP_KAMONOHASHI_HOST || window.location.hostname
 export default {
   components: {
     KqiDisplayTextForm,
+    KqiTrainingHistorySelector,
   },
   props: {
     id: {
@@ -68,10 +75,6 @@ export default {
       default: null,
     },
     visible: Boolean,
-    selectHistories: {
-      type: Array,
-      default: null,
-    },
   },
   data() {
     return {
@@ -81,13 +84,26 @@ export default {
       polling: false, // ポーリング中かの判定フラグ
       expiresIn: 3, // 起動期間(h)
       remainingTime: null, // 残り起動期間の文字列表記('0d 1h 0m')
+      selectedMountHistories: [],
+      mountedHistories: [],
     }
   },
   computed: {
-    ...mapGetters(['tensorboard']),
+    ...mapGetters(['tensorboard', 'historiesToMount']),
   },
   // 準備ができたらステータスのポーリング開始
-  created() {
+  async created() {
+    await this.fetchHistoriesToMount({
+      status: [
+        'Running',
+        'Completed',
+        'UserCanceled',
+        'Killed',
+        'Failed',
+        'None',
+        'Error',
+      ],
+    })
     this.intervalId = setInterval(() => {
       // 可視状態かつIDがセットされている状態でのみ、ポーリング
       if (this.visible && this.id >= 0) {
@@ -100,7 +116,12 @@ export default {
     clearInterval(this.intervalId)
   },
   methods: {
-    ...mapActions(['fetchTensorboard', 'putTensorboard', 'deleteTensorboard']),
+    ...mapActions([
+      'fetchTensorboard',
+      'putTensorboard',
+      'deleteTensorboard',
+      'fetchHistoriesToMount',
+    ]),
     // TensorBoardステータス確認
     async checkTensorBoardStatus() {
       if (this.polling) {
@@ -119,6 +140,25 @@ export default {
         : null
 
       this.polling = false
+
+      if (this.statusName === 'None' && this.mountedHistories.length === 0) {
+        this.mountedHistories = []
+        this.historiesToMount.forEach(history => {
+          if (history.id !== +this.id) {
+            this.mountedHistories.push(history)
+          }
+        })
+
+        this.selectedMountHistories = []
+        if (this.tensorboard.mountedTrainingHistoryIds !== null) {
+          this.tensorboard.mountedTrainingHistoryIds.forEach(id => {
+            let tmp = this.historiesToMount.find(history => history.id === id)
+            if (tmp !== null) {
+              this.selectedMountHistories.push(tmp)
+            }
+          })
+        }
+      }
     },
     // TensorBoard起動
     async runTensorBoard() {
@@ -126,10 +166,10 @@ export default {
       this.statusName = 'Starting'
 
       // 追加でマウントする学習がある場合
-      let selectHistoryIds = []
-      if (this.selectHistories) {
-        this.selectHistories.forEach(history => {
-          selectHistoryIds.push(history.id)
+      let selectedHistoryIds = []
+      if (this.selectedMountHistories) {
+        this.selectedMountHistories.forEach(history => {
+          selectedHistoryIds.push(history.id)
         })
       }
 
@@ -137,7 +177,8 @@ export default {
         id: this.id,
         model: {
           expiresIn: this.expiresIn * 60 * 60,
-          selectHistoryIds: selectHistoryIds,
+          selectedHistoryIds:
+            selectedHistoryIds.length !== 0 ? selectedHistoryIds : null,
         },
       }
       await this.putTensorboard(params)

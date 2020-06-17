@@ -15,7 +15,7 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         /// <summary>
         /// 追加でマウントする学習履歴ID
         /// </summary>
-        public IEnumerable<long> selectHistoryIds { get; set; }
+        public IEnumerable<long> selectedHistoryIds { get; set; }
 
     }
 }

@@ -253,12 +253,6 @@
           </div>
           <el-form-item label="TensorBoard">
             <br />
-            <kqi-training-history-selector
-              v-model="form.selectHistories"
-              :histories="form.historiesToMount"
-              multiple
-            />
-            <br />
             <kqi-tensorboard-handler
               :id="String(detail.id)"
               :visible="dialogVisible"
@@ -316,7 +310,6 @@ import KqiJobStopButton from '@/components/KqiJobStopButton'
 import KqiFileManager from '@/components/KqiFileManager'
 import KqiDataSetDetails from '@/components/selector/KqiDataSetDetails'
 import KqiTrainingHistoryDetails from '@/components/selector/KqiTrainingHistoryDetails'
-import KqiTrainingHistorySelector from '@/components/selector/KqiTrainingHistorySelector'
 import KqiTagEditor from '@/components/KqiTagEditor'
 import KqiTensorboardHandler from './KqiTensorboardHandler'
 import { createNamespacedHelpers } from 'vuex'
@@ -331,7 +324,6 @@ export default {
     KqiFileManager,
     KqiDataSetDetails,
     KqiTrainingHistoryDetails,
-    KqiTrainingHistorySelector,
     KqiTagEditor,
     KqiTensorboardHandler,
   },
@@ -357,7 +349,6 @@ export default {
         name: null,
         favorite: false,
         memo: null,
-        historiesToMount: [],
         selectHistories: [],
         tags: [],
       },
@@ -368,13 +359,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters([
-      'detail',
-      'events',
-      'uploadedFiles',
-      'tenantTags',
-      'historiesToMount',
-    ]),
+    ...mapGetters(['detail', 'events', 'uploadedFiles', 'tenantTags']),
   },
   watch: {
     async $route() {
@@ -398,7 +383,6 @@ export default {
       'put',
       'delete',
       'deleteFile',
-      'fetchHistoriesToMount',
     ]),
     async initialize() {
       this.title = '学習履歴'
@@ -413,31 +397,6 @@ export default {
     async retrieveData() {
       await this.fetchDetail(this.id)
       await this.fetchUploadedFiles(this.detail.id)
-      await this.fetchHistoriesToMount({
-        status: [
-          'Running',
-          'Completed',
-          'UserCanceled',
-          'Killed',
-          'Failed',
-          'None',
-          'Error',
-        ],
-      })
-      this.historiesToMount.forEach(history => {
-        if (history.id !== this.detail.id) {
-          this.form.historiesToMount.push(history)
-        }
-      })
-
-      if (this.detail.mountTrainingHistoryIds) {
-        let selectedHistoryIds = this.detail.mountTrainingHistoryIds.split(',')
-        selectedHistoryIds.forEach(selectedId =>
-          this.form.selectHistories.push(
-            this.historiesToMount.find(h => +selectedId == h.id),
-          ),
-        )
-      }
 
       if (
         this.detail.statusType === 'Running' ||

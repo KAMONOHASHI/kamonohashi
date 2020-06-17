@@ -830,13 +830,22 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             //新規にTensorBoardコンテナを起動する。
-            var result = await clusterManagementLogic.RunTensorBoardContainerAsync(trainingHistory, expiresIn, model.selectHistoryIds);
+            var result = await clusterManagementLogic.RunTensorBoardContainerAsync(trainingHistory, expiresIn, model.selectedHistoryIds);
             if (result == null || result.Status.Succeed() == false)
             {
                 //起動に失敗した場合、ステータス Failed で返す。
                 return JsonError(HttpStatusCode.ServiceUnavailable, $"Failed to run tensorboard container: {result.Status}");
             }
 
+            string mountedTrainingHistoryIds = null;
+            if (model.selectedHistoryIds != null && model.selectedHistoryIds.Count() != 0)
+            {
+                foreach (long selectedHistoryId in model.selectedHistoryIds)
+                {
+                    mountedTrainingHistoryIds = selectedHistoryId + ",";
+                }
+                mountedTrainingHistoryIds = mountedTrainingHistoryIds.TrimEnd(',');
+            }
             container = new TensorBoardContainer()
             {
                 Name = result.Name,
@@ -846,22 +855,12 @@ namespace Nssol.Platypus.Controllers.spa
                 TrainingHistoryId = id,
                 Host = result.Host,
                 PortNo = result.Port,
-                ExpiresIn = expiresIn
+                ExpiresIn = expiresIn,
+                MountedTrainingHistoryIds = mountedTrainingHistoryIds
             };
 
             // コンテナテーブルにInsertする
             tensorBoardContainerRepository.Add(container);
-
-            if (model.selectHistoryIds.Count() != 0)
-            {
-                // 学習履歴テーブルに追加マウントした履歴IDについて更新する
-                string selectIds = model.selectHistoryIds.ElementAt(0).ToString();
-                for (int i = 1; model.selectHistoryIds.Count() > i; i++)
-                {
-                    selectIds = selectIds + "," + model.selectHistoryIds.ElementAt(i).ToString();
-                }
-                await trainingHistoryRepository.UpdateMountTrainingHistoryIdsAsync(id, selectIds);
-            }
             
             unitOfWork.Commit();
 
@@ -887,9 +886,6 @@ namespace Nssol.Platypus.Controllers.spa
 
             await trainingLogic.DeleteTensorBoardAsync(container, false);
 
-            // 学習履歴テーブルに追加マウントの履歴IDのクリア
-            await trainingHistoryRepository.UpdateMountTrainingHistoryIdsAsync(id, null);
-            unitOfWork.Commit();
             return JsonNoContent();
         }
 

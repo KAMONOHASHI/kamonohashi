@@ -1,7 +1,9 @@
 ﻿using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Models.TenantModels;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 
 namespace Nssol.Platypus.ApiModels.TrainingApiModels
 {
@@ -43,6 +45,17 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
                     // 生存時間が無期限の場合はnullを返す
                     RemainingTime = null;
                 }
+
+                if (container.MountedTrainingHistoryIds != null)
+                {
+                    string[] historyIds = container.MountedTrainingHistoryIds.Split(',');
+                    List<long> mountedTrainingHistoryIds = new List<long>();
+                    foreach (string id in historyIds)
+                    {
+                        mountedTrainingHistoryIds.Add(long.Parse(id));
+                    }
+                    MountedTrainingHistoryIds = mountedTrainingHistoryIds;
+                }
             }
         }
 
@@ -70,5 +83,10 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         /// コンテナの残存時間(%d d %h h %m m)
         /// </summary>
         public string RemainingTime { get; set; }
+
+        /// <summary>
+        /// マウントした学習履歴ID
+        /// </summary>
+        public List<long> MountedTrainingHistoryIds { get; set; }
     }
 }

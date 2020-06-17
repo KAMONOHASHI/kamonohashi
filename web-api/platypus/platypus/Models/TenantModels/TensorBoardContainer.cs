@@ -66,5 +66,10 @@ namespace Nssol.Platypus.Models.TenantModels
         {
             return $"{Id}({Host}:{PortNo}):{Name}:{Status}";
         }
+
+        /// <summary>
+        /// マウントした学習履歴ID
+        /// </summary>
+        public string MountedTrainingHistoryIds { get; set; }
     }
 }

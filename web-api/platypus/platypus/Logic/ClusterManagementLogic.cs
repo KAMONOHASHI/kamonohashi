@@ -814,7 +814,7 @@ namespace Nssol.Platypus.Logic
         /// <param name="trainingHistory">対象の学習履歴</param>
         /// <param name="expiresIn">生存期間(秒)</param>
         /// <returns>作成したコンテナのステータス</returns>
-        public async Task<ContainerInfo> RunTensorBoardContainerAsync(TrainingHistory trainingHistory, int expiresIn, IEnumerable<long> selectHistoryIds)
+        public async Task<ContainerInfo> RunTensorBoardContainerAsync(TrainingHistory trainingHistory, int expiresIn, IEnumerable<long> selectedHistoryIds)
         {
             //コンテナ名は自動生成
             //使用できる文字など、命名規約はコンテナ管理サービス側によるが、
@@ -869,35 +869,34 @@ namespace Nssol.Platypus.Logic
             };
 
             // 追加でマウントする学習がある場合
-            if (selectHistoryIds.Count() != 0)
+            if (selectedHistoryIds != null && selectedHistoryIds.Count() != 0)
             {
                 entryPoint = "/usr/local/bin/tensorboard --logdir " + trainingHistory.Id + ":/kqi/output/" + trainingHistory.Id;
                 NfsVolumeMounts = new List<NfsVolumeMountModel>()
                 {
                     new NfsVolumeMountModel()
                     {
-                        Name = "nfs-output-" + trainingHistory.Id.ToString(),
-                        MountPath = "/kqi/output/" + trainingHistory.Id.ToString(),
+                        Name = "nfs-output-" + trainingHistory.Id,
+                        MountPath = "/kqi/output/" + trainingHistory.Id,
                         SubPath = trainingHistory.Id.ToString(),
                         Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
                         ServerPath = CurrentUserInfo.SelectedTenant.TrainingContainerOutputNfsPath
                     }
                 };
 
-                for (int i = 0; i < selectHistoryIds.Count(); i++)
+                foreach(long id in selectedHistoryIds)
                 {
-                    entryPoint = entryPoint + "," + selectHistoryIds.ElementAt(i) + ":/kqi/output/" + selectHistoryIds.ElementAt(i);
+                    entryPoint = entryPoint + "," + id + ":/kqi/output/" + id;
                     NfsVolumeMounts.Add(new NfsVolumeMountModel() 
                         { 
-                            Name = "nfs-output-" + selectHistoryIds.ElementAt(i).ToString(),
-                            MountPath = "/kqi/output/" + selectHistoryIds.ElementAt(i).ToString(),
-                            SubPath = selectHistoryIds.ElementAt(i).ToString(),
+                            Name = "nfs-output-" + id,
+                            MountPath = "/kqi/output/" + id,
+                            SubPath = id.ToString(),
                             Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
                             ServerPath = CurrentUserInfo.SelectedTenant.TrainingContainerOutputNfsPath
                         });
                 };
             }
-
 
             //コンテナを起動するために必要な設定値をインスタンス化
             var inputModel = new RunContainerInputModel()

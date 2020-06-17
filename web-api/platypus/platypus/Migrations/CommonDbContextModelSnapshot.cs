@@ -1078,6 +1078,8 @@ namespace Nssol.Platypus.Migrations
                     b.Property<string>("ModifiedBy")
                         .IsRequired();
 
+                    b.Property<string>("MountedTrainingHistoryIds");
+
                     b.Property<string>("Name")
                         .IsRequired();
 
@@ -1162,8 +1164,6 @@ namespace Nssol.Platypus.Migrations
 
                     b.Property<string>("ModifiedBy")
                         .IsRequired();
-
-                    b.Property<string>("MountTrainingHistoryIds");
 
                     b.Property<string>("Name")
                         .IsRequired();

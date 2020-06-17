@@ -10,7 +10,7 @@ using Nssol.Platypus.DataAccess;
 namespace Nssol.Platypus.Migrations
 {
     [DbContext(typeof(CommonDbContext))]
-    [Migration("20200616060005_v2.1.1")]
+    [Migration("20200617135512_v2.1.1")]
     partial class v211
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1080,6 +1080,8 @@ namespace Nssol.Platypus.Migrations
                     b.Property<string>("ModifiedBy")
                         .IsRequired();
 
+                    b.Property<string>("MountedTrainingHistoryIds");
+
                     b.Property<string>("Name")
                         .IsRequired();
 
@@ -1164,8 +1166,6 @@ namespace Nssol.Platypus.Migrations
 
                     b.Property<string>("ModifiedBy")
                         .IsRequired();
-
-                    b.Property<string>("MountTrainingHistoryIds");
 
                     b.Property<string>("Name")
                         .IsRequired();

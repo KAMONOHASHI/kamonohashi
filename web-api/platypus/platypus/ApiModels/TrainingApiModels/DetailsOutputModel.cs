@@ -75,8 +75,6 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
 
             // 待機時間と実行時間の設定
             SetWaitingAndExecutionTimes(history);
-
-            MountTrainingHistoryIds = history.MountTrainingHistoryIds;
         }
 
         /// <summary>
@@ -253,11 +251,5 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
             TimeSpan span = finshedTime.Value - startingTime.Value;
             return span.ToString(@"%d'd '%h'h '%m'm'", CultureInfo.InvariantCulture);
         }
-
-        /// <summary>
-        /// マウントした学習ID
-        /// tensorboard起動時に追加した学習履歴IDが入る
-        /// </summary>
-        public string MountTrainingHistoryIds { get; set; }
     }
 }
