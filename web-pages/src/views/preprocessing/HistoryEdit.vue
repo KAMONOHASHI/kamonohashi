@@ -60,9 +60,16 @@
               :key="index"
               class="outputDataId"
             >
-              <el-link type="primary" @click="redirectDataEdit(outputDataId)">
+              <el-link
+                v-if="$store.getters['account/isAvailableData']"
+                type="primary"
+                @click="redirectDataEdit(outputDataId)"
+              >
                 {{ outputDataId }}
               </el-link>
+              <span v-else type="primary">
+                {{ outputDataId }}
+              </span>
             </span>
           </div>
         </div>
