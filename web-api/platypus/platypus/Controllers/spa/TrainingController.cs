@@ -842,7 +842,7 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 foreach (long selectedHistoryId in model.selectedHistoryIds)
                 {
-                    mountedTrainingHistoryIds = selectedHistoryId + ",";
+                    mountedTrainingHistoryIds = mountedTrainingHistoryIds + selectedHistoryId + ",";
                 }
                 mountedTrainingHistoryIds = mountedTrainingHistoryIds.TrimEnd(',');
             }

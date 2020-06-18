@@ -22,6 +22,22 @@
           停止
         </el-button>
         <kqi-display-text-form label="残り時間" :value="remainingTime" />
+        <el-form-item
+          v-if="selectedMountHistories.length !== 0"
+          label="マウントした学習"
+        >
+          <span class="selectedMountHistories">
+            <span
+              v-for="selectedMountHistory in selectedMountHistories"
+              :key="selectedMountHistory.id"
+              class="selectedMountHistory"
+            >
+              <el-button>
+                {{ selectedMountHistory.fullName }}
+              </el-button>
+            </span>
+          </span>
+        </el-form-item>
       </div>
       <div v-else>
         利用可能リソース待機中...
@@ -141,7 +157,7 @@ export default {
 
       this.polling = false
 
-      if (this.statusName === 'None' && this.mountedHistories.length === 0) {
+      if (this.mountedHistories.length === 0) {
         this.mountedHistories = []
         this.historiesToMount.forEach(history => {
           if (history.id !== +this.id) {
@@ -168,6 +184,13 @@ export default {
       // 追加でマウントする学習がある場合
       let selectedHistoryIds = []
       if (this.selectedMountHistories) {
+        this.selectedMountHistories.sort(function(a, b) {
+          if (a.id > b.id) {
+            return 1
+          } else {
+            return -1
+          }
+        })
         this.selectedMountHistories.forEach(history => {
           selectedHistoryIds.push(history.id)
         })
@@ -197,4 +220,13 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.selectedMountHistory {
+  margin: 10px;
+}
+
+.selectedMountHistories {
+  display: inline-block;
+  width: 100%;
+}
+</style>
