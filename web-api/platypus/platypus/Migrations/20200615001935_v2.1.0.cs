@@ -35,19 +35,19 @@ namespace Nssol.Platypus.Migrations
                 name: "LocalDataSet",
                 table: "TrainingHistories",
                 nullable: false,
-                defaultValue: false);
+                defaultValue: true);
 
             migrationBuilder.AddColumn<bool>(
                 name: "LocalDataSet",
                 table: "NotebookHistories",
                 nullable: false,
-                defaultValue: false);
+                defaultValue: true);
 
             migrationBuilder.AddColumn<bool>(
                 name: "LocalDataSet",
                 table: "InferenceHistories",
                 nullable: false,
-                defaultValue: false);
+                defaultValue: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
