@@ -188,7 +188,8 @@ def list_path_pairs(id):
     api = rest.DataSetApi(configuration.get_api_client())
     result = api.list_dataset_pathpairs(id)
     for x in result:
-      print(x.data_path + " " + x.stored_path)
+      print(repr(x.data_path)[1:-1])
+      print(repr(x.stored_path)[1:-1])
 
 @data_set.command('list-data-types')
 def list_data_types():
