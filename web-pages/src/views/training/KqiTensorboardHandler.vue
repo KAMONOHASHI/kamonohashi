@@ -24,15 +24,17 @@
         <kqi-display-text-form label="残り時間" :value="remainingTime" />
         <el-form-item
           v-if="selectedMountHistories.length !== 0"
-          label="マウントした学習"
+          label="追加した学習結果"
         >
-          <span class="selectedMountHistories">
+          <span class="selected-mount-histories">
             <span
               v-for="selectedMountHistory in selectedMountHistories"
               :key="selectedMountHistory.id"
-              class="selectedMountHistory"
             >
-              <el-button>
+              <el-button
+                slot="referenc"
+                @click="showMountedHistory(selectedMountHistory.id)"
+              >
                 {{ selectedMountHistory.fullName }}
               </el-button>
             </span>
@@ -57,6 +59,7 @@
       <kqi-training-history-selector
         v-model="selectedMountHistories"
         :histories="mountedHistories"
+        :tensor-board-flag="true"
         multiple
       />
     </span>
@@ -100,8 +103,8 @@ export default {
       polling: false, // ポーリング中かの判定フラグ
       expiresIn: 3, // 起動期間(h)
       remainingTime: null, // 残り起動期間の文字列表記('0d 1h 0m')
-      selectedMountHistories: [],
-      mountedHistories: [],
+      selectedMountHistories: [], // 選択した学習履歴
+      mountedHistories: [], // セレクタで表示される学習履歴
     }
   },
   computed: {
@@ -109,6 +112,7 @@ export default {
   },
   // 準備ができたらステータスのポーリング開始
   async created() {
+    this.selectedMountHistories = []
     await this.fetchHistoriesToMount({
       status: [
         'Running',
@@ -157,23 +161,21 @@ export default {
 
       this.polling = false
 
-      if (this.mountedHistories.length === 0) {
-        this.mountedHistories = []
-        this.historiesToMount.forEach(history => {
-          if (history.id !== +this.id) {
-            this.mountedHistories.push(history)
+      this.mountedHistories = []
+      this.historiesToMount.forEach(history => {
+        if (history.id !== +this.id) {
+          this.mountedHistories.push(history)
+        }
+      })
+
+      if (this.tensorboard.mountedTrainingHistoryIds !== null) {
+        this.selectedMountHistories = []
+        this.tensorboard.mountedTrainingHistoryIds.forEach(id => {
+          let tmp = this.historiesToMount.find(history => history.id === id)
+          if (tmp) {
+            this.selectedMountHistories.push(tmp)
           }
         })
-
-        this.selectedMountHistories = []
-        if (this.tensorboard.mountedTrainingHistoryIds !== null) {
-          this.tensorboard.mountedTrainingHistoryIds.forEach(id => {
-            let tmp = this.historiesToMount.find(history => history.id === id)
-            if (tmp !== null) {
-              this.selectedMountHistories.push(tmp)
-            }
-          })
-        }
       }
     },
     // TensorBoard起動
@@ -216,16 +218,16 @@ export default {
       this.statusName = 'Deleting'
       await this.deleteTensorboard(this.id)
     },
+    async showMountedHistory(selectedMountHistoryId) {
+      this.selectedMountHistories = []
+      this.$router.push('/training/' + selectedMountHistoryId)
+    },
   },
 }
 </script>
 
 <style lang="scss" scoped>
-.selectedMountHistory {
-  margin: 10px;
-}
-
-.selectedMountHistories {
+.selected-mount-histories {
   display: inline-block;
   width: 100%;
 }

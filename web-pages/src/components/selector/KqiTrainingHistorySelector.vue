@@ -1,7 +1,7 @@
 <!--name: 学習履歴セレクタ,-->
 <!--description: 学習履歴を選択するドロップダウンメニュー。選択すると詳細がホバーで出る。,-->
 <template>
-  <el-form-item label="マウントする学習" prop="training">
+  <el-form-item :label="title" prop="training">
     <el-popover
       v-if="!multiple"
       ref="detail-popover"
@@ -62,6 +62,16 @@ export default {
         return []
       },
     },
+    // tensorBoardの設定で使用されているかのフラグ
+    tensorBoardFlag: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  data() {
+    return {
+      title: 'マウントする学習',
+    }
   },
   computed: {
     computedValue: function() {
@@ -73,6 +83,11 @@ export default {
         return this.value[0]
       }
     },
+  },
+  created() {
+    if (this.tensorBoardFlag) {
+      this.title = '追加する学習結果'
+    }
   },
   methods: {
     async onChange(training) {

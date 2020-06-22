@@ -837,15 +837,6 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonError(HttpStatusCode.ServiceUnavailable, $"Failed to run tensorboard container: {result.Status}");
             }
 
-            string mountedTrainingHistoryIds = null;
-            if (model.selectedHistoryIds != null && model.selectedHistoryIds.Count() != 0)
-            {
-                foreach (long selectedHistoryId in model.selectedHistoryIds)
-                {
-                    mountedTrainingHistoryIds = mountedTrainingHistoryIds + selectedHistoryId + ",";
-                }
-                mountedTrainingHistoryIds = mountedTrainingHistoryIds.TrimEnd(',');
-            }
             container = new TensorBoardContainer()
             {
                 Name = result.Name,
@@ -856,8 +847,10 @@ namespace Nssol.Platypus.Controllers.spa
                 Host = result.Host,
                 PortNo = result.Port,
                 ExpiresIn = expiresIn,
-                MountedTrainingHistoryIds = mountedTrainingHistoryIds
+                MountedTrainingHistoryIdList = model.selectedHistoryIds.ToList<long>()
             };
+
+            container.MountedTrainingHistoryIds = container.GetMountedTrainingHistoryIds();
 
             // コンテナテーブルにInsertする
             tensorBoardContainerRepository.Add(container);

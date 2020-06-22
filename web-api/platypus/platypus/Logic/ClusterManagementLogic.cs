@@ -927,7 +927,7 @@ namespace Nssol.Platypus.Logic
                 },
                 ClusterManagerToken = token,
                 IsNodePort = true, //ランダムポート指定。アクセス先ポートが動的に決まるようになる。
-                EntryPoint = "/usr/local/bin/tensorboard --logdir /kqi/output"
+                EntryPoint = entryPoint
             };
 
             var outModel = await clusterManagementService.RunContainerAsync(inputModel);

@@ -46,16 +46,7 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
                     RemainingTime = null;
                 }
 
-                if (container.MountedTrainingHistoryIds != null)
-                {
-                    string[] historyIds = container.MountedTrainingHistoryIds.Split(',');
-                    List<long> mountedTrainingHistoryIds = new List<long>();
-                    foreach (string id in historyIds)
-                    {
-                        mountedTrainingHistoryIds.Add(long.Parse(id));
-                    }
-                    MountedTrainingHistoryIds = mountedTrainingHistoryIds;
-                }
+                MountedTrainingHistoryIds = container.GetMountedTrainingHistoryIdList();
             }
         }
 

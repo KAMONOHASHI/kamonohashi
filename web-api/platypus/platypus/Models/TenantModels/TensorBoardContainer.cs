@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -71,5 +73,50 @@ namespace Nssol.Platypus.Models.TenantModels
         /// マウントした学習履歴ID
         /// </summary>
         public string MountedTrainingHistoryIds { get; set; }
+
+        /// <summary>
+        /// マウントした学習履歴IDリスト
+        /// </summary>
+        [NotMapped]
+        public List<long> MountedTrainingHistoryIdList { get; set; }
+
+        /// <summary>
+        /// マウントした学習履歴ID
+        /// </summary>
+        /// リストの情報をカンマ区切りで1つにまとめる
+        public string GetMountedTrainingHistoryIds()
+        {
+            if ( MountedTrainingHistoryIdList == null || MountedTrainingHistoryIdList.Count < 1)
+            {
+                return null;
+            }
+            foreach (long selectedHistoryId in MountedTrainingHistoryIdList)
+            {
+                MountedTrainingHistoryIds = MountedTrainingHistoryIds + selectedHistoryId + ",";
+            }
+            MountedTrainingHistoryIds = MountedTrainingHistoryIds.TrimEnd(',');
+            return MountedTrainingHistoryIds;
+        }
+
+
+        /// <summary>
+        /// マウントした学習履歴IDのリスト表現
+        /// </summary>
+        /// <returns>マウントした学習履歴ID</returns>
+        public List<long> GetMountedTrainingHistoryIdList()
+        {
+            if (MountedTrainingHistoryIds == null)
+            {
+                return new List<long>();
+            }
+            string[] historyIds = MountedTrainingHistoryIds.Split(',');
+            List<long> mountedTrainingHistoryIds = new List<long>();
+            foreach (string id in historyIds)
+            {
+                mountedTrainingHistoryIds.Add(long.Parse(id));
+            }
+            MountedTrainingHistoryIdList = mountedTrainingHistoryIds;
+            return MountedTrainingHistoryIdList;
+        }
     }
 }

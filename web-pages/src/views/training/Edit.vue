@@ -252,11 +252,9 @@
             </el-form-item>
           </div>
           <el-form-item label="TensorBoard">
-            <br />
             <kqi-tensorboard-handler
               :id="String(detail.id)"
               :visible="dialogVisible"
-              :select-histories="form.selectHistories"
             />
           </el-form-item>
 
@@ -349,7 +347,6 @@ export default {
         name: null,
         favorite: false,
         memo: null,
-        selectHistories: [],
         tags: [],
       },
       title: '',
