@@ -19,17 +19,21 @@ data:
             echo "dataset get failed"
         fi
         # default: create symlink to raw-data, $LOCAL_DATASET = True : copy raw-data to local
-        prepare_cmd='ln -s "/kqi/raw/${stored_path}" "/kqi/input/${file_path}"'
+        prepare_cmd='ln -s "/kqi/raw/${stored_path}" "/kqi/input/${file_path_c_quote}"'
         if [ $LOCAL_DATASET = "True" ]; then
-            prepare_cmd='cp "/kqi/raw/${stored_path}" "/kqi/input/${file_path}"'
+            prepare_cmd='cp "/kqi/raw/${stored_path}" "/kqi/input/${file_path_c_quote}"'
         fi
-        while read file_path stored_path
+        while true
         do
-            mkdir -p "/kqi/input/$(dirname ${file_path})" && eval ${prepare_cmd}
-        if [ $? -ne 0 ]; then
-            echo "create dataset failed"
-            exit 0
-        fi
+            read -r file_path
+            read -r stored_path
+            if [ -z "$stored_path" ] ; then break; fi
+            printf -v file_path_c_quote %b "$file_path"
+            mkdir -p /kqi/input/$(dirname "${file_path}") && eval ${prepare_cmd}
+            if [ $? -ne 0 ]; then
+                echo "create dataset failed"
+                exit 0
+            fi
         done </kqi/tmp/datapairs.txt
     fi
   main: |
