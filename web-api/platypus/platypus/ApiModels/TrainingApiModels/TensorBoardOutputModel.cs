@@ -46,7 +46,11 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
                     RemainingTime = null;
                 }
 
-                MountedTrainingHistoryIds = container.GetMountedTrainingHistoryIdList();
+                MountedTrainingHistoryIds = new List<long>();
+                foreach (long mountedTrainingHistoryId in container.GetMountedTrainingHistoryIdList())
+                {
+                    MountedTrainingHistoryIds.Add(mountedTrainingHistoryId);
+                }
             }
         }
 

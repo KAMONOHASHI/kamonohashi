@@ -32,7 +32,7 @@
               :key="selectedMountHistory.id"
             >
               <el-button
-                slot="referenc"
+                class="el-input"
                 @click="showMountedHistory(selectedMountHistory.id)"
               >
                 {{ selectedMountHistory.fullName }}

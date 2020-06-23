@@ -81,25 +81,6 @@ namespace Nssol.Platypus.Models.TenantModels
         public List<long> MountedTrainingHistoryIdList { get; set; }
 
         /// <summary>
-        /// マウントした学習履歴ID
-        /// </summary>
-        /// リストの情報をカンマ区切りで1つにまとめる
-        public string GetMountedTrainingHistoryIds()
-        {
-            if ( MountedTrainingHistoryIdList == null || MountedTrainingHistoryIdList.Count < 1)
-            {
-                return null;
-            }
-            foreach (long selectedHistoryId in MountedTrainingHistoryIdList)
-            {
-                MountedTrainingHistoryIds = MountedTrainingHistoryIds + selectedHistoryId + ",";
-            }
-            MountedTrainingHistoryIds = MountedTrainingHistoryIds.TrimEnd(',');
-            return MountedTrainingHistoryIds;
-        }
-
-
-        /// <summary>
         /// マウントした学習履歴IDのリスト表現
         /// </summary>
         /// <returns>マウントした学習履歴ID</returns>
@@ -109,13 +90,7 @@ namespace Nssol.Platypus.Models.TenantModels
             {
                 return new List<long>();
             }
-            string[] historyIds = MountedTrainingHistoryIds.Split(',');
-            List<long> mountedTrainingHistoryIds = new List<long>();
-            foreach (string id in historyIds)
-            {
-                mountedTrainingHistoryIds.Add(long.Parse(id));
-            }
-            MountedTrainingHistoryIdList = mountedTrainingHistoryIds;
+            MountedTrainingHistoryIdList = JsonConvert.DeserializeObject<List<long>>(MountedTrainingHistoryIds);
             return MountedTrainingHistoryIdList;
         }
     }

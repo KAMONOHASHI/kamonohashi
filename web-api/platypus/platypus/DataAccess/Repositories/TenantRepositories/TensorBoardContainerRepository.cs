@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using Nssol.Platypus.DataAccess.Core;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories;
 using Nssol.Platypus.Infrastructure;
@@ -76,6 +77,19 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
                 Update(container);
             }
             return true;
+        }
+
+        /// <summary>
+        /// tensorBoardコンテナ情報を追加
+        /// </summary>
+        /// <param name="container">tensorBoardコンテナ情報</param>
+        public override void Add(TensorBoardContainer container)
+        {
+            if (container.MountedTrainingHistoryIdList != null && container.MountedTrainingHistoryIdList.Count > 0)
+            {
+                container.MountedTrainingHistoryIds = JsonConvert.SerializeObject(container.MountedTrainingHistoryIdList);
+            }
+            base.Add(container);
         }
     }
 }

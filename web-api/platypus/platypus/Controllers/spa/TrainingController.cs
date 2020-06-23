@@ -847,10 +847,8 @@ namespace Nssol.Platypus.Controllers.spa
                 Host = result.Host,
                 PortNo = result.Port,
                 ExpiresIn = expiresIn,
-                MountedTrainingHistoryIdList = model.selectedHistoryIds.ToList<long>()
+                MountedTrainingHistoryIdList = model.selectedHistoryIds
             };
-
-            container.MountedTrainingHistoryIds = container.GetMountedTrainingHistoryIds();
 
             // コンテナテーブルにInsertする
             tensorBoardContainerRepository.Add(container);

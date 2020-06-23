@@ -31,7 +31,7 @@ namespace Nssol.Platypus.Logic.Interfaces
         /// <param name="expiresIn">生存期間(秒)</param>
         /// <param name="selectHistoryIds">追加でマウントする学習履歴ID</param>
         /// <returns>作成したコンテナのステータス</returns>
-        Task<ContainerInfo> RunTensorBoardContainerAsync(TrainingHistory trainingHistory, int expiresIn, IEnumerable<long> selectHistoryIds);
+        Task<ContainerInfo> RunTensorBoardContainerAsync(TrainingHistory trainingHistory, int expiresIn, List<long> selectHistoryIds);
 
         /// <summary>
         /// 新規に画像認識の訓練用コンテナを作成する。

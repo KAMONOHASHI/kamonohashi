@@ -813,8 +813,9 @@ namespace Nssol.Platypus.Logic
         /// </summary>
         /// <param name="trainingHistory">対象の学習履歴</param>
         /// <param name="expiresIn">生存期間(秒)</param>
+        /// <param name="selectedHistoryIds">追加でマウントする学習履歴ID</param>
         /// <returns>作成したコンテナのステータス</returns>
-        public async Task<ContainerInfo> RunTensorBoardContainerAsync(TrainingHistory trainingHistory, int expiresIn, IEnumerable<long> selectedHistoryIds)
+        public async Task<ContainerInfo> RunTensorBoardContainerAsync(TrainingHistory trainingHistory, int expiresIn, List<long> selectedHistoryIds)
         {
             //コンテナ名は自動生成
             //使用できる文字など、命名規約はコンテナ管理サービス側によるが、
