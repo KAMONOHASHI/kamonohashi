@@ -297,7 +297,7 @@ export default {
 }
 
 .el-select ::v-deep .el-select__tags-text {
-  max-width: 345px;
+  max-width: 15vw;
   overflow: hidden;
   text-overflow: ellipsis;
   display: inline-block;
