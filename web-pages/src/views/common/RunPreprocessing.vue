@@ -295,4 +295,12 @@ export default {
 .el-select {
   width: 100% !important;
 }
+
+.el-select ::v-deep .el-select__tags-text {
+  max-width: 345px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+  vertical-align: middle;
+}
 </style>

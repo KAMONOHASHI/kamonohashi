@@ -27,17 +27,29 @@
           label="追加した学習結果"
         >
           <span class="selected-mount-histories">
-            <span
+            <div
               v-for="selectedMountHistory in selectedMountHistories"
               :key="selectedMountHistory.id"
             >
-              <el-button
-                class="el-input"
-                @click="showMountedHistory(selectedMountHistory.id)"
+              <el-popover
+                ref="mountDetail"
+                title="追加した学習詳細"
+                trigger="hover"
+                width="350"
+                placement="left"
               >
-                {{ selectedMountHistory.fullName }}
-              </el-button>
-            </span>
+                <kqi-training-history-details
+                  :training="selectedMountHistory"
+                />
+                <el-button
+                  slot="reference"
+                  class="el-input selected-mount-history"
+                  @click="showMountedHistory(selectedMountHistory.id)"
+                >
+                  {{ selectedMountHistory.fullName }}
+                </el-button>
+              </el-popover>
+            </div>
           </span>
         </el-form-item>
       </div>
@@ -79,6 +91,7 @@
 <script>
 import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
 import KqiTrainingHistorySelector from '@/components/selector/KqiTrainingHistorySelector'
+import KqiTrainingHistoryDetails from '@/components/selector/KqiTrainingHistoryDetails'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('training')
 const kqiHost = process.env.VUE_APP_KAMONOHASHI_HOST || window.location.hostname
@@ -87,6 +100,7 @@ export default {
   components: {
     KqiDisplayTextForm,
     KqiTrainingHistorySelector,
+    KqiTrainingHistoryDetails,
   },
   props: {
     id: {
@@ -230,5 +244,10 @@ export default {
 .selected-mount-histories {
   display: inline-block;
   width: 100%;
+}
+
+.selected-mount-history {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>

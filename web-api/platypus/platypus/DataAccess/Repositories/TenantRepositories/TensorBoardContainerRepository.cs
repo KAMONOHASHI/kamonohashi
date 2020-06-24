@@ -3,7 +3,6 @@ using Newtonsoft.Json;
 using Nssol.Platypus.DataAccess.Core;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories;
 using Nssol.Platypus.Infrastructure;
-using Nssol.Platypus.Models;
 using Nssol.Platypus.Models.TenantModels;
 using System;
 using System.Collections.Generic;
@@ -82,14 +81,14 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
         /// <summary>
         /// tensorBoardコンテナ情報を追加
         /// </summary>
-        /// <param name="container">tensorBoardコンテナ情報</param>
-        public override void Add(TensorBoardContainer container)
+        /// <param name="entity">tensorBoardコンテナ情報</param>
+        public override void Add(TensorBoardContainer entity)
         {
-            if (container.MountedTrainingHistoryIdList != null && container.MountedTrainingHistoryIdList.Count > 0)
+            if (entity.MountedTrainingHistoryIdList != null && entity.MountedTrainingHistoryIdList.Count > 0)
             {
-                container.MountedTrainingHistoryIds = JsonConvert.SerializeObject(container.MountedTrainingHistoryIdList);
+                entity.MountedTrainingHistoryIds = JsonConvert.SerializeObject(entity.MountedTrainingHistoryIdList);
             }
-            base.Add(container);
+            base.Add(entity);
         }
     }
 }

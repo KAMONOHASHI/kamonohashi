@@ -22,6 +22,7 @@
         clearable
         :value="computedValue"
         :multiple="multiple"
+        class=".el-select__tags-text"
         @change="onChange"
       >
         <el-option
@@ -111,6 +112,14 @@ export default {
 
 <style lang="scss" scoped>
 .el-select {
-  width: 100% !important;
+  width: 100%;
+}
+
+.el-select ::v-deep .el-select__tags-text {
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+  vertical-align: middle;
 }
 </style>

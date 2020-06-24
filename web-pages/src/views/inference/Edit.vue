@@ -51,7 +51,7 @@
                   <el-button
                     v-if="$store.getters['account/isAvailableTraining']"
                     slot="reference"
-                    class="el-input"
+                    class="el-input parent-taraining-history"
                     @click="showParent(parent.id)"
                   >
                     {{ parent.fullName }}
@@ -485,5 +485,10 @@ export default {
 .favorite {
   font-size: 20px;
   color: rgb(230, 162, 60);
+}
+
+.parent-taraining-history {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>

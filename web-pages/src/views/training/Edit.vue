@@ -55,7 +55,7 @@
                   <kqi-training-history-details :training="parent" />
                   <el-button
                     slot="reference"
-                    class="el-input"
+                    class="el-input parent_history"
                     @click="showParent(parent.id)"
                   >
                     {{ parent.fullName }}
@@ -560,5 +560,10 @@ export default {
 .favorite {
   font-size: 20px;
   color: rgb(230, 162, 60);
+}
+
+.parent_history {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>
