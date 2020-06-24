@@ -55,7 +55,7 @@
                   <kqi-training-history-details :training="parent" />
                   <el-button
                     slot="reference"
-                    class="el-input parent_history"
+                    class="el-input button"
                     @click="showParent(parent.id)"
                   >
                     {{ parent.fullName }}
@@ -79,7 +79,7 @@
               <el-button
                 v-if="$store.getters['account/isAvailableDataSet']"
                 v-popover:dataSetDetail
-                class="el-input"
+                class="el-input button"
                 @click="redirectEditDataSet"
               >
                 {{ detail.dataSet.name }}
@@ -562,7 +562,7 @@ export default {
   color: rgb(230, 162, 60);
 }
 
-.parent_history {
+.button {
   overflow: hidden;
   text-overflow: ellipsis;
 }
