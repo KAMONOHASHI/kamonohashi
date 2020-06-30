@@ -37,6 +37,20 @@ namespace Nssol.Platypus.ApiModels.NotebookApiModels
                 });
             }
 
+            if (history.ParentInferenceMaps != null)
+            {
+                Inferences = new List<InferenceApiModels.InferenceIndexOutputModel>();
+                foreach (var parentInferenceMap in history.ParentInferenceMaps)
+                {
+                    var parentInference = new InferenceApiModels.InferenceIndexOutputModel(parentInferenceMap.Parent);
+                    Inferences.Add(parentInference);
+                }
+                Inferences.Sort(delegate (InferenceApiModels.InferenceIndexOutputModel parentInference1, InferenceApiModels.InferenceIndexOutputModel parentInference2)
+                {
+                    return parentInference1.Id.CompareTo(parentInference2.Id);
+                });
+            }
+
             Options = new List<KeyValuePair<string, string>>();
             GitModel = new GitCommitOutputModel()
             {
@@ -94,6 +108,11 @@ namespace Nssol.Platypus.ApiModels.NotebookApiModels
         /// 親学習履歴
         /// </summary>
         public List<TrainingApiModels.IndexOutputModel> Parents { get; set; }
+
+        /// <summary>
+        /// 親推論履歴
+        /// </summary>
+        public List<InferenceApiModels.InferenceIndexOutputModel> Inferences { get; set; }
 
         /// <summary>
         /// ノートブックモデルGit情報

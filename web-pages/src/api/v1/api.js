@@ -245,6 +245,7 @@ let api = {
   inference: {
     getSimple: gen.ApiV1InferencesSimpleGet,
     get: gen.ApiV1InferencesGet,
+    getMount: gen.ApiV1InferencesMountGet,
     post: gen.ApiV1InferencesRunPost,
     getById: gen.ApiV1InferencesByIdGet,
     deleteById: gen.ApiV1InferencesByIdDelete,

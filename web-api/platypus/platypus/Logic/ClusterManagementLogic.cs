@@ -1110,7 +1110,7 @@ namespace Nssol.Platypus.Logic
                 notEditableEnvList.Add("DATASET_ID", "");
             }
 
-            // 親を指定した場合は親の出力結果を/kqi/parentにマウント
+            // 親学習を指定した場合は親学習の出力結果を/kqi/parentにマウント
             if (notebookHistory.ParentTrainingMaps != null)
             {
                 foreach (var parentTrainingMap in notebookHistory.ParentTrainingMaps)
@@ -1122,6 +1122,23 @@ namespace Nssol.Platypus.Logic
                         SubPath = parentTrainingMap.ParentId.ToString(),
                         Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
                         ServerPath = CurrentUserInfo.SelectedTenant.TrainingContainerOutputNfsPath,
+                        ReadOnly = true
+                    });
+                }
+            }
+
+            // 親推論を指定した場合は親推論の出力結果を/kqi/inferenceにマウント
+            if (notebookHistory.ParentInferenceMaps != null)
+            {
+                foreach (var parentInferenceMap in notebookHistory.ParentInferenceMaps)
+                {
+                    inputModel.NfsVolumeMounts.Add(new NfsVolumeMountModel()
+                    {
+                        Name = "nfs-inference-" + parentInferenceMap.ParentId.ToString(),
+                        MountPath = "/kqi/inference/" + parentInferenceMap.ParentId.ToString(),
+                        SubPath = parentInferenceMap.ParentId.ToString(),
+                        Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
+                        ServerPath = CurrentUserInfo.SelectedTenant.InferenceContainerOutputNfsPath,
                         ReadOnly = true
                     });
                 }

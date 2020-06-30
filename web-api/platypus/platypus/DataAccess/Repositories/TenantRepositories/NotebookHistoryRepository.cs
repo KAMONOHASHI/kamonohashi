@@ -57,6 +57,8 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
                             .Include(t => t.ParentTrainingMaps).ThenInclude(map => map.Parent)
                                                                .ThenInclude(p => p.TagMaps)
                                                                .ThenInclude(map => map.Tag)
+                            .Include(t => t.ParentInferenceMaps).ThenInclude(map => map.Parent)
+                                                                .ThenInclude(p => p.DataSet)
                             .SingleOrDefaultAsync();
         }
 
@@ -162,6 +164,38 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
         public void DetachParentToNotebookAsync(NotebookHistory notebookHistory)
         {
             DeleteModelAll<NotebookHistoryParentTrainingMap>(map => map.NotebookHistoryId == notebookHistory.Id);
+        }
+
+        /// <summary>
+        /// ノートブック履歴IDに親推論履歴IDを紐づける
+        /// </summary>
+        /// <param name="notebookHistory">ノートブック履歴</param>
+        /// <param name="parentInference">親推論履歴</param>
+        public NotebookHistoryParentInferenceMap AttachParentInferenceToNotebookAsync(NotebookHistory notebookHistory, InferenceHistory parentInference)
+        {
+            if (parentInference == null)
+            {
+                //指定がなければ何もしない
+                return null;
+            }
+
+            NotebookHistoryParentInferenceMap map = new NotebookHistoryParentInferenceMap()
+            {
+                NotebookHistoryId = notebookHistory.Id,
+                ParentId = parentInference.Id
+            };
+
+            AddModel(map);
+            return map;
+        }
+
+        /// <summary>
+        /// ノートブック履歴IDに紐づいている親推論履歴IDを解除する
+        /// </summary>
+        /// <param name="notebookHistory">ノートブック履歴</param>
+        public void DetachParentInferenceToNotebookAsync(NotebookHistory notebookHistory)
+        {
+            DeleteModelAll<NotebookHistoryParentInferenceMap>(map => map.NotebookHistoryId == notebookHistory.Id);
         }
     }
 }

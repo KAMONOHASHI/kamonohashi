@@ -189,6 +189,11 @@ namespace Nssol.Platypus.Models.TenantModels
         public virtual ICollection<NotebookHistoryParentTrainingMap> ParentTrainingMaps { get; set; }
 
         /// <summary>
+        /// 親推論履歴のマッピング
+        /// </summary>
+        public virtual ICollection<NotebookHistoryParentInferenceMap> ParentInferenceMaps { get; set; }
+
+        /// <summary>
         /// コンテナ起動時に使用する名前
         /// </summary>
         public string Key
