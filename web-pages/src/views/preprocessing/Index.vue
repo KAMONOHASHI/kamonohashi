@@ -71,6 +71,7 @@
     <router-view
       @done="done"
       @cancel="closeDialog"
+      @close="closeDialog"
       @copy="handleCopy"
       @return="back"
       @shell="shell"
