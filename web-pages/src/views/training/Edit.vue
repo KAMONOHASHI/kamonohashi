@@ -253,7 +253,7 @@
           </div>
           <el-form-item label="TensorBoard">
             <kqi-tensorboard-handler
-              :id="String(detail.id)"
+              :id="String(id)"
               :visible="dialogVisible"
             />
           </el-form-item>

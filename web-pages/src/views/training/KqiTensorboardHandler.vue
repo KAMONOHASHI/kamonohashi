@@ -128,6 +128,16 @@ export default {
   computed: {
     ...mapGetters(['tensorboard', 'historiesToMount']),
   },
+  watch: {
+    async $route() {
+      // 学習履歴間での画面移動時、tensorboardの表示を更新する
+      this.selectedMountHistories = []
+      if (this.visible && this.id >= 0) {
+        this.checkTensorBoardStatus()
+      }
+    },
+  },
+
   // 準備ができたらステータスのポーリング開始
   async created() {
     this.selectedMountHistories = []
@@ -142,6 +152,10 @@ export default {
         'Error',
       ],
     })
+    // 起動時の状態を確認する
+    if (this.visible && this.id >= 0) {
+      this.checkTensorBoardStatus()
+    }
     this.intervalId = setInterval(() => {
       // 可視状態かつIDがセットされている状態でのみ、ポーリング
       if (this.visible && this.id >= 0) {
@@ -171,7 +185,15 @@ export default {
       this.polling = true
 
       await this.fetchTensorboard(this.id)
-      this.statusName = this.tensorboard.statusType
+      // statusNameがStarting(起動中)でstatusTypeがNoneの場合は、起動ボタン押下後でtensorboardがまだ立っていないのでstatusNameを更新しない
+      if (
+        !(
+          this.statusName === 'Starting' &&
+          this.tensorboard.statusType === 'None'
+        )
+      ) {
+        this.statusName = this.tensorboard.statusType
+      }
       this.remainingTime = this.tensorboard.remainingTime
       this.tensorboardUrl = this.tensorboard.nodePort
         ? `http://${kqiHost}:${this.tensorboard.nodePort}`
@@ -237,7 +259,6 @@ export default {
       await this.deleteTensorboard(this.id)
     },
     async showMountedHistory(selectedMountHistoryId) {
-      this.selectedMountHistories = []
       this.$router.push('/training/' + selectedMountHistoryId)
     },
   },
