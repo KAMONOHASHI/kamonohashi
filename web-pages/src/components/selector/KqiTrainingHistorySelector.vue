@@ -63,16 +63,11 @@ export default {
         return []
       },
     },
-    // tensorBoardの設定で使用されているかのフラグ
-    tensorBoardFlag: {
-      type: Boolean,
-      default: false,
+    // title
+    title: {
+      type: String,
+      default: 'マウントする学習',
     },
-  },
-  data() {
-    return {
-      title: 'マウントする学習',
-    }
   },
   computed: {
     computedValue: function() {
@@ -84,11 +79,6 @@ export default {
         return this.value[0]
       }
     },
-  },
-  created() {
-    if (this.tensorBoardFlag) {
-      this.title = '追加する学習結果'
-    }
   },
   methods: {
     async onChange(training) {

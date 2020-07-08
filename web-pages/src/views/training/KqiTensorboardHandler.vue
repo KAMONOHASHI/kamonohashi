@@ -71,7 +71,7 @@
       <kqi-training-history-selector
         v-model="selectedMountHistories"
         :histories="mountedHistories"
-        :tensor-board-flag="true"
+        :title="'追加する学習結果'"
         multiple
       />
     </span>
