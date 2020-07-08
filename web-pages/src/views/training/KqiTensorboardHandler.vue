@@ -24,7 +24,7 @@
         <kqi-display-text-form label="残り時間" :value="remainingTime" />
         <el-form-item
           v-if="selectedMountHistories.length !== 0"
-          label="追加した学習結果"
+          label="追加表示した学習結果"
         >
           <span class="selected-mount-histories">
             <div
@@ -33,7 +33,7 @@
             >
               <el-popover
                 ref="mountDetail"
-                title="追加した学習詳細"
+                title="追加表示した学習詳細"
                 trigger="hover"
                 width="350"
                 placement="left"
@@ -58,22 +58,26 @@
       </div>
     </span>
     <span v-else-if="statusName === 'None'">
-      <el-button type="primary" @click="runTensorBoard">起動</el-button>
-      <el-form-item label="起動期間(h)">
-        <el-slider
-          v-model="expiresIn"
-          class="el-input"
-          :min="1"
-          :max="24"
-          show-input
-        />
-      </el-form-item>
-      <kqi-training-history-selector
-        v-model="selectedMountHistories"
-        :histories="mountedHistories"
-        :title="'追加する学習結果'"
-        multiple
-      />
+      <el-row>
+        <el-col :offset="1" :span="23">
+          <el-button type="primary" @click="runTensorBoard">起動</el-button>
+          <el-form-item label="起動期間(h)">
+            <el-slider
+              v-model="expiresIn"
+              class="el-input"
+              :min="1"
+              :max="24"
+              show-input
+            />
+          </el-form-item>
+          <kqi-training-history-selector
+            v-model="selectedMountHistories"
+            :histories="mountedHistories"
+            :title="'追加表示する学習結果'"
+            multiple
+          />
+        </el-col>
+      </el-row>
     </span>
     <span v-else-if="statusName === 'Starting'">
       起動中...
