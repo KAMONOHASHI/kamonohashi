@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis;
 using Nssol.Platypus.ApiModels.Components;
 using Nssol.Platypus.ApiModels.DataApiModels;
 using Nssol.Platypus.Controllers.Util;
@@ -537,6 +538,11 @@ namespace Nssol.Platypus.Controllers.spa
             return JsonOK(tags.Select(t => t.Name));
         }
 
+        /// <summary>
+        /// 未使用タグの削除
+        /// </summary>
+        /// <param name="tagRepository"></param>
+        /// <returns></returns>
         [HttpDelete("datatags")]
         //[Filters.PermissionFilter(MenuCode.System)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
@@ -545,6 +551,29 @@ namespace Nssol.Platypus.Controllers.spa
             tagRepository.DeleteUnUsedDataTags();
             unitOfWork.Commit();
             return JsonNoContent();
+        }
+
+        /// <summary>
+        /// 選択されているデータにタグを追加する
+        /// </summary>
+        [HttpPut("datatags")]
+        [Filters.PermissionFilter(MenuCode.Data)]
+        [ProducesResponseType((int) HttpStatusCode.OK)]
+        public async Task<IActionResult> CreateTagsAsync(IEnumerable<int> dataIds, IEnumerable<string> tags)
+        {
+            foreach (int dataId in dataIds) 
+            {
+                IEnumerable<string> dataTags = tagLogic.GetAllDataTag(dataId).Select(t => t.Name);
+                List<string> tagList = dataTags.ToList();
+                foreach (string tag in tags)
+                {
+                    tagList.Add(tag);
+                }
+                dataTags = tagList;
+                await tagLogic.EditDataTagsAsync(dataId, dataTags);
+            }
+            unitOfWork.Commit();
+            return JsonOK(new Data());
         }
     }
 }

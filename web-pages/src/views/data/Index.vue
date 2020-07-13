@@ -9,6 +9,9 @@
       />
       <el-col class="right-top-button" :span="8">
         <div>
+          <el-button v-if="selections.length !== 0" @click="showTagCreate">
+            タグ作成
+          </el-button>
           <el-button
             v-if="$store.getters['account/isAvailablePreprocessing']"
             @click="openPreprocessingDialog"
@@ -184,6 +187,12 @@ export default {
     },
     redirectPreprocessingPage() {
       this.$router.push('/preprocessing')
+    },
+    showTagCreate() {
+      this.$router.push({
+        name: 'tag',
+        params: { selectedData: this.selections },
+      })
     },
   },
 }

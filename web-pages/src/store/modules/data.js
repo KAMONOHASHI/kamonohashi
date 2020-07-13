@@ -102,6 +102,11 @@ const actions = {
       fileId: fileId,
     })
   },
+
+  // eslint-disable-next-line no-unused-vars
+  async putDataTags({ commit }, params) {
+    await api.data.putDataTags(params)
+  },
 }
 
 // mutations

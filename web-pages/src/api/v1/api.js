@@ -134,6 +134,7 @@ let api = {
     putFilesById: gen.ApiV1DataByIdFilesPost,
     deleteFilesById: gen.ApiV1DataByIdFilesByFileIdDelete,
     getDataTags: gen.ApiV1DataDatatagsGet,
+    putDataTags: gen.ApiV1DataDatatagsPut,
   },
 
   datasets: {

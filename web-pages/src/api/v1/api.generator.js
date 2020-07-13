@@ -1445,7 +1445,60 @@ export const ApiV1DataDatatagsGetURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
- * 
+ * 選択されているデータにタグを追加する
+ * request: ApiV1DataDatatagsPut
+ * url: ApiV1DataDatatagsPutURL
+ * method: ApiV1DataDatatagsPut_TYPE
+ * raw_url: ApiV1DataDatatagsPut_RAW_URL
+ * @param dataIds - 
+ * @param tags - 
+ */
+export const ApiV1DataDatatagsPut = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v1/data/datatags'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['dataIds'] !== undefined) {
+    queryParameters['dataIds'] = parameters['dataIds']
+  }
+  if (parameters['tags'] !== undefined) {
+    queryParameters['tags'] = parameters['tags']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('put', domain + path, body, queryParameters, form, config)
+}
+export const ApiV1DataDatatagsPut_RAW_URL = function() {
+  return '/api/v1/data/datatags'
+}
+export const ApiV1DataDatatagsPut_TYPE = function() {
+  return 'put'
+}
+export const ApiV1DataDatatagsPutURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v1/data/datatags'
+  if (parameters['dataIds'] !== undefined) {
+    queryParameters['dataIds'] = parameters['dataIds']
+  }
+  if (parameters['tags'] !== undefined) {
+    queryParameters['tags'] = parameters['tags']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 未使用タグの削除
  * request: ApiV1DataDatatagsDelete
  * url: ApiV1DataDatatagsDeleteURL
  * method: ApiV1DataDatatagsDelete_TYPE
