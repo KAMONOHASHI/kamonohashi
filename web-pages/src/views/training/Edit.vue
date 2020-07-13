@@ -55,7 +55,7 @@
                   <kqi-training-history-details :training="parent" />
                   <el-button
                     slot="reference"
-                    class="el-input"
+                    class="el-input button"
                     @click="showParent(parent.id)"
                   >
                     {{ parent.fullName }}
@@ -79,7 +79,7 @@
               <el-button
                 v-if="$store.getters['account/isAvailableDataSet']"
                 v-popover:dataSetDetail
-                class="el-input"
+                class="el-input button"
                 @click="redirectEditDataSet"
               >
                 {{ detail.dataSet.name }}
@@ -253,7 +253,7 @@
           </div>
           <el-form-item label="TensorBoard">
             <kqi-tensorboard-handler
-              :id="String(detail.id)"
+              :id="String(id)"
               :visible="dialogVisible"
             />
           </el-form-item>
@@ -394,6 +394,7 @@ export default {
     async retrieveData() {
       await this.fetchDetail(this.id)
       await this.fetchUploadedFiles(this.detail.id)
+
       if (
         this.detail.statusType === 'Running' ||
         this.detail.statusType === 'Error'
@@ -559,5 +560,10 @@ export default {
 .favorite {
   font-size: 20px;
   color: rgb(230, 162, 60);
+}
+
+.button {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>

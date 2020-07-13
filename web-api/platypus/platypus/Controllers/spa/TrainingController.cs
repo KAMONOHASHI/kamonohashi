@@ -830,7 +830,7 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             //新規にTensorBoardコンテナを起動する。
-            var result = await clusterManagementLogic.RunTensorBoardContainerAsync(trainingHistory, expiresIn);
+            var result = await clusterManagementLogic.RunTensorBoardContainerAsync(trainingHistory, expiresIn, model.selectedHistoryIds);
             if (result == null || result.Status.Succeed() == false)
             {
                 //起動に失敗した場合、ステータス Failed で返す。
@@ -846,11 +846,13 @@ namespace Nssol.Platypus.Controllers.spa
                 TrainingHistoryId = id,
                 Host = result.Host,
                 PortNo = result.Port,
-                ExpiresIn = expiresIn
+                ExpiresIn = expiresIn,
+                MountedTrainingHistoryIdList = model.selectedHistoryIds
             };
 
             // コンテナテーブルにInsertする
             tensorBoardContainerRepository.Add(container);
+            
             unitOfWork.Commit();
 
             return JsonOK(new TensorBoardOutputModel(container, result.Status, containerOptions.WebEndPoint));
