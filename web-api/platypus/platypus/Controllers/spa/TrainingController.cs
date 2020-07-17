@@ -337,11 +337,15 @@ namespace Nssol.Platypus.Controllers.spa
                 model.ConditionNote = details.ConditionNote;
                 if (details.Status.IsRunning())
                 {
-                    var endpointInfo = await clusterManagementLogic.GetContainerEndpointInfoAsync(history.Key, CurrentUserInfo.SelectedTenant.Name, false);
-                    foreach (var endpoint in endpointInfo.EndPoints ?? new List<EndPointInfo>())
+                    // 開放ポート未指定時には行わない
+                    if (model.Ports != null && model.Ports.Count > 0)
                     {
-                        //ノードポート番号を返す
-                        model.NodePorts.Add(new KeyValuePair<string, string>(endpoint.Key, endpoint.Port.ToString()));
+                        var endpointInfo = await clusterManagementLogic.GetContainerEndpointInfoAsync(history.Key, CurrentUserInfo.SelectedTenant.Name, false);
+                        foreach (var endpoint in endpointInfo.EndPoints ?? new List<EndPointInfo>())
+                        {
+                            //ノードポート番号を返す
+                            model.NodePorts.Add(new KeyValuePair<string, string>(endpoint.Key, endpoint.Port.ToString()));
+                        }
                     }
                 }
             }
