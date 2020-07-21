@@ -132,7 +132,7 @@ def delete(id):
 def update(id, name, memo, favorite):
     """Update inference"""
     api = rest.InferenceApi(configuration.get_api_client())
-    model = rest.InferenceApiModelsEditInputModel(name=name, memo=memo, favorite=favorite)
+    model = rest.TrainingApiModelsEditInputModel(name=name, memo=memo, favorite=favorite)
     result = api.update_inference(id, model=model)
     print('updated', result.id)
 
