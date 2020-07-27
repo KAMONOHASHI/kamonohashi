@@ -217,7 +217,7 @@ export default {
               })
               await this.$notify.success({
                 title: 'Success',
-                message: `ID:${dataId}の前処理に成功しました`,
+                message: `ID:${dataId}の前処理を実行しました`,
               })
               this.error = null
             } catch (e) {
