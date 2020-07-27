@@ -1,7 +1,7 @@
 <!--name: 学習履歴セレクタ,-->
 <!--description: 学習履歴を選択するドロップダウンメニュー。選択すると詳細がホバーで出る。,-->
 <template>
-  <el-form-item label="マウントする学習" prop="training">
+  <el-form-item :label="title" prop="training">
     <el-popover
       v-if="!multiple"
       ref="detail-popover"
@@ -22,6 +22,7 @@
         clearable
         :value="computedValue"
         :multiple="multiple"
+        class=".el-select__tags-text"
         @change="onChange"
       >
         <el-option
@@ -62,6 +63,11 @@ export default {
         return []
       },
     },
+    // title
+    title: {
+      type: String,
+      default: 'マウントする学習',
+    },
   },
   computed: {
     computedValue: function() {
@@ -96,6 +102,14 @@ export default {
 
 <style lang="scss" scoped>
 .el-select {
-  width: 100% !important;
+  width: 100%;
+}
+
+.el-select ::v-deep .el-select__tags-text {
+  max-width: 15vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+  vertical-align: middle;
 }
 </style>
