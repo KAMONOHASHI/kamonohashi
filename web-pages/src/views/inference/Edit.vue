@@ -51,7 +51,7 @@
                   <el-button
                     v-if="$store.getters['account/isAvailableTraining']"
                     slot="reference"
-                    class="el-input"
+                    class="el-input button"
                     @click="showParent(parent.id)"
                   >
                     {{ parent.fullName }}
@@ -78,7 +78,7 @@
               <el-button
                 v-if="$store.getters['account/isAvailableDataSet']"
                 v-popover:dataSetDetail
-                class="el-input"
+                class="el-input button"
                 @click="redirectEditDataSet"
               >
                 {{ detail.dataSet.name }}
@@ -485,5 +485,10 @@ export default {
 .favorite {
   font-size: 20px;
   color: rgb(230, 162, 60);
+}
+
+.button {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>

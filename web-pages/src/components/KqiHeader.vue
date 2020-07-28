@@ -84,6 +84,13 @@ export default {
       if (tenant) {
         await this.fetchAccount()
         this.user = this.account
+        if (this.user.userName.length > 25) {
+          this.user.userName = this.user.userName.substr(0, 25) + '...'
+        }
+        if (this.user.selectedTenant.displayName.length > 25) {
+          this.user.selectedTenant.displayName =
+            this.user.selectedTenant.displayName.substr(0, 25) + '...'
+        }
       } else {
         this.user = null
       }

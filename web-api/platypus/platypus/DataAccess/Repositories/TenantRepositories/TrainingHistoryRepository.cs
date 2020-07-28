@@ -202,7 +202,6 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
             AddModel(map);
             return map;
         }
-
         #region 添付ファイル操作
 
         /// <summary>

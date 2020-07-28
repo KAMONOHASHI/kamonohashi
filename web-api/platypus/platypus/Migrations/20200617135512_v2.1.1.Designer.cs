@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Nssol.Platypus.DataAccess;
@@ -9,9 +10,10 @@ using Nssol.Platypus.DataAccess;
 namespace Nssol.Platypus.Migrations
 {
     [DbContext(typeof(CommonDbContext))]
-    partial class CommonDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200617135512_v2.1.1")]
+    partial class v211
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -853,39 +855,6 @@ namespace Nssol.Platypus.Migrations
                     b.HasIndex("TenantId");
 
                     b.ToTable("NotebookHistories");
-                });
-
-            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.NotebookHistoryParentInferenceMap", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("CreatedAt");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired();
-
-                    b.Property<DateTime>("ModifiedAt");
-
-                    b.Property<string>("ModifiedBy")
-                        .IsRequired();
-
-                    b.Property<long>("NotebookHistoryId");
-
-                    b.Property<long>("ParentId");
-
-                    b.Property<long>("TenantId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NotebookHistoryId");
-
-                    b.HasIndex("ParentId");
-
-                    b.HasIndex("TenantId", "NotebookHistoryId", "ParentId")
-                        .IsUnique();
-
-                    b.ToTable("NotebookHistoryParentInferenceMaps");
                 });
 
             modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.NotebookHistoryParentTrainingMap", b =>
@@ -1733,24 +1702,6 @@ namespace Nssol.Platypus.Migrations
                     b.HasOne("Nssol.Platypus.Models.TenantModels.DataSet", "DataSet")
                         .WithMany()
                         .HasForeignKey("DataSetId");
-
-                    b.HasOne("Nssol.Platypus.Models.Tenant", "Tenant")
-                        .WithMany()
-                        .HasForeignKey("TenantId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.NotebookHistoryParentInferenceMap", b =>
-                {
-                    b.HasOne("Nssol.Platypus.Models.TenantModels.NotebookHistory", "NotebookHistory")
-                        .WithMany("ParentInferenceMaps")
-                        .HasForeignKey("NotebookHistoryId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Nssol.Platypus.Models.TenantModels.InferenceHistory", "Parent")
-                        .WithMany()
-                        .HasForeignKey("ParentId")
-                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Nssol.Platypus.Models.Tenant", "Tenant")
                         .WithMany()
