@@ -134,7 +134,7 @@ namespace Nssol.Platypus.Controllers.spa
                 {
                     string key = entry.DataType.Name;
                     var dataFile = new ApiModels.DataApiModels.IndexOutputModel(entry.Data);
-                    entities[key].Add(dataFile);
+                    entities[key].Insert(0, dataFile);
                 }
 
                 model.Entries = entities;

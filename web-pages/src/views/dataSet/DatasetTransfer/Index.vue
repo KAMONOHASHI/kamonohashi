@@ -240,13 +240,6 @@ export default {
         entry.length,
       )
       let dataList = entry.slice(pageStartIndex, pageEndIndex)
-      dataList.sort(function(a, b) {
-        if (a.id < b.id) {
-          return 1
-        } else {
-          return -1
-        }
-      })
       viewInfo.currentPage = nextPage
       viewInfo.dataList = dataList
       viewInfo.filteredTotal = entry.length
