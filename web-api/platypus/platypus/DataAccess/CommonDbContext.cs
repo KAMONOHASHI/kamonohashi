@@ -185,7 +185,7 @@ namespace Nssol.Platypus.DataAccess
         /// </summary>
         public virtual DbSet<NotebookHistoryParentTrainingMap> NotebookHistoryParentTrainingMaps { get; set; }
         /// <summary>
-        /// ノートブック履歴と親学習履歴の中間テーブル
+        /// ノートブック履歴と親推論履歴の中間テーブル
         /// </summary>
         public virtual DbSet<NotebookHistoryParentInferenceMap> NotebookHistoryParentInferenceMaps { get; set; }
 
