@@ -91,6 +91,21 @@ def remove_unused_api_and_rename_operation_id(spec):
         '/api/v1/inferences/{id}/halt': {
             'post': 'halt_inference',
         },
+        '/api/v1/inferences/run': {
+            'post': 'create_inference',
+        },
+        '/api/v1/inferences/{id}': {
+            'get': 'get_inference', 
+            'delete': 'delete_inference', 
+            'put': 'update_inference',
+        },
+        '/api/v1/inferences/{id}/files': {
+            'get': 'list_inference_files',
+            'post': 'add_inference_file',
+        },
+        '/api/v1/inferences/{id}/files/{fileId}': {
+            'delete': 'delete_inference_file',
+        },
         '/api/v1/training': {
             'get': 'list_training', 
         },
