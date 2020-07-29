@@ -443,4 +443,8 @@ export default {
   font-size: 20px;
   color: rgb(230, 162, 60);
 }
+.scroll {
+  height: 125px;
+  overflow-y: scroll;
+}
 </style>
