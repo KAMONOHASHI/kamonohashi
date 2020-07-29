@@ -4,10 +4,18 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Nssol.Platypus.Migrations
 {
-    public partial class v211a : Migration
+    public partial class v211 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            // tensorboardコンテナにマウントした学習履歴IDカラム追加
+            migrationBuilder.AddColumn<string>(
+                name: "MountedTrainingHistoryIds",
+                table: "TensorBoardContainers",
+                nullable: true,
+                defaultValue: null
+            );
+
             migrationBuilder.CreateTable(
                 name: "NotebookHistoryParentInferenceMaps",
                 columns: table => new
@@ -66,6 +74,12 @@ namespace Nssol.Platypus.Migrations
         {
             migrationBuilder.DropTable(
                 name: "NotebookHistoryParentInferenceMaps");
+
+            // tensorboardコンテナのマウントした学習履歴IDカラム削除
+            migrationBuilder.DropColumn(
+                name: "MountedTrainingHistoryIds",
+                table: "TensorBoardContainers"
+            );
         }
     }
 }
