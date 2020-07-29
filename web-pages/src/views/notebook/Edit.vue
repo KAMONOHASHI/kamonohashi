@@ -38,27 +38,59 @@
           </el-form-item>
           <div v-if="detail.parents && detail.parents.length > 0">
             <el-form-item label="マウントした学習">
-              <div v-for="parent in detail.parents" :key="parent.id">
-                <el-popover
-                  ref="parentDetail"
-                  title="マウントした学習詳細"
-                  trigger="hover"
-                  width="350"
-                  placement="right"
-                >
-                  <kqi-training-history-details :training="parent" />
-                  <el-button
-                    v-if="$store.getters['account/isAvailableTraining']"
-                    slot="reference"
-                    class="el-input button"
-                    @click="showParent(parent.id)"
+              <br />
+              <div :class="{ scroll: detail.parents.length > 3 }">
+                <div v-for="parent in detail.parents" :key="parent.id">
+                  <el-popover
+                    ref="parentDetail"
+                    title="マウントした学習詳細"
+                    trigger="hover"
+                    width="350"
+                    placement="right"
                   >
-                    {{ parent.fullName }}
-                  </el-button>
-                  <el-button v-else slot="reference" class="el-input">
-                    {{ parent.fullName }}
-                  </el-button>
-                </el-popover>
+                    <kqi-training-history-details :training="parent" />
+                    <el-button
+                      v-if="$store.getters['account/isAvailableTraining']"
+                      slot="reference"
+                      class="el-input"
+                      @click="showParent(parent.id)"
+                    >
+                      {{ parent.fullName }}
+                    </el-button>
+                    <el-button v-else slot="reference" class="el-input">
+                      {{ parent.fullName }}
+                    </el-button>
+                  </el-popover>
+                </div>
+              </div>
+            </el-form-item>
+          </div>
+          <div v-if="detail.inferences && detail.inferences.length > 0">
+            <el-form-item label="マウントした推論">
+              <br />
+              <div :class="{ scroll: detail.inferences.length > 3 }">
+                <div v-for="inference in detail.inferences" :key="inference.id">
+                  <el-popover
+                    ref="parentDetail"
+                    title="マウントした推論詳細"
+                    trigger="hover"
+                    width="350"
+                    placement="right"
+                  >
+                    <kqi-inference-history-details :inference="inference" />
+                    <el-button
+                      v-if="$store.getters['account/isAvailableInference']"
+                      slot="reference"
+                      class="el-input"
+                      @click="showInference(inference.id)"
+                    >
+                      {{ inference.fullName }}
+                    </el-button>
+                    <el-button v-else slot="reference" class="el-input">
+                      {{ inference.fullName }}
+                    </el-button>
+                  </el-popover>
+                </div>
               </div>
             </el-form-item>
           </div>
@@ -253,6 +285,7 @@ import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
 import KqiDeleteButton from '@/components/KqiDeleteButton'
 import KqiDataSetDetails from '@/components/selector/KqiDataSetDetails'
 import KqiTrainingHistoryDetails from '@/components/selector/KqiTrainingHistoryDetails'
+import KqiInferenceHistoryDetails from '@/components/selector/KqiInferenceHistoryDetails'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('notebook')
 const kqiHost = process.env.VUE_APP_KAMONOHASHI_HOST || window.location.hostname
@@ -265,6 +298,7 @@ export default {
     KqiDeleteButton,
     KqiDataSetDetails,
     KqiTrainingHistoryDetails,
+    KqiInferenceHistoryDetails,
   },
   props: {
     id: {
@@ -369,6 +403,10 @@ export default {
       // 表示内容の変更は、beforeUpdated内で行う
       this.$router.push('/training/' + parentId)
     },
+    showInference(inferenceId) {
+      // 表示内容の変更は、beforeUpdated内で行う
+      this.$router.push('/inference/' + inferenceId)
+    },
     redirectEditDataSet() {
       this.$router.push('/dataset/edit/' + this.detail.dataSet.id)
     },
@@ -412,9 +450,8 @@ export default {
   font-size: 20px;
   color: rgb(230, 162, 60);
 }
-
-.button {
-  overflow: hidden;
-  text-overflow: ellipsis;
+.scroll {
+  height: 125px;
+  overflow-y: scroll;
 }
 </style>

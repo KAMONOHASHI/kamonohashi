@@ -2707,6 +2707,52 @@ export const ApiV1InferencesGetURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * マウントする推論履歴を取得
+ * request: ApiV1InferencesMountGet
+ * url: ApiV1InferencesMountGetURL
+ * method: ApiV1InferencesMountGet_TYPE
+ * raw_url: ApiV1InferencesMountGet_RAW_URL
+ * @param status - ステータス
+ */
+export const ApiV1InferencesMountGet = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v1/inferences/mount'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['status'] !== undefined) {
+    queryParameters['Status'] = parameters['status']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV1InferencesMountGet_RAW_URL = function() {
+  return '/api/v1/inferences/mount'
+}
+export const ApiV1InferencesMountGet_TYPE = function() {
+  return 'get'
+}
+export const ApiV1InferencesMountGetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v1/inferences/mount'
+  if (parameters['status'] !== undefined) {
+    queryParameters['Status'] = parameters['status']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * 指定されたIDの推論履歴の詳細情報を取得
  * request: ApiV1InferencesByIdGet
  * url: ApiV1InferencesByIdGetURL

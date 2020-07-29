@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Nssol.Platypus.DataAccess;
@@ -9,9 +10,10 @@ using Nssol.Platypus.DataAccess;
 namespace Nssol.Platypus.Migrations
 {
     [DbContext(typeof(CommonDbContext))]
-    partial class CommonDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200722054159_v2.1.1a")]
+    partial class v211a
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1110,8 +1112,6 @@ namespace Nssol.Platypus.Migrations
 
                     b.Property<string>("ModifiedBy")
                         .IsRequired();
-
-                    b.Property<string>("MountedTrainingHistoryIds");
 
                     b.Property<string>("Name")
                         .IsRequired();

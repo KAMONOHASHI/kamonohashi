@@ -257,6 +257,27 @@ namespace Nssol.Platypus.Controllers.spa
         }
 
         /// <summary>
+        /// マウントする推論履歴を取得
+        /// </summary>
+        /// <param name="filter">検索条件</param>
+        [HttpGet("mount")]
+        [Filters.PermissionFilter(MenuCode.Notebook)]
+        [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
+        public IActionResult GetTrainingToMount(ApiModels.InferenceApiModels.MountInputModel filter)
+        {
+            var data = inferenceHistoryRepository.GetAllIncludeDataSetAndParentWithOrdering();
+
+            // ステータスを限定する
+            if (filter.Status != null)
+            {
+                data = data.Where(t => filter.Status.Contains(t.GetStatus().ToString()));
+            }
+
+            // SQLが多重実行されることを防ぐため、ToListで即時発行させたうえで、結果を生成
+            return JsonOK(data.ToList().Select(history => GetUpdatedIndexOutputModelAsync(history).Result));
+        }
+
+        /// <summary>
         /// 指定されたIDの推論履歴の詳細情報を取得
         /// </summary>
         /// <param name="id">推論履歴ID</param>
