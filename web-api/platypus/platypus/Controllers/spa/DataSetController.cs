@@ -134,7 +134,13 @@ namespace Nssol.Platypus.Controllers.spa
                 {
                     string key = entry.DataType.Name;
                     var dataFile = new ApiModels.DataApiModels.IndexOutputModel(entry.Data);
-                    entities[key].Insert(0, dataFile);
+                    entities[key].Add(dataFile);
+                }
+
+                //各種別内のデータについて、データIDの降順に並び替える
+                foreach (var dataType in dataTypeRepository.GetAllWithOrderby(d => d.SortOrder, true))
+                {
+                    entities[dataType.Name].Reverse();
                 }
 
                 model.Entries = entities;
