@@ -33,7 +33,6 @@ class InferenceApi(object):
             api_client = ApiClient()
         self.api_client = api_client
 
-
     def add_inference_file(self, id, **kwargs):  # noqa: E501
         """add_inference_file  # noqa: E501
 
@@ -45,7 +44,7 @@ class InferenceApi(object):
         :param async_req bool
         :param int id: (required)
         :param ComponentsAddFileInputModel model:
-        :return: InferenceApiModelsAttachedFileOutputModel
+        :return: TrainingApiModelsAttachedFileOutputModel
                  If the method is called asynchronously,
                  returns the request thread.
         """
@@ -67,7 +66,7 @@ class InferenceApi(object):
         :param async_req bool
         :param int id: (required)
         :param ComponentsAddFileInputModel model:
-        :return: InferenceApiModelsAttachedFileOutputModel
+        :return: TrainingApiModelsAttachedFileOutputModel
                  If the method is called asynchronously,
                  returns the request thread.
         """
