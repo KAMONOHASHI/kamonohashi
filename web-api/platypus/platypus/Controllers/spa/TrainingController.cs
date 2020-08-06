@@ -337,11 +337,15 @@ namespace Nssol.Platypus.Controllers.spa
                 model.ConditionNote = details.ConditionNote;
                 if (details.Status.IsRunning())
                 {
-                    var endpointInfo = await clusterManagementLogic.GetContainerEndpointInfoAsync(history.Key, CurrentUserInfo.SelectedTenant.Name, false);
-                    foreach (var endpoint in endpointInfo.EndPoints ?? new List<EndPointInfo>())
+                    // 開放ポート未指定時には行わない
+                    if (model.Ports != null && model.Ports.Count > 0)
                     {
-                        //ノードポート番号を返す
-                        model.NodePorts.Add(new KeyValuePair<string, string>(endpoint.Key, endpoint.Port.ToString()));
+                        var endpointInfo = await clusterManagementLogic.GetContainerEndpointInfoAsync(history.Key, CurrentUserInfo.SelectedTenant.Name, false);
+                        foreach (var endpoint in endpointInfo.EndPoints ?? new List<EndPointInfo>())
+                        {
+                            //ノードポート番号を返す
+                            model.NodePorts.Add(new KeyValuePair<string, string>(endpoint.Key, endpoint.Port.ToString()));
+                        }
                     }
                 }
             }
@@ -830,7 +834,7 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             //新規にTensorBoardコンテナを起動する。
-            var result = await clusterManagementLogic.RunTensorBoardContainerAsync(trainingHistory, expiresIn);
+            var result = await clusterManagementLogic.RunTensorBoardContainerAsync(trainingHistory, expiresIn, model.selectedHistoryIds);
             if (result == null || result.Status.Succeed() == false)
             {
                 //起動に失敗した場合、ステータス Failed で返す。
@@ -846,11 +850,13 @@ namespace Nssol.Platypus.Controllers.spa
                 TrainingHistoryId = id,
                 Host = result.Host,
                 PortNo = result.Port,
-                ExpiresIn = expiresIn
+                ExpiresIn = expiresIn,
+                MountedTrainingHistoryIdList = model.selectedHistoryIds
             };
 
             // コンテナテーブルにInsertする
             tensorBoardContainerRepository.Add(container);
+            
             unitOfWork.Commit();
 
             return JsonOK(new TensorBoardOutputModel(container, result.Status, containerOptions.WebEndPoint));

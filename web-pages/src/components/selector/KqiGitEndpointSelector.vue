@@ -106,7 +106,16 @@ export default {
 .selectGit {
   width: 100%;
 }
+
 .left-margin {
   padding-left: 30px;
+}
+
+.el-select ::v-deep .el-select__tags-text {
+  max-width: 15vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+  vertical-align: middle;
 }
 </style>

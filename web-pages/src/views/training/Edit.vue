@@ -55,7 +55,7 @@
                   <kqi-training-history-details :training="parent" />
                   <el-button
                     slot="reference"
-                    class="el-input"
+                    class="el-input button"
                     @click="showParent(parent.id)"
                   >
                     {{ parent.fullName }}
@@ -79,7 +79,7 @@
               <el-button
                 v-if="$store.getters['account/isAvailableDataSet']"
                 v-popover:dataSetDetail
-                class="el-input"
+                class="el-input button"
                 @click="redirectEditDataSet"
               >
                 {{ detail.dataSet.name }}
@@ -132,16 +132,27 @@
             />
           </el-form-item>
 
-          <el-form-item v-if="detail.options" label="環境変数">
-            <div class="el-input">
+          <el-form-item label="環境変数">
+            <br />
+            <div
+              v-if="detail.options && detail.options.length > 0"
+              class="el-input"
+            >
               <el-row v-for="option in detail.options" :key="option.key">
                 <el-col :span="8" :offset="1">{{ option.key }}</el-col>
                 <el-col :span="12">{{ option.value }}</el-col>
               </el-row>
             </div>
+            <div v-else>
+              －
+            </div>
           </el-form-item>
-          <el-form-item v-if="detail.ports" label="開放ポート番号">
-            <div class="el-input">
+          <el-form-item label="開放ポート番号">
+            <br />
+            <div
+              v-if="detail.ports && detail.ports.length > 0"
+              class="el-input"
+            >
               <span
                 v-for="port in detail.ports"
                 :key="port"
@@ -149,6 +160,9 @@
               >
                 {{ port }}
               </span>
+            </div>
+            <div v-else>
+              －
             </div>
           </el-form-item>
 
@@ -253,7 +267,7 @@
           </div>
           <el-form-item label="TensorBoard">
             <kqi-tensorboard-handler
-              :id="String(detail.id)"
+              :id="String(id)"
               :visible="dialogVisible"
             />
           </el-form-item>
@@ -394,6 +408,7 @@ export default {
     async retrieveData() {
       await this.fetchDetail(this.id)
       await this.fetchUploadedFiles(this.detail.id)
+
       if (
         this.detail.statusType === 'Running' ||
         this.detail.statusType === 'Error'
@@ -559,5 +574,10 @@ export default {
 .favorite {
   font-size: 20px;
   color: rgb(230, 162, 60);
+}
+
+.button {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>

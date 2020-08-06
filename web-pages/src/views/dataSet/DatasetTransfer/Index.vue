@@ -240,7 +240,6 @@ export default {
         entry.length,
       )
       let dataList = entry.slice(pageStartIndex, pageEndIndex)
-
       viewInfo.currentPage = nextPage
       viewInfo.dataList = dataList
       viewInfo.filteredTotal = entry.length

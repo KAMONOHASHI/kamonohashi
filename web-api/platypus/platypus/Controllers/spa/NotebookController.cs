@@ -28,6 +28,7 @@ namespace Nssol.Platypus.Controllers.spa
     {
         private readonly INotebookHistoryRepository notebookHistoryRepository;
         private readonly ITrainingHistoryRepository trainingHistoryRepository;
+        private readonly IInferenceHistoryRepository inferenceHistoryRepository;
         private readonly IDataSetRepository dataSetRepository;
         private readonly ITenantRepository tenantRepository;
         private readonly INodeRepository nodeRepository;
@@ -43,6 +44,7 @@ namespace Nssol.Platypus.Controllers.spa
         public NotebookController(
             INotebookHistoryRepository notebookHistoryRepository,
             ITrainingHistoryRepository trainingHistoryRepository,
+            IInferenceHistoryRepository inferenceHistoryRepository,
             IDataSetRepository dataSetRepository,
             ITenantRepository tenantRepository,
             INodeRepository nodeRepository,
@@ -55,6 +57,7 @@ namespace Nssol.Platypus.Controllers.spa
         {
             this.notebookHistoryRepository = notebookHistoryRepository;
             this.trainingHistoryRepository = trainingHistoryRepository;
+            this.inferenceHistoryRepository = inferenceHistoryRepository;
             this.dataSetRepository = dataSetRepository;
             this.tenantRepository = tenantRepository;
             this.nodeRepository = nodeRepository;
@@ -567,6 +570,29 @@ namespace Nssol.Platypus.Controllers.spa
                 }
                 notebookHistory.ParentTrainingMaps = maps;
             }
+
+            // 親推論が指定されていれば存在チェック
+            if (model.InferenceIds != null)
+            {
+                var maps = new List<NotebookHistoryParentInferenceMap>();
+
+                foreach (var parentId in model.InferenceIds)
+                {
+                    var parenInferencet = await inferenceHistoryRepository.GetByIdAsync(parentId);
+                    if (parenInferencet == null)
+                    {
+                        return JsonNotFound($"Inference ID {parentId} is not found.");
+                    }
+                    // ノートブック履歴に親学習を紐づける
+                    var map = notebookHistoryRepository.AttachParentInferenceToNotebookAsync(notebookHistory, parenInferencet);
+                    if (map != null)
+                    {
+                        maps.Add(map);
+                    }
+                }
+                notebookHistory.ParentInferenceMaps = maps;
+            }
+            
             notebookHistoryRepository.Add(notebookHistory);
             unitOfWork.Commit();
 
@@ -823,6 +849,31 @@ namespace Nssol.Platypus.Controllers.spa
                     }
                 }
                 notebookHistory.ParentTrainingMaps = maps;
+            }
+
+            // 現状のノートブック履歴IDに紐づいている親推論をすべて外す。
+            notebookHistoryRepository.DetachParentInferenceToNotebookAsync(notebookHistory);
+
+            // 親推論が指定されていれば存在チェック
+            if (model.InferenceIds != null)
+            {
+                var maps = new List<NotebookHistoryParentInferenceMap>();
+
+                foreach (var parentId in model.InferenceIds)
+                {
+                    var parenInferencet = await inferenceHistoryRepository.GetByIdAsync(parentId);
+                    if (parenInferencet == null)
+                    {
+                        return JsonNotFound($"Inference ID {parentId} is not found.");
+                    }
+                    // ノートブック履歴に親学習を紐づける
+                    var map = notebookHistoryRepository.AttachParentInferenceToNotebookAsync(notebookHistory, parenInferencet);
+                    if (map != null)
+                    {
+                        maps.Add(map);
+                    }
+                }
+                notebookHistory.ParentInferenceMaps = maps;
             }
 
             // コンテナの実行前に、ノートブック履歴を更新する（コンテナの実行に失敗した場合、そのステータスをユーザに表示するため）

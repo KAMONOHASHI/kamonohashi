@@ -137,6 +137,12 @@ namespace Nssol.Platypus.Controllers.spa
                     entities[key].Add(dataFile);
                 }
 
+                //各種別内のデータについて、データIDの降順に並び替える
+                foreach (var dataType in dataTypeRepository.GetAllWithOrderby(d => d.SortOrder, true))
+                {
+                    entities[dataType.Name].Reverse();
+                }
+
                 model.Entries = entities;
             }
 

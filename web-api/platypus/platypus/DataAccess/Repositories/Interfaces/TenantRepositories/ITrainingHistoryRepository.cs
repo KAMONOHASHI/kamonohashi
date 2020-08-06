@@ -81,7 +81,6 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories
         /// <param name="trainingHistory">学習履歴</param>
         /// <param name="parent">親学習履歴</param>
         TrainingHistoryParentMap AttachParentAsync(TrainingHistory trainingHistory, TrainingHistory parent);
-
         #region 添付ファイル操作
 
         /// <summary>

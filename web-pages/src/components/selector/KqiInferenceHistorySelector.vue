@@ -1,12 +1,12 @@
 <!--name: 学習履歴セレクタ,-->
 <!--description: 学習履歴を選択するドロップダウンメニュー。選択すると詳細がホバーで出る。,-->
 <template>
-  <el-form-item :label="title" prop="training">
+  <el-form-item label="マウントする推論" prop="inference">
     <el-popover
       v-if="!multiple"
       ref="detail-popover"
       :disabled="value.length !== 1"
-      title="学習詳細"
+      title="推論詳細"
       trigger="hover"
       width="350"
       placement="right"
@@ -22,7 +22,6 @@
         clearable
         :value="computedValue"
         :multiple="multiple"
-        class=".el-select__tags-text"
         @change="onChange"
       >
         <el-option
@@ -63,11 +62,6 @@ export default {
         return []
       },
     },
-    // title
-    title: {
-      type: String,
-      default: 'マウントする学習',
-    },
   },
   computed: {
     computedValue: function() {
@@ -81,8 +75,8 @@ export default {
     },
   },
   methods: {
-    async onChange(training) {
-      if (training === '') {
+    async onChange(inference) {
+      if (inference === '') {
         // clearボタンが押下された場合、空配列でemit
         this.$emit('input', [])
         return
@@ -90,10 +84,10 @@ export default {
 
       if (this.multiple) {
         // 複数選択の場合はObjectの配列のため、そのままemit
-        this.$emit('input', training)
+        this.$emit('input', inference)
       } else {
         // 単一選択の場合は単体Objectであるため、配列に格納してemit
-        this.$emit('input', [training])
+        this.$emit('input', [inference])
       }
     },
   },
@@ -102,14 +96,6 @@ export default {
 
 <style lang="scss" scoped>
 .el-select {
-  width: 100%;
-}
-
-.el-select ::v-deep .el-select__tags-text {
-  max-width: 15vw;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: inline-block;
-  vertical-align: middle;
+  width: 100% !important;
 }
 </style>

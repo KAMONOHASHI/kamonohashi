@@ -813,8 +813,9 @@ namespace Nssol.Platypus.Logic
         /// </summary>
         /// <param name="trainingHistory">対象の学習履歴</param>
         /// <param name="expiresIn">生存期間(秒)</param>
+        /// <param name="selectedHistoryIds">追加でマウントする学習履歴ID</param>
         /// <returns>作成したコンテナのステータス</returns>
-        public async Task<ContainerInfo> RunTensorBoardContainerAsync(TrainingHistory trainingHistory, int expiresIn)
+        public async Task<ContainerInfo> RunTensorBoardContainerAsync(TrainingHistory trainingHistory, int expiresIn, List<long> selectedHistoryIds)
         {
             //コンテナ名は自動生成
             //使用できる文字など、命名規約はコンテナ管理サービス側によるが、
@@ -839,7 +840,7 @@ namespace Nssol.Platypus.Logic
             // 上書き不可の環境変数
             var notEditableEnvList = new Dictionary<string, string>()
             {
-                { "TRAINING_ID", trainingHistory.Id.ToString()},
+                { "TRAINING_ID", trainingHistory.Id.ToString() },
                 { "KQI_SERVER", containerOptions.WebServerUrl },
                 { "KQI_TOKEN", loginLogic.GenerateToken().AccessToken },
                 { "http_proxy", containerOptions.Proxy },
@@ -853,6 +854,50 @@ namespace Nssol.Platypus.Logic
                 { "LANG", "C.UTF-8"},  // python実行時のエラー回避
                 { "EXPIRES_IN", expiresIn != 0 ? expiresIn.ToString() : "infinity"}  // コンテナ生存期間
             };
+
+            string entryPoint = "/usr/local/bin/tensorboard --logdir /kqi/output";
+            List<NfsVolumeMountModel> NfsVolumeMounts = new List<NfsVolumeMountModel>()
+            {
+                // 結果が保存されているディレクトリ
+                new NfsVolumeMountModel()
+                {
+                    Name = "nfs-output",
+                    MountPath = "/kqi/output",
+                    SubPath = trainingHistory.Id.ToString(),
+                    Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
+                    ServerPath = CurrentUserInfo.SelectedTenant.TrainingContainerOutputNfsPath
+                }
+            };
+
+            // 追加でマウントする学習がある場合
+            if (selectedHistoryIds != null && selectedHistoryIds.Count() != 0)
+            {
+                entryPoint = "/usr/local/bin/tensorboard --logdir " + trainingHistory.Id + ":/kqi/output/" + trainingHistory.Id;
+                NfsVolumeMounts = new List<NfsVolumeMountModel>()
+                {
+                    new NfsVolumeMountModel()
+                    {
+                        Name = "nfs-output-" + trainingHistory.Id,
+                        MountPath = "/kqi/output/" + trainingHistory.Id,
+                        SubPath = trainingHistory.Id.ToString(),
+                        Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
+                        ServerPath = CurrentUserInfo.SelectedTenant.TrainingContainerOutputNfsPath
+                    }
+                };
+
+                foreach(long id in selectedHistoryIds)
+                {
+                    entryPoint = entryPoint + "," + id + ":/kqi/output/" + id;
+                    NfsVolumeMounts.Add(new NfsVolumeMountModel() 
+                        { 
+                            Name = "nfs-output-" + id,
+                            MountPath = "/kqi/output/" + id,
+                            SubPath = id.ToString(),
+                            Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
+                            ServerPath = CurrentUserInfo.SelectedTenant.TrainingContainerOutputNfsPath
+                        });
+                };
+            }
 
             //コンテナを起動するために必要な設定値をインスタンス化
             var inputModel = new RunContainerInputModel()
@@ -868,18 +913,7 @@ namespace Nssol.Platypus.Logic
                 Gpu = 0,
                 KqiImage = "kamonohashi/cli:" + versionLogic.GetVersion(),
                 KqiToken = loginLogic.GenerateToken().AccessToken,
-                NfsVolumeMounts = new List<NfsVolumeMountModel>()
-                {
-                    // 結果が保存されているディレクトリ
-                    new NfsVolumeMountModel()
-                    {
-                        Name = "nfs-output",
-                        MountPath = "/kqi/output",
-                        SubPath = trainingHistory.Id.ToString(),
-                        Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
-                        ServerPath = CurrentUserInfo.SelectedTenant.TrainingContainerOutputNfsPath
-                    }
-                },
+                NfsVolumeMounts = NfsVolumeMounts,
 
                 PrepareAndFinishContainerEnvList = notEditableEnvList, // 上書き不可の環境変数を設定
                 MainContainerEnvList = notEditableEnvList, // 上書き不可の環境変数を設定
@@ -893,7 +927,8 @@ namespace Nssol.Platypus.Logic
                     new PortMappingModel() { Protocol = "TCP", Port = 6006, TargetPort = 6006, Name = "tensorboard" }
                 },
                 ClusterManagerToken = token,
-                IsNodePort = true //ランダムポート指定。アクセス先ポートが動的に決まるようになる。
+                IsNodePort = true, //ランダムポート指定。アクセス先ポートが動的に決まるようになる。
+                EntryPoint = entryPoint
             };
 
             var outModel = await clusterManagementService.RunContainerAsync(inputModel);
@@ -1081,7 +1116,8 @@ namespace Nssol.Platypus.Logic
                     { "tmp", "/kqi/tmp/" },
                     { "input", "/kqi/input/" },
                     { "git", "/kqi/git/" },
-                    { "parent", "/kqi/parent/" }
+                    { "parent", "/kqi/parent/" },
+                    { "inference", "/kqi/inference/" }
                 },
 
                 PrepareAndFinishContainerEnvList = editableEnvList, // 上書き可の環境変数を設定
@@ -1110,7 +1146,7 @@ namespace Nssol.Platypus.Logic
                 notEditableEnvList.Add("DATASET_ID", "");
             }
 
-            // 親を指定した場合は親の出力結果を/kqi/parentにマウント
+            // 親学習を指定した場合は親学習の出力結果を/kqi/parentにマウント
             if (notebookHistory.ParentTrainingMaps != null)
             {
                 foreach (var parentTrainingMap in notebookHistory.ParentTrainingMaps)
@@ -1122,6 +1158,23 @@ namespace Nssol.Platypus.Logic
                         SubPath = parentTrainingMap.ParentId.ToString(),
                         Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
                         ServerPath = CurrentUserInfo.SelectedTenant.TrainingContainerOutputNfsPath,
+                        ReadOnly = true
+                    });
+                }
+            }
+
+            // 親推論を指定した場合は親推論の出力結果を/kqi/inferenceにマウント
+            if (notebookHistory.ParentInferenceMaps != null)
+            {
+                foreach (var parentInferenceMap in notebookHistory.ParentInferenceMaps)
+                {
+                    inputModel.NfsVolumeMounts.Add(new NfsVolumeMountModel()
+                    {
+                        Name = "nfs-inference-" + parentInferenceMap.ParentId.ToString(),
+                        MountPath = "/kqi/inference/" + parentInferenceMap.ParentId.ToString(),
+                        SubPath = parentInferenceMap.ParentId.ToString(),
+                        Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
+                        ServerPath = CurrentUserInfo.SelectedTenant.InferenceContainerOutputNfsPath,
                         ReadOnly = true
                     });
                 }

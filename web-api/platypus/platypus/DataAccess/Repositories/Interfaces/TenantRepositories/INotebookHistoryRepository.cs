@@ -74,5 +74,18 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories
         /// </summary>
         /// <param name="notebookHistory">ノートブック履歴</param>
         void DetachParentToNotebookAsync(NotebookHistory notebookHistory);
+
+        /// <summary>
+        /// ノートブック履歴IDに親推論履歴IDを紐づける
+        /// </summary>
+        /// <param name="notebookHistory">ノートブック履歴</param>
+        /// <param name="parentInference">親推論履歴</param>
+        NotebookHistoryParentInferenceMap AttachParentInferenceToNotebookAsync(NotebookHistory notebookHistory, InferenceHistory parentInference);
+
+        /// <summary>
+        /// ノートブック履歴IDに紐づいている親推論履歴IDを解除する
+        /// </summary>
+        /// <param name="notebookHistory">ノートブック履歴</param>
+        void DetachParentInferenceToNotebookAsync(NotebookHistory notebookHistory);
     }
 }

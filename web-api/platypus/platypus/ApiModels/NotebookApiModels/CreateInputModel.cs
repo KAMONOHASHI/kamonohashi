@@ -32,6 +32,11 @@ namespace Nssol.Platypus.ApiModels.NotebookApiModels
         public IEnumerable<long> ParentIds { get; set; }
 
         /// <summary>
+        /// 親推論履歴ID
+        /// </summary>
+        public IEnumerable<long> InferenceIds { get; set; }
+
+        /// <summary>
         /// ノートブックモデルGit情報
         /// </summary>
         public GitCommitInputModel GitModel { get; set; }

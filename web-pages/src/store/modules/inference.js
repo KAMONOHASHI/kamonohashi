@@ -5,6 +5,7 @@ import Util from '@/util/util'
 const state = {
   histories: [],
   total: 0,
+  historiesToMount: [],
   selections: [],
   detail: {},
   events: {},
@@ -19,6 +20,9 @@ const getters = {
   },
   total(state) {
     return state.total
+  },
+  historiesToMount(state) {
+    return state.historiesToMount
   },
   selections(state) {
     return state.selections
@@ -51,6 +55,11 @@ const actions = {
     if (total !== undefined) {
       commit('setTotal', parseInt(total))
     }
+  },
+
+  async fetchHistoriesToMount({ commit }, params) {
+    let historiesToMount = (await api.inference.getMount(params)).data
+    commit('setHistoriesToMount', { historiesToMount })
   },
 
   async fetchDetail({ commit }, id) {
@@ -147,6 +156,10 @@ const mutations = {
 
   setTotal(state, total) {
     state.total = total
+  },
+
+  setHistoriesToMount(state, { historiesToMount }) {
+    state.historiesToMount = historiesToMount
   },
 
   setSelections(state, selections) {

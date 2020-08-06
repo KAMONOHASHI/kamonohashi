@@ -60,6 +60,12 @@ data:
             echo "You need to change the name of '/kqi/output/parent' or delete it. After that, please run again."
         fi
     fi
+    if [ ! -L /kqi/output/inference ]; then
+        ln -s /kqi/inference/ /kqi/output/inference
+        if [ $? -ne 0 ]; then
+            echo "You need to change the name of '/kqi/output/inference' or delete it. After that, please run again."
+        fi
+    fi
     cd /kqi/git
     @Raw(Model.EntryPoint)
     if [ $? -ne 0 ]; then

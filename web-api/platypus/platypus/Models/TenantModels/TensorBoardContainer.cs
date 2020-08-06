@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -65,6 +67,31 @@ namespace Nssol.Platypus.Models.TenantModels
         public override string ToString()
         {
             return $"{Id}({Host}:{PortNo}):{Name}:{Status}";
+        }
+
+        /// <summary>
+        /// マウントした学習履歴ID
+        /// </summary>
+        public string MountedTrainingHistoryIds { get; set; }
+
+        /// <summary>
+        /// マウントした学習履歴IDリスト
+        /// </summary>
+        [NotMapped]
+        public List<long> MountedTrainingHistoryIdList { get; set; }
+
+        /// <summary>
+        /// マウントした学習履歴IDのリスト表現
+        /// </summary>
+        /// <returns>マウントした学習履歴ID</returns>
+        public List<long> GetMountedTrainingHistoryIdList()
+        {
+            if (MountedTrainingHistoryIds == null)
+            {
+                return new List<long>();
+            }
+            MountedTrainingHistoryIdList = JsonConvert.DeserializeObject<List<long>>(MountedTrainingHistoryIds);
+            return MountedTrainingHistoryIdList;
         }
     }
 }
