@@ -81,13 +81,17 @@ const actions = {
 
   // eslint-disable-next-line no-unused-vars
   async putFile({ commit }, { id, fileInfo }) {
+    let model = { files: [] }
     for (let i = 0; i < fileInfo.length; i++) {
-      fileInfo[i].FileName = fileInfo[i].name
-      await api.data.putFilesById({
-        id: id,
-        model: fileInfo[i],
+      model.files.push({
+        fileName: fileInfo[i].name,
+        storedPath: fileInfo[i].storedPath,
       })
     }
+    await api.data.putFilesById({
+      id: id,
+      model: model,
+    })
   },
 
   // eslint-disable-next-line no-unused-vars

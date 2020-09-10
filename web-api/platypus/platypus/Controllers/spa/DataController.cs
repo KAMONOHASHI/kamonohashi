@@ -355,8 +355,8 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="dataSetRepository">DI用</param>
         [HttpPost("{id}/files")]
         [Filters.PermissionFilter(MenuCode.Data)]
-        [ProducesResponseType(typeof(DataFileOutputModel), (int)HttpStatusCode.Created)]
-        public async Task<IActionResult> AddFile(long id, [FromBody]AddFileInputModel model, [FromServices] IDataSetRepository dataSetRepository)
+        [ProducesResponseType(typeof(DataFilesOutputModel), (int)HttpStatusCode.Created)]
+        public async Task<IActionResult> AddFile(long id, [FromBody]AddFilesInputModel model, [FromServices] IDataSetRepository dataSetRepository)
         {
             //データの入力チェック
             if (!ModelState.IsValid)
@@ -377,18 +377,23 @@ namespace Nssol.Platypus.Controllers.spa
                 return checkResult;
             }
 
-            //同じファイル名は登録できない
-            var file = data.DataProperties.FirstOrDefault(d => d.Key == model.FileName);
-            if (file != null)
-            {
-                return JsonConflict($"Data {data.Name} has already a file named {model.FileName}.");
-            }
+            List<DataFilesOutputModel.File> files = new List<DataFilesOutputModel.File>();
 
-            // データファイルの登録
-            var property = dataRepository.AddFile(data, model.FileName, model.StoredPath);
+           //同じファイル名は登録できない
+            foreach(var fileinfo in model.Files)
+            {
+                var file = data.DataProperties.FirstOrDefault(d => d.Key == fileinfo.FileName);
+                if (file != null)
+                {
+                    return JsonConflict($"Data {data.Name} has already a file named {fileinfo.FileName}.");
+                }
+                // データファイルの登録
+                var property = dataRepository.AddFile(data, fileinfo.FileName, fileinfo.StoredPath);
+                files.Add(new DataFilesOutputModel.File(property.Id, property.Key, fileinfo.FileName));
+            }
             unitOfWork.Commit();
 
-            return JsonCreated(new DataFileOutputModel { Id = id, Key = property.Key, FileId = property.Id, FileName = model.FileName });
+            return JsonCreated(new DataFilesOutputModel { Id = id, Files=files });
         }
 
         /// <summary>

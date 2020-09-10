@@ -240,7 +240,7 @@ export default {
     async uploadFile(dataId) {
       let dataFileInfo = await this.$refs.dataFile.uploadFile()
       if (dataFileInfo !== undefined) {
-        this.putFile({ id: dataId, fileInfo: dataFileInfo })
+        await this.putFile({ id: dataId, fileInfo: dataFileInfo })
       }
     },
 
