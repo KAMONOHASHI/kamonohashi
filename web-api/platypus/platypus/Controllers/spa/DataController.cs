@@ -379,9 +379,9 @@ namespace Nssol.Platypus.Controllers.spa
 
             List<DataFilesOutputModel.File> files = new List<DataFilesOutputModel.File>();
 
-           //同じファイル名は登録できない
             foreach(var fileinfo in model.Files)
             {
+                // 同じファイル名は登録できない。存在した場合はエラーを返し、データ登録を取りやめる。
                 var file = data.DataProperties.FirstOrDefault(d => d.Key == fileinfo.FileName);
                 if (file != null)
                 {
