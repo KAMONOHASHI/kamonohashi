@@ -89,11 +89,11 @@ def create(name, file, memo, tags):
         tags=list(tags)
     )
     result = api.create_data(model=model)
+    model = {'files': []}
     for x in file:
         upload_info = object_storage.upload_file(api.api_client, x, 'Data')
-        model = rest.ComponentsAddFileInputModel(file_name=upload_info.file_name,
-                                                 stored_path=upload_info.stored_path)
-        api.add_data_file(result.id, model=model)
+        model['files'].append(rest.ComponentsAddFileInputModel(file_name=upload_info.file_name, stored_path=upload_info.stored_path))
+    api.add_data_file(result.id, model=model)
     print('created', result.id)
 
 
@@ -149,10 +149,11 @@ def download_files(id, destination):
 def upload_files(id, file):
     """Upload files to data"""
     api = rest.DataApi(configuration.get_api_client())
+    model = {'files': []}
     for x in file:
         upload_info = object_storage.upload_file(api.api_client, x, 'Data')
-        model = rest.ComponentsAddFileInputModel(file_name=upload_info.file_name, stored_path=upload_info.stored_path)
-        api.add_data_file(id, model=model)
+        model['files'].append(rest.ComponentsAddFileInputModel(file_name=upload_info.file_name, stored_path=upload_info.stored_path))
+    api.add_data_file(id, model=model)
 
 
 @data.command('delete-file')
