@@ -1,4 +1,4 @@
-FROM node:12.16.1-stretch AS build
+FROM node:12.18.4-stretch AS build
 
 COPY / /src
 RUN cd /src/ && npm install && npm run build 
