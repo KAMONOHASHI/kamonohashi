@@ -19,6 +19,11 @@
               :histories="trainingHistories"
               multiple
             />
+            <kqi-inference-history-selector
+              v-model="form.selectedParentInference"
+              :histories="inferenceHistories"
+              multiple
+            />
             <kqi-data-set-selector
               v-model="form.dataSetId"
               :data-sets="dataSets"
@@ -114,6 +119,11 @@
               <kqi-training-history-selector
                 v-model="form.selectedParent"
                 :histories="trainingHistories"
+                multiple
+              />
+              <kqi-inference-history-selector
+                v-model="form.selectedParentInference"
+                :histories="inferenceHistories"
                 multiple
               />
             </el-col>
@@ -252,6 +262,7 @@
 import KqiDisplayError from '@/components/KqiDisplayError'
 import KqiDataSetSelector from '@/components/selector/KqiDataSetSelector'
 import KqiTrainingHistorySelector from '@/components/selector/KqiTrainingHistorySelector'
+import KqiInferenceHistorySelector from '@/components/selector/KqiInferenceHistorySelector'
 import KqiContainerSelector from '@/components/selector/KqiContainerSelector'
 import KqiGitSelector from '@/components/selector/KqiGitSelector'
 import KqiResourceSelector from '@/components/selector/KqiResourceSelector'
@@ -273,6 +284,7 @@ export default {
     KqiDisplayError,
     KqiDataSetSelector,
     KqiTrainingHistorySelector,
+    KqiInferenceHistorySelector,
     KqiContainerSelector,
     KqiGitSelector,
     KqiResourceSelector,
@@ -338,6 +350,7 @@ export default {
   computed: {
     ...mapGetters({
       trainingHistories: ['training/historiesToMount'],
+      inferenceHistories: ['inference/historiesToMount'],
       trainingDetail: ['training/detail'],
       dataSets: ['dataSet/dataSets'],
       registries: ['registrySelector/registries'],
@@ -366,6 +379,9 @@ export default {
     // 指定に必要な情報を取得
     await this['training/fetchHistoriesToMount']({
       status: ['Completed', 'UserCanceled'],
+    })
+    await this['inference/fetchHistoriesToMount']({
+      status: ['Completed', 'UserCanceled', 'Killed'],
     })
     await this['cluster/fetchPartitions']()
     await this['cluster/fetchQuota']()
@@ -423,6 +439,16 @@ export default {
             })
           })
         }
+        this.form.selectedParentInference = []
+        if (this.detail.inferences) {
+          this.inferenceHistories.forEach(history => {
+            this.detail.inferences.forEach(parent => {
+              if (history.id === parent.id) {
+                this.form.selectedParentInference.push(parent)
+              }
+            })
+          })
+        }
         this.form.resource.cpu = detail.cpu
         this.form.resource.memory = detail.memory
         this.form.resource.gpu = detail.gpu
@@ -476,6 +502,7 @@ export default {
   methods: {
     ...mapActions([
       'training/fetchHistoriesToMount',
+      'inference/fetchHistoriesToMount',
       'training/fetchDetail',
       'inference/fetchDetail',
       'inference/post',
@@ -509,6 +536,10 @@ export default {
             this.form.selectedParent.forEach(parent => {
               selectedParentIds.push(parent.id)
             })
+            let selectedParentInferenceIds = []
+            this.form.selectedParentInference.forEach(inference => {
+              selectedParentInferenceIds.push(inference.id)
+            })
             // ブランチ未指定の際はcommitIdも未指定で実行
             // ブランチ指定時、HEADが指定された際はcommitsの先頭要素をcommitIDに指定する。コピー実行時の再現性を担保するため
             let commitId = null
@@ -528,6 +559,7 @@ export default {
               Name: this.form.name,
               DataSetId: this.form.dataSetId,
               ParentIds: selectedParentIds,
+              inferenceIds: selectedParentInferenceIds,
               ContainerImage: {
                 registryId: this.form.containerImage.registry.id,
                 image: this.form.containerImage.image,
