@@ -304,6 +304,7 @@ export default {
         dataSetId: null,
         entryPoint: null,
         selectedParent: [],
+        selectedParentInference: [],
         containerImage: {
           registry: null,
           image: null,
