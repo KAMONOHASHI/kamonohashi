@@ -1,5 +1,6 @@
 /.idea/
 launchSettings.json
+DesignTimeDbContextFactory.cs
 /.vs/
 deploy-tools-*.tar.gz
 /deploy-tools/infra/conf/inventory
