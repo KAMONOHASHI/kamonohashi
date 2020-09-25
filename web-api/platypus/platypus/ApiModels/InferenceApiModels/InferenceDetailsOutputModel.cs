@@ -47,6 +47,19 @@ namespace Nssol.Platypus.ApiModels.InferenceApiModels
                 }
                 Parents = parents;
             }
+            if (history.ParentInferenceMaps != null)
+            {
+                Inferences = new List<InferenceApiModels.InferenceIndexOutputModel>();
+                foreach (var parentInferenceMap in history.ParentInferenceMaps)
+                {
+                    var parentInference = new InferenceApiModels.InferenceIndexOutputModel(parentInferenceMap.Parent);
+                    Inferences.Add(parentInference);
+                }
+                Inferences.Sort(delegate (InferenceApiModels.InferenceIndexOutputModel parentInference1, InferenceApiModels.InferenceIndexOutputModel parentInference2)
+                {
+                    return parentInference1.Id.CompareTo(parentInference2.Id);
+                });
+            }
 
             Node = history.Node;
 
@@ -91,6 +104,11 @@ namespace Nssol.Platypus.ApiModels.InferenceApiModels
         /// 親学習履歴情報。
         /// </summary>
         public List<IndexOutputModel> Parents { get; set; }
+
+        /// <summary>
+        /// 親推論履歴
+        /// </summary>
+        public List<InferenceApiModels.InferenceIndexOutputModel> Inferences { get; set; }
 
         /// <summary>
         /// 完了日時

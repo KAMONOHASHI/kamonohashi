@@ -3,10 +3,10 @@ using Nssol.Platypus.Controllers.Util;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace Nssol.Platypus.ApiModels.TrainingApiModels
+namespace Nssol.Platypus.ApiModels.InferenceApiModels
 {
     /// <summary>
-    /// 新規学習実行モデル
+    /// 新規推論実行モデル
     /// </summary>
     public class CreateInputModel
     {

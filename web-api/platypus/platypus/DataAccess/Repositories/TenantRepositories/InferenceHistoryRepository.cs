@@ -65,6 +65,8 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
                 .Include(t => t.ParentMaps).ThenInclude(map => map.Parent)
                                            .ThenInclude(p => p.TagMaps)
                                            .ThenInclude(map => map.Tag)
+                .Include(t => t.ParentInferenceMaps).ThenInclude(map => map.Parent)
+                                            .ThenInclude(p => p.DataSet)
                 .Include(t => t.InferenceHistoryAttachedFile)
                 .Include(t => t.ContainerRegistry)
                 .SingleOrDefaultAsync();
@@ -197,6 +199,38 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
 
             AddModel(map);
             return map;
+        }
+
+        /// <summary>
+        /// 推論履歴IDに親推論履歴IDを紐づける
+        /// </summary>
+        /// <param name="inferenceHistory">推論履歴履歴</param>
+        /// <param name="parentInference">親推論履歴</param>
+        public InferenceHistoryParentInferenceMap AttachParentInferenceToInferenceAsync(InferenceHistory inferenceHistory, InferenceHistory parentInference)
+        {
+            if (parentInference == null)
+            {
+                //指定がなければ何もしない
+                return null;
+            }
+
+            InferenceHistoryParentInferenceMap map = new InferenceHistoryParentInferenceMap()
+            {
+                InferenceHistoryId = inferenceHistory.Id,
+                ParentId = parentInference.Id
+            };
+
+            AddModel(map);
+            return map;
+        }
+
+        /// <summary>
+        /// 推論履歴IDに紐づいている親推論履歴IDを解除する
+        /// </summary>
+        /// <param name="inferenceHistory">推論履歴</param>
+        public void DetachParentInferenceToInferenceAsync(InferenceHistory inferenceHistory)
+        {
+            DeleteModelAll<InferenceHistoryParentInferenceMap>(map => map.InferenceHistoryId == inferenceHistory.Id);
         }
 
         #region 添付ファイル操作

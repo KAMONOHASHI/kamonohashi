@@ -19,6 +19,7 @@ using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using CreateInputModel = Nssol.Platypus.ApiModels.InferenceApiModels.CreateInputModel;
 
 namespace Nssol.Platypus.Controllers.spa
 {
@@ -471,6 +472,31 @@ namespace Nssol.Platypus.Controllers.spa
 
                 inferenceHistory.ParentMaps = maps;
             }
+            // 現状の推論履歴IDに紐づいている親推論をすべて外す。
+            inferenceHistoryRepository.DetachParentInferenceToInferenceAsync(inferenceHistory);
+
+            // 親推論が指定されていれば存在チェック
+            if (model.InferenceIds != null)
+            {
+                var maps = new List<InferenceHistoryParentInferenceMap>();
+
+                foreach (var parentId in model.InferenceIds)
+                {
+                    var parentInference = await inferenceHistoryRepository.GetByIdAsync(parentId);
+                    if (parentInference == null)
+                    {
+                        return JsonNotFound($"Inference ID {parentId} is not found.");
+                    }
+                    // 推論履歴に親推論を紐づける
+                    var map = inferenceHistoryRepository.AttachParentInferenceToInferenceAsync(inferenceHistory, parentInference);
+                    if (map != null)
+                    {
+                        maps.Add(map);
+                    }
+                }
+                inferenceHistory.ParentInferenceMaps = maps;
+            }
+
             inferenceHistoryRepository.Add(inferenceHistory);
             if (dataSet.IsLocked == false)
             {
