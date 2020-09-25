@@ -63,7 +63,35 @@
               </div>
             </el-form-item>
           </div>
-
+          <div v-if="detail.inferences && detail.inferences.length > 0">
+            <el-form-item label="マウントした推論">
+              <br />
+              <div :class="{ scroll: detail.inferences.length > 3 }">
+                <div v-for="inference in detail.inferences" :key="inference.id">
+                  <el-popover
+                    ref="parentDetail"
+                    title="マウントした推論詳細"
+                    trigger="hover"
+                    width="350"
+                    placement="right"
+                  >
+                    <kqi-inference-history-details :inference="inference" />
+                    <el-button
+                      v-if="$store.getters['account/isAvailableInference']"
+                      slot="reference"
+                      class="el-input"
+                      @click="showInference(inference.id)"
+                    >
+                      {{ inference.fullName }}
+                    </el-button>
+                    <el-button v-else slot="reference" class="el-input">
+                      {{ inference.fullName }}
+                    </el-button>
+                  </el-popover>
+                </div>
+              </div>
+            </el-form-item>
+          </div>
           <div v-if="detail.dataSet">
             <el-form-item label="データセット">
               <el-popover
@@ -262,6 +290,7 @@ import KqiJobStopButton from '@/components/KqiJobStopButton'
 import KqiFileManager from '@/components/KqiFileManager'
 import KqiDataSetDetails from '@/components/selector/KqiDataSetDetails'
 import KqiTrainingHistoryDetails from '@/components/selector/KqiTrainingHistoryDetails'
+import KqiInferenceHistoryDetails from '@/components/selector/KqiInferenceHistoryDetails'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('inference')
 
@@ -274,6 +303,7 @@ export default {
     KqiFileManager,
     KqiDataSetDetails,
     KqiTrainingHistoryDetails,
+    KqiInferenceHistoryDetails,
   },
   props: {
     id: {
@@ -424,6 +454,10 @@ export default {
     // 親ジョブ履歴の表示指示
     async showParent(parentId) {
       this.$router.push('/training/' + parentId)
+    },
+    showInference(inferenceId) {
+      // 表示内容の変更は、beforeUpdated内で行う
+      this.$router.push('/inference/' + inferenceId)
     },
     redirectEditDataSet() {
       this.$router.push('/dataset/edit/' + this.detail.dataSet.id)
