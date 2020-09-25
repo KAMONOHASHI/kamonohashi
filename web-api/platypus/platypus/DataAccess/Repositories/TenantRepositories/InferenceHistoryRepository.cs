@@ -34,13 +34,15 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
         }
 
         /// <summary>
-        /// 全推論履歴（データセット、親学習を含む）を並べ替えありで取得します。
+        /// 全推論履歴（データセット、親学習・親推論を含む）を並べ替えありで取得します。
         /// </summary>
         public IQueryable<InferenceHistory> GetAllIncludeDataSetAndParentWithOrdering()
         {
             return GetAll().OrderByDescending(t => t.Favorite).ThenByDescending(t => t.Id)
                 .Include(t => t.DataSet)
-                .Include(t => t.ParentMaps).ThenInclude(map => map.Parent);
+                .Include(t => t.ParentMaps).ThenInclude(map => map.Parent)
+                .Include(t => t.ParentInferenceMaps).ThenInclude(map => map.Parent)
+                ;
         }
 
         /// <summary>
@@ -61,6 +63,8 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
         {
             return await FindAll(t => t.Id == id).Include(t => t.DataSet)
                 .Include(t => t.ParentMaps).ThenInclude(map => map.Parent)
+                                           .ThenInclude(p => p.DataSet)
+                .Include(t => t.ParentInferenceMaps).ThenInclude(map => map.Parent)
                                            .ThenInclude(p => p.DataSet)
                 .Include(t => t.ParentMaps).ThenInclude(map => map.Parent)
                                            .ThenInclude(p => p.TagMaps)
@@ -177,6 +181,15 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
         }
 
         /// <summary>
+        /// 指定したIDの推論履歴を利用した推論履歴を取得する
+        /// </summary>
+        /// <param name="id">マウントされた推論ID</param>
+        public async Task<IEnumerable<InferenceHistoryParentInferenceMap>> GetMountedInferenceAsync(long id)
+        {
+            return await FindModelAll<InferenceHistoryParentInferenceMap>(x => x.ParentId == id).Include(t => t.InferenceHistory).OrderBy(x => x.Id).ToListAsync();
+        }
+
+        /// <summary>
         /// 推論履歴に親学習を紐づける
         /// </summary>
         /// <param name="history">推論履歴</param>
@@ -190,6 +203,29 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
             }
 
             InferenceHistoryParentMap map = new InferenceHistoryParentMap()
+            {
+                InferenceHistoryId = history.Id,
+                ParentId = parent.Id
+            };
+
+            AddModel(map);
+            return map;
+        }
+
+        /// <summary>
+        /// 推論履歴に親推論を紐づける
+        /// </summary>
+        /// <param name="history">推論履歴</param>
+        /// <param name="parent">親推論履歴</param>
+        public InferenceHistoryParentInferenceMap AttachParentInferenceAsync(InferenceHistory history, InferenceHistory parent)
+        {
+            if (parent == null)
+            {
+                //指定がなければ何もしない
+                return null;
+            }
+
+            InferenceHistoryParentInferenceMap map = new InferenceHistoryParentInferenceMap()
             {
                 InferenceHistoryId = history.Id,
                 ParentId = parent.Id

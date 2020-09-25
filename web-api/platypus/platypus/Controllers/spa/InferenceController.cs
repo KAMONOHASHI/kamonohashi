@@ -253,6 +253,65 @@ namespace Nssol.Platypus.Controllers.spa
                     data = data.Where(d => d.ParentMaps != null && d.ParentMaps.Any(m => m.Parent.Name.Contains(filter.ParentName, StringComparison.CurrentCulture)));
                 }
             }
+            // マウントした推論IDの検索
+            if (string.IsNullOrEmpty(filter.ParentInferenceId) == false)
+            {
+                if (filter.ParentInferenceId.StartsWith(">=", StringComparison.CurrentCulture))
+                {
+                    if (long.TryParse(filter.ParentInferenceId.Substring(2), out long target))
+                    {
+                        data = data.Where(d => d.ParentInferenceMaps != null && d.ParentInferenceMaps.Any(m => m.ParentId >= target));
+                    }
+                }
+                else if (filter.ParentInferenceId.StartsWith(">", StringComparison.CurrentCulture))
+                {
+                    if (long.TryParse(filter.ParentInferenceId.Substring(1), out long target))
+                    {
+                        data = data.Where(d => d.ParentInferenceMaps != null && d.ParentInferenceMaps.Any(m => m.ParentId > target));
+                    }
+                }
+                else if (filter.ParentInferenceId.StartsWith("<=", StringComparison.CurrentCulture))
+                {
+                    if (long.TryParse(filter.ParentInferenceId.Substring(2), out long target))
+                    {
+                        data = data.Where(d => d.ParentInferenceMaps != null && d.ParentInferenceMaps.Any(m => m.ParentId <= target));
+                    }
+                }
+                else if (filter.ParentInferenceId.StartsWith("<", StringComparison.CurrentCulture))
+                {
+                    if (long.TryParse(filter.ParentInferenceId.Substring(1), out long target))
+                    {
+                        data = data.Where(d => d.ParentInferenceMaps != null && d.ParentInferenceMaps.Any(m => m.ParentId < target));
+                    }
+                }
+                else if (filter.ParentInferenceId.StartsWith("=", StringComparison.CurrentCulture))
+                {
+                    if (long.TryParse(filter.ParentInferenceId.Substring(1), out long target))
+                    {
+                        data = data.Where(d => d.ParentInferenceMaps != null && d.ParentInferenceMaps.Any(m => m.ParentId == target));
+                    }
+                }
+                else
+                {
+                    if (long.TryParse(filter.ParentInferenceId, out long target))
+                    {
+                        data = data.Where(d => d.ParentInferenceMaps != null && d.ParentInferenceMaps.Any(m => m.ParentId == target));
+                    }
+                }
+            }
+
+            // マウントした推論名の検索
+            if (string.IsNullOrEmpty(filter.ParentInferenceName) == false)
+            {
+                if (filter.ParentInferenceName.StartsWith("!", StringComparison.CurrentCulture))
+                {
+                    data = data.Where(d => d.ParentInferenceMaps == null || d.ParentInferenceMaps.Count == 0 || d.ParentMaps.All(m => m.Parent.Name.Contains(filter.ParentName.Substring(1), StringComparison.CurrentCulture) == false));
+                }
+                else
+                {
+                    data = data.Where(d => d.ParentInferenceMaps != null && d.ParentInferenceMaps.Any(m => m.Parent.Name.Contains(filter.ParentName, StringComparison.CurrentCulture)));
+                }
+            }
             return data;
         }
 
@@ -262,7 +321,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="filter">検索条件</param>
         [HttpGet("mount")]
         [Filters.PermissionFilter(MenuCode.Notebook)]
-        [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(IEnumerable<InferenceIndexOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetTrainingToMount(ApiModels.InferenceApiModels.MountInputModel filter)
         {
             var data = inferenceHistoryRepository.GetAllIncludeDataSetAndParentWithOrdering();
@@ -358,7 +417,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPost("run")]
         [Filters.PermissionFilter(MenuCode.Inference)]
         [ProducesResponseType(typeof(InferenceSimpleOutputModel), (int)HttpStatusCode.Created)]
-        public async Task<IActionResult> Create([FromBody]CreateInputModel model)
+        public async Task<IActionResult> Create([FromBody] ApiModels.InferenceApiModels.CreateInputModel model)
         {
 
             //データの入力チェック
@@ -471,6 +530,30 @@ namespace Nssol.Platypus.Controllers.spa
 
                 inferenceHistory.ParentMaps = maps;
             }
+
+            // 親推論が指定されていれば存在チェック
+            if (model.ParentInferenceIds != null)
+            {
+                var maps = new List<InferenceHistoryParentInferenceMap>();
+
+                foreach (var parentId in model.ParentInferenceIds)
+                {
+                    var parent = await inferenceHistoryRepository.GetByIdAsync(parentId);
+                    if (parent == null)
+                    {
+                        return JsonNotFound($"Inference ID {parentId} is not found.");
+                    }
+                    // 推論履歴に親学習を紐づける
+                    var map = inferenceHistoryRepository.AttachParentInferenceAsync(inferenceHistory, parent);
+                    if (map != null)
+                    {
+                        maps.Add(map);
+                    }
+                }
+
+                inferenceHistory.ParentInferenceMaps = maps;
+            }
+
             inferenceHistoryRepository.Add(inferenceHistory);
             if (dataSet.IsLocked == false)
             {
@@ -801,6 +884,13 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 //推論がまだ進行中の場合、情報を更新する
                 status = await clusterManagementLogic.GetContainerStatusAsync(inferenceHistory.Key, CurrentUserInfo.SelectedTenant.Name, false);
+            }
+
+            //推論結果を利用した推論ジョブがあったら消せない
+            var parentInferenceHistory = (await inferenceHistoryRepository.GetMountedInferenceAsync(inferenceHistory.Id)).FirstOrDefault();
+            if (parentInferenceHistory != null)
+            {
+                return JsonConflict($"Inference {inferenceHistory.Id} has been used by inference.");
             }
 
             if (status.Exist())

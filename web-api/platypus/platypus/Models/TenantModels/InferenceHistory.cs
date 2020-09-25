@@ -200,6 +200,13 @@ namespace Nssol.Platypus.Models.TenantModels
         public virtual ICollection<InferenceHistoryParentMap> ParentMaps { get; set; }
 
         /// <summary>
+        /// 親推論履歴のマッピング
+        /// </summary>
+        [InverseProperty("InferenceHistory")]
+        public virtual ICollection<InferenceHistoryParentInferenceMap> ParentInferenceMaps { get; set; }
+
+
+        /// <summary>
         /// 推論履歴添付ファイル
         /// </summary>
         public virtual ICollection<InferenceHistoryAttachedFile> InferenceHistoryAttachedFile { get; set; }

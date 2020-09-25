@@ -771,6 +771,24 @@ namespace Nssol.Platypus.Logic
                     });
                 }
             }
+            if (inferenceHistory.ParentInferenceMaps != null)
+            {                   
+                // 親学習と違い、「1つのみで直下マウント」という仕様の時期が存在しないので、
+                // １つのみかどうかの分岐は不要
+                foreach (var parentMap in inferenceHistory.ParentInferenceMaps)
+                {
+                    inputModel.NfsVolumeMounts.Add(new NfsVolumeMountModel()
+                    {
+                        Name = "nfs-parent-inference-" + parentMap.ParentId.ToString(),
+                        MountPath = "/kqi/inference/" + parentMap.ParentId.ToString(),
+                        SubPath = parentMap.ParentId.ToString(),
+                        Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
+                        ServerPath = CurrentUserInfo.SelectedTenant.InferenceContainerOutputNfsPath,
+                        ReadOnly = true
+                    });
+                }
+
+            }
 
             // ユーザの任意追加環境変数をマージする
             AddEnvListToInputModel(inferenceHistory.OptionDic, inputModel.MainContainerEnvList);

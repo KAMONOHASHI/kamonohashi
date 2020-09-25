@@ -48,6 +48,16 @@ namespace Nssol.Platypus.ApiModels.InferenceApiModels
                 Parents = parents;
             }
 
+            if (history.ParentInferenceMaps != null && history.ParentInferenceMaps.Count > 0)
+            {
+                List<InferenceIndexOutputModel> parents = new List<InferenceIndexOutputModel>();
+                foreach (InferenceHistoryParentInferenceMap parentMap in history.ParentInferenceMaps)
+                {
+                    parents.Add(new InferenceIndexOutputModel(parentMap.Parent));
+                }
+                ParentInferences = parents;
+            }
+
             Node = history.Node;
 
             EntryPoint = history.EntryPoint;
@@ -91,6 +101,11 @@ namespace Nssol.Platypus.ApiModels.InferenceApiModels
         /// 親学習履歴情報。
         /// </summary>
         public List<IndexOutputModel> Parents { get; set; }
+
+        /// <summary>
+        /// 親推論履歴情報。
+        /// </summary>
+        public List<InferenceIndexOutputModel> ParentInferences { get; set; }
 
         /// <summary>
         /// 完了日時

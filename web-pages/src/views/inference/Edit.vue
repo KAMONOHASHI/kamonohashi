@@ -64,6 +64,35 @@
             </el-form-item>
           </div>
 
+          <div
+            v-if="detail.parentInferences && detail.parentInferences.length > 0"
+          >
+            <el-form-item label="マウントした推論">
+              <div v-for="parent in detail.parentInferences" :key="parent.id">
+                <el-popover
+                  ref="parentDetail"
+                  title="マウントした推論詳細"
+                  trigger="hover"
+                  width="350"
+                  placement="right"
+                >
+                  <kqi-inference-history-details :inference="parent" />
+                  <el-button
+                    v-if="$store.getters['account/isAvailableInference']"
+                    slot="reference"
+                    class="el-input button"
+                    @click="showParentInference(parent.id)"
+                  >
+                    {{ parent.fullName }}
+                  </el-button>
+                  <el-button v-else slot="reference" class="el-input">
+                    {{ parent.fullName }}
+                  </el-button>
+                </el-popover>
+              </div>
+            </el-form-item>
+          </div>
+
           <div v-if="detail.dataSet">
             <el-form-item label="データセット">
               <el-popover
@@ -262,6 +291,7 @@ import KqiJobStopButton from '@/components/KqiJobStopButton'
 import KqiFileManager from '@/components/KqiFileManager'
 import KqiDataSetDetails from '@/components/selector/KqiDataSetDetails'
 import KqiTrainingHistoryDetails from '@/components/selector/KqiTrainingHistoryDetails'
+import KqiInferenceHistoryDetails from '@/components/selector/KqiInferenceHistoryDetails'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('inference')
 
@@ -274,6 +304,7 @@ export default {
     KqiFileManager,
     KqiDataSetDetails,
     KqiTrainingHistoryDetails,
+    KqiInferenceHistoryDetails,
   },
   props: {
     id: {
@@ -424,6 +455,10 @@ export default {
     // 親ジョブ履歴の表示指示
     async showParent(parentId) {
       this.$router.push('/training/' + parentId)
+    },
+    // 親ジョブ履歴の表示指示
+    async showParentInference(parentInferenceId) {
+      this.$router.push('/inference/' + parentInferenceId)
     },
     redirectEditDataSet() {
       this.$router.push('/dataset/edit/' + this.detail.dataSet.id)
