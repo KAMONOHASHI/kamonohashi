@@ -35,11 +35,6 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         public IEnumerable<long> ParentIds { get; set; }
 
         /// <summary>
-        /// 親推論履歴ID
-        /// </summary>
-        public IEnumerable<long> InferenceIds { get; set; }
-
-        /// <summary>
         /// 学習モデルGit情報
         /// </summary>
         [Required]
