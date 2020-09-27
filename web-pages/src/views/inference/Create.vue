@@ -424,7 +424,6 @@ export default {
         // 推論のコピー実行
         await this['inference/fetchDetail'](this.originId)
         detail = this.inferenceDetail
-
         this.form.name = detail.name
         this.form.entryPoint = detail.entryPoint
         this.form.zip = detail.zip
@@ -441,9 +440,9 @@ export default {
           })
         }
         this.form.selectedParentInference = []
-        if (this.detail.inferences) {
+        if (detail.inferences) {
           this.inferenceHistories.forEach(history => {
-            this.detail.inferences.forEach(parent => {
+            detail.inferences.forEach(parent => {
               if (history.id === parent.id) {
                 this.form.selectedParentInference.push(parent)
               }
