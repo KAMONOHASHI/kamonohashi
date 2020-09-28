@@ -2213,6 +2213,13 @@
             "type": "string"
           },
           {
+            "name": "ParentInferenceName",
+            "in": "query",
+            "description": "マウントした推論名",
+            "required": false,
+            "type": "string"
+          },
+          {
             "name": "perPage",
             "in": "query",
             "description": "表示件数。指定がない場合は上限(1000件)。",
@@ -8888,6 +8895,14 @@
             "type": "string"
           }
         },
+        "parentInferenceFullNameList": {
+          "description": "親推論ジョブ名（表示用）",
+          "uniqueItems": false,
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "outputValue": {
           "description": "出力値",
           "type": "string"
@@ -9117,6 +9132,14 @@
         },
         "parentFullNameList": {
           "description": "親学習ジョブ名（表示用）",
+          "uniqueItems": false,
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "parentInferenceFullNameList": {
+          "description": "親推論ジョブ名（表示用）",
           "uniqueItems": false,
           "type": "array",
           "items": {

@@ -40,7 +40,8 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
         {
             return GetAll().OrderByDescending(t => t.Favorite).ThenByDescending(t => t.Id)
                 .Include(t => t.DataSet)
-                .Include(t => t.ParentMaps).ThenInclude(map => map.Parent);
+                .Include(t => t.ParentMaps).ThenInclude(map => map.Parent)
+                .Include(t => t.ParentInferenceMaps).ThenInclude(map => map.Parent);
         }
 
         /// <summary>

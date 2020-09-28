@@ -62,5 +62,10 @@
         /// マウントした学習名
         /// </summary>
         public string ParentName { get; set; }
+
+        /// <summary>
+        /// マウントした推論名
+        /// </summary>
+        public string ParentInferenceName { get; set; }
     }
 }
