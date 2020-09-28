@@ -258,3 +258,4 @@ platypus/platypus/wwwroot/dist/
 /**/ClientApp/src/**/*.js
 /**/ClientApp/src/**/*.map
 platypus/platypus/wwwroot/spa
+platypus/platypus/DesignTimeDbContextFactory.cs
