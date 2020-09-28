@@ -1,10 +1,10 @@
-FROM node:12.16.1-stretch AS build
+FROM node:12.18.4 AS build
 
 COPY / /src
 RUN cd /src/ && npm install && npm run build 
 
 
-FROM node:12.16.1-stretch
+FROM node:12.18.4
 RUN npm install -g http-server
 RUN groupadd -r -g 900 platypus-pages && \
     useradd -r -s /bin/false -g platypus-pages -u 900 platypus-pages
