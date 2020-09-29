@@ -2591,6 +2591,7 @@ e.g.（比較文字列は半角でOK）
      * @param status - ステータス
      * @param entryPoint - 実行コマンド
      * @param parentId - マウントした学習ID
+     * @param parentInferenceId - マウントした推論ID
      * @param parentName - マウントした学習名
      * @param parentInferenceName - マウントした推論名
      * @param perPage - 表示件数。指定がない場合は上限(1000件)。
@@ -2630,6 +2631,9 @@ export const ApiV1InferencesGet = function(parameters = {}) {
   }
   if (parameters['parentId'] !== undefined) {
     queryParameters['ParentId'] = parameters['parentId']
+  }
+  if (parameters['parentInferenceId'] !== undefined) {
+    queryParameters['ParentInferenceId'] = parameters['parentInferenceId']
   }
   if (parameters['parentName'] !== undefined) {
     queryParameters['ParentName'] = parameters['parentName']
@@ -2689,6 +2693,9 @@ export const ApiV1InferencesGetURL = function(parameters = {}) {
   }
   if (parameters['parentId'] !== undefined) {
     queryParameters['ParentId'] = parameters['parentId']
+  }
+  if (parameters['parentInferenceId'] !== undefined) {
+    queryParameters['ParentInferenceId'] = parameters['parentInferenceId']
   }
   if (parameters['parentName'] !== undefined) {
     queryParameters['ParentName'] = parameters['parentName']

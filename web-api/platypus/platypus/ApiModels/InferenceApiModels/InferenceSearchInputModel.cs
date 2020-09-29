@@ -59,6 +59,11 @@
         public string ParentId { get; set; }
 
         /// <summary>
+        /// マウントした推論ID
+        /// </summary>
+        public string ParentInferenceId { get; set; }
+
+        /// <summary>
         /// マウントした学習名
         /// </summary>
         public string ParentName { get; set; }

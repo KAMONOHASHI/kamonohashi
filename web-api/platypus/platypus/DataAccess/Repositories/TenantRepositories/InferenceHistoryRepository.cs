@@ -203,6 +203,15 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
         }
 
         /// <summary>
+        /// 指定したIDの推論履歴を利用した推論履歴を取得する
+        /// </summary>
+        /// <param name="id">マウントされた推論ID</param>
+        public async Task<IEnumerable<InferenceHistoryParentInferenceMap>> GetMountedInferenceAsync(long id)
+        {
+            return await FindModelAll<InferenceHistoryParentInferenceMap>(x => x.ParentId == id).Include(t => t.InferenceHistory).OrderBy(x => x.Id).ToListAsync();
+        }
+
+        /// <summary>
         /// 推論履歴IDに親推論履歴IDを紐づける
         /// </summary>
         /// <param name="inferenceHistory">推論履歴履歴</param>
@@ -225,14 +234,6 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
             return map;
         }
 
-        /// <summary>
-        /// 推論履歴IDに紐づいている親推論履歴IDを解除する
-        /// </summary>
-        /// <param name="inferenceHistory">推論履歴</param>
-        public void DetachParentInferenceToInferenceAsync(InferenceHistory inferenceHistory)
-        {
-            DeleteModelAll<InferenceHistoryParentInferenceMap>(map => map.InferenceHistoryId == inferenceHistory.Id);
-        }
 
         #region 添付ファイル操作
 

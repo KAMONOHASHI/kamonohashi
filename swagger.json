@@ -2206,6 +2206,13 @@
             "type": "string"
           },
           {
+            "name": "ParentInferenceId",
+            "in": "query",
+            "description": "マウントした推論ID",
+            "required": false,
+            "type": "string"
+          },
+          {
             "name": "ParentName",
             "in": "query",
             "description": "マウントした学習名",

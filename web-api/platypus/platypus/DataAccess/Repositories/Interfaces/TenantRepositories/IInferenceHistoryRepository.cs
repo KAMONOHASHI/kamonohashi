@@ -75,6 +75,12 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories
         Task<IEnumerable<InferenceHistoryParentMap>> GetMountedTrainingAsync(long id);
 
         /// <summary>
+        /// 指定したIDの推論履歴を利用した推論履歴を取得する
+        /// </summary>
+        /// <param name="id">マウントされた推論ID</param>
+        Task<IEnumerable<InferenceHistoryParentInferenceMap>> GetMountedInferenceAsync(long id);
+
+        /// <summary>
         /// 推論履歴に親学習を紐づける
         /// </summary>
         /// <param name="history">推論履歴</param>
@@ -88,11 +94,6 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories
         /// <param name="parentInference">親推論履歴</param>
         InferenceHistoryParentInferenceMap AttachParentInferenceToInferenceAsync(InferenceHistory inferenceHistory, InferenceHistory parentInference);
 
-        /// <summary>
-        /// 推論履歴IDに紐づいている親推論履歴IDを解除する
-        /// </summary>
-        /// <param name="inferenceHistory">ノートブック履歴</param>
-        void DetachParentInferenceToInferenceAsync(InferenceHistory inferenceHistory);
 
         #region 添付ファイル操作
 

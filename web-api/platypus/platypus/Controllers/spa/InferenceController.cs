@@ -242,6 +242,53 @@ namespace Nssol.Platypus.Controllers.spa
                 }
             }
 
+            // マウントした推論IDの検索
+            if (string.IsNullOrEmpty(filter.ParentInferenceId) == false)
+            {
+                if (filter.ParentInferenceId.StartsWith(">=", StringComparison.CurrentCulture))
+                {
+                    if (long.TryParse(filter.ParentInferenceId.Substring(2), out long target))
+                    {
+                        data = data.Where(d => d.ParentInferenceMaps != null && d.ParentInferenceMaps.Any(m => m.ParentId >= target));
+                    }
+                }
+                else if (filter.ParentInferenceId.StartsWith(">", StringComparison.CurrentCulture))
+                {
+                    if (long.TryParse(filter.ParentInferenceId.Substring(1), out long target))
+                    {
+                        data = data.Where(d => d.ParentInferenceMaps != null && d.ParentInferenceMaps.Any(m => m.ParentId > target));
+                    }
+                }
+                else if (filter.ParentInferenceId.StartsWith("<=", StringComparison.CurrentCulture))
+                {
+                    if (long.TryParse(filter.ParentInferenceId.Substring(2), out long target))
+                    {
+                        data = data.Where(d => d.ParentInferenceMaps != null && d.ParentInferenceMaps.Any(m => m.ParentId <= target));
+                    }
+                }
+                else if (filter.ParentInferenceId.StartsWith("<", StringComparison.CurrentCulture))
+                {
+                    if (long.TryParse(filter.ParentInferenceId.Substring(1), out long target))
+                    {
+                        data = data.Where(d => d.ParentInferenceMaps != null && d.ParentInferenceMaps.Any(m => m.ParentId < target));
+                    }
+                }
+                else if (filter.ParentInferenceId.StartsWith("=", StringComparison.CurrentCulture))
+                {
+                    if (long.TryParse(filter.ParentInferenceId.Substring(1), out long target))
+                    {
+                        data = data.Where(d => d.ParentInferenceMaps != null && d.ParentInferenceMaps.Any(m => m.ParentId == target));
+                    }
+                }
+                else
+                {
+                    if (long.TryParse(filter.ParentInferenceId, out long target))
+                    {
+                        data = data.Where(d => d.ParentMaps != null && d.ParentMaps.Any(m => m.ParentId == target));
+                    }
+                }
+            }
+
             // マウントした学習名の検索
             if (string.IsNullOrEmpty(filter.ParentName) == false)
             {
@@ -254,6 +301,19 @@ namespace Nssol.Platypus.Controllers.spa
                     data = data.Where(d => d.ParentMaps != null && d.ParentMaps.Any(m => m.Parent.Name.Contains(filter.ParentName, StringComparison.CurrentCulture)));
                 }
             }
+
+            // マウントした推論名の検索
+            if (string.IsNullOrEmpty(filter.ParentInferenceName) == false)
+            {
+                if (filter.ParentInferenceName.StartsWith("!", StringComparison.CurrentCulture))
+                {
+                    data = data.Where(d => d.ParentInferenceMaps == null || d.ParentInferenceMaps.Count == 0 || d.ParentInferenceMaps.All(m => m.Parent.Name.Contains(filter.ParentInferenceName.Substring(1), StringComparison.CurrentCulture) == false));
+                }
+                else
+                {
+                    data = data.Where(d => d.ParentInferenceMaps != null && d.ParentInferenceMaps.Any(m => m.Parent.Name.Contains(filter.ParentInferenceName, StringComparison.CurrentCulture)));
+                }
+            }
             return data;
         }
 
@@ -262,7 +322,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="filter">検索条件</param>
         [HttpGet("mount")]
-        [Filters.PermissionFilter(MenuCode.Notebook)]
+        [Filters.PermissionFilter(MenuCode.Inference)]
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetTrainingToMount(ApiModels.InferenceApiModels.MountInputModel filter)
         {
@@ -472,8 +532,7 @@ namespace Nssol.Platypus.Controllers.spa
 
                 inferenceHistory.ParentMaps = maps;
             }
-            // 現状の推論履歴IDに紐づいている親推論をすべて外す。
-            inferenceHistoryRepository.DetachParentInferenceToInferenceAsync(inferenceHistory);
+
 
             // 親推論が指定されていれば存在チェック
             if (model.InferenceIds != null)
