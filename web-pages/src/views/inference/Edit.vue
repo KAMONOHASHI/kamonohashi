@@ -80,7 +80,7 @@
                       v-if="$store.getters['account/isAvailableInference']"
                       slot="reference"
                       class="el-input"
-                      @click="showInference(inference.id)"
+                      @click="showParentInference(inference.id)"
                     >
                       {{ inference.fullName }}
                     </el-button>
@@ -455,9 +455,8 @@ export default {
     async showParent(parentId) {
       this.$router.push('/training/' + parentId)
     },
-    showInference(inferenceId) {
-      // 表示内容の変更は、beforeUpdated内で行う
-      this.$router.push('/inference/' + inferenceId)
+    async showParentInference(parentInferenceId) {
+      this.$router.push('/inference/' + parentInferenceId)
     },
     redirectEditDataSet() {
       this.$router.push('/dataset/edit/' + this.detail.dataSet.id)

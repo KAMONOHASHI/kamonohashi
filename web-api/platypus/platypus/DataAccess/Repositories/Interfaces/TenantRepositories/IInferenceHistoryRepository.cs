@@ -19,7 +19,7 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories
         /// </summary>
         IQueryable<InferenceHistory> GetAllIncludeDataSet();
         /// <summary>
-        /// 全推論履歴（データセット、親学習を含む）を並べ替えありで取得します。
+        /// 全推論履歴（データセット、親学習、親推論を含む）を並べ替えありで取得します。
         /// </summary>
         IQueryable<InferenceHistory> GetAllIncludeDataSetAndParentWithOrdering();
 
