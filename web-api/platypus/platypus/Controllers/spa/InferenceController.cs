@@ -322,8 +322,8 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="filter">検索条件</param>
         [HttpGet("mount")]
-        [Filters.PermissionFilter(MenuCode.Inference)]
-        [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
+        [Filters.PermissionFilter(MenuCode.Notebook,MenuCode.Inference)]
+        [ProducesResponseType(typeof(IEnumerable<InferenceIndexOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetTrainingToMount(ApiModels.InferenceApiModels.MountInputModel filter)
         {
             var data = inferenceHistoryRepository.GetAllIncludeDataSetAndParentWithOrdering();
