@@ -15,23 +15,23 @@ data:
   show-logo: |
     cat << "EOD"
     --------------------------------------------------------------------------------------------
-                ..NNNMMMMNNgJ..         #   #      ##     #     #    #####    #      #    ##### 
-            ..NMMMMMMMMMMMMMMMMNa,      #  #       ##     ##   ##   #     #   ##     #   #     #
-          .dMMMMMMMMMMMMMMMMMMMM"!      # #       #  #    # # # #   #     #   # #    #   #     #
-        .dMMMMMMMMMMMMMMMMMMMD`         ###       #  #    # # # #   #     #   #  #   #   #     #
-       .MMMMMMMMMMMMMMMMMMM'`           # #      #    #   #  #  #   #     #   #   #  #   #     #
-      .MMMMMMMMMMMMMMMMMMM'    .MM      #  #     ######   #     #   #     #   #    # #   #     #
-      MMMMMMMH""MMMMMMMMMM{    MMM'     #   #    #    #   #     #   #     #   #     ##   #     #
-     .MMMMM'       _7"WMMY"             #    #   #    #   #     #    #####    #      #    ##### 
+                ..NNNMMMMNNgJ..         #   #      ##     #     #    ####    #      #    #### 
+            ..NMMMMMMMMMMMMMMMMNa,      #  #       ##     ##   ##   #    #   ##     #   #    #
+          .dMMMMMMMMMMMMMMMMMMMM"!      # #       #  #    # # # #   #    #   # #    #   #    #
+        .dMMMMMMMMMMMMMMMMMMMD`         ###       #  #    # # # #   #    #   #  #   #   #    #
+       .MMMMMMMMMMMMMMMMMMM'`           # #      #    #   #  #  #   #    #   #   #  #   #    #
+      .MMMMMMMMMMMMMMMMMMM'    .MM      #  #     ######   #     #   #    #   #    # #   #    #
+      MMMMMMMH""MMMMMMMMMM{    MMM'     #   #    #    #   #     #   #    #   #     ##   #    #
+     .MMMMM'       _7"WMMY"             #    #   #    #   #     #    ####    #      #    #### 
      dMMMM!                                                                                     
-     dMMM#                              #    #     ##       ####     #    #      #              
-     JMMMN                              #    #     ##      #         #    #      #              
-     .MMMMp                             #    #    #  #     #         #    #      #              
-      ?MMMMMNJ..                        ######    #  #      ##       ######      #              
-       TMMMMMMMMMMMMMMMMMMMMMMMMNN..    #    #   #    #       ##     #    #      #              
-        ?MMMMMMMMMMMMMMMMMMMMMMMMMMMMt  #    #   ######         #    #    #      #              
-          TMMMMMMMMMMMMMMMMMMMMMMMMM!   #    #   #    #    #    #    #    #      #              
-            7MMMMMMMMMMMMMMMMMMMM"`     #    #   #    #    #####     #    #      #              
+     dMMM#                              #    #     ##       ####    #    #      #              
+     JMMMN                              #    #     ##      #        #    #      #              
+     .MMMMp                             #    #    #  #     #        #    #      #              
+      ?MMMMMNJ..                        ######    #  #      ##      ######      #              
+       TMMMMMMMMMMMMMMMMMMMMMMMMNN..    #    #   #    #       ##    #    #      #              
+        ?MMMMMMMMMMMMMMMMMMMMMMMMMMMMt  #    #   ######         #   #    #      #              
+          TMMMMMMMMMMMMMMMMMMMMMMMMM!   #    #   #    #    #    #   #    #      #              
+            7MMMMMMMMMMMMMMMMMMMM"`     #    #   #    #    #####    #    #      #              
                ?YMMMMMMMMMMMMB"`                                                                
     --------------------------------------------------------------------------------------------
     EOD
