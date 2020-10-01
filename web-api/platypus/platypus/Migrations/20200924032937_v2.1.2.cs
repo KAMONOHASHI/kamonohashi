@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Nssol.Platypus.Migrations
 {
-    public partial class _20200924_mikunitest : Migration
+    public partial class v212 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
