@@ -336,12 +336,14 @@ export default {
   computed: {
     ...mapGetters(['detail', 'events', 'uploadedFiles']),
   },
+  watch: {
+    async $route() {
+      // 子推論履歴と親推論履歴が同一コンポーネントのため、その遷移はrouterの変化で検知する
+      await this.initialize()
+    },
+  },
   async created() {
-    this.title = '推論履歴'
-    await this.retrieveData()
-    this.form.name = this.detail.name
-    this.form.favorite = this.detail.favorite
-    this.form.memo = this.detail.memo
+    await this.initialize()
   },
   methods: {
     ...mapActions([
@@ -355,6 +357,13 @@ export default {
       'delete',
       'deleteFile',
     ]),
+    async initialize() {
+      this.title = '推論履歴'
+      await this.retrieveData()
+      this.form.name = this.detail.name
+      this.form.favorite = this.detail.favorite
+      this.form.memo = this.detail.memo
+    },
     async retrieveData() {
       await this.fetchDetail(this.id)
       await this.fetchUploadedFiles(this.detail.id)
