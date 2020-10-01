@@ -324,7 +324,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpGet("mount")]
         [Filters.PermissionFilter(MenuCode.Notebook,MenuCode.Inference)]
         [ProducesResponseType(typeof(IEnumerable<InferenceIndexOutputModel>), (int)HttpStatusCode.OK)]
-        public IActionResult GetTrainingToMount(ApiModels.InferenceApiModels.MountInputModel filter)
+        public IActionResult GetInferenceToMount(ApiModels.InferenceApiModels.MountInputModel filter)
         {
             var data = inferenceHistoryRepository.GetAllIncludeDataSetAndParentWithOrdering();
 
