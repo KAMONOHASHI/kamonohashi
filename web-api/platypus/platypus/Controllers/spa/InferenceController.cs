@@ -19,6 +19,7 @@ using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using CreateInputModel = Nssol.Platypus.ApiModels.InferenceApiModels.CreateInputModel;
 
 namespace Nssol.Platypus.Controllers.spa
 {
@@ -53,7 +54,7 @@ namespace Nssol.Platypus.Controllers.spa
             IGitLogic gitLogic,
             IClusterManagementLogic clusterManagementLogic,
             IUnitOfWork unitOfWork,
-            IHttpContextAccessor accessor): base(accessor)
+            IHttpContextAccessor accessor) : base(accessor)
         {
             this.trainingHistoryRepository = trainingHistoryRepository;
             this.inferenceHistoryRepository = inferenceHistoryRepository;
@@ -89,7 +90,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpGet]
         [Filters.PermissionFilter(MenuCode.Inference)]
         [ProducesResponseType(typeof(IEnumerable<InferenceIndexOutputModel>), (int)HttpStatusCode.OK)]
-        public IActionResult GetAll([FromQuery]InferenceSearchInputModel filter, [FromQuery]int? perPage, [FromQuery] int page = 1, bool withTotal = false)
+        public IActionResult GetAll([FromQuery] InferenceSearchInputModel filter, [FromQuery] int? perPage, [FromQuery] int page = 1, bool withTotal = false)
         {
             var data = inferenceHistoryRepository.GetAllIncludeDataSetAndParentWithOrdering();
             data = Search(data, filter);
@@ -241,6 +242,53 @@ namespace Nssol.Platypus.Controllers.spa
                 }
             }
 
+            // マウントした推論IDの検索
+            if (string.IsNullOrEmpty(filter.ParentInferenceId) == false)
+            {
+                if (filter.ParentInferenceId.StartsWith(">=", StringComparison.CurrentCulture))
+                {
+                    if (long.TryParse(filter.ParentInferenceId.Substring(2), out long target))
+                    {
+                        data = data.Where(d => d.ParentInferenceMaps != null && d.ParentInferenceMaps.Any(m => m.ParentId >= target));
+                    }
+                }
+                else if (filter.ParentInferenceId.StartsWith(">", StringComparison.CurrentCulture))
+                {
+                    if (long.TryParse(filter.ParentInferenceId.Substring(1), out long target))
+                    {
+                        data = data.Where(d => d.ParentInferenceMaps != null && d.ParentInferenceMaps.Any(m => m.ParentId > target));
+                    }
+                }
+                else if (filter.ParentInferenceId.StartsWith("<=", StringComparison.CurrentCulture))
+                {
+                    if (long.TryParse(filter.ParentInferenceId.Substring(2), out long target))
+                    {
+                        data = data.Where(d => d.ParentInferenceMaps != null && d.ParentInferenceMaps.Any(m => m.ParentId <= target));
+                    }
+                }
+                else if (filter.ParentInferenceId.StartsWith("<", StringComparison.CurrentCulture))
+                {
+                    if (long.TryParse(filter.ParentInferenceId.Substring(1), out long target))
+                    {
+                        data = data.Where(d => d.ParentInferenceMaps != null && d.ParentInferenceMaps.Any(m => m.ParentId < target));
+                    }
+                }
+                else if (filter.ParentInferenceId.StartsWith("=", StringComparison.CurrentCulture))
+                {
+                    if (long.TryParse(filter.ParentInferenceId.Substring(1), out long target))
+                    {
+                        data = data.Where(d => d.ParentInferenceMaps != null && d.ParentInferenceMaps.Any(m => m.ParentId == target));
+                    }
+                }
+                else
+                {
+                    if (long.TryParse(filter.ParentInferenceId, out long target))
+                    {
+                        data = data.Where(d => d.ParentMaps != null && d.ParentMaps.Any(m => m.ParentId == target));
+                    }
+                }
+            }
+
             // マウントした学習名の検索
             if (string.IsNullOrEmpty(filter.ParentName) == false)
             {
@@ -253,6 +301,19 @@ namespace Nssol.Platypus.Controllers.spa
                     data = data.Where(d => d.ParentMaps != null && d.ParentMaps.Any(m => m.Parent.Name.Contains(filter.ParentName, StringComparison.CurrentCulture)));
                 }
             }
+
+            // マウントした推論名の検索
+            if (string.IsNullOrEmpty(filter.ParentInferenceName) == false)
+            {
+                if (filter.ParentInferenceName.StartsWith("!", StringComparison.CurrentCulture))
+                {
+                    data = data.Where(d => d.ParentInferenceMaps == null || d.ParentInferenceMaps.Count == 0 || d.ParentInferenceMaps.All(m => m.Parent.Name.Contains(filter.ParentInferenceName.Substring(1), StringComparison.CurrentCulture) == false));
+                }
+                else
+                {
+                    data = data.Where(d => d.ParentInferenceMaps != null && d.ParentInferenceMaps.Any(m => m.Parent.Name.Contains(filter.ParentInferenceName, StringComparison.CurrentCulture)));
+                }
+            }
             return data;
         }
 
@@ -261,9 +322,9 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="filter">検索条件</param>
         [HttpGet("mount")]
-        [Filters.PermissionFilter(MenuCode.Notebook)]
-        [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
-        public IActionResult GetTrainingToMount(ApiModels.InferenceApiModels.MountInputModel filter)
+        [Filters.PermissionFilter(MenuCode.Notebook, MenuCode.Inference)]
+        [ProducesResponseType(typeof(IEnumerable<InferenceIndexOutputModel>), (int)HttpStatusCode.OK)]
+        public IActionResult GetInferenceToMount(ApiModels.InferenceApiModels.MountInputModel filter)
         {
             var data = inferenceHistoryRepository.GetAllIncludeDataSetAndParentWithOrdering();
 
@@ -358,7 +419,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPost("run")]
         [Filters.PermissionFilter(MenuCode.Inference)]
         [ProducesResponseType(typeof(InferenceSimpleOutputModel), (int)HttpStatusCode.Created)]
-        public async Task<IActionResult> Create([FromBody]CreateInputModel model)
+        public async Task<IActionResult> Create([FromBody] CreateInputModel model)
         {
 
             //データの入力チェック
@@ -471,6 +532,30 @@ namespace Nssol.Platypus.Controllers.spa
 
                 inferenceHistory.ParentMaps = maps;
             }
+
+
+            // 親推論が指定されていれば存在チェック
+            if (model.InferenceIds != null)
+            {
+                var maps = new List<InferenceHistoryParentInferenceMap>();
+
+                foreach (var parentId in model.InferenceIds)
+                {
+                    var parentInference = await inferenceHistoryRepository.GetByIdAsync(parentId);
+                    if (parentInference == null)
+                    {
+                        return JsonNotFound($"Inference ID {parentId} is not found.");
+                    }
+                    // 推論履歴に親推論を紐づける
+                    var map = inferenceHistoryRepository.AttachParentInferenceToInferenceAsync(inferenceHistory, parentInference);
+                    if (map != null)
+                    {
+                        maps.Add(map);
+                    }
+                }
+                inferenceHistory.ParentInferenceMaps = maps;
+            }
+
             inferenceHistoryRepository.Add(inferenceHistory);
             if (dataSet.IsLocked == false)
             {
@@ -513,7 +598,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPut("{id}")]
         [Filters.PermissionFilter(MenuCode.Inference)]
         [ProducesResponseType(typeof(InferenceSimpleOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> Edit(long? id, [FromBody]EditInputModel model)
+        public async Task<IActionResult> Edit(long? id, [FromBody] EditInputModel model)
         {
             //データの入力チェック
             if (!ModelState.IsValid || !id.HasValue)
@@ -544,7 +629,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPost("{id}/files")]
         [Filters.PermissionFilter(MenuCode.Inference)]
         [ProducesResponseType(typeof(AttachedFileOutputModel), (int)HttpStatusCode.Created)]
-        public async Task<IActionResult> RegistAttachedFile(long id, [FromBody]AddFileInputModel model)
+        public async Task<IActionResult> RegistAttachedFile(long id, [FromBody] AddFileInputModel model)
         {
             //データの入力チェック
             if (!ModelState.IsValid)

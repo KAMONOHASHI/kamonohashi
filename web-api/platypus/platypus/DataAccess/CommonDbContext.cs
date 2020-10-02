@@ -160,6 +160,12 @@ namespace Nssol.Platypus.DataAccess
         /// 推論履歴と親学習履歴の中間テーブル
         /// </summary>
         public virtual DbSet<InferenceHistoryParentMap> InferenceHistoryParentMaps { get; set; }
+
+        /// <summary>
+        /// 推論履歴と親推論履歴の中間テーブル
+        /// </summary>
+        public virtual DbSet<InferenceHistoryParentInferenceMap> InferenceHistoryParentInferenceMaps { get; set; }
+
         /// <summary>
         /// 推論履歴添付ファイル
         /// </summary>
@@ -259,6 +265,9 @@ namespace Nssol.Platypus.DataAccess
                     .HasIndex(e => new { e.TenantId, e.TrainingHistoryId, e.ParentId })
                     .IsUnique();
             modelBuilder.Entity<InferenceHistoryParentMap>()
+                    .HasIndex(e => new { e.TenantId, e.InferenceHistoryId, e.ParentId })
+                    .IsUnique();
+            modelBuilder.Entity<InferenceHistoryParentInferenceMap>()
                     .HasIndex(e => new { e.TenantId, e.InferenceHistoryId, e.ParentId })
                     .IsUnique();
             modelBuilder.Entity<NotebookHistoryParentTrainingMap>()
