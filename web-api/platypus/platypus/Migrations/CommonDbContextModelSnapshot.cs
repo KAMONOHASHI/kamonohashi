@@ -1799,7 +1799,7 @@ namespace Nssol.Platypus.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Nssol.Platypus.Models.TenantModels.InferenceHistory", "Parent")
-                        .WithMany()
+                        .WithMany("ParentInferenceMaps")
                         .HasForeignKey("ParentId")
                         .OnDelete(DeleteBehavior.Cascade);
 

@@ -50,7 +50,6 @@ namespace Nssol.Platypus.ApiModels.InferenceApiModels
         /// </summary>
         [Required]
         public string EntryPoint { get; set; }
-
         /// <summary>
         /// 追加環境変数
         /// </summary>
