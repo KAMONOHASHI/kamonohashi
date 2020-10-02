@@ -29,13 +29,3 @@ VUE_APP_KAMONOHASHI_HOST='KAMONOHASHI-hostname'
 9. http://localhost:8080 にアクセスできることを確認
 
 10. (任意)Chromeでのデバッグを容易にするためVue.js devtoolsをインストールする
-
-## APIに変更が加わった場合
-
-1. swaggerの画面から`swagger.json`を取得し、モノリポジトリ直下に配置
-
-2. `npm run generate-api`を実行
-
-3. `src/api/v1/api.generator.js`が自動生成される
-
-4. APIを追加する場合は`src/api/v1/api.js`を編集する
