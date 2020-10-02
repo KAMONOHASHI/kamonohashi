@@ -63,11 +63,16 @@
               </div>
             </el-form-item>
           </div>
-          <div v-if="detail.inferences && detail.inferences.length > 0">
+          <div
+            v-if="detail.parentInferences && detail.parentInferences.length > 0"
+          >
             <el-form-item label="マウントした推論">
               <br />
-              <div :class="{ scroll: detail.inferences.length > 3 }">
-                <div v-for="inference in detail.inferences" :key="inference.id">
+              <div :class="{ scroll: detail.parentInferences.length > 3 }">
+                <div
+                  v-for="inference in detail.parentInferences"
+                  :key="inference.id"
+                >
                   <el-popover
                     ref="parentDetail"
                     title="マウントした推論詳細"

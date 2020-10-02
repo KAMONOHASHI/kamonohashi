@@ -2303,7 +2303,7 @@
               "uniqueItems": false,
               "type": "array",
               "items": {
-                "$ref": "#/definitions/Nssol.Platypus.ApiModels.TrainingApiModels.IndexOutputModel"
+                "$ref": "#/definitions/Nssol.Platypus.ApiModels.InferenceApiModels.InferenceIndexOutputModel"
               }
             }
           }
@@ -8962,82 +8962,6 @@
         }
       }
     },
-    "Nssol.Platypus.ApiModels.TrainingApiModels.IndexOutputModel": {
-      "description": "学習履歴のうち、Indexで表示する最低情報だけを保持する",
-      "type": "object",
-      "properties": {
-        "dataSet": {
-          "$ref": "#/definitions/Nssol.Platypus.ApiModels.DataSetApiModels.IndexOutputModel",
-          "description": "データセット"
-        },
-        "entryPoint": {
-          "description": "ジョブ実行コマンド",
-          "type": "string"
-        },
-        "parentFullNameList": {
-          "description": "親学習名（表示用）",
-          "uniqueItems": false,
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "tags": {
-          "description": "タグ",
-          "uniqueItems": false,
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "id": {
-          "format": "int64",
-          "description": "ID",
-          "type": "integer"
-        },
-        "displayId": {
-          "format": "int64",
-          "description": "表示用ID",
-          "type": "integer"
-        },
-        "name": {
-          "description": "名前",
-          "type": "string"
-        },
-        "memo": {
-          "description": "メモ",
-          "type": "string"
-        },
-        "status": {
-          "description": "ステータス",
-          "type": "string"
-        },
-        "favorite": {
-          "description": "お気に入り",
-          "type": "boolean"
-        },
-        "fullName": {
-          "description": "表示用",
-          "type": "string"
-        },
-        "createdBy": {
-          "description": "登録者",
-          "type": "string"
-        },
-        "createdAt": {
-          "description": "登録日",
-          "type": "string"
-        },
-        "modifiedBy": {
-          "description": "更新者",
-          "type": "string"
-        },
-        "modifiedAt": {
-          "description": "更新日",
-          "type": "string"
-        }
-      }
-    },
     "Nssol.Platypus.ApiModels.InferenceApiModels.InferenceDetailsOutputModel": {
       "description": "推論履歴の詳細情報モデル",
       "type": "object",
@@ -9070,7 +8994,7 @@
             "$ref": "#/definitions/Nssol.Platypus.ApiModels.TrainingApiModels.IndexOutputModel"
           }
         },
-        "inferences": {
+        "parentInferences": {
           "description": "親推論履歴",
           "uniqueItems": false,
           "type": "array",
@@ -9279,6 +9203,82 @@
         },
         "tag": {
           "description": "タグ（バージョン）名",
+          "type": "string"
+        }
+      }
+    },
+    "Nssol.Platypus.ApiModels.TrainingApiModels.IndexOutputModel": {
+      "description": "学習履歴のうち、Indexで表示する最低情報だけを保持する",
+      "type": "object",
+      "properties": {
+        "dataSet": {
+          "$ref": "#/definitions/Nssol.Platypus.ApiModels.DataSetApiModels.IndexOutputModel",
+          "description": "データセット"
+        },
+        "entryPoint": {
+          "description": "ジョブ実行コマンド",
+          "type": "string"
+        },
+        "parentFullNameList": {
+          "description": "親学習名（表示用）",
+          "uniqueItems": false,
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "tags": {
+          "description": "タグ",
+          "uniqueItems": false,
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "id": {
+          "format": "int64",
+          "description": "ID",
+          "type": "integer"
+        },
+        "displayId": {
+          "format": "int64",
+          "description": "表示用ID",
+          "type": "integer"
+        },
+        "name": {
+          "description": "名前",
+          "type": "string"
+        },
+        "memo": {
+          "description": "メモ",
+          "type": "string"
+        },
+        "status": {
+          "description": "ステータス",
+          "type": "string"
+        },
+        "favorite": {
+          "description": "お気に入り",
+          "type": "boolean"
+        },
+        "fullName": {
+          "description": "表示用",
+          "type": "string"
+        },
+        "createdBy": {
+          "description": "登録者",
+          "type": "string"
+        },
+        "createdAt": {
+          "description": "登録日",
+          "type": "string"
+        },
+        "modifiedBy": {
+          "description": "更新者",
+          "type": "string"
+        },
+        "modifiedAt": {
+          "description": "更新日",
           "type": "string"
         }
       }
