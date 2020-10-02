@@ -65,7 +65,7 @@ namespace Nssol.Platypus.Logic
             this.unitOfWork = unitOfWork;
             this.containerOptions = containerOptions.Value;
             this.adOptions = adOptions.Value;
-    }
+        }
 
         #region コンテナ管理
 
@@ -210,7 +210,7 @@ namespace Nssol.Platypus.Logic
 
             return await clusterManagementService.GetEventsAsync(tenant, token);
         }
-        
+
         /// <summary>
         /// 指定したコンテナのイベントを取得する
         /// </summary>
@@ -218,7 +218,7 @@ namespace Nssol.Platypus.Logic
         {
             var result = await GetEventsAsync(tenant, force);
 
-            if(result.IsSuccess)
+            if (result.IsSuccess)
             {
                 var events = errorOnly ?
                     result.Value.Where(r => r.ContainerName == containerName && r.IsError) :
@@ -246,9 +246,9 @@ namespace Nssol.Platypus.Logic
             }
 
             var registryMap = registryLogic.GetCurrentRegistryMap(preprocessHistory.Preprocess.ContainerRegistryId.Value);
-            
+
             string tags = "-t " + preprocessHistory.Preprocess.Name; //生成されるデータのタグを設定
-            foreach(var tag in preprocessHistory.InputData.Tags)
+            foreach (var tag in preprocessHistory.InputData.Tags)
             {
                 tags += " -t " + tag;
             }
@@ -294,7 +294,7 @@ namespace Nssol.Platypus.Logic
                 Gpu = preprocessHistory.Gpu.Value,
                 KqiToken = loginLogic.GenerateToken().AccessToken,
                 KqiImage = "kamonohashi/cli:" + versionLogic.GetVersion(),
-                LogPath= "/kqi/attach/preproc_stdout_stderr_${PREPROCESSING_ID}_${DATA_ID}.log", // 前処理履歴IDは現状ユーザーに見えないので前処理+データIDをつける
+                LogPath = "/kqi/attach/preproc_stdout_stderr_${PREPROCESSING_ID}_${DATA_ID}.log", // 前処理履歴IDは現状ユーザーに見えないので前処理+データIDをつける
                 NfsVolumeMounts = new List<NfsVolumeMountModel>()
                 {
                     // 添付ファイルを保存するディレクトリ
@@ -465,7 +465,7 @@ namespace Nssol.Platypus.Logic
                 LoginUser = CurrentUserInfo.Alias, //アカウントはエイリアスから指定
                 Name = trainHistory.Key,
                 ContainerImage = registryMap.Registry.GetImagePath(trainHistory.ContainerImage, trainHistory.ContainerTag),
-                ScriptType = "training", 
+                ScriptType = "training",
                 Cpu = trainHistory.Cpu,
                 Memory = trainHistory.Memory,
                 Gpu = trainHistory.Gpu,
@@ -542,7 +542,7 @@ namespace Nssol.Platypus.Logic
                         });
                     }
                 }
-                else if(trainHistory.ParentMaps.Count() == 1)
+                else if (trainHistory.ParentMaps.Count() == 1)
                 {
                     // 親が1件のみの場合、過去の再現性を担保するため、/kqi/parent直下にマウントする
                     inputModel.NfsVolumeMounts.Add(new NfsVolumeMountModel()
@@ -559,7 +559,7 @@ namespace Nssol.Platypus.Logic
 
             // 開放するポート番号を指定
             if (trainHistory.PortList != null)
-            { 
+            {
                 var portMappingList = new List<PortMappingModel>();
                 foreach (var port in trainHistory.PortList)
                 {
@@ -680,7 +680,7 @@ namespace Nssol.Platypus.Logic
                 LoginUser = CurrentUserInfo.Alias, //アカウントはエイリアスから指定
                 Name = inferenceHistory.Key,
                 ContainerImage = registryMap.Registry.GetImagePath(inferenceHistory.ContainerImage, inferenceHistory.ContainerTag),
-                ScriptType = "inference", 
+                ScriptType = "inference",
                 Cpu = inferenceHistory.Cpu,
                 Memory = inferenceHistory.Memory,
                 Gpu = inferenceHistory.Gpu,
@@ -725,7 +725,7 @@ namespace Nssol.Platypus.Logic
                 {
                     { "tmp", "/kqi/tmp/" },
                     { "input", "/kqi/input/" },
-                    { "git", "/kqi/git/" }
+                    { "git", "/kqi/git/" },
                 },
 
                 PrepareAndFinishContainerEnvList = editableEnvList, // 上書き可の環境変数を設定
@@ -767,6 +767,22 @@ namespace Nssol.Platypus.Logic
                         SubPath = inferenceHistory.ParentMaps.First().ParentId.ToString(),
                         Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
                         ServerPath = CurrentUserInfo.SelectedTenant.TrainingContainerOutputNfsPath,
+                        ReadOnly = true
+                    });
+                }
+            }
+            // 親推論を指定した場合は親推論の出力結果を/kqi/inferenceにマウント
+            if (inferenceHistory.ParentInferenceMaps != null)
+            {
+                foreach (var parentInferenceMap in inferenceHistory.ParentInferenceMaps)
+                {
+                    inputModel.NfsVolumeMounts.Add(new NfsVolumeMountModel()
+                    {
+                        Name = "nfs-inference-" + parentInferenceMap.ParentId.ToString(),
+                        MountPath = "/kqi/inference/" + parentInferenceMap.ParentId.ToString(),
+                        SubPath = parentInferenceMap.ParentId.ToString(),
+                        Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
+                        ServerPath = CurrentUserInfo.SelectedTenant.InferenceContainerOutputNfsPath,
                         ReadOnly = true
                     });
                 }
@@ -824,14 +840,14 @@ namespace Nssol.Platypus.Logic
             string containerName = $"tensorboard-{tenantId}-{trainingHistory.Id}-{DateTime.Now.ToString("yyyyMMddHHmmssffffff")}";
 
             string token = await GetUserAccessTokenAsync();
-            if(token == null)
+            if (token == null)
             {
                 //トークンがない場合、結果はnull
                 return new ContainerInfo() { Status = ContainerStatus.Forbidden };
             }
 
             var nodes = GetAccessibleNode();
-            if(nodes == null || nodes.Count == 0)
+            if (nodes == null || nodes.Count == 0)
             {
                 //デプロイ可能なノードがゼロなら、エラー扱い
                 return new ContainerInfo() { Status = ContainerStatus.Forbidden };
@@ -885,17 +901,17 @@ namespace Nssol.Platypus.Logic
                     }
                 };
 
-                foreach(long id in selectedHistoryIds)
+                foreach (long id in selectedHistoryIds)
                 {
                     entryPoint = entryPoint + "," + id + ":/kqi/output/" + id;
-                    NfsVolumeMounts.Add(new NfsVolumeMountModel() 
-                        { 
-                            Name = "nfs-output-" + id,
-                            MountPath = "/kqi/output/" + id,
-                            SubPath = id.ToString(),
-                            Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
-                            ServerPath = CurrentUserInfo.SelectedTenant.TrainingContainerOutputNfsPath
-                        });
+                    NfsVolumeMounts.Add(new NfsVolumeMountModel()
+                    {
+                        Name = "nfs-output-" + id,
+                        MountPath = "/kqi/output/" + id,
+                        SubPath = id.ToString(),
+                        Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
+                        ServerPath = CurrentUserInfo.SelectedTenant.TrainingContainerOutputNfsPath
+                    });
                 };
             }
 
@@ -986,7 +1002,7 @@ namespace Nssol.Platypus.Logic
                 result = await GetContainerStatusAsync(container.Name, container.Tenant.Name, force);
             }
 
-            
+
             if (result.Exist() == false)
             {
                 //コンテナがすでに停止しているので、ログを出した後でDBから対象レコードを削除
@@ -997,7 +1013,7 @@ namespace Nssol.Platypus.Logic
             else
             {
                 bool updateResult = tensorBoardContainerRepository.UpdateStatus(container.Id, result.Name, true);
-                if(updateResult == false)
+                if (updateResult == false)
                 {
                     //削除対象がすでに消えていた場合
                     return ContainerStatus.None;
@@ -1496,7 +1512,7 @@ namespace Nssol.Platypus.Logic
                 return true; //正常系扱い
             }
             string dockerCfg = registryLogic.GetDockerCfgAuthString(userRegistryMap);
-            if(dockerCfg == null)
+            if (dockerCfg == null)
             {
                 return false;
             }
@@ -1568,7 +1584,7 @@ namespace Nssol.Platypus.Logic
                 }
                 token = await clusterManagementService.RegistUserAsync(TenantName, CurrentUserInfo.Alias);
 
-                if(token == null)
+                if (token == null)
                 {
                     //トークン生成に失敗
                     return null;
@@ -1638,7 +1654,7 @@ namespace Nssol.Platypus.Logic
                 await browserWebSocket.CloseOutputAsync(WebSocketCloseStatus.InternalServerError, "Kubernetes error", CancellationToken.None); ;
                 return;
             }
-            ClientWebSocket kubernetesWebSocket = result.Value; 
+            ClientWebSocket kubernetesWebSocket = result.Value;
 
             // Kubernetesの情報を中継する処理を、別スレッドで起動。
             var task = CommunicateKubernetesAsync(kubernetesWebSocket, browserWebSocket);
@@ -1655,7 +1671,7 @@ namespace Nssol.Platypus.Logic
                     var sendK8sBuffer = new List<byte>();
                     sendK8sBuffer.Insert(0, 0); // stdin prefix(0x00)を追加
 
-                    for(int i=0; i < ret.Count; i++)
+                    for (int i = 0; i < ret.Count; i++)
                     {
                         sendK8sBuffer.Add(buff[i]);
                     }

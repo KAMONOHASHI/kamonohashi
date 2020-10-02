@@ -19,7 +19,7 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories
         /// </summary>
         IQueryable<InferenceHistory> GetAllIncludeDataSet();
         /// <summary>
-        /// 全推論履歴（データセット、親学習を含む）を並べ替えありで取得します。
+        /// 全推論履歴（データセット、親学習、親推論を含む）を並べ替えありで取得します。
         /// </summary>
         IQueryable<InferenceHistory> GetAllIncludeDataSetAndParentWithOrdering();
 
@@ -75,11 +75,25 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories
         Task<IEnumerable<InferenceHistoryParentMap>> GetMountedTrainingAsync(long id);
 
         /// <summary>
+        /// 指定したIDの推論履歴を利用した推論履歴を取得する
+        /// </summary>
+        /// <param name="id">マウントされた推論ID</param>
+        Task<IEnumerable<InferenceHistoryParentInferenceMap>> GetMountedInferenceAsync(long id);
+
+        /// <summary>
         /// 推論履歴に親学習を紐づける
         /// </summary>
         /// <param name="history">推論履歴</param>
         /// <param name="parent">親学習履歴</param>
         InferenceHistoryParentMap AttachParentAsync(InferenceHistory history, TrainingHistory parent);
+
+        /// <summary>
+        /// 推論履歴IDに親推論履歴IDを紐づける
+        /// </summary>
+        /// <param name="inferenceHistory">推論履歴</param>
+        /// <param name="parentInference">親推論履歴</param>
+        InferenceHistoryParentInferenceMap AttachParentInferenceToInferenceAsync(InferenceHistory inferenceHistory, InferenceHistory parentInference);
+
 
         #region 添付ファイル操作
 
