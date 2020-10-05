@@ -8,6 +8,7 @@
         None = 0,
         GitHub = 1,
         GitLab = 2,
-        GitLabCom = 3
+        GitLabCom = 3,
+        GitBucket = 4
     }
 }

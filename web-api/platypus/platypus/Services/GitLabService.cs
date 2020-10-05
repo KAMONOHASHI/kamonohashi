@@ -34,7 +34,7 @@ namespace Nssol.Platypus.Services
             
             if (response.IsSuccess)
             {
-                //ロジック層に返すための版用モデルに変換
+                //ロジック層に返すための汎用モデルに変換
                 var outModel = response.Value.Select(e => new RepositoryModel()
                 {
                     Name = e.path, // e.nameは表示そのまま（スペースが入りうる）なので、pathからとる
@@ -321,6 +321,27 @@ namespace Nssol.Platypus.Services
                 }
             }
             while (true);
+        }
+
+        public async Task<Result<string, string>> GetUserNameByTokenAsync(UserTenantGitMap gitMap)
+        {
+            // API呼び出しパラメータ作成
+            RequestParam param = CreateRequestParam(gitMap);
+            param.ApiPath = $"/api/v4/user";
+
+            // API 呼び出し
+            Result<string, string> response = await this.SendGetRequestAsync(param);
+
+            if (response.IsSuccess)
+            {
+                var result = JsonConvert.DeserializeObject<GetUserModel>(response.Value);
+
+                return Result<string, string>.CreateResult(result.username);
+            }
+            else
+            {
+                return Result<string, string>.CreateErrorResult(response.Error);
+            }
         }
 
         /// <summary>
