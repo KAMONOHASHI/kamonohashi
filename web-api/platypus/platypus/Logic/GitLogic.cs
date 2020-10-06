@@ -151,8 +151,8 @@ namespace Nssol.Platypus.Logic
                 return Result<GitEndpointModel, string>.CreateResult(null);
             }
             UserTenantGitMap map = GetCurrentGitMap(gitId);
-
-            string url = $"{map.Git.RepositoryUrl}/{owner}/{repositoryName}.git";
+            string gitUrl = map.Git.RepositoryUrl.TrimEnd('/');
+            string url = $"{gitUrl}/{owner}/{repositoryName}.git";
             var result = new GitEndpointModel()
             {
                 Url = url,
@@ -204,10 +204,11 @@ namespace Nssol.Platypus.Logic
             }
             UserTenantGitMap map = GetCurrentGitMap(gitId);
             IGitService gitService = GetGitService(map?.Git);
+            string gitUrl = map.Git.RepositoryUrl.TrimEnd('/');
             if (gitService != null)
             {
                 //今のところ全GitサービスでURLが共通なので、サービス層ではなくロジック層で作って返す
-                return $"{map.Git.RepositoryUrl}/{owner}/{repositoryName}/commit/{commitId}";
+                return $"{gitUrl}/{owner}/{repositoryName}/commit/{commitId}";
             }
             return null;
         }
@@ -229,10 +230,12 @@ namespace Nssol.Platypus.Logic
             }
             UserTenantGitMap map = GetCurrentGitMap(gitId);
             IGitService gitService = GetGitService(map?.Git);
+            string gitUrl = map.Git.RepositoryUrl.TrimEnd('/');
+
             if (gitService != null)
             {
                 //今のところ全GitサービスでURLが共通なので、サービス層ではなくロジック層で作って返す
-                return $"{map.Git.RepositoryUrl}/{owner}/{repositoryName}/tree/{commitId}";
+                return $"{gitUrl}/{owner}/{repositoryName}/tree/{commitId}";
             }
             return null;
         }

@@ -37,7 +37,7 @@ namespace Nssol.Platypus.Services
         /// </summary>
         /// <param name="gitMap">Git情報</param>
         /// <returns>リポジトリ一覧</returns>
-        public async Task<Result<IEnumerable<RepositoryModel>, string>> GetAllRepositoriesAsync(UserTenantGitMap gitMap)
+        public async virtual Task<Result<IEnumerable<RepositoryModel>, string>> GetAllRepositoriesAsync(UserTenantGitMap gitMap)
         {
             if (string.IsNullOrEmpty(gitMap.GitToken))
             {
@@ -242,7 +242,7 @@ namespace Nssol.Platypus.Services
         /// </summary>
         /// <param name="gitMap">Git情報</param>
         /// <returns>リクエストパラメータ</returns>
-        private RequestParam CreateRequestParam(UserTenantGitMap gitMap)
+        protected RequestParam CreateRequestParam(UserTenantGitMap gitMap)
         {
             RequestParam param = new RequestParam()
             {

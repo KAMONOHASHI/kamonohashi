@@ -30,5 +30,64 @@ namespace Nssol.Platypus.Services
         {
             this.options = options.Value;
         }
+
+        /// <summary>
+        /// リポジトリ一覧を取得する。
+        /// 特に範囲は限定せず、<see cref="Git.Token"/>の権限で参照可能なすべてのリポジトリが対象となる。
+        /// </summary>
+        /// <param name="gitMap">Git情報</param>
+        /// <returns>リポジトリ一覧</returns>
+        public async override Task<Result<IEnumerable<RepositoryModel>, string>> GetAllRepositoriesAsync(UserTenantGitMap gitMap)
+        {
+            // API呼び出しパラメータ作成
+            RequestParam param = CreateRequestParam(gitMap);
+
+            if (string.IsNullOrEmpty(gitMap.GitToken))
+            {
+                param.ApiPath = $"/repositories";
+
+                // API 呼び出し
+                Result<string, string> response = await this.SendGetRequestAsync(param);
+
+                if (response.IsSuccess)
+                {
+                    var result = JsonConvert.DeserializeObject<IEnumerable<GetRepositoryModel>>(response.Value);
+                    return Result<IEnumerable<RepositoryModel>, string>.CreateResult(
+                            result.Select(e => new RepositoryModel()
+                            {
+                                Owner = e.owner.login, //GitHubではAPI実行にそのリポジトリのオーナー名が必要なので、それをKeyに入れる
+                                Name = e.name,
+                                FullName = e.full_name,
+                            }).OrderBy(e => e.FullName));
+                }
+                else
+                {
+                    return Result<IEnumerable<RepositoryModel>, string>.CreateErrorResult(response.Error);
+                }
+            }
+            else
+            {
+                param.ApiPath = $"/user/repos";
+
+                // API 呼び出し
+                Result<string, string> response = await this.SendGetRequestAsync(param);
+
+                if (response.IsSuccess)
+                {
+                    var result = JsonConvert.DeserializeObject<IEnumerable<GetRepositoryModel>>(response.Value);
+                    return Result<IEnumerable<RepositoryModel>, string>.CreateResult(
+                            result.Select(e => new RepositoryModel()
+                            {
+                                Owner = e.owner.login, //GitHubではAPI実行にそのリポジトリのオーナー名が必要なので、それをKeyに入れる
+                            Name = e.name,
+                                FullName = e.full_name,
+                            }).OrderBy(e => e.FullName));
+                }
+                else
+                {
+                    return Result<IEnumerable<RepositoryModel>, string>.CreateErrorResult(response.Error);
+                }
+            }
+        }
     }
 }
