@@ -448,10 +448,9 @@ namespace Nssol.Platypus.Services
             {
                 var result = ConvertResult<GetPodsOutputModel>(response);
 
-                // KqiNamespacePrefix で始まるテナントと KubernetesNamespacePrefix から始まるテナントはシステム管理のため、除外する
-                // ただし、 KqiAdminNamespace はテナントデータ削除用コンテナで使用するため含める
+                // KubernetesNamespacePrefix から始まるテナントはシステム管理のため、除外する
                 return Result<IEnumerable<ContainerDetailsInfo>, ContainerStatus>.CreateResult(
-                    result.Items.Where(item => (item.Metadata.Namespace == containerOptions.KqiAdminNamespace) || (item.Metadata.Namespace.StartsWith(containerOptions.KqiNamespacePrefix) == false && item.Metadata.Namespace.StartsWith(containerOptions.KubernetesNamespacePrefix) == false))
+                    result.Items.Where(item => item.Metadata.Namespace.StartsWith(containerOptions.KubernetesNamespacePrefix) == false)
                     .Select(i => ConvertModel(i)));
             }
             else

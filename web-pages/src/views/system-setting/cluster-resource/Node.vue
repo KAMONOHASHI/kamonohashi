@@ -86,7 +86,8 @@ export default {
       await this.fetchNodes()
     },
     handleEditOpen(row) {
-      if (row) {
+      // tenantIdが-1のものはDBに登録されていないテナントのものであり詳細情報を取得できないため選択不可とする
+      if (row && row.tenantId !== -1) {
         this.$router.push('/cluster-resource/' + row.tenantId + '/' + row.name)
       }
     },
