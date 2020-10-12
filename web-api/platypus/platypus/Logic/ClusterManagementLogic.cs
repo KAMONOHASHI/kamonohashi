@@ -855,7 +855,7 @@ namespace Nssol.Platypus.Logic
                 { "EXPIRES_IN", expiresIn != 0 ? expiresIn.ToString() : "infinity"}  // コンテナ生存期間
             };
 
-            string entryPoint = "/usr/local/bin/tensorboard --logdir /kqi/output";
+            string entryPoint = "/usr/local/bin/tensorboard --bind_all --logdir /kqi/output";
             List<NfsVolumeMountModel> NfsVolumeMounts = new List<NfsVolumeMountModel>()
             {
                 // 結果が保存されているディレクトリ
@@ -872,7 +872,7 @@ namespace Nssol.Platypus.Logic
             // 追加でマウントする学習がある場合
             if (selectedHistoryIds != null && selectedHistoryIds.Count() != 0)
             {
-                entryPoint = "/usr/local/bin/tensorboard --logdir " + trainingHistory.Id + ":/kqi/output/" + trainingHistory.Id;
+                entryPoint = "/usr/local/bin/tensorboard --bind_all --logdir " + trainingHistory.Id + ":/kqi/output/" + trainingHistory.Id;
                 NfsVolumeMounts = new List<NfsVolumeMountModel>()
                 {
                     new NfsVolumeMountModel()
@@ -906,7 +906,7 @@ namespace Nssol.Platypus.Logic
                 TenantName = TenantName,
                 LoginUser = CurrentUserInfo.Alias, //アカウントはエイリアスから指定
                 Name = containerName,
-                ContainerImage = "tensorflow/tensorflow:1.13.2",    // tensorboardで利用するイメージはtensorflow/tensorflow:1.13.2で固定
+                ContainerImage = "tensorflow/tensorflow:2.3.1",    // tensorboardで利用するイメージはtensorflow/tensorflow:2.3.1で固定
                 ScriptType = "tensorboard",
                 Cpu = 1,
                 Memory = 1, //メモリは1GBで仮決め
