@@ -364,6 +364,10 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonBadRequest("Invalid inputs.");
             }
 
+            if (model.Files == null && (model.FileName == null || model.StoredPath == null)) {
+                return JsonBadRequest("Invalid inputs. Files or a pair of FileName and StoredPath is required");
+            }
+
             //データの存在チェック
             var data = await dataRepository.GetDataIncludeAllAsync(id);
             if (data == null)
@@ -379,7 +383,17 @@ namespace Nssol.Platypus.Controllers.spa
 
             List<DataFilesOutputModel.File> files = new List<DataFilesOutputModel.File>();
 
-            foreach(var fileinfo in model.Files)
+            var fileInfoList = model.Files ?? new List<AddFilesInputModel.File>();
+
+            if (model.FileName != null && model.StoredPath != null) {
+                fileInfoList.Add(new AddFilesInputModel.File
+                {
+                    FileName = model.FileName,
+                    StoredPath = model.StoredPath
+                });
+            }
+
+            foreach(var fileinfo in fileInfoList)
             {
                 // 同じファイル名は登録できない。存在した場合はエラーを返し、データ登録を取りやめる。
                 var file = data.DataProperties.FirstOrDefault(d => d.Key == fileinfo.FileName);
