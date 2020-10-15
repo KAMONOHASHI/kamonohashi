@@ -242,7 +242,7 @@ namespace Nssol.Platypus.Services
         /// </summary>
         /// <param name="gitMap">Git情報</param>
         /// <returns>リクエストパラメータ</returns>
-        protected RequestParam CreateRequestParam(UserTenantGitMap gitMap)
+        protected virtual RequestParam CreateRequestParam(UserTenantGitMap gitMap)
         {
             RequestParam param = new RequestParam()
             {
