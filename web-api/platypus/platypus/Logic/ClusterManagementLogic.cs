@@ -333,18 +333,24 @@ namespace Nssol.Platypus.Logic
                 long gitId = preprocessHistory.Preprocess.RepositoryGitId == -1 ?
                     CurrentUserInfo.SelectedTenant.DefaultGitId.Value : preprocessHistory.Preprocess.RepositoryGitId.Value;
 
-                var gitEndpoint = gitLogic.GetPullUrl(preprocessHistory.Preprocess.RepositoryGitId.Value, preprocessHistory.Preprocess.RepositoryName, preprocessHistory.Preprocess.RepositoryOwner);
-                if (gitEndpoint != null)
+                var gitEndpointResult = await gitLogic.GetPullUrlAsync(preprocessHistory.Preprocess.RepositoryGitId.Value, preprocessHistory.Preprocess.RepositoryName, preprocessHistory.Preprocess.RepositoryOwner);
+
+                if (!gitEndpointResult.IsSuccess)
                 {
-                    notEditableEnvList.Add("MODEL_REPOSITORY", gitEndpoint.FullUrl);
-                    notEditableEnvList.Add("MODEL_REPOSITORY_URL", gitEndpoint.Url);
-                    notEditableEnvList.Add("MODEL_REPOSITORY_TOKEN", gitEndpoint.Token);
+                    return Result<ContainerInfo, string>.CreateErrorResult(gitEndpointResult.Error);
                 }
-                else
+
+                if (gitEndpointResult.Value == null)
                 {
                     //Git情報は必須にしているので、無ければエラー
                     return Result<ContainerInfo, string>.CreateErrorResult("Git credential is not valid.");
                 }
+
+                var gitEndpoint = gitEndpointResult.Value;
+                notEditableEnvList.Add("MODEL_REPOSITORY", gitEndpoint.FullUrl);
+                notEditableEnvList.Add("MODEL_REPOSITORY_URL", gitEndpoint.Url);
+                notEditableEnvList.Add("MODEL_REPOSITORY_TOKEN", gitEndpoint.Token);
+
             }
 
             // ユーザの任意追加環境変数をマージする
@@ -411,13 +417,19 @@ namespace Nssol.Platypus.Logic
                 CurrentUserInfo.SelectedTenant.DefaultGitId.Value : trainHistory.ModelGitId;
 
             var registryMap = registryLogic.GetCurrentRegistryMap(trainHistory.ContainerRegistryId.Value);
-            var gitEndpoint = gitLogic.GetPullUrl(gitId, trainHistory.ModelRepository, trainHistory.ModelRepositoryOwner);
+            var gitEndpointResult = await gitLogic.GetPullUrlAsync(gitId, trainHistory.ModelRepository, trainHistory.ModelRepositoryOwner);
 
-            if (gitEndpoint == null)
+            if (! gitEndpointResult.IsSuccess) {
+                return Result<ContainerInfo, string>.CreateErrorResult(gitEndpointResult.Error);
+            }
+
+            if (gitEndpointResult.Value == null)
             {
                 //Git情報は必須にしているので、無ければエラー
                 return Result<ContainerInfo, string>.CreateErrorResult("Git credential is not valid.");
             }
+
+            var gitEndpoint = gitEndpointResult.Value;
 
             var nodes = GetAccessibleNode();
             if (nodes == null || nodes.Count == 0)
@@ -626,13 +638,20 @@ namespace Nssol.Platypus.Logic
                 CurrentUserInfo.SelectedTenant.DefaultGitId.Value : inferenceHistory.ModelGitId.Value;
 
             var registryMap = registryLogic.GetCurrentRegistryMap(inferenceHistory.ContainerRegistryId.Value);
-            var gitEndpoint = gitLogic.GetPullUrl(gitId, inferenceHistory.ModelRepository, inferenceHistory.ModelRepositoryOwner);
+            var gitEndpointResult = await gitLogic.GetPullUrlAsync(gitId, inferenceHistory.ModelRepository, inferenceHistory.ModelRepositoryOwner);
 
-            if (gitEndpoint == null)
+            if (!gitEndpointResult.IsSuccess)
+            {
+                return Result<ContainerInfo, string>.CreateErrorResult(gitEndpointResult.Error);
+            }
+
+            if (gitEndpointResult.Value == null)
             {
                 //Git情報は必須にしているので、無ければエラー
                 return Result<ContainerInfo, string>.CreateErrorResult("Git credential is not valid.");
             }
+
+            var gitEndpoint = gitEndpointResult.Value;
 
             var nodes = GetAccessibleNode();
             if (nodes == null || nodes.Count == 0)
@@ -1202,9 +1221,15 @@ namespace Nssol.Platypus.Logic
                 long gitId = notebookHistory.ModelGitId == -1 ?
                     CurrentUserInfo.SelectedTenant.DefaultGitId.Value : notebookHistory.ModelGitId.Value;
 
-                var gitEndpoint = gitLogic.GetPullUrl(gitId, notebookHistory.ModelRepository, notebookHistory.ModelRepositoryOwner);
-                if (gitEndpoint != null)
+                var gitEndpointResult = await gitLogic.GetPullUrlAsync(gitId, notebookHistory.ModelRepository, notebookHistory.ModelRepositoryOwner);
+
+                if (!gitEndpointResult.IsSuccess) {
+                    return Result<ContainerInfo, string>.CreateErrorResult(gitEndpointResult.Error);
+                }
+
+                if (gitEndpointResult.Value != null)
                 {
+                    var gitEndpoint = gitEndpointResult.Value;
                     notEditableEnvList.Add("MODEL_REPOSITORY", gitEndpoint.FullUrl);
                     notEditableEnvList.Add("MODEL_REPOSITORY_URL", gitEndpoint.Url);
                     notEditableEnvList.Add("MODEL_REPOSITORY_TOKEN", gitEndpoint.Token);

@@ -281,8 +281,10 @@ namespace Nssol.Platypus.Services
             public string UserName { get; set; }
             /// <summary>パスワード</summary>
             public string Password { get; set; }
-            /// <summary>Bearer認証トークン</summary>
+            /// <summary>認証トークン</summary>
             public string Token { get; set; }
+            /// <summary>認証トークンタイプ。Autorization headerに記載。Bearer、token等を想定</summary>
+            public string TokenType { get; set; }
             /// <summary>
             /// ヘッダー
             /// </summary>
@@ -332,7 +334,8 @@ namespace Nssol.Platypus.Services
                     }
                     else if(string.IsNullOrEmpty(Token) == false)
                     {
-                        return new AuthenticationHeaderValue("Bearer", Token);
+                        var tokenType = TokenType ?? "Bearer";
+                        return new AuthenticationHeaderValue(tokenType, Token);
                     }
                     else
                     {

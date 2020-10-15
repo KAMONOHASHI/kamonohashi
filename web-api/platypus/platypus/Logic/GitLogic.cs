@@ -144,15 +144,15 @@ namespace Nssol.Platypus.Logic
         /// <param name="repositoryName">リポジトリ名</param>
         /// <param name="owner">オーナー名</param>
         /// <returns>git pullするためのURL</returns>
-        public GitEndpointModel GetPullUrl(long gitId, string repositoryName, string owner)
+        public async Task<Result<GitEndpointModel, string>> GetPullUrlAsync(long gitId, string repositoryName, string owner)
         {
             if (string.IsNullOrEmpty(repositoryName) || string.IsNullOrEmpty(owner))
             {
-                return null;
+                return Result<GitEndpointModel, string>.CreateResult(null);
             }
             UserTenantGitMap map = GetCurrentGitMap(gitId);
-
-            string url = $"{map.Git.RepositoryUrl}/{owner}/{repositoryName}.git";
+            string gitUrl = map.Git.RepositoryUrl.TrimEnd('/');
+            string url = $"{gitUrl}/{owner}/{repositoryName}.git";
             var result = new GitEndpointModel()
             {
                 Url = url,
@@ -165,15 +165,26 @@ namespace Nssol.Platypus.Logic
             else
             {
                 // http の場合、以下のようなフォーマットで git clone できる
-                //  http://kqi:${token}@${host}/${owner}/${repositoryName}.git
-                // ユーザ名がkqiになっているのは、空文字以外の任意文字列を入れないと認証失敗になる問題が発見されたため。
+                //  http://${user}:${token}@${host}/${owner}/${repositoryName}.git
+                IGitService gitService = GetGitService(map?.Git);
+                var userNameResult = await gitService.GetUserNameByTokenAsync(map);
+
+                if (!userNameResult.IsSuccess) 
+                {
+                    return Result<GitEndpointModel, string>.CreateErrorResult(userNameResult.Error);
+                }
+                if(userNameResult.Value == null)
+                {
+                    return Result<GitEndpointModel, string>.CreateErrorResult("invalid git service response");
+                }
+
                 UriBuilder builder = new UriBuilder(url);
-                builder.UserName = "kqi";
+                builder.UserName = userNameResult.Value;
                 builder.Password = map.GitToken;
                 result.FullUrl = builder.Uri.ToString();
             }
 
-            return result;
+            return Result<GitEndpointModel, string>.CreateResult(result);
         }
 
         /// <summary>
@@ -193,10 +204,11 @@ namespace Nssol.Platypus.Logic
             }
             UserTenantGitMap map = GetCurrentGitMap(gitId);
             IGitService gitService = GetGitService(map?.Git);
+            string gitUrl = map.Git.RepositoryUrl.TrimEnd('/');
             if (gitService != null)
             {
                 //今のところ全GitサービスでURLが共通なので、サービス層ではなくロジック層で作って返す
-                return $"{map.Git.RepositoryUrl}/{owner}/{repositoryName}/commit/{commitId}";
+                return $"{gitUrl}/{owner}/{repositoryName}/commit/{commitId}";
             }
             return null;
         }
@@ -218,10 +230,12 @@ namespace Nssol.Platypus.Logic
             }
             UserTenantGitMap map = GetCurrentGitMap(gitId);
             IGitService gitService = GetGitService(map?.Git);
+            string gitUrl = map.Git.RepositoryUrl.TrimEnd('/');
+
             if (gitService != null)
             {
                 //今のところ全GitサービスでURLが共通なので、サービス層ではなくロジック層で作って返す
-                return $"{map.Git.RepositoryUrl}/{owner}/{repositoryName}/tree/{commitId}";
+                return $"{gitUrl}/{owner}/{repositoryName}/tree/{commitId}";
             }
             return null;
         }
@@ -261,6 +275,10 @@ namespace Nssol.Platypus.Logic
                 else if (git.ServiceType == GitServiceType.GitLabCom)
                 {
                     return CommonDiLogic.DynamicDi<GitLabComService>();
+                }
+                else if (git.ServiceType == GitServiceType.GitBucket) 
+                {
+                    return CommonDiLogic.DynamicDi<GitBucketService>();
                 }
             }
             return null;

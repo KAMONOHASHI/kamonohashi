@@ -114,6 +114,7 @@ namespace Nssol.Platypus
             services.AddTransient<GitHubService>();
             services.AddTransient<GitLabService>();
             services.AddTransient<GitLabComService>();
+            services.AddTransient<GitBucketService>();
             services.AddTransient<DockerHubRegistryService>();
             services.AddTransient<GitLabRegistryService>();
             services.AddTransient<PrivateDockerRegistryService>();
