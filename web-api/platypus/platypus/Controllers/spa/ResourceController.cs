@@ -111,8 +111,7 @@ namespace Nssol.Platypus.Controllers.spa
                         var nodeInfo = nodeInfos.Find(n => n.Name == container.NodeName);
                         if(nodeInfo == null)
                         {
-                            //ノード一覧にないコンテナなので、あり得ない。ログだけ出して、無視。
-                            JsonError(HttpStatusCode.ServiceUnavailable, $"The container {container.Name} is in the unknown node {container.NodeName}.");
+                            //登録ノードに所属していないコンテナは無視
                             continue;
                         }
                         var model = new NodeResourceOutputModel(nodeInfo);
@@ -139,12 +138,14 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// テナント単位のリソースデータを取得する
         /// </summary>
+        /// <param name="nodeRepository">DI用</param>
         /// <returns>リソースデータ</returns>
         [HttpGet("tenants")]
         [PermissionFilter(MenuCode.Resource)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<TenantResourceOutputModel>))]
-        public async Task<IActionResult> GetResourceByTenant()
+        public async Task<IActionResult> GetResourceByTenant([FromServices] INodeRepository nodeRepository)
         {
+            var nodes = nodeRepository.GetAll().OrderBy(n => n.Name);
             var result = tenantRepository.GetAllTenants().OrderBy(t => t.DisplayName).ToDictionary(t => t.Name, t => new TenantResourceOutputModel(t));
             
             var response = await clusterManagementLogic.GetAllContainerDetailsInfosAsync();
@@ -152,6 +153,14 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 foreach (var container in response.Value)
                 {
+                    //nodeInfoから必要な情報を取って、結果に含める
+                    var nodeInfo = nodes.FirstOrDefault(n => n.Name == container.NodeName);
+                    if (nodeInfo == null)
+                    {
+                        //登録ノードに所属していないコンテナは無視
+                        continue;
+                    }
+
                     if (result.ContainsKey(container.TenantName))
                     {
                         //テナント単位で集計する場合、テナントIDは自明なので、CreateContainerDetailsOutputModel()は使わない
@@ -189,17 +198,21 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 起動中のコンテナ一覧を取得する
         /// </summary>
+        /// <param name="nodeRepository">DI用</param>
         /// <returns>リソースデータ</returns>
         [HttpGet("containers")]
         [PermissionFilter(MenuCode.Resource)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<ContainerDetailsOutputModel>))]
-        public async Task<IActionResult> GetResourceByContainer()
+        public async Task<IActionResult> GetResourceByContainer([FromServices] INodeRepository nodeRepository)
         {
+            var nodes = nodeRepository.GetAll().OrderBy(n => n.Name);
             var result = await clusterManagementLogic.GetAllContainerDetailsInfosAsync();
             if (result.IsSuccess)
             {
-                // ノード名（昇順）、テナント名（昇順）で並び替える
-                return JsonOK(result.Value.Select(info => CreateContainerDetailsOutputModel(info)).OrderBy(c => c.NodeName).ThenBy(c => c.TenantName));
+                // 登録ノードに所属していないコンテナは無視し、ノード名（昇順）、テナント名（昇順）で並び替える
+                return JsonOK(result.Value
+                    .Select(info => CreateContainerDetailsOutputModel(info)).OrderBy(c => c.NodeName).ThenBy(c => c.TenantName)
+                    .Where(info => nodes.FirstOrDefault(n => n.Name == info.NodeName) != null));
             }
             else
             {
@@ -224,6 +237,11 @@ namespace Nssol.Platypus.Controllers.spa
                     // KqiAdminNamespace の場合、KQI管理者用とする。
                     model.TenantName = containerManageOptions.KqiAdminNamespace;
                     model.TenantId = 0;
+                }else if (info.TenantName.StartsWith(containerManageOptions.KqiNamespacePrefix))
+                {
+                    // KqiNamespacePrefix で始まるテナント名の場合、kqi-systemとする
+                    model.TenantName = "kqi-system";
+                    model.TenantId = -1;
                 }
                 else
                 {

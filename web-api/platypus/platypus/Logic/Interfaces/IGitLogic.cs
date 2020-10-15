@@ -67,7 +67,7 @@ namespace Nssol.Platypus.Logic.Interfaces
         /// <param name="repositoryName">リポジトリ名</param>
         /// <param name="owner">オーナー名</param>
         /// <returns>git pullするためのURL</returns>
-        GitEndpointModel GetPullUrl(long gitId, string repositoryName, string owner);
+        Task<Result<GitEndpointModel, string>> GetPullUrlAsync(long gitId, string repositoryName, string owner);
 
         /// <summary>
         /// コミット内容の差分表示を参照できるWebUI URLを取得する。

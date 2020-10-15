@@ -60,6 +60,19 @@
             </span>
           </template>
         </el-table-column>
+        <el-table-column label="マウントした推論" width="200px">
+          <template slot-scope="scope">
+            <span
+              v-for="(ParentInferenceName, index) in scope.row
+                .parentInferenceFullNameList"
+              :key="index"
+            >
+              <span class="parent">
+                {{ ParentInferenceName }}
+              </span>
+            </span>
+          </template>
+        </el-table-column>
         <el-table-column
           prop="dataSet.name"
           label="データセット"
@@ -149,7 +162,17 @@ export default {
         { prop: 'startedAt', name: '開始日時', type: 'date' },
         { prop: 'startedBy', name: '実行者', type: 'text' },
         { prop: 'parentId', name: 'マウントした学習ID', type: 'number' },
+        {
+          prop: 'parentInferenceId',
+          name: 'マウントした推論ID',
+          type: 'number',
+        },
         { prop: 'parentName', name: 'マウントした学習名', type: 'text' },
+        {
+          prop: 'parentInferenceName',
+          name: 'マウントした推論名',
+          type: 'text',
+        },
         { prop: 'dataSet', name: 'データセット', type: 'text' },
         { prop: 'entryPoint', name: '実行コマンド', type: 'text' },
         { prop: 'memo', name: 'メモ', type: 'text' },

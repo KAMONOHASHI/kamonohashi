@@ -37,7 +37,7 @@ namespace Nssol.Platypus.Services
         /// </summary>
         /// <param name="gitMap">Git情報</param>
         /// <returns>リポジトリ一覧</returns>
-        public async Task<Result<IEnumerable<RepositoryModel>, string>> GetAllRepositoriesAsync(UserTenantGitMap gitMap)
+        public async virtual Task<Result<IEnumerable<RepositoryModel>, string>> GetAllRepositoriesAsync(UserTenantGitMap gitMap)
         {
             if (string.IsNullOrEmpty(gitMap.GitToken))
             {
@@ -216,19 +216,41 @@ namespace Nssol.Platypus.Services
             }
         }
 
+        public async Task<Result<string, string>> GetUserNameByTokenAsync(UserTenantGitMap gitMap)
+        {
+            // API呼び出しパラメータ作成
+            RequestParam param = CreateRequestParam(gitMap);
+            param.ApiPath = $"/user";
+
+            // API 呼び出し
+            Result<string, string> response = await this.SendGetRequestAsync(param);
+
+            if (response.IsSuccess)
+            {
+                var result = JsonConvert.DeserializeObject<GetUserModel>(response.Value);
+
+                return Result<string, string>.CreateResult(result.login);
+            }
+            else
+            {
+                return Result<string, string>.CreateErrorResult(response.Error);
+            }
+        }
+
         /// <summary>
         /// 共通で使うパラメータを生成
         /// </summary>
         /// <param name="gitMap">Git情報</param>
         /// <returns>リクエストパラメータ</returns>
-        private RequestParam CreateRequestParam(UserTenantGitMap gitMap)
+        protected RequestParam CreateRequestParam(UserTenantGitMap gitMap)
         {
             RequestParam param = new RequestParam()
             {
                 BaseUrl = gitMap.Git.ApiUrl,
                 //Proxy = options.Proxy, // API Server からのアクセスは特にコード内では制御せず、OS設定に任せる
                 Token = gitMap.GitToken,
-                UserAgent = "C#App"
+                UserAgent = "C#App",
+                TokenType = "token",
             };
             return param;
         }

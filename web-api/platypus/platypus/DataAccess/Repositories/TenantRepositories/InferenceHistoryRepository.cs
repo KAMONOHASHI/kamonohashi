@@ -40,7 +40,8 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
         {
             return GetAll().OrderByDescending(t => t.Favorite).ThenByDescending(t => t.Id)
                 .Include(t => t.DataSet)
-                .Include(t => t.ParentMaps).ThenInclude(map => map.Parent);
+                .Include(t => t.ParentMaps).ThenInclude(map => map.Parent)
+                .Include(t => t.ParentInferenceMaps).ThenInclude(map => map.Parent);
         }
 
         /// <summary>
@@ -65,6 +66,8 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
                 .Include(t => t.ParentMaps).ThenInclude(map => map.Parent)
                                            .ThenInclude(p => p.TagMaps)
                                            .ThenInclude(map => map.Tag)
+                .Include(t => t.ParentInferenceMaps).ThenInclude(map => map.Parent)
+                                            .ThenInclude(p => p.DataSet)
                 .Include(t => t.InferenceHistoryAttachedFile)
                 .Include(t => t.ContainerRegistry)
                 .SingleOrDefaultAsync();
@@ -198,6 +201,39 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
             AddModel(map);
             return map;
         }
+
+        /// <summary>
+        /// 指定したIDの推論履歴を利用した推論履歴を取得する
+        /// </summary>
+        /// <param name="id">マウントされた推論ID</param>
+        public async Task<IEnumerable<InferenceHistoryParentInferenceMap>> GetMountedInferenceAsync(long id)
+        {
+            return await FindModelAll<InferenceHistoryParentInferenceMap>(x => x.ParentId == id).Include(t => t.InferenceHistory).OrderBy(x => x.Id).ToListAsync();
+        }
+
+        /// <summary>
+        /// 推論履歴IDに親推論履歴IDを紐づける
+        /// </summary>
+        /// <param name="inferenceHistory">推論履歴履歴</param>
+        /// <param name="parentInference">親推論履歴</param>
+        public InferenceHistoryParentInferenceMap AttachParentInferenceToInferenceAsync(InferenceHistory inferenceHistory, InferenceHistory parentInference)
+        {
+            if (parentInference == null)
+            {
+                //指定がなければ何もしない
+                return null;
+            }
+
+            InferenceHistoryParentInferenceMap map = new InferenceHistoryParentInferenceMap()
+            {
+                InferenceHistoryId = inferenceHistory.Id,
+                ParentId = parentInference.Id
+            };
+
+            AddModel(map);
+            return map;
+        }
+
 
         #region 添付ファイル操作
 

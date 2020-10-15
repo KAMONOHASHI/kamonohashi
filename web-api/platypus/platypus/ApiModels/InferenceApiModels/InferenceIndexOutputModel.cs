@@ -25,6 +25,15 @@ namespace Nssol.Platypus.ApiModels.InferenceApiModels
                 }
                 ParentFullNameList = parentFullNameList;
             }
+            if (history.ParentInferenceMaps != null && history.ParentInferenceMaps.Count > 0)
+            {
+                List<string> parentInferenceFullNameList = new List<string>();
+                foreach (InferenceHistoryParentInferenceMap parentInferenceMap in history.ParentInferenceMaps)
+                {
+                    parentInferenceFullNameList.Add($"{parentInferenceMap.Parent.Id}:{parentInferenceMap.Parent.Name}");
+                }
+                ParentInferenceFullNameList = parentInferenceFullNameList;
+            }
         }
 
         /// <summary>
@@ -41,6 +50,11 @@ namespace Nssol.Platypus.ApiModels.InferenceApiModels
         /// 親学習ジョブ名（表示用）
         /// </summary>
         public List<string> ParentFullNameList { get; set; }
+
+        /// <summary>
+        /// 親推論ジョブ名（表示用）
+        /// </summary>
+        public List<string> ParentInferenceFullNameList { get; set; }
 
         /// <summary>
         /// 出力値
