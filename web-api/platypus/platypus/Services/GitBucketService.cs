@@ -55,7 +55,7 @@ namespace Nssol.Platypus.Services
                     return Result<IEnumerable<RepositoryModel>, string>.CreateResult(
                             result.Select(e => new RepositoryModel()
                             {
-                                Owner = e.owner.login, //GitHubではAPI実行にそのリポジトリのオーナー名が必要なので、それをKeyに入れる
+                                Owner = e.owner.login, //GitHub,GitBucketではAPI実行にそのリポジトリのオーナー名が必要なので、それをKeyに入れる
                                 Name = e.name,
                                 FullName = e.full_name,
                             }).OrderBy(e => e.FullName));
@@ -78,7 +78,7 @@ namespace Nssol.Platypus.Services
                     return Result<IEnumerable<RepositoryModel>, string>.CreateResult(
                             result.Select(e => new RepositoryModel()
                             {
-                                Owner = e.owner.login, //GitHubではAPI実行にそのリポジトリのオーナー名が必要なので、それをKeyに入れる
+                                Owner = e.owner.login, //GitHub,GitBucketではAPI実行にそのリポジトリのオーナー名が必要なので、それをKeyに入れる
                             Name = e.name,
                                 FullName = e.full_name,
                             }).OrderBy(e => e.FullName));
