@@ -89,5 +89,22 @@ namespace Nssol.Platypus.Services
                 }
             }
         }
+
+        /// <summary>
+        /// 共通で使うパラメータを生成
+        /// </summary>
+        /// <param name="gitMap">Git情報</param>
+        /// <returns>リクエストパラメータ</returns>
+        protected override RequestParam CreateRequestParam(UserTenantGitMap gitMap)
+        {
+            RequestParam param = new RequestParam()
+            {
+                BaseUrl = gitMap.Git.ApiUrl.TrimEnd('/')+"/api/v3",
+                Token = gitMap.GitToken,
+                UserAgent = "C#App",
+                TokenType = "token",
+            };
+            return param;
+        }
     }
 }
