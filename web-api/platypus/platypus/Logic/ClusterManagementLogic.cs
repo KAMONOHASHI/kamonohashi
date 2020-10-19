@@ -907,7 +907,7 @@ namespace Nssol.Platypus.Logic
             // 追加でマウントする学習がある場合
             if (selectedHistoryIds != null && selectedHistoryIds.Count() != 0)
             {
-                entryPoint = "/usr/local/bin/tensorboard --bind_all --logdir " + trainingHistory.Id + ":/kqi/output/" + trainingHistory.Id;
+                entryPoint = "/usr/local/bin/tensorboard --bind_all --logdir_spec " + trainingHistory.Id + ":/kqi/output/" + trainingHistory.Id;
                 NfsVolumeMounts = new List<NfsVolumeMountModel>()
                 {
                     new NfsVolumeMountModel()
