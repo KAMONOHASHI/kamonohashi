@@ -26,152 +26,152 @@ def traverse(obj, callback):
 
 def remove_unused_api_and_rename_operation_id(spec):
     used_api = {
-        '/api/v1/account': {
+        '/api/v2/account': {
             'get': 'get_account',
         },
-        '/api/v1/account/login': {
+        '/api/v2/account/login': {
             'post': 'login',
         },
-        '/api/v1/account/tenants/{tenantId}/token': {
+        '/api/v2/account/tenants/{tenantId}/token': {
             'post': 'switch_tenant',
         },
-        '/api/v1/admin/tenants': {
+        '/api/v2/admin/tenants': {
             'get': 'list_tenants',
             'post': 'create_tenant',
         },
-        '/api/v1/admin/tenants/{id}': {
+        '/api/v2/admin/tenants/{id}': {
             'get': 'get_tenant',
             'put': 'update_tenant',
             'delete': 'delete_tenant',
         },
-        '/api/v1/data': {
+        '/api/v2/data': {
             'get': 'list_data',
             'post': 'create_data',
         },
-        '/api/v1/data/{id}': {
+        '/api/v2/data/{id}': {
             'get': 'get_data', 
             'put': 'update_data',
             'delete': 'delete_data',
         },
-        '/api/v1/data/{id}/files': {
+        '/api/v2/data/{id}/files': {
             'get': 'list_data_files', 
             'post': 'add_data_file',
         },
-        '/api/v1/data/{id}/files/{fileId}': {
+        '/api/v2/data/{id}/files/{fileId}': {
             'delete': 'delete_data_file',
         },
-        '/api/v1/datasets': {
+        '/api/v2/datasets': {
             'get': 'list_datasets', 
             'post': 'create_dataset',
         },
-        '/api/v1/datasets/{id}': {
+        '/api/v2/datasets/{id}': {
             'get': 'get_dataset', 
             'put': 'update_dataset', 
             'delete': 'delete_dataset', 
             'patch': 'patch_dataset',
         },
-        '/api/v1/datasets/{id}/files': {
+        '/api/v2/datasets/{id}/files': {
             'get': 'list_dataset_files',
         },
-        '/api/v1/datasets/{id}/pathpairs': {
+        '/api/v2/datasets/{id}/pathpairs': {
             'get': 'list_dataset_pathpairs',
         },
-        '/api/v1/datatypes': {
+        '/api/v2/datatypes': {
             'get': 'list_dataset_datatypes',
         },
-        '/api/v1/inferences': {
+        '/api/v2/inferences': {
             'get': 'list_inference', 
         },
-        '/api/v1/inferences/{id}/container-files': {
+        '/api/v2/inferences/{id}/container-files': {
             'get': 'list_inference_container_files',
         },
-        '/api/v1/inferences/{id}/complete': {
+        '/api/v2/inferences/{id}/complete': {
             'post': 'complete_inference',
         },
-        '/api/v1/inferences/{id}/halt': {
+        '/api/v2/inferences/{id}/halt': {
             'post': 'halt_inference',
         },
-        '/api/v1/inferences/run': {
+        '/api/v2/inferences/run': {
             'post': 'create_inference',
         },
-        '/api/v1/inferences/{id}': {
+        '/api/v2/inferences/{id}': {
             'get': 'get_inference', 
             'delete': 'delete_inference', 
             'put': 'update_inference',
         },
-        '/api/v1/inferences/{id}/files': {
+        '/api/v2/inferences/{id}/files': {
             'get': 'list_inference_files',
             'post': 'add_inference_file',
         },
-        '/api/v1/inferences/{id}/files/{fileId}': {
+        '/api/v2/inferences/{id}/files/{fileId}': {
             'delete': 'delete_inference_file',
         },
-        '/api/v1/training': {
+        '/api/v2/training': {
             'get': 'list_training', 
         },
-        '/api/v1/training/run': {
+        '/api/v2/training/run': {
             'post': 'create_training',
         },
-        '/api/v1/training/{id}': {
+        '/api/v2/training/{id}': {
             'get': 'get_training', 
             'delete': 'delete_training', 
             'put': 'update_training',
         },
-        '/api/v1/training/{id}/complete': {
+        '/api/v2/training/{id}/complete': {
             'post': 'complete_training',
         },
-        '/api/v1/training/{id}/container-files': {
+        '/api/v2/training/{id}/container-files': {
             'get': 'list_training_container_files',
         },
-        '/api/v1/training/{id}/files': {
+        '/api/v2/training/{id}/files': {
             'get': 'list_training_files',
             'post': 'add_training_file',
         },
-        '/api/v1/training/{id}/files/{fileId}': {
+        '/api/v2/training/{id}/files/{fileId}': {
             'delete': 'delete_training_file',
         },
-        '/api/v1/training/{id}/halt': {
+        '/api/v2/training/{id}/halt': {
             'post': 'halt_training',
         },
-        '/api/v1/training/{id}/tensorboard': {
+        '/api/v2/training/{id}/tensorboard': {
             'delete': 'halt_tensorboard',
         },
-        '/api/v1/preprocessings': {
+        '/api/v2/preprocessings': {
             'get': 'list_preprocessings', 
             'post': 'create_preprocessing',
         },
-        '/api/v1/preprocessings/{id}': {
+        '/api/v2/preprocessings/{id}': {
             'get': 'get_preprocessing',
             'put': 'update_preprocessing',
             'delete': 'delete_preprocessing', 
             'patch': 'patch_preprocessing',
         },
-        '/api/v1/preprocessings/{id}/histories': {
+        '/api/v2/preprocessings/{id}/histories': {
             'get': 'list_preprocessing_histories',
         },
-        '/api/v1/preprocessings/{id}/histories/{dataId}': {
+        '/api/v2/preprocessings/{id}/histories/{dataId}': {
             'post': 'create_preprocessing_history', 
             'delete': 'delete_preprocessing_history',
         },
-        '/api/v1/preprocessings/{id}/histories/{dataId}/data': {
+        '/api/v2/preprocessings/{id}/histories/{dataId}/data': {
             'post': 'add_preprocessing_history_files',
         },
-        '/api/v1/preprocessings/{id}/histories/{dataId}/complete': {
+        '/api/v2/preprocessings/{id}/histories/{dataId}/complete': {
             'post': 'complete_preprocessing_history',
         },
-        '/api/v1/preprocessings/{id}/histories/{dataId}/halt': {
+        '/api/v2/preprocessings/{id}/histories/{dataId}/halt': {
             'post': 'halt_preprocessing_history',
         },
-        '/api/v1/preprocessings/{id}/run': {
+        '/api/v2/preprocessings/{id}/run': {
             'post': 'run_preprocessing',
         },
-        '/api/v1/notebook/{id}/halt': {
+        '/api/v2/notebook/{id}/halt': {
             'post': 'halt_notebook',
         },
-        '/api/v1/upload/complete': {
+        '/api/v2/upload/complete': {
             'post': 'complete_upload',
         },
-        '/api/v1/upload/parameter': {
+        '/api/v2/upload/parameter': {
             'get': 'get_upload_paramater',
         },
     }
@@ -234,12 +234,15 @@ def rename_model(spec):
 
 def remove_comment(spec):
     comment = []
+    paths = spec['paths']
+    definitions = spec['definitions']
 
     def callback(obj, key, value):
         if key in ('summary', 'description'):
             comment.append((obj, key))
 
-    traverse(spec, callback)
+    traverse(paths, callback)
+    traverse(definitions, callback)
 
     for obj, key in comment:
         del obj[key]
@@ -253,6 +256,5 @@ remove_unused_model(spec)
 rename_model(spec)
 if len(sys.argv) <= 1 or sys.argv[1] != '--preserve-comment':
     remove_comment(spec)
-spec['info']['description'] = 'A platform for deep learning'
 
 json.dump(spec, fout, sort_keys=True, indent=2, ensure_ascii=False)

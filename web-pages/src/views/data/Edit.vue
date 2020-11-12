@@ -191,8 +191,8 @@ export default {
             this.error = null
           } catch (error) {
             try {
-              // データIDが存在する場合、該当のデータを削除する
-              if (dataId !== null) {
+              // 新規データ作成の場合、該当のデータを削除する
+              if (this.id === null && dataId !== null) {
                 await this.delete(dataId)
               }
             } finally {
@@ -240,7 +240,7 @@ export default {
     async uploadFile(dataId) {
       let dataFileInfo = await this.$refs.dataFile.uploadFile()
       if (dataFileInfo !== undefined) {
-        this.putFile({ id: dataId, fileInfo: dataFileInfo })
+        await this.putFile({ id: dataId, fileInfo: dataFileInfo })
       }
     },
 

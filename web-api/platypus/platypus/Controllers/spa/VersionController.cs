@@ -14,7 +14,8 @@ namespace Nssol.Platypus.Controllers.spa
     /// <summary>
     /// バージョン情報を扱うためのAPI集
     /// </summary>
-    [Route("api/v1/version")]
+    [ApiVersion("1"), ApiVersion("2")]
+    [Route("api/v{api-version:apiVersion}/version")]
     public class VersionController : PlatypusApiControllerBase
     {
         /// <summary>

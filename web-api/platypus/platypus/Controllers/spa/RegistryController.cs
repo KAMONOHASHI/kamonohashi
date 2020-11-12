@@ -21,7 +21,8 @@ namespace Nssol.Platypus.Controllers.spa
     /// <summary>
     /// レジストリ管理を扱うためのAPI集
     /// </summary>
-    [Route("api/v1/admin/registry")]
+    [ApiVersion("1"), ApiVersion("2")]
+    [Route("api/v{api-version:apiVersion}/admin/registry")]
     public class RegistryController : PlatypusApiControllerBase
     {
         private readonly IRegistryLogic registryLogic;
@@ -267,7 +268,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// テナント管理者が選択可能な登録済みのDockerレジストリ エンドポイント一覧を取得
         /// </summary>
-        [HttpGet("/api/v1/tenant/registry/endpoints")]
+        [HttpGet("/api/v{api-version:apiVersion}/tenant/registry/endpoints")]
         [Filters.PermissionFilter(MenuCode.TenantSetting)]
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetAllForTenant()
@@ -291,7 +292,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="registryId">レジストリID</param>
         /// <returns>イメージ名のリスト</returns>
-        [HttpGet("/api/v1/registries/{registryId}/images")]
+        [HttpGet("/api/v{api-version:apiVersion}/registries/{registryId}/images")]
         [Filters.PermissionFilter(MenuCode.Training, MenuCode.Preprocess, MenuCode.Inference, MenuCode.Notebook)]
         [ProducesResponseType(typeof(IEnumerable<string>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetImages([FromRoute] long? registryId)
@@ -322,7 +323,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="registryId">レジストリID</param>
         /// <param name="image">イメージ名</param>
         /// <returns>タグ名のリスト</returns>
-        [HttpGet("/api/v1/registries/{registryId}/images/{image}/tags")]
+        [HttpGet("/api/v{api-version:apiVersion}/registries/{registryId}/images/{image}/tags")]
         [Filters.PermissionFilter(MenuCode.Training, MenuCode.Preprocess, MenuCode.Inference, MenuCode.Notebook)]
         [ProducesResponseType(typeof(IEnumerable<string>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetTagsAsync([FromRoute] long? registryId, [FromRoute] string image)
@@ -351,7 +352,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// 階層化されたURLを吸収するためのダミーAPI。
         /// 製品版のSwaggerからは削除する。
         /// </summary>
-        [HttpGet("/api/v1/registries/{registryId}/images/{*segments}")]
+        [HttpGet("/api/v{api-version:apiVersion}/registries/{registryId}/images/{*segments}")]
         [Filters.PermissionFilter(MenuCode.Training, MenuCode.Preprocess, MenuCode.Inference, MenuCode.Notebook)]
         public async Task<IActionResult> AllocatieRoute([FromRoute] long? registryId, [FromRoute] string segments)
         {

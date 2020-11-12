@@ -89,11 +89,13 @@ def create(name, file, memo, tags):
         tags=list(tags)
     )
     result = api.create_data(model=model)
+    file_model = rest.DataApiModelsAddFilesInputModel(files=[])
     for x in file:
         upload_info = object_storage.upload_file(api.api_client, x, 'Data')
-        model = rest.ComponentsAddFileInputModel(file_name=upload_info.file_name,
-                                                 stored_path=upload_info.stored_path)
-        api.add_data_file(result.id, model=model)
+        file_model.files.append(rest.ComponentsAddFileInputModel(file_name=upload_info.file_name,
+                                                                 stored_path=upload_info.stored_path))
+    api.add_data_file(result.id, model=file_model,
+                      _request_timeout=heavy_request_timeout(api.api_client))
     print('created', result.id)
 
 
@@ -115,7 +117,7 @@ def update(id, name, memo, tags):
 def delete(id):
     """Delete data"""
     api = rest.DataApi(configuration.get_api_client())
-    api.delete_data(id)
+    api.delete_data(id, _request_timeout=heavy_request_timeout(api.api_client))
     print('deleted', id)
 
 
@@ -149,10 +151,12 @@ def download_files(id, destination):
 def upload_files(id, file):
     """Upload files to data"""
     api = rest.DataApi(configuration.get_api_client())
+    model = rest.DataApiModelsAddFilesInputModel(files=[])
     for x in file:
         upload_info = object_storage.upload_file(api.api_client, x, 'Data')
-        model = rest.ComponentsAddFileInputModel(file_name=upload_info.file_name, stored_path=upload_info.stored_path)
-        api.add_data_file(id, model=model)
+        model.files.append(rest.ComponentsAddFileInputModel(file_name=upload_info.file_name,
+                                                            stored_path=upload_info.stored_path))
+    api.add_data_file(id, model=model, _request_timeout=heavy_request_timeout(api.api_client))
 
 
 @data.command('delete-file')
@@ -163,3 +167,11 @@ def delete_file(id, file_id):
     api = rest.DataApi(configuration.get_api_client())
     api.delete_data_file(id, file_id)
     print('deleted', file_id)
+
+
+def heavy_request_timeout(api_client):
+    """Calculate a timeout for time-consuming api call
+    :param rest.ApiClient api_client:
+    """
+    default_timeout = api_client.rest_client.pool_manager.connection_pool_kw['timeout']
+    return None if default_timeout is None else default_timeout * 30

@@ -17,7 +17,8 @@ using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Controllers.spa
 {
-    [Route("api/v1/admin/users")]
+    [ApiVersion("1"), ApiVersion("2")]
+    [Route("api/v{api-version:apiVersion}/admin/users")]
     public class UserController : PlatypusApiControllerBase
     {
         private readonly IUserRepository userRepository;
@@ -425,7 +426,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// テナント向けに、所属しているユーザの一覧を取得する。
         /// </summary>
-        [HttpGet("/api/v1/tenant/users")]
+        [HttpGet("/api/v{api-version:apiVersion}/tenant/users")]
         [PermissionFilter(MenuCode.TenantUser)]
         [ProducesResponseType(typeof(IEnumerable<IndexForTenantOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetAllUsersForTenant()
@@ -447,7 +448,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// テナント向けに指定したユーザの情報を取得する。
         /// </summary>
-        [HttpGet("/api/v1/tenant/users/{id}")]
+        [HttpGet("/api/v{api-version:apiVersion}/tenant/users/{id}")]
         [PermissionFilter(MenuCode.TenantUser)]
         [ProducesResponseType(typeof(IndexForTenantOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetUserForTenant(long? id)
@@ -483,7 +484,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="id">ユーザID</param>
         /// <param name="tenantRepository">DI用</param>
-        [HttpDelete("/api/v1/tenant/users/{id}")]
+        [HttpDelete("/api/v{api-version:apiVersion}/tenant/users/{id}")]
         [PermissionFilter(MenuCode.TenantUser)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         public async Task<IActionResult> DetachTenantForTenant([FromRoute] long? id, [FromServices] ITenantRepository tenantRepository)
@@ -542,7 +543,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="id">ユーザID</param>
         /// <param name="roleIds">登録するロールID</param>
         /// <param name="tenantRepository">DI用</param>
-        [HttpPut("/api/v1/tenant/users/{id}/roles")]
+        [HttpPut("/api/v{api-version:apiVersion}/tenant/users/{id}/roles")]
         [PermissionFilter(MenuCode.TenantUser)]
         [ProducesResponseType(typeof(IndexForAdminOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> EditUserTenantRoleForTenant([FromRoute] long id, [FromBody] IEnumerable<long> roleIds, [FromServices] ITenantRepository tenantRepository)

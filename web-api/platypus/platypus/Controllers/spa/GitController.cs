@@ -21,7 +21,8 @@ namespace Nssol.Platypus.Controllers.spa
     /// <summary>
     /// Git管理を扱うためのAPI集
     /// </summary>
-    [Route("api/v1/git")]
+    [ApiVersion("1"), ApiVersion("2")]
+    [Route("api/v{api-version:apiVersion}/git")]
     public class GitController : PlatypusApiControllerBase
     {
         private readonly IGitLogic gitLogic;
@@ -46,7 +47,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 登録済みのGitエンドポイント一覧を取得
         /// </summary>
-        [HttpGet("/api/v1/admin/git/endpoints")]
+        [HttpGet("/api/v{api-version:apiVersion}/admin/git/endpoints")]
         [Filters.PermissionFilter(MenuCode.Git, MenuCode.Tenant)]
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetAll()
@@ -59,7 +60,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// Git種別一覧を取得
         /// </summary>
-        [HttpGet("/api/v1/admin/git/types")]
+        [HttpGet("/api/v{api-version:apiVersion}/admin/git/types")]
         [Filters.PermissionFilter(MenuCode.Git)]
         [ProducesResponseType(typeof(IEnumerable<EnumInfo>), (int)HttpStatusCode.OK)]
         public IActionResult GetAllTypes()
@@ -73,7 +74,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// 指定されたIDのGitエンドポイント情報を取得。
         /// </summary>
         /// <param name="id">GitエンドポイントID</param>
-        [HttpGet("/api/v1/admin/git/endpoints/{id}")]
+        [HttpGet("/api/v{api-version:apiVersion}/admin/git/endpoints/{id}")]
         [Filters.PermissionFilter(MenuCode.Git)]
         [ProducesResponseType(typeof(DetailsOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetDetails(long? id)
@@ -98,7 +99,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// 新規にGitエンドポイントを登録する
         /// </summary>
         /// <param name="model">新規作成モデル</param>
-        [HttpPost("/api/v1/admin/git/endpoints")]
+        [HttpPost("/api/v{api-version:apiVersion}/admin/git/endpoints")]
         [Filters.PermissionFilter(MenuCode.Git)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.Created)]
         public IActionResult Create([FromBody]CreateInputModel model)
@@ -130,7 +131,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="id">編集対象GitID</param>
         /// <param name="model">編集モデル</param>
-        [HttpPut("/api/v1/admin/git/endpoints/{id}")]
+        [HttpPut("/api/v{api-version:apiVersion}/admin/git/endpoints/{id}")]
         [Filters.PermissionFilter(MenuCode.Git)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> Edit(long? id, [FromBody]CreateInputModel model) //EditとCreateで項目が同じなので、入力モデルを使いまわし
@@ -171,7 +172,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="notebookHistoryRepository">DI用</param>
         /// <param name="trainingHistoryRepository">DI用</param>
         /// <param name="inferenceHistoryRepository">DI用</param>
-        [HttpDelete("/api/v1/admin/git/endpoints/{id}")]
+        [HttpDelete("/api/v{api-version:apiVersion}/admin/git/endpoints/{id}")]
         [Filters.PermissionFilter(MenuCode.Git)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         public async Task<IActionResult> Delete(long? id,
@@ -244,7 +245,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// テナント管理者が選択可能な登録済みのGitエンドポイント一覧を取得
         /// </summary>
-        [HttpGet("/api/v1/tenant/git/endpoints")]
+        [HttpGet("/api/v{api-version:apiVersion}/tenant/git/endpoints")]
         [Filters.PermissionFilter(MenuCode.TenantSetting)]
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetAllForTenant()

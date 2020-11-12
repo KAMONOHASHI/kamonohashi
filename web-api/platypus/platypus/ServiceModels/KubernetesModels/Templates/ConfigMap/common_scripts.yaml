@@ -8,7 +8,6 @@ data:
 @:  kqi-conf: |
 @:    {
 @:    "token": "@Raw(Model.Token)", 
-@:    "timeout": 30, 
 @:    "server": "@Raw(Model.Server)"
 @:    }
 }
