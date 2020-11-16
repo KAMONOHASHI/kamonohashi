@@ -23,6 +23,7 @@ import user from '@/router/user'
 import menu from '@/router/menu'
 import clusterResource from '@/router/cluster-resource'
 import version from '@/router/version'
+import modelTemplate from '@/router/model-template'
 
 Vue.use(Router)
 
@@ -50,6 +51,7 @@ let router = new Router({
     ...menu,
     ...clusterResource,
     ...version,
+    ...modelTemplate,
   ],
 })
 router.beforeEach((to, from, next) => {

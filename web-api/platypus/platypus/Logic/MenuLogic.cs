@@ -49,7 +49,9 @@ namespace Nssol.Platypus.Logic
                 UserMenu,
                 NodeMenu,
                 MenuAccessMenu,
-                ResourceMenu
+                ResourceMenu,
+
+                TemplateMenu
             };
 
             MenuMap = new Dictionary<MenuCode, MenuItemInfo>();
@@ -376,7 +378,19 @@ namespace Nssol.Platypus.Logic
             ShowSideMenu = true,
             MenuType = MenuType.Tenant
         };
-
+        internal static MenuItemInfo TemplateMenu = new MenuItemInfo()
+        {
+            Name = "モデルテンプレート",
+            NameEn = "ModelTemplate",
+            Description = "学習用テンプレートコンテナの共有",
+            DescriptionEn = "model template for sharing",
+            Category = "pl-template",
+            Code = MenuCode.Template,
+            Url = "/model-template",
+            ShowTopMenu = true,
+            ShowSideMenu = true,
+            MenuType = MenuType.Tenant
+        };
         internal static MenuItemInfo TenantSettingMenu = new MenuItemInfo()
         {
             Name = "接続テナント設定",
@@ -529,6 +543,8 @@ namespace Nssol.Platypus.Logic
             ShowSideMenu = true,
             MenuType = MenuType.System
         };
+
+
 
         #endregion
 
