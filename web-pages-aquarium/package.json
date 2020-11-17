@@ -6,7 +6,9 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "generate-api": "node swagger-to-api.js"
+    "generate-api": "node swagger-to-api.js",
+    "storybook": "start-storybook -p 9001 -c .storybook",
+    "buid-storybook": "build-storybook -s public"
   },
   "dependencies": {
     "axios": "^0.19.2",
@@ -26,6 +28,7 @@
   },
   "devDependencies": {
     "@babel/helper-compilation-targets": "^7.10.4",
+    "@storybook/vue": "^6.0.28",
     "@vue/cli-plugin-babel": "^4.5.7",
     "@vue/cli-plugin-eslint": "^4.5.7",
     "@vue/cli-plugin-router": "^4.5.7",
@@ -39,6 +42,7 @@
     "node-sass": "^4.14.1",
     "prettier": "^1.19.1",
     "sass-loader": "^8.0.0",
+    "storybook-addon-vue-info": "^1.4.2",
     "swagger-vue": "^1.0.3",
     "vue-template-compiler": "^2.6.12"
   }
