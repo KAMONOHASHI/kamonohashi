@@ -17,6 +17,39 @@
       <el-form-item label="テンプレート名" prop="name">
         <el-input v-model="form.name" />
       </el-form-item>
+      <el-form-item label="説明文" prop="memo">
+        <el-input v-model="form.memo" type="textarea" />
+      </el-form-item>
+      <!-- TODO モデルの目的追加 -->
+      <el-form-item label="モデルの目的(複数選択可能)" prop="tasktype">
+        <div class="el-input">
+          <el-select
+            v-model="form.selectedTaskTypeId"
+            multiple
+            placeholder="Select Type of Task"
+            filterable
+            value-key="id"
+            remote
+            clearable
+          >
+            <el-option
+              v-for="item in tasktype"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            >
+              <span style="float: left;">{{ item.name }}</span>
+            </el-option>
+          </el-select>
+        </div>
+      </el-form-item>
+      <!-- TODO テンプレートの用途選択 -->
+      <el-form-item label="テンプレートの用途" prop="memo">
+        <div class="el-input">
+          <el-radio v-model="radio" label="1">学習・推論</el-radio>
+          <el-radio v-model="radio" label="2">前処理</el-radio>
+        </div>
+      </el-form-item>
       <el-form-item label="実行コマンド" prop="entryPoint">
         <el-input
           v-model="form.entryPoint"
@@ -24,9 +57,6 @@
           :autosize="{ minRows: 2 }"
           :disabled="isPatch"
         />
-      </el-form-item>
-      <el-form-item label="説明文" prop="memo">
-        <el-input v-model="form.memo" type="textarea" />
       </el-form-item>
       <el-row :gutter="20">
         <el-col :span="12">
@@ -89,7 +119,46 @@ export default {
   },
   data() {
     return {
+      radio: '1',
+      tasktype: [
+        {
+          id: 1,
+          name: '画像分類',
+          Url: '',
+          imgPath: '',
+          description: '画像に割り当てるラベルを予測します。',
+        },
+        {
+          id: 2,
+          name: 'オブジェクト検出',
+          url: '',
+          imgPath: '',
+          description: '関心のあるオブジェクトのすべての位置を予測します',
+        },
+        {
+          id: 3,
+          name: 'セグメンテーション',
+          url: '',
+          imgPath: '',
+          description: '関心のあるオブジェクトのすべての領域を予測します',
+        },
+        {
+          id: 4,
+          name: '異常検知',
+          url: '',
+          imgPath: '',
+          description: '--',
+        },
+        {
+          id: 5,
+          name: '回帰',
+          url: '',
+          imgPath: '',
+          description: '--',
+        },
+      ],
       form: {
+        selectedTypeId: [],
         name: null,
         entryPoint: null,
         memo: null,
@@ -167,7 +236,7 @@ export default {
     ]),
     async initialize() {
       let url = this.$route.path
-      let type = url.split('/')[2] // ["", "preprocessing", "{type}", "{id}"]
+      let type = url.split('/')[3] // ["", "preprocessing", "{type}", "{id}"]
       switch (type) {
         case 'create':
           this.title = '新しいテンプレートの登録'
