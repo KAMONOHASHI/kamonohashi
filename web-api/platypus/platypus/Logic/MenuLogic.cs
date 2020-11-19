@@ -386,7 +386,7 @@ namespace Nssol.Platypus.Logic
             DescriptionEn = "model template for sharing",
             Category = "pl-template",
             Code = MenuCode.Template,
-            Url = "/model-template",
+            Url = "/aquarium/model-template",
             ShowTopMenu = true,
             ShowSideMenu = true,
             MenuType = MenuType.Tenant
