@@ -11,7 +11,7 @@
         <router-link :to="menu.url">
           <el-card
             class="menu"
-            style="border: solid 1px #ebeef5; width: 400px; height: 200px; border-left: 5px solid rgba(26, 191, 213, 0.7);"
+            style="border: solid 1px #ebeef5; width: 400px; height: 200px;"
           >
             <div class="menu-name">
               {{ menu.name }}
@@ -40,7 +40,7 @@
         <router-link :to="menu.url">
           <el-card
             class="menu"
-            style="border: solid 1px #ebeef5; width: 400px; height: 200px; border-left: 5px solid rgba(26, 191, 213, 0.7);"
+            style="border: solid 1px #ebeef5; width: 400px; height: 200px;"
           >
             <div class="menu-name">
               {{ menu.name }}
@@ -70,7 +70,7 @@
         <router-link :to="menu.url">
           <el-card
             class="menu"
-            style="border: solid 1px #ebeef5; width: 400px; height: 200px; border-left: 5px solid rgba(26, 191, 213, 0.7);"
+            style="border: solid 1px #ebeef5; width: 400px; height: 200px; "
           >
             <div class="menu-name">
               {{ menu.name }}
@@ -197,7 +197,7 @@ a {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  justify-content: start;
+  justify-content: flex-start;
   align-content: flex-start;
   margin-bottom: 40px;
 }
