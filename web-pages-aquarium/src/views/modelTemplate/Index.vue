@@ -38,7 +38,7 @@
           <!-- <router-link :to="menu.url"> -->
           <el-card
             class="template"
-            style="border: solid 1px #ebeef5; width: 360px; height: 200px;"
+            style="border: solid 1px #ebeef5; width: 360px; height: 300px;"
             @click="openEditDialog"
           >
             <div class="template-name">
@@ -49,6 +49,12 @@
               style="padding: 10px; font-size: 14px;"
             >
               {{ menu.description }}
+            </div>
+            <div
+              class="template-description"
+              style="padding: 20px; font-size: 18px;text-align:center;"
+            >
+              <el-tag> {{ menu.category }}</el-tag>
             </div>
           </el-card>
           <!-- </router-link> -->
@@ -158,8 +164,10 @@ a {
 
 .template-name {
   font-weight: bold;
-  padding: 10px;
-  font-size: 20px;
+  padding: 30px 10px;
+  font-size: 24px;
+  border-bottom: 1px solid #ebeef5;
+  text-align: center;
 }
 
 .template-description {
