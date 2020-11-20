@@ -35,29 +35,28 @@
           :key="index"
           class="card-container"
         >
-          <!-- <router-link :to="menu.url"> -->
-          <el-card
-            class="template"
-            style="border: solid 1px #ebeef5; width: 360px; height: 300px;"
-            @click="openEditDialog"
-          >
-            <div class="template-name">
-              {{ menu.name }}
-            </div>
-            <div
-              class="template-description"
-              style="padding: 10px; font-size: 14px;"
+          <router-link to="/aquarium/model-template/edit">
+            <el-card
+              class="template"
+              style="border: solid 1px #ebeef5; width: 360px; height: 400px;"
             >
-              {{ menu.description }}
-            </div>
-            <div
-              class="template-description"
-              style="padding: 20px; font-size: 18px;text-align:center;"
-            >
-              <el-tag> {{ menu.category }}</el-tag>
-            </div>
-          </el-card>
-          <!-- </router-link> -->
+              <div class="template-name">
+                {{ menu.name }}
+              </div>
+              <div
+                class="template-description"
+                style="padding: 10px; font-size: 14px;"
+              >
+                {{ menu.description }}
+              </div>
+              <div
+                class="template-description"
+                style="padding: 20px; font-size: 18px;text-align:center;"
+              >
+                <el-tag> {{ menu.category }}</el-tag>
+              </div>
+            </el-card>
+          </router-link>
           <router-view
             @done="done"
             @cancel="closeDialog"
@@ -138,8 +137,12 @@ export default {
       await this.retrieveData()
       this.showSuccessMessage()
     },
-    openEditDialog(selectedTemplate) {
-      this.$router.push('/aquarium/model-template/edit/' + selectedTemplate.id)
+    // openEditDialog(selectedTemplate) {
+    //   this.$router.push('/aquarium/model-template/edit/' + selectedTemplate.id)
+    // },
+    // TODO テンプレートIDを引数にとってページ遷移
+    openEditDialog() {
+      this.$router.push('/aquarium/model-template/edit/')
     },
     openCreateDialog() {
       this.$router.push('/aquarium/model-template/create')
