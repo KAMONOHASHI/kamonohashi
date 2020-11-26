@@ -182,6 +182,14 @@ let api = {
     runById: gen.ApiV1PreprocessingsByIdRunPost,
   },
 
+  templates: {
+    get: gen.ApiV1TemplatesGet,
+    post: gen.ApiV1TemplatesPost,
+    getById: gen.ApiV1TemplatesByIdGet,
+    put: gen.ApiV1TemplatesByIdPut,
+    delete: gen.ApiV1TemplatesByIdDelete,
+  },
+
   resource: {
     admin: {
       getNodes: gen.ApiV1AdminResourceNodesGet,

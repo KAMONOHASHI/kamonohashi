@@ -3596,6 +3596,282 @@ export const ApiV1AdminMenu_typesGetURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+* 指定された条件でページングされた状態で、全前テンプレートを取得
+* request: ApiV1TemplatesGet
+* url: ApiV1TemplatesGetURL
+* method: ApiV1TemplatesGet_TYPE
+* raw_url: ApiV1TemplatesGet_RAW_URL
+     * @param id - IDの検索条件。
+比較文字列＋数値の形式。
+     * @param name - 名前
+     * @param createdAt - 実行時刻の検索条件。
+比較文字列＋時刻の形式。
+e.g.（比較文字列は半角でOK）
+"2018/01/01" → 2018/01/01 00:00:00 以降 ～ 2018/01/02 00:00:00 より前
+"＞2018/01/01" → 2018/01/01 00:00:00 以降
+"＜2018/01/01" → 2018/01/01 00:00:00 以前
+     * @param memo - メモ
+     * @param perPage - 表示件数。指定がない場合は全件。
+     * @param page - ページ番号。デフォルトは1。
+     * @param withTotal - 合計件数をレスポンスヘッダ(X-Total-Count)に含めるか。デフォルトはfalse。
+*/
+export const ApiV1TemplatesGet = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v1/templates'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['id'] !== undefined) {
+    queryParameters['Id'] = parameters['id']
+  }
+  if (parameters['name'] !== undefined) {
+    queryParameters['Name'] = parameters['name']
+  }
+  if (parameters['createdAt'] !== undefined) {
+    queryParameters['CreatedAt'] = parameters['createdAt']
+  }
+  if (parameters['memo'] !== undefined) {
+    queryParameters['Memo'] = parameters['memo']
+  }
+  if (parameters['perPage'] !== undefined) {
+    queryParameters['perPage'] = parameters['perPage']
+  }
+  if (parameters['page'] !== undefined) {
+    queryParameters['page'] = parameters['page']
+  }
+  if (parameters['withTotal'] !== undefined) {
+    queryParameters['withTotal'] = parameters['withTotal']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV1TemplatesGet_RAW_URL = function() {
+  return '/api/v1/templates'
+}
+export const ApiV1TemplatesGet_TYPE = function() {
+  return 'get'
+}
+export const ApiV1TemplatesGetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v1/templates'
+  if (parameters['id'] !== undefined) {
+    queryParameters['Id'] = parameters['id']
+  }
+  if (parameters['name'] !== undefined) {
+    queryParameters['Name'] = parameters['name']
+  }
+  if (parameters['createdAt'] !== undefined) {
+    queryParameters['CreatedAt'] = parameters['createdAt']
+  }
+  if (parameters['memo'] !== undefined) {
+    queryParameters['Memo'] = parameters['memo']
+  }
+  if (parameters['perPage'] !== undefined) {
+    queryParameters['perPage'] = parameters['perPage']
+  }
+  if (parameters['page'] !== undefined) {
+    queryParameters['page'] = parameters['page']
+  }
+  if (parameters['withTotal'] !== undefined) {
+    queryParameters['withTotal'] = parameters['withTotal']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 新規にモデルテンプレートを登録する
+ * request: ApiV1TemplatesPost
+ * url: ApiV1TemplatesPostURL
+ * method: ApiV1TemplatesPost_TYPE
+ * raw_url: ApiV1TemplatesPost_RAW_URL
+ * @param model - 新規作成内容
+ */
+export const ApiV1TemplatesPost = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v1/templates'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['model'] !== undefined) {
+    body = parameters['model']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('post', domain + path, body, queryParameters, form, config)
+}
+export const ApiV1TemplatesPost_RAW_URL = function() {
+  return '/api/v1/templates'
+}
+export const ApiV1TemplatesPost_TYPE = function() {
+  return 'post'
+}
+export const ApiV1TemplatesPostURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v1/templates'
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 指定されたIDのテンプレートの詳細情報を取得。
+ * request: ApiV1TemplatesByIdGet
+ * url: ApiV1TemplatesByIdGetURL
+ * method: ApiV1TemplatesByIdGet_TYPE
+ * raw_url: ApiV1TemplatesByIdGet_RAW_URL
+ * @param id - テンプレートID
+ */
+export const ApiV1TemplatesByIdGet = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v1/templates/{id}'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV1TemplatesByIdGet_RAW_URL = function() {
+  return '/api/v1/templates/{id}'
+}
+export const ApiV1TemplatesByIdGet_TYPE = function() {
+  return 'get'
+}
+export const ApiV1TemplatesByIdGetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v1/templates/{id}'
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 一度でもテンプレートが使用されていた場合、削除不可
+ * request: ApiV1TemplatesByIdDelete
+ * url: ApiV1TemplatesByIdDeleteURL
+ * method: ApiV1TemplatesByIdDelete_TYPE
+ * raw_url: ApiV1TemplatesByIdDelete_RAW_URL
+ * @param id - 前処理ID
+ */
+export const ApiV1TemplatesByIdDelete = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v1/templates/{id}'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('delete', domain + path, body, queryParameters, form, config)
+}
+export const ApiV1TemplatesByIdDelete_RAW_URL = function() {
+  return '/api/v1/templates/{id}'
+}
+export const ApiV1TemplatesByIdDelete_TYPE = function() {
+  return 'delete'
+}
+export const ApiV1TemplatesByIdDeleteURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v1/templates/{id}'
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * テンプレートが実行済みの場合でも編集可能な項目のみ扱う
+ * request: ApiV1TemplatesByIdPatch
+ * url: ApiV1TemplatesByIdPatchURL
+ * method: ApiV1TemplatesByIdPatch_TYPE
+ * raw_url: ApiV1TemplatesByIdPatch_RAW_URL
+ * @param id - 変更対象のテンプレートID
+ * @param model - 変更内容
+ */
+export const ApiV1TemplatesByIdPatch = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v1/templates/{id}'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  if (parameters['model'] !== undefined) {
+    body = parameters['model']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('patch', domain + path, body, queryParameters, form, config)
+}
+export const ApiV1TemplatesByIdPatch_RAW_URL = function() {
+  return '/api/v1/templates/{id}'
+}
+export const ApiV1TemplatesByIdPatch_TYPE = function() {
+  return 'patch'
+}
+export const ApiV1TemplatesByIdPatchURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v1/templates/{id}'
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * 全ノード一覧を取得
  * request: ApiV1AdminNodesGet
  * url: ApiV1AdminNodesGetURL
