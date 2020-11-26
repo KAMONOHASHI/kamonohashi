@@ -20,36 +20,6 @@
       <el-form-item label="説明文" prop="memo">
         <el-input v-model="form.memo" type="textarea" />
       </el-form-item>
-      <!-- TODO モデルの目的追加 -->
-      <el-form-item label="モデルの目的(複数選択可能)" prop="tasktype">
-        <div class="el-input">
-          <el-select
-            v-model="form.selectedTaskTypeId"
-            multiple
-            placeholder="Select Type of Task"
-            filterable
-            value-key="id"
-            remote
-            clearable
-          >
-            <el-option
-              v-for="item in tasktype"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id"
-            >
-              <span style="float: left;">{{ item.name }}</span>
-            </el-option>
-          </el-select>
-        </div>
-      </el-form-item>
-      <!-- TODO テンプレートの用途選択 -->
-      <el-form-item label="テンプレートの用途" prop="memo">
-        <div class="el-input">
-          <el-radio v-model="radio" label="1">学習・推論</el-radio>
-          <el-radio v-model="radio" label="2">前処理</el-radio>
-        </div>
-      </el-form-item>
       <el-form-item label="実行コマンド" prop="entryPoint">
         <el-input
           v-model="form.entryPoint"
@@ -66,6 +36,17 @@
             :registries="registries"
             :images="images"
             :tags="tags"
+            heading="前処理実行コンテナイメージ"
+            @selectRegistry="selectRegistry"
+            @selectImage="selectImage"
+          />
+          <kqi-container-selector
+            v-model="form.containerImage"
+            :disabled="isPatch"
+            :registries="registries"
+            :images="images"
+            :tags="tags"
+            heading="学習・推論コンテナイメージ"
             @selectRegistry="selectRegistry"
             @selectImage="selectImage"
           />
@@ -119,46 +100,7 @@ export default {
   },
   data() {
     return {
-      radio: '1',
-      tasktype: [
-        {
-          id: 1,
-          name: '画像分類',
-          Url: '',
-          imgPath: '',
-          description: '画像に割り当てるラベルを予測します。',
-        },
-        {
-          id: 2,
-          name: 'オブジェクト検出',
-          url: '',
-          imgPath: '',
-          description: '関心のあるオブジェクトのすべての位置を予測します',
-        },
-        {
-          id: 3,
-          name: 'セグメンテーション',
-          url: '',
-          imgPath: '',
-          description: '関心のあるオブジェクトのすべての領域を予測します',
-        },
-        {
-          id: 4,
-          name: '異常検知',
-          url: '',
-          imgPath: '',
-          description: '--',
-        },
-        {
-          id: 5,
-          name: '回帰',
-          url: '',
-          imgPath: '',
-          description: '--',
-        },
-      ],
       form: {
-        selectedTypeId: [],
         name: null,
         entryPoint: null,
         memo: null,
@@ -220,10 +162,10 @@ export default {
   },
   methods: {
     ...mapActions([
-      'template/fetchDetail',
-      'template/post',
-      'template/put',
-      'template/delete',
+      'modelTemplate/fetchDetail',
+      'modelTemplate/post',
+      'modelTemplate/put',
+      'modelTemplate/delete',
       'registrySelector/fetchRegistries',
       'registrySelector/fetchImages',
       'registrySelector/fetchTags',
@@ -275,65 +217,65 @@ export default {
       await form.validate(async valid => {
         if (valid) {
           try {
-            // if (this.isPatch) {
-            //   // 名称・メモ・リソースのみ更新
-            //   await this.patchPreprocessing()
-            // } else {
-            // コンテナイメージの指定
-            // イメージとタグが指定されている場合、コンテナイメージを指定して登録
-            // イメージとタグが指定されていない場合、コンテナイメージは未指定(null)として登録
-            let containerImage = null
-            if (
-              this.form.containerImage.image !== null &&
-              this.form.containerImage.tag !== null
-            ) {
-              containerImage = {
-                registryId: this.form.containerImage.registry.id,
-                image: this.form.containerImage.image,
-                tag: this.form.containerImage.tag,
-              }
-            }
-
-            // gitモデルの指定
-            // リポジトリとブランチが指定されている場合、gitモデルを指定して登録
-            // リポジトリとブランチが指定されていない場合、gitモデルは未指定(null)として登録
-            let gitModel = null
-            if (
-              this.form.gitModel.repository !== null &&
-              this.form.gitModel.branch !== null
-            ) {
-              // HEAD指定の時はcommitsの先頭要素をcommitIDに指定する。コピー実行時の再現性を担保するため
-              gitModel = {
-                gitId: this.form.gitModel.git.id,
-                repository: this.form.gitModel.repository.name,
-                owner: this.form.gitModel.repository.owner,
-                branch: this.form.gitModel.branch.branchName,
-                commitId: this.form.gitModel.commit
-                  ? this.form.gitModel.commit.commitId
-                  : this.commits[0].commitId,
-              }
-            }
-            let params = {
-              name: this.form.name,
-              entryPoint: this.form.entryPoint,
-              ContainerImage: containerImage,
-              GitModel: gitModel,
-              memo: this.form.memo,
-              cpu: this.form.resource.cpu,
-              memory: this.form.resource.memory,
-              gpu: this.form.resource.gpu,
-            }
-            if (this.isCreateDialog) {
-              // 新規作成
-              await this['model-template/post'](params)
+            if (this.isPatch) {
+              // 名称・メモ・リソースのみ更新
+              await this.patchTemplates()
             } else {
-              // 編集
-              await this['model-template/put']({
-                id: this.id,
-                params: params,
-              })
+              // コンテナイメージの指定
+              // イメージとタグが指定されている場合、コンテナイメージを指定して登録
+              // イメージとタグが指定されていない場合、コンテナイメージは未指定(null)として登録
+              let containerImage = null
+              if (
+                this.form.containerImage.image !== null &&
+                this.form.containerImage.tag !== null
+              ) {
+                containerImage = {
+                  registryId: this.form.containerImage.registry.id,
+                  image: this.form.containerImage.image,
+                  tag: this.form.containerImage.tag,
+                }
+              }
+
+              // gitモデルの指定
+              // リポジトリとブランチが指定されている場合、gitモデルを指定して登録
+              // リポジトリとブランチが指定されていない場合、gitモデルは未指定(null)として登録
+              let gitModel = null
+              if (
+                this.form.gitModel.repository !== null &&
+                this.form.gitModel.branch !== null
+              ) {
+                // HEAD指定の時はcommitsの先頭要素をcommitIDに指定する。コピー実行時の再現性を担保するため
+                gitModel = {
+                  gitId: this.form.gitModel.git.id,
+                  repository: this.form.gitModel.repository.name,
+                  owner: this.form.gitModel.repository.owner,
+                  branch: this.form.gitModel.branch.branchName,
+                  commitId: this.form.gitModel.commit
+                    ? this.form.gitModel.commit.commitId
+                    : this.commits[0].commitId,
+                }
+              }
+              let params = {
+                name: this.form.name,
+                entryPoint: this.form.entryPoint,
+                ContainerImage: containerImage,
+                GitModel: gitModel,
+                memo: this.form.memo,
+                cpu: this.form.resource.cpu,
+                memory: this.form.resource.memory,
+                gpu: this.form.resource.gpu,
+              }
+              if (this.isCreateDialog) {
+                // 新規作成
+                await this['model-template/post'](params)
+              } else {
+                // 編集
+                await this['model-template/put']({
+                  id: this.id,
+                  params: params,
+                })
+              }
             }
-            // }
 
             this.$emit('done')
             this.error = null
@@ -344,22 +286,22 @@ export default {
       })
     },
 
-    // async patchPreprocessing() {
-    //   let params = {
-    //     name: this.form.name,
-    //     memo: this.form.memo,
-    //     cpu: this.form.resource.cpu,
-    //     memory: this.form.resource.memory,
-    //     gpu: this.form.resource.gpu,
-    //   }
-    //   await this['preprocessing/patch']({
-    //     id: this.id,
-    //     params: params,
-    //   })
-    // },
+    async patchTemplates() {
+      let params = {
+        name: this.form.name,
+        memo: this.form.memo,
+        cpu: this.form.resource.cpu,
+        memory: this.form.resource.memory,
+        gpu: this.form.resource.gpu,
+      }
+      await this['modelTemplate/patch']({
+        id: this.id,
+        params: params,
+      })
+    },
     async deleteTemplate() {
       try {
-        await this['model-template/delete'](this.id)
+        await this['modelTemplate/delete'](this.id)
         this.$emit('done', 'delete')
       } catch (e) {
         this.error = e

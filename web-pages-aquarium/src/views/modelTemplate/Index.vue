@@ -31,29 +31,31 @@
         登録したテンプレートをカード形式で表示 -->
       <div class="dashboard">
         <div
-          v-for="(menu, index) in menuList"
+          v-for="(template, index) in preprocessings"
           :key="index"
           class="card-container"
         >
-          <router-link to="/aquarium/model-template/edit">
+          <router-link to="/aquarium/model-template/1">
             <el-card
               class="template"
-              style="border: solid 1px #ebeef5; width: 360px; height: 400px;"
+              style="border: solid 1px #ebeef5; width: 360px; height: 300px;"
             >
               <div class="template-name">
-                {{ menu.name }}
+                {{ template.name }}
               </div>
+
               <div
                 class="template-description"
                 style="padding: 10px; font-size: 14px;"
               >
-                {{ menu.description }}
+                {{ template.memo }}
               </div>
+              <!-- タグを想定 -->
               <div
                 class="template-description"
                 style="padding: 20px; font-size: 18px;text-align:center;"
               >
-                <el-tag> {{ menu.category }}</el-tag>
+                <el-tag> {{ template.memo }}</el-tag>
               </div>
             </el-card>
           </router-link>
@@ -72,7 +74,7 @@
 import { createNamespacedHelpers } from 'vuex'
 import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index'
 // TODO template API に変更
-const { mapGetters, mapActions } = createNamespacedHelpers('account')
+const { mapGetters, mapActions } = createNamespacedHelpers('preprocessing')
 
 export default {
   title: 'モデルテンプレート',
@@ -81,6 +83,10 @@ export default {
   },
   data() {
     return {
+      pageStatus: {
+        currentPage: 1,
+        currentPageSize: 10,
+      },
       unwatchLogin: undefined,
       searchCondition: {},
       searchConfigs: [
@@ -92,32 +98,23 @@ export default {
   },
   computed: {
     // TODO template API に変更
-    ...mapGetters(['menuList']),
+    ...mapGetters(['preprocessings']),
   },
   async created() {
     // TODO template API に変更
-    this.unwatchLogin = this.$store.watch(
-      this.$store.getters.getLoginTenant,
-      this.watchLogin,
-    )
-    await this.fetchMenuList()
-  },
-
-  async beforeDestroy() {
-    this.unwatchLogin()
+    await this.retrieveData()
   },
 
   methods: {
     // TODO template API に変更
-    ...mapActions(['fetchMenuList']),
-    async watchLogin(tenant) {
-      if (tenant) {
-        await this.fetchMenuList()
-      }
-    },
+    ...mapActions(['fetchPreprocessings']),
+
     async retrieveData() {
       let params = this.searchCondition
-      await this.fetchMenuList(params)
+      params.page = this.pageStatus.currentPage
+      params.perPage = this.pageStatus.currentPageSize
+      params.withTotal = true
+      await this.fetchPreprocessings(params)
     },
     async search() {
       this.pageStatus.currentPage = 1

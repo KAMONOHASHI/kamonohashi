@@ -3,6 +3,7 @@ import api from '@/api/v1/api'
 // initial state
 const state = {
   templates: [],
+  total: 0,
   detail: {},
 }
 
@@ -10,6 +11,9 @@ const state = {
 const getters = {
   templates(state) {
     return state.templates
+  },
+  total(state) {
+    return state.total
   },
 
   detail(state) {
@@ -19,11 +23,11 @@ const getters = {
 
 // actions
 const actions = {
-  async fetchPreprocessings({ commit }, params) {
-    let response = await api.preprocessings.get(params)
-    let preprocessings = response.data
+  async fetchModelTemplates({ commit }, params) {
+    let response = await api.templates.get(params)
+    let templates = response.data
     let total = response.headers['x-total-count']
-    commit('setPreprocessings', { preprocessings })
+    commit('setTemplates', { templates })
     // params.withTotal=trueの時は件数が取れているため設定
     if (total !== undefined) {
       commit('setTotal', parseInt(total))
@@ -31,66 +35,30 @@ const actions = {
   },
 
   async fetchDetail({ commit }, id) {
-    let detail = (await api.preprocessings.getById({ id: id })).data
+    let detail = (await api.templates.getById({ id: id })).data
     commit('setDetail', { detail })
-  },
-
-  async fetchHistories({ commit }, id) {
-    let histories = (await api.preprocessings.getHistory({ id: id })).data
-    commit('setHistories', histories)
-  },
-
-  async fetchHistoryDetail({ commit }, { id, dataId }) {
-    let historyDetail = (
-      await api.preprocessings.getHistroyById({
-        id: id,
-        dataId: dataId,
-      })
-    ).data
-    commit('setHistoryDetail', historyDetail)
-  },
-
-  async fetchHistoryEvents({ commit }, { id, dataId }) {
-    let historyEvents = (
-      await api.preprocessings.getEventsById({
-        id: id,
-        dataId: dataId,
-      })
-    ).data
-    commit('setHistoryEvents', historyEvents)
-  },
-
-  async fetchLogFile({ commit }, { id, dataId }) {
-    let logFile = (
-      await api.preprocessings.getFilesById({
-        id: id,
-        dataId: dataId,
-        withUrl: true,
-      })
-    ).data
-    commit('setLogFile', logFile)
   },
 
   // eslint-disable-next-line no-unused-vars
   async post({ commit }, params) {
-    return await api.preprocessings.post({ model: params })
+    return await api.templates.post({ model: params })
   },
 
   // eslint-disable-next-line no-unused-vars
   async put({ commit }, { id, params }) {
-    return await api.preprocessings.put({ id: id, model: params })
+    return await api.templates.put({ id: id, model: params })
   },
 
   // eslint-disable-next-line no-unused-vars
   async delete({ commit }, id) {
-    await api.preprocessings.delete({ id: id })
+    await api.templates.delete({ id: id })
   },
 }
 
 // mutations
 const mutations = {
-  setPreprocessings(state, { preprocessings }) {
-    state.preprocessings = preprocessings
+  setTemplates(state, { templates }) {
+    state.templates = templates
   },
 
   setDetail(state, { detail }) {

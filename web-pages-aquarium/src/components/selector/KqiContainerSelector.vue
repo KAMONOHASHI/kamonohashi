@@ -2,7 +2,7 @@
 <!--description: イメージ名、タグ名を指定するドロップダウンをそれぞれ表示する,-->
 
 <template>
-  <el-form-item label="コンテナイメージ" prop="containerImage">
+  <el-form-item :label="heading" prop="containerImage">
     <el-row></el-row>
     <el-row>
       <!-- レジストリの選択 -->
@@ -102,6 +102,10 @@ export default {
       default: () => {
         return []
       },
+    },
+    heading: {
+      type: String,
+      default: 'コンテナイメージ',
     },
     // 選択されたレジストリ、イメージ、タグをvalueで保持
     value: {
