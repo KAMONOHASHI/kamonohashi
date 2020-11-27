@@ -3090,6 +3090,246 @@
                 ]
             }
         },
+        "/api/v1/templates": {
+            "get": {
+                "tags": [
+                    "ModelTemplate"
+                ],
+                "summary": "指定された条件でページングされた状態で、全前テンプレートを取得",
+                "operationId": "ApiV1TemplatesGet",
+                "consumes": [],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "Id",
+                        "in": "query",
+                        "description": "IDの検索条件。\r\n比較文字列＋数値の形式。",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "Name",
+                        "in": "query",
+                        "description": "名前",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "CreatedAt",
+                        "in": "query",
+                        "description": "実行時刻の検索条件。\r\n比較文字列＋時刻の形式。\r\ne.g.（比較文字列は半角でOK）\r\n\"2018/01/01\" → 2018/01/01 00:00:00 以降 ～ 2018/01/02 00:00:00 より前\r\n\"＞2018/01/01\" → 2018/01/01 00:00:00 以降\r\n\"＜2018/01/01\" → 2018/01/01 00:00:00 以前",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "Memo",
+                        "in": "query",
+                        "description": "メモ",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "perPage",
+                        "in": "query",
+                        "description": "表示件数。指定がない場合は全件。",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "ページ番号。デフォルトは1。",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int32",
+                        "default": 1
+                    },
+                    {
+                        "name": "withTotal",
+                        "in": "query",
+                        "description": "合計件数をレスポンスヘッダ(X-Total-Count)に含めるか。デフォルトはfalse。",
+                        "required": false,
+                        "type": "boolean",
+                        "default": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "uniqueItems": false,
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Nssol.Platypus.ApiModels.ModelTemplateApiModels.IndexOutputModel"
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "ModelTemplate"
+                ],
+                "summary": "新規にモデルテンプレートを登録する",
+                "operationId": "ApiV1TemplatesPost",
+                "consumes": [
+                    "application/json-patch+json",
+                    "application/json",
+                    "text/json",
+                    "application/*+json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "model",
+                        "in": "body",
+                        "description": "新規作成内容",
+                        "required": false,
+                        "schema": {
+                            "$ref": "#/definitions/Nssol.Platypus.ApiModels.ModelTemplateApiModels.CreateInputModel"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/Nssol.Platypus.ApiModels.ModelTemplateApiModels.IndexOutputModel"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/templates/{id}": {
+            "get": {
+                "tags": [
+                    "ModelTemplate"
+                ],
+                "summary": "指定されたIDのテンプレートの詳細情報を取得。",
+                "operationId": "ApiV1TemplatesByIdGet",
+                "consumes": [],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "テンプレートID",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/Nssol.Platypus.ApiModels.ModelTemplateApiModels.DetailsOutputModel"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "ModelTemplate"
+                ],
+                "summary": "テンプレートを削除する。",
+                "description": "一度でもテンプレートが使用されていた場合、削除不可",
+                "operationId": "ApiV1TemplatesByIdDelete",
+                "consumes": [],
+                "produces": [],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "前処理ID",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "ModelTemplate"
+                ],
+                "summary": "テンプレートの編集",
+                "description": "テンプレートが実行済みの場合でも編集可能な項目のみ扱う",
+                "operationId": "ApiV1TemplatesByIdPatch",
+                "consumes": [
+                    "application/json-patch+json",
+                    "application/json",
+                    "text/json",
+                    "application/*+json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "変更対象のテンプレートID",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "model",
+                        "in": "body",
+                        "description": "変更内容",
+                        "required": false,
+                        "schema": {
+                            "$ref": "#/definitions/Nssol.Platypus.ApiModels.ModelTemplateApiModels.EditInputModel"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/Nssol.Platypus.ApiModels.ModelTemplateApiModels.IndexOutputModel"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
         "/api/v1/admin/nodes": {
             "get": {
                 "tags": [
@@ -9754,6 +9994,242 @@
                 }
             }
         },
+        "Nssol.Platypus.ApiModels.ModelTemplateApiModels.IndexOutputModel": {
+            "description": "テンプレート情報のうち、Indexで表示する最低情報だけを保持する",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "format": "int64",
+                    "description": "前処理ID",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "名前",
+                    "type": "string"
+                },
+                "memo": {
+                    "description": "メモ",
+                    "type": "string"
+                },
+                "taskType": {
+                    "format": "int32",
+                    "description": "タスクの種類",
+                    "enum": [
+                        0,
+                        1,
+                        2,
+                        3,
+                        4,
+                        5
+                    ],
+                    "type": "integer"
+                },
+                "createdBy": {
+                    "description": "登録者",
+                    "type": "string"
+                },
+                "createdAt": {
+                    "description": "登録日",
+                    "type": "string"
+                },
+                "modifiedBy": {
+                    "description": "更新者",
+                    "type": "string"
+                },
+                "modifiedAt": {
+                    "description": "更新日",
+                    "type": "string"
+                }
+            }
+        },
+        "Nssol.Platypus.ApiModels.ModelTemplateApiModels.CreateInputModel": {
+            "description": "テンプレート作成の入力モデル",
+            "required": [
+                "name",
+                "taskType"
+            ],
+            "type": "object",
+            "properties": {
+                "name": {
+                    "description": "識別名",
+                    "type": "string"
+                },
+                "taskType": {
+                    "format": "int32",
+                    "description": "タスクの種類",
+                    "enum": [
+                        0,
+                        1,
+                        2,
+                        3,
+                        4,
+                        5
+                    ],
+                    "type": "integer"
+                },
+                "entryPoint": {
+                    "description": "エントリポイント",
+                    "type": "string"
+                },
+                "containerImage": {
+                    "$ref": "#/definitions/Nssol.Platypus.ApiModels.Components.ContainerImageInputModel",
+                    "description": "コンテナ情報"
+                },
+                "gitModel": {
+                    "$ref": "#/definitions/Nssol.Platypus.ApiModels.Components.GitCommitNullableInputModel",
+                    "description": "ソースコードGit情報"
+                },
+                "memo": {
+                    "description": "メモ",
+                    "type": "string"
+                },
+                "cpu": {
+                    "format": "int32",
+                    "description": "CPUコア数のデフォルト値",
+                    "type": "integer"
+                },
+                "memory": {
+                    "format": "int32",
+                    "description": "メモリ容量（GB）のデフォルト値",
+                    "type": "integer"
+                },
+                "gpu": {
+                    "format": "int32",
+                    "description": "GPU数のデフォルト値",
+                    "type": "integer"
+                }
+            }
+        },
+        "Nssol.Platypus.ApiModels.Components.GitCommitNullableInputModel": {
+            "description": "Nssol.Platypus.ApiModels.Components.GitCommitInputModelからRequiredを消したもの。",
+            "type": "object",
+            "properties": {
+                "gitId": {
+                    "format": "int64",
+                    "description": "Git ID",
+                    "type": "integer"
+                },
+                "repository": {
+                    "description": "リポジトリ名",
+                    "type": "string"
+                },
+                "owner": {
+                    "description": "リポジトリのオーナー名",
+                    "type": "string"
+                },
+                "branch": {
+                    "description": "ブランチ名。指定しない場合はmasterになる。\r\nNssol.Platypus.ApiModels.Components.GitCommitNullableInputModel.CommitIdを指定した場合は無視される。",
+                    "type": "string"
+                },
+                "commitId": {
+                    "description": "コミットID。指定しない場合はNssol.Platypus.ApiModels.Components.GitCommitNullableInputModel.BranchのHEADコミットになる。",
+                    "type": "string"
+                }
+            }
+        },
+        "Nssol.Platypus.ApiModels.ModelTemplateApiModels.DetailsOutputModel": {
+            "type": "object",
+            "properties": {
+                "gitModel": {
+                    "$ref": "#/definitions/Nssol.Platypus.ApiModels.Components.GitCommitOutputModel",
+                    "description": "ソースコードGit情報"
+                },
+                "containerImage": {
+                    "$ref": "#/definitions/Nssol.Platypus.ApiModels.Components.ContainerImageOutputModel",
+                    "description": "コンテナイメージ"
+                },
+                "entryPoint": {
+                    "description": "エントリポイント。",
+                    "type": "string"
+                },
+                "cpu": {
+                    "format": "int32",
+                    "description": "CPUコア数のデフォルト値",
+                    "type": "integer"
+                },
+                "memory": {
+                    "format": "int32",
+                    "description": "メモリ容量（GB）のデフォルト値",
+                    "type": "integer"
+                },
+                "gpu": {
+                    "format": "int32",
+                    "description": "GPU数のデフォルト値",
+                    "type": "integer"
+                },
+                "id": {
+                    "format": "int64",
+                    "description": "前処理ID",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "名前",
+                    "type": "string"
+                },
+                "memo": {
+                    "description": "メモ",
+                    "type": "string"
+                },
+                "taskType": {
+                    "format": "int32",
+                    "description": "タスクの種類",
+                    "enum": [
+                        0,
+                        1,
+                        2,
+                        3,
+                        4,
+                        5
+                    ],
+                    "type": "integer"
+                },
+                "createdBy": {
+                    "description": "登録者",
+                    "type": "string"
+                },
+                "createdAt": {
+                    "description": "登録日",
+                    "type": "string"
+                },
+                "modifiedBy": {
+                    "description": "更新者",
+                    "type": "string"
+                },
+                "modifiedAt": {
+                    "description": "更新日",
+                    "type": "string"
+                }
+            }
+        },
+        "Nssol.Platypus.ApiModels.ModelTemplateApiModels.EditInputModel": {
+            "description": "テンプレート編集の入力モデル",
+            "type": "object",
+            "properties": {
+                "name": {
+                    "description": "名前",
+                    "type": "string"
+                },
+                "memo": {
+                    "description": "メモ",
+                    "type": "string"
+                },
+                "cpu": {
+                    "format": "int32",
+                    "description": "CPUコア数のデフォルト値",
+                    "type": "integer"
+                },
+                "memory": {
+                    "format": "int32",
+                    "description": "メモリ容量（GB）のデフォルト値",
+                    "type": "integer"
+                },
+                "gpu": {
+                    "format": "int32",
+                    "description": "GPU数のデフォルト値",
+                    "type": "integer"
+                }
+            }
+        },
         "Nssol.Platypus.ApiModels.NodeApiModels.IndexOutputModel": {
             "description": "ノード情報のうち、Indexで表示する最低情報だけを保持する",
             "type": "object",
@@ -10503,33 +10979,6 @@
                     "format": "int32",
                     "description": "GPU数のデフォルト値",
                     "type": "integer"
-                }
-            }
-        },
-        "Nssol.Platypus.ApiModels.Components.GitCommitNullableInputModel": {
-            "description": "Nssol.Platypus.ApiModels.Components.GitCommitInputModelからRequiredを消したもの。",
-            "type": "object",
-            "properties": {
-                "gitId": {
-                    "format": "int64",
-                    "description": "Git ID",
-                    "type": "integer"
-                },
-                "repository": {
-                    "description": "リポジトリ名",
-                    "type": "string"
-                },
-                "owner": {
-                    "description": "リポジトリのオーナー名",
-                    "type": "string"
-                },
-                "branch": {
-                    "description": "ブランチ名。指定しない場合はmasterになる。\r\nNssol.Platypus.ApiModels.Components.GitCommitNullableInputModel.CommitIdを指定した場合は無視される。",
-                    "type": "string"
-                },
-                "commitId": {
-                    "description": "コミットID。指定しない場合はNssol.Platypus.ApiModels.Components.GitCommitNullableInputModel.BranchのHEADコミットになる。",
-                    "type": "string"
                 }
             }
         },
