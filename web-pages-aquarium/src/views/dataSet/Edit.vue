@@ -2,6 +2,7 @@
   <kqi-dialog
     :title="title"
     :type="isCreateDialog ? 'CREATE' : 'EDIT'"
+    :submitText="submitText"
     @submit="submit"
     @delete="deleteDataSet"
     @close="$emit('cancel')"
@@ -18,45 +19,24 @@
         <el-form-item label="データセット名" prop="name">
           <el-input v-model="form.name" />
         </el-form-item>
-        <el-form-item label="メモ" prop="memo">
-          <el-input v-model="form.memo" type="textarea" />
-        </el-form-item>
-      </el-row>
-      <el-row v-else>
-        <el-col :span="12">
-          <el-form-item label="ID">
-            <kqi-display-text-form v-model="id" />
-          </el-form-item>
-          <el-form-item label="データセット名" prop="name">
-            <el-input v-model="form.name" />
-          </el-form-item>
-          <el-form-item label="メモ" prop="memo">
-            <el-input v-model="form.memo" type="textarea" />
-          </el-form-item>
-        </el-col>
-        <el-col v-if="isEditDialog" :offset="1" :span="11">
-          <el-form-item label="編集可否">
-            <kqi-display-text-form v-if="isLocked" value="不可" />
-            <kqi-display-text-form v-else value="可" />
-          </el-form-item>
-          <el-form-item label="登録者">
-            <kqi-display-text-form v-model="detail.createdBy" />
-          </el-form-item>
-          <el-form-item label="登録日時">
-            <kqi-display-text-form v-model="detail.createdAt" />
-          </el-form-item>
-        </el-col>
       </el-row>
 
-      <el-form-item label="データ" prop="entries" />
-      <el-form-item>
-        <pl-dataset-transfer
-          v-if="form.entries"
-          v-model="form.entries"
-          :disabled="isLocked"
-          @showData="handleShowData"
-        />
-      </el-form-item>
+      <el-form-item label="モデルの目的を選択してください" prop="entries" />
+      <div class="model-type-list ">
+        <div
+          v-for="(model, index) in modelList"
+          :key="'t' + index"
+          class="model-type"
+        >
+          <div class="model-type-image"><span>IMAGE</span></div>
+          <div class="model-type-label ">
+            <el-radio v-model="form.modeltype" :label="model.name">{{
+              model.label
+            }}</el-radio>
+            <div class="model-type-description ">{{ model.description }}</div>
+          </div>
+        </div>
+      </div>
     </el-form>
   </kqi-dialog>
 </template>
@@ -64,8 +44,7 @@
 <script>
 import KqiDialog from '@/components/KqiDialog'
 import KqiDisplayError from '@/components/KqiDisplayError'
-import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
-import DataSetTransfer from './DatasetTransfer/Index'
+
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapMutations, mapActions } = createNamespacedHelpers(
   'dataSet',
@@ -75,8 +54,6 @@ export default {
   components: {
     KqiDialog,
     KqiDisplayError,
-    KqiDisplayTextForm,
-    'pl-dataset-transfer': DataSetTransfer,
   },
   props: {
     id: {
@@ -86,10 +63,31 @@ export default {
   },
   data() {
     return {
+      submitText: '新規登録',
+
+      modelList: [
+        {
+          name: 'ingleLabel',
+          label: '単一ラベル分類',
+          description: '画像に割り当てる正しいラベルを１つ予測します。',
+        },
+        {
+          name: 'objectDetection',
+          label: 'オブジェクト検出',
+          description: '関心のあるオブジェクトのすべての位置を予測します。',
+        },
+        {
+          name: 'segmentation',
+          label: 'セグメンテーション',
+          description: '関心のあるオブジェクトのすべての領域を予測します。',
+        },
+        { name: 'anomaly', label: '異常検知', description: '' },
+        { name: 'regression', label: '回帰', description: '' },
+      ],
       form: {
         name: '',
-        memo: '',
-        entries: null,
+
+        modeltype: null,
       },
       title: '',
       isCreateDialog: false,
@@ -100,7 +98,7 @@ export default {
       error: null,
       rules: {
         name: [{ required: true, trigger: 'blur', message: '必須項目です' }],
-        entries: [
+        modeltype: [
           {
             required: true,
             trigger: 'blur',
@@ -151,7 +149,7 @@ export default {
       let type = url.split('/')[2] // ["", "dataset", "{type}", "{id}"]
       switch (type) {
         case 'create':
-          this.title = 'データセット作成'
+          this.title = '新しいデータセットの作成'
           this.isCreateDialog = true
           this.isCopyCreation = this.id !== null
           this.isEditDialog = false
@@ -282,6 +280,39 @@ export default {
   .dialog /deep/ .el-dialog {
     width: 1450px;
   }
+}
+.model-type-list {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: start;
+  align-content: flex-start;
+  margin-bottom: 40px;
+}
+
+.model-type {
+  border-radius: 10px;
+  border: solid 1px #ebeef5;
+  float: left;
+  margin: 0px 20px 10px 0;
+  position: relative;
+  width: 300px;
+  height: 300px;
+}
+
+.model-type-image {
+  border-radius: 10px 10px 0px 0px;
+  height: 150px;
+  background-color: #aaa;
+  color: #666;
+  text-align: center;
+  padding-top: 30px;
+}
+.model-type-label {
+  padding: 20px;
+}
+.model-type-description {
+  padding: 20px;
 }
 
 .dialog /deep/ label {

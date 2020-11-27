@@ -1,5 +1,6 @@
 import Index from '@/views/dataSet/Index'
 import Edit from '@/views/dataSet/Edit'
+import Detail from '@/views/dataSet/Detail/Index'
 
 export default [
   {
@@ -17,5 +18,10 @@ export default [
         props: true,
       },
     ],
+  },
+  {
+    path: '/dataset/detail/:id',
+    component: Detail,
+    children: [],
   },
 ]

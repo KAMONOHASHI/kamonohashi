@@ -1,83 +1,34 @@
 <template>
   <div>
-    <h2>データセット</h2>
-    <el-row type="flex" justify="space-between" :gutter="20">
-      <kqi-pagination
-        v-model="pageStatus"
-        :total="total"
-        @change="retrieveData"
-      />
-      <el-col class="right-top-button" :span="8">
-        <el-button
-          icon="el-icon-plus"
-          type="primary"
-          plain
-          @click="openCreateDialog()"
-        >
-          新しいデータセット
-        </el-button>
-      </el-col>
-    </el-row>
-    <el-row :gutter="20">
-      <el-col class="search">
-        <kqi-smart-search-input
-          v-model="searchCondition"
-          :configs="searchConfigs"
-          @search="search"
-        />
-      </el-col>
-    </el-row>
-    <el-row class="test">
-      <el-table
-        class="data-table pl-index-table"
-        :data="dataSets"
-        border
-        @row-click="openEditDataset"
+    <h2>（データセット名）</h2>
+    <el-tabs v-model="activeName" @tab-click="handleClick">
+      <el-tab-pane label="アップロード" name="upload">
+        <upload />
+      </el-tab-pane>
+      <el-tab-pane label="イメージ" name="image"><images /></el-tab-pane>
+      <el-tab-pane label="トレーニング" name="train">
+        <training />
+      </el-tab-pane>
+
+      <el-tab-pane label="評価" name="evaluation">評価</el-tab-pane>
+      <el-tab-pane label="テストとデプロイ" name="test"
+        >テストとデプロイ</el-tab-pane
       >
-        <el-table-column prop="id" label="ID" width="120px" />
-        <el-table-column prop="name" label="データセット名" width="auto" />
-        <el-table-column prop="type" label="種類" width="auto" />
-        <el-table-column
-          prop="totalImageNumber"
-          label="イメージの総数"
-          width="auto"
-        />
-        <el-table-column
-          prop="labeledImageNumber"
-          label="ラベル付きのイメージ数"
-          width="auto"
-        />
-        <el-table-column
-          prop="lastModified"
-          label="最終更新日時"
-          width="auto"
-        />
-        <el-table-column prop="status" label="ステータス" width="auto" />
-      </el-table>
-    </el-row>
-    <el-row>
-      <kqi-pagination
-        v-model="pageStatus"
-        :total="total"
-        @change="retrieveData"
-      />
-    </el-row>
+    </el-tabs>
     <router-view @cancel="closeDialog" @done="done" @copy="handleCopy" />
   </div>
 </template>
 
 <script>
-import KqiPagination from '@/components/KqiPagination'
-import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index'
 import { createNamespacedHelpers } from 'vuex'
+import Upload from './Upload'
+import Images from './Images'
+import Training from './Training'
 const { mapGetters, mapActions } = createNamespacedHelpers('dataSet')
 
 export default {
   title: 'データセット',
-  components: {
-    KqiPagination,
-    KqiSmartSearchInput,
-  },
+  components: { Upload, Images, Training },
   data() {
     return {
       iconname: 'pl-plus',
@@ -143,8 +94,8 @@ export default {
     openCreateDialog() {
       this.$router.push('/dataset/create')
     },
-    openEditDataset(selectedRow) {
-      this.$router.push('/dataset/detail/' + selectedRow.id)
+    openEditDialog(selectedRow) {
+      this.$router.push('/dataset/edit/' + selectedRow.id)
     },
     handleCopy(id) {
       this.$router.push('/dataset/create/' + id)
