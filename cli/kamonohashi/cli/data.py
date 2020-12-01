@@ -83,19 +83,14 @@ def get(id, destination):
 def create(name, file, memo, tags):
     """Create new data"""
     api = rest.DataApi(configuration.get_api_client())
+    check_upload_files(len(file))
     model = rest.DataApiModelsCreateInputModel(
         memo=memo,
         name=name,
         tags=list(tags)
     )
     result = api.create_data(model=model)
-    file_model = rest.DataApiModelsAddFilesInputModel(files=[])
-    for x in file:
-        upload_info = object_storage.upload_file(api.api_client, x, 'Data')
-        file_model.files.append(rest.ComponentsAddFileInputModel(file_name=upload_info.file_name,
-                                                                 stored_path=upload_info.stored_path))
-    api.add_data_file(result.id, model=file_model,
-                      _request_timeout=heavy_request_timeout(api.api_client))
+    do_upload_files(api, result.id, file)
     print('created', result.id)
 
 
@@ -151,12 +146,9 @@ def download_files(id, destination):
 def upload_files(id, file):
     """Upload files to data"""
     api = rest.DataApi(configuration.get_api_client())
-    model = rest.DataApiModelsAddFilesInputModel(files=[])
-    for x in file:
-        upload_info = object_storage.upload_file(api.api_client, x, 'Data')
-        model.files.append(rest.ComponentsAddFileInputModel(file_name=upload_info.file_name,
-                                                            stored_path=upload_info.stored_path))
-    api.add_data_file(id, model=model, _request_timeout=heavy_request_timeout(api.api_client))
+    result = api.list_data_files(id)
+    check_upload_files(len(result) + len(file))
+    do_upload_files(api, id, file)
 
 
 @data.command('delete-file')
@@ -175,3 +167,27 @@ def heavy_request_timeout(api_client):
     """
     default_timeout = api_client.rest_client.pool_manager.connection_pool_kw['timeout']
     return None if default_timeout is None else default_timeout * 30
+
+
+def check_upload_files(file_count):
+    """
+    :param int file_count:
+    """
+    max_files_per_data = 10000
+    if max_files_per_data < file_count:
+        raise Exception('Maximum number of files per data is {max_files_per_data}.'
+                        .format(max_files_per_data=max_files_per_data))
+
+
+def do_upload_files(api, id, file):
+    """
+    :param rest.DataApi api:
+    :param int id: data id
+    :param list[string] file:
+    """
+    model = rest.DataApiModelsAddFilesInputModel(files=[])
+    for x in file:
+        upload_info = object_storage.upload_file(api.api_client, x, 'Data')
+        model.files.append(rest.ComponentsAddFileInputModel(file_name=upload_info.file_name,
+                                                            stored_path=upload_info.stored_path))
+    api.add_data_file(id, model=model, _request_timeout=heavy_request_timeout(api.api_client))
