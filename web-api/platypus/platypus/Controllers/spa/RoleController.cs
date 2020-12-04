@@ -14,7 +14,8 @@ using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Controllers.spa
 {
-    [Route("api/v1/tenant/roles")]
+    [ApiVersion("1"), ApiVersion("2")]
+    [Route("api/v{api-version:apiVersion}/tenant/roles")]
     public class RoleController : PlatypusApiControllerBase
     {
         private readonly IRoleRepository roleRepository;
@@ -34,7 +35,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 全ロール一覧を取得
         /// </summary>
-        [HttpGet("/api/v1/admin/roles")]
+        [HttpGet("/api/v{api-version:apiVersion}/admin/roles")]
         [PermissionFilter(MenuCode.Role, MenuCode.User, MenuCode.Menu)]
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetAllForAdmin()
@@ -49,7 +50,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="id">ロールID</param>
         /// <param name="tenantRepository">DI用</param>
-        [HttpGet("/api/v1/admin/roles/{id}")]
+        [HttpGet("/api/v{api-version:apiVersion}/admin/roles/{id}")]
         [PermissionFilter(MenuCode.Role)]
         [ProducesResponseType(typeof(DetailsOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetDetailForAdmin(long? id, [FromServices] ITenantRepository tenantRepository)
@@ -76,7 +77,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 新規にロールを登録する
         /// </summary>
-        [HttpPost("/api/v1/admin/roles")]
+        [HttpPost("/api/v{api-version:apiVersion}/admin/roles")]
         [PermissionFilter(MenuCode.Role)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.Created)]
         public async Task<IActionResult> CreateForAdmin([FromBody]CreateInputModel model, [FromServices] ITenantRepository tenantRepository)
@@ -105,7 +106,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// ロール情報の編集
         /// </summary>
-        [HttpPut("/api/v1/admin/roles/{id}")]
+        [HttpPut("/api/v{api-version:apiVersion}/admin/roles/{id}")]
         [PermissionFilter(MenuCode.Role)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> EditForAdmin(long? id, [FromBody]EditInputModel model, [FromServices] ITenantRepository tenantRepository)
@@ -180,7 +181,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// ロールを削除する。
         /// </summary>
-        [HttpDelete("/api/v1/admin/roles/{id}")]
+        [HttpDelete("/api/v{api-version:apiVersion}/admin/roles/{id}")]
         [PermissionFilter(MenuCode.Role)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         public async Task<IActionResult> DeleteForAdmin(long? id, [FromServices] ITenantRepository tenantRepository)

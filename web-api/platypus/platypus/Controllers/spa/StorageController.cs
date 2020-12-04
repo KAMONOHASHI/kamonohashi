@@ -21,6 +21,7 @@ namespace Nssol.Platypus.Controllers.spa
     /// URLはアクションメソッド単位で割り当てる。
     /// 多数のメニューで使用される想定のため、権限制御は行わない。
     /// </summary>
+    [ApiVersion("1"), ApiVersion("2")]
     public class StorageController : PlatypusApiControllerBase
     {
         private readonly IStorageLogic storageLogic;
@@ -42,7 +43,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 登録済みのStorageエンドポイント一覧を取得
         /// </summary>
-        [HttpGet("/api/v1/admin/storage/endpoints")]
+        [HttpGet("/api/v{api-version:apiVersion}/admin/storage/endpoints")]
         [Filters.PermissionFilter(MenuCode.Storage, MenuCode.Tenant)]
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetAll()
@@ -56,7 +57,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// 指定されたIDのStorageエンドポイント情報を取得。
         /// </summary>
         /// <param name="id">StorageエンドポイントID</param>
-        [HttpGet("/api/v1/admin/storage/endpoints/{id}")]
+        [HttpGet("/api/v{api-version:apiVersion}/admin/storage/endpoints/{id}")]
         [Filters.PermissionFilter(MenuCode.Storage)]
         [ProducesResponseType(typeof(DetailsOutputModel), (int)HttpStatusCode.OK)]
         public IActionResult GetDetails(long? id)
@@ -80,7 +81,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 新規にStorageエンドポイントを登録する
         /// </summary>
-        [HttpPost("/api/v1/admin/storage/endpoints")]
+        [HttpPost("/api/v{api-version:apiVersion}/admin/storage/endpoints")]
         [Filters.PermissionFilter(MenuCode.Storage)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.Created)]
         public IActionResult Create([FromBody]CreateInputModel model)
@@ -113,7 +114,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// Storageエンドポイント情報の編集
         /// </summary>
-        [HttpPut("/api/v1/admin/storage/endpoints/{id}")]
+        [HttpPut("/api/v{api-version:apiVersion}/admin/storage/endpoints/{id}")]
         [Filters.PermissionFilter(MenuCode.Storage)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> Edit(long? id, [FromBody]CreateInputModel model) //EditとCreateで項目が同じなので、入力モデルを使いまわし
@@ -156,7 +157,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// Storageエンドポイント情報の削除
         /// </summary>
-        [HttpDelete("/api/v1/admin/storage/endpoints/{id}")]
+        [HttpDelete("/api/v{api-version:apiVersion}/admin/storage/endpoints/{id}")]
         [Filters.PermissionFilter(MenuCode.Storage)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         public async Task<IActionResult> Delete(long? id)
@@ -192,7 +193,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 分割アップロードを行うためのパラメータを取得する
         /// </summary>
-        [HttpGet("/api/v1/upload/parameter")]
+        [HttpGet("/api/v{api-version:apiVersion}/upload/parameter")]
         [ProducesResponseType(typeof(MultiPartUploadModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetMultipleUploadUrlv2([FromQuery]MultiPartUploadInputModel model)
         {
@@ -216,7 +217,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 分割アップロードの処理を完了する
         /// </summary>
-        [HttpPost("/api/v1/upload/complete")]
+        [HttpPost("/api/v{api-version:apiVersion}/upload/complete")]
         [ProducesResponseType(typeof(CompleteMultiplePartUploadInputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> CompleteMultiUploadv2([FromBody]CompleteMultiplePartUploadInputModel model)
         {
@@ -240,7 +241,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="fileName">ダウンロード時に書き換えるファイル名</param>
         /// <param name="secure">HTTPS化するか</param>
         /// <returns>署名付きダウンロードURL</returns>
-        [HttpGet("/api/v1/download/url")]
+        [HttpGet("/api/v{api-version:apiVersion}/download/url")]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
         public IActionResult GetStorageUrl(string type, string storedPath, string fileName, bool secure)
         {

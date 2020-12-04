@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -46,7 +48,7 @@ namespace Nssol.Platypus
         public static string DefaultConnectionString { get; set; }
 
         /// <summary>
-        /// <see cref="Configure(IApplicationBuilder, IHostingEnvironment, ILoggerFactory, IOptions{WebSecurityOptions}, ICommonDiLogic)"/> 内処理用のロガー
+        /// <see cref="Configure(IApplicationBuilder, IHostingEnvironment, ILoggerFactory, IOptions{WebSecurityOptions}, ICommonDiLogic, IApiVersionDescriptionProvider)"/> 内処理用のロガー
         /// </summary>
         private ILogger logger;
 
@@ -266,6 +268,15 @@ namespace Nssol.Platypus
                 cfg.Filters.Add(typeof(GlobalExceptionHandlerAttribute));
             });
 
+            // API Versioning
+            services.AddVersionedApiExplorer(options =>
+            {
+                options.GroupNameFormat = "'v'VVV";
+                options.SubstituteApiVersionInUrl = true;
+            });
+            services.AddApiVersioning(options => 
+                options.ApiVersionReader = new UrlSegmentApiVersionReader());
+
             if (wsops.EnableSwagger)
             {
                 // SwaggerにXMLコメントの内容を反映させるために、サーバ上での XML Document のパスを渡す
@@ -275,18 +286,26 @@ namespace Nssol.Platypus
                 services.AddSwaggerGen(options =>
                 {
                     // APIの署名を記載
-                    options.SwaggerDoc("v1", new Info
+                    using (var serviceProvider = services.BuildServiceProvider())
                     {
-                        Title = "KAMONOHASHI API",
-                        Version = "v1",
-                        Description = "For developers only.",
-                        Contact = new Contact()
+                        var provider = serviceProvider.GetRequiredService<IApiVersionDescriptionProvider>();
+                        foreach (var description in provider.ApiVersionDescriptions)
                         {
-                            Email = "kamonohashi-support@jp.nssol.nipponsteel.com",
-                            Name = "KAMONOHASHI Support"
-                        },
-                        TermsOfService = ApplicationConst.Copyright
-                    });
+                            options.SwaggerDoc(description.GroupName, new Info
+                            {
+                                Title = "KAMONOHASHI API",
+                                Version = description.GroupName,
+                                Description = "A platform for deep learning",
+                                Contact = new Contact()
+                                {
+                                    Email = "kamonohashi-support@jp.nssol.nipponsteel.com",
+                                    Name = "KAMONOHASHI Support"
+                                },
+                                TermsOfService = ApplicationConst.Copyright,
+                            });
+                        }
+                    }
+
                     // デフォルトだと同じクラス名の入出力モデルを使えないので、識別に名前空間名も含める
                     // https://stackoverflow.com/questions/46071513/swagger-error-conflicting-schemaids-duplicate-schemaids-detected-for-types-a-a
                     options.CustomSchemaIds(x => x.FullName);
@@ -329,7 +348,8 @@ namespace Nssol.Platypus
         /// <param name="loggerFactory">ロガーファクトリ</param>
         /// <param name="securityOptions">appsettings.jsonから読み込んだセキュリティ設定情報</param>
         /// <param name="commonDiLogic">DI用</param>
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IOptions<WebSecurityOptions> securityOptions, ICommonDiLogic commonDiLogic)
+        /// <param name="provider">API Versioning</param>
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IOptions<WebSecurityOptions> securityOptions, ICommonDiLogic commonDiLogic, IApiVersionDescriptionProvider provider)
         {
             WebSecurityOptions options = securityOptions.Value;
             isDebug = options.EnableRequestPiplineDebugLog;
@@ -396,7 +416,10 @@ namespace Nssol.Platypus
                     app.UseSwagger();
                     app.UseSwaggerUI(c =>
                     {
-                        c.SwaggerEndpoint("/swagger/v1/swagger.json", "KAMONOHASHI API V1");
+                        foreach (var description in provider.ApiVersionDescriptions)
+                        {
+                            c.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", description.GroupName);
+                        }
                     });
                 }
 
