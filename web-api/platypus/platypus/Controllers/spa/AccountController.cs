@@ -21,7 +21,8 @@ using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Controllers.spa
 {
-    [Route("api/v1/account")]
+    [ApiVersion("1"), ApiVersion("2")]
+    [Route("api/v{api-version:apiVersion}/account")]
     public class AccountController : PlatypusApiControllerBase
     {
         private readonly ILoginLogic loginLogic;

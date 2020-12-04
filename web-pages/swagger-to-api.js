@@ -6,7 +6,7 @@ const path = require('path');
 const readline = require('readline');
 
 let tmpfile = path.join(__dirname, './temp.js');
-let outfile = path.join(__dirname, './src/api/v1/api.generator.js');
+let outfile = path.join(__dirname, './src/api/api.generator.js');
 
 // 自動生成で api.generator.js を作成
 let opt = {

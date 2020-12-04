@@ -40,6 +40,6 @@ VUE_APP_KAMONOHASHI_HOST='KAMONOHASHI-hostname'
 
 2. `npm run generate-api`を実行
 
-3. `src/api/v1/api.generator.js`が自動生成される
+3. `src/api/api.generator.js`が自動生成される
 
-4. API を追加する場合は`src/api/v1/api.js`を編集する
+4. API を追加する場合は`src/api/api.js`を編集する

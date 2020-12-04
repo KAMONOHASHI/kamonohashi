@@ -67,8 +67,8 @@ export default {
         return fileInfo
       }
     },
-    isFileSelected() {
-      return this.$refs.uploadForm.isFileSelected()
+    selectedFilesLength() {
+      return this.$refs.uploadForm.selectedFilesLength()
     },
   },
 }

@@ -78,12 +78,8 @@ export default {
       this.selectedFiles = Object.values(files)
     },
 
-    isFileSelected() {
-      if (this.selectedFiles === undefined || this.selectedFiles.length === 0) {
-        return false
-      } else {
-        return true
-      }
+    selectedFilesLength() {
+      return this.selectedFiles === undefined ? 0 : this.selectedFiles.length
     },
 
     // ファイルの分割数の合計を取得する

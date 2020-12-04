@@ -38,7 +38,9 @@ def list_files(api_client, id):
 def upload_file(api_client, id, file_path):
     api = rest.DataApi(api_client)
     upload_info = object_storage.upload_file(api_client, file_path, 'Data')
-    model = rest.ComponentsAddFileInputModel(file_name=upload_info.file_name, stored_path=upload_info.stored_path)
+    model = rest.DataApiModelsAddFilesInputModel(
+        files=[rest.ComponentsAddFileInputModel(file_name=upload_info.file_name,
+                                                stored_path=upload_info.stored_path)])
     result = api.add_data_file(id, model=model)
     return result
 

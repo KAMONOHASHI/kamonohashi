@@ -23,7 +23,8 @@ namespace Nssol.Platypus.Controllers.spa
     /// <summary>
     /// 前処理管理を扱うためのAPI集
     /// </summary>
-    [Route("api/v1/preprocessings")]
+    [ApiVersion("1"), ApiVersion("2")]
+    [Route("api/v{api-version:apiVersion}/preprocessings")]
     public class PreprocessingController : PlatypusApiControllerBase
     {
         private readonly IPreprocessRepository preprocessRepository;

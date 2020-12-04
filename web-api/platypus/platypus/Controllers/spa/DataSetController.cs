@@ -17,7 +17,8 @@ namespace Nssol.Platypus.Controllers.spa
     /// <summary>
     /// データセット管理を扱うためのAPI集
     /// </summary>
-    [Route("api/v1/datasets")]
+    [ApiVersion("1"), ApiVersion("2")]
+    [Route("api/v{api-version:apiVersion}/datasets")]
     public class DataSetController : PlatypusApiControllerBase
     {
         private readonly IDataRepository dataRepository;
@@ -454,7 +455,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 全データ種別を取得する
         /// </summary>
-        [HttpGet("/api/v1/datatypes")]
+        [HttpGet("/api/v{api-version:apiVersion}/datatypes")]
         [Filters.PermissionFilter(MenuCode.DataSet)]
         [ProducesResponseType(typeof(IEnumerable<DataTypeOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetDataTypes()
