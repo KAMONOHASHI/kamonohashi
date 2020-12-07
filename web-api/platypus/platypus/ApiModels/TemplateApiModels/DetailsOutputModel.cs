@@ -25,7 +25,7 @@ namespace Nssol.Platypus.ApiModels.TemplateApiModels
                     CommitId = template.PreprocessRepositoryCommitId
                 };
             }
-            if (!string.IsNullOrEmpty(template.PreprocessContainerImage) && !string.IsNullOrEmpty(preprocessing.ContainerTag))
+            if (!string.IsNullOrEmpty(template.PreprocessContainerImage) && !string.IsNullOrEmpty(template.PreprocessContainerTag))
             {
                 PreprocessContainerImage = new ContainerImageOutputModel()
                 {
@@ -48,7 +48,7 @@ namespace Nssol.Platypus.ApiModels.TemplateApiModels
                     CommitId = template.TrainingRepositoryCommitId
                 };
             }
-            if (!string.IsNullOrEmpty(template.TrainingContainerImage) && !string.IsNullOrEmpty(preprocessing.ContainerTag))
+            if (!string.IsNullOrEmpty(template.TrainingContainerImage) && !string.IsNullOrEmpty(template.TrainingContainerTag))
             {
                 TrainingContainerImage = new ContainerImageOutputModel()
                 {

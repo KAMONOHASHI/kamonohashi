@@ -51,27 +51,27 @@ namespace Nssol.Platypus.ApiModels.TemplateApiModels
         /// <summary>
         /// コンテナ情報
         /// </summary>
-        public ContainerImageInputModel PreprocesContainerImage { get; set; }
+        public ContainerImageInputModel PreprocessContainerImage { get; set; }
 
         /// <summary>
         /// 前処理ソースコードGit情報
         /// </summary>
-        public GitCommitNullableInputModel PreprocesGitModel { get; set; }
+        public GitCommitNullableInputModel PreprocessGitModel { get; set; }
 
         /// <summary>
         /// CPUコア数のデフォルト値
         /// </summary>
-        public int PreprocesCpu { get; set; }
+        public int PreprocessCpu { get; set; }
 
         /// <summary>
         /// メモリ容量（GB）のデフォルト値
         /// </summary>
-        public int PreprocesMemory { get; set; }
+        public int PreprocessMemory { get; set; }
 
         /// <summary>
         /// GPU数のデフォルト値
         /// </summary>
-        public int PreprocesGpu { get; set; }
+        public int PreprocessGpu { get; set; }
         #endregion
 
         #region 学習・推論コンテナ

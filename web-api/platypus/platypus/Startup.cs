@@ -142,6 +142,8 @@ namespace Nssol.Platypus
             services.AddTransient<INodeRepository, NodeRepository>();
             services.AddTransient<ISettingRepository, SettingRepository>();
             services.AddTransient<INodeTenantMapRepository, NodeTenantMapRepository>();
+            services.AddTransient<ITemplateRepository, TemplateRepository>();
+            services.AddTransient<ITemplateTenantMapRepository, TemplateTenantMapRepository>();
 
             // その他のDI設定
             services.AddTransient<IUnitOfWork, UnitOfWork>();
