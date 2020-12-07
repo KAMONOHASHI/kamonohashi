@@ -52,6 +52,8 @@ export default {
   methods: {
     ...mapActions(['fetchFileSize']),
     async openImage() {
+      // filesizeがnullの場合にだけshowの切り替えを行う
+      // (同じファイルのサイズを複数回取得しようとしない)
       if (!this.show && this.size === null) {
         let params = { id: this.id, name: this.fileName }
         this.size = await this.fetchFileSize(params)
