@@ -349,7 +349,6 @@ namespace Nssol.Platypus.Controllers.spa
             return JsonOK(new DataFileOutputModel { Id = id, Key = name, FileId = property.Id, FileName = property.DataFile.FileName, FileSize = fileSize });
         }
 
-
         /// <summary>
         /// 指定したデータのファイル情報を全て取得する
         /// </summary>

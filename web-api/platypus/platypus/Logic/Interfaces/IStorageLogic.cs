@@ -77,7 +77,6 @@ namespace Nssol.Platypus.Logic.Interfaces
         /// <returns>ファイルサイズ</returns>
         long GetFileSize(ResourceType type, string fileStoredPath);
 
-
         /// <summary>
         /// 指定されたデータファイルの内容を返す。
         /// </summary>
