@@ -389,7 +389,7 @@ namespace Nssol.Platypus.Logic
             Url = "/aquarium/model-template",
             ShowTopMenu = true,
             ShowSideMenu = true,
-            MenuType = MenuType.Tenant
+            MenuType = MenuType.System
         };
         internal static MenuItemInfo TenantSettingMenu = new MenuItemInfo()
         {

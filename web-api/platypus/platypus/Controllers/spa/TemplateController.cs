@@ -45,6 +45,7 @@ namespace Nssol.Platypus.Controllers.spa
             IHttpContextAccessor accessor) : base(accessor)
         {
             this.templateRepository = templateRepository;
+            this.tenantRepository = tenantRepository;
             this.unitOfWork = unitOfWork;
             this.clusterManagementLogic = clusterManagementLogic;
             this.gitLogic = gitLogic;
