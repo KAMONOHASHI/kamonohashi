@@ -23,6 +23,13 @@
           size="mini"
           @delete="$emit('delete', uploadedFile.fileId)"
         />
+        <!-- 画像プレビュー -->
+        <kqi-display-image-button
+          v-if="isImage(uploadedFile.fileName)"
+          :id="uploadedFile.id"
+          :download-url="uploadedFile.url"
+          :file-name="uploadedFile.fileName"
+        />
       </div>
       <!-- アップロード済みファイルがあるので、それを表示 -->
     </div>
@@ -36,6 +43,7 @@
 import KqiDownloadButton from '@/components/KqiDownloadButton'
 import KqiDeleteButton from '@/components/KqiDeleteButton'
 import KqiUploadForm from '@/components/KqiUploadForm'
+import KqiDisplayImageButton from '@/components/KqiDisplayImageButton'
 
 export default {
   name: 'FileManager',
@@ -43,6 +51,7 @@ export default {
     KqiDownloadButton,
     KqiDeleteButton,
     KqiUploadForm,
+    KqiDisplayImageButton,
   },
   props: {
     uploadedFiles: {
@@ -69,6 +78,15 @@ export default {
     },
     selectedFilesLength() {
       return this.$refs.uploadForm.selectedFilesLength()
+    },
+    isImage(fileName) {
+      return (
+        fileName.endsWith('.png') ||
+        fileName.endsWith('.jpg') ||
+        fileName.endsWith('.jpeg') ||
+        fileName.endsWith('.gif') ||
+        fileName.endsWith('.bmp')
+      )
     },
   },
 }

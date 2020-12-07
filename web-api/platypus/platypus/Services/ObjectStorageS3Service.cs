@@ -833,6 +833,19 @@ namespace Nssol.Platypus.Services
         }
 
         /// <summary>
+        /// 指定されたデータファイルのファイルサイズを返す。
+        /// </summary>
+        /// <param name="key">オブジェクトのキー</param>
+        /// <returns>ファイルサイズ</returns>
+        public long GetFileSize(string key)
+        {
+            var getObjectMetadataRequest = new GetObjectMetadataRequest() { BucketName = bucket, Key = key };
+            GetObjectMetadataResponse meta = client.GetObjectMetadataAsync(getObjectMetadataRequest).Result;
+            var fileSize = meta.Headers.ContentLength;
+            return fileSize;
+        }
+
+        /// <summary>
         /// 指定されたデータファイルの内容を返す。
         /// </summary>
         /// <param name="uri">データファイルのURI</param>

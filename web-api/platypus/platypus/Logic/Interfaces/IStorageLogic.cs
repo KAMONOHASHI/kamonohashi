@@ -71,6 +71,14 @@ namespace Nssol.Platypus.Logic.Interfaces
         Uri GetPreSignedUriForGet(ResourceType type, string fileStoredPath, string fileName, bool useHttp);
 
         /// <summary>
+        /// 指定されたデータファイルのファイルサイズを返す。
+        /// </summary>
+        /// <param name="type">リソース種別</param>
+        /// <returns>ファイルサイズ</returns>
+        long GetFileSize(ResourceType type, string fileStoredPath);
+
+
+        /// <summary>
         /// 指定されたデータファイルの内容を返す。
         /// </summary>
         /// <param name="type">リソース種別</param>
