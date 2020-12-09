@@ -1,10 +1,9 @@
-import Index from '@/views/dataSet/Index'
-import Edit from '@/views/dataSet/Edit'
-import Detail from '@/views/dataSet/Detail/Index'
-
+import Index from '@/views/experiment/Index'
+import Edit from '@/views/experiment/Edit'
+import Detail from '@/views/experiment/Detail/Index'
 export default [
   {
-    path: '/dataset',
+    path: '/aquarium/experiment',
     component: Index,
     children: [
       {
@@ -21,7 +20,7 @@ export default [
     ],
   },
   {
-    path: '/dataset/detail/:id',
+    path: '/aquarium/experiment/detail/:id',
     component: Detail,
     children: [],
   },

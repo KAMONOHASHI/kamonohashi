@@ -1,11 +1,12 @@
 <template>
   <div>
-    <h2>（データセット名）</h2>
+    <h2>（実験名）</h2>
     <el-tabs v-model="activeName" @tab-click="handleClick">
-      <el-tab-pane label="アップロード" name="upload">
-        <upload />
+      <el-tab-pane label="実行情報" name="info"> <info /> </el-tab-pane>
+      <el-tab-pane label="実行結果" name="result">
+        <result />
       </el-tab-pane>
-      <el-tab-pane label="イメージ" name="image"><images /></el-tab-pane>
+      <el-tab-pane label="推論" name="inference"><inference /></el-tab-pane>
     </el-tabs>
     <router-view @cancel="closeDialog" @done="done" @copy="handleCopy" />
   </div>
@@ -13,13 +14,15 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex'
-import Upload from './Upload'
-import Images from './Images'
+import Info from './Info'
+import Result from './Result'
+
+import Inference from './Inference'
 const { mapGetters, mapActions } = createNamespacedHelpers('dataSet')
 
 export default {
-  title: 'データセット',
-  components: { Upload, Images },
+  title: '実験',
+  components: { Info, Result, Inference },
   data() {
     return {
       iconname: 'pl-plus',
@@ -39,7 +42,7 @@ export default {
         { prop: 'status', name: 'ステータス', type: 'text' },
       ],
       tableData: [],
-      activeName: 'upload',
+      activeName: 'info',
     }
   },
   computed: {

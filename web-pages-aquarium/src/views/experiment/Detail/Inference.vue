@@ -1,45 +1,19 @@
 <template>
   <div>
-    <h2>（データセット名）</h2>
-    <el-tabs v-model="activeName" @tab-click="handleClick">
-      <el-tab-pane label="アップロード" name="upload">
-        <upload />
-      </el-tab-pane>
-      <el-tab-pane label="イメージ" name="image"><images /></el-tab-pane>
-    </el-tabs>
-    <router-view @cancel="closeDialog" @done="done" @copy="handleCopy" />
+    <h2>推論一覧</h2>
   </div>
 </template>
 
 <script>
 import { createNamespacedHelpers } from 'vuex'
-import Upload from './Upload'
-import Images from './Images'
 const { mapGetters, mapActions } = createNamespacedHelpers('dataSet')
 
 export default {
   title: 'データセット',
-  components: { Upload, Images },
+  components: {},
   data() {
     return {
-      iconname: 'pl-plus',
-
-      searchCondition: {},
-      searchConfigs: [
-        { prop: 'id', name: 'ID', type: 'number' },
-        { prop: 'name', name: 'データセット名', type: 'text' },
-        { prop: 'type', name: '種類', type: 'text' },
-        { prop: 'totalImageNumber', name: 'イメージの総数', type: 'text' },
-        {
-          prop: 'labeledImageNumber',
-          name: 'ラベル付きのイメージ数',
-          type: 'text',
-        },
-        { prop: 'lastModified', name: '最終更新日時', type: 'date' },
-        { prop: 'status', name: 'ステータス', type: 'text' },
-      ],
-      tableData: [],
-      activeName: 'upload',
+      importfile: null,
     }
   },
   computed: {
@@ -57,8 +31,6 @@ export default {
     },
     async retrieveData() {
       let params = this.searchCondition
-
-      params.withTotal = true
       await this.fetchDataSets(params)
     },
     closeDialog() {
@@ -86,6 +58,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.importfile-detail {
+  padding-top: 50px;
+}
+.importfile-detail > h3 {
+  padding-bottom: 10px;
+}
 .right-top-button {
   text-align: right;
 }

@@ -1,73 +1,67 @@
 <template>
   <div>
     <el-row class="tac">
-      <el-col :span="6">
+      <el-col :span="24" style="padding:15px">
+        データセットバージョン
+        <el-select v-model="versionValue" placeholder="Select">
+          <el-option
+            v-for="item in versionOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          >
+          </el-option>
+        </el-select>
+      </el-col>
+    </el-row>
+
+    <el-row>
+      <el-col :span="4">
+        <h3 style="padding:15px">ファイル一覧</h3>
         <el-menu
           class="el-menu-vertical-demo"
           @open="handleOpen"
           @close="handleClose"
         >
-          <el-menu-item index="1">
-            <span>全ての画像</span>
-          </el-menu-item>
-          <el-menu-item index="2">
-            <span>ラベル付き</span>
-          </el-menu-item>
-          <el-menu-item index="3">
-            <span>ラベルなし</span>
-          </el-menu-item>
-        </el-menu>
-        <el-menu
-          class="el-menu-vertical-demo"
-          @open="handleOpen"
-          @close="handleClose"
-        >
-          <div class="line"></div>
-          <el-menu-item index="4">
-            <i class="el-icon-setting"></i>
-            <span>ラベルをフィルタ</span>
-            <i class="el-icon-more"></i>
-          </el-menu-item>
-          <div class="line"></div>
-          <el-menu-item index="5">
-            <span>daisy</span>
-          </el-menu-item>
-          <el-menu-item index="5">
-            <span>dandelion</span>
-          </el-menu-item>
-          <el-menu-item index="5">
-            <span>roses</span>
-          </el-menu-item>
-          <el-menu-item index="5">
-            <span>sunflowers</span>
-          </el-menu-item>
-          <el-menu-item index="5">
-            <span>tulips</span>
-          </el-menu-item>
-          <el-menu-item index="3">
-            <span>新規ラベルを追加</span>
-          </el-menu-item>
+          <el-submenu
+            :index="index"
+            v-for="(list, index) in fileList"
+            :key="index"
+          >
+            <template slot="title">
+              <i class="el-icon-arrow-down"></i>
+              <span>{{ list.listName }}<i class="el-icon-delete"></i></span>
+            </template>
+            <el-menu-item-group
+              v-for="(item, subIndex) in list.list"
+              :key="subIndex"
+            >
+              <el-menu-item :index="index - subIndex">{{ item }}</el-menu-item>
+            </el-menu-item-group>
+          </el-submenu>
         </el-menu>
       </el-col>
       <el-col :span="18">
-        <el-menu
-          :default-active="activeIndex"
-          class="el-menu-demo"
-          mode="horizontal"
-          @select="handleSelect"
-        >
-          <el-menu-item index="1">イメージのフィルタリング</el-menu-item>
-
-          <el-menu-item index="3" disabled
-            ><i class="el-icon-s-grid"></i
-          ></el-menu-item>
-        </el-menu>
+        <el-row>
+          <el-col>
+            <h3 style="padding:15px">プレビュー</h3>
+          </el-col>
+        </el-row>
         <div class="line"></div>
-        <el-checkbox
-          label="すべて選択"
-          name="type"
-          style="margin:10px"
-        ></el-checkbox>
+        <div>
+          <el-card
+            :body-style="{ padding: '0px' }"
+            v-for="(name, index) in selectImageList"
+            style="width:300px;height:300px ;float: left;"
+            :key="name"
+            :offset="index > 0 ? 2 : 0"
+          >
+            <img src="" class="image" style="width:300px;height:270px " />
+            <div style="padding: 14px;">
+              <span>{{ name }}</span>
+            </div>
+          </el-card>
+        </div>
       </el-col>
     </el-row>
   </div>
@@ -81,7 +75,43 @@ export default {
   title: 'データセット',
   components: {},
   data() {
-    return {}
+    return {
+      selectImageList: [
+        'rose(1).png',
+        'dasy(1).png',
+        'rose(2).png',
+        'dasy(3).png',
+      ],
+      versionOptions: [
+        //TODO：APIからとってくる
+        {
+          value: 'V1',
+          label: 'V1',
+        },
+        {
+          value: 'V2',
+          label: 'V2',
+        },
+        {
+          value: 'V3',
+          label: 'V3',
+        },
+      ],
+      versionValue: 'V3',
+      fileList: [
+        //TODO：APIからとってくる
+        {
+          listName: 'test20201201',
+          list: ['rose(1).png', 'dasy(1).png', 'label.csv'],
+        },
+        {
+          listName: 'test20201101',
+          list: ['rose(1).png', 'dasy(1).png', 'label.csv'],
+        },
+        { listName: 'test20201001', list: [] },
+        { listName: 'test20200901', list: [] },
+      ],
+    }
   },
   computed: {
     ...mapGetters(['dataSets', 'total']),
@@ -93,30 +123,18 @@ export default {
   methods: {
     ...mapActions(['fetchDataSets']),
 
-    async currentChange(page) {
-      this.pageStatus.currentPage = page
+    async currentChange() {
       await this.retrieveData()
     },
     async retrieveData() {
       let params = this.searchCondition
-      params.page = this.pageStatus.currentPage
-      params.perPage = this.pageStatus.currentPageSize
-      params.withTotal = true
+
       await this.fetchDataSets(params)
     },
     closeDialog() {
       this.$router.push('/dataset')
     },
-    async done(type) {
-      if (type === 'delete') {
-        // 削除時、表示していたページにデータが無くなっている可能性がある。
-        // 総数 % ページサイズ === 1の時、残り1の状態で削除したため、currentPageが1で無ければ1つ前のページに戻す
-        if (this.total % this.pageStatus.currentPageSize === 1) {
-          if (this.pageStatus.currentPage !== 1) {
-            this.pageStatus.currentPage -= 1
-          }
-        }
-      }
+    async done() {
       this.closeDialog()
       await this.retrieveData()
       this.showSuccessMessage()
@@ -131,7 +149,6 @@ export default {
       this.$router.push('/dataset/create/' + id)
     },
     async search() {
-      this.pageStatus.currentPage = 1
       await this.retrieveData()
     },
   },
@@ -154,5 +171,36 @@ export default {
 .pagination /deep/ .el-input {
   text-align: left;
   width: 120px;
+}
+
+/******** */
+.time {
+  font-size: 13px;
+  color: #999;
+}
+
+.bottom {
+  margin-top: 13px;
+  line-height: 12px;
+}
+
+.button {
+  padding: 0;
+  float: right;
+}
+
+.image {
+  width: 100%;
+  display: block;
+}
+
+.clearfix:before,
+.clearfix:after {
+  display: table;
+  content: '';
+}
+
+.clearfix:after {
+  clear: both;
 }
 </style>

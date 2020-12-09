@@ -1,79 +1,178 @@
 <template>
-  <kqi-dialog
-    :title="title"
-    :type="isCreateDialog ? 'CREATE' : 'EDIT'"
-    @submit="submit"
+  <el-dialog
+    class="dialog"
+    title="新しいテンプレートの登録"
+    :visible.sync="dialogVisible"
+    :close-on-click-modal="false"
     @delete="deleteTemplate"
     @close="$emit('cancel')"
   >
-    <el-form
-      ref="createForm"
-      :model="form"
-      :rules="rules"
-      element-loading-background="rgba(255, 255, 255, 0.7)"
-    >
-      <kqi-display-error :error="error" />
-      <kqi-display-text-form v-if="isEditDialog" label="ID" :value="id" />
-      <el-form-item label="テンプレート名" prop="name">
-        <el-input v-model="form.name" />
-      </el-form-item>
-      <el-form-item label="説明文" prop="memo">
-        <el-input v-model="form.memo" type="textarea" />
-      </el-form-item>
-      <el-form-item label="実行コマンド" prop="entryPoint">
-        <el-input
-          v-model="form.entryPoint"
-          type="textarea"
-          :autosize="{ minRows: 2 }"
-          :disabled="isPatch"
-        />
-      </el-form-item>
-      <el-row :gutter="20">
-        <el-col :span="12">
-          <kqi-container-selector
-            v-model="form.containerImage"
-            :disabled="isPatch"
-            :registries="registries"
-            :images="images"
-            :tags="tags"
-            heading="前処理実行コンテナイメージ"
-            @selectRegistry="selectRegistry"
-            @selectImage="selectImage"
-          />
-          <kqi-container-selector
-            v-model="form.containerImage"
-            :disabled="isPatch"
-            :registries="registries"
-            :images="images"
-            :tags="tags"
-            heading="学習・推論コンテナイメージ"
-            @selectRegistry="selectRegistry"
-            @selectImage="selectImage"
-          />
-          <kqi-git-selector
-            v-model="form.gitModel"
-            :disabled="isPatch"
-            :gits="gits"
-            :repositories="repositories"
-            :branches="branches"
-            :commits="commits"
-            :loading-repositories="loadingRepositories"
-            heading="スクリプト"
-            @selectGit="selectGit"
-            @selectRepository="selectRepository"
-            @selectBranch="selectBranch"
-          />
-        </el-col>
-        <el-col :span="12">
-          <kqi-resource-selector v-model="form.resource" :quota="quota" />
-        </el-col>
-      </el-row>
-    </el-form>
-  </kqi-dialog>
+    <el-row :gutter="20">
+      <el-col :span="4">
+        <div style="height: 400px;">
+          <el-steps direction="vertical" :active="active">
+            <el-step title="Step 1" description="基本設定"></el-step>
+            <el-step title="Step 2" description="前処理"></el-step>
+            <el-step title="Step 3" description="学習"></el-step>
+          </el-steps>
+        </div>
+      </el-col>
+      <el-col :span="20">
+        <el-form
+          ref="createForm"
+          :model="form"
+          :rules="rules"
+          element-loading-background="rgba(255, 255, 255, 0.7)"
+        >
+          <!-- step 1 -->
+          <el-form v-if="active === 0" ref="form0" :model="form" :rules="rules">
+            <kqi-display-error :error="error" />
+            <kqi-display-text-form v-if="isEditDialog" label="ID" :value="id" />
+
+            <el-form-item label="テンプレート名" prop="name">
+              <el-input v-model="form.name" />
+            </el-form-item>
+            <el-form-item label="説明文" prop="memo">
+              <el-input v-model="form.memo" type="textarea" />
+            </el-form-item>
+            <el-form-item
+              label="公開設定 "
+              prop="publishing"
+              style="display:block"
+              ><br />
+              <el-radio
+                v-model="form.publishing"
+                label="1"
+                style="display:block"
+                >現在のテナント
+              </el-radio>
+              <el-radio
+                v-model="form.publishing"
+                label="2"
+                style="display:block"
+                >全テナントに公開</el-radio
+              >
+            </el-form-item>
+          </el-form>
+          <!-- step 2 -->
+          <el-form v-if="active === 1" ref="form1" :model="form" :rules="rules">
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <kqi-container-selector
+                  v-model="form.containerImage"
+                  :disabled="isPatch"
+                  :registries="registries"
+                  :images="images"
+                  :tags="tags"
+                  heading="前処理実行コンテナイメージ"
+                  @selectRegistry="selectRegistry"
+                  @selectImage="selectImage"
+                />
+
+                <kqi-git-selector
+                  v-model="form.gitModel"
+                  :disabled="isPatch"
+                  :gits="gits"
+                  :repositories="repositories"
+                  :branches="branches"
+                  :commits="commits"
+                  :loading-repositories="loadingRepositories"
+                  heading="スクリプト"
+                  @selectGit="selectGit"
+                  @selectRepository="selectRepository"
+                  @selectBranch="selectBranch"
+                />
+                <el-form-item label="実行コマンド" prop="entryPoint">
+                  <el-input
+                    v-model="form.entryPoint"
+                    type="textarea"
+                    :autosize="{ minRows: 2 }"
+                    :disabled="isPatch"
+                  />
+                </el-form-item>
+              </el-col>
+
+              <el-col :span="12">
+                <kqi-resource-selector v-model="form.resource" :quota="quota" />
+              </el-col>
+            </el-row>
+          </el-form>
+          <!-- step 3 -->
+          <el-form v-if="active === 2" ref="form2" :model="form" :rules="rules">
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <kqi-container-selector
+                  v-model="form.containerImage"
+                  :disabled="isPatch"
+                  :registries="registries"
+                  :images="images"
+                  :tags="tags"
+                  heading="学習・推論コンテナイメージ"
+                  @selectRegistry="selectRegistry"
+                  @selectImage="selectImage"
+                />
+                <kqi-git-selector
+                  v-model="form.gitModel"
+                  :disabled="isPatch"
+                  :gits="gits"
+                  :repositories="repositories"
+                  :branches="branches"
+                  :commits="commits"
+                  :loading-repositories="loadingRepositories"
+                  heading="スクリプト"
+                  @selectGit="selectGit"
+                  @selectRepository="selectRepository"
+                  @selectBranch="selectBranch"
+                />
+                <el-form-item label="実行コマンド" prop="entryPoint">
+                  <el-input
+                    v-model="form.entryPoint"
+                    type="textarea"
+                    :autosize="{ minRows: 2 }"
+                    :disabled="isPatch"
+                  />
+                </el-form-item>
+              </el-col>
+
+              <el-col :span="12">
+                <kqi-resource-selector v-model="form.resource" :quota="quota" />
+              </el-col>
+            </el-row>
+          </el-form>
+        </el-form>
+      </el-col>
+    </el-row>
+    <el-row class="step">
+      <div>
+        <span
+          v-if="active >= 1"
+          class="left-step-group"
+          style="margin-top: 12px;"
+          @click="previous"
+        >
+          <i class="el-icon-arrow-left" />
+          Previous step
+        </span>
+        <span
+          v-if="active <= 1"
+          class="right-step-group"
+          style="margin-top: 12px;"
+          @click="next"
+        >
+          Next step
+          <i class="el-icon-arrow-right" />
+        </span>
+        <span class="right-step-group">
+          <el-button v-if="active === 2" type="primary" @click="submit">
+            新規登録
+          </el-button>
+        </span>
+      </div>
+    </el-row>
+  </el-dialog>
 </template>
 
 <script>
-import KqiDialog from '@/components/KqiDialog'
 import KqiDisplayError from '@/components/KqiDisplayError'
 import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
 import KqiContainerSelector from '@/components/selector/KqiContainerSelector'
@@ -85,7 +184,6 @@ import { mapActions, mapGetters } from 'vuex'
 
 export default {
   components: {
-    KqiDialog,
     KqiDisplayError,
     KqiDisplayTextForm,
     KqiContainerSelector,
@@ -100,6 +198,7 @@ export default {
   },
   data() {
     return {
+      active: 0,
       form: {
         name: null,
         entryPoint: null,
@@ -211,6 +310,30 @@ export default {
         return git.id === this.defaultGitId
       })
       await this['gitSelector/fetchRepositories'](this.defaultGitId)
+    },
+    async next() {
+      let form = null
+      switch (this.active) {
+        case 0:
+          form = this.$refs.form0
+          break
+        case 1:
+          form = this.$refs.form1
+          break
+        case 2:
+          form = this.$refs.form2
+          break
+      }
+      await form.validate(async valid => {
+        if (valid) {
+          this.active++
+        }
+      })
+    },
+    previous() {
+      if (this.active-- < 0) {
+        this.active = 0
+      }
     },
     async submit() {
       let form = this.$refs.createForm
@@ -370,5 +493,16 @@ export default {
 
 .dialog /deep/ label {
   font-weight: bold !important;
+}
+
+.left-step-group {
+  text-align: left;
+  float: left;
+  z-index: 2;
+}
+.right-step-group {
+  text-align: right;
+  float: right;
+  z-index: 2;
 }
 </style>

@@ -14,22 +14,38 @@
       <h3>パソコンから画像をアップロード</h3>
       任意のファイル形式がアップロードできます。画像の表示はJPG,PNG,ZIPがサポートされています。<br />
       1回のアップロードでさいだいXXXファイル送信できます。アップロードしたファイルはKAMONOHASHIのデータ、データセットに保存されます。
-      <el-button
-        type="plain"
-        plain
-        @click="openDialog()"
-        style="display:block;margin-top:10px"
-      >
-        ファイルを選択
-      </el-button>
+
+      <el-row>
+        <el-upload
+          class="upload-demo"
+          :on-preview="handlePreview"
+          :on-remove="handleRemove"
+          :before-remove="beforeRemove"
+          multiple
+          :limit="3"
+          :on-exceed="handleExceed"
+          :file-list="fileList"
+          style="display:block;margin-top:10px"
+        >
+          <el-button size="small">ファイルを選択</el-button>
+        </el-upload>
+        <el-link
+          type="info"
+          plain
+          @click="openDialog()"
+          style="display:block;margin-top:10px ;padding:15px"
+        >
+          続行
+        </el-link>
+      </el-row>
     </div>
     <div v-else-if="importfile == 2" class="importfile-detail">
       <h3>KAMONOHASHIからデータセットを選択</h3>
       <el-button
         type="plain"
         plain
-        @click="openDialog()"
         style="display:block;margin-top:10px"
+        @click="openDialog()"
       >
         データを選択
       </el-button>
@@ -59,30 +75,17 @@ export default {
   methods: {
     ...mapActions(['fetchDataSets']),
 
-    async currentChange(page) {
-      this.pageStatus.currentPage = page
+    async currentChange() {
       await this.retrieveData()
     },
     async retrieveData() {
       let params = this.searchCondition
-      params.page = this.pageStatus.currentPage
-      params.perPage = this.pageStatus.currentPageSize
-      params.withTotal = true
       await this.fetchDataSets(params)
     },
     closeDialog() {
       this.$router.push('/dataset')
     },
-    async done(type) {
-      if (type === 'delete') {
-        // 削除時、表示していたページにデータが無くなっている可能性がある。
-        // 総数 % ページサイズ === 1の時、残り1の状態で削除したため、currentPageが1で無ければ1つ前のページに戻す
-        if (this.total % this.pageStatus.currentPageSize === 1) {
-          if (this.pageStatus.currentPage !== 1) {
-            this.pageStatus.currentPage -= 1
-          }
-        }
-      }
+    async done() {
       this.closeDialog()
       await this.retrieveData()
       this.showSuccessMessage()
@@ -97,7 +100,6 @@ export default {
       this.$router.push('/dataset/create/' + id)
     },
     async search() {
-      this.pageStatus.currentPage = 1
       await this.retrieveData()
     },
   },
