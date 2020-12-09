@@ -1,9 +1,11 @@
-<!-- ToDo : 画像のデータサイズが非常に大きい場合、画像を表示しない処理を追加 必要? -->
 <template>
   <span>
     <el-popover placement="right" trigger="click" :title="fileName">
       <div v-if="show">
         <el-image class="image-size" :src="downloadUrl" />
+      </div>
+      <div v-else-if="size === null">
+        <i class="icon-size el-icon-loading" />
       </div>
       <div v-else>
         データが大きすぎるため表示できません。<br />
@@ -43,7 +45,7 @@ export default {
       default: null,
     },
   },
-  data: function() {
+  data() {
     return {
       show: this.showImage,
       size: this.fileSize,
@@ -69,5 +71,9 @@ export default {
 .image-size {
   max-width: 300pt;
   height: auto;
+}
+.icon-size {
+  width: 100pt;
+  height: 100pt;
 }
 </style>
