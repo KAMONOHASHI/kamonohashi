@@ -329,6 +329,27 @@ namespace Nssol.Platypus.Controllers.spa
         }
 
         /// <summary>
+        /// ファイルのサイズ(Byte)を取得する
+        /// </summary>
+        /// <param name="id">対象データID</param>
+        /// <param name="name">対象ファイル名</param>
+        [HttpGet("{id}/files/{name}/size")]
+        [Filters.PermissionFilter(MenuCode.Data)]
+        [ProducesResponseType(typeof(DataFileOutputModel), (int)HttpStatusCode.OK)]
+        public IActionResult GetFileSize(long id, string name)
+        {
+            //データの存在チェック
+            var property = dataRepository.GetDataProperty(id, name);
+            if (property == null || property.DataFile == null)
+            {
+                return JsonNotFound($"Data ID {id} or file name {name} is not found.");
+            }
+
+            var fileSize = storageLogic.GetFileSize(ResourceType.Data, property.DataFile.StoredPath);
+            return JsonOK(new DataFileOutputModel { Id = id, Key = name, FileId = property.Id, FileName = property.DataFile.FileName, FileSize = fileSize });
+        }
+
+        /// <summary>
         /// 指定したデータのファイル情報を全て取得する
         /// </summary>
         /// <param name="withUrl">結果にダウンロード用のURLを含めるか</param>
