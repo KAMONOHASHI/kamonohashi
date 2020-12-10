@@ -2882,7 +2882,8 @@
                             22,
                             23,
                             24,
-                            25
+                            25,
+                            26
                         ]
                     },
                     {
@@ -3025,7 +3026,8 @@
                             22,
                             23,
                             24,
-                            25
+                            25,
+                            26
                         ]
                     },
                     {
@@ -6122,6 +6124,166 @@
                         "description": "Success",
                         "schema": {
                             "type": "string"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/api/v2/admin/templates": {
+            "get": {
+                "tags": [
+                    "Template"
+                ],
+                "summary": "全テンプレート一覧を取得",
+                "operationId": "ApiV2AdminTemplatesGet",
+                "consumes": [],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "perPage",
+                        "in": "query",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int32",
+                        "default": 1
+                    },
+                    {
+                        "name": "withTotal",
+                        "in": "query",
+                        "required": false,
+                        "type": "boolean",
+                        "default": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "uniqueItems": false,
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Nssol.Platypus.ApiModels.TemplateApiModels.IndexOutputModel"
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Template"
+                ],
+                "summary": "新規にテンプレートを登録する",
+                "operationId": "ApiV2AdminTemplatesPost",
+                "consumes": [
+                    "application/json-patch+json",
+                    "application/json",
+                    "text/json",
+                    "application/*+json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "model",
+                        "in": "body",
+                        "required": false,
+                        "schema": {
+                            "$ref": "#/definitions/Nssol.Platypus.ApiModels.TemplateApiModels.CreateInputModel"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/Nssol.Platypus.ApiModels.TemplateApiModels.IndexOutputModel"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/api/v2/admin/template-access-levels": {
+            "get": {
+                "tags": [
+                    "Template"
+                ],
+                "summary": "テンプレートアクセスレベルの一覧を取得する",
+                "operationId": "ApiV2AdminTemplate-access-levelsGet",
+                "consumes": [],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "uniqueItems": false,
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Nssol.Platypus.Infrastructure.Infos.EnumInfo"
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/api/v2/admin/templates/{id}": {
+            "get": {
+                "tags": [
+                    "Template"
+                ],
+                "summary": "指定されたIDのテンプレート情報を取得。",
+                "operationId": "ApiV2AdminTemplatesByIdGet",
+                "consumes": [],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "テンプレートID",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/Nssol.Platypus.ApiModels.TemplateApiModels.DetailsOutputModel"
                         }
                     }
                 },
@@ -9647,7 +9809,8 @@
                         22,
                         23,
                         24,
-                        25
+                        25,
+                        26
                     ],
                     "type": "integer"
                 },
@@ -9731,7 +9894,8 @@
                         22,
                         23,
                         24,
-                        25
+                        25,
+                        26
                     ],
                     "type": "integer"
                 },
@@ -11743,6 +11907,259 @@
                 },
                 "key": {
                     "description": "キー",
+                    "type": "string"
+                }
+            }
+        },
+        "Nssol.Platypus.ApiModels.TemplateApiModels.IndexOutputModel": {
+            "description": "テンプレート情報のうち、Indexで表示する最低情報だけを保持する",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "format": "int64",
+                    "description": "ID",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "名前",
+                    "type": "string"
+                },
+                "memo": {
+                    "description": "メモ",
+                    "type": "string"
+                },
+                "accessLevel": {
+                    "format": "int32",
+                    "description": "アクセスレベル",
+                    "enum": [
+                        0,
+                        1,
+                        2
+                    ],
+                    "type": "integer"
+                },
+                "accessLevelStr": {
+                    "description": "アクセスレベルの表示名",
+                    "type": "string"
+                },
+                "version": {
+                    "format": "int64",
+                    "description": "バージョン",
+                    "type": "integer"
+                },
+                "createdBy": {
+                    "description": "登録者",
+                    "type": "string"
+                },
+                "createdAt": {
+                    "description": "登録日",
+                    "type": "string"
+                },
+                "modifiedBy": {
+                    "description": "更新者",
+                    "type": "string"
+                },
+                "modifiedAt": {
+                    "description": "更新日",
+                    "type": "string"
+                }
+            }
+        },
+        "Nssol.Platypus.ApiModels.TemplateApiModels.CreateInputModel": {
+            "description": "テンプレート作成の入力モデル",
+            "required": [
+                "name",
+                "accessLevel",
+                "version"
+            ],
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "memo": {
+                    "description": "メモ",
+                    "type": "string"
+                },
+                "accessLevel": {
+                    "format": "int32",
+                    "description": "アクセスレベル",
+                    "enum": [
+                        0,
+                        1,
+                        2
+                    ],
+                    "type": "integer"
+                },
+                "version": {
+                    "format": "int64",
+                    "description": "バージョン",
+                    "type": "integer"
+                },
+                "assignedTenantIds": {
+                    "description": "このテンプレートを使用できるテナントのID。\r\nNssol.Platypus.ApiModels.TemplateApiModels.CreateInputModel.AccessLevelがNssol.Platypus.Infrastructure.TemplateAccessLevel.Privateの時のみ指定可能。\r\nそれ以外の場合は無視される。",
+                    "uniqueItems": false,
+                    "type": "array",
+                    "items": {
+                        "format": "int64",
+                        "type": "integer"
+                    }
+                },
+                "preprocessEntryPoint": {
+                    "description": "エントリポイント",
+                    "type": "string"
+                },
+                "preprocessContainerImage": {
+                    "$ref": "#/definitions/Nssol.Platypus.ApiModels.Components.ContainerImageInputModel",
+                    "description": "コンテナ情報"
+                },
+                "preprocessGitModel": {
+                    "$ref": "#/definitions/Nssol.Platypus.ApiModels.Components.GitCommitNullableInputModel",
+                    "description": "前処理ソースコードGit情報"
+                },
+                "preprocessCpu": {
+                    "format": "int32",
+                    "description": "CPUコア数のデフォルト値",
+                    "type": "integer"
+                },
+                "preprocessMemory": {
+                    "format": "int32",
+                    "description": "メモリ容量（GB）のデフォルト値",
+                    "type": "integer"
+                },
+                "preprocessGpu": {
+                    "format": "int32",
+                    "description": "GPU数のデフォルト値",
+                    "type": "integer"
+                },
+                "trainingEntryPoint": {
+                    "description": "エントリポイント",
+                    "type": "string"
+                },
+                "trainingContainerImage": {
+                    "$ref": "#/definitions/Nssol.Platypus.ApiModels.Components.ContainerImageInputModel",
+                    "description": "コンテナ情報"
+                },
+                "trainingGitModel": {
+                    "$ref": "#/definitions/Nssol.Platypus.ApiModels.Components.GitCommitNullableInputModel",
+                    "description": "前処理ソースコードGit情報"
+                },
+                "trainingCpu": {
+                    "format": "int32",
+                    "description": "CPUコア数のデフォルト値",
+                    "type": "integer"
+                },
+                "trainingMemory": {
+                    "format": "int32",
+                    "description": "メモリ容量（GB）のデフォルト値",
+                    "type": "integer"
+                },
+                "trainingGpu": {
+                    "format": "int32",
+                    "description": "GPU数のデフォルト値",
+                    "type": "integer"
+                }
+            }
+        },
+        "Nssol.Platypus.ApiModels.TemplateApiModels.DetailsOutputModel": {
+            "type": "object",
+            "properties": {
+                "preprocessGitModel": {
+                    "$ref": "#/definitions/Nssol.Platypus.ApiModels.Components.GitCommitOutputModel",
+                    "description": "ソースコードGit情報"
+                },
+                "preprocessContainerImage": {
+                    "$ref": "#/definitions/Nssol.Platypus.ApiModels.Components.ContainerImageOutputModel",
+                    "description": "コンテナイメージ"
+                },
+                "preprocessEntryPoint": {
+                    "description": "エントリポイント。",
+                    "type": "string"
+                },
+                "trainingGitModel": {
+                    "$ref": "#/definitions/Nssol.Platypus.ApiModels.Components.GitCommitOutputModel",
+                    "description": "ソースコードGit情報"
+                },
+                "trainingContainerImage": {
+                    "$ref": "#/definitions/Nssol.Platypus.ApiModels.Components.ContainerImageOutputModel",
+                    "description": "コンテナイメージ"
+                },
+                "trainingEntryPoint": {
+                    "description": "エントリポイント。",
+                    "type": "string"
+                },
+                "assignedTenants": {
+                    "description": "Nssol.Platypus.ApiModels.TemplateApiModels.IndexOutputModel.AccessLevelがNssol.Platypus.Infrastructure.TemplateAccessLevel.Privateの時、このノードを使用できるテナントの一覧。",
+                    "uniqueItems": false,
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Nssol.Platypus.ApiModels.TemplateApiModels.DetailsOutputModel+AssignedTenant"
+                    }
+                },
+                "id": {
+                    "format": "int64",
+                    "description": "ID",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "名前",
+                    "type": "string"
+                },
+                "memo": {
+                    "description": "メモ",
+                    "type": "string"
+                },
+                "accessLevel": {
+                    "format": "int32",
+                    "description": "アクセスレベル",
+                    "enum": [
+                        0,
+                        1,
+                        2
+                    ],
+                    "type": "integer"
+                },
+                "accessLevelStr": {
+                    "description": "アクセスレベルの表示名",
+                    "type": "string"
+                },
+                "version": {
+                    "format": "int64",
+                    "description": "バージョン",
+                    "type": "integer"
+                },
+                "createdBy": {
+                    "description": "登録者",
+                    "type": "string"
+                },
+                "createdAt": {
+                    "description": "登録日",
+                    "type": "string"
+                },
+                "modifiedBy": {
+                    "description": "更新者",
+                    "type": "string"
+                },
+                "modifiedAt": {
+                    "description": "更新日",
+                    "type": "string"
+                }
+            }
+        },
+        "Nssol.Platypus.ApiModels.TemplateApiModels.DetailsOutputModel+AssignedTenant": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "format": "int64",
+                    "description": "テナントID",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "テナント名",
+                    "type": "string"
+                },
+                "displayName": {
+                    "description": "テナント表示名",
                     "type": "string"
                 }
             }

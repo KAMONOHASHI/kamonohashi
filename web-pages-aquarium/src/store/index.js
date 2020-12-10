@@ -21,7 +21,7 @@ import tenant from './modules/tenant'
 import training from './modules/training'
 import user from './modules/user'
 import version from './modules/version'
-import modelTemplate from './modules/modelTemplate'
+import template from './modules/template'
 
 Vue.use(Vuex)
 export default new Vuex.Store({
@@ -47,7 +47,7 @@ export default new Vuex.Store({
     training,
     user,
     version,
-    modelTemplate,
+    template,
   },
   state: {
     // ログイン情報

@@ -1,4 +1,4 @@
-import api from '@/api/v1/api'
+import api from '@/api/api'
 
 // initial state
 const state = {
@@ -24,7 +24,7 @@ const getters = {
 // actions
 const actions = {
   async fetchModelTemplates({ commit }, params) {
-    let response = await api.templates.get(params)
+    let response = await api.templates.admin.get(params)
     let templates = response.data
     let total = response.headers['x-total-count']
     commit('setTemplates', { templates })
@@ -35,23 +35,23 @@ const actions = {
   },
 
   async fetchDetail({ commit }, id) {
-    let detail = (await api.templates.getById({ id: id })).data
+    let detail = (await api.templates.admin.getById({ id: id })).data
     commit('setDetail', { detail })
   },
 
   // eslint-disable-next-line no-unused-vars
   async post({ commit }, params) {
-    return await api.templates.post({ model: params })
+    return await api.templates.admin.post({ model: params })
   },
 
   // eslint-disable-next-line no-unused-vars
   async put({ commit }, { id, params }) {
-    return await api.templates.put({ id: id, model: params })
+    return await api.templates.admin.put({ id: id, model: params })
   },
 
   // eslint-disable-next-line no-unused-vars
   async delete({ commit }, id) {
-    await api.templates.delete({ id: id })
+    await api.templates.admin.delete({ id: id })
   },
 }
 
