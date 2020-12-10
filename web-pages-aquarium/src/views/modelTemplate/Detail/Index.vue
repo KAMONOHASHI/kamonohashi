@@ -1,64 +1,35 @@
 <template>
   <div>
-    <h2>データセット</h2>
-    <el-row type="flex" justify="space-between" :gutter="20">
-      <kqi-pagination
-        v-model="pageStatus"
-        :total="total"
-        @change="retrieveData"
-      />
-      <el-col class="right-top-button" :span="8">
-        <el-button
-          icon="el-icon-plus"
-          type="primary"
-          plain
-          @click="openCreateDialog()"
-        >
-          新しいデータセット
-        </el-button>
-      </el-col>
-    </el-row>
+    <h2>
+      テンプレート詳細＞（テンプレート名）
+      <el-tag type="info" style="border-radius:15px">Version 1</el-tag>
+    </h2>
 
-    <el-row class="test">
-      <el-table
-        class="data-table pl-index-table"
-        :data="dataSets"
-        border
-        @row-click="openEditDataset"
-      >
-        <el-table-column prop="id" label="ID" width="120px" />
-        <el-table-column prop="name" label="データセット名" width="auto" />
-        <el-table-column prop="version" label="最新バージョン" width="auto" />
-
-        <el-table-column
-          prop="lastModified"
-          label="最終更新日時"
-          width="auto"
-        />
-        <el-table-column prop="status" label="ステータス" width="auto" />
-      </el-table>
-    </el-row>
-    <el-row>
-      <kqi-pagination
-        v-model="pageStatus"
-        :total="total"
-        @change="retrieveData"
-      />
-    </el-row>
+    <el-tabs v-model="activeName" @tab-click="handleClick">
+      <el-tab-pane label="基本設定" name="baseSetting"
+        ><base-setting
+      /></el-tab-pane>
+      <el-tab-pane label="前処理" name="preprocessing"
+        ><preprocessing
+      /></el-tab-pane>
+      <el-tab-pane label="学習と推論" name="train">
+        <training />
+      </el-tab-pane>
+    </el-tabs>
     <router-view @cancel="closeDialog" @done="done" @copy="handleCopy" />
   </div>
 </template>
 
 <script>
-import KqiPagination from '@/components/KqiPagination'
 import { createNamespacedHelpers } from 'vuex'
+import BaseSetting from './BaseSetting'
+import Preprocessing from './Preprocessing'
+import Training from './Training'
 const { mapGetters, mapActions } = createNamespacedHelpers('dataSet')
 
 export default {
-  title: 'データセット',
-  components: {
-    KqiPagination,
-  },
+  title: 'モデルテンプレート',
+  components: { BaseSetting, Preprocessing, Training },
   data() {
     return {
       iconname: 'pl-plus',
@@ -70,12 +41,18 @@ export default {
       searchConfigs: [
         { prop: 'id', name: 'ID', type: 'number' },
         { prop: 'name', name: 'データセット名', type: 'text' },
-        { prop: 'version', name: '最新バージョン', type: 'text' },
-
+        { prop: 'type', name: '種類', type: 'text' },
+        { prop: 'totalImageNumber', name: 'イメージの総数', type: 'text' },
+        {
+          prop: 'labeledImageNumber',
+          name: 'ラベル付きのイメージ数',
+          type: 'text',
+        },
         { prop: 'lastModified', name: '最終更新日時', type: 'date' },
         { prop: 'status', name: 'ステータス', type: 'text' },
       ],
       tableData: [],
+      activeName: 'baseSetting',
     }
   },
   computed: {
@@ -87,7 +64,7 @@ export default {
   },
   methods: {
     ...mapActions(['fetchDataSets']),
-
+    handleClick() {},
     async currentChange(page) {
       this.pageStatus.currentPage = page
       await this.retrieveData()
@@ -119,8 +96,8 @@ export default {
     openCreateDialog() {
       this.$router.push('/dataset/create')
     },
-    openEditDataset(selectedRow) {
-      this.$router.push('/dataset/detail/' + selectedRow.id)
+    openEditDialog(selectedRow) {
+      this.$router.push('/dataset/edit/' + selectedRow.id)
     },
     handleCopy(id) {
       this.$router.push('/dataset/create/' + id)

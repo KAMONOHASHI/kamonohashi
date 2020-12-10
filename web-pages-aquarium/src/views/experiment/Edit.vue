@@ -2,45 +2,41 @@
   <kqi-dialog
     :title="title"
     :type="isCreateDialog ? 'CREATE' : 'EDIT'"
-    :submit-text="submitText"
+    :submitText="submitText"
     @submit="submit"
     @delete="deleteDataSet"
     @close="$emit('cancel')"
   >
+    <el-row v-if="isEditDialog">
+      <el-col :span="24" class="right-button-group">
+        <el-button @click="$emit('copy', id)">コピー</el-button>
+      </el-col>
+    </el-row>
+
     <el-form ref="createForm" :model="form" :rules="rules">
       <kqi-display-error :error="error" />
-      <el-row>
+      <el-row v-if="isCreateDialog">
         <el-form-item label="データセット名" prop="name">
           <el-input v-model="form.name" />
         </el-form-item>
       </el-row>
-      <el-row>
-        <el-form-item label="" prop="name">
-          <el-radio v-model="form.publishing" label="1" style="display:block"
-            >パソコンから画像をアップロード</el-radio
-          >
-        </el-form-item>
-      </el-row>
-      <el-row>
-        <h3>パソコンから画像をアップロード</h3>
-        パソコンから画像をアップロード
-        任意のファイル形式がアップロードできまうｓ。画像の表示はJPG,PNG,***がサポートされています。<br />
-        一回のアップロードで最大XXXファイル送信できます。アップロードしたファイルはKAMONOHASHIのデータ、データセットに保存されます。
-      </el-row>
-      <el-row>
-        <el-upload
-          class="upload-demo"
-          :on-preview="handlePreview"
-          :on-remove="handleRemove"
-          :before-remove="beforeRemove"
-          multiple
-          :limit="3"
-          :on-exceed="handleExceed"
-          :file-list="fileList"
+
+      <el-form-item label="モデルの目的を選択してください" prop="entries" />
+      <div class="model-type-list ">
+        <div
+          v-for="(model, index) in modelList"
+          :key="'t' + index"
+          class="model-type"
         >
-          <el-button size="small">ファイルを選択</el-button>
-        </el-upload>
-      </el-row>
+          <div class="model-type-image"><span>IMAGE</span></div>
+          <div class="model-type-label ">
+            <el-radio v-model="form.modeltype" :label="model.name">{{
+              model.label
+            }}</el-radio>
+            <div class="model-type-description ">{{ model.description }}</div>
+          </div>
+        </div>
+      </div>
     </el-form>
   </kqi-dialog>
 </template>
@@ -69,18 +65,58 @@ export default {
     return {
       submitText: '新規登録',
 
+      modelList: [
+        {
+          name: 'ingleLabel',
+          label: '単一ラベル分類',
+          description: '画像に割り当てる正しいラベルを１つ予測します。',
+        },
+        {
+          name: 'objectDetection',
+          label: 'オブジェクト検出',
+          description: '関心のあるオブジェクトのすべての位置を予測します。',
+        },
+        {
+          name: 'segmentation',
+          label: 'セグメンテーション',
+          description: '関心のあるオブジェクトのすべての領域を予測します。',
+        },
+        { name: 'anomaly', label: '異常検知', description: '' },
+        { name: 'regression', label: '回帰', description: '' },
+      ],
       form: {
         name: '',
-        publishing: '',
+
+        modeltype: null,
       },
       title: '',
       isCreateDialog: false,
       isCopyCreation: false,
+      isEditDialog: false,
       isLocked: false,
       dialogVisible: true,
       error: null,
       rules: {
         name: [{ required: true, trigger: 'blur', message: '必須項目です' }],
+        modeltype: [
+          {
+            required: true,
+            trigger: 'blur',
+            validator(rule, value, callback) {
+              let exists = false
+              for (let key in value) {
+                if (value[key].length > 0) {
+                  exists = true
+                }
+              }
+              if (exists) {
+                callback()
+              } else {
+                callback(new Error('必須項目です'))
+              }
+            },
+          },
+        ],
       },
     }
   },
@@ -116,7 +152,15 @@ export default {
           this.title = '新しいデータセットの作成'
           this.isCreateDialog = true
           this.isCopyCreation = this.id !== null
+          this.isEditDialog = false
           this.isLocked = false
+          break
+
+        case 'edit':
+          this.title = 'データセット編集'
+          this.isCreateDialog = false
+          this.isCopyCreation = false
+          this.isEditDialog = true
           break
       }
 
@@ -135,7 +179,7 @@ export default {
       }
 
       // 編集時/コピー作成時は、既に登録されている情報を各項目を設定
-      if (this.isCopyCreation) {
+      if (this.isEditDialog || this.isCopyCreation) {
         await this.retrieveData()
       }
     },
@@ -144,6 +188,7 @@ export default {
       try {
         await this.fetchDetail(this.id)
         this.form.name = this.detail.name
+        this.form.memo = this.detail.memo
         let ent = {}
         let types = []
         for (let key in this.detail.entries) {
@@ -151,6 +196,10 @@ export default {
           types.push({ name: key })
         }
         this.form.entries = ent
+        if (this.isEditDialog) {
+          // 編集時は編集可否を設定
+          this.isLocked = this.detail.isLocked
+        }
 
         this.setDataTypes(types)
         this.error = null
@@ -236,7 +285,7 @@ export default {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  justify-content: flex-start;
+  justify-content: start;
   align-content: flex-start;
   margin-bottom: 40px;
 }

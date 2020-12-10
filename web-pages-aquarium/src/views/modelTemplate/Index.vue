@@ -1,13 +1,14 @@
 <template>
   <div>
     <h2>モデルテンプレート</h2>
-    <h3>Deep Learningのソースコードを閲覧できます</h3>
+    <h3>AI作成のためのテンプレートを登録できます</h3>
     <div class="model-template">
       <!-- TODO 検索ボタンデザイン -->
       <el-row :gutter="20">
         <el-col class="search">
           <kqi-smart-search-input
             v-model="searchCondition"
+            style="width:300px"
             :configs="searchConfigs"
             @search="search"
           />
@@ -55,17 +56,18 @@
                 class="template-description"
                 style="padding: 20px; font-size: 18px;text-align:center;"
               >
-                <el-tag> {{ template.memo }}</el-tag>
+                <div style="padding:20px">
+                  <el-button type="primary">Pytorch</el-button>
+                </div>
+                <div>
+                  <el-tag class="tag"> {{ template.tag }}</el-tag>
+                </div>
               </div>
             </el-card>
           </router-link>
-          <router-view
-            @done="done"
-            @cancel="closeDialog"
-            @close="closeDialog"
-          />
         </div>
       </div>
+      <router-view />
     </div>
   </div>
 </template>
@@ -93,6 +95,25 @@ export default {
         { prop: 'id', name: 'ID', type: 'number' },
         { prop: 'name', name: 'テンプレート名', type: 'text' },
         { prop: 'tag', name: 'タグ', type: 'text', multiple: true },
+      ],
+      preprocessings: [
+        //TODO 後で消す
+        { name: 'A工場●●分類', memo: '説明文説明文', tag: 'Classification' },
+        {
+          name: 'A部署異常検知前処理',
+          memo: '事前学習済みXXXモデルを使用',
+          tag: 'Classification',
+        },
+        {
+          name: 'D工場X画像前処理',
+          memo: '説明文説明文',
+          tag: 'Classification',
+        },
+        {
+          name: '●●部署●●セグメント',
+          memo: '説明文説明文',
+          tag: 'Classification',
+        },
       ],
     }
   },
@@ -186,5 +207,8 @@ a {
 .card-container {
   float: left;
   margin: 20px 20px 10px 0;
+}
+.tag {
+  border-radius: 15px;
 }
 </style>
