@@ -31,9 +31,8 @@
         </el-upload>
         <el-link
           type="info"
-          plain
-          @click="openDialog()"
           style="display:block;margin-top:10px ;padding:15px"
+          @click="openDialog()"
         >
           続行
         </el-link>

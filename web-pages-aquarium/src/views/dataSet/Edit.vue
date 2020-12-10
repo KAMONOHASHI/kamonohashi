@@ -2,7 +2,7 @@
   <kqi-dialog
     :title="title"
     :type="isCreateDialog ? 'CREATE' : 'EDIT'"
-    :submitText="submitText"
+    :submit-text="submitText"
     @submit="submit"
     @delete="deleteDataSet"
     @close="$emit('cancel')"
@@ -236,7 +236,7 @@ export default {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  justify-content: start;
+  justify-content: flex-start;
   align-content: flex-start;
   margin-bottom: 40px;
 }

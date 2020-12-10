@@ -24,9 +24,9 @@
           @close="handleClose"
         >
           <el-submenu
-            :index="index"
             v-for="(list, index) in fileList"
             :key="index"
+            :index="index"
           >
             <template slot="title">
               <i class="el-icon-arrow-down"></i>
@@ -50,10 +50,10 @@
         <div class="line"></div>
         <div>
           <el-card
-            :body-style="{ padding: '0px' }"
             v-for="(name, index) in selectImageList"
-            style="width:300px;height:300px ;float: left;"
             :key="name"
+            :body-style="{ padding: '0px' }"
+            style="width:300px;height:300px ;float: left;"
             :offset="index > 0 ? 2 : 0"
           >
             <img src="" class="image" style="width:300px;height:270px " />

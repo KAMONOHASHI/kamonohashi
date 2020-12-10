@@ -7,8 +7,8 @@
       <el-row :gutter="20">
         <el-col class="search">
           <kqi-smart-search-input
-            style="width:300px"
             v-model="searchCondition"
+            style="width:300px"
             :configs="searchConfigs"
             @search="search"
           />
