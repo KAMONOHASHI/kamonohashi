@@ -36,6 +36,7 @@
           :key="index"
           class="card-container"
         >
+          <!-- TODO /aquarium/model-template/<templateid>に飛ぶようにする -->
           <router-link to="/aquarium/model-template/1">
             <el-card
               class="template"
