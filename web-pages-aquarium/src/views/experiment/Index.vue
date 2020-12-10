@@ -1,6 +1,7 @@
 <template>
   <div>
-    <h2>データセット</h2>
+    <h2>実験一覧</h2>
+
     <el-row type="flex" justify="space-between" :gutter="20">
       <kqi-pagination
         v-model="pageStatus"
@@ -14,7 +15,7 @@
           plain
           @click="openCreateDialog()"
         >
-          新しいデータセット
+          新しくモデルをトレーニングする
         </el-button>
       </el-col>
     </el-row>
@@ -22,14 +23,20 @@
     <el-row class="test">
       <el-table
         class="data-table pl-index-table"
-        :data="dataSets"
+        :data="experimentList"
         border
-        @row-click="openEditDataset"
+        @row-click="openEditExperiment"
       >
         <el-table-column prop="id" label="ID" width="120px" />
-        <el-table-column prop="name" label="データセット名" width="auto" />
-        <el-table-column prop="version" label="最新バージョン" width="auto" />
+        <el-table-column prop="name" label="名前" width="auto" />
+        <el-table-column prop="dataset" label="データセット" width="auto" />
+        <el-table-column prop="template" label="テンプレート" width="auto" />
 
+        <el-table-column
+          prop="averagePrecisionRate"
+          label="平均適合率"
+          width="auto"
+        />
         <el-table-column
           prop="lastModified"
           label="最終更新日時"
@@ -55,7 +62,7 @@ import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('dataSet')
 
 export default {
-  title: 'データセット',
+  title: '実験',
   components: {
     KqiPagination,
   },
@@ -68,14 +75,26 @@ export default {
       },
       searchCondition: {},
       searchConfigs: [
-        { prop: 'id', name: 'ID', type: 'number' },
-        { prop: 'name', name: 'データセット名', type: 'text' },
-        { prop: 'version', name: '最新バージョン', type: 'text' },
+        { prop: 'name', name: '名前', type: 'text' },
+        { prop: 'dataset', name: 'データセット', type: 'text' },
+        { prop: 'template', name: 'テンプレート', type: 'text' },
+        { prop: 'averagePrecisionRate', name: '平均適合率', type: 'text' },
 
         { prop: 'lastModified', name: '最終更新日時', type: 'date' },
         { prop: 'status', name: 'ステータス', type: 'text' },
       ],
       tableData: [],
+      experimentList: [
+        //TODO APIから取得したら消す
+        {
+          name: 'FLOWER_training',
+          dataset: 'FLOWER',
+          template: '●●画像分類ver.2',
+          averagePrecisionRate: '0.95',
+          lastModified: '2020/10/08',
+          status: '学習完了',
+        },
+      ],
     }
   },
   computed: {
@@ -117,13 +136,13 @@ export default {
       this.showSuccessMessage()
     },
     openCreateDialog() {
-      this.$router.push('/dataset/create')
+      this.$router.push('/aquarium/experiment/create')
     },
-    openEditDataset(selectedRow) {
-      this.$router.push('/dataset/detail/' + selectedRow.id)
+    openEditExperiment(selectedRow) {
+      this.$router.push('/aquarium/experiment/detail/' + selectedRow.id)
     },
     handleCopy(id) {
-      this.$router.push('/dataset/create/' + id)
+      this.$router.push('/aquarium/experiment/create/' + id)
     },
     async search() {
       this.pageStatus.currentPage = 1

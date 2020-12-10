@@ -110,7 +110,7 @@ export default {
         {
           category: '',
           name: '学習',
-          url: '',
+          url: '/dataset',
           description: 'モデルをトレーニングします。',
         },
       ],

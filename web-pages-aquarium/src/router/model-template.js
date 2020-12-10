@@ -1,6 +1,7 @@
 import Index from '@/views/modelTemplate/Index'
 import Edit from '@/views/modelTemplate/Edit'
-import TemplateIndex from '@/views/modelTemplate/TemplateIndex'
+//import TemplateIndex from '@/views/modelTemplate/TemplateIndex'
+import Detail from '@/views/modelTemplate/Detail/Index'
 
 export default [
   {
@@ -10,15 +11,12 @@ export default [
       {
         path: 'create',
         component: Edit,
+        props: true,
       },
+
       {
         path: 'edit/:id/',
         component: Edit,
-        props: true,
-      },
-      {
-        path: ':id',
-        component: TemplateIndex,
         props: true,
       },
     ],
@@ -32,7 +30,12 @@ export default [
   // TODO:APIができたら↑に修正
   {
     path: '/aquarium/model-template/1',
-    component: TemplateIndex,
+    component: Detail,
     props: true,
   },
+  //{
+  //  path: '/aquarium/model-template/1',
+  //  component: TemplateIndex,
+  //  props: true,
+  //},
 ]
