@@ -6292,6 +6292,134 @@
                         "api_key": []
                     }
                 ]
+            },
+            "post": {
+                "tags": [
+                    "Template"
+                ],
+                "summary": "バージョンを変更するテンプレート情報の編集",
+                "description": "バージョンを上げる編集では前処理コンテナ・学習コンテナの編集を扱う",
+                "operationId": "ApiV2AdminTemplatesByIdPost",
+                "consumes": [
+                    "application/json-patch+json",
+                    "application/json",
+                    "text/json",
+                    "application/*+json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "変更対象のテンプレートID",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "model",
+                        "in": "body",
+                        "description": "変更内容",
+                        "required": false,
+                        "schema": {
+                            "$ref": "#/definitions/Nssol.Platypus.ApiModels.TemplateApiModels.CreateInputModel"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/Nssol.Platypus.ApiModels.TemplateApiModels.IndexOutputModel"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Template"
+                ],
+                "summary": "テンプレートを削除する。",
+                "description": "一度でも前処理が実行されていた場合、削除不可",
+                "operationId": "ApiV2AdminTemplatesByIdDelete",
+                "consumes": [],
+                "produces": [],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "テンプレートID",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Template"
+                ],
+                "summary": "バージョンを変更しないテンプレート情報の編集",
+                "description": "同バージョンの編集ではテンプレートが実行済みの場合でも編集可能な項目のみ扱う",
+                "operationId": "ApiV2AdminTemplatesByIdPatch",
+                "consumes": [
+                    "application/json-patch+json",
+                    "application/json",
+                    "text/json",
+                    "application/*+json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "変更対象のテンプレートID",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "model",
+                        "in": "body",
+                        "description": "変更内容",
+                        "required": false,
+                        "schema": {
+                            "$ref": "#/definitions/Nssol.Platypus.ApiModels.TemplateApiModels.EditInputModel"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/Nssol.Platypus.ApiModels.TemplateApiModels.IndexOutputModel"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
             }
         },
         "/api/v2/admin/tenants": {
@@ -11947,6 +12075,11 @@
                     "description": "バージョン",
                     "type": "integer"
                 },
+                "groupId": {
+                    "format": "int64",
+                    "description": "グループID",
+                    "type": "integer"
+                },
                 "createdBy": {
                     "description": "登録者",
                     "type": "string"
@@ -11994,6 +12127,11 @@
                 "version": {
                     "format": "int64",
                     "description": "バージョン",
+                    "type": "integer"
+                },
+                "groupId": {
+                    "format": "int64",
+                    "description": "グループID",
                     "type": "integer"
                 },
                 "assignedTenantIds": {
@@ -12128,6 +12266,11 @@
                     "description": "バージョン",
                     "type": "integer"
                 },
+                "groupId": {
+                    "format": "int64",
+                    "description": "グループID",
+                    "type": "integer"
+                },
                 "createdBy": {
                     "description": "登録者",
                     "type": "string"
@@ -12161,6 +12304,39 @@
                 "displayName": {
                     "description": "テナント表示名",
                     "type": "string"
+                }
+            }
+        },
+        "Nssol.Platypus.ApiModels.TemplateApiModels.EditInputModel": {
+            "description": "テンプレート編集の入力モデル",
+            "type": "object",
+            "properties": {
+                "name": {
+                    "description": "名前",
+                    "type": "string"
+                },
+                "memo": {
+                    "description": "メモ",
+                    "type": "string"
+                },
+                "accessLevel": {
+                    "format": "int32",
+                    "description": "アクセスレベル",
+                    "enum": [
+                        0,
+                        1,
+                        2
+                    ],
+                    "type": "integer"
+                },
+                "assignedTenantIds": {
+                    "description": "このテンプレートを使用できるテナントのID。\r\nNssol.Platypus.ApiModels.TemplateApiModels.EditInputModel.AccessLevelがNssol.Platypus.Infrastructure.TemplateAccessLevel.Privateの時のみ指定可能。\r\nそれ以外の場合は無視される。",
+                    "uniqueItems": false,
+                    "type": "array",
+                    "items": {
+                        "format": "int64",
+                        "type": "integer"
+                    }
                 }
             }
         },

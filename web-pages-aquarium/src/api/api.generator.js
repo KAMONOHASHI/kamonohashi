@@ -7422,6 +7422,149 @@ export const ApiV2AdminTemplatesByIdGetURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * バージョンを上げる編集では前処理コンテナ・学習コンテナの編集を扱う
+ * request: ApiV2AdminTemplatesByIdPost
+ * url: ApiV2AdminTemplatesByIdPostURL
+ * method: ApiV2AdminTemplatesByIdPost_TYPE
+ * raw_url: ApiV2AdminTemplatesByIdPost_RAW_URL
+ * @param id - 変更対象のテンプレートID
+ * @param model - 変更内容
+ */
+export const ApiV2AdminTemplatesByIdPost = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/admin/templates/{id}'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  if (parameters['model'] !== undefined) {
+    body = parameters['model']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('post', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2AdminTemplatesByIdPost_RAW_URL = function() {
+  return '/api/v2/admin/templates/{id}'
+}
+export const ApiV2AdminTemplatesByIdPost_TYPE = function() {
+  return 'post'
+}
+export const ApiV2AdminTemplatesByIdPostURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/admin/templates/{id}'
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 一度でも前処理が実行されていた場合、削除不可
+ * request: ApiV2AdminTemplatesByIdDelete
+ * url: ApiV2AdminTemplatesByIdDeleteURL
+ * method: ApiV2AdminTemplatesByIdDelete_TYPE
+ * raw_url: ApiV2AdminTemplatesByIdDelete_RAW_URL
+ * @param id - テンプレートID
+ */
+export const ApiV2AdminTemplatesByIdDelete = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/admin/templates/{id}'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('delete', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2AdminTemplatesByIdDelete_RAW_URL = function() {
+  return '/api/v2/admin/templates/{id}'
+}
+export const ApiV2AdminTemplatesByIdDelete_TYPE = function() {
+  return 'delete'
+}
+export const ApiV2AdminTemplatesByIdDeleteURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/admin/templates/{id}'
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 同バージョンの編集ではテンプレートが実行済みの場合でも編集可能な項目のみ扱う
+ * request: ApiV2AdminTemplatesByIdPatch
+ * url: ApiV2AdminTemplatesByIdPatchURL
+ * method: ApiV2AdminTemplatesByIdPatch_TYPE
+ * raw_url: ApiV2AdminTemplatesByIdPatch_RAW_URL
+ * @param id - 変更対象のテンプレートID
+ * @param model - 変更内容
+ */
+export const ApiV2AdminTemplatesByIdPatch = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/admin/templates/{id}'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  if (parameters['model'] !== undefined) {
+    body = parameters['model']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('patch', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2AdminTemplatesByIdPatch_RAW_URL = function() {
+  return '/api/v2/admin/templates/{id}'
+}
+export const ApiV2AdminTemplatesByIdPatch_TYPE = function() {
+  return 'patch'
+}
+export const ApiV2AdminTemplatesByIdPatchURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/admin/templates/{id}'
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * テナント一覧を取得
  * request: ApiV2AdminTenantsGet
  * url: ApiV2AdminTenantsGetURL
