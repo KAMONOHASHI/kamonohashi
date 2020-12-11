@@ -35,6 +35,12 @@ namespace Nssol.Platypus.ApiModels.TemplateApiModels
         [Required]
         public long? Version { get; set; }
 
+
+        /// <summary>
+        /// グループID
+        /// </summary>
+        public long? GroupId { get; set; }
+
         /// <summary>
         /// このテンプレートを使用できるテナントのID。
         /// <see cref="AccessLevel"/>が<see cref="TemplateAccessLevel.Private"/>の時のみ指定可能。

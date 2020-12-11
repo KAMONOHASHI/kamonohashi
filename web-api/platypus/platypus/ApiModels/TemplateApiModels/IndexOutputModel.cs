@@ -14,6 +14,7 @@ namespace Nssol.Platypus.ApiModels.TemplateApiModels
             Name = template.Name;
             Memo = template.Memo;
             Version = template.Version;
+            GroupId = template.GroupId;
             AccessLevel = template.AccessLevel;
             AccessLevelStr = template.AccessLevel.ToString();
         }
@@ -45,6 +46,11 @@ namespace Nssol.Platypus.ApiModels.TemplateApiModels
         /// バージョン
         /// </summary>
         public long? Version { get; set; }
+
+        /// <summary>
+        /// グループID
+        /// </summary>
+        public long? GroupId { get; set; }
 
 
     }

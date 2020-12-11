@@ -98,6 +98,8 @@ namespace Nssol.Platypus.Migrations
 
                     b.Property<long?>("DisplayId");
 
+                    b.Property<long?>("GroupId");
+
                     b.Property<string>("Memo");
 
                     b.Property<DateTime>("ModifiedAt");

@@ -10,7 +10,7 @@ using Nssol.Platypus.DataAccess;
 namespace Nssol.Platypus.Migrations
 {
     [DbContext(typeof(CommonDbContext))]
-    [Migration("20201208083824_v2.1.4")]
+    [Migration("20201210083824_v2.1.4")]
     partial class v214
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -99,6 +99,8 @@ namespace Nssol.Platypus.Migrations
                         .IsRequired();
 
                     b.Property<long?>("DisplayId");
+
+                    b.Property<long?>("GroupId");
 
                     b.Property<string>("Memo");
 

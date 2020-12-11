@@ -22,6 +22,7 @@ namespace Nssol.Platypus.Migrations
                     Name = table.Column<string>(nullable: false),
                     Memo = table.Column<string>(nullable: true),
                     Version = table.Column<long>(nullable: true),
+                    GroupId = table.Column<long>(nullable: true),
                     AccessLevel = table.Column<int>(nullable: false),
                     PreprocessEntryPoint = table.Column<string>(nullable: true),
                     PreprocessRepositoryGitId = table.Column<long>(nullable: true),

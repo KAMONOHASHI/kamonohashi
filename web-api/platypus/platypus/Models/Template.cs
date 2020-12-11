@@ -30,9 +30,16 @@ namespace Nssol.Platypus.Models
         /// </summary>
         public long? Version { get; set; }
 
+
+        /// <summary>
+        /// グループID
+        /// </summary>
+        public long? GroupId { get; set; }
+
         /// <summary>
         /// 公開設定
         /// </summary>
+        [Required]
         public TemplateAccessLevel AccessLevel { get; set; }
 
 

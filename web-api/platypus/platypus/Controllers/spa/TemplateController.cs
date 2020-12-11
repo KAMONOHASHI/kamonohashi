@@ -22,7 +22,7 @@ namespace Nssol.Platypus.Controllers.spa
     /// テンプレート管理を扱うためのAPI集
     /// </summary>
     [ApiVersion("1"), ApiVersion("2")]
-    [Route("api/v{api-version:apiVersion}/admin/templates")]
+    [Route("api/v{api-version:apiVersion}")]
     public class TemplateController : PlatypusApiControllerBase
     {
         private readonly ITemplateRepository templateRepository;
@@ -52,7 +52,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 全テンプレート一覧を取得
         /// </summary>
-        [HttpGet]
+        [HttpGet("admin/templates")]
         [PermissionFilter(MenuCode.Template)]
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetAllTemplatesForAdmin([FromQuery] int? perPage, [FromQuery] int page = 1, bool withTotal = false)
@@ -73,10 +73,34 @@ namespace Nssol.Platypus.Controllers.spa
             return JsonOK(templates.Select(t => new IndexOutputModel(t)));
         }
 
+
+        /// <summary>
+        /// 接続中のテナントに有効なテンプレート一覧を取得
+        /// </summary>
+        //[HttpGet("tenant/templates")]
+        //[PermissionFilter(MenuCode.Template)]
+        //[ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
+        //public IActionResult GetTemplatesByGroupId([FromQuery] int? perPage, [FromQuery] int page = 1, bool withTotal = false)
+        //{
+        //    var templates = templateRepository.GetAccessibleTemplates(CurrentUserInfo.SelectedTenant.Id);
+
+        //    if (withTotal)
+        //    {
+        //        //テンプレートの場合は件数が少ない想定なので、別のSQLを投げずにカウントしてしまう
+        //        SetTotalCountToHeader(templates.Count());
+        //    }
+
+        //    //if (perPage.HasValue)
+        //    //{
+        //    //    templates = templates.Paging(page, perPage.Value);
+        //    //}
+        //    return JsonOK(templates.Select(t => new IndexOutputModel(t)));
+        //}
+
         /// <summary>
         /// テンプレートアクセスレベルの一覧を取得する
         /// </summary>
-        [HttpGet("/api/v{api-version:apiVersion}/admin/template-access-levels")]
+        [HttpGet("admin/template-access-levels")]
         [PermissionFilter(MenuCode.Template)]
         [ProducesResponseType(typeof(IEnumerable<EnumInfo>), (int)HttpStatusCode.OK)]
         public IActionResult GetAllTypes()
@@ -91,7 +115,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="id">テンプレートID</param>
         /// <param name="templateTenantMapRepository">DI用</param>
-        [HttpGet("{id}")]
+        [HttpGet("admin/templates/{id}")]
         [PermissionFilter(MenuCode.Template)]
         [ProducesResponseType(typeof(DetailsOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetDetail(long? id, [FromServices] ITemplateTenantMapRepository templateTenantMapRepository)
@@ -130,10 +154,12 @@ namespace Nssol.Platypus.Controllers.spa
             return JsonOK(model);
         }
 
+
+
         /// <summary>
         /// 新規にテンプレートを登録する
         /// </summary>
-        [HttpPost]
+        [HttpPost("admin/templates")]
         [PermissionFilter(MenuCode.Template)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.Created)]
         public async Task<IActionResult> Create([FromBody] CreateInputModel model,
@@ -204,14 +230,151 @@ namespace Nssol.Platypus.Controllers.spa
         }
 
         /// <summary>
-        /// テンプレート情報の編集
+        /// バージョンを変更するテンプレート情報の編集
         /// </summary>
+        /// <remarks>
+        /// バージョンを上げる編集では前処理コンテナ・学習コンテナの編集を扱う
+        /// </remarks>
+        /// <param name="id">変更対象のテンプレートID</param>
+        /// <param name="model">変更内容</param>
+        [HttpPost("admin/templates/{id}")]
+        [PermissionFilter(MenuCode.Template)]
+        [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> PostEdit(long? id, [FromBody] CreateInputModel model)
+        {
+            // データの入力チェック
+            if (!ModelState.IsValid || !id.HasValue)
+            {
+                return JsonBadRequest("Invalid inputs.");
+            }
+            // データの存在チェック
+            var template
+                = await templateRepository.GetByIdAsync(id.Value);
+            if (template == null)
+            {
+                return JsonNotFound($"Template ID {id.Value} is not found.");
+            }
 
+            var errorResult = await SetTemplateDetailsAsync(template, model);
+            if (errorResult != null)
+            {
+                return errorResult;
+            }
+            unitOfWork.Commit();
+
+            return JsonOK(new IndexOutputModel(template));
+        }
+
+
+        /// <summary>
+        /// バージョンを変更しないテンプレート情報の編集
+        /// </summary>
+        /// <remarks>
+        /// 同バージョンの編集ではテンプレートが実行済みの場合でも編集可能な項目のみ扱う
+        /// </remarks>
+        /// <param name="id">変更対象のテンプレートID</param>
+        /// <param name="model">変更内容</param>
+        [HttpPatch("admin/templates/{id}")]
+        [PermissionFilter(MenuCode.Template)]
+        [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> Edit(long? id, [FromBody] EditInputModel model)
+        {
+            // データの入力チェック
+            if (!ModelState.IsValid || !id.HasValue)
+            {
+                return JsonBadRequest("Invalid inputs.");
+            }
+            // データの存在チェック
+            var template
+                = await templateRepository.GetByIdAsync(id.Value);
+            if (template == null)
+            {
+                return JsonNotFound($"Template ID {id.Value} is not found.");
+            }
+
+            if (model.Name != null)
+            {
+                if (string.IsNullOrWhiteSpace(model.Name))
+                {
+                    // 名前に空文字は許可しない
+                    return JsonBadRequest($"A name of Template is NOT allowed to set empty string.");
+                }
+                template.Name = model.Name;
+            }
+            template.Memo = EditColumn(model.Memo, template.Memo);
+
+            if (template.AccessLevel != TemplateAccessLevel.Disabled)
+            {
+                if (template.AccessLevel == TemplateAccessLevel.Private)
+                {
+                    //テナントをアサイン
+                    if (model.AssignedTenantIds != null)
+                    {
+                        foreach (long tenantId in model.AssignedTenantIds)
+                        {
+                            Tenant tenant = tenantRepository.Get(tenantId);
+                            if (tenant == null)
+                            {
+                                return JsonNotFound($"Tenant ID {tenantId} is not found.");
+                            }
+                            await clusterManagementLogic.UpdateTenantEnabledLabelAsync(template.Name, tenant.Name, true);
+                        }
+                        templateRepository.AssignTenants(template, model.AssignedTenantIds, true);
+                    }
+                }
+                else
+                {
+                    // アクセスレベルが "Public" の場合、全てのテナントをアサイン
+                    var tenants = tenantRepository.GetAllTenants();
+                    foreach (Tenant tenant in tenants)
+                    {
+                        await clusterManagementLogic.UpdateTenantEnabledLabelAsync(template.Name, tenant.Name, true);
+                    }
+                }
+            }
+
+            unitOfWork.Commit();
+
+            return JsonOK(new IndexOutputModel(template));
+        }
 
         /// <summary>
         /// テンプレートを削除する。
         /// </summary>
-        /// 
+        /// <remarks>
+        /// 一度でも前処理が実行されていた場合、削除不可
+        /// </remarks>
+        /// <param name="id">テンプレートID</param>
+        [HttpDelete("admin/templates/{id}")]
+        [PermissionFilter(MenuCode.Template)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        public async Task<IActionResult> Delete(long? id)
+        {
+            // データの入力チェック
+            if (id == null)
+            {
+                return JsonBadRequest("Invalid inputs.");
+            }
+            // データの存在チェック
+            var template = await templateRepository.GetByIdAsync(id.Value);
+            if (template == null)
+            {
+                return JsonNotFound($"Template ID {id.Value} is not found.");
+            }
+
+            //TODO テンプレート実行履歴の有無をチェック
+            //var history = templateHistoryRepository.Find(p => p.PreprocessId == id.Value);
+            //if (history != null)
+            //{
+            //    // 過去にテンプレートを実行済みなので、削除できない
+            //    return JsonConflict($"Template ID {id.Value} is already executed. History ID = {history.Id} ");
+            //}
+
+            templateRepository.Delete(template);
+            unitOfWork.Commit();
+
+            return JsonNoContent();
+        }
 
         /// <summary>
         /// 引数のテンプレートインスタンスに、入力モデルの値を詰め込む。
@@ -304,7 +467,8 @@ namespace Nssol.Platypus.Controllers.spa
 
             template.Name = model.Name;
             template.Memo = model.Memo;
-            template.Version = 1;
+            template.Version += 1;
+            template.GroupId = model.GroupId;
             template.AccessLevel = (TemplateAccessLevel)model.AccessLevel;
             template.PreprocessEntryPoint = model.PreprocessEntryPoint;
             template.PreprocessContainerRegistryId = preprocessRegistryId;
