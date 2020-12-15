@@ -8,7 +8,7 @@
       </el-tab-pane>
       <el-tab-pane label="推論" name="inference"><inference /></el-tab-pane>
     </el-tabs>
-    <router-view @cancel="closeDialog" @done="done" @copy="handleCopy" />
+    <router-view @done="done" @copy="handleCopy" />
   </div>
 </template>
 
@@ -73,13 +73,13 @@ export default {
       this.showSuccessMessage()
     },
     openCreateDialog() {
-      this.$router.push('/dataset/create')
+      this.$router.push('/aqarium/xperiment/create')
     },
     openEditDialog(selectedRow) {
-      this.$router.push('/dataset/edit/' + selectedRow.id)
+      this.$router.push('/aqarium/xperiment/edit/' + selectedRow.id)
     },
     handleCopy(id) {
-      this.$router.push('/dataset/create/' + id)
+      this.$router.push('/aqarium/xperiment/create/' + id)
     },
     async search() {
       await this.retrieveData()
