@@ -67,6 +67,48 @@ namespace Nssol.Platypus.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ExperimentHistories",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    CreatedBy = table.Column<string>(nullable: false),
+                    CreatedAt = table.Column<DateTime>(nullable: false),
+                    ModifiedBy = table.Column<string>(nullable: false),
+                    ModifiedAt = table.Column<DateTime>(nullable: false),
+                    TenantId = table.Column<long>(nullable: false),
+                    DataSetId = table.Column<long>(nullable: false),
+                    TemplateId = table.Column<long>(nullable: true),
+                    StartedAt = table.Column<DateTime>(nullable: true),
+                    CompletedAt = table.Column<DateTime>(nullable: true),
+                    Status = table.Column<string>(nullable: true),
+                    Options = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ExperimentHistories", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ExperimentHistories_DataSets_DataSetId",
+                        column: x => x.DataSetId,
+                        principalTable: "DataSets",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ExperimentHistories_Templates_TemplateId",
+                        column: x => x.TemplateId,
+                        principalTable: "Templates",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ExperimentHistories_Tenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "Tenants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "TemplateTenantMaps",
                 columns: table => new
                 {
@@ -97,6 +139,21 @@ namespace Nssol.Platypus.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_ExperimentHistories_DataSetId",
+                table: "ExperimentHistories",
+                column: "DataSetId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ExperimentHistories_TemplateId",
+                table: "ExperimentHistories",
+                column: "TemplateId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ExperimentHistories_TenantId",
+                table: "ExperimentHistories",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Templates_PreprocessContainerRegistryId",
                 table: "Templates",
                 column: "PreprocessContainerRegistryId");
@@ -120,6 +177,9 @@ namespace Nssol.Platypus.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "ExperimentHistories");
+
             migrationBuilder.DropTable(
                 name: "TemplateTenantMaps");
 

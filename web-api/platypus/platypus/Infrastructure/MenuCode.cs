@@ -119,7 +119,11 @@ namespace Nssol.Platypus.Infrastructure
         /// <summary>
         /// モデルテンプレート
         /// </summary>
-        Template
+        Template,
+        /// <summary>
+        /// 実験管理
+        /// </summary>
+        Experiment
 
 
     }
