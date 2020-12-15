@@ -33,6 +33,11 @@ namespace Nssol.Platypus.Models.TenantModels
         public bool IsLocked { get; set; }
 
         /// <summary>
+        /// 展開時にデータ種別を無視する
+        /// </summary>
+        public bool IsFlat { get; set; }
+
+        /// <summary>
         /// データセットエントリ
         /// </summary>
         public virtual ICollection<DataSetEntry> DataSetEntries { get; set; }

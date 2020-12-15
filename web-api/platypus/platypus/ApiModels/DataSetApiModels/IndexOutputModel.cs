@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Nssol.Platypus.Models.TenantModels;
-using Nssol.Platypus.Infrastructure;
+﻿using Nssol.Platypus.Models.TenantModels;
 
 namespace Nssol.Platypus.ApiModels.DataSetApiModels
 {
@@ -15,6 +10,7 @@ namespace Nssol.Platypus.ApiModels.DataSetApiModels
             DisplayId = dataSet.DisplayId;
             Name = dataSet.Name;
             Memo = dataSet.Memo;
+            IsFlat = dataSet.IsFlat;
         }
 
         /// <summary>
@@ -33,5 +29,9 @@ namespace Nssol.Platypus.ApiModels.DataSetApiModels
         /// メモ
         /// </summary>
         public string Memo { get; set; }
+        /// <summary>
+        /// 展開時にデータ種別を無視する
+        /// </summary>
+        public bool IsFlat { get; set; }
     }
 }

@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Nssol.Platypus.ApiModels.DataSetApiModels
 {
@@ -23,12 +20,21 @@ namespace Nssol.Platypus.ApiModels.DataSetApiModels
         /// メモ
         /// </summary>
         public string Memo { get; set; }
+        /// <summary>
+        /// 展開時にデータ種別を無視する
+        /// </summary>
+        public bool IsFlat { get; set; }
 
         /// <summary>
         /// キーにデータ種別、値にデータIDの集合を取るディクショナリ
         /// </summary>
         [Required]
         public Dictionary<string, IEnumerable<Entry>> Entries { get; set; }
+
+        /// <summary>
+        /// IsFlat == trueの場合に参照されるエントリ
+        /// </summary>
+        public IEnumerable<Entry> FlatEntries { get; set; }
 
         public class Entry
         {

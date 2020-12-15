@@ -1,9 +1,5 @@
 ﻿using Nssol.Platypus.Models.TenantModels;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Nssol.Platypus.Infrastructure;
 
 namespace Nssol.Platypus.ApiModels.DataSetApiModels
 {
@@ -17,6 +13,11 @@ namespace Nssol.Platypus.ApiModels.DataSetApiModels
         /// データセットのエントリ。キーにデータ種別、値にデータ情報集合を持つ。
         /// </summary>
         public Dictionary<string, List<ApiModels.DataApiModels.IndexOutputModel>> Entries { get; set; }
+
+        /// <summary>
+        /// IsFlat == trueの場合に参照されるエントリ
+        /// </summary>
+        public List<ApiModels.DataApiModels.IndexOutputModel> FlatEntries { get; set; }
 
         /// <summary>
         /// 実行済みか
