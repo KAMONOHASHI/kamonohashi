@@ -82,6 +82,16 @@ namespace Nssol.Platypus.DataAccess
         public virtual DbSet<NodeTenantMap> NodeTenantMaps { get; set; }
 
         /// <summary>
+        /// テンプレート
+        /// </summary>
+        public virtual DbSet<ModelTemplate> Templates { get; set; }
+
+        /// <summary>
+        /// テンプレートとテナントの中間テーブル
+        /// </summary>
+        public virtual DbSet<TemplateTenantMap> TemplateTenantMaps { get; set; }
+
+        /// <summary>
         /// ユーザとロールの中間テーブル
         /// </summary>
         public virtual DbSet<UserRoleMap> UserRoleMaps { get; set; }
@@ -241,6 +251,9 @@ namespace Nssol.Platypus.DataAccess
                     .IsUnique();
             modelBuilder.Entity<NodeTenantMap>()
                     .HasIndex(e => new { e.NodeId, e.TenantId })
+                    .IsUnique();
+            modelBuilder.Entity<TemplateTenantMap>()
+                    .HasIndex(e => new { e.TemplateId, e.TenantId })
                     .IsUnique();
             modelBuilder.Entity<TenantGitMap>()
                     .HasIndex(e => new { e.TenantId, e.GitId })

@@ -1,9 +1,9 @@
 {
     "swagger": "2.0",
     "info": {
-        "version": "v1",
+        "version": "v2",
         "title": "KAMONOHASHI API",
-        "description": "For developers only.",
+        "description": "A platform for deep learning",
         "termsOfService": "Copyright (C) 2016-2019 NS Solutions Corporation, All Rights Reserved.",
         "contact": {
             "name": "KAMONOHASHI Support",
@@ -11,13 +11,13 @@
         }
     },
     "paths": {
-        "/api/v1/account": {
+        "/api/v2/account": {
             "get": {
                 "tags": [
                     "Account"
                 ],
                 "summary": "ログインユーザのアカウント情報を取得する",
-                "operationId": "ApiV1AccountGet",
+                "operationId": "ApiV2AccountGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -42,7 +42,7 @@
                     "Account"
                 ],
                 "summary": "ログインユーザのアカウント情報を変更する",
-                "operationId": "ApiV1AccountPut",
+                "operationId": "ApiV2AccountPut",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -71,13 +71,13 @@
                 ]
             }
         },
-        "/api/v1/account/password": {
+        "/api/v2/account/password": {
             "put": {
                 "tags": [
                     "Account"
                 ],
                 "summary": "ログインユーザのパスワードを変更する",
-                "operationId": "ApiV1AccountPasswordPut",
+                "operationId": "ApiV2AccountPasswordPut",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -107,13 +107,13 @@
                 ]
             }
         },
-        "/api/v1/account/login": {
+        "/api/v2/account/login": {
             "post": {
                 "tags": [
                     "Account"
                 ],
                 "summary": "ログインする",
-                "operationId": "ApiV1AccountLoginPost",
+                "operationId": "ApiV2AccountLoginPost",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -144,13 +144,13 @@
                 "security": []
             }
         },
-        "/api/v1/account/tenants/{tenantId}/token": {
+        "/api/v2/account/tenants/{tenantId}/token": {
             "post": {
                 "tags": [
                     "Account"
                 ],
                 "summary": "現在の認証情報を使用し、新規にアクセストークンを取得する",
-                "operationId": "ApiV1AccountTenantsByTenantIdTokenPost",
+                "operationId": "ApiV2AccountTenantsByTenantIdTokenPost",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -188,13 +188,13 @@
                 ]
             }
         },
-        "/api/v1/account/menus/tree": {
+        "/api/v2/account/menus/tree": {
             "get": {
                 "tags": [
                     "Account"
                 ],
                 "summary": "アクセス可能なメニュー一覧をツリー形式で取得する。",
-                "operationId": "ApiV1AccountMenusTreeGet",
+                "operationId": "ApiV2AccountMenusTreeGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -226,13 +226,13 @@
                 ]
             }
         },
-        "/api/v1/account/menus/list": {
+        "/api/v2/account/menus/list": {
             "get": {
                 "tags": [
                     "Account"
                 ],
                 "summary": "アクセス可能なメニュー一覧をリスト形式で取得する。",
-                "operationId": "ApiV1AccountMenusListGet",
+                "operationId": "ApiV2AccountMenusListGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -264,13 +264,13 @@
                 ]
             }
         },
-        "/api/v1/account/gits": {
+        "/api/v2/account/gits": {
             "get": {
                 "tags": [
                     "Account"
                 ],
                 "summary": "選択中のテナントにおけるGit情報を取得する",
-                "operationId": "ApiV1AccountGitsGet",
+                "operationId": "ApiV2AccountGitsGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -295,7 +295,7 @@
                     "Account"
                 ],
                 "summary": "選択中のテナントにおけるGitのトークン情報を更新する。",
-                "operationId": "ApiV1AccountGitsPut",
+                "operationId": "ApiV2AccountGitsPut",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -331,13 +331,13 @@
                 ]
             }
         },
-        "/api/v1/account/registries": {
+        "/api/v2/account/registries": {
             "get": {
                 "tags": [
                     "Account"
                 ],
                 "summary": "選択中のテナントにおけるレジストリ情報を取得する",
-                "operationId": "ApiV1AccountRegistriesGet",
+                "operationId": "ApiV2AccountRegistriesGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -362,7 +362,7 @@
                     "Account"
                 ],
                 "summary": "選択中のテナントにおけるレジストリのトークン情報を更新する。",
-                "operationId": "ApiV1AccountRegistriesPut",
+                "operationId": "ApiV2AccountRegistriesPut",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -398,13 +398,13 @@
                 ]
             }
         },
-        "/api/v1/tenant/partitions": {
+        "/api/v2/tenant/partitions": {
             "get": {
                 "tags": [
                     "Cluster"
                 ],
                 "summary": "接続中のテナントに有効なパーティションの一覧を取得する。",
-                "operationId": "ApiV1TenantPartitionsGet",
+                "operationId": "ApiV2TenantPartitionsGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -429,13 +429,13 @@
                 ]
             }
         },
-        "/api/v1/admin/partitions": {
+        "/api/v2/admin/partitions": {
             "get": {
                 "tags": [
                     "Cluster"
                 ],
                 "summary": "パーティションの一覧を取得する。",
-                "operationId": "ApiV1AdminPartitionsGet",
+                "operationId": "ApiV2AdminPartitionsGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -460,13 +460,13 @@
                 ]
             }
         },
-        "/api/v1/admin/quotas": {
+        "/api/v2/admin/quotas": {
             "get": {
                 "tags": [
                     "Cluster"
                 ],
                 "summary": "クォータ設定を取得する。",
-                "operationId": "ApiV1AdminQuotasGet",
+                "operationId": "ApiV2AdminQuotasGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -496,7 +496,7 @@
                 ],
                 "summary": "クォータ設定を更新する。",
                 "description": "0が指定された場合、上限なしを示す。また、指定のなかったテナントは更新しない。",
-                "operationId": "ApiV1AdminQuotasPost",
+                "operationId": "ApiV2AdminQuotasPost",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -539,13 +539,13 @@
                 ]
             }
         },
-        "/api/v1/tenant/quota": {
+        "/api/v2/tenant/quota": {
             "get": {
                 "tags": [
                     "Cluster"
                 ],
                 "summary": "接続中テナントのクォータ情報を取得",
-                "operationId": "ApiV1TenantQuotaGet",
+                "operationId": "ApiV2TenantQuotaGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -566,14 +566,14 @@
                 ]
             }
         },
-        "/api/v1/admin/tensorboards": {
+        "/api/v2/admin/tensorboards": {
             "delete": {
                 "tags": [
                     "Cluster"
                 ],
                 "summary": "DB上の全てのTensorBoardコンテナ情報を対応する実コンテナごと削除する。",
                 "description": "REST APIとして定時バッチから実行される想定。",
-                "operationId": "ApiV1AdminTensorboardsDelete",
+                "operationId": "ApiV2AdminTensorboardsDelete",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -595,13 +595,13 @@
                 ]
             }
         },
-        "/api/v1/admin/events/{id}": {
+        "/api/v2/admin/events/{id}": {
             "get": {
                 "tags": [
                     "Cluster"
                 ],
                 "summary": "イベントを取得する",
-                "operationId": "ApiV1AdminEventsByIdGet",
+                "operationId": "ApiV2AdminEventsByIdGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -642,13 +642,13 @@
                 ]
             }
         },
-        "/api/v1/data": {
+        "/api/v2/data": {
             "get": {
                 "tags": [
                     "Data"
                 ],
                 "summary": "指定された条件でページングされた状態で、データ一覧を取得。\r\nタグ情報が含まれる。",
-                "operationId": "ApiV1DataGet",
+                "operationId": "ApiV2DataGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -750,7 +750,7 @@
                     "Data"
                 ],
                 "summary": "データの新規作成",
-                "operationId": "ApiV1DataPost",
+                "operationId": "ApiV2DataPost",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -785,13 +785,13 @@
                 ]
             }
         },
-        "/api/v1/data/{id}": {
+        "/api/v2/data/{id}": {
             "get": {
                 "tags": [
                     "Data"
                 ],
                 "summary": "指定したIDのデータ詳細情報を取得する。",
-                "operationId": "ApiV1DataByIdGet",
+                "operationId": "ApiV2DataByIdGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -825,7 +825,7 @@
                     "Data"
                 ],
                 "summary": "データ編集メソッド。\r\nファイルの追加は別のメソッドで行う。",
-                "operationId": "ApiV1DataByIdPut",
+                "operationId": "ApiV2DataByIdPut",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -873,7 +873,7 @@
                     "Data"
                 ],
                 "summary": "指定したデータを削除する",
-                "operationId": "ApiV1DataByIdDelete",
+                "operationId": "ApiV2DataByIdDelete",
                 "consumes": [],
                 "produces": [],
                 "parameters": [
@@ -898,13 +898,13 @@
                 ]
             }
         },
-        "/api/v1/data/{id}/tags/{tag}": {
+        "/api/v2/data/{id}/tags/{tag}": {
             "put": {
                 "tags": [
                     "Data"
                 ],
                 "summary": "指定したデータに対してタグを追加する。",
-                "operationId": "ApiV1DataByIdTagsByTagPut",
+                "operationId": "ApiV2DataByIdTagsByTagPut",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -943,7 +943,7 @@
                     "Data"
                 ],
                 "summary": "指定したデータからタグを削除する。",
-                "operationId": "ApiV1DataByIdTagsByTagDelete",
+                "operationId": "ApiV2DataByIdTagsByTagDelete",
                 "consumes": [],
                 "produces": [],
                 "parameters": [
@@ -973,13 +973,13 @@
                 ]
             }
         },
-        "/api/v1/data/{id}/files/{name}": {
+        "/api/v2/data/{id}/files/{name}": {
             "get": {
                 "tags": [
                     "Data"
                 ],
                 "summary": "ファイルのダウンロードURLを取得する",
-                "operationId": "ApiV1DataByIdFilesByNameGet",
+                "operationId": "ApiV2DataByIdFilesByNameGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -1016,13 +1016,13 @@
                 ]
             }
         },
-        "/api/v1/data/{id}/files": {
+        "/api/v2/data/{id}/files": {
             "get": {
                 "tags": [
                     "Data"
                 ],
                 "summary": "指定したデータのファイル情報を全て取得する",
-                "operationId": "ApiV1DataByIdFilesGet",
+                "operationId": "ApiV2DataByIdFilesGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -1067,7 +1067,7 @@
                     "Data"
                 ],
                 "summary": "ファイルを追加する。",
-                "operationId": "ApiV1DataByIdFilesPost",
+                "operationId": "ApiV2DataByIdFilesPost",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -1092,7 +1092,7 @@
                         "description": "追加するファイル情報",
                         "required": false,
                         "schema": {
-                            "$ref": "#/definitions/Nssol.Platypus.ApiModels.Components.AddFileInputModel"
+                            "$ref": "#/definitions/Nssol.Platypus.ApiModels.DataApiModels.AddFilesInputModel"
                         }
                     }
                 ],
@@ -1100,7 +1100,7 @@
                     "201": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/Nssol.Platypus.ApiModels.DataApiModels.DataFileOutputModel"
+                            "$ref": "#/definitions/Nssol.Platypus.ApiModels.DataApiModels.DataFilesOutputModel"
                         }
                     }
                 },
@@ -1111,13 +1111,13 @@
                 ]
             }
         },
-        "/api/v1/data/{id}/files/{fileId}": {
+        "/api/v2/data/{id}/files/{fileId}": {
             "delete": {
                 "tags": [
                     "Data"
                 ],
                 "summary": "指定されたIDのファイルを削除する",
-                "operationId": "ApiV1DataByIdFilesByFileIdDelete",
+                "operationId": "ApiV2DataByIdFilesByFileIdDelete",
                 "consumes": [],
                 "produces": [],
                 "parameters": [
@@ -1150,13 +1150,13 @@
                 ]
             }
         },
-        "/api/v1/data/datatags": {
+        "/api/v2/data/datatags": {
             "get": {
                 "tags": [
                     "Data"
                 ],
                 "summary": "選択中のテナントに登録されているデータ管理で使用できるタグを表示する",
-                "operationId": "ApiV1DataDatatagsGet",
+                "operationId": "ApiV2DataDatatagsGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -1184,7 +1184,7 @@
                 "tags": [
                     "Data"
                 ],
-                "operationId": "ApiV1DataDatatagsDelete",
+                "operationId": "ApiV2DataDatatagsDelete",
                 "consumes": [],
                 "produces": [],
                 "parameters": [],
@@ -1200,13 +1200,13 @@
                 ]
             }
         },
-        "/api/v1/datasets": {
+        "/api/v2/datasets": {
             "get": {
                 "tags": [
                     "DataSet"
                 ],
                 "summary": "指定された条件でページングされた状態で、データセット一覧を取得",
-                "operationId": "ApiV1DatasetsGet",
+                "operationId": "ApiV2DatasetsGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -1289,7 +1289,7 @@
                     "DataSet"
                 ],
                 "summary": "データセットを新規作成する",
-                "operationId": "ApiV1DatasetsPost",
+                "operationId": "ApiV2DatasetsPost",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -1325,13 +1325,13 @@
                 ]
             }
         },
-        "/api/v1/datasets/{id}": {
+        "/api/v2/datasets/{id}": {
             "get": {
                 "tags": [
                     "DataSet"
                 ],
                 "summary": "指定したIDのデータセット詳細情報を取得する。",
-                "operationId": "ApiV1DatasetsByIdGet",
+                "operationId": "ApiV2DatasetsByIdGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -1365,7 +1365,7 @@
                     "DataSet"
                 ],
                 "summary": "データセットのエントリ内容（学習で使用後は編集不可）を変更する",
-                "operationId": "ApiV1DatasetsByIdPut",
+                "operationId": "ApiV2DatasetsByIdPut",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -1413,7 +1413,7 @@
                     "DataSet"
                 ],
                 "summary": "データセットを削除する",
-                "operationId": "ApiV1DatasetsByIdDelete",
+                "operationId": "ApiV2DatasetsByIdDelete",
                 "consumes": [],
                 "produces": [],
                 "parameters": [
@@ -1442,7 +1442,7 @@
                     "DataSet"
                 ],
                 "summary": "データセットの付属情報（メモなど、任意のタイミングで変更できるもの）を変更する。",
-                "operationId": "ApiV1DatasetsByIdPatch",
+                "operationId": "ApiV2DatasetsByIdPatch",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -1486,13 +1486,13 @@
                 ]
             }
         },
-        "/api/v1/datasets/{id}/files": {
+        "/api/v2/datasets/{id}/files": {
             "get": {
                 "tags": [
                     "DataSet"
                 ],
                 "summary": "指定したIDのデータセットに含まれるデータファイル情報を取得する。",
-                "operationId": "ApiV1DatasetsByIdFilesGet",
+                "operationId": "ApiV2DatasetsByIdFilesGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -1529,13 +1529,13 @@
                 ]
             }
         },
-        "/api/v1/datasets/{id}/pathpairs": {
+        "/api/v2/datasets/{id}/pathpairs": {
             "get": {
                 "tags": [
                     "DataSet"
                 ],
                 "summary": "指定したIDのデータセットに含まれるデータとNFS上のデータ名のペア情報を取得する。",
-                "operationId": "ApiV1DatasetsByIdPathpairsGet",
+                "operationId": "ApiV2DatasetsByIdPathpairsGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -1569,13 +1569,13 @@
                 ]
             }
         },
-        "/api/v1/datatypes": {
+        "/api/v2/datatypes": {
             "get": {
                 "tags": [
                     "DataSet"
                 ],
                 "summary": "全データ種別を取得する",
-                "operationId": "ApiV1DatatypesGet",
+                "operationId": "ApiV2DatatypesGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -1600,13 +1600,13 @@
                 ]
             }
         },
-        "/api/v1/admin/git/endpoints": {
+        "/api/v2/admin/git/endpoints": {
             "get": {
                 "tags": [
                     "Git"
                 ],
                 "summary": "登録済みのGitエンドポイント一覧を取得",
-                "operationId": "ApiV1AdminGitEndpointsGet",
+                "operationId": "ApiV2AdminGitEndpointsGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -1635,7 +1635,7 @@
                     "Git"
                 ],
                 "summary": "新規にGitエンドポイントを登録する",
-                "operationId": "ApiV1AdminGitEndpointsPost",
+                "operationId": "ApiV2AdminGitEndpointsPost",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -1671,13 +1671,13 @@
                 ]
             }
         },
-        "/api/v1/admin/git/types": {
+        "/api/v2/admin/git/types": {
             "get": {
                 "tags": [
                     "Git"
                 ],
                 "summary": "Git種別一覧を取得",
-                "operationId": "ApiV1AdminGitTypesGet",
+                "operationId": "ApiV2AdminGitTypesGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -1702,13 +1702,13 @@
                 ]
             }
         },
-        "/api/v1/admin/git/endpoints/{id}": {
+        "/api/v2/admin/git/endpoints/{id}": {
             "get": {
                 "tags": [
                     "Git"
                 ],
                 "summary": "指定されたIDのGitエンドポイント情報を取得。",
-                "operationId": "ApiV1AdminGitEndpointsByIdGet",
+                "operationId": "ApiV2AdminGitEndpointsByIdGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -1742,7 +1742,7 @@
                     "Git"
                 ],
                 "summary": "Gitエンドポイント情報の編集",
-                "operationId": "ApiV1AdminGitEndpointsByIdPut",
+                "operationId": "ApiV2AdminGitEndpointsByIdPut",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -1790,7 +1790,7 @@
                     "Git"
                 ],
                 "summary": "Gitエンドポイント情報の削除",
-                "operationId": "ApiV1AdminGitEndpointsByIdDelete",
+                "operationId": "ApiV2AdminGitEndpointsByIdDelete",
                 "consumes": [],
                 "produces": [],
                 "parameters": [
@@ -1815,13 +1815,13 @@
                 ]
             }
         },
-        "/api/v1/tenant/git/endpoints": {
+        "/api/v2/tenant/git/endpoints": {
             "get": {
                 "tags": [
                     "Git"
                 ],
                 "summary": "テナント管理者が選択可能な登録済みのGitエンドポイント一覧を取得",
-                "operationId": "ApiV1TenantGitEndpointsGet",
+                "operationId": "ApiV2TenantGitEndpointsGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -1846,13 +1846,13 @@
                 ]
             }
         },
-        "/api/v1/git/{gitId}/repos": {
+        "/api/v2/git/{gitId}/repos": {
             "get": {
                 "tags": [
                     "Git"
                 ],
                 "summary": "全てのリポジトリを取得する",
-                "operationId": "ApiV1GitByGitIdReposGet",
+                "operationId": "ApiV2GitByGitIdReposGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -1885,13 +1885,13 @@
                 ]
             }
         },
-        "/api/v1/git/{gitId}/repos/{owner}/{repositoryName}/branches": {
+        "/api/v2/git/{gitId}/repos/{owner}/{repositoryName}/branches": {
             "get": {
                 "tags": [
                     "Git"
                 ],
                 "summary": "ブランチ一覧を取得する",
-                "operationId": "ApiV1GitByGitIdReposByOwnerByRepositoryNameBranchesGet",
+                "operationId": "ApiV2GitByGitIdReposByOwnerByRepositoryNameBranchesGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -1939,13 +1939,13 @@
                 ]
             }
         },
-        "/api/v1/git/{gitId}/repos/{owner}/{repositoryName}/commits": {
+        "/api/v2/git/{gitId}/repos/{owner}/{repositoryName}/commits": {
             "get": {
                 "tags": [
                     "Git"
                 ],
                 "summary": "コミット一覧を取得する",
-                "operationId": "ApiV1GitByGitIdReposByOwnerByRepositoryNameCommitsGet",
+                "operationId": "ApiV2GitByGitIdReposByOwnerByRepositoryNameCommitsGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -2000,13 +2000,13 @@
                 ]
             }
         },
-        "/api/v1/git/{gitId}/repos/{owner}/{repositoryName}/commits/{commitId}": {
+        "/api/v2/git/{gitId}/repos/{owner}/{repositoryName}/commits/{commitId}": {
             "get": {
                 "tags": [
                     "Git"
                 ],
                 "summary": "指定したコミットIDのコミット詳細を取得する",
-                "operationId": "ApiV1GitByGitIdReposByOwnerByRepositoryNameCommitsByCommitIdGet",
+                "operationId": "ApiV2GitByGitIdReposByOwnerByRepositoryNameCommitsByCommitIdGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -2057,13 +2057,13 @@
                 ]
             }
         },
-        "/api/v1/git/{gitId}/repos/{segments}": {
+        "/api/v2/git/{gitId}/repos/{segments}": {
             "get": {
                 "tags": [
                     "Git"
                 ],
                 "summary": "階層化されたURLを吸収するためのダミーAPI。\r\n製品版のSwaggerからは削除する。",
-                "operationId": "ApiV1GitByGitIdReposBySegmentsGet",
+                "operationId": "ApiV2GitByGitIdReposBySegmentsGet",
                 "consumes": [],
                 "produces": [],
                 "parameters": [
@@ -2099,13 +2099,13 @@
                 ]
             }
         },
-        "/api/v1/inferences/simple": {
+        "/api/v2/inferences/simple": {
             "get": {
                 "tags": [
                     "Inference"
                 ],
                 "summary": "全推論履歴のIDと名前を取得",
-                "operationId": "ApiV1InferencesSimpleGet",
+                "operationId": "ApiV2InferencesSimpleGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -2130,13 +2130,13 @@
                 ]
             }
         },
-        "/api/v1/inferences": {
+        "/api/v2/inferences": {
             "get": {
                 "tags": [
                     "Inference"
                 ],
                 "summary": "指定された条件でページングされた状態で、全推論履歴を取得",
-                "operationId": "ApiV1InferencesGet",
+                "operationId": "ApiV2InferencesGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -2271,13 +2271,13 @@
                 ]
             }
         },
-        "/api/v1/inferences/mount": {
+        "/api/v2/inferences/mount": {
             "get": {
                 "tags": [
                     "Inference"
                 ],
                 "summary": "マウントする推論履歴を取得",
-                "operationId": "ApiV1InferencesMountGet",
+                "operationId": "ApiV2InferencesMountGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -2315,13 +2315,13 @@
                 ]
             }
         },
-        "/api/v1/inferences/{id}": {
+        "/api/v2/inferences/{id}": {
             "get": {
                 "tags": [
                     "Inference"
                 ],
                 "summary": "指定されたIDの推論履歴の詳細情報を取得",
-                "operationId": "ApiV1InferencesByIdGet",
+                "operationId": "ApiV2InferencesByIdGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -2355,7 +2355,7 @@
                     "Inference"
                 ],
                 "summary": "推論履歴の編集",
-                "operationId": "ApiV1InferencesByIdPut",
+                "operationId": "ApiV2InferencesByIdPut",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -2403,7 +2403,7 @@
                     "Inference"
                 ],
                 "summary": "推論履歴を削除",
-                "operationId": "ApiV1InferencesByIdDelete",
+                "operationId": "ApiV2InferencesByIdDelete",
                 "consumes": [],
                 "produces": [],
                 "parameters": [
@@ -2428,13 +2428,13 @@
                 ]
             }
         },
-        "/api/v1/inferences/{id}/events": {
+        "/api/v2/inferences/{id}/events": {
             "get": {
                 "tags": [
                     "Inference"
                 ],
                 "summary": "指定された推論履歴のエラーイベントを取得",
-                "operationId": "ApiV1InferencesByIdEventsGet",
+                "operationId": "ApiV2InferencesByIdEventsGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -2464,13 +2464,13 @@
                 ]
             }
         },
-        "/api/v1/inferences/run": {
+        "/api/v2/inferences/run": {
             "post": {
                 "tags": [
                     "Inference"
                 ],
                 "summary": "新規に推論を開始",
-                "operationId": "ApiV1InferencesRunPost",
+                "operationId": "ApiV2InferencesRunPost",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -2506,13 +2506,13 @@
                 ]
             }
         },
-        "/api/v1/inferences/{id}/files": {
+        "/api/v2/inferences/{id}/files": {
             "get": {
                 "tags": [
                     "Inference"
                 ],
                 "summary": "推論履歴添付ファイルの一覧を取得",
-                "operationId": "ApiV1InferencesByIdFilesGet",
+                "operationId": "ApiV2InferencesByIdFilesGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -2558,7 +2558,7 @@
                     "Inference"
                 ],
                 "summary": "推論履歴添付ファイルを登録",
-                "operationId": "ApiV1InferencesByIdFilesPost",
+                "operationId": "ApiV2InferencesByIdFilesPost",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -2602,14 +2602,14 @@
                 ]
             }
         },
-        "/api/v1/inferences/{id}/container-files": {
+        "/api/v2/inferences/{id}/container-files": {
             "get": {
                 "tags": [
                     "Inference"
                 ],
                 "summary": "コンテナの出力ファイルの一覧を取得",
                 "description": "コンテナの/output/配下から指定ディレクトリパスの直下を検索する\r\n検索対象ディレクトリが見つからない場合もファイル・ディレクトリが空の結果を返す",
-                "operationId": "ApiV1InferencesByIdContainer-filesGet",
+                "operationId": "ApiV2InferencesByIdContainer-filesGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -2655,13 +2655,13 @@
                 ]
             }
         },
-        "/api/v1/inferences/{id}/files/{fileId}": {
+        "/api/v2/inferences/{id}/files/{fileId}": {
             "delete": {
                 "tags": [
                     "Inference"
                 ],
                 "summary": "推論履歴添付ファイルを削除",
-                "operationId": "ApiV1InferencesByIdFilesByFileIdDelete",
+                "operationId": "ApiV2InferencesByIdFilesByFileIdDelete",
                 "consumes": [],
                 "produces": [],
                 "parameters": [
@@ -2694,13 +2694,13 @@
                 ]
             }
         },
-        "/api/v1/inferences/{id}/halt": {
+        "/api/v2/inferences/{id}/halt": {
             "post": {
                 "tags": [
                     "Inference"
                 ],
                 "summary": "推論を途中で強制終了",
-                "operationId": "ApiV1InferencesByIdHaltPost",
+                "operationId": "ApiV2InferencesByIdHaltPost",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -2730,13 +2730,13 @@
                 ]
             }
         },
-        "/api/v1/inferences/{id}/user-cancel": {
+        "/api/v2/inferences/{id}/user-cancel": {
             "post": {
                 "tags": [
                     "Inference"
                 ],
                 "summary": "推論を途中で強制終了させる。\r\nユーザ自身がジョブを停止させた場合。",
-                "operationId": "ApiV1InferencesByIdUser-cancelPost",
+                "operationId": "ApiV2InferencesByIdUser-cancelPost",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -2766,13 +2766,13 @@
                 ]
             }
         },
-        "/api/v1/inferences/{id}/complete": {
+        "/api/v2/inferences/{id}/complete": {
             "post": {
                 "tags": [
                     "Inference"
                 ],
                 "summary": "推論を正常終了",
-                "operationId": "ApiV1InferencesByIdCompletePost",
+                "operationId": "ApiV2InferencesByIdCompletePost",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -2802,13 +2802,13 @@
                 ]
             }
         },
-        "/api/v1/tenant/menus": {
+        "/api/v2/tenant/menus": {
             "get": {
                 "tags": [
                     "Menu"
                 ],
                 "summary": "テナント向けに、メニューとロールのマッピング情報一覧を取得",
-                "operationId": "ApiV1TenantMenusGet",
+                "operationId": "ApiV2TenantMenusGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -2833,13 +2833,13 @@
                 ]
             }
         },
-        "/api/v1/tenant/menus/{id}": {
+        "/api/v2/tenant/menus/{id}": {
             "put": {
                 "tags": [
                     "Menu"
                 ],
                 "summary": "テナント向けの、メニューとロールのマッピング情報を更新",
-                "operationId": "ApiV1TenantMenusByIdPut",
+                "operationId": "ApiV2TenantMenusByIdPut",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -2915,13 +2915,13 @@
                 ]
             }
         },
-        "/api/v1/tenant/menu-types": {
+        "/api/v2/tenant/menu-types": {
             "get": {
                 "tags": [
                     "Menu"
                 ],
                 "summary": "テナント向けのメニュー種別一覧を取得",
-                "operationId": "ApiV1TenantMenu-typesGet",
+                "operationId": "ApiV2TenantMenu-typesGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -2946,13 +2946,13 @@
                 ]
             }
         },
-        "/api/v1/admin/menus": {
+        "/api/v2/admin/menus": {
             "get": {
                 "tags": [
                     "Menu"
                 ],
                 "summary": "管理者向けに、メニューとロールのマッピング情報一覧を取得",
-                "operationId": "ApiV1AdminMenusGet",
+                "operationId": "ApiV2AdminMenusGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -2977,13 +2977,13 @@
                 ]
             }
         },
-        "/api/v1/admin/menus/{id}": {
+        "/api/v2/admin/menus/{id}": {
             "put": {
                 "tags": [
                     "Menu"
                 ],
                 "summary": "管理者向けの、メニューとロールのマッピング情報を更新",
-                "operationId": "ApiV1AdminMenusByIdPut",
+                "operationId": "ApiV2AdminMenusByIdPut",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -3059,13 +3059,13 @@
                 ]
             }
         },
-        "/api/v1/admin/menu-types": {
+        "/api/v2/admin/menu-types": {
             "get": {
                 "tags": [
                     "Menu"
                 ],
                 "summary": "管理者向けメニュー種別一覧を取得",
-                "operationId": "ApiV1AdminMenu-typesGet",
+                "operationId": "ApiV2AdminMenu-typesGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -3090,253 +3090,13 @@
                 ]
             }
         },
-        "/api/v1/templates": {
-            "get": {
-                "tags": [
-                    "ModelTemplate"
-                ],
-                "summary": "指定された条件でページングされた状態で、全前テンプレートを取得",
-                "operationId": "ApiV1TemplatesGet",
-                "consumes": [],
-                "produces": [
-                    "application/json"
-                ],
-                "parameters": [
-                    {
-                        "name": "Id",
-                        "in": "query",
-                        "description": "IDの検索条件。\r\n比較文字列＋数値の形式。",
-                        "required": false,
-                        "type": "string"
-                    },
-                    {
-                        "name": "Name",
-                        "in": "query",
-                        "description": "名前",
-                        "required": false,
-                        "type": "string"
-                    },
-                    {
-                        "name": "CreatedAt",
-                        "in": "query",
-                        "description": "実行時刻の検索条件。\r\n比較文字列＋時刻の形式。\r\ne.g.（比較文字列は半角でOK）\r\n\"2018/01/01\" → 2018/01/01 00:00:00 以降 ～ 2018/01/02 00:00:00 より前\r\n\"＞2018/01/01\" → 2018/01/01 00:00:00 以降\r\n\"＜2018/01/01\" → 2018/01/01 00:00:00 以前",
-                        "required": false,
-                        "type": "string"
-                    },
-                    {
-                        "name": "Memo",
-                        "in": "query",
-                        "description": "メモ",
-                        "required": false,
-                        "type": "string"
-                    },
-                    {
-                        "name": "perPage",
-                        "in": "query",
-                        "description": "表示件数。指定がない場合は全件。",
-                        "required": false,
-                        "type": "integer",
-                        "format": "int32"
-                    },
-                    {
-                        "name": "page",
-                        "in": "query",
-                        "description": "ページ番号。デフォルトは1。",
-                        "required": false,
-                        "type": "integer",
-                        "format": "int32",
-                        "default": 1
-                    },
-                    {
-                        "name": "withTotal",
-                        "in": "query",
-                        "description": "合計件数をレスポンスヘッダ(X-Total-Count)に含めるか。デフォルトはfalse。",
-                        "required": false,
-                        "type": "boolean",
-                        "default": false
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Success",
-                        "schema": {
-                            "uniqueItems": false,
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/Nssol.Platypus.ApiModels.ModelTemplateApiModels.IndexOutputModel"
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "api_key": []
-                    }
-                ]
-            },
-            "post": {
-                "tags": [
-                    "ModelTemplate"
-                ],
-                "summary": "新規にモデルテンプレートを登録する",
-                "operationId": "ApiV1TemplatesPost",
-                "consumes": [
-                    "application/json-patch+json",
-                    "application/json",
-                    "text/json",
-                    "application/*+json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "parameters": [
-                    {
-                        "name": "model",
-                        "in": "body",
-                        "description": "新規作成内容",
-                        "required": false,
-                        "schema": {
-                            "$ref": "#/definitions/Nssol.Platypus.ApiModels.ModelTemplateApiModels.CreateInputModel"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Success",
-                        "schema": {
-                            "$ref": "#/definitions/Nssol.Platypus.ApiModels.ModelTemplateApiModels.IndexOutputModel"
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "api_key": []
-                    }
-                ]
-            }
-        },
-        "/api/v1/templates/{id}": {
-            "get": {
-                "tags": [
-                    "ModelTemplate"
-                ],
-                "summary": "指定されたIDのテンプレートの詳細情報を取得。",
-                "operationId": "ApiV1TemplatesByIdGet",
-                "consumes": [],
-                "produces": [
-                    "application/json"
-                ],
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "テンプレートID",
-                        "required": true,
-                        "type": "integer",
-                        "format": "int64"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Success",
-                        "schema": {
-                            "$ref": "#/definitions/Nssol.Platypus.ApiModels.ModelTemplateApiModels.DetailsOutputModel"
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "api_key": []
-                    }
-                ]
-            },
-            "delete": {
-                "tags": [
-                    "ModelTemplate"
-                ],
-                "summary": "テンプレートを削除する。",
-                "description": "一度でもテンプレートが使用されていた場合、削除不可",
-                "operationId": "ApiV1TemplatesByIdDelete",
-                "consumes": [],
-                "produces": [],
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "前処理ID",
-                        "required": true,
-                        "type": "integer",
-                        "format": "int64"
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "Success"
-                    }
-                },
-                "security": [
-                    {
-                        "api_key": []
-                    }
-                ]
-            },
-            "patch": {
-                "tags": [
-                    "ModelTemplate"
-                ],
-                "summary": "テンプレートの編集",
-                "description": "テンプレートが実行済みの場合でも編集可能な項目のみ扱う",
-                "operationId": "ApiV1TemplatesByIdPatch",
-                "consumes": [
-                    "application/json-patch+json",
-                    "application/json",
-                    "text/json",
-                    "application/*+json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "変更対象のテンプレートID",
-                        "required": true,
-                        "type": "integer",
-                        "format": "int64"
-                    },
-                    {
-                        "name": "model",
-                        "in": "body",
-                        "description": "変更内容",
-                        "required": false,
-                        "schema": {
-                            "$ref": "#/definitions/Nssol.Platypus.ApiModels.ModelTemplateApiModels.EditInputModel"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Success",
-                        "schema": {
-                            "$ref": "#/definitions/Nssol.Platypus.ApiModels.ModelTemplateApiModels.IndexOutputModel"
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "api_key": []
-                    }
-                ]
-            }
-        },
-        "/api/v1/admin/nodes": {
+        "/api/v2/admin/nodes": {
             "get": {
                 "tags": [
                     "Node"
                 ],
                 "summary": "全ノード一覧を取得",
-                "operationId": "ApiV1AdminNodesGet",
+                "operationId": "ApiV2AdminNodesGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -3394,7 +3154,7 @@
                     "Node"
                 ],
                 "summary": "新規にノードを登録する",
-                "operationId": "ApiV1AdminNodesPost",
+                "operationId": "ApiV2AdminNodesPost",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -3429,13 +3189,13 @@
                 ]
             }
         },
-        "/api/v1/admin/node-access-levels": {
+        "/api/v2/admin/node-access-levels": {
             "get": {
                 "tags": [
                     "Node"
                 ],
                 "summary": "ノードアクセスレベルの一覧を取得する",
-                "operationId": "ApiV1AdminNode-access-levelsGet",
+                "operationId": "ApiV2AdminNode-access-levelsGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -3460,13 +3220,13 @@
                 ]
             }
         },
-        "/api/v1/admin/nodes/{id}": {
+        "/api/v2/admin/nodes/{id}": {
             "get": {
                 "tags": [
                     "Node"
                 ],
                 "summary": "指定されたIDのノード情報を取得。",
-                "operationId": "ApiV1AdminNodesByIdGet",
+                "operationId": "ApiV2AdminNodesByIdGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -3500,7 +3260,7 @@
                     "Node"
                 ],
                 "summary": "ノード情報の編集",
-                "operationId": "ApiV1AdminNodesByIdPut",
+                "operationId": "ApiV2AdminNodesByIdPut",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -3546,7 +3306,7 @@
                     "Node"
                 ],
                 "summary": "ノードを削除する。",
-                "operationId": "ApiV1AdminNodesByIdDelete",
+                "operationId": "ApiV2AdminNodesByIdDelete",
                 "consumes": [],
                 "produces": [],
                 "parameters": [
@@ -3570,13 +3330,13 @@
                 ]
             }
         },
-        "/api/v1/admin/nodes/sync-cluster-from-db": {
+        "/api/v2/admin/nodes/sync-cluster-from-db": {
             "post": {
                 "tags": [
                     "Node"
                 ],
                 "summary": "ノード情報をDBからClusterへ同期させる",
-                "operationId": "ApiV1AdminNodesSync-cluster-from-dbPost",
+                "operationId": "ApiV2AdminNodesSync-cluster-from-dbPost",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -3601,13 +3361,13 @@
                 ]
             }
         },
-        "/api/v1/notebook/simple": {
+        "/api/v2/notebook/simple": {
             "get": {
                 "tags": [
                     "Notebook"
                 ],
                 "summary": "全ノートブック履歴のIDと名前を取得",
-                "operationId": "ApiV1NotebookSimpleGet",
+                "operationId": "ApiV2NotebookSimpleGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -3632,13 +3392,13 @@
                 ]
             }
         },
-        "/api/v1/notebook": {
+        "/api/v2/notebook": {
             "get": {
                 "tags": [
                     "Notebook"
                 ],
                 "summary": "指定された条件でページングされた状態で、全ノートブック履歴を取得",
-                "operationId": "ApiV1NotebookGet",
+                "operationId": "ApiV2NotebookGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -3731,13 +3491,13 @@
                 ]
             }
         },
-        "/api/v1/notebook/{id}": {
+        "/api/v2/notebook/{id}": {
             "get": {
                 "tags": [
                     "Notebook"
                 ],
                 "summary": "指定されたIDのノートブック履歴の詳細情報を取得。",
-                "operationId": "ApiV1NotebookByIdGet",
+                "operationId": "ApiV2NotebookByIdGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -3771,7 +3531,7 @@
                     "Notebook"
                 ],
                 "summary": "ノートブック履歴の編集",
-                "operationId": "ApiV1NotebookByIdPut",
+                "operationId": "ApiV2NotebookByIdPut",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -3819,7 +3579,7 @@
                     "Notebook"
                 ],
                 "summary": "ノートブック履歴を削除する。",
-                "operationId": "ApiV1NotebookByIdDelete",
+                "operationId": "ApiV2NotebookByIdDelete",
                 "consumes": [],
                 "produces": [],
                 "parameters": [
@@ -3844,13 +3604,13 @@
                 ]
             }
         },
-        "/api/v1/notebook/{id}/events": {
+        "/api/v2/notebook/{id}/events": {
             "get": {
                 "tags": [
                     "Notebook"
                 ],
                 "summary": "指定されたノートブック履歴のエラーイベントを取得します。",
-                "operationId": "ApiV1NotebookByIdEventsGet",
+                "operationId": "ApiV2NotebookByIdEventsGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -3880,13 +3640,13 @@
                 ]
             }
         },
-        "/api/v1/notebook/{id}/endpoint": {
+        "/api/v2/notebook/{id}/endpoint": {
             "get": {
                 "tags": [
                     "Notebook"
                 ],
                 "summary": "指定されたノートブック履歴のエンドポイントを取得します。",
-                "operationId": "ApiV1NotebookByIdEndpointGet",
+                "operationId": "ApiV2NotebookByIdEndpointGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -3916,13 +3676,13 @@
                 ]
             }
         },
-        "/api/v1/notebook/run": {
+        "/api/v2/notebook/run": {
             "post": {
                 "tags": [
                     "Notebook"
                 ],
                 "summary": "新規にノートブックコンテナを開始する",
-                "operationId": "ApiV1NotebookRunPost",
+                "operationId": "ApiV2NotebookRunPost",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -3958,14 +3718,14 @@
                 ]
             }
         },
-        "/api/v1/notebook/{id}/container-files": {
+        "/api/v2/notebook/{id}/container-files": {
             "get": {
                 "tags": [
                     "Notebook"
                 ],
                 "summary": "コンテナの出力ファイルの一覧を取得する。",
                 "description": "コンテナの/output/配下から指定ディレクトリパスの直下を検索する\r\n検索対象ディレクトリが見つからない場合もファイル・ディレクトリが空の結果を返す",
-                "operationId": "ApiV1NotebookByIdContainer-filesGet",
+                "operationId": "ApiV2NotebookByIdContainer-filesGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -4011,13 +3771,13 @@
                 ]
             }
         },
-        "/api/v1/notebook/{id}/halt": {
+        "/api/v2/notebook/{id}/halt": {
             "post": {
                 "tags": [
                     "Notebook"
                 ],
                 "summary": "ノートブックコンテナを途中で強制終了させる。",
-                "operationId": "ApiV1NotebookByIdHaltPost",
+                "operationId": "ApiV2NotebookByIdHaltPost",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -4047,13 +3807,13 @@
                 ]
             }
         },
-        "/api/v1/notebook/{id}/rerun": {
+        "/api/v2/notebook/{id}/rerun": {
             "post": {
                 "tags": [
                     "Notebook"
                 ],
                 "summary": "指定されたノートブック履歴のコンテナを再起動する",
-                "operationId": "ApiV1NotebookByIdRerunPost",
+                "operationId": "ApiV2NotebookByIdRerunPost",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -4097,13 +3857,13 @@
                 ]
             }
         },
-        "/api/v1/notebook/available-infinite-time": {
+        "/api/v2/notebook/available-infinite-time": {
             "get": {
                 "tags": [
                     "Notebook"
                 ],
                 "summary": "選択中のテナントのノートブック無期限利用可否フラグを取得する",
-                "operationId": "ApiV1NotebookAvailable-infinite-timeGet",
+                "operationId": "ApiV2NotebookAvailable-infinite-timeGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -4124,13 +3884,13 @@
                 ]
             }
         },
-        "/api/v1/preprocessings": {
+        "/api/v2/preprocessings": {
             "get": {
                 "tags": [
                     "Preprocessing"
                 ],
                 "summary": "指定された条件でページングされた状態で、全前処理を取得",
-                "operationId": "ApiV1PreprocessingsGet",
+                "operationId": "ApiV2PreprocessingsGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -4213,7 +3973,7 @@
                     "Preprocessing"
                 ],
                 "summary": "新規に前処理を登録する",
-                "operationId": "ApiV1PreprocessingsPost",
+                "operationId": "ApiV2PreprocessingsPost",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -4249,13 +4009,13 @@
                 ]
             }
         },
-        "/api/v1/preprocessings/{id}": {
+        "/api/v2/preprocessings/{id}": {
             "get": {
                 "tags": [
                     "Preprocessing"
                 ],
                 "summary": "指定されたIDの前処理の詳細情報を取得。",
-                "operationId": "ApiV1PreprocessingsByIdGet",
+                "operationId": "ApiV2PreprocessingsByIdGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -4290,7 +4050,7 @@
                 ],
                 "summary": "前処理の詳細情報編集",
                 "description": "全ての項目が対象だが、一度でも前処理が実行されていた場合、編集不可",
-                "operationId": "ApiV1PreprocessingsByIdPut",
+                "operationId": "ApiV2PreprocessingsByIdPut",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -4339,7 +4099,7 @@
                 ],
                 "summary": "前処理を削除する。",
                 "description": "一度でも前処理が実行されていた場合、削除不可",
-                "operationId": "ApiV1PreprocessingsByIdDelete",
+                "operationId": "ApiV2PreprocessingsByIdDelete",
                 "consumes": [],
                 "produces": [],
                 "parameters": [
@@ -4369,7 +4129,7 @@
                 ],
                 "summary": "前処理の編集",
                 "description": "前処理が実行済みの場合でも編集可能な項目のみ扱う",
-                "operationId": "ApiV1PreprocessingsByIdPatch",
+                "operationId": "ApiV2PreprocessingsByIdPatch",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -4413,13 +4173,13 @@
                 ]
             }
         },
-        "/api/v1/preprocessings/{id}/histories": {
+        "/api/v2/preprocessings/{id}/histories": {
             "get": {
                 "tags": [
                     "Preprocessing"
                 ],
                 "summary": "指定した前処理の履歴情報を取得する。",
-                "operationId": "ApiV1PreprocessingsByIdHistoriesGet",
+                "operationId": "ApiV2PreprocessingsByIdHistoriesGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -4453,13 +4213,13 @@
                 ]
             }
         },
-        "/api/v1/preprocessings/{id}/histories/{dataId}": {
+        "/api/v2/preprocessings/{id}/histories/{dataId}": {
             "get": {
                 "tags": [
                     "Preprocessing"
                 ],
                 "summary": "指定されたデータに対する前処理の履歴を取得。",
-                "operationId": "ApiV1PreprocessingsByIdHistoriesByDataIdGet",
+                "operationId": "ApiV2PreprocessingsByIdHistoriesByDataIdGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -4502,7 +4262,7 @@
                 ],
                 "summary": "前処理履歴を作成する。",
                 "description": "前処理実行用のコンテナなどは起動しない。ローカル環境など、KAMONOHASHI外で作成した前処理結果をアップロードする際に用いる。\r\n作成された前処理履歴は実行中のステータスとなり、前処理結果の追加が可能な状態になる。",
-                "operationId": "ApiV1PreprocessingsByIdHistoriesByDataIdPost",
+                "operationId": "ApiV2PreprocessingsByIdHistoriesByDataIdPost",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -4544,7 +4304,7 @@
                     "Preprocessing"
                 ],
                 "summary": "前処理履歴を削除する。生成された前処理済みデータもまとめて削除する。",
-                "operationId": "ApiV1PreprocessingsByIdHistoriesByDataIdDelete",
+                "operationId": "ApiV2PreprocessingsByIdHistoriesByDataIdDelete",
                 "consumes": [],
                 "produces": [],
                 "parameters": [
@@ -4577,13 +4337,13 @@
                 ]
             }
         },
-        "/api/v1/preprocessings/{id}/histories/{dataId}/events": {
+        "/api/v2/preprocessings/{id}/histories/{dataId}/events": {
             "get": {
                 "tags": [
                     "Preprocessing"
                 ],
                 "summary": "前処理履歴のイベントを取得する",
-                "operationId": "ApiV1PreprocessingsByIdHistoriesByDataIdEventsGet",
+                "operationId": "ApiV2PreprocessingsByIdHistoriesByDataIdEventsGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -4621,14 +4381,14 @@
                 ]
             }
         },
-        "/api/v1/preprocessings/{id}/run": {
+        "/api/v2/preprocessings/{id}/run": {
             "post": {
                 "tags": [
                     "Preprocessing"
                 ],
                 "summary": "前処理を実行し、履歴を作成する。",
                 "description": "前処理実行用のコンテナを起動する。\r\n作成された前処理履歴は実行中のステータスとなり、前処理結果の追加が可能な状態になる。",
-                "operationId": "ApiV1PreprocessingsByIdRunPost",
+                "operationId": "ApiV2PreprocessingsByIdRunPost",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -4672,13 +4432,13 @@
                 ]
             }
         },
-        "/api/v1/preprocessings/{id}/histories/{dataId}/data": {
+        "/api/v2/preprocessings/{id}/histories/{dataId}/data": {
             "post": {
                 "tags": [
                     "Preprocessing"
                 ],
                 "summary": "前処理履歴に出力データを追加する。\r\n追加する対象の前処理履歴は実行中のステータスのみ許可される。",
-                "operationId": "ApiV1PreprocessingsByIdHistoriesByDataIdDataPost",
+                "operationId": "ApiV2PreprocessingsByIdHistoriesByDataIdDataPost",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -4730,13 +4490,13 @@
                 ]
             }
         },
-        "/api/v1/preprocessings/{id}/histories/{dataId}/halt": {
+        "/api/v2/preprocessings/{id}/histories/{dataId}/halt": {
             "post": {
                 "tags": [
                     "Preprocessing"
                 ],
                 "summary": "前処理履歴の登録を異常終了させる。\r\n前処理履歴はエラーのステータスとなり、前処理結果の追加が不可能な状態になる。",
-                "operationId": "ApiV1PreprocessingsByIdHistoriesByDataIdHaltPost",
+                "operationId": "ApiV2PreprocessingsByIdHistoriesByDataIdHaltPost",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -4774,13 +4534,13 @@
                 ]
             }
         },
-        "/api/v1/preprocessings/{id}/histories/{dataId}/complete": {
+        "/api/v2/preprocessings/{id}/histories/{dataId}/complete": {
             "post": {
                 "tags": [
                     "Preprocessing"
                 ],
                 "summary": "前処理履歴の登録を完了する。\r\n前処理履歴は完了のステータスとなり、前処理結果の追加が不可能な状態になる。",
-                "operationId": "ApiV1PreprocessingsByIdHistoriesByDataIdCompletePost",
+                "operationId": "ApiV2PreprocessingsByIdHistoriesByDataIdCompletePost",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -4818,13 +4578,13 @@
                 ]
             }
         },
-        "/api/v1/preprocessings/{id}/histories/{dataId}/files": {
+        "/api/v2/preprocessings/{id}/histories/{dataId}/files": {
             "get": {
                 "tags": [
                     "Preprocessing"
                 ],
                 "summary": "前処理履歴添付ファイルの一覧を取得する。",
-                "operationId": "ApiV1PreprocessingsByIdHistoriesByDataIdFilesGet",
+                "operationId": "ApiV2PreprocessingsByIdHistoriesByDataIdFilesGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -4869,13 +4629,13 @@
                 ]
             }
         },
-        "/api/v1/admin/registry/endpoints": {
+        "/api/v2/admin/registry/endpoints": {
             "get": {
                 "tags": [
                     "Registry"
                 ],
                 "summary": "登録済みのDockerレジストリ エンドポイント一覧を取得",
-                "operationId": "ApiV1AdminRegistryEndpointsGet",
+                "operationId": "ApiV2AdminRegistryEndpointsGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -4904,7 +4664,7 @@
                     "Registry"
                 ],
                 "summary": "新規にDockerレジストリ エンドポイントを登録する",
-                "operationId": "ApiV1AdminRegistryEndpointsPost",
+                "operationId": "ApiV2AdminRegistryEndpointsPost",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -4940,13 +4700,13 @@
                 ]
             }
         },
-        "/api/v1/admin/registry/types": {
+        "/api/v2/admin/registry/types": {
             "get": {
                 "tags": [
                     "Registry"
                 ],
                 "summary": "Dockerレジストリ種別一覧を取得",
-                "operationId": "ApiV1AdminRegistryTypesGet",
+                "operationId": "ApiV2AdminRegistryTypesGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -4971,13 +4731,13 @@
                 ]
             }
         },
-        "/api/v1/admin/registry/endpoints/{id}": {
+        "/api/v2/admin/registry/endpoints/{id}": {
             "get": {
                 "tags": [
                     "Registry"
                 ],
                 "summary": "指定されたIDのDockerレジストリ エンドポイント情報を取得",
-                "operationId": "ApiV1AdminRegistryEndpointsByIdGet",
+                "operationId": "ApiV2AdminRegistryEndpointsByIdGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -5011,7 +4771,7 @@
                     "Registry"
                 ],
                 "summary": "Dockerレジストリ エンドポイント情報の編集",
-                "operationId": "ApiV1AdminRegistryEndpointsByIdPut",
+                "operationId": "ApiV2AdminRegistryEndpointsByIdPut",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -5059,7 +4819,7 @@
                     "Registry"
                 ],
                 "summary": "Dockerレジストリ エンドポイント情報の削除",
-                "operationId": "ApiV1AdminRegistryEndpointsByIdDelete",
+                "operationId": "ApiV2AdminRegistryEndpointsByIdDelete",
                 "consumes": [],
                 "produces": [],
                 "parameters": [
@@ -5084,13 +4844,13 @@
                 ]
             }
         },
-        "/api/v1/tenant/registry/endpoints": {
+        "/api/v2/tenant/registry/endpoints": {
             "get": {
                 "tags": [
                     "Registry"
                 ],
                 "summary": "テナント管理者が選択可能な登録済みのDockerレジストリ エンドポイント一覧を取得",
-                "operationId": "ApiV1TenantRegistryEndpointsGet",
+                "operationId": "ApiV2TenantRegistryEndpointsGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -5115,13 +4875,13 @@
                 ]
             }
         },
-        "/api/v1/registries/{registryId}/images": {
+        "/api/v2/registries/{registryId}/images": {
             "get": {
                 "tags": [
                     "Registry"
                 ],
                 "summary": "レジストリに存在する全イメージの取得",
-                "operationId": "ApiV1RegistriesByRegistryIdImagesGet",
+                "operationId": "ApiV2RegistriesByRegistryIdImagesGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -5155,13 +4915,13 @@
                 ]
             }
         },
-        "/api/v1/registries/{registryId}/images/{image}/tags": {
+        "/api/v2/registries/{registryId}/images/{image}/tags": {
             "get": {
                 "tags": [
                     "Registry"
                 ],
                 "summary": "イメージ名に対応するタグ一覧を取得",
-                "operationId": "ApiV1RegistriesByRegistryIdImagesByImageTagsGet",
+                "operationId": "ApiV2RegistriesByRegistryIdImagesByImageTagsGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -5202,13 +4962,13 @@
                 ]
             }
         },
-        "/api/v1/registries/{registryId}/images/{segments}": {
+        "/api/v2/registries/{registryId}/images/{segments}": {
             "get": {
                 "tags": [
                     "Registry"
                 ],
                 "summary": "階層化されたURLを吸収するためのダミーAPI。\r\n製品版のSwaggerからは削除する。",
-                "operationId": "ApiV1RegistriesByRegistryIdImagesBySegmentsGet",
+                "operationId": "ApiV2RegistriesByRegistryIdImagesBySegmentsGet",
                 "consumes": [],
                 "produces": [],
                 "parameters": [
@@ -5238,13 +4998,13 @@
                 ]
             }
         },
-        "/api/v1/admin/resource/nodes": {
+        "/api/v2/admin/resource/nodes": {
             "get": {
                 "tags": [
                     "Resource"
                 ],
                 "summary": "ノード単位のリソースデータを取得する",
-                "operationId": "ApiV1AdminResourceNodesGet",
+                "operationId": "ApiV2AdminResourceNodesGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -5269,13 +5029,13 @@
                 ]
             }
         },
-        "/api/v1/admin/resource/tenants": {
+        "/api/v2/admin/resource/tenants": {
             "get": {
                 "tags": [
                     "Resource"
                 ],
                 "summary": "テナント単位のリソースデータを取得する",
-                "operationId": "ApiV1AdminResourceTenantsGet",
+                "operationId": "ApiV2AdminResourceTenantsGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -5300,13 +5060,13 @@
                 ]
             }
         },
-        "/api/v1/admin/resource/containers": {
+        "/api/v2/admin/resource/containers": {
             "get": {
                 "tags": [
                     "Resource"
                 ],
                 "summary": "起動中のコンテナ一覧を取得する",
-                "operationId": "ApiV1AdminResourceContainersGet",
+                "operationId": "ApiV2AdminResourceContainersGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -5331,13 +5091,13 @@
                 ]
             }
         },
-        "/api/v1/admin/resource/container-types": {
+        "/api/v2/admin/resource/container-types": {
             "get": {
                 "tags": [
                     "Resource"
                 ],
                 "summary": "コンテナ種別一覧を取得",
-                "operationId": "ApiV1AdminResourceContainer-typesGet",
+                "operationId": "ApiV2AdminResourceContainer-typesGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -5362,13 +5122,13 @@
                 ]
             }
         },
-        "/api/v1/admin/resource/containers/{tenantId}/{name}": {
+        "/api/v2/admin/resource/containers/{tenantId}/{name}": {
             "get": {
                 "tags": [
                     "Resource"
                 ],
                 "summary": "指定コンテナのリソースデータを取得する",
-                "operationId": "ApiV1AdminResourceContainersByTenantIdByNameGet",
+                "operationId": "ApiV2AdminResourceContainersByTenantIdByNameGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -5409,7 +5169,7 @@
                     "Resource"
                 ],
                 "summary": "指定コンテナを削除する",
-                "operationId": "ApiV1AdminResourceContainersByTenantIdByNameDelete",
+                "operationId": "ApiV2AdminResourceContainersByTenantIdByNameDelete",
                 "consumes": [],
                 "produces": [],
                 "parameters": [
@@ -5441,13 +5201,13 @@
                 ]
             }
         },
-        "/api/v1/admin/resource/containers/{tenantId}/{name}/log": {
+        "/api/v2/admin/resource/containers/{tenantId}/{name}/log": {
             "get": {
                 "tags": [
                     "Resource"
                 ],
                 "summary": "指定コンテナのログを取得する",
-                "operationId": "ApiV1AdminResourceContainersByTenantIdByNameLogGet",
+                "operationId": "ApiV2AdminResourceContainersByTenantIdByNameLogGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -5484,13 +5244,13 @@
                 ]
             }
         },
-        "/api/v1/admin/resource/containers/{tenantId}/{name}/events": {
+        "/api/v2/admin/resource/containers/{tenantId}/{name}/events": {
             "get": {
                 "tags": [
                     "Resource"
                 ],
                 "summary": "指定コンテナのイベントを取得する",
-                "operationId": "ApiV1AdminResourceContainersByTenantIdByNameEventsGet",
+                "operationId": "ApiV2AdminResourceContainersByTenantIdByNameEventsGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -5527,13 +5287,13 @@
                 ]
             }
         },
-        "/api/v1/tenant/resource/containers": {
+        "/api/v2/tenant/resource/containers": {
             "get": {
                 "tags": [
                     "Resource"
                 ],
                 "summary": "特定テナント向けに起動中のコンテナ一覧を取得する",
-                "operationId": "ApiV1TenantResourceContainersGet",
+                "operationId": "ApiV2TenantResourceContainersGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -5558,13 +5318,13 @@
                 ]
             }
         },
-        "/api/v1/tenant/resource/nodes": {
+        "/api/v2/tenant/resource/nodes": {
             "get": {
                 "tags": [
                     "Resource"
                 ],
                 "summary": "特定テナントに紐づくノード単位のリソースデータを取得する",
-                "operationId": "ApiV1TenantResourceNodesGet",
+                "operationId": "ApiV2TenantResourceNodesGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -5589,13 +5349,13 @@
                 ]
             }
         },
-        "/api/v1/tenant/resource/containers/{name}": {
+        "/api/v2/tenant/resource/containers/{name}": {
             "get": {
                 "tags": [
                     "Resource"
                 ],
                 "summary": "指定コンテナのリソースデータを取得する",
-                "operationId": "ApiV1TenantResourceContainersByNameGet",
+                "operationId": "ApiV2TenantResourceContainersByNameGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -5628,7 +5388,7 @@
                     "Resource"
                 ],
                 "summary": "指定コンテナを削除する",
-                "operationId": "ApiV1TenantResourceContainersByNameDelete",
+                "operationId": "ApiV2TenantResourceContainersByNameDelete",
                 "consumes": [],
                 "produces": [],
                 "parameters": [
@@ -5651,13 +5411,13 @@
                 ]
             }
         },
-        "/api/v1/tenant/resource/containers/{name}/log": {
+        "/api/v2/tenant/resource/containers/{name}/log": {
             "get": {
                 "tags": [
                     "Resource"
                 ],
                 "summary": "指定コンテナのログを取得する",
-                "operationId": "ApiV1TenantResourceContainersByNameLogGet",
+                "operationId": "ApiV2TenantResourceContainersByNameLogGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -5686,13 +5446,13 @@
                 ]
             }
         },
-        "/api/v1/admin/roles": {
+        "/api/v2/admin/roles": {
             "get": {
                 "tags": [
                     "Role"
                 ],
                 "summary": "全ロール一覧を取得",
-                "operationId": "ApiV1AdminRolesGet",
+                "operationId": "ApiV2AdminRolesGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -5721,7 +5481,7 @@
                     "Role"
                 ],
                 "summary": "新規にロールを登録する",
-                "operationId": "ApiV1AdminRolesPost",
+                "operationId": "ApiV2AdminRolesPost",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -5756,13 +5516,13 @@
                 ]
             }
         },
-        "/api/v1/admin/roles/{id}": {
+        "/api/v2/admin/roles/{id}": {
             "get": {
                 "tags": [
                     "Role"
                 ],
                 "summary": "指定されたIDのロール情報を取得。",
-                "operationId": "ApiV1AdminRolesByIdGet",
+                "operationId": "ApiV2AdminRolesByIdGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -5796,7 +5556,7 @@
                     "Role"
                 ],
                 "summary": "ロール情報の編集",
-                "operationId": "ApiV1AdminRolesByIdPut",
+                "operationId": "ApiV2AdminRolesByIdPut",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -5842,7 +5602,7 @@
                     "Role"
                 ],
                 "summary": "ロールを削除する。",
-                "operationId": "ApiV1AdminRolesByIdDelete",
+                "operationId": "ApiV2AdminRolesByIdDelete",
                 "consumes": [],
                 "produces": [],
                 "parameters": [
@@ -5866,14 +5626,14 @@
                 ]
             }
         },
-        "/api/v1/tenant/roles": {
+        "/api/v2/tenant/roles": {
             "get": {
                 "tags": [
                     "Role"
                 ],
                 "summary": "現在選択中のテナントで利用可能なロール一覧を取得。",
                 "description": "システムロール以外の共通ロールと、テナント用カスタムロールが対象。",
-                "operationId": "ApiV1TenantRolesGet",
+                "operationId": "ApiV2TenantRolesGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -5902,7 +5662,7 @@
                     "Role"
                 ],
                 "summary": "新規にロールを登録する",
-                "operationId": "ApiV1TenantRolesPost",
+                "operationId": "ApiV2TenantRolesPost",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -5937,13 +5697,13 @@
                 ]
             }
         },
-        "/api/v1/tenant/roles/{id}": {
+        "/api/v2/tenant/roles/{id}": {
             "get": {
                 "tags": [
                     "Role"
                 ],
                 "summary": "指定されたIDのテナント用カスタムロール情報を取得。",
-                "operationId": "ApiV1TenantRolesByIdGet",
+                "operationId": "ApiV2TenantRolesByIdGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -5977,7 +5737,7 @@
                     "Role"
                 ],
                 "summary": "テナント用カスタムロール情報の編集",
-                "operationId": "ApiV1TenantRolesByIdPut",
+                "operationId": "ApiV2TenantRolesByIdPut",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -6023,7 +5783,7 @@
                     "Role"
                 ],
                 "summary": "テナント用カスタムロールを削除する。",
-                "operationId": "ApiV1TenantRolesByIdDelete",
+                "operationId": "ApiV2TenantRolesByIdDelete",
                 "consumes": [],
                 "produces": [],
                 "parameters": [
@@ -6047,13 +5807,13 @@
                 ]
             }
         },
-        "/api/v1/admin/storage/endpoints": {
+        "/api/v2/admin/storage/endpoints": {
             "get": {
                 "tags": [
                     "Storage"
                 ],
                 "summary": "登録済みのStorageエンドポイント一覧を取得",
-                "operationId": "ApiV1AdminStorageEndpointsGet",
+                "operationId": "ApiV2AdminStorageEndpointsGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -6082,7 +5842,7 @@
                     "Storage"
                 ],
                 "summary": "新規にStorageエンドポイントを登録する",
-                "operationId": "ApiV1AdminStorageEndpointsPost",
+                "operationId": "ApiV2AdminStorageEndpointsPost",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -6117,13 +5877,13 @@
                 ]
             }
         },
-        "/api/v1/admin/storage/endpoints/{id}": {
+        "/api/v2/admin/storage/endpoints/{id}": {
             "get": {
                 "tags": [
                     "Storage"
                 ],
                 "summary": "指定されたIDのStorageエンドポイント情報を取得。",
-                "operationId": "ApiV1AdminStorageEndpointsByIdGet",
+                "operationId": "ApiV2AdminStorageEndpointsByIdGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -6157,7 +5917,7 @@
                     "Storage"
                 ],
                 "summary": "Storageエンドポイント情報の編集",
-                "operationId": "ApiV1AdminStorageEndpointsByIdPut",
+                "operationId": "ApiV2AdminStorageEndpointsByIdPut",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -6203,7 +5963,7 @@
                     "Storage"
                 ],
                 "summary": "Storageエンドポイント情報の削除",
-                "operationId": "ApiV1AdminStorageEndpointsByIdDelete",
+                "operationId": "ApiV2AdminStorageEndpointsByIdDelete",
                 "consumes": [],
                 "produces": [],
                 "parameters": [
@@ -6227,13 +5987,13 @@
                 ]
             }
         },
-        "/api/v1/upload/parameter": {
+        "/api/v2/upload/parameter": {
             "get": {
                 "tags": [
                     "Storage"
                 ],
                 "summary": "分割アップロードを行うためのパラメータを取得する",
-                "operationId": "ApiV1UploadParameterGet",
+                "operationId": "ApiV2UploadParameterGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -6277,13 +6037,13 @@
                 ]
             }
         },
-        "/api/v1/upload/complete": {
+        "/api/v2/upload/complete": {
             "post": {
                 "tags": [
                     "Storage"
                 ],
                 "summary": "分割アップロードの処理を完了する",
-                "operationId": "ApiV1UploadCompletePost",
+                "operationId": "ApiV2UploadCompletePost",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -6318,13 +6078,13 @@
                 ]
             }
         },
-        "/api/v1/download/url": {
+        "/api/v2/download/url": {
             "get": {
                 "tags": [
                     "Storage"
                 ],
                 "summary": "ダウンロード用の一時署名URLを取得する",
-                "operationId": "ApiV1DownloadUrlGet",
+                "operationId": "ApiV2DownloadUrlGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -6374,13 +6134,301 @@
                 ]
             }
         },
-        "/api/v1/admin/tenants": {
+        "/api/v2/admin/templates": {
+            "get": {
+                "tags": [
+                    "Template"
+                ],
+                "summary": "全テンプレート一覧を取得",
+                "operationId": "ApiV2AdminTemplatesGet",
+                "consumes": [],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "perPage",
+                        "in": "query",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int32",
+                        "default": 1
+                    },
+                    {
+                        "name": "withTotal",
+                        "in": "query",
+                        "required": false,
+                        "type": "boolean",
+                        "default": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "uniqueItems": false,
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Nssol.Platypus.ApiModels.TemplateApiModels.IndexOutputModel"
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Template"
+                ],
+                "summary": "新規にテンプレートを登録する",
+                "operationId": "ApiV2AdminTemplatesPost",
+                "consumes": [
+                    "application/json-patch+json",
+                    "application/json",
+                    "text/json",
+                    "application/*+json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "model",
+                        "in": "body",
+                        "required": false,
+                        "schema": {
+                            "$ref": "#/definitions/Nssol.Platypus.ApiModels.TemplateApiModels.CreateInputModel"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/Nssol.Platypus.ApiModels.TemplateApiModels.IndexOutputModel"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/api/v2/admin/template-access-levels": {
+            "get": {
+                "tags": [
+                    "Template"
+                ],
+                "summary": "テンプレートアクセスレベルの一覧を取得する",
+                "operationId": "ApiV2AdminTemplate-access-levelsGet",
+                "consumes": [],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "uniqueItems": false,
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Nssol.Platypus.Infrastructure.Infos.EnumInfo"
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/api/v2/admin/templates/{id}": {
+            "get": {
+                "tags": [
+                    "Template"
+                ],
+                "summary": "指定されたIDのテンプレート情報を取得。",
+                "operationId": "ApiV2AdminTemplatesByIdGet",
+                "consumes": [],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "テンプレートID",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/Nssol.Platypus.ApiModels.TemplateApiModels.DetailsOutputModel"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Template"
+                ],
+                "summary": "バージョンを変更するテンプレート情報の編集",
+                "description": "バージョンを上げる編集では前処理コンテナ・学習コンテナの編集を扱う",
+                "operationId": "ApiV2AdminTemplatesByIdPost",
+                "consumes": [
+                    "application/json-patch+json",
+                    "application/json",
+                    "text/json",
+                    "application/*+json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "変更対象のテンプレートID",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "model",
+                        "in": "body",
+                        "description": "変更内容",
+                        "required": false,
+                        "schema": {
+                            "$ref": "#/definitions/Nssol.Platypus.ApiModels.TemplateApiModels.CreateInputModel"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/Nssol.Platypus.ApiModels.TemplateApiModels.IndexOutputModel"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Template"
+                ],
+                "summary": "テンプレートを削除する。",
+                "description": "一度でも前処理が実行されていた場合、削除不可",
+                "operationId": "ApiV2AdminTemplatesByIdDelete",
+                "consumes": [],
+                "produces": [],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "テンプレートID",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Template"
+                ],
+                "summary": "バージョンを変更しないテンプレート情報の編集",
+                "description": "同バージョンの編集ではテンプレートが実行済みの場合でも編集可能な項目のみ扱う",
+                "operationId": "ApiV2AdminTemplatesByIdPatch",
+                "consumes": [
+                    "application/json-patch+json",
+                    "application/json",
+                    "text/json",
+                    "application/*+json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "変更対象のテンプレートID",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "model",
+                        "in": "body",
+                        "description": "変更内容",
+                        "required": false,
+                        "schema": {
+                            "$ref": "#/definitions/Nssol.Platypus.ApiModels.TemplateApiModels.EditInputModel"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/Nssol.Platypus.ApiModels.TemplateApiModels.IndexOutputModel"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ]
+            }
+        },
+        "/api/v2/admin/tenants": {
             "get": {
                 "tags": [
                     "Tenant"
                 ],
                 "summary": "テナント一覧を取得",
-                "operationId": "ApiV1AdminTenantsGet",
+                "operationId": "ApiV2AdminTenantsGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -6409,7 +6457,7 @@
                     "Tenant"
                 ],
                 "summary": "新規にテナントを登録する",
-                "operationId": "ApiV1AdminTenantsPost",
+                "operationId": "ApiV2AdminTenantsPost",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -6445,13 +6493,13 @@
                 ]
             }
         },
-        "/api/v1/admin/tenants/{id}": {
+        "/api/v2/admin/tenants/{id}": {
             "get": {
                 "tags": [
                     "Tenant"
                 ],
                 "summary": "指定されたIDのテナント情報を取得。",
-                "operationId": "ApiV1AdminTenantsByIdGet",
+                "operationId": "ApiV2AdminTenantsByIdGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -6485,7 +6533,7 @@
                     "Tenant"
                 ],
                 "summary": "テナント情報の編集",
-                "operationId": "ApiV1AdminTenantsByIdPut",
+                "operationId": "ApiV2AdminTenantsByIdPut",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -6533,7 +6581,7 @@
                     "Tenant"
                 ],
                 "summary": "テナントを削除する。(他のユーザが未ログイン状態の時間帯で実施するのが望ましい)",
-                "operationId": "ApiV1AdminTenantsByIdDelete",
+                "operationId": "ApiV2AdminTenantsByIdDelete",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -6563,13 +6611,13 @@
                 ]
             }
         },
-        "/api/v1/tenant": {
+        "/api/v2/tenant": {
             "get": {
                 "tags": [
                     "Tenant"
                 ],
                 "summary": "接続中のテナントの情報を取得。",
-                "operationId": "ApiV1TenantGet",
+                "operationId": "ApiV2TenantGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -6594,7 +6642,7 @@
                     "Tenant"
                 ],
                 "summary": "接続中のテナントの情報の編集",
-                "operationId": "ApiV1TenantPut",
+                "operationId": "ApiV2TenantPut",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -6630,13 +6678,13 @@
                 ]
             }
         },
-        "/api/v1/training/simple": {
+        "/api/v2/training/simple": {
             "get": {
                 "tags": [
                     "Training"
                 ],
                 "summary": "全学習履歴のIDと名前を取得",
-                "operationId": "ApiV1TrainingSimpleGet",
+                "operationId": "ApiV2TrainingSimpleGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -6661,13 +6709,13 @@
                 ]
             }
         },
-        "/api/v1/training": {
+        "/api/v2/training": {
             "get": {
                 "tags": [
                     "Training"
                 ],
                 "summary": "指定された条件でページングされた状態で、全学習履歴を取得",
-                "operationId": "ApiV1TrainingGet",
+                "operationId": "ApiV2TrainingGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -6800,13 +6848,13 @@
                 ]
             }
         },
-        "/api/v1/training/mount": {
+        "/api/v2/training/mount": {
             "get": {
                 "tags": [
                     "Training"
                 ],
                 "summary": "マウントする学習履歴を取得",
-                "operationId": "ApiV1TrainingMountGet",
+                "operationId": "ApiV2TrainingMountGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -6844,13 +6892,13 @@
                 ]
             }
         },
-        "/api/v1/training/{id}": {
+        "/api/v2/training/{id}": {
             "get": {
                 "tags": [
                     "Training"
                 ],
                 "summary": "指定されたIDの学習履歴の詳細情報を取得。",
-                "operationId": "ApiV1TrainingByIdGet",
+                "operationId": "ApiV2TrainingByIdGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -6884,7 +6932,7 @@
                     "Training"
                 ],
                 "summary": "学習履歴の編集",
-                "operationId": "ApiV1TrainingByIdPut",
+                "operationId": "ApiV2TrainingByIdPut",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -6932,7 +6980,7 @@
                     "Training"
                 ],
                 "summary": "学習履歴を削除する。",
-                "operationId": "ApiV1TrainingByIdDelete",
+                "operationId": "ApiV2TrainingByIdDelete",
                 "consumes": [],
                 "produces": [],
                 "parameters": [
@@ -6957,13 +7005,13 @@
                 ]
             }
         },
-        "/api/v1/training/{id}/events": {
+        "/api/v2/training/{id}/events": {
             "get": {
                 "tags": [
                     "Training"
                 ],
                 "summary": "指定された学習履歴のエラーイベントを取得します。",
-                "operationId": "ApiV1TrainingByIdEventsGet",
+                "operationId": "ApiV2TrainingByIdEventsGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -6993,13 +7041,13 @@
                 ]
             }
         },
-        "/api/v1/training/run": {
+        "/api/v2/training/run": {
             "post": {
                 "tags": [
                     "Training"
                 ],
                 "summary": "新規に学習を開始する",
-                "operationId": "ApiV1TrainingRunPost",
+                "operationId": "ApiV2TrainingRunPost",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -7035,13 +7083,13 @@
                 ]
             }
         },
-        "/api/v1/training/{id}/files": {
+        "/api/v2/training/{id}/files": {
             "get": {
                 "tags": [
                     "Training"
                 ],
                 "summary": "学習履歴添付ファイルの一覧を取得する。",
-                "operationId": "ApiV1TrainingByIdFilesGet",
+                "operationId": "ApiV2TrainingByIdFilesGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -7087,7 +7135,7 @@
                     "Training"
                 ],
                 "summary": "学習履歴添付ファイルを登録する。",
-                "operationId": "ApiV1TrainingByIdFilesPost",
+                "operationId": "ApiV2TrainingByIdFilesPost",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -7131,14 +7179,14 @@
                 ]
             }
         },
-        "/api/v1/training/{id}/container-files": {
+        "/api/v2/training/{id}/container-files": {
             "get": {
                 "tags": [
                     "Training"
                 ],
                 "summary": "コンテナの出力ファイルの一覧を取得する。",
                 "description": "コンテナの/output/配下から指定ディレクトリパスの直下を検索する\r\n検索対象ディレクトリが見つからない場合もファイル・ディレクトリが空の結果を返す",
-                "operationId": "ApiV1TrainingByIdContainer-filesGet",
+                "operationId": "ApiV2TrainingByIdContainer-filesGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -7184,13 +7232,13 @@
                 ]
             }
         },
-        "/api/v1/training/{id}/files/{fileId}": {
+        "/api/v2/training/{id}/files/{fileId}": {
             "delete": {
                 "tags": [
                     "Training"
                 ],
                 "summary": "学習履歴添付ファイルを削除する",
-                "operationId": "ApiV1TrainingByIdFilesByFileIdDelete",
+                "operationId": "ApiV2TrainingByIdFilesByFileIdDelete",
                 "consumes": [],
                 "produces": [],
                 "parameters": [
@@ -7223,13 +7271,13 @@
                 ]
             }
         },
-        "/api/v1/training/{id}/tensorboard": {
+        "/api/v2/training/{id}/tensorboard": {
             "get": {
                 "tags": [
                     "Training"
                 ],
                 "summary": "指定したTensorBoardコンテナ情報を取得する",
-                "operationId": "ApiV1TrainingByIdTensorboardGet",
+                "operationId": "ApiV2TrainingByIdTensorboardGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -7263,7 +7311,7 @@
                     "Training"
                 ],
                 "summary": "指定した学習のTensor Boardを立てる",
-                "operationId": "ApiV1TrainingByIdTensorboardPut",
+                "operationId": "ApiV2TrainingByIdTensorboardPut",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -7311,7 +7359,7 @@
                     "Training"
                 ],
                 "summary": "指定した学習のTensor Boardを削除する",
-                "operationId": "ApiV1TrainingByIdTensorboardDelete",
+                "operationId": "ApiV2TrainingByIdTensorboardDelete",
                 "consumes": [],
                 "produces": [],
                 "parameters": [
@@ -7336,13 +7384,13 @@
                 ]
             }
         },
-        "/api/v1/training/{id}/halt": {
+        "/api/v2/training/{id}/halt": {
             "post": {
                 "tags": [
                     "Training"
                 ],
                 "summary": "学習を途中で強制終了させる。",
-                "operationId": "ApiV1TrainingByIdHaltPost",
+                "operationId": "ApiV2TrainingByIdHaltPost",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -7372,13 +7420,13 @@
                 ]
             }
         },
-        "/api/v1/training/{id}/user-cancel": {
+        "/api/v2/training/{id}/user-cancel": {
             "post": {
                 "tags": [
                     "Training"
                 ],
                 "summary": "学習を途中で強制終了させる。\r\nユーザ自身がジョブを停止させた場合。",
-                "operationId": "ApiV1TrainingByIdUser-cancelPost",
+                "operationId": "ApiV2TrainingByIdUser-cancelPost",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -7408,13 +7456,13 @@
                 ]
             }
         },
-        "/api/v1/training/{id}/complete": {
+        "/api/v2/training/{id}/complete": {
             "post": {
                 "tags": [
                     "Training"
                 ],
                 "summary": "学習を正常終了させる。",
-                "operationId": "ApiV1TrainingByIdCompletePost",
+                "operationId": "ApiV2TrainingByIdCompletePost",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -7444,13 +7492,13 @@
                 ]
             }
         },
-        "/api/v1/training/tags": {
+        "/api/v2/training/tags": {
             "get": {
                 "tags": [
                     "Training"
                 ],
                 "summary": "選択中のテナントに登録されている学習管理で使用するタグを表示する",
-                "operationId": "ApiV1TrainingTagsGet",
+                "operationId": "ApiV2TrainingTagsGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -7475,13 +7523,13 @@
                 ]
             }
         },
-        "/api/v1/admin/users": {
+        "/api/v2/admin/users": {
             "get": {
                 "tags": [
                     "User"
                 ],
                 "summary": "管理者向けにユーザの一覧を取得する。",
-                "operationId": "ApiV1AdminUsersGet",
+                "operationId": "ApiV2AdminUsersGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -7510,7 +7558,7 @@
                     "User"
                 ],
                 "summary": "ユーザをローカルアカウントとして新規追加する",
-                "operationId": "ApiV1AdminUsersPost",
+                "operationId": "ApiV2AdminUsersPost",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -7545,13 +7593,13 @@
                 ]
             }
         },
-        "/api/v1/admin/users/{id}": {
+        "/api/v2/admin/users/{id}": {
             "get": {
                 "tags": [
                     "User"
                 ],
                 "summary": "管理者向けに指定したユーザの情報を取得する。",
-                "operationId": "ApiV1AdminUsersByIdGet",
+                "operationId": "ApiV2AdminUsersByIdGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -7584,7 +7632,7 @@
                     "User"
                 ],
                 "summary": "指定したユーザを編集する",
-                "operationId": "ApiV1AdminUsersByIdPut",
+                "operationId": "ApiV2AdminUsersByIdPut",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -7630,7 +7678,7 @@
                     "User"
                 ],
                 "summary": "指定したユーザを削除する",
-                "operationId": "ApiV1AdminUsersByIdDelete",
+                "operationId": "ApiV2AdminUsersByIdDelete",
                 "consumes": [],
                 "produces": [],
                 "parameters": [
@@ -7654,13 +7702,13 @@
                 ]
             }
         },
-        "/api/v1/admin/users/{id}/password": {
+        "/api/v2/admin/users/{id}/password": {
             "put": {
                 "tags": [
                     "User"
                 ],
                 "summary": "指定したユーザのパスワードを変更する",
-                "operationId": "ApiV1AdminUsersByIdPasswordPut",
+                "operationId": "ApiV2AdminUsersByIdPasswordPut",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -7697,13 +7745,13 @@
                 ]
             }
         },
-        "/api/v1/tenant/users": {
+        "/api/v2/tenant/users": {
             "get": {
                 "tags": [
                     "User"
                 ],
                 "summary": "テナント向けに、所属しているユーザの一覧を取得する。",
-                "operationId": "ApiV1TenantUsersGet",
+                "operationId": "ApiV2TenantUsersGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -7728,13 +7776,13 @@
                 ]
             }
         },
-        "/api/v1/tenant/users/{id}": {
+        "/api/v2/tenant/users/{id}": {
             "get": {
                 "tags": [
                     "User"
                 ],
                 "summary": "テナント向けに指定したユーザの情報を取得する。",
-                "operationId": "ApiV1TenantUsersByIdGet",
+                "operationId": "ApiV2TenantUsersByIdGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -7767,7 +7815,7 @@
                     "User"
                 ],
                 "summary": "指定したユーザを接続中のテナントから削除する",
-                "operationId": "ApiV1TenantUsersByIdDelete",
+                "operationId": "ApiV2TenantUsersByIdDelete",
                 "consumes": [],
                 "produces": [],
                 "parameters": [
@@ -7792,13 +7840,13 @@
                 ]
             }
         },
-        "/api/v1/tenant/users/{id}/roles": {
+        "/api/v2/tenant/users/{id}/roles": {
             "put": {
                 "tags": [
                     "User"
                 ],
                 "summary": "指定したユーザについての接続中のテナントに対するロール情報を編集する",
-                "operationId": "ApiV1TenantUsersByIdRolesPut",
+                "operationId": "ApiV2TenantUsersByIdRolesPut",
                 "consumes": [
                     "application/json-patch+json",
                     "application/json",
@@ -7847,13 +7895,13 @@
                 ]
             }
         },
-        "/api/v1/version": {
+        "/api/v2/version": {
             "get": {
                 "tags": [
                     "Version"
                 ],
                 "summary": "バージョン情報を取得",
-                "operationId": "ApiV1VersionGet",
+                "operationId": "ApiV2VersionGet",
                 "consumes": [],
                 "produces": [
                     "application/json"
@@ -8573,6 +8621,22 @@
                 }
             }
         },
+        "Nssol.Platypus.ApiModels.DataApiModels.AddFilesInputModel": {
+            "required": [
+                "files"
+            ],
+            "type": "object",
+            "properties": {
+                "files": {
+                    "description": "ファイル名と保存パスのペアのListを受け取る",
+                    "uniqueItems": false,
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Nssol.Platypus.ApiModels.Components.AddFileInputModel"
+                    }
+                }
+            }
+        },
         "Nssol.Platypus.ApiModels.Components.AddFileInputModel": {
             "required": [
                 "fileName",
@@ -8587,6 +8651,23 @@
                 "storedPath": {
                     "description": "保存パス",
                     "type": "string"
+                }
+            }
+        },
+        "Nssol.Platypus.ApiModels.DataApiModels.DataFilesOutputModel": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "format": "int64",
+                    "description": "データID",
+                    "type": "integer"
+                },
+                "files": {
+                    "uniqueItems": false,
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Nssol.Platypus.ApiModels.DataApiModels.DataFileOutputModel"
+                    }
                 }
             }
         },
@@ -9994,242 +10075,6 @@
                 }
             }
         },
-        "Nssol.Platypus.ApiModels.ModelTemplateApiModels.IndexOutputModel": {
-            "description": "テンプレート情報のうち、Indexで表示する最低情報だけを保持する",
-            "type": "object",
-            "properties": {
-                "id": {
-                    "format": "int64",
-                    "description": "前処理ID",
-                    "type": "integer"
-                },
-                "name": {
-                    "description": "名前",
-                    "type": "string"
-                },
-                "memo": {
-                    "description": "メモ",
-                    "type": "string"
-                },
-                "taskType": {
-                    "format": "int32",
-                    "description": "タスクの種類",
-                    "enum": [
-                        0,
-                        1,
-                        2,
-                        3,
-                        4,
-                        5
-                    ],
-                    "type": "integer"
-                },
-                "createdBy": {
-                    "description": "登録者",
-                    "type": "string"
-                },
-                "createdAt": {
-                    "description": "登録日",
-                    "type": "string"
-                },
-                "modifiedBy": {
-                    "description": "更新者",
-                    "type": "string"
-                },
-                "modifiedAt": {
-                    "description": "更新日",
-                    "type": "string"
-                }
-            }
-        },
-        "Nssol.Platypus.ApiModels.ModelTemplateApiModels.CreateInputModel": {
-            "description": "テンプレート作成の入力モデル",
-            "required": [
-                "name",
-                "taskType"
-            ],
-            "type": "object",
-            "properties": {
-                "name": {
-                    "description": "識別名",
-                    "type": "string"
-                },
-                "taskType": {
-                    "format": "int32",
-                    "description": "タスクの種類",
-                    "enum": [
-                        0,
-                        1,
-                        2,
-                        3,
-                        4,
-                        5
-                    ],
-                    "type": "integer"
-                },
-                "entryPoint": {
-                    "description": "エントリポイント",
-                    "type": "string"
-                },
-                "containerImage": {
-                    "$ref": "#/definitions/Nssol.Platypus.ApiModels.Components.ContainerImageInputModel",
-                    "description": "コンテナ情報"
-                },
-                "gitModel": {
-                    "$ref": "#/definitions/Nssol.Platypus.ApiModels.Components.GitCommitNullableInputModel",
-                    "description": "ソースコードGit情報"
-                },
-                "memo": {
-                    "description": "メモ",
-                    "type": "string"
-                },
-                "cpu": {
-                    "format": "int32",
-                    "description": "CPUコア数のデフォルト値",
-                    "type": "integer"
-                },
-                "memory": {
-                    "format": "int32",
-                    "description": "メモリ容量（GB）のデフォルト値",
-                    "type": "integer"
-                },
-                "gpu": {
-                    "format": "int32",
-                    "description": "GPU数のデフォルト値",
-                    "type": "integer"
-                }
-            }
-        },
-        "Nssol.Platypus.ApiModels.Components.GitCommitNullableInputModel": {
-            "description": "Nssol.Platypus.ApiModels.Components.GitCommitInputModelからRequiredを消したもの。",
-            "type": "object",
-            "properties": {
-                "gitId": {
-                    "format": "int64",
-                    "description": "Git ID",
-                    "type": "integer"
-                },
-                "repository": {
-                    "description": "リポジトリ名",
-                    "type": "string"
-                },
-                "owner": {
-                    "description": "リポジトリのオーナー名",
-                    "type": "string"
-                },
-                "branch": {
-                    "description": "ブランチ名。指定しない場合はmasterになる。\r\nNssol.Platypus.ApiModels.Components.GitCommitNullableInputModel.CommitIdを指定した場合は無視される。",
-                    "type": "string"
-                },
-                "commitId": {
-                    "description": "コミットID。指定しない場合はNssol.Platypus.ApiModels.Components.GitCommitNullableInputModel.BranchのHEADコミットになる。",
-                    "type": "string"
-                }
-            }
-        },
-        "Nssol.Platypus.ApiModels.ModelTemplateApiModels.DetailsOutputModel": {
-            "type": "object",
-            "properties": {
-                "gitModel": {
-                    "$ref": "#/definitions/Nssol.Platypus.ApiModels.Components.GitCommitOutputModel",
-                    "description": "ソースコードGit情報"
-                },
-                "containerImage": {
-                    "$ref": "#/definitions/Nssol.Platypus.ApiModels.Components.ContainerImageOutputModel",
-                    "description": "コンテナイメージ"
-                },
-                "entryPoint": {
-                    "description": "エントリポイント。",
-                    "type": "string"
-                },
-                "cpu": {
-                    "format": "int32",
-                    "description": "CPUコア数のデフォルト値",
-                    "type": "integer"
-                },
-                "memory": {
-                    "format": "int32",
-                    "description": "メモリ容量（GB）のデフォルト値",
-                    "type": "integer"
-                },
-                "gpu": {
-                    "format": "int32",
-                    "description": "GPU数のデフォルト値",
-                    "type": "integer"
-                },
-                "id": {
-                    "format": "int64",
-                    "description": "前処理ID",
-                    "type": "integer"
-                },
-                "name": {
-                    "description": "名前",
-                    "type": "string"
-                },
-                "memo": {
-                    "description": "メモ",
-                    "type": "string"
-                },
-                "taskType": {
-                    "format": "int32",
-                    "description": "タスクの種類",
-                    "enum": [
-                        0,
-                        1,
-                        2,
-                        3,
-                        4,
-                        5
-                    ],
-                    "type": "integer"
-                },
-                "createdBy": {
-                    "description": "登録者",
-                    "type": "string"
-                },
-                "createdAt": {
-                    "description": "登録日",
-                    "type": "string"
-                },
-                "modifiedBy": {
-                    "description": "更新者",
-                    "type": "string"
-                },
-                "modifiedAt": {
-                    "description": "更新日",
-                    "type": "string"
-                }
-            }
-        },
-        "Nssol.Platypus.ApiModels.ModelTemplateApiModels.EditInputModel": {
-            "description": "テンプレート編集の入力モデル",
-            "type": "object",
-            "properties": {
-                "name": {
-                    "description": "名前",
-                    "type": "string"
-                },
-                "memo": {
-                    "description": "メモ",
-                    "type": "string"
-                },
-                "cpu": {
-                    "format": "int32",
-                    "description": "CPUコア数のデフォルト値",
-                    "type": "integer"
-                },
-                "memory": {
-                    "format": "int32",
-                    "description": "メモリ容量（GB）のデフォルト値",
-                    "type": "integer"
-                },
-                "gpu": {
-                    "format": "int32",
-                    "description": "GPU数のデフォルト値",
-                    "type": "integer"
-                }
-            }
-        },
         "Nssol.Platypus.ApiModels.NodeApiModels.IndexOutputModel": {
             "description": "ノード情報のうち、Indexで表示する最低情報だけを保持する",
             "type": "object",
@@ -10979,6 +10824,33 @@
                     "format": "int32",
                     "description": "GPU数のデフォルト値",
                     "type": "integer"
+                }
+            }
+        },
+        "Nssol.Platypus.ApiModels.Components.GitCommitNullableInputModel": {
+            "description": "Nssol.Platypus.ApiModels.Components.GitCommitInputModelからRequiredを消したもの。",
+            "type": "object",
+            "properties": {
+                "gitId": {
+                    "format": "int64",
+                    "description": "Git ID",
+                    "type": "integer"
+                },
+                "repository": {
+                    "description": "リポジトリ名",
+                    "type": "string"
+                },
+                "owner": {
+                    "description": "リポジトリのオーナー名",
+                    "type": "string"
+                },
+                "branch": {
+                    "description": "ブランチ名。指定しない場合はmasterになる。\r\nNssol.Platypus.ApiModels.Components.GitCommitNullableInputModel.CommitIdを指定した場合は無視される。",
+                    "type": "string"
+                },
+                "commitId": {
+                    "description": "コミットID。指定しない場合はNssol.Platypus.ApiModels.Components.GitCommitNullableInputModel.BranchのHEADコミットになる。",
+                    "type": "string"
                 }
             }
         },
@@ -12164,6 +12036,307 @@
                 "key": {
                     "description": "キー",
                     "type": "string"
+                }
+            }
+        },
+        "Nssol.Platypus.ApiModels.TemplateApiModels.IndexOutputModel": {
+            "description": "テンプレート情報のうち、Indexで表示する最低情報だけを保持する",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "format": "int64",
+                    "description": "ID",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "名前",
+                    "type": "string"
+                },
+                "memo": {
+                    "description": "メモ",
+                    "type": "string"
+                },
+                "accessLevel": {
+                    "format": "int32",
+                    "description": "アクセスレベル",
+                    "enum": [
+                        0,
+                        1,
+                        2
+                    ],
+                    "type": "integer"
+                },
+                "accessLevelStr": {
+                    "description": "アクセスレベルの表示名",
+                    "type": "string"
+                },
+                "version": {
+                    "format": "int64",
+                    "description": "バージョン",
+                    "type": "integer"
+                },
+                "groupId": {
+                    "format": "int64",
+                    "description": "グループID",
+                    "type": "integer"
+                },
+                "createdBy": {
+                    "description": "登録者",
+                    "type": "string"
+                },
+                "createdAt": {
+                    "description": "登録日",
+                    "type": "string"
+                },
+                "modifiedBy": {
+                    "description": "更新者",
+                    "type": "string"
+                },
+                "modifiedAt": {
+                    "description": "更新日",
+                    "type": "string"
+                }
+            }
+        },
+        "Nssol.Platypus.ApiModels.TemplateApiModels.CreateInputModel": {
+            "description": "テンプレート作成の入力モデル",
+            "required": [
+                "name",
+                "accessLevel",
+                "version"
+            ],
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "memo": {
+                    "description": "メモ",
+                    "type": "string"
+                },
+                "accessLevel": {
+                    "format": "int32",
+                    "description": "アクセスレベル",
+                    "enum": [
+                        0,
+                        1,
+                        2
+                    ],
+                    "type": "integer"
+                },
+                "version": {
+                    "format": "int64",
+                    "description": "バージョン",
+                    "type": "integer"
+                },
+                "groupId": {
+                    "format": "int64",
+                    "description": "グループID",
+                    "type": "integer"
+                },
+                "assignedTenantIds": {
+                    "description": "このテンプレートを使用できるテナントのID。\r\nNssol.Platypus.ApiModels.TemplateApiModels.CreateInputModel.AccessLevelがNssol.Platypus.Infrastructure.TemplateAccessLevel.Privateの時のみ指定可能。\r\nそれ以外の場合は無視される。",
+                    "uniqueItems": false,
+                    "type": "array",
+                    "items": {
+                        "format": "int64",
+                        "type": "integer"
+                    }
+                },
+                "preprocessEntryPoint": {
+                    "description": "エントリポイント",
+                    "type": "string"
+                },
+                "preprocessContainerImage": {
+                    "$ref": "#/definitions/Nssol.Platypus.ApiModels.Components.ContainerImageInputModel",
+                    "description": "コンテナ情報"
+                },
+                "preprocessGitModel": {
+                    "$ref": "#/definitions/Nssol.Platypus.ApiModels.Components.GitCommitNullableInputModel",
+                    "description": "前処理ソースコードGit情報"
+                },
+                "preprocessCpu": {
+                    "format": "int32",
+                    "description": "CPUコア数のデフォルト値",
+                    "type": "integer"
+                },
+                "preprocessMemory": {
+                    "format": "int32",
+                    "description": "メモリ容量（GB）のデフォルト値",
+                    "type": "integer"
+                },
+                "preprocessGpu": {
+                    "format": "int32",
+                    "description": "GPU数のデフォルト値",
+                    "type": "integer"
+                },
+                "trainingEntryPoint": {
+                    "description": "エントリポイント",
+                    "type": "string"
+                },
+                "trainingContainerImage": {
+                    "$ref": "#/definitions/Nssol.Platypus.ApiModels.Components.ContainerImageInputModel",
+                    "description": "コンテナ情報"
+                },
+                "trainingGitModel": {
+                    "$ref": "#/definitions/Nssol.Platypus.ApiModels.Components.GitCommitNullableInputModel",
+                    "description": "前処理ソースコードGit情報"
+                },
+                "trainingCpu": {
+                    "format": "int32",
+                    "description": "CPUコア数のデフォルト値",
+                    "type": "integer"
+                },
+                "trainingMemory": {
+                    "format": "int32",
+                    "description": "メモリ容量（GB）のデフォルト値",
+                    "type": "integer"
+                },
+                "trainingGpu": {
+                    "format": "int32",
+                    "description": "GPU数のデフォルト値",
+                    "type": "integer"
+                }
+            }
+        },
+        "Nssol.Platypus.ApiModels.TemplateApiModels.DetailsOutputModel": {
+            "type": "object",
+            "properties": {
+                "preprocessGitModel": {
+                    "$ref": "#/definitions/Nssol.Platypus.ApiModels.Components.GitCommitOutputModel",
+                    "description": "ソースコードGit情報"
+                },
+                "preprocessContainerImage": {
+                    "$ref": "#/definitions/Nssol.Platypus.ApiModels.Components.ContainerImageOutputModel",
+                    "description": "コンテナイメージ"
+                },
+                "preprocessEntryPoint": {
+                    "description": "エントリポイント。",
+                    "type": "string"
+                },
+                "trainingGitModel": {
+                    "$ref": "#/definitions/Nssol.Platypus.ApiModels.Components.GitCommitOutputModel",
+                    "description": "ソースコードGit情報"
+                },
+                "trainingContainerImage": {
+                    "$ref": "#/definitions/Nssol.Platypus.ApiModels.Components.ContainerImageOutputModel",
+                    "description": "コンテナイメージ"
+                },
+                "trainingEntryPoint": {
+                    "description": "エントリポイント。",
+                    "type": "string"
+                },
+                "assignedTenants": {
+                    "description": "Nssol.Platypus.ApiModels.TemplateApiModels.IndexOutputModel.AccessLevelがNssol.Platypus.Infrastructure.TemplateAccessLevel.Privateの時、このノードを使用できるテナントの一覧。",
+                    "uniqueItems": false,
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Nssol.Platypus.ApiModels.TemplateApiModels.DetailsOutputModel+AssignedTenant"
+                    }
+                },
+                "id": {
+                    "format": "int64",
+                    "description": "ID",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "名前",
+                    "type": "string"
+                },
+                "memo": {
+                    "description": "メモ",
+                    "type": "string"
+                },
+                "accessLevel": {
+                    "format": "int32",
+                    "description": "アクセスレベル",
+                    "enum": [
+                        0,
+                        1,
+                        2
+                    ],
+                    "type": "integer"
+                },
+                "accessLevelStr": {
+                    "description": "アクセスレベルの表示名",
+                    "type": "string"
+                },
+                "version": {
+                    "format": "int64",
+                    "description": "バージョン",
+                    "type": "integer"
+                },
+                "groupId": {
+                    "format": "int64",
+                    "description": "グループID",
+                    "type": "integer"
+                },
+                "createdBy": {
+                    "description": "登録者",
+                    "type": "string"
+                },
+                "createdAt": {
+                    "description": "登録日",
+                    "type": "string"
+                },
+                "modifiedBy": {
+                    "description": "更新者",
+                    "type": "string"
+                },
+                "modifiedAt": {
+                    "description": "更新日",
+                    "type": "string"
+                }
+            }
+        },
+        "Nssol.Platypus.ApiModels.TemplateApiModels.DetailsOutputModel+AssignedTenant": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "format": "int64",
+                    "description": "テナントID",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "テナント名",
+                    "type": "string"
+                },
+                "displayName": {
+                    "description": "テナント表示名",
+                    "type": "string"
+                }
+            }
+        },
+        "Nssol.Platypus.ApiModels.TemplateApiModels.EditInputModel": {
+            "description": "テンプレート編集の入力モデル",
+            "type": "object",
+            "properties": {
+                "name": {
+                    "description": "名前",
+                    "type": "string"
+                },
+                "memo": {
+                    "description": "メモ",
+                    "type": "string"
+                },
+                "accessLevel": {
+                    "format": "int32",
+                    "description": "アクセスレベル",
+                    "enum": [
+                        0,
+                        1,
+                        2
+                    ],
+                    "type": "integer"
+                },
+                "assignedTenantIds": {
+                    "description": "このテンプレートを使用できるテナントのID。\r\nNssol.Platypus.ApiModels.TemplateApiModels.EditInputModel.AccessLevelがNssol.Platypus.Infrastructure.TemplateAccessLevel.Privateの時のみ指定可能。\r\nそれ以外の場合は無視される。",
+                    "uniqueItems": false,
+                    "type": "array",
+                    "items": {
+                        "format": "int64",
+                        "type": "integer"
+                    }
                 }
             }
         },

@@ -32,10 +32,11 @@
         登録したテンプレートをカード形式で表示 -->
       <div class="dashboard">
         <div
-          v-for="(template, index) in preprocessings"
+          v-for="(template, index) in templates"
           :key="index"
           class="card-container"
         >
+          <!-- TODO /aquarium/model-template/<templateid>に飛ぶようにする -->
           <router-link to="/aquarium/model-template/1">
             <el-card
               class="template"
@@ -76,7 +77,7 @@
 import { createNamespacedHelpers } from 'vuex'
 import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index'
 // TODO template API に変更
-const { mapGetters, mapActions } = createNamespacedHelpers('preprocessing')
+const { mapGetters, mapActions } = createNamespacedHelpers('template')
 
 export default {
   title: 'モデルテンプレート',
@@ -119,7 +120,7 @@ export default {
   },
   computed: {
     // TODO template API に変更
-    ...mapGetters(['preprocessings']),
+    ...mapGetters(['templates']),
   },
   async created() {
     // TODO template API に変更
@@ -128,14 +129,14 @@ export default {
 
   methods: {
     // TODO template API に変更
-    ...mapActions(['fetchPreprocessings']),
+    ...mapActions(['fetchModelTemplates']),
 
     async retrieveData() {
       let params = this.searchCondition
       params.page = this.pageStatus.currentPage
       params.perPage = this.pageStatus.currentPageSize
       params.withTotal = true
-      await this.fetchPreprocessings(params)
+      await this.fetchModelTemplates(params)
     },
     async search() {
       this.pageStatus.currentPage = 1

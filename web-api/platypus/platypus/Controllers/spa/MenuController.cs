@@ -18,7 +18,8 @@ using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Controllers.spa
 {
-    [Route("api/v1/menu")]
+    [ApiVersion("1"), ApiVersion("2")]
+    [Route("api/v{api-version:apiVersion}/menu")]
     public class MenuController : PlatypusApiControllerBase
     {
         private readonly IMenuLogic menuLogic;
@@ -40,7 +41,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// テナント向けに、メニューとロールのマッピング情報一覧を取得
         /// </summary>
-        [HttpGet("/api/v1/tenant/menus")]
+        [HttpGet("/api/v{api-version:apiVersion}/tenant/menus")]
         [PermissionFilter(MenuCode.TenantMenu)]
         [ProducesResponseType(typeof(IEnumerable<MenuForTenantOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetMenuRoleMapForTenant()
@@ -75,7 +76,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// テナント向けの、メニューとロールのマッピング情報を更新
         /// </summary>
-        [HttpPut("/api/v1/tenant/menus/{id}")]
+        [HttpPut("/api/v{api-version:apiVersion}/tenant/menus/{id}")]
         [PermissionFilter(MenuCode.TenantMenu)]
         [ProducesResponseType(typeof(MenuForTenantOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> EditMenuRoleMapForTenant([FromRoute] MenuCode? id, [FromBody] IEnumerable<long> roleIds, [FromServices] IMenuRepository menuRepository)
@@ -147,7 +148,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// テナント向けのメニュー種別一覧を取得
         /// </summary>
-        [HttpGet("/api/v1/tenant/menu-types")]
+        [HttpGet("/api/v{api-version:apiVersion}/tenant/menu-types")]
         [PermissionFilter(MenuCode.TenantMenu)]
         [ProducesResponseType(typeof(IEnumerable<EnumInfo>), (int)HttpStatusCode.OK)]
         public IActionResult GetAllTypesForTenant()
@@ -165,7 +166,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 管理者向けに、メニューとロールのマッピング情報一覧を取得
         /// </summary>
-        [HttpGet("/api/v1/admin/menus")]
+        [HttpGet("/api/v{api-version:apiVersion}/admin/menus")]
         [PermissionFilter(MenuCode.Menu)]
         [ProducesResponseType(typeof(IEnumerable<MenuForAdminOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetMenuRoleMapForAdmin()
@@ -198,7 +199,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 管理者向けの、メニューとロールのマッピング情報を更新
         /// </summary>
-        [HttpPut("/api/v1/admin/menus/{id}")]
+        [HttpPut("/api/v{api-version:apiVersion}/admin/menus/{id}")]
         [PermissionFilter(MenuCode.Menu)]
         [ProducesResponseType(typeof(MenuForAdminOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> EditMenuRoleMapForAdmin([FromRoute] MenuCode? id, [FromBody] IEnumerable<long> roleIds, [FromServices] IMenuRepository menuRepository)
@@ -274,7 +275,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 管理者向けメニュー種別一覧を取得
         /// </summary>
-        [HttpGet("/api/v1/admin/menu-types")]
+        [HttpGet("/api/v{api-version:apiVersion}/admin/menu-types")]
         [PermissionFilter(MenuCode.Menu)]
         [ProducesResponseType(typeof(IEnumerable<EnumInfo>), (int)HttpStatusCode.OK)]
         public IActionResult GetAllTypesForSystem()

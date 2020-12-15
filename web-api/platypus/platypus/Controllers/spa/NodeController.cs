@@ -19,7 +19,8 @@ using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Controllers.spa
 {
-    [Route("api/v1/admin/nodes")]
+    [ApiVersion("1"), ApiVersion("2")]
+    [Route("api/v{api-version:apiVersion}/admin/nodes")]
     public class NodeController : PlatypusApiControllerBase
     {
         private readonly INodeRepository nodeRepository;
@@ -76,7 +77,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// ノードアクセスレベルの一覧を取得する
         /// </summary>
-        [HttpGet("/api/v1/admin/node-access-levels")]
+        [HttpGet("/api/v{api-version:apiVersion}/admin/node-access-levels")]
         [PermissionFilter(MenuCode.Node)]
         [ProducesResponseType(typeof(IEnumerable<EnumInfo>), (int)HttpStatusCode.OK)]
         public IActionResult GetAllTypes()

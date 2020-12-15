@@ -20,7 +20,8 @@ namespace Nssol.Platypus.Controllers.spa
     /// <summary>
     /// テナント管理を扱うためのAPI集
     /// </summary>
-    [Route("api/v1/admin/tenants")]
+    [ApiVersion("1"), ApiVersion("2")]
+    [Route("api/v{api-version:apiVersion}/admin/tenants")]
     public class TenantController : PlatypusApiControllerBase
     {
         private readonly ITenantRepository tenantRepository;
@@ -503,7 +504,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 接続中のテナントの情報を取得。
         /// </summary>
-        [HttpGet("/api/v1/tenant")]
+        [HttpGet("/api/v{api-version:apiVersion}/tenant")]
         [PermissionFilter(MenuCode.TenantSetting)]
         [ProducesResponseType(typeof(DetailsOutputModel), (int)HttpStatusCode.OK)]
         public IActionResult GetDetailsForTenant()
@@ -515,7 +516,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// 接続中のテナントの情報の編集
         /// </summary>
         /// <param name="model">変更内容</param>
-        [HttpPut("/api/v1/tenant")]
+        [HttpPut("/api/v{api-version:apiVersion}/tenant")]
         [PermissionFilter(MenuCode.TenantSetting)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> EditForTenant([FromBody]EditInputModel model)

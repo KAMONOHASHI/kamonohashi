@@ -16,7 +16,8 @@ using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Controllers.spa
 {
-    [Route("api/v1/data")]
+    [ApiVersion("1"), ApiVersion("2")]
+    [Route("api/v{api-version:apiVersion}/data")]
     public class DataController : PlatypusApiControllerBase
     {
         private readonly IDataRepository dataRepository;
@@ -353,6 +354,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="id">変更対象のデータID</param>
         /// <param name="model">追加するファイル情報</param>
         /// <param name="dataSetRepository">DI用</param>
+        [MapToApiVersion("1")]
         [HttpPost("{id}/files")]
         [Filters.PermissionFilter(MenuCode.Data)]
         [ProducesResponseType(typeof(DataFileOutputModel), (int)HttpStatusCode.Created)]
@@ -389,6 +391,63 @@ namespace Nssol.Platypus.Controllers.spa
             unitOfWork.Commit();
 
             return JsonCreated(new DataFileOutputModel { Id = id, Key = property.Key, FileId = property.Id, FileName = model.FileName });
+        }
+
+        /// <summary>
+        /// ファイルを追加する。
+        /// </summary>
+        /// <param name="id">変更対象のデータID</param>
+        /// <param name="model">追加するファイル情報</param>
+        /// <param name="dataSetRepository">DI用</param>
+        [MapToApiVersion("2")]
+        [HttpPost("{id}/files")]
+        [Filters.PermissionFilter(MenuCode.Data)]
+        [ProducesResponseType(typeof(DataFilesOutputModel), (int)HttpStatusCode.Created)]
+        public async Task<IActionResult> AddStoredFiles(long id, [FromBody]AddFilesInputModel model, [FromServices] IDataSetRepository dataSetRepository)
+        {
+            //データの入力チェック
+            if (!ModelState.IsValid)
+            {
+                return JsonBadRequest("Invalid inputs.");
+            }
+
+            //データの存在チェック
+            var data = await dataRepository.GetDataIncludeAllAsync(id);
+            if (data == null)
+            {
+                return JsonNotFound($"Data ID {id} is not found.");
+            }
+
+            var checkResult = await CheckDataIsLocked(data, dataSetRepository);
+            if (checkResult != null)
+            {
+                return checkResult;
+            }
+
+            // 1データあたりのファイル数チェック
+            const int maxNumberOfFiles = 10000;
+            if (maxNumberOfFiles < data.DataProperties.Count + model.Files.Count)
+            {
+                return JsonBadRequest($"Maximum number of files per data is {maxNumberOfFiles}.");
+            }
+
+            var files = new List<DataFileOutputModel>();
+
+            foreach (var fileinfo in model.Files)
+            {
+                // 同じファイル名は登録できない。存在した場合はエラーを返し、データ登録を取りやめる。
+                var file = data.DataProperties.FirstOrDefault(d => d.Key == fileinfo.FileName);
+                if (file != null)
+                {
+                    return JsonConflict($"Data {data.Name} has already a file named {fileinfo.FileName}.");
+                }
+                // データファイルの登録
+                var property = dataRepository.AddFile(data, fileinfo.FileName, fileinfo.StoredPath);
+                files.Add(new DataFileOutputModel { FileId = property.Id, Key = property.Key, FileName = fileinfo.FileName });
+            }
+            unitOfWork.Commit();
+
+            return JsonCreated(new DataFilesOutputModel { Id = id, Files = files });
         }
 
         /// <summary>

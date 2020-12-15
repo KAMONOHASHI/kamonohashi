@@ -1,4 +1,4 @@
-import api from '@/api/v1/api'
+import api from '@/api/api'
 import Util from '@/util/util'
 
 // initial state

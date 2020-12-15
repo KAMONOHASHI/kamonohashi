@@ -95,14 +95,17 @@ export default {
   },
   data() {
     let validateFiles = (rule, value, callback) => {
-      // アップロードするファイルが存在しない場合はエラーを出す。
-      if (
-        this.$refs.dataFile.isFileSelected() ||
-        this.uploadedFiles.length >= 1
-      ) {
-        callback()
-      } else {
+      // 1データのファイルが許容範囲外ならエラーを出す。
+      // ただし、既存データのファイル数が最大値を超えていても、ファイル追加以外の編集は可能にする。
+      let uploaded = this.uploadedFiles.length
+      let selected = this.$refs.dataFile.selectedFilesLength()
+      let max = 10000
+      if (uploaded <= 0 && selected <= 0) {
         callback(new Error('ファイルを1つ以上選択してください'))
+      } else if (0 < selected && max < uploaded + selected) {
+        callback(new Error(`1データの最大ファイル数は${max}です`))
+      } else {
+        callback()
       }
     }
     return {
@@ -191,8 +194,8 @@ export default {
             this.error = null
           } catch (error) {
             try {
-              // データIDが存在する場合、該当のデータを削除する
-              if (dataId !== null) {
+              // 新規データ作成の場合、該当のデータを削除する
+              if (this.id === null && dataId !== null) {
                 await this.delete(dataId)
               }
             } finally {
@@ -240,7 +243,7 @@ export default {
     async uploadFile(dataId) {
       let dataFileInfo = await this.$refs.dataFile.uploadFile()
       if (dataFileInfo !== undefined) {
-        this.putFile({ id: dataId, fileInfo: dataFileInfo })
+        await this.putFile({ id: dataId, fileInfo: dataFileInfo })
       }
     },
 

@@ -24,7 +24,8 @@ namespace Nssol.Platypus.Controllers.spa
     /// <summary>
     /// リソース管理を扱うためのAPI集
     /// </summary>
-    [Route("api/v1/admin/resource")]
+    [ApiVersion("1"), ApiVersion("2")]
+    [Route("api/v{api-version:apiVersion}/admin/resource")]
     public class ResourceController : PlatypusApiControllerBase
     {
         // for DI
@@ -619,7 +620,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// 特定テナント向けに起動中のコンテナ一覧を取得する
         /// </summary>
         /// <returns>リソースデータ</returns>
-        [HttpGet("/api/v1/tenant/resource/containers")]
+        [HttpGet("/api/v{api-version:apiVersion}/tenant/resource/containers")]
         [PermissionFilter(MenuCode.TenantResource)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<ContainerDetailsForTenantOutputModel>))]
         public async Task<IActionResult> GetResourceForTenant()
@@ -642,7 +643,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// 特定テナントに紐づくノード単位のリソースデータを取得する
         /// </summary>
         /// <returns>特定テナントに紐づくノード単位のリソースデータ</returns>
-        [HttpGet("/api/v1/tenant/resource/nodes")]
+        [HttpGet("/api/v{api-version:apiVersion}/tenant/resource/nodes")]
         [PermissionFilter(MenuCode.TenantResource)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<NodeResourceOutputModel>))]
         public async Task<IActionResult> GetResourceByNodeForTenant([FromServices] INodeRepository nodeRepository)
@@ -725,7 +726,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="name">コンテナ名</param>
         /// <returns>リソースデータ</returns>
-        [HttpGet("/api/v1/tenant/resource/containers/{name}")]
+        [HttpGet("/api/v{api-version:apiVersion}/tenant/resource/containers/{name}")]
         [PermissionFilter(MenuCode.TenantResource)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(ContainerDetailsForTenantOutputModel))]
         public async Task<IActionResult> GetResourceByContainerNameForTenant([FromRoute] string name)
@@ -757,7 +758,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="name">コンテナ名</param>
         /// <returns>リソースデータ</returns>
-        [HttpGet("/api/v1/tenant/resource/containers/{name}/log")]
+        [HttpGet("/api/v{api-version:apiVersion}/tenant/resource/containers/{name}/log")]
         [PermissionFilter(MenuCode.TenantResource)]
         [ProducesResponseType(typeof(System.IO.Stream), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetLogByContainerIdForTenant([FromRoute] string name)
@@ -785,7 +786,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 指定コンテナを削除する
         /// </summary>
-        [HttpDelete("/api/v1/tenant/resource/containers/{name}")]
+        [HttpDelete("/api/v{api-version:apiVersion}/tenant/resource/containers/{name}")]
         [PermissionFilter(MenuCode.TenantResource)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         public async Task<IActionResult> DeleteResourceByContainerIdForTenant([FromRoute] string name)

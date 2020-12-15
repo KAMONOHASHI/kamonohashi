@@ -203,18 +203,18 @@ export default {
         name: null,
         entryPoint: null,
         memo: null,
-        containerImage: {
+        preprocessContainerImage: {
           registry: null,
           image: null,
           tag: null,
         },
-        gitModel: {
+        preprocessGitModel: {
           git: null,
           repository: null,
           branch: null,
           commit: null,
         },
-        resource: {
+        preprocessResource: {
           cpu: 1,
           memory: 1,
           gpu: 0,
@@ -245,8 +245,7 @@ export default {
       commits: ['gitSelector/commits'],
       commitDetail: ['gitSelector/commitDetail'],
       loadingRepositories: ['gitSelector/loadingRepositories'],
-      detail: ['preprocessing/detail'],
-      histories: ['preprocessing/histories'],
+      detail: ['template/detail'],
       quota: ['cluster/quota'],
     }),
   },
@@ -261,10 +260,10 @@ export default {
   },
   methods: {
     ...mapActions([
-      'modelTemplate/fetchDetail',
-      'modelTemplate/post',
-      'modelTemplate/put',
-      'modelTemplate/delete',
+      'template/fetchDetail',
+      'template/post',
+      'template/put',
+      'template/delete',
       'registrySelector/fetchRegistries',
       'registrySelector/fetchImages',
       'registrySelector/fetchTags',
@@ -299,14 +298,16 @@ export default {
       // 指定に必要な情報を取得
       // レジストリ一覧を取得し、デフォルトレジストリを設定
       await this['registrySelector/fetchRegistries']()
-      this.form.containerImage.registry = this.registries.find(registry => {
-        return registry.id === this.defaultRegistryId
-      })
-      await this.selectRegistry(this.defaultRegistryId)
+      this.form.preprocessContainerImage.registry = this.registries.find(
+        registry => {
+          return registry.id === this.defaultRegistryId
+        },
+      )
+      await this.SelectRegistry(this.defaultRegistryId)
 
       // gitサーバ一覧を取得し、デフォルトgitサーバを設定
       await this['gitSelector/fetchGits']()
-      this.form.gitModel.git = this.gits.find(git => {
+      this.form.preprocessGitModel.git = this.gits.find(git => {
         return git.id === this.defaultGitId
       })
       await this['gitSelector/fetchRepositories'](this.defaultGitId)
@@ -347,28 +348,28 @@ export default {
               // コンテナイメージの指定
               // イメージとタグが指定されている場合、コンテナイメージを指定して登録
               // イメージとタグが指定されていない場合、コンテナイメージは未指定(null)として登録
-              let containerImage = null
+              let preprocessContainerImage = null
               if (
-                this.form.containerImage.image !== null &&
-                this.form.containerImage.tag !== null
+                this.form.preprocessContainerImage.image !== null &&
+                this.form.preprocessContainerImage.tag !== null
               ) {
-                containerImage = {
-                  registryId: this.form.containerImage.registry.id,
-                  image: this.form.containerImage.image,
-                  tag: this.form.containerImage.tag,
+                preprocessContainerImage = {
+                  registryId: this.form.preprocessContainerImage.registry.id,
+                  image: this.form.preprocessContainerImage.image,
+                  tag: this.form.preprocessContainerImage.tag,
                 }
               }
 
               // gitモデルの指定
               // リポジトリとブランチが指定されている場合、gitモデルを指定して登録
               // リポジトリとブランチが指定されていない場合、gitモデルは未指定(null)として登録
-              let gitModel = null
+              let preprocessGitModel = null
               if (
-                this.form.gitModel.repository !== null &&
-                this.form.gitModel.branch !== null
+                this.form.preprocessGitModel.repository !== null &&
+                this.form.preprocessGitModel.branch !== null
               ) {
                 // HEAD指定の時はcommitsの先頭要素をcommitIDに指定する。コピー実行時の再現性を担保するため
-                gitModel = {
+                preprocessGitModel = {
                   gitId: this.form.gitModel.git.id,
                   repository: this.form.gitModel.repository.name,
                   owner: this.form.gitModel.repository.owner,
@@ -380,20 +381,20 @@ export default {
               }
               let params = {
                 name: this.form.name,
-                entryPoint: this.form.entryPoint,
-                ContainerImage: containerImage,
-                GitModel: gitModel,
+                preprocessEntryPoint: this.form.preprocessEntryPoint,
+                preprocessContainerImage: preprocessContainerImage,
+                preprocessGitModel: preprocessGitModel,
                 memo: this.form.memo,
-                cpu: this.form.resource.cpu,
-                memory: this.form.resource.memory,
-                gpu: this.form.resource.gpu,
+                cpu: this.form.preprocessResource.cpu,
+                memory: this.form.preprocessResource.memory,
+                gpu: this.form.preprocessResource.gpu,
               }
               if (this.isCreateDialog) {
                 // 新規作成
-                await this['model-template/post'](params)
+                await this['template/post'](params)
               } else {
                 // 編集
-                await this['model-template/put']({
+                await this['template/put']({
                   id: this.id,
                   params: params,
                 })

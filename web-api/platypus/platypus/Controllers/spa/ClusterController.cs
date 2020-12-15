@@ -19,7 +19,8 @@ using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Controllers.spa
 {
-    [Route("api/v1")]
+    [ApiVersion("1"), ApiVersion("2")]
+    [Route("api/v{api-version:apiVersion}")]
     public class ClusterController : PlatypusApiControllerBase
     {
         private readonly ITensorBoardContainerRepository tensorBoardContainerRepository;
@@ -123,7 +124,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 接続中テナントのクォータ情報を取得
         /// </summary>
-        [HttpGet("/api/v1/tenant/quota")]
+        [HttpGet("tenant/quota")]
         [PermissionFilter(MenuCode.TenantResource, MenuCode.Training, MenuCode.Preprocess, MenuCode.Inference, MenuCode.Notebook)]
         [ProducesResponseType(typeof(QuotaOutputModel), (int)HttpStatusCode.OK)]
         public IActionResult GetQuotaForTenantAsync([FromServices] ITenantRepository tenantRepository)
