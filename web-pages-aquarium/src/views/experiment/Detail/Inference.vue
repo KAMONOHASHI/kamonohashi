@@ -1,6 +1,23 @@
 <template>
   <div>
     <h2>推論一覧</h2>
+    作成したAIの評価の履歴一覧です
+    <el-row>
+      <el-col :span="18">
+        <el-table :data="inferenceList" style="width: 100%">
+          <el-table-column prop="id" label="ID" width="180"> </el-table-column>
+          <el-table-column prop="data" label="データ" width="180">
+          </el-table-column>
+          <el-table-column prop="result" label="結果"> </el-table-column>
+        </el-table>
+      </el-col>
+    </el-row>
+    <el-row>
+      <el-col> </el-col>
+      <el-button type="primary" style="margin-top:20px" @click="submit">
+        別のデータで推論を実行
+      </el-button>
+    </el-row>
   </div>
 </template>
 
@@ -9,11 +26,17 @@ import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('dataSet')
 
 export default {
-  title: 'データセット',
+  title: '推論',
   components: {},
   data() {
     return {
       importfile: null,
+      inferenceList: [
+        { id: '1', data: '製造所A部品データ1', result: '成功' },
+        { id: '2', data: '製造所A部品B', result: '実行中' },
+        { id: '3', data: '製造所A部品データ2', result: 'エラー' },
+        { id: '4', data: '製造所A部品データ3', result: 'エラー' },
+      ],
     }
   },
   computed: {

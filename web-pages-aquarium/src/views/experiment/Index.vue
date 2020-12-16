@@ -118,9 +118,7 @@ export default {
       params.withTotal = true
       await this.fetchDataSets(params)
     },
-    closeDialog() {
-      this.$router.push('/dataset')
-    },
+
     async done(type) {
       if (type === 'delete') {
         // 削除時、表示していたページにデータが無くなっている可能性がある。
