@@ -51,7 +51,8 @@ namespace Nssol.Platypus.Logic
                 MenuAccessMenu,
                 ResourceMenu,
 
-                TemplateMenu
+                TemplateMenu,
+                ExperimentMenu
             };
 
             MenuMap = new Dictionary<MenuCode, MenuItemInfo>();
@@ -374,6 +375,19 @@ namespace Nssol.Platypus.Logic
             Category = "pl-inference",
             Code = MenuCode.Inference,
             Url = "/inference",
+            ShowTopMenu = true,
+            ShowSideMenu = true,
+            MenuType = MenuType.Tenant
+        };
+        internal static MenuItemInfo ExperimentMenu = new MenuItemInfo()
+        {
+            Name = "実験管理",
+            NameEn = "Experiment",
+            Description = "アクアリウムのジョブを投入するための各種管理",
+            DescriptionEn = "Managing Experiment Status and Histories",
+            Category = "pl-experiment",
+            Code = MenuCode.Experiment,
+            Url = "/experiment",
             ShowTopMenu = true,
             ShowSideMenu = true,
             MenuType = MenuType.Tenant
