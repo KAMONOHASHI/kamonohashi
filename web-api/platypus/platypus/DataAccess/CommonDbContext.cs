@@ -209,6 +209,18 @@ namespace Nssol.Platypus.DataAccess
         /// 実験履歴
         /// </summary>
         public virtual DbSet<ExperimentHistory> ExperimentHistories { get; set; }
+        /// <summary>
+        /// アクアリウムデータセット
+        /// </summary>
+        public virtual DbSet<Models.TenantModels.Aquarium.DataSet> AquariumDatasets { get; set; }
+        /// <summary>
+        /// アクアリウムデータセットバージョン
+        /// </summary>
+        public virtual DbSet<Models.TenantModels.Aquarium.DataSetVersion> AquariumDatasetVersions { get; set; }
+        /// <summary>
+        /// アクアリウムデータセットバージョンエントリ
+        /// </summary>
+        public virtual DbSet<Models.TenantModels.Aquarium.DataSetVersionEntry> AquariumDatasetVersionEntries { get; set; }
 
         #endregion
 
