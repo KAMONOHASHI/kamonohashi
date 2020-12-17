@@ -1254,6 +1254,57 @@ export const ApiV2DataByIdFilesByNameGetURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * ファイルのサイズ(Byte)を取得する
+ * request: ApiV2DataByIdFilesByNameSizeGet
+ * url: ApiV2DataByIdFilesByNameSizeGetURL
+ * method: ApiV2DataByIdFilesByNameSizeGet_TYPE
+ * raw_url: ApiV2DataByIdFilesByNameSizeGet_RAW_URL
+ * @param id - 対象データID
+ * @param name - 対象ファイル名
+ */
+export const ApiV2DataByIdFilesByNameSizeGet = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/data/{id}/files/{name}/size'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  path = path.replace('{name}', `${parameters['name']}`)
+  if (parameters['name'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: name'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2DataByIdFilesByNameSizeGet_RAW_URL = function() {
+  return '/api/v2/data/{id}/files/{name}/size'
+}
+export const ApiV2DataByIdFilesByNameSizeGet_TYPE = function() {
+  return 'get'
+}
+export const ApiV2DataByIdFilesByNameSizeGetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/data/{id}/files/{name}/size'
+  path = path.replace('{id}', `${parameters['id']}`)
+  path = path.replace('{name}', `${parameters['name']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * 指定したデータのファイル情報を全て取得する
  * request: ApiV2DataByIdFilesGet
  * url: ApiV2DataByIdFilesGetURL

@@ -52,6 +52,17 @@
                 >
                   <el-button icon="el-icon-download" size="mini" />
                 </a>
+                <!-- 画像プレビュー -->
+                <!-- ここから呼び出す場合、checkFileSizeでサイズの確認が終わっている -->
+                <!-- そのため、file-size=0として呼び出し、コンポーネントでファイルの -->
+                <!-- サイズのチェックをさせない -->
+                <kqi-display-image-button
+                  v-if="isImage(scope.row.name)"
+                  :download-url="scope.row.url"
+                  :file-name="scope.row.name"
+                  :show-image="checkFileSize(scope.row.size)"
+                  :file-size="0"
+                />
               </span>
             </template>
           </el-table-column>
@@ -70,8 +81,11 @@
 </template>
 
 <script>
+import KqiDisplayImageButton from '@/components/KqiDisplayImageButton'
+
 export default {
   name: 'FileIndex',
+  components: { KqiDisplayImageButton },
   props: {
     fileList: {
       type: Array,
@@ -100,6 +114,24 @@ export default {
     async handleNavAdd(dir) {
       this.path += dir + '/'
       this.$emit('updatePath', this.path)
+    },
+    isImage(fileName) {
+      return (
+        fileName.endsWith('.png') ||
+        fileName.endsWith('.jpg') ||
+        fileName.endsWith('.jpeg') ||
+        fileName.endsWith('.gif') ||
+        fileName.endsWith('.bmp')
+      )
+    },
+    checkFileSize(fileSizeString) {
+      if (fileSizeString.endsWith('Byte') || fileSizeString.endsWith('KB')) {
+        return true
+      } else {
+        // case fileSizeString ends with MB
+        var fileSize = parseFloat(fileSizeString.split(' ')[0])
+        return fileSize < 10
+      }
     },
   },
 }

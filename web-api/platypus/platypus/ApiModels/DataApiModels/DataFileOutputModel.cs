@@ -27,5 +27,9 @@ namespace Nssol.Platypus.ApiModels.DataApiModels
         /// ファイル名
         /// </summary>
         public string FileName { get; set; }
+        /// <summary>
+        /// ファイルサイズ
+        /// </summary>
+        public long FileSize { get; set; }
     }
 }

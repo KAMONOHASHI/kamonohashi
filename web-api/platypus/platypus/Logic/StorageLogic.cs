@@ -204,6 +204,18 @@ namespace Nssol.Platypus.Logic
         }
 
         /// <summary>
+        /// 指定されたファイルのファイルサイズを返す。
+        /// </summary>
+        /// <param name="type">リソース種別</param>
+        /// <param name="fileStoredPath">ファイルのPath</param>
+        /// <returns>ファイルサイズ</returns>
+        public long GetFileSize(ResourceType type, string fileStoredPath)
+        {
+            string key = CreateKey(type, fileStoredPath);
+            return objectStorageService.GetFileSize(key);
+        }
+
+        /// <summary>
         /// ファイル種別とファイル名からオブジェクトストレージのキーを作成する。
         /// </summary>
         private string CreateKey(ResourceType type, string fileName)

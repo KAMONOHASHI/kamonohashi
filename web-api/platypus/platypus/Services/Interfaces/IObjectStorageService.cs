@@ -66,6 +66,13 @@ namespace Nssol.Platypus.Services.Interfaces
         Uri GetPreSignedUriForGet(string key, string fileName, bool useHttp);
 
         /// <summary>
+        /// 指定されたデータファイルのファイルサイズを返す。
+        /// </summary>
+        /// <param name="key">オブジェクトのキー</param>
+        /// <returns>ファイルサイズ</returns>
+        long GetFileSize(string key);
+
+        /// <summary>
         /// 指定されたデータファイルの内容を返す。
         /// </summary>
         /// <param name="uri">データファイルのURI</param>
