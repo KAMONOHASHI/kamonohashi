@@ -26,6 +26,7 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly IDataTypeRepository dataTypeRepository;
         private readonly IDataLogic dataLogic;
         private readonly IUnitOfWork unitOfWork;
+        private static readonly string dummyDataType = "training";
 
         /// <summary>
         /// コンストラクタ
@@ -123,6 +124,7 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 //エントリの作成開始
                 var entities = new Dictionary<string, List<ApiModels.DataApiModels.IndexOutputModel>>();
+                var flatEntries = new List<ApiModels.DataApiModels.IndexOutputModel>();
 
                 //空のデータ種別も表示したい＆順番を統一したいので、先に初期化しておく
                 foreach (var dataType in dataTypeRepository.GetAllWithOrderby(d => d.SortOrder, true))
@@ -133,9 +135,16 @@ namespace Nssol.Platypus.Controllers.spa
                 //エントリを一つずつ突っ込んでいく。件数次第では遅いかも。
                 foreach (var entry in dataSet.DataSetEntries)
                 {
-                    string key = entry.DataType.Name;
                     var dataFile = new ApiModels.DataApiModels.IndexOutputModel(entry.Data);
-                    entities[key].Add(dataFile);
+                    if (dataSet.IsFlat)
+                    {
+                        flatEntries.Add(dataFile);
+                    }
+                    else
+                    {
+                        string key = entry.DataType.Name;
+                        entities[key].Add(dataFile);
+                    }
                 }
 
                 //各種別内のデータについて、データIDの降順に並び替える
@@ -145,6 +154,7 @@ namespace Nssol.Platypus.Controllers.spa
                 }
 
                 model.Entries = entities;
+                model.FlatEntries = flatEntries;
             }
 
             model.IsLocked = dataSet.IsLocked;
@@ -241,7 +251,9 @@ namespace Nssol.Platypus.Controllers.spa
                 {
                     lock (pathPairs)
                     {
-                        pathPairs.Add(new PathPairOutputModel($"{dataTypeName}/{entry.DataId}/{data.Key}", data.DataFile.StoredPath));
+                        pathPairs.Add(new PathPairOutputModel(
+                            dataSet.IsFlat ? $"{entry.DataId}/{data.Key}" : $"{dataTypeName}/{entry.DataId}/{data.Key}",
+                            data.DataFile.StoredPath));
                     }
                 }
             }
@@ -267,14 +279,22 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 Name = model.Name,
                 Memo = model.Memo,
-                IsLocked = false
+                IsLocked = false,
+                IsFlat = model.IsFlat,
             };
             dataSetRepository.Add(dataSet);
 
-            if (model.Entries == null)
+            if ((model.IsFlat && model.FlatEntries == null)
+                || (!model.IsFlat && model.Entries == null))
             {
                 unitOfWork.Commit();
                 return JsonOK(new IndexOutputModel(dataSet));
+            }
+
+            if (model.IsFlat)
+            {
+                model.Entries.Clear();
+                model.Entries[dummyDataType] = model.FlatEntries;
             }
 
             return await InsertDataSetEntryAsync(dataSet, model.Entries, true);
@@ -361,10 +381,17 @@ namespace Nssol.Platypus.Controllers.spa
             dataSetRepository.DeleteAllEntries(dataSet.Id);
 
             //値があれば登録
-            if (model.Entries == null)
+            if ((dataSet.IsFlat && model.FlatEntries == null)
+                || (!dataSet.IsFlat && model.Entries == null))
             {
                 unitOfWork.Commit();
                 return JsonOK(new IndexOutputModel(dataSet));
+            }
+
+            if (dataSet.IsFlat)
+            {
+                model.Entries.Clear();
+                model.Entries[dummyDataType] = model.FlatEntries;
             }
 
             return await InsertDataSetEntryAsync(dataSet, model.Entries, false);
