@@ -4,10 +4,35 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Nssol.Platypus.Migrations
 {
-    public partial class v214 : Migration
+    public partial class v230 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "AquariumDatasets",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    CreatedBy = table.Column<string>(nullable: false),
+                    CreatedAt = table.Column<DateTime>(nullable: false),
+                    ModifiedBy = table.Column<string>(nullable: false),
+                    ModifiedAt = table.Column<DateTime>(nullable: false),
+                    TenantId = table.Column<long>(nullable: false),
+                    Name = table.Column<string>(nullable: false),
+                    LatestVersion = table.Column<long>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AquariumDatasets", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AquariumDatasets_Tenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "Tenants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Templates",
                 columns: table => new
@@ -64,6 +89,37 @@ namespace Nssol.Platypus.Migrations
                         principalTable: "Registries",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AquariumDatasetVersions",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    CreatedBy = table.Column<string>(nullable: false),
+                    CreatedAt = table.Column<DateTime>(nullable: false),
+                    ModifiedBy = table.Column<string>(nullable: false),
+                    ModifiedAt = table.Column<DateTime>(nullable: false),
+                    TenantId = table.Column<long>(nullable: false),
+                    Version = table.Column<long>(nullable: false),
+                    DataSetId = table.Column<long>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AquariumDatasetVersions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AquariumDatasetVersions_AquariumDatasets_DataSetId",
+                        column: x => x.DataSetId,
+                        principalTable: "AquariumDatasets",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AquariumDatasetVersions_Tenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "Tenants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -138,6 +194,73 @@ namespace Nssol.Platypus.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "AquariumDatasetVersionEntries",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    CreatedBy = table.Column<string>(nullable: false),
+                    CreatedAt = table.Column<DateTime>(nullable: false),
+                    ModifiedBy = table.Column<string>(nullable: false),
+                    ModifiedAt = table.Column<DateTime>(nullable: false),
+                    TenantId = table.Column<long>(nullable: false),
+                    DataSetVersionId = table.Column<long>(nullable: false),
+                    DataId = table.Column<long>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AquariumDatasetVersionEntries", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AquariumDatasetVersionEntries_Data_DataId",
+                        column: x => x.DataId,
+                        principalTable: "Data",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AquariumDatasetVersionEntries_AquariumDatasetVersions_DataS~",
+                        column: x => x.DataSetVersionId,
+                        principalTable: "AquariumDatasetVersions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AquariumDatasetVersionEntries_Tenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "Tenants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AquariumDatasets_TenantId",
+                table: "AquariumDatasets",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AquariumDatasetVersionEntries_DataId",
+                table: "AquariumDatasetVersionEntries",
+                column: "DataId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AquariumDatasetVersionEntries_DataSetVersionId",
+                table: "AquariumDatasetVersionEntries",
+                column: "DataSetVersionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AquariumDatasetVersionEntries_TenantId",
+                table: "AquariumDatasetVersionEntries",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AquariumDatasetVersions_DataSetId",
+                table: "AquariumDatasetVersions",
+                column: "DataSetId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AquariumDatasetVersions_TenantId",
+                table: "AquariumDatasetVersions",
+                column: "TenantId");
+
             migrationBuilder.CreateIndex(
                 name: "IX_ExperimentHistories_DataSetId",
                 table: "ExperimentHistories",
@@ -178,13 +301,22 @@ namespace Nssol.Platypus.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "AquariumDatasetVersionEntries");
+
+            migrationBuilder.DropTable(
                 name: "ExperimentHistories");
 
             migrationBuilder.DropTable(
                 name: "TemplateTenantMaps");
 
             migrationBuilder.DropTable(
+                name: "AquariumDatasetVersions");
+
+            migrationBuilder.DropTable(
                 name: "Templates");
+
+            migrationBuilder.DropTable(
+                name: "AquariumDatasets");
         }
     }
 }
