@@ -59,7 +59,7 @@ namespace Nssol.Platypus.Logic.Interfaces
         /// </summary>
         /// <param name="experimentHistory">対象の実験履歴</param>
         /// <returns>作成したコンテナのステータス</returns>
-        Task<Result<ContainerInfo, string>> RunExperimentContainerAsync(ExperimentHistory experimentHistory);
+        Task<Result<ContainerInfo, string>> RunExperimentTrainContainerAsync(ExperimentHistory experimentHistory);
 
         /// <summary>
         /// 新規にバケット(テナントデータ)削除用のコンテナを作成する。
