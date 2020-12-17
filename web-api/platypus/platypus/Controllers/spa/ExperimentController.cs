@@ -261,8 +261,52 @@ namespace Nssol.Platypus.Controllers.spa
         [ProducesResponseType(typeof(SimpleOutputModel), (int)HttpStatusCode.Created)]
         public async Task<IActionResult> Create([FromBody] CreateInputModel model)
         {
-            // 環境変数名のチェック
-            if (model.Options != null && model.Options.Count > 0)
+            var dataSet = await dataSetRepository.GetByIdAsync(model.DataSetId.Value);
+            if (dataSet == null)
+            {
+                return JsonNotFound($"DataSet ID {model.DataSetId} is not found.");
+            }
+            if (!ModelState.IsValid)
+            {
+                return JsonBadRequest("Invalid inputs.");
+            }
+
+            // テンプレートの存在確認
+            var template = await templateRepository.GetByIdAsync(model.TemplateId.Value);
+            if (template == null)
+            {
+                return JsonNotFound($"Template ID {template.Id} is not found.");
+            }
+
+            // イメージが指定されていない学習は起動不能(前処理は必須ではないのでチェックしない。)
+            if (string.IsNullOrEmpty(template.TrainingContainerImage) || string.IsNullOrEmpty(template.TrainingContainerTag))
+            {
+                return JsonNotFound($"Training of Template {template.Name} can not be run because a container image has not been selected properly yet.");
+            }
+
+            // 前処理・学習コンテナの各リソースの超過チェック
+            Tenant tenant = tenantRepository.Get(CurrentUserInfo.SelectedTenant.Id);
+            string preprocessErrorMessage = clusterManagementLogic.CheckQuota(tenant, template.PreprocessCpu, template.PreprocessMemory, template.PreprocessGpu);
+            if (preprocessErrorMessage != null)
+            {
+                return JsonBadRequest(preprocessErrorMessage);
+            }
+            string trainingErrorMessage = clusterManagementLogic.CheckQuota(tenant, template.TrainingCpu, template.TrainingMemory, template.TrainingGpu);
+            if (trainingErrorMessage != null)
+            {
+                return JsonBadRequest(trainingErrorMessage);
+            }
+
+            // TODO: テンプレートの前処理コンテナについて実行済みか判断する
+            //テンプレートが既に実行中か確認する
+            var experimentHistory = experimentHistoryRepository.Find(pph => pph.DataSetId == model.DataSetId && pph.TemplateId == template.Id);
+            if (experimentHistory != null)
+            {
+                string status = ContainerStatus.Convert(experimentHistory.Status).Key;
+                return JsonNotFound($"DataSet {dataSet.Id}:{dataSet.Name} has already been used by {template.Id}:{template.Name}. Status:{status}");
+            }
+                // 環境変数名のチェック
+                if (model.Options != null && model.Options.Count > 0)
             {
                 foreach (var env in model.Options)
                 {
@@ -276,12 +320,19 @@ namespace Nssol.Platypus.Controllers.spa
                     }
                 }
             }
-            var validateResult = await ValidateExperimentHistoryInputModelAsync(model.TempalteId, model.DataSetId);
-            if (validateResult.IsSuccess == false)
-            {
-                return validateResult.Error;
-            }
-            ExperimentHistory experimentHistory = validateResult.Value;
+
+
+            //コンテナの実行前に、学習履歴を作成する（コンテナの実行に失敗した場合、そのステータスをユーザに表示するため）
+
+                experimentHistory = new ExperimentHistory()
+                {
+                    Name = model.Name,
+                    DataSetId = dataSet.Id,
+                    TemplateId = template.Id,
+                    Template = template,
+                    Status = ContainerStatus.Running.Key
+                };
+
             experimentHistory.OptionDic = model.Options ?? new Dictionary<string, string>(); // オプションはnullの可能性があるので、その時は初期化
             if (experimentHistory.OptionDic.ContainsKey("")) // 空文字は除外する
             {
@@ -299,7 +350,7 @@ namespace Nssol.Platypus.Controllers.spa
 
             // TODO: 詳細情報の取得が必要なものを記述
 
-            var result = await clusterManagementLogic.RunExperimentContainerAsync(experimentHistory);
+            var result = await clusterManagementLogic.RunExperimentTrainContainerAsync(experimentHistory);
             if (result.IsSuccess == false)
             {
                 //コンテナの起動に失敗した状態。エラーを出力して、保存した学習履歴も削除する。
@@ -327,71 +378,7 @@ namespace Nssol.Platypus.Controllers.spa
 
         /// <summary>
         /// 実験履歴作成の入力モデルのチェックを行う。
-        /// </summary>
-        /// <param name="templateId">テンプレートID</param>
-        /// <param name="dataSetId">アクアリウムデータセットID</param>
-        private async Task<Result<ExperimentHistory, IActionResult>> ValidateExperimentHistoryInputModelAsync(long? templateId, long? dataSetId)
-        {
-            if (dataSetId == null)
-            {
-                return Result<ExperimentHistory, IActionResult>.CreateErrorResult(JsonBadRequest("DataSet ID is requried."));
-            }
-            if (!ModelState.IsValid)
-            {
-                return Result<ExperimentHistory, IActionResult>.CreateErrorResult(JsonBadRequest("Invalid Input"));
-            }
-            // アクアリウムデータセットIDの存在確認
-            var dataSet = await dataSetRepository.GetByIdAsync(dataSetId.Value);
-            if (dataSet == null)
-            {
-                return Result<ExperimentHistory, IActionResult>.CreateErrorResult(JsonNotFound($"DataSet ID {dataSetId} is not found."));
-            }
-            // テンプレートの存在確認
-            var template = await templateRepository.GetByIdAsync(templateId.Value);
-            if (template == null)
-            {
-                return Result<ExperimentHistory, IActionResult>.CreateErrorResult(JsonNotFound($"Template ID {templateId} is not found."));
-            }
 
-            // イメージが指定されていない学習は起動不能(前処理は必須ではないのでチェックしない。)
-            if (string.IsNullOrEmpty(template.TrainingContainerImage) || string.IsNullOrEmpty(template.TrainingContainerTag))
-            {
-                return Result<ExperimentHistory, IActionResult>.CreateErrorResult(JsonNotFound($"Training of Template {template.Name} can not be run because a container image has not been selected properly yet."));
-            }
-
-            // 前処理・学習コンテナの各リソースの超過チェック
-            Tenant tenant = tenantRepository.Get(CurrentUserInfo.SelectedTenant.Id);
-            string preprocessErrorMessage = clusterManagementLogic.CheckQuota(tenant, template.PreprocessCpu, template.PreprocessMemory, template.PreprocessGpu);
-            if (preprocessErrorMessage != null)
-            {
-                return Result<ExperimentHistory, IActionResult>.CreateErrorResult(JsonBadRequest(preprocessErrorMessage));
-            }
-            string trainingErrorMessage = clusterManagementLogic.CheckQuota(tenant, template.TrainingCpu, template.TrainingMemory, template.TrainingGpu);
-            if (trainingErrorMessage != null)
-            {
-                return Result<ExperimentHistory, IActionResult>.CreateErrorResult(JsonBadRequest(trainingErrorMessage));
-            }
-
-            // TODO: テンプレートの前処理コンテナについて実行済みか判断する
-            //テンプレートが既に実行中か確認する
-            var experimentHistory = experimentHistoryRepository.Find(pph => pph.DataSetId == dataSetId && pph.TemplateId == template.Id);
-            if (experimentHistory != null)
-            {
-                string status = ContainerStatus.Convert(experimentHistory.Status).Name;
-                return Result<ExperimentHistory, IActionResult>.CreateErrorResult(JsonNotFound($"DataSet {dataSet.Id}:{dataSet.Name} has already been used by {template.Id}:{template.Name}. Status:{status}"));
-            }
-
-            experimentHistory = new ExperimentHistory()
-            {
-                DataSetId = dataSet.Id,
-                TemplateId = template.Id,
-                Template = template,
-                Status = ContainerStatus.Running.Key
-            };
-
-            return Result<ExperimentHistory, IActionResult>.CreateResult(experimentHistory);
-
-        }
 
         /// <summary>
         /// 実験履歴の編集

@@ -29,7 +29,7 @@ namespace Nssol.Platypus.ApiModels.ExperimentApiModels
         ///　テンプレートID
         /// </summary>
         [Required]
-        public long? TempalteId { get; set; }
+        public long? TemplateId { get; set; }
 
 
         /// <summary>

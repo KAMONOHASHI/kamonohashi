@@ -1277,164 +1277,164 @@ namespace Nssol.Platypus.Logic
         }
         #endregion
 
-        #region 実験(テンプレート)の前処理コンテナ管理
+        //#region 実験(テンプレート)の前処理コンテナ管理
 
-        /// <summary>
-        /// 新規に実験用コンテナを作成する。
-        /// </summary>
-        /// <param name="experimentHistory">対象の実験履歴</param>
-        /// <returns>作成したコンテナのステータス</returns>
-        public async Task<Result<ContainerInfo, string>> RunExperimentContainerAsync(ExperimentHistory experimentHistory)
-        {
-            string token = await GetUserAccessTokenAsync();
-            if (token == null)
-            {
-                //トークンがない場合、結果はnull
-                return Result<ContainerInfo, string>.CreateErrorResult("Access denied. Failed to get token to access the cluster management system.");
-            }
+        ///// <summary>
+        ///// 新規に実験用コンテナを作成する。
+        ///// </summary>
+        ///// <param name="experimentHistory">対象の実験履歴</param>
+        ///// <returns>作成したコンテナのステータス</returns>
+        //public async Task<Result<ContainerInfo, string>> RunExperimentContainerAsync(ExperimentHistory experimentHistory)
+        //{
+        //    string token = await GetUserAccessTokenAsync();
+        //    if (token == null)
+        //    {
+        //        //トークンがない場合、結果はnull
+        //        return Result<ContainerInfo, string>.CreateErrorResult("Access denied. Failed to get token to access the cluster management system.");
+        //    }
 
-            var registryMap = registryLogic.GetCurrentRegistryMap(experimentHistory.Template.PreprocessContainerRegistryId.Value);
+        //    var registryMap = registryLogic.GetCurrentRegistryMap(experimentHistory.Template.PreprocessContainerRegistryId.Value);
 
-            // TODO:必要に応じて生成されるデータのタグを設定
-            // string tags = "-t " + experimentHistory.Template.Name; 
+        //    // TODO:必要に応じて生成されるデータのタグを設定
+        //    // string tags = "-t " + experimentHistory.Template.Name; 
 
 
-            // 上書き可の環境変数
-            var editableEnvList = new Dictionary<string, string>()
-            {
-                { "http_proxy", containerOptions.Proxy },
-                { "https_proxy", containerOptions.Proxy },
-                { "no_proxy", containerOptions.NoProxy },
-                { "HTTP_PROXY", containerOptions.Proxy },
-                { "HTTPS_PROXY", containerOptions.Proxy },
-                { "NO_PROXY", containerOptions.NoProxy },
-                { "COLUMNS", containerOptions.ShellColumns }
-            };
+        //    // 上書き可の環境変数
+        //    var editableEnvList = new Dictionary<string, string>()
+        //    {
+        //        { "http_proxy", containerOptions.Proxy },
+        //        { "https_proxy", containerOptions.Proxy },
+        //        { "no_proxy", containerOptions.NoProxy },
+        //        { "HTTP_PROXY", containerOptions.Proxy },
+        //        { "HTTPS_PROXY", containerOptions.Proxy },
+        //        { "NO_PROXY", containerOptions.NoProxy },
+        //        { "COLUMNS", containerOptions.ShellColumns }
+        //    };
 
-            // 上書き不可の環境変数
-            var notEditableEnvList = new Dictionary<string, string>()
-            {
-                { "DATASET_ID", experimentHistory.DataSetId.ToString()},
-                { "DATASET_NAME", experimentHistory.DataSet.Name },
-                { "PREPROCESSING_ID", experimentHistory.TemplateId.ToString()},
-                { "COMMIT_ID", experimentHistory.Template.PreprocessRepositoryCommitId},
-                { "KQI_SERVER", containerOptions.WebServerUrl },
-                { "KQI_TOKEN", loginLogic.GenerateToken().AccessToken },
-                { "PYTHONUNBUFFERED", "true" }, // python実行時の標準出力・エラーのバッファリングをなくす
-                { "LC_ALL", "C.UTF-8"},  // python実行時のエラー回避
-                { "LANG", "C.UTF-8"}  // python実行時のエラー回避
-            };
+        //    // 上書き不可の環境変数
+        //    var notEditableEnvList = new Dictionary<string, string>()
+        //    {
+        //        { "DATASET_ID", experimentHistory.DataSetId.ToString()},
+        //        { "DATASET_NAME", experimentHistory.DataSet.Name },
+        //        { "PREPROCESSING_ID", experimentHistory.TemplateId.ToString()},
+        //        { "COMMIT_ID", experimentHistory.Template.PreprocessRepositoryCommitId},
+        //        { "KQI_SERVER", containerOptions.WebServerUrl },
+        //        { "KQI_TOKEN", loginLogic.GenerateToken().AccessToken },
+        //        { "PYTHONUNBUFFERED", "true" }, // python実行時の標準出力・エラーのバッファリングをなくす
+        //        { "LC_ALL", "C.UTF-8"},  // python実行時のエラー回避
+        //        { "LANG", "C.UTF-8"}  // python実行時のエラー回避
+        //    };
 
-            //コンテナを起動するために必要な設定値をインスタンス化
-            var inputModel = new RunContainerInputModel()
-            {
-                ID = experimentHistory.Id,
-                TenantName = TenantName,
-                LoginUser = CurrentUserInfo.Alias, //アカウントはエイリアスから指定
-                Name = "preproc-" + experimentHistory.Key,
-                ContainerImage = registryMap.Registry.GetImagePath(experimentHistory.Template.PreprocessContainerImage, experimentHistory.Template.PreprocessContainerTag),
-                ScriptType = "experimentpreproc-", // 実行スクリプトの指定
-                Cpu = experimentHistory.Template.PreprocessCpu,
-                Memory = experimentHistory.Template.PreprocessMemory,
-                Gpu = experimentHistory.Template.PreprocessGpu,
-                KqiToken = loginLogic.GenerateToken().AccessToken,
-                KqiImage = "kamonohashi/cli:" + versionLogic.GetVersion(),
-                LogPath = "/kqi/attach/preproc_stdout_stderr_${PREPROCESSING_ID}_${DATA_ID}.log", // 前処理履歴IDは現状ユーザーに見えないので前処理+データIDをつける
-                NfsVolumeMounts = new List<NfsVolumeMountModel>()
-                {
-                    // 添付ファイルを保存するディレクトリ
-                    // 前処理結果ディレクトリを前処理完了時にzip圧縮して添付するために使用
-                    new NfsVolumeMountModel()
-                    {
-                        Name = "nfs-experiment-preproc-attach",
-                        MountPath = "/kqi/attach",
-                        SubPath = experimentHistory.Id.ToString(),
-                        Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
-                        ServerPath = CurrentUserInfo.SelectedTenant.PreprocContainerAttachedNfsPath,
-                        ReadOnly = false
-                    }
-                },
-                ContainerSharedPath = new Dictionary<string, string>()
-                {
-                    { "tmp", "/kqi/tmp/" },
-                    { "input", "/kqi/input/" },
-                    { "git", "/kqi/git/" },
-                    { "output", "/kqi/output/" }
-                },
+        //    //コンテナを起動するために必要な設定値をインスタンス化
+        //    var inputModel = new RunContainerInputModel()
+        //    {
+        //        ID = experimentHistory.Id,
+        //        TenantName = TenantName,
+        //        LoginUser = CurrentUserInfo.Alias, //アカウントはエイリアスから指定
+        //        Name = "preproc-" + experimentHistory.Key,
+        //        ContainerImage = registryMap.Registry.GetImagePath(experimentHistory.Template.PreprocessContainerImage, experimentHistory.Template.PreprocessContainerTag),
+        //        ScriptType = "experimentpreproc-", // 実行スクリプトの指定
+        //        Cpu = experimentHistory.Template.PreprocessCpu,
+        //        Memory = experimentHistory.Template.PreprocessMemory,
+        //        Gpu = experimentHistory.Template.PreprocessGpu,
+        //        KqiToken = loginLogic.GenerateToken().AccessToken,
+        //        KqiImage = "kamonohashi/cli:" + versionLogic.GetVersion(),
+        //        LogPath = "/kqi/attach/preproc_stdout_stderr_${PREPROCESSING_ID}_${DATA_ID}.log", // 前処理履歴IDは現状ユーザーに見えないので前処理+データIDをつける
+        //        NfsVolumeMounts = new List<NfsVolumeMountModel>()
+        //        {
+        //            // 添付ファイルを保存するディレクトリ
+        //            // 前処理結果ディレクトリを前処理完了時にzip圧縮して添付するために使用
+        //            new NfsVolumeMountModel()
+        //            {
+        //                Name = "nfs-experiment-preproc-attach",
+        //                MountPath = "/kqi/attach",
+        //                SubPath = experimentHistory.Id.ToString(),
+        //                Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
+        //                ServerPath = CurrentUserInfo.SelectedTenant.PreprocContainerAttachedNfsPath,
+        //                ReadOnly = false
+        //            }
+        //        },
+        //        ContainerSharedPath = new Dictionary<string, string>()
+        //        {
+        //            { "tmp", "/kqi/tmp/" },
+        //            { "input", "/kqi/input/" },
+        //            { "git", "/kqi/git/" },
+        //            { "output", "/kqi/output/" }
+        //        },
 
-                PrepareAndFinishContainerEnvList = editableEnvList, // 上書き可の環境変数を設定
-                MainContainerEnvList = editableEnvList, // 上書き可の環境変数を設定
+        //        PrepareAndFinishContainerEnvList = editableEnvList, // 上書き可の環境変数を設定
+        //        MainContainerEnvList = editableEnvList, // 上書き可の環境変数を設定
 
-                EntryPoint = experimentHistory.Template.PreprocessEntryPoint,
+        //        EntryPoint = experimentHistory.Template.PreprocessEntryPoint,
 
-                ClusterManagerToken = token,
-                RegistryTokenName = registryMap.RegistryTokenKey,
-                IsNodePort = true
-            };
+        //        ClusterManagerToken = token,
+        //        RegistryTokenName = registryMap.RegistryTokenKey,
+        //        IsNodePort = true
+        //    };
 
-            // 前処理はGitの未指定も許可するため、その判定
-            if (experimentHistory.Template.PreprocessRepositoryGitId != null)
-            {
-                long gitId = experimentHistory.Template.PreprocessRepositoryGitId == -1 ?
-                    CurrentUserInfo.SelectedTenant.DefaultGitId.Value : experimentHistory.Template.PreprocessRepositoryGitId.Value;
+        //    // 前処理はGitの未指定も許可するため、その判定
+        //    if (experimentHistory.Template.PreprocessRepositoryGitId != null)
+        //    {
+        //        long gitId = experimentHistory.Template.PreprocessRepositoryGitId == -1 ?
+        //            CurrentUserInfo.SelectedTenant.DefaultGitId.Value : experimentHistory.Template.PreprocessRepositoryGitId.Value;
 
-                var gitEndpointResult = await gitLogic.GetPullUrlAsync(experimentHistory.Template.PreprocessRepositoryGitId.Value, experimentHistory.Template.PreprocessRepositoryName, experimentHistory.Template.PreprocessRepositoryOwner);
+        //        var gitEndpointResult = await gitLogic.GetPullUrlAsync(experimentHistory.Template.PreprocessRepositoryGitId.Value, experimentHistory.Template.PreprocessRepositoryName, experimentHistory.Template.PreprocessRepositoryOwner);
 
-                if (!gitEndpointResult.IsSuccess)
-                {
-                    return Result<ContainerInfo, string>.CreateErrorResult(gitEndpointResult.Error);
-                }
+        //        if (!gitEndpointResult.IsSuccess)
+        //        {
+        //            return Result<ContainerInfo, string>.CreateErrorResult(gitEndpointResult.Error);
+        //        }
 
-                if (gitEndpointResult.Value == null)
-                {
-                    //Git情報は必須にしているので、無ければエラー
-                    return Result<ContainerInfo, string>.CreateErrorResult("Git credential is not valid.");
-                }
+        //        if (gitEndpointResult.Value == null)
+        //        {
+        //            //Git情報は必須にしているので、無ければエラー
+        //            return Result<ContainerInfo, string>.CreateErrorResult("Git credential is not valid.");
+        //        }
 
-                var gitEndpoint = gitEndpointResult.Value;
-                notEditableEnvList.Add("MODEL_REPOSITORY", gitEndpoint.FullUrl);
-                notEditableEnvList.Add("MODEL_REPOSITORY_URL", gitEndpoint.Url);
-                notEditableEnvList.Add("MODEL_REPOSITORY_TOKEN", gitEndpoint.Token);
+        //        var gitEndpoint = gitEndpointResult.Value;
+        //        notEditableEnvList.Add("MODEL_REPOSITORY", gitEndpoint.FullUrl);
+        //        notEditableEnvList.Add("MODEL_REPOSITORY_URL", gitEndpoint.Url);
+        //        notEditableEnvList.Add("MODEL_REPOSITORY_TOKEN", gitEndpoint.Token);
 
-            }
+        //    }
 
-            // ユーザの任意追加環境変数をマージする
-            AddEnvListToInputModel(experimentHistory.OptionDic, inputModel.MainContainerEnvList);
+        //    // ユーザの任意追加環境変数をマージする
+        //    AddEnvListToInputModel(experimentHistory.OptionDic, inputModel.MainContainerEnvList);
 
-            // 上書き不可の追加環境変数をマージする
-            AddEnvListToInputModel(notEditableEnvList, inputModel.PrepareAndFinishContainerEnvList);
-            AddEnvListToInputModel(notEditableEnvList, inputModel.MainContainerEnvList);
+        //    // 上書き不可の追加環境変数をマージする
+        //    AddEnvListToInputModel(notEditableEnvList, inputModel.PrepareAndFinishContainerEnvList);
+        //    AddEnvListToInputModel(notEditableEnvList, inputModel.MainContainerEnvList);
 
-            // 使用できるノードを取得する
-            var nodes = GetAccessibleNode();
-            if (nodes == null || nodes.Count == 0)
-            {
-                // デプロイ可能なノードがゼロなら、エラー扱い
-                return Result<ContainerInfo, string>.CreateErrorResult("Access denied.　There is no node this tenant can use.");
-            }
-            else
-            {
-                // 制約に追加
-                inputModel.ConstraintList = new Dictionary<string, List<string>>()
-                {
-                    { TenantName, new List<string> { "true" } } // tenantNameの許可がされているサーバでのみ実行
-                };
-            }
+        //    // 使用できるノードを取得する
+        //    var nodes = GetAccessibleNode();
+        //    if (nodes == null || nodes.Count == 0)
+        //    {
+        //        // デプロイ可能なノードがゼロなら、エラー扱い
+        //        return Result<ContainerInfo, string>.CreateErrorResult("Access denied.　There is no node this tenant can use.");
+        //    }
+        //    else
+        //    {
+        //        // 制約に追加
+        //        inputModel.ConstraintList = new Dictionary<string, List<string>>()
+        //        {
+        //            { TenantName, new List<string> { "true" } } // tenantNameの許可がされているサーバでのみ実行
+        //        };
+        //    }
 
-            var outModel = await clusterManagementService.RunContainerAsync(inputModel);
-            if (outModel.IsSuccess == false)
-            {
-                return Result<ContainerInfo, string>.CreateErrorResult(outModel.Error);
-            }
-            return Result<ContainerInfo, string>.CreateResult(new ContainerInfo()
-            {
-                Name = outModel.Value.Name,
-                Status = outModel.Value.Status,
-                Host = outModel.Value.Host,
-                Configuration = outModel.Value.Configuration
-            });
-        }
-        #endregion
+        //    var outModel = await clusterManagementService.RunContainerAsync(inputModel);
+        //    if (outModel.IsSuccess == false)
+        //    {
+        //        return Result<ContainerInfo, string>.CreateErrorResult(outModel.Error);
+        //    }
+        //    return Result<ContainerInfo, string>.CreateResult(new ContainerInfo()
+        //    {
+        //        Name = outModel.Value.Name,
+        //        Status = outModel.Value.Status,
+        //        Host = outModel.Value.Host,
+        //        Configuration = outModel.Value.Configuration
+        //    });
+        //}
+        //#endregion
 
         #region 実験(テンプレート)の学習・推論コンテナ管理
 
@@ -1443,7 +1443,7 @@ namespace Nssol.Platypus.Logic
         /// </summary>
         /// <param name="experimentHistory">対象の実験履歴</param>
         /// <returns>作成したコンテナのステータス</returns>
-        public async Task<Result<ContainerInfo, string>> RunTrainContainerAsync(ExperimentHistory experimentHistory)
+        public async Task<Result<ContainerInfo, string>> RunExperimentTrainContainerAsync(ExperimentHistory experimentHistory)
         {
             string token = await GetUserAccessTokenAsync();
             if (token == null)
@@ -1520,7 +1520,7 @@ namespace Nssol.Platypus.Logic
                 ID = experimentHistory.Id,
                 TenantName = TenantName,
                 LoginUser = CurrentUserInfo.Alias, //アカウントはエイリアスから指定
-                Name = "training-" + experimentHistory.Key,
+                Name = "experiment-training-" + experimentHistory.Key,
                 ContainerImage = registryMap.Registry.GetImagePath(experimentHistory.Template.TrainingContainerImage, experimentHistory.Template.TrainingContainerTag),
                 ScriptType = "training",
                 Cpu = experimentHistory.Template.TrainingCpu,
@@ -1535,7 +1535,7 @@ namespace Nssol.Platypus.Logic
                     new NfsVolumeMountModel()
                     {
                         Name = "nfs-output",
-                        MountPath = "/kqi/output",
+                        MountPath = "/kqi/output/experiment",
                         SubPath = experimentHistory.Id.ToString(),
                         Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
                         ServerPath = CurrentUserInfo.SelectedTenant.TrainingContainerOutputNfsPath,
@@ -1546,7 +1546,7 @@ namespace Nssol.Platypus.Logic
                     new NfsVolumeMountModel()
                     {
                         Name = "nfs-attach",
-                        MountPath = "/kqi/attach",
+                        MountPath = "/kqi/attach/experiment",
                         SubPath = experimentHistory.Id.ToString(),
                         Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
                         ServerPath = CurrentUserInfo.SelectedTenant.TrainingContainerAttachedNfsPath,
