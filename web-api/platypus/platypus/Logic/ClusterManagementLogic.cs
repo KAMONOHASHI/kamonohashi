@@ -1466,8 +1466,8 @@ namespace Nssol.Platypus.Logic
             // 上書き不可の環境変数
             var notEditableEnvList = new Dictionary<string, string>()
             {
-                { "DATASET_ID", experimentHistory.DataSetId.ToString()},
-                { "TRAINING_ID", experimentHistory.Id.ToString()},
+                { "DATASET_ID", experimentHistory.DataSet.DataSetId.ToString()},
+                { "EXPERIMENT_ID", experimentHistory.Id.ToString()},
                 { "COMMIT_ID", experimentHistory.Template.TrainingRepositoryCommitId},
                 { "KQI_SERVER", containerOptions.WebServerUrl },
                 { "KQI_TOKEN", loginLogic.GenerateToken().AccessToken },
@@ -1522,7 +1522,7 @@ namespace Nssol.Platypus.Logic
                 LoginUser = CurrentUserInfo.Alias, //アカウントはエイリアスから指定
                 Name = "experiment-training-" + experimentHistory.Key,
                 ContainerImage = registryMap.Registry.GetImagePath(experimentHistory.Template.TrainingContainerImage, experimentHistory.Template.TrainingContainerTag),
-                ScriptType = "training",
+                ScriptType = "experiment",
                 Cpu = experimentHistory.Template.TrainingCpu,
                 Memory = experimentHistory.Template.TrainingMemory,
                 Gpu = experimentHistory.Template.TrainingGpu,
@@ -1535,7 +1535,7 @@ namespace Nssol.Platypus.Logic
                     new NfsVolumeMountModel()
                     {
                         Name = "nfs-output",
-                        MountPath = "/kqi/output/experiment",
+                        MountPath = "/kqi/output/training",
                         SubPath = experimentHistory.Id.ToString(),
                         Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
                         ServerPath = CurrentUserInfo.SelectedTenant.TrainingContainerOutputNfsPath,
@@ -1546,7 +1546,7 @@ namespace Nssol.Platypus.Logic
                     new NfsVolumeMountModel()
                     {
                         Name = "nfs-attach",
-                        MountPath = "/kqi/attach/experiment",
+                        MountPath = "/kqi/attach/training",
                         SubPath = experimentHistory.Id.ToString(),
                         Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
                         ServerPath = CurrentUserInfo.SelectedTenant.TrainingContainerAttachedNfsPath,

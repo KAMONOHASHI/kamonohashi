@@ -26,6 +26,12 @@ namespace Nssol.Platypus.ApiModels.ExperimentApiModels
         public long? DataSetId { get; set; }
 
         /// <summary>
+        /// アクアリウムデータセットIDのバージョン
+        /// </summary>
+        [Required]
+        public long? DataSetVersion { get; set; }
+
+        /// <summary>
         ///　テンプレートID
         /// </summary>
         [Required]

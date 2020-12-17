@@ -14,14 +14,14 @@ namespace Nssol.Platypus.ApiModels.ExperimentApiModels
         /// <param name="history">実験履歴</param>
         public IndexOutputModel(ExperimentHistory history) : base(history)
         {
-            DataSet = new DataSetApiModels.IndexOutputModel(history.DataSet);
+            DataSet = new Aquarium.DataSetApiModels.VersionIndexOutputModel(history.DataSet);
             Template = new TemplateApiModels.IndexOutputModel(history.Template);
         }
 
         /// <summary>
         /// データセット
         /// </summary>
-        public DataSetApiModels.IndexOutputModel DataSet { get; set; }
+        public Aquarium.DataSetApiModels.VersionIndexOutputModel DataSet { get; set; }
 
         /// <summary>
         /// テンプレート

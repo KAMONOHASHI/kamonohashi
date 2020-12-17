@@ -33,8 +33,7 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly IExperimentHistoryRepository experimentHistoryRepository;
         private readonly IInferenceHistoryRepository inferenceHistoryRepository;
         private readonly ITensorBoardContainerRepository tensorBoardContainerRepository;
-        //TODO アクアリウムデータセットに変更
-        private readonly IDataSetRepository dataSetRepository;
+        private readonly DataAccess.Repositories.Interfaces.TenantRepositories.Aquarium.IDataSetRepository dataSetRepository;
         private readonly ITemplateRepository templateRepository;
         private readonly ITagRepository tagRepository;
         private readonly ITenantRepository tenantRepository;
@@ -53,7 +52,8 @@ namespace Nssol.Platypus.Controllers.spa
             IExperimentHistoryRepository experimentHistoryRepository,
             IInferenceHistoryRepository inferenceHistoryRepository,
             ITensorBoardContainerRepository tensorBoardContainerRepository,
-            IDataSetRepository dataSetRepository,
+            DataAccess.Repositories.Interfaces.TenantRepositories.Aquarium.IDataSetRepository dataSetRepository,
+            IDataLogic dataLogic,
             ITemplateRepository templateRepository,
             ITenantRepository tenantRepository,
             INodeRepository nodeRepository,
@@ -262,9 +262,10 @@ namespace Nssol.Platypus.Controllers.spa
         public async Task<IActionResult> Create([FromBody] CreateInputModel model)
         {
             var dataSet = await dataSetRepository.GetByIdAsync(model.DataSetId.Value);
-            if (dataSet == null)
+            var dataSetVersion = await dataSetRepository.GetDataSetVersionWithFilesAsync(model.DataSetId.Value, model.DataSetVersion.Value);
+            if (dataSetVersion == null)
             {
-                return JsonNotFound($"DataSet ID {model.DataSetId} is not found.");
+                return JsonNotFound($"DataSet ID {model.DataSetId} and VersionId {model.DataSetVersion}  is not found.");
             }
             if (!ModelState.IsValid)
             {
@@ -303,7 +304,7 @@ namespace Nssol.Platypus.Controllers.spa
             if (experimentHistory != null)
             {
                 string status = ContainerStatus.Convert(experimentHistory.Status).Key;
-                return JsonNotFound($"DataSet {dataSet.Id}:{dataSet.Name} has already been used by {template.Id}:{template.Name}. Status:{status}");
+                return JsonNotFound($"DataSet {dataSet.Id}:{dataSet.Name} version {dataSetVersion.Version} has already been used by {template.Id}:{template.Name}. Status:{status}");
             }
                 // 環境変数名のチェック
                 if (model.Options != null && model.Options.Count > 0)
@@ -327,7 +328,7 @@ namespace Nssol.Platypus.Controllers.spa
                 experimentHistory = new ExperimentHistory()
                 {
                     Name = model.Name,
-                    DataSetId = dataSet.Id,
+                    DataSetId = dataSetVersion.Id,
                     TemplateId = template.Id,
                     Template = template,
                     Status = ContainerStatus.Running.Key

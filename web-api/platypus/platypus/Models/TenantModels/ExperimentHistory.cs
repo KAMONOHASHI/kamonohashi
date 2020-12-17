@@ -57,7 +57,7 @@ namespace Nssol.Platypus.Models.TenantModels
         /// <see cref="Options"/> のディクショナリ表現。
         /// </summary>
         /// <remarks>
-        /// <see cref="DataAccess.Repositories.TenantRepositories.PreprocessHistoryRepository.Add(PreprocessHistory)"/> の実行時、
+        /// <see cref="DataAccess.Repositories.TenantRepositories.ExperimentHistoryRepository.Add(ExperimentHistory)"/> の実行時、
         /// <see cref="Options"/> への変換を行う。更新はされないので、そこだけでいいはず。
         /// </remarks>
         [NotMapped]
@@ -67,7 +67,8 @@ namespace Nssol.Platypus.Models.TenantModels
         /// TODO アクアリウムデータセットに変更
         /// </summary>
         [ForeignKey(nameof(DataSetId))]
-        public virtual DataSet DataSet { get; set; }
+        public virtual Models.TenantModels.Aquarium.DataSetVersion
+            DataSet { get; set; }
 
         /// <summary>
         /// テンプレート
