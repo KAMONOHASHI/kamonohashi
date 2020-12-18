@@ -341,39 +341,46 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             experimentHistoryRepository.Add(experimentHistory);
-            // TODO アクアリウムのデータセットの仕様に合わせて変更
-            //experimentHistoryRepository.Add(experimentHistory);
-            //if (dataSet.IsLocked == false)
-            //{
-            //    dataSet.IsLocked = true;
-            //}
+
             unitOfWork.Commit();
 
             // TODO: 詳細情報の取得が必要なものを記述
 
-            var result = await clusterManagementLogic.RunExperimentTrainContainerAsync(experimentHistory);
-            if (result.IsSuccess == false)
+
+            //コンテナを起動する
+            //指定したテンプレート内に前処理がない場合、テンプレート実行の学習コンテナのみ起動する
+            //指定したテンプレート内に前処理がある場合ではじめて実行されるデータの場合、テンプレート実行の前処理コンテナ起動後、学習コンテナを起動する
+            //TODO:指定したテンプレート内に前処理がある場合ですでに前処理実行済みのデータがある場合
+            if (!string.IsNullOrWhiteSpace(template.PreprocessEntryPoint))
             {
-                //コンテナの起動に失敗した状態。エラーを出力して、保存した学習履歴も削除する。
-                experimentHistoryRepository.Delete(experimentHistory);
+                var trainingResult = await clusterManagementLogic.RunExperimentTrainContainerAsync(experimentHistory);
+                if (trainingResult.IsSuccess == false)
+                {
+                    //コンテナの起動に失敗した状態。エラーを出力して、保存した学習履歴も削除する。
+                    experimentHistoryRepository.Delete(experimentHistory);
+                    unitOfWork.Commit();
+
+                    return JsonError(HttpStatusCode.ServiceUnavailable, "Failed to run Experiment. The message bellow may be help to resolve: " + trainingResult.Error);
+                }
+
+                //結果に従い、学習結果を更新する。
+                //実行には時間がかかりうるので、DBから最新の情報を取ってくる
+                experimentHistory = await experimentHistoryRepository.GetByIdAsync(experimentHistory.Id);
+                experimentHistory.Status = trainingResult.Value.Status.Key;
                 unitOfWork.Commit();
 
-                return JsonError(HttpStatusCode.ServiceUnavailable, "Failed to run Experiment. The message bellow may be help to resolve: " + result.Error);
-            }
-
-            //結果に従い、学習結果を更新する。
-            //実行には時間がかかりうるので、DBから最新の情報を取ってくる
-            experimentHistory = await experimentHistoryRepository.GetByIdAsync(experimentHistory.Id);
-            experimentHistory.Status = result.Value.Status.Key;
-            unitOfWork.Commit();
-
-            if (result.Value.Status.Succeed())
-            {
-                return JsonCreated(new SimpleOutputModel(experimentHistory));
+                if (trainingResult.Value.Status.Succeed())
+                {
+                    return JsonCreated(new SimpleOutputModel(experimentHistory));
+                }
+                else
+                {
+                    return JsonError(HttpStatusCode.ServiceUnavailable, $"Failed to run Experiment. Status={trainingResult.Value.Status.Name}. Please contact your server administrator.");
+                }
             }
             else
             {
-                return JsonError(HttpStatusCode.ServiceUnavailable, $"Failed to run Experiment. Status={result.Value.Status.Name}. Please contact your server administrator.");
+                var preprocessResult = await clusterManagementLogic.RunExperimentPreprocessContainerAsync(experimentHistory);
             }
         }
 

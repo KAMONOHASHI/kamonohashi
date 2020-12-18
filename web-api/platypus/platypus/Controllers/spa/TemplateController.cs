@@ -165,11 +165,12 @@ namespace Nssol.Platypus.Controllers.spa
         public async Task<IActionResult> Create([FromBody] CreateInputModel model,
             [FromServices] ITenantRepository tenantRepository)
         {
-            //データの入力チェック
-            if (!ModelState.IsValid)
-            {
-                return JsonBadRequest("Invalid inputs.");
-            }
+            //TODO:データの入力チェック
+            //前処理コンテナは空白でも許す
+            //if (!ModelState.IsValid)
+            //{
+            //    return JsonBadRequest("Invalid inputs.");
+            //}
 
             if (string.IsNullOrWhiteSpace(model.Name))
             {
