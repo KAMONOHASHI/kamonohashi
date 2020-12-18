@@ -184,12 +184,10 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="id">取得するアクアリウムデータセットID</param>
         /// <param name="versionId">取得するアクアリウムデータセットバージョンID</param>
-        /// <param name="withUrl">結果にダウンロード用のURLを含めるか</param>
-        /// <param name="withFileSize">結果にファイルサイズを含めるか</param>
         [HttpGet("{id}/versions/{versionId}")]
         [Filters.PermissionFilter(MenuCode.DataSet, MenuCode.Training, MenuCode.Inference, MenuCode.Notebook)]
         [ProducesResponseType(typeof(VersionDetailsOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetDataSetVersion(long id, long versionId, [FromQuery]bool withUrl, [FromQuery]bool withFileSize)
+        public async Task<IActionResult> GetDataSetVersion(long id, long versionId)
         {
             var dataSetVersion = await aquariumDataSetRepository.GetDataSetVersionWithFilesAsync(id, versionId);
             if (dataSetVersion == null)
@@ -202,42 +200,26 @@ namespace Nssol.Platypus.Controllers.spa
 
             if (dataSet.DataSetEntries != null)
             {
-                result.Entries = new Dictionary<string, List<VersionDetailsOutputModel.Entry>>();
-                result.FlatEntries = new List<VersionDetailsOutputModel.Entry>();
+                result.Entries = new Dictionary<string, List<ApiModels.DataApiModels.IndexOutputModel>>();
+                result.FlatEntries = new List<ApiModels.DataApiModels.IndexOutputModel>();
 
                 foreach (var dataType in dataTypeRepository.GetAllWithOrderby(d => d.SortOrder, true))
                 {
-                    result.Entries.Add(dataType.Name, new List<VersionDetailsOutputModel.Entry>());
+                    result.Entries.Add(dataType.Name, new List<ApiModels.DataApiModels.IndexOutputModel>());
                 }
 
                 if (dataSet.IsFlat)
                 {
                     result.FlatEntries = dataSet.DataSetEntries
                         .OrderByDescending(x => x.Data.Id)
-                        .AsParallel()
-                        .Select(x => new VersionDetailsOutputModel.Entry
-                        {
-                            Data = new ApiModels.DataApiModels.IndexOutputModel(x.Data),
-                            Files = dataLogic.GetDataFiles(x.Data, withUrl, withFileSize).OrderBy(y => y.FileId),
-                        });
+                        .Select(x => new ApiModels.DataApiModels.IndexOutputModel(x.Data));
                 }
                 else
                 {
-                    dataSet.DataSetEntries
-                        .OrderByDescending(x => x.Data.Id)
-                        .AsParallel()
-                        .ForAll(y =>
-                        {
-                            var files = dataLogic.GetDataFiles(y.Data, withUrl, withFileSize).OrderBy(x => x.FileId);
-                            lock (result.Entries)
-                            {
-                                result.Entries[y.DataType.Name].Add(new VersionDetailsOutputModel.Entry
-                                {
-                                    Data = new ApiModels.DataApiModels.IndexOutputModel(y.Data),
-                                    Files = files,
-                                });
-                            }
-                        });
+                    foreach (var x in dataSet.DataSetEntries.OrderByDescending(x => x.Data.Id))
+                    {
+                        result.Entries[x.DataType.Name].Add(new ApiModels.DataApiModels.IndexOutputModel(x.Data));
+                    }
                 }
             }
             return JsonOK(result);

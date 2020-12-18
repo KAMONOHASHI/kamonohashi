@@ -12,26 +12,14 @@ namespace Nssol.Platypus.ApiModels.Aquarium.DataSetApiModels
         public VersionDetailsOutputModel(DataSetVersion dataSetVesion) 
             : base(dataSetVesion) {}
 
-        public class Entry
-        {
-            /// <summary>
-            /// データ
-            /// </summary>
-            public DataApiModels.IndexOutputModel Data { get; set; }
-            /// <summary>
-            /// ファイル
-            /// </summary>
-            public IEnumerable<DataFileOutputModel> Files { get; set; }
-        }
-
         /// <summary>
         /// データエントリ
         /// </summary>
-        public IDictionary<string, List<Entry>> Entries { get; set; }
+        public IDictionary<string, List<DataApiModels.IndexOutputModel>> Entries { get; set; }
 
         /// <summary>
         /// IsFlat == trueの場合に参照されるデータエントリ
         /// </summary>
-        public IEnumerable<Entry> FlatEntries { get; set; }
+        public IEnumerable<DataApiModels.IndexOutputModel> FlatEntries { get; set; }
     }
 }
