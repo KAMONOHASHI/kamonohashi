@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Nssol.Platypus.Models.TenantModels.Aquarium
 {
@@ -14,6 +13,11 @@ namespace Nssol.Platypus.Models.TenantModels.Aquarium
         public long Version { get; set; }
 
         /// <summary>
+        /// アクアリウムデータセットID
+        /// </summary>
+        public long AquariumDataSetId { get; set; }
+
+        /// <summary>
         /// データセットID
         /// </summary>
         public long DataSetId { get; set; }
@@ -21,12 +25,13 @@ namespace Nssol.Platypus.Models.TenantModels.Aquarium
         /// <summary>
         /// データセット
         /// </summary>
-        [ForeignKey(nameof(DataSetId))]
-        public virtual DataSet DataSet { get; set; }
+        [ForeignKey(nameof(AquariumDataSetId))]
+        public virtual DataSet AquariumDataSet { get; set; }
 
         /// <summary>
-        /// データセットバージョンエントリ
+        /// データセット
         /// </summary>
-        public virtual IEnumerable<DataSetVersionEntry> DataSetVersionEntries { get; set; }
+        [ForeignKey(nameof(DataSetId))]
+        public virtual Models.TenantModels.DataSet DataSet { get; set; }
     }
 }

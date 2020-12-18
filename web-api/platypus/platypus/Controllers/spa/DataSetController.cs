@@ -198,7 +198,7 @@ namespace Nssol.Platypus.Controllers.spa
                 dataSet.DataSetEntries.AsParallel().ForAll(entry =>
                 {
                     string key = entry.DataType.Name;
-                    var dataFiles = dataLogic.GetDataFiles(entry.Data, withUrl);
+                    var dataFiles = dataLogic.GetDataFiles(entry.Data, withUrl, false);
                     lock (entities)
                     {
                         entities[key].AddRange(dataFiles);

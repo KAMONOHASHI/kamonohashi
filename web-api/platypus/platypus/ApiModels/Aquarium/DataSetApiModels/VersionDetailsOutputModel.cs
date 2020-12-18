@@ -25,8 +25,13 @@ namespace Nssol.Platypus.ApiModels.Aquarium.DataSetApiModels
         }
 
         /// <summary>
-        /// データのエントリ
+        /// データエントリ
         /// </summary>
-        public IEnumerable<Entry> Entries { get; set; }
+        public IDictionary<string, List<Entry>> Entries { get; set; }
+
+        /// <summary>
+        /// IsFlat == trueの場合に参照されるデータエントリ
+        /// </summary>
+        public IEnumerable<Entry> FlatEntries { get; set; }
     }
 }
