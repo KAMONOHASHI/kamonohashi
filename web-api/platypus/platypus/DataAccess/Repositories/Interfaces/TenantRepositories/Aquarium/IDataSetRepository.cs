@@ -19,10 +19,10 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories.A
         /// <summary>
         /// アクアリウムデータセットバージョンとそのファイルを取得する
         /// </summary>
-        /// <param name="datasetId">アクアリウムデータセットID</param>
+        /// <param name="aquariumDatasetId">アクアリウムデータセットID</param>
         /// <param name="versionId">アクアリウムデータセットバージョンID</param>
-        /// <returns>アクアリウムデータセット</returns>
-        Task<DataSetVersion> GetDataSetVersionWithFilesAsync(long datasetId, long versionId);
+        /// <returns>アクアリウムデータセッバージョント</returns>
+        Task<DataSetVersion> GetDataSetVersionWithFilesAsync(long aquariumDatasetId, long versionId);
 
         /// <summary>
         /// 新規エントリを追加する

@@ -10,7 +10,7 @@ using Nssol.Platypus.DataAccess;
 namespace Nssol.Platypus.Migrations
 {
     [DbContext(typeof(CommonDbContext))]
-    [Migration("20201217043712_v2.3.0")]
+    [Migration("20201217235328_v2.3.0")]
     partial class v230
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -527,6 +527,8 @@ namespace Nssol.Platypus.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<long>("AquariumDataSetId");
+
                     b.Property<DateTime>("CreatedAt");
 
                     b.Property<string>("CreatedBy")
@@ -545,43 +547,13 @@ namespace Nssol.Platypus.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AquariumDataSetId");
+
                     b.HasIndex("DataSetId");
 
                     b.HasIndex("TenantId");
 
                     b.ToTable("AquariumDatasetVersions");
-                });
-
-            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.Aquarium.DataSetVersionEntry", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("CreatedAt");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired();
-
-                    b.Property<long>("DataId");
-
-                    b.Property<long>("DataSetVersionId");
-
-                    b.Property<DateTime>("ModifiedAt");
-
-                    b.Property<string>("ModifiedBy")
-                        .IsRequired();
-
-                    b.Property<long>("TenantId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DataId");
-
-                    b.HasIndex("DataSetVersionId");
-
-                    b.HasIndex("TenantId");
-
-                    b.ToTable("AquariumDatasetVersionEntries");
                 });
 
             modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.Data", b =>
@@ -697,6 +669,8 @@ namespace Nssol.Platypus.Migrations
                         .IsRequired();
 
                     b.Property<long?>("DisplayId");
+
+                    b.Property<bool>("IsFlat");
 
                     b.Property<bool>("IsLocked");
 
@@ -1898,27 +1872,14 @@ namespace Nssol.Platypus.Migrations
 
             modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.Aquarium.DataSetVersion", b =>
                 {
-                    b.HasOne("Nssol.Platypus.Models.TenantModels.Aquarium.DataSet", "DataSet")
+                    b.HasOne("Nssol.Platypus.Models.TenantModels.Aquarium.DataSet", "AquariumDataSet")
                         .WithMany("DataSetVersions")
+                        .HasForeignKey("AquariumDataSetId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Nssol.Platypus.Models.TenantModels.DataSet", "DataSet")
+                        .WithMany()
                         .HasForeignKey("DataSetId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Nssol.Platypus.Models.Tenant", "Tenant")
-                        .WithMany()
-                        .HasForeignKey("TenantId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.Aquarium.DataSetVersionEntry", b =>
-                {
-                    b.HasOne("Nssol.Platypus.Models.TenantModels.Data", "Data")
-                        .WithMany()
-                        .HasForeignKey("DataId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Nssol.Platypus.Models.TenantModels.Aquarium.DataSetVersion", "DataSetVersion")
-                        .WithMany("DataSetVersionEntries")
-                        .HasForeignKey("DataSetVersionId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Nssol.Platypus.Models.Tenant", "Tenant")
@@ -2023,7 +1984,7 @@ namespace Nssol.Platypus.Migrations
 
             modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.ExperimentHistory", b =>
                 {
-                    b.HasOne("Nssol.Platypus.Models.TenantModels.DataSet", "DataSet")
+                    b.HasOne("Nssol.Platypus.Models.TenantModels.Aquarium.DataSetVersion", "DataSet")
                         .WithMany()
                         .HasForeignKey("DataSetId")
                         .OnDelete(DeleteBehavior.Cascade);

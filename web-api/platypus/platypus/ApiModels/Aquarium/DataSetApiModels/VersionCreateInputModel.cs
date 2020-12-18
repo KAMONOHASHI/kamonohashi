@@ -8,19 +8,10 @@ namespace Nssol.Platypus.ApiModels.Aquarium.DataSetApiModels
     /// </summary>
     public class VersionCreateInputModel
     {
-        public class Entry
-        {
-            /// <summary>
-            /// データID
-            /// </summary>
-            [Required]
-            public long Id { get; set; }
-        }
-
         /// <summary>
-        /// データエントリ
+        /// データセットID
         /// </summary>
         [Required]
-        public List<Entry> Entries { get; set; }
+        public long DataSetId { get; set; }
     }
 }

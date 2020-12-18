@@ -12,6 +12,7 @@ namespace Nssol.Platypus.ApiModels.Aquarium.DataSetApiModels
             Id = dataSetVesion.Id;
             Version = dataSetVesion.Version;
             DataSetId = dataSetVesion.DataSetId;
+            AquariumDataSetId = dataSetVesion.AquariumDataSetId;
         }
 
         /// <summary>
@@ -23,6 +24,11 @@ namespace Nssol.Platypus.ApiModels.Aquarium.DataSetApiModels
         /// バージョン番号
         /// </summary>
         public long Version { get; set; }
+
+        /// <summary>
+        /// アクアリウムデータセットID
+        /// </summary>
+        public long AquariumDataSetId { get; set; }
 
         /// <summary>
         /// データセットID

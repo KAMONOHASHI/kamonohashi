@@ -217,10 +217,6 @@ namespace Nssol.Platypus.DataAccess
         /// アクアリウムデータセットバージョン
         /// </summary>
         public virtual DbSet<Models.TenantModels.Aquarium.DataSetVersion> AquariumDatasetVersions { get; set; }
-        /// <summary>
-        /// アクアリウムデータセットバージョンエントリ
-        /// </summary>
-        public virtual DbSet<Models.TenantModels.Aquarium.DataSetVersionEntry> AquariumDatasetVersionEntries { get; set; }
 
         #endregion
 

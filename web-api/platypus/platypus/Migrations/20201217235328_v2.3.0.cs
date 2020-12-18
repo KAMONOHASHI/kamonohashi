@@ -103,61 +103,26 @@ namespace Nssol.Platypus.Migrations
                     ModifiedAt = table.Column<DateTime>(nullable: false),
                     TenantId = table.Column<long>(nullable: false),
                     Version = table.Column<long>(nullable: false),
+                    AquariumDataSetId = table.Column<long>(nullable: false),
                     DataSetId = table.Column<long>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AquariumDatasetVersions", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AquariumDatasetVersions_AquariumDatasets_DataSetId",
-                        column: x => x.DataSetId,
+                        name: "FK_AquariumDatasetVersions_AquariumDatasets_AquariumDataSetId",
+                        column: x => x.AquariumDataSetId,
                         principalTable: "AquariumDatasets",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_AquariumDatasetVersions_Tenants_TenantId",
-                        column: x => x.TenantId,
-                        principalTable: "Tenants",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ExperimentHistories",
-                columns: table => new
-                {
-                    Id = table.Column<long>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    CreatedBy = table.Column<string>(nullable: false),
-                    CreatedAt = table.Column<DateTime>(nullable: false),
-                    ModifiedBy = table.Column<string>(nullable: false),
-                    ModifiedAt = table.Column<DateTime>(nullable: false),
-                    TenantId = table.Column<long>(nullable: false),
-                    DataSetId = table.Column<long>(nullable: false),
-                    TemplateId = table.Column<long>(nullable: true),
-                    StartedAt = table.Column<DateTime>(nullable: true),
-                    CompletedAt = table.Column<DateTime>(nullable: true),
-                    Status = table.Column<string>(nullable: true),
-                    Options = table.Column<string>(nullable: true),
-                    Name = table.Column<string>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ExperimentHistories", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ExperimentHistories_DataSets_DataSetId",
+                        name: "FK_AquariumDatasetVersions_DataSets_DataSetId",
                         column: x => x.DataSetId,
                         principalTable: "DataSets",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ExperimentHistories_Templates_TemplateId",
-                        column: x => x.TemplateId,
-                        principalTable: "Templates",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ExperimentHistories_Tenants_TenantId",
+                        name: "FK_AquariumDatasetVersions_Tenants_TenantId",
                         column: x => x.TenantId,
                         principalTable: "Tenants",
                         principalColumn: "Id",
@@ -195,7 +160,7 @@ namespace Nssol.Platypus.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AquariumDatasetVersionEntries",
+                name: "ExperimentHistories",
                 columns: table => new
                 {
                     Id = table.Column<long>(nullable: false)
@@ -205,26 +170,31 @@ namespace Nssol.Platypus.Migrations
                     ModifiedBy = table.Column<string>(nullable: false),
                     ModifiedAt = table.Column<DateTime>(nullable: false),
                     TenantId = table.Column<long>(nullable: false),
-                    DataSetVersionId = table.Column<long>(nullable: false),
-                    DataId = table.Column<long>(nullable: false)
+                    DataSetId = table.Column<long>(nullable: false),
+                    TemplateId = table.Column<long>(nullable: true),
+                    StartedAt = table.Column<DateTime>(nullable: true),
+                    CompletedAt = table.Column<DateTime>(nullable: true),
+                    Status = table.Column<string>(nullable: true),
+                    Options = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AquariumDatasetVersionEntries", x => x.Id);
+                    table.PrimaryKey("PK_ExperimentHistories", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AquariumDatasetVersionEntries_Data_DataId",
-                        column: x => x.DataId,
-                        principalTable: "Data",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_AquariumDatasetVersionEntries_AquariumDatasetVersions_DataS~",
-                        column: x => x.DataSetVersionId,
+                        name: "FK_ExperimentHistories_AquariumDatasetVersions_DataSetId",
+                        column: x => x.DataSetId,
                         principalTable: "AquariumDatasetVersions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_AquariumDatasetVersionEntries_Tenants_TenantId",
+                        name: "FK_ExperimentHistories_Templates_TemplateId",
+                        column: x => x.TemplateId,
+                        principalTable: "Templates",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ExperimentHistories_Tenants_TenantId",
                         column: x => x.TenantId,
                         principalTable: "Tenants",
                         principalColumn: "Id",
@@ -237,19 +207,9 @@ namespace Nssol.Platypus.Migrations
                 column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AquariumDatasetVersionEntries_DataId",
-                table: "AquariumDatasetVersionEntries",
-                column: "DataId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AquariumDatasetVersionEntries_DataSetVersionId",
-                table: "AquariumDatasetVersionEntries",
-                column: "DataSetVersionId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AquariumDatasetVersionEntries_TenantId",
-                table: "AquariumDatasetVersionEntries",
-                column: "TenantId");
+                name: "IX_AquariumDatasetVersions_AquariumDataSetId",
+                table: "AquariumDatasetVersions",
+                column: "AquariumDataSetId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AquariumDatasetVersions_DataSetId",
@@ -300,9 +260,6 @@ namespace Nssol.Platypus.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "AquariumDatasetVersionEntries");
-
             migrationBuilder.DropTable(
                 name: "ExperimentHistories");
 

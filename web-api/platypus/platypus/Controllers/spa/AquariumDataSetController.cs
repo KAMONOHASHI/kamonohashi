@@ -22,19 +22,25 @@ namespace Nssol.Platypus.Controllers.spa
     public class AquariumDataSetController : PlatypusApiControllerBase
     {
         private readonly IDataRepository dataRepository;
-        private readonly DataAccess.Repositories.Interfaces.TenantRepositories.Aquarium.IDataSetRepository dataSetRepository;
+        private readonly DataAccess.Repositories.Interfaces.TenantRepositories.Aquarium.IDataSetRepository aquariumDataSetRepository;
+        private readonly IDataSetRepository dataSetRepository;
+        private readonly IDataTypeRepository dataTypeRepository;
         private readonly IDataLogic dataLogic;
         private readonly IUnitOfWork unitOfWork;
 
         public AquariumDataSetController(
             IDataRepository dataRepository,
-            DataAccess.Repositories.Interfaces.TenantRepositories.Aquarium.IDataSetRepository dataSetRepository,
+            DataAccess.Repositories.Interfaces.TenantRepositories.Aquarium.IDataSetRepository aquariumDataSetRepository,
+            IDataSetRepository dataSetRepository,
+            IDataTypeRepository dataTypeRepository,
             IDataLogic dataLogic,
             IUnitOfWork unitOfWork,
             IHttpContextAccessor accessor) : base(accessor)
         {
             this.dataRepository = dataRepository;
+            this.aquariumDataSetRepository = aquariumDataSetRepository;
             this.dataSetRepository = dataSetRepository;
+            this.dataTypeRepository = dataTypeRepository;
             this.dataLogic = dataLogic;
             this.unitOfWork = unitOfWork;
         }
@@ -57,7 +63,7 @@ namespace Nssol.Platypus.Controllers.spa
                 Name = model.Name,
                 LatestVersion = 0,
             };
-            dataSetRepository.Add(dataSet);
+            aquariumDataSetRepository.Add(dataSet);
 
             unitOfWork.Commit();
             return JsonCreated(new IndexOutputModel(dataSet));
@@ -77,39 +83,32 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonBadRequest("Invalid inputs.");
             }
 
-            var dataSet = await dataSetRepository.GetByIdAsync(id);
+            var dataSet = await dataSetRepository.GetByIdAsync(model.DataSetId);
             if (dataSet == null)
             {
-                return JsonNotFound($"DataSet ID {id} is not found.");
+                return JsonNotFound($"DataSet ID {model.DataSetId} is not found.");
             }
 
-            dataSet.LatestVersion += 1;
-            dataSetRepository.Update(dataSet);
+            var aquariumDataSet = await aquariumDataSetRepository.GetByIdAsync(id);
+            if (aquariumDataSet == null)
+            {
+                return JsonNotFound($"AquariumDataSet ID {id} is not found.");
+            }
+
+            aquariumDataSet.LatestVersion += 1;
+            aquariumDataSetRepository.Update(aquariumDataSet);
 
             var dataSetVersion = new DataSetVersion
             {
-                DataSetId = id,
-                Version = dataSet.LatestVersion,
+                AquariumDataSetId = id,
+                Version = aquariumDataSet.LatestVersion,
+                DataSetId = model.DataSetId,
             };
-            dataSetRepository.Add(dataSetVersion);
-
-            foreach (var x in model.Entries)
-            {
-                if (!await dataRepository.ExistsAsync(y => y.Id == x.Id))
-                {
-                    return JsonNotFound($"Data ID {x.Id} is not found.");
-                }
-                dataSetRepository.Add(new DataSetVersionEntry
-                {
-                    DataId = x.Id,
-                    DataSetVersion = dataSetVersion,
-                });
-            }
+            aquariumDataSetRepository.Add(dataSetVersion);
 
             unitOfWork.Commit();
             return JsonCreated(new VersionIndexOutputModel(dataSetVersion));
         }
-
         /// <summary>
         /// アクアリウムデータセットを削除する
         /// </summary>
@@ -118,12 +117,12 @@ namespace Nssol.Platypus.Controllers.spa
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         public async Task<IActionResult> DeleteDataSet(long id)
         {
-            var dataSet = await dataSetRepository.GetByIdAsync(id);
-            if (dataSet == null)
+            var aquariumDataSet = await aquariumDataSetRepository.GetByIdAsync(id);
+            if (aquariumDataSet == null)
             {
-                return JsonNotFound($"DataSet ID {id} is not found.");
+                return JsonNotFound($"AquariumDataSet ID {id} is not found.");
             }
-            dataSetRepository.Delete(dataSet);
+            aquariumDataSetRepository.Delete(aquariumDataSet);
 
             unitOfWork.Commit();
             return JsonNoContent();
@@ -141,7 +140,7 @@ namespace Nssol.Platypus.Controllers.spa
         public IActionResult GetDataSetList([FromQuery]SearchInputModel filter, [FromQuery]int? perPage,
             [FromQuery]int page = 1, bool withTotal = false)
         {
-            var dataSet = dataSetRepository.GetAll()
+            var dataSet = aquariumDataSetRepository.GetAll()
                 .SearchLong(d => d.Id, filter.Id)
                 .SearchString(d => d.Name, filter.Name)
                 .SearchString(d => d.CreatedBy, filter.CreatedBy)
@@ -170,12 +169,12 @@ namespace Nssol.Platypus.Controllers.spa
         [ProducesResponseType(typeof(IEnumerable<VersionIndexOutputModel>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetDataSetVersionList(long id)
         {
-            var dataSet = await dataSetRepository.GetDataSetWithVersionsAsync(id);
-            if (dataSet == null)
+            var aquariumDataSet = await aquariumDataSetRepository.GetDataSetWithVersionsAsync(id);
+            if (aquariumDataSet == null)
             {
-                return JsonNotFound($"DataSet Id {id} is not found.");
+                return JsonNotFound($"AquariumDataSet Id {id} is not found.");
             }
-            return JsonOK(dataSet.DataSetVersions
+            return JsonOK(aquariumDataSet.DataSetVersions
                 .OrderByDescending(x => x.Version)
                 .Select(x => new VersionIndexOutputModel(x)));
         }
@@ -186,27 +185,60 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="id">取得するアクアリウムデータセットID</param>
         /// <param name="versionId">取得するアクアリウムデータセットバージョンID</param>
         /// <param name="withUrl">結果にダウンロード用のURLを含めるか</param>
+        /// <param name="withFileSize">結果にファイルサイズを含めるか</param>
         [HttpGet("{id}/versions/{versionId}")]
         [Filters.PermissionFilter(MenuCode.DataSet, MenuCode.Training, MenuCode.Inference, MenuCode.Notebook)]
         [ProducesResponseType(typeof(VersionDetailsOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetDataSetVersion(long id, long versionId, [FromQuery]bool withUrl)
+        public async Task<IActionResult> GetDataSetVersion(long id, long versionId, [FromQuery]bool withUrl, [FromQuery]bool withFileSize)
         {
-            var dataSetVersion = await dataSetRepository.GetDataSetVersionWithFilesAsync(id, versionId);
+            var dataSetVersion = await aquariumDataSetRepository.GetDataSetVersionWithFilesAsync(id, versionId);
             if (dataSetVersion == null)
             {
-                return JsonNotFound($"DataSetVersion (DataSetId {id} and VersionId {versionId}) is not found.");
+                return JsonNotFound($"DataSetVersion (AquariumDataSetId {id} and VersionId {versionId}) is not found.");
             }
 
             var result = new VersionDetailsOutputModel(dataSetVersion);
-            if (dataSetVersion.DataSetVersionEntries != null)
+            var dataSet = dataSetVersion.DataSet;
+
+            if (dataSet.DataSetEntries != null)
             {
-                result.Entries = dataSetVersion.DataSetVersionEntries
-                    .AsParallel()
-                    .Select(x => new VersionDetailsOutputModel.Entry
-                    {
-                        Data = new ApiModels.DataApiModels.IndexOutputModel(x.Data),
-                        Files = dataLogic.GetDataFiles(x.Data, withUrl)
-                    });
+                result.Entries = new Dictionary<string, List<VersionDetailsOutputModel.Entry>>();
+                result.FlatEntries = new List<VersionDetailsOutputModel.Entry>();
+
+                foreach (var dataType in dataTypeRepository.GetAllWithOrderby(d => d.SortOrder, true))
+                {
+                    result.Entries.Add(dataType.Name, new List<VersionDetailsOutputModel.Entry>());
+                }
+
+                if (dataSet.IsFlat)
+                {
+                    result.FlatEntries = dataSet.DataSetEntries
+                        .OrderByDescending(x => x.Data.Id)
+                        .AsParallel()
+                        .Select(x => new VersionDetailsOutputModel.Entry
+                        {
+                            Data = new ApiModels.DataApiModels.IndexOutputModel(x.Data),
+                            Files = dataLogic.GetDataFiles(x.Data, withUrl, withFileSize).OrderBy(y => y.FileId),
+                        });
+                }
+                else
+                {
+                    dataSet.DataSetEntries
+                        .OrderByDescending(x => x.Data.Id)
+                        .AsParallel()
+                        .ForAll(y =>
+                        {
+                            var files = dataLogic.GetDataFiles(y.Data, withUrl, withFileSize).OrderBy(x => x.FileId);
+                            lock (result.Entries)
+                            {
+                                result.Entries[y.DataType.Name].Add(new VersionDetailsOutputModel.Entry
+                                {
+                                    Data = new ApiModels.DataApiModels.IndexOutputModel(y.Data),
+                                    Files = files,
+                                });
+                            }
+                        });
+                }
             }
             return JsonOK(result);
         }

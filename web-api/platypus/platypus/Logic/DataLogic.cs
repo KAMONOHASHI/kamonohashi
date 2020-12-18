@@ -56,7 +56,8 @@ namespace Nssol.Platypus.Logic
         /// </summary>
         /// <param name="data">データ</param>
         /// <param name="withUrl">結果にダウンロード用のURLを含めるか</param>
-        public IEnumerable<DataFileOutputModel> GetDataFiles(Data data, bool withUrl)
+        /// <param name="withFileSize">結果にファイルサイズを含めるか</param>
+        public IEnumerable<DataFileOutputModel> GetDataFiles(Data data, bool withUrl, bool withFileSize)
         {
             var result = new List<DataFileOutputModel>();
             
@@ -67,6 +68,10 @@ namespace Nssol.Platypus.Logic
                 if (withUrl)
                 {
                     model.Url = storageLogic.GetPreSignedUriForGet(ResourceType.Data, property.DataFile.StoredPath, property.DataFile.FileName, true).ToString();
+                }
+                if (withFileSize)
+                {
+                    model.FileSize = storageLogic.GetFileSize(ResourceType.Data, property.DataFile.StoredPath);
                 }
                 result.Add(model);
             }
