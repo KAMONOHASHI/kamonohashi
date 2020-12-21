@@ -35,11 +35,13 @@ namespace Nssol.Platypus.Logic
         private readonly IClusterManagementService clusterManagementService;
         private readonly ContainerManageOptions containerOptions;
         private readonly ActiveDirectoryOptions adOptions;
+        private readonly DataAccess.Repositories.Interfaces.TenantRepositories.Aquarium.IDataSetRepository aquariumDataSetRepository;
 
         /// <summary>
         /// コンストラクタ
         /// </summary>
         public ClusterManagementLogic(
+            DataAccess.Repositories.Interfaces.TenantRepositories.Aquarium.IDataSetRepository aquariumDataSetRepository,
             ICommonDiLogic commonDiLogic,
             IUserRepository userRepository,
             INodeRepository nodeRepository,
@@ -65,6 +67,7 @@ namespace Nssol.Platypus.Logic
             this.unitOfWork = unitOfWork;
             this.containerOptions = containerOptions.Value;
             this.adOptions = adOptions.Value;
+            this.aquariumDataSetRepository = aquariumDataSetRepository;
         }
 
         #region コンテナ管理
@@ -1294,9 +1297,13 @@ namespace Nssol.Platypus.Logic
             }
 
             var registryMap = registryLogic.GetCurrentRegistryMap(experimentHistory.Template.PreprocessContainerRegistryId.Value);
+            var InputDatas = aquariumDataSetRepository.GetDataSetVersionWithFilesAsync(experimentHistory.DataSetId, experimentHistory.DataSet.Version);
+            //string tags = "-t " + experimentHistory.Template.Name; //生成されるデータのタグを設定
+            //foreach (var tag in InputDatas.)
+            //{
+            //    tags += " -t " + tag;
+            //}
 
-            // TODO:必要に応じて生成されるデータのタグを設定
-            // string tags = "-t " + experimentHistory.Template.Name; 
 
 
             // 上書き可の環境変数
@@ -1338,7 +1345,7 @@ namespace Nssol.Platypus.Logic
                 Gpu = experimentHistory.Template.PreprocessGpu,
                 KqiToken = loginLogic.GenerateToken().AccessToken,
                 KqiImage = "kamonohashi/cli:" + versionLogic.GetVersion(),
-                LogPath = "/kqi/attach/preproc_stdout_stderr_${PREPROCESSING_ID}_${DATA_ID}.log", // 前処理履歴IDは現状ユーザーに見えないので前処理+データIDをつける
+                LogPath = "/kqi/attach/experiment_preproc_stdout_stderr_${EXPERIMENT_ID}_${DATASET_ID}.log",
                 NfsVolumeMounts = new List<NfsVolumeMountModel>()
                 {
                     // 添付ファイルを保存するディレクトリ
@@ -1349,7 +1356,7 @@ namespace Nssol.Platypus.Logic
                         MountPath = "/kqi/attach",
                         SubPath = experimentHistory.Id.ToString(),
                         Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
-                        ServerPath = CurrentUserInfo.SelectedTenant.PreprocContainerAttachedNfsPath,
+                        ServerPath = CurrentUserInfo.SelectedTenant.ExperimentContainerAttachedNfsPath,
                         ReadOnly = false
                     }
                 },
@@ -1537,7 +1544,7 @@ namespace Nssol.Platypus.Logic
                         MountPath = "/kqi/output/training",
                         SubPath = experimentHistory.Id.ToString(),
                         Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
-                        ServerPath = CurrentUserInfo.SelectedTenant.TrainingContainerOutputNfsPath,
+                        ServerPath = CurrentUserInfo.SelectedTenant.ExperimentContainerOutputNfsPath,
                         ReadOnly = false
                     },
                     // 添付ファイルを保存するディレクトリ
@@ -1548,7 +1555,7 @@ namespace Nssol.Platypus.Logic
                         MountPath = "/kqi/attach/training",
                         SubPath = experimentHistory.Id.ToString(),
                         Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
-                        ServerPath = CurrentUserInfo.SelectedTenant.TrainingContainerAttachedNfsPath,
+                        ServerPath = CurrentUserInfo.SelectedTenant.ExperimentContainerAttachedNfsPath,
                         ReadOnly = false
                     },
                     
