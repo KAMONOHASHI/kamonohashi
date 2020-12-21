@@ -350,7 +350,7 @@ namespace Nssol.Platypus.Controllers.spa
             //コンテナを起動する
             //指定したテンプレート内に前処理がない場合、テンプレート実行の学習コンテナのみ起動する
             //指定したテンプレート内に前処理がある場合ではじめて実行されるデータの場合、テンプレート実行の前処理コンテナ起動後、学習コンテナを起動する
-            //TODO:指定したテンプレート内に前処理がある場合ですでに前処理実行済みのデータがある場合
+            //TODO:指定したテンプレート内に前処理がある場合ですでに前処理実行済みのデータがある場合,前処理結果を探し/kqi/inputに配置後学習起動する。
             if (!string.IsNullOrWhiteSpace(template.PreprocessEntryPoint))
             {
                 var trainingResult = await clusterManagementLogic.RunExperimentTrainContainerAsync(experimentHistory);
@@ -381,6 +381,28 @@ namespace Nssol.Platypus.Controllers.spa
             else
             {
                 var preprocessResult = await clusterManagementLogic.RunExperimentPreprocessContainerAsync(experimentHistory);
+                if (preprocessResult.IsSuccess == false)
+                {
+                    //コンテナの起動に失敗した状態。エラーを出力して、保存した学習履歴も削除する。
+                    experimentHistoryRepository.Delete(experimentHistory);
+                    unitOfWork.Commit();
+
+                    return JsonError(HttpStatusCode.ServiceUnavailable, "Failed to run Experiment. The message bellow may be help to resolve: " + preprocessResult.Error);
+                }
+                //結果に従い、前処理結果を更新する。
+                //実行には時間がかかりうるので、DBから最新の情報を取ってくる
+                experimentHistory = await experimentHistoryRepository.GetByIdAsync(experimentHistory.Id);
+                experimentHistory.Status = preprocessResult.Value.Status.Key;
+                unitOfWork.Commit();
+
+                if (preprocessResult.Value.Status.Succeed())
+                {
+                    return JsonCreated(new SimpleOutputModel(experimentHistory));
+                }
+                else
+                {
+                    return JsonError(HttpStatusCode.ServiceUnavailable, $"Failed to run Experiment. Status={preprocessResult.Value.Status.Name}. Please contact your server administrator.");
+                }
             }
         }
 
