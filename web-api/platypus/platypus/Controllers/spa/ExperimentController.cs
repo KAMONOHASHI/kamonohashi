@@ -351,7 +351,7 @@ namespace Nssol.Platypus.Controllers.spa
             //指定したテンプレート内に前処理がない場合、テンプレート実行の学習コンテナのみ起動する
             //指定したテンプレート内に前処理がある場合ではじめて実行されるデータの場合、テンプレート実行の前処理コンテナ起動後、学習コンテナを起動する
             //TODO:指定したテンプレート内に前処理がある場合ですでに前処理実行済みのデータがある場合,前処理結果を探し/kqi/inputに配置後学習起動する。
-            if (!string.IsNullOrWhiteSpace(template.PreprocessEntryPoint))
+            if (string.IsNullOrWhiteSpace(template.PreprocessEntryPoint))
             {
                 var trainingResult = await clusterManagementLogic.RunExperimentTrainContainerAsync(experimentHistory);
                 if (trainingResult.IsSuccess == false)

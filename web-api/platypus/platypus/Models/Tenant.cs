@@ -132,6 +132,30 @@ namespace Nssol.Platypus.Models
                 return $"{Storage.NfsRootPath}{StorageBucket}/{ResourceType.NotebookContainerAttachedFiles}";
             }
         }
+
+        /// <summary>
+        /// 実験のコンテナ出力ファイル用のNFSマウント元パス
+        /// </summary>
+        [NotMapped]
+        public string ExperimentContainerOutputNfsPath
+        {
+            get
+            {
+                return $"{Storage.NfsRootPath}{StorageBucket}/{ResourceType.ExperimentContainerOutputFiles}";
+            }
+        }
+
+        /// <summary>
+        /// 実験のコンテナ添付ファイル用のNFSマウント元パス
+        /// </summary>
+        [NotMapped]
+        public string ExperimentContainerAttachedNfsPath
+        {
+            get
+            {
+                return $"{Storage.NfsRootPath}{StorageBucket}/{ResourceType.ExperimentContainerAttachedFiles}";
+            }
+        }
         #endregion
 
         /// <summary>
