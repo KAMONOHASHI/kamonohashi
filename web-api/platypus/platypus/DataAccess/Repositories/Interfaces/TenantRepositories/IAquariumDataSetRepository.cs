@@ -2,12 +2,12 @@
 using Nssol.Platypus.Models.TenantModels.Aquarium;
 using System.Threading.Tasks;
 
-namespace Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories.Aquarium
+namespace Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories
 {
     /// <summary>
     /// アクアリウムデータセット関連テーブルにアクセスするためのリポジトリインターフェイス
     /// </summary>
-    public interface IDataSetRepository : IRepositoryForTenant<DataSet>
+    public interface IAqiariumDataSetRepository : IRepositoryForTenant<DataSet>
     {
         /// <summary>
         /// アクアリウムデータセットとそのバージョンを取得する
@@ -17,12 +17,12 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories.A
         Task<DataSet> GetDataSetWithVersionsAsync(long id);
 
         /// <summary>
-        /// アクアリウムデータセットバージョンとそのファイルを取得する
+        /// アクアリウムデータセットバージョンとそのデータを取得する
         /// </summary>
         /// <param name="aquariumDatasetId">アクアリウムデータセットID</param>
         /// <param name="versionId">アクアリウムデータセットバージョンID</param>
         /// <returns>アクアリウムデータセッバージョント</returns>
-        Task<DataSetVersion> GetDataSetVersionWithFilesAsync(long aquariumDatasetId, long versionId);
+        Task<DataSetVersion> GetDataSetVersionWithDataAsync(long aquariumDatasetId, long versionId);
 
         /// <summary>
         /// 新規エントリを追加する

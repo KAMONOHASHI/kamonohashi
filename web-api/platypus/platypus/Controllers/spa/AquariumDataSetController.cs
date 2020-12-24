@@ -22,7 +22,7 @@ namespace Nssol.Platypus.Controllers.spa
     public class AquariumDataSetController : PlatypusApiControllerBase
     {
         private readonly IDataRepository dataRepository;
-        private readonly DataAccess.Repositories.Interfaces.TenantRepositories.Aquarium.IDataSetRepository aquariumDataSetRepository;
+        private readonly IAqiariumDataSetRepository aquariumDataSetRepository;
         private readonly IDataSetRepository dataSetRepository;
         private readonly IDataTypeRepository dataTypeRepository;
         private readonly IDataLogic dataLogic;
@@ -30,7 +30,7 @@ namespace Nssol.Platypus.Controllers.spa
 
         public AquariumDataSetController(
             IDataRepository dataRepository,
-            DataAccess.Repositories.Interfaces.TenantRepositories.Aquarium.IDataSetRepository aquariumDataSetRepository,
+            IAqiariumDataSetRepository aquariumDataSetRepository,
             IDataSetRepository dataSetRepository,
             IDataTypeRepository dataTypeRepository,
             IDataLogic dataLogic,
@@ -109,6 +109,7 @@ namespace Nssol.Platypus.Controllers.spa
             unitOfWork.Commit();
             return JsonCreated(new VersionIndexOutputModel(dataSetVersion));
         }
+
         /// <summary>
         /// アクアリウムデータセットを削除する
         /// </summary>
@@ -185,11 +186,10 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="id">取得するアクアリウムデータセットID</param>
         /// <param name="versionId">取得するアクアリウムデータセットバージョンID</param>
         [HttpGet("{id}/versions/{versionId}")]
-        [Filters.PermissionFilter(MenuCode.DataSet, MenuCode.Training, MenuCode.Inference, MenuCode.Notebook)]
         [ProducesResponseType(typeof(VersionDetailsOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetDataSetVersion(long id, long versionId)
         {
-            var dataSetVersion = await aquariumDataSetRepository.GetDataSetVersionWithFilesAsync(id, versionId);
+            var dataSetVersion = await aquariumDataSetRepository.GetDataSetVersionWithDataAsync(id, versionId);
             if (dataSetVersion == null)
             {
                 return JsonNotFound($"DataSetVersion (AquariumDataSetId {id} and VersionId {versionId}) is not found.");
