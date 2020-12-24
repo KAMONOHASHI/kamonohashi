@@ -14,7 +14,7 @@ data:
     kqi data download-files -d /kqi/input/$DATASET_ID $DATASET_ID && kqi data get -d /kqi/input/meta.json $DATASET_ID
     if [ $? -ne 0 ]; then
         echo "data download-files failed"
-        kqi preprocessing halt-history -did $DATASET_ID $EXPERIMENT_ID
+        kqi experiment halt $EXPERIMENT_ID
     fi
   main: |
     bash /kqi/scripts/common/wait-ready
@@ -29,9 +29,9 @@ data:
     if [ $(cat /kqi/tmp/result_exit_code) -eq 0 ]
     then
       echo "------------------------- [KAMONOHASHI Finish] retrun code is 0. complete  -------------------------"
-      kqi preprocessing build-history-files -did $DATASET_ID -s /kqi/output $TAGS $EXPERIMENT_ID
+      kqi data create -n $DATA_NAME -f /kqi/output $TAGS
     else
       echo "------------------------- [KAMONOHASHI Finish] retrun code is $RESULT. kill  -------------------------"
-      kqi preprocessing halt-history -did $DATASET_ID $EXPERIMENT_ID
+      kqi experiment halt $EXPERIMENT_ID
     fi
     

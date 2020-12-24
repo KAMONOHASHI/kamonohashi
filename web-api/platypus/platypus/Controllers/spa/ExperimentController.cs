@@ -526,9 +526,9 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="id">対象の学習履歴ID</param>
         /// <param name="fileId">削除するファイルのID</param>
-        [HttpDelete("{id}/files/{fileId}")]
-        [Filters.PermissionFilter(MenuCode.Experiment)]
-        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        //[HttpDelete("{id}/files/{fileId}")]
+        //[Filters.PermissionFilter(MenuCode.Experiment)]
+        //[ProducesResponseType((int)HttpStatusCode.NoContent)]
 
 
         /// <summary>
@@ -632,9 +632,9 @@ namespace Nssol.Platypus.Controllers.spa
         /// 指定した学習のTensor Boardを削除する
         /// </summary>
         /// <param name="id">対象の学習履歴ID</param>
-        [HttpDelete("{id}/tensorboard")]
-        [Filters.PermissionFilter(MenuCode.Experiment)]
-        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        //[HttpDelete("{id}/tensorboard")]
+        //[Filters.PermissionFilter(MenuCode.Experiment)]
+        //[ProducesResponseType((int)HttpStatusCode.NoContent)]
         //public async Task<IActionResult> DeleteTensorBoard(long id)
         //{
         //    //学習履歴IDとテナントIDが等しく、Disable状態じゃないコンテナを取得する
