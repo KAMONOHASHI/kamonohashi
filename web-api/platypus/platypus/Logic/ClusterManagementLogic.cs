@@ -35,16 +35,18 @@ namespace Nssol.Platypus.Logic
         private readonly IClusterManagementService clusterManagementService;
         private readonly ContainerManageOptions containerOptions;
         private readonly ActiveDirectoryOptions adOptions;
-        private readonly DataAccess.Repositories.Interfaces.TenantRepositories.Aquarium.IDataSetRepository aquariumDataSetRepository;
+        private readonly IAqiariumDataSetRepository aquariumDataSetRepository;
+        private readonly IDataRepository dataRepository;
 
         /// <summary>
         /// コンストラクタ
         /// </summary>
         public ClusterManagementLogic(
-            DataAccess.Repositories.Interfaces.TenantRepositories.Aquarium.IDataSetRepository aquariumDataSetRepository,
+            IAqiariumDataSetRepository aquariumDataSetRepository,
             ICommonDiLogic commonDiLogic,
             IUserRepository userRepository,
             INodeRepository nodeRepository,
+            IDataRepository dataRepository,
             ITensorBoardContainerRepository tensorBoardContainerRepository,
             IClusterManagementService clusterManagementService,
             IUnitOfWork unitOfWork,
@@ -59,6 +61,7 @@ namespace Nssol.Platypus.Logic
             this.tensorBoardContainerRepository = tensorBoardContainerRepository;
             this.userRepository = userRepository;
             this.nodeRepository = nodeRepository;
+            this.dataRepository = dataRepository;
             this.clusterManagementService = clusterManagementService;
             this.loginLogic = loginLogic;
             this.gitLogic = gitLogic;
@@ -1297,12 +1300,14 @@ namespace Nssol.Platypus.Logic
             }
 
             var registryMap = registryLogic.GetCurrentRegistryMap(experimentHistory.Template.PreprocessContainerRegistryId.Value);
-            var InputDatas = aquariumDataSetRepository.GetDataSetVersionWithFilesAsync(experimentHistory.DataSetId, experimentHistory.DataSet.Version);
+            var InputDataId = aquariumDataSetRepository.GetDataSetVersionWithDataAsync(experimentHistory.DataSetId, experimentHistory.DataSet.Version);
+            //var InputData = await dataRepository.GetDataIncludeAllAsync(InputDataId);
             //string tags = "-t " + experimentHistory.Template.Name; //生成されるデータのタグを設定
-            //foreach (var tag in InputDatas.)
+            //foreach (var tag in InputData.Tags)
             //{
             //    tags += " -t " + tag;
             //}
+
 
 
 
