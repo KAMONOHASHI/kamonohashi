@@ -33,7 +33,7 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly IExperimentHistoryRepository experimentHistoryRepository;
         private readonly IInferenceHistoryRepository inferenceHistoryRepository;
         private readonly ITensorBoardContainerRepository tensorBoardContainerRepository;
-        private readonly DataAccess.Repositories.Interfaces.TenantRepositories.IAqiariumDataSetRepository dataSetRepository;
+        private readonly DataAccess.Repositories.Interfaces.TenantRepositories.IAquariumDataSetRepository dataSetRepository;
         private readonly ITemplateRepository templateRepository;
         private readonly ITagRepository tagRepository;
         private readonly ITenantRepository tenantRepository;
@@ -52,7 +52,7 @@ namespace Nssol.Platypus.Controllers.spa
             IExperimentHistoryRepository experimentHistoryRepository,
             IInferenceHistoryRepository inferenceHistoryRepository,
             ITensorBoardContainerRepository tensorBoardContainerRepository,
-            DataAccess.Repositories.Interfaces.TenantRepositories.IAqiariumDataSetRepository dataSetRepository,
+            DataAccess.Repositories.Interfaces.TenantRepositories.IAquariumDataSetRepository dataSetRepository,
             IDataLogic dataLogic,
             ITemplateRepository templateRepository,
             ITenantRepository tenantRepository,
