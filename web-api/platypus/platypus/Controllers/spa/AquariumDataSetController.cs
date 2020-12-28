@@ -22,7 +22,7 @@ namespace Nssol.Platypus.Controllers.spa
     public class AquariumDataSetController : PlatypusApiControllerBase
     {
         private readonly IDataRepository dataRepository;
-        private readonly IAqiariumDataSetRepository aquariumDataSetRepository;
+        private readonly IAquariumDataSetRepository aquariumDataSetRepository;
         private readonly IDataSetRepository dataSetRepository;
         private readonly IDataTypeRepository dataTypeRepository;
         private readonly IDataLogic dataLogic;
@@ -30,7 +30,7 @@ namespace Nssol.Platypus.Controllers.spa
 
         public AquariumDataSetController(
             IDataRepository dataRepository,
-            IAqiariumDataSetRepository aquariumDataSetRepository,
+            IAquariumDataSetRepository aquariumDataSetRepository,
             IDataSetRepository dataSetRepository,
             IDataTypeRepository dataTypeRepository,
             IDataLogic dataLogic,

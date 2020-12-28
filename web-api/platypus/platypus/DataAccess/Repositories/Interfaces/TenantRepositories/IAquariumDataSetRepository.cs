@@ -7,7 +7,7 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories
     /// <summary>
     /// アクアリウムデータセット関連テーブルにアクセスするためのリポジトリインターフェイス
     /// </summary>
-    public interface IAqiariumDataSetRepository : IRepositoryForTenant<DataSet>
+    public interface IAquariumDataSetRepository : IRepositoryForTenant<DataSet>
     {
         /// <summary>
         /// アクアリウムデータセットとそのバージョンを取得する
