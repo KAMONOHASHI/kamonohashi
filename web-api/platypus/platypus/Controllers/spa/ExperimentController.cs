@@ -475,7 +475,7 @@ namespace Nssol.Platypus.Controllers.spa
         }
 
         /// <summary>
-        /// 学習履歴添付ファイルの一覧を取得する。
+        /// 実験履歴添付ファイルの一覧を取得する。
         /// </summary>
         /// <param name="id">対象の学習履歴ID</param>
         /// <param name="withUrl">結果にダウンロード用のURLを含めるか</param>
@@ -723,79 +723,74 @@ namespace Nssol.Platypus.Controllers.spa
         /// 実験履歴を削除する。
         /// </summary>
         /// <param name="id">実験履歴ID</param>
-        //[HttpDelete("{id}")]
-        //[Filters.PermissionFilter(MenuCode.Experiment)]
-        //[ProducesResponseType((int)HttpStatusCode.NoContent)]
-        //public async Task<IActionResult> Delete(long? id)
-        //{
-        //    //データの入力チェック
-        //    if (id == null)
-        //    {
-        //        return JsonBadRequest("Invalid inputs.");
-        //    }
-        //    //データの存在チェック
-        //    var experimentHistory = await experimentHistoryRepository.GetByIdAsync(id.Value);
-        //    if (experimentHistory == null)
-        //    {
-        //        return JsonNotFound($"Experiment ID {id} is not found.");
-        //    }
+        [HttpDelete("{id}")]
+        [Filters.PermissionFilter(MenuCode.Experiment)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        public async Task<IActionResult> Delete(long? id)
+        {
+            //データの入力チェック
+            if (id == null)
+            {
+                return JsonBadRequest("Invalid inputs.");
+            }
+            //データの存在チェック
+            var experimentHistory = await experimentHistoryRepository.GetByIdAsync(id.Value);
+            if (experimentHistory == null)
+            {
+                return JsonNotFound($"Experiment ID {id} is not found.");
+            }
 
-        //    //ステータスを確認
+            //ステータスを確認
 
-        //    var status = experimentHistory.GetStatus();
-        //    if (status.Exist())
-        //    {
-        //        //学習がまだ進行中の場合、情報を更新する
-        //        status = await clusterManagementLogic.GetContainerStatusAsync(experimentHistory.Key, CurrentUserInfo.SelectedTenant.Name, false);
-        //    }
+            var status = experimentHistory.GetStatus();
+            if (status.Exist())
+            {
+                //学習がまだ進行中の場合、情報を更新する
+                status = await clusterManagementLogic.GetContainerStatusAsync(experimentHistory.Key, CurrentUserInfo.SelectedTenant.Name, false);
+            }
 
-        //    //学習結果を利用した推論ジョブがあったら消せない
-        //    var inferenceHistory = (await inferenceHistoryRepository.GetMountedExperimentAsync(experimentHistory.Id)).FirstOrDefault();
-        //    if (inferenceHistory != null)
-        //    {
-        //        return JsonConflict($"Experiment {experimentHistory.Id} has been used by inference.");
-        //    }
+           
+            if (status.Exist())
+            {
+                //実行中であれば、コンテナを削除
+                await clusterManagementLogic.DeleteContainerAsync(
+                    ContainerType.Experiment, experimentHistory.Key, CurrentUserInfo.SelectedTenant.Name, false);
+            }
 
-        //    if (status.Exist())
-        //    {
-        //        //実行中であれば、コンテナを削除
-        //        await clusterManagementLogic.DeleteContainerAsync(
-        //            ContainerType.Experiment, experimentHistory.Key, CurrentUserInfo.SelectedTenant.Name, false);
-        //    }
+            //TODO
+            //TensorBoardを起動中だった場合は、そっちも消す
+            //TensorBoardContainer container = tensorBoardContainerRepository.GetAvailableContainer(experimentHistory.Id);
+            //if (container != null)
+            //{
+            //    await clusterManagementLogic.DeleteContainerAsync(
+            //        ContainerType.TensorBoard, container.Name, CurrentUserInfo.SelectedTenant.Name, false);
+            //    tensorBoardContainerRepository.Delete(container, true);
+            //}
 
-        //    //TensorBoardを起動中だった場合は、そっちも消す
-        //    TensorBoardContainer container = tensorBoardContainerRepository.GetAvailableContainer(experimentHistory.Id);
-        //    if (container != null)
-        //    {
-        //        await clusterManagementLogic.DeleteContainerAsync(
-        //            ContainerType.TensorBoard, container.Name, CurrentUserInfo.SelectedTenant.Name, false);
-        //        tensorBoardContainerRepository.Delete(container, true);
-        //    }
-
-        //    //添付ファイルがあったらまとめて消す
-        //    var files = await experimentHistoryRepository.GetAllAttachedFilesAsync(experimentHistory.Id);
-        //    foreach (var file in files)
-        //    {
-        //        experimentHistoryRepository.DeleteAttachedFile(file);
-        //        await storageLogic.DeleteFileAsync(ResourceType.ExperimentHistoryAttachedFiles, file.StoredPath);
-        //    }
+            //添付ファイルがあったらまとめて消す
+            //var files = await experimentHistoryRepository.GetAllAttachedFilesAsync(experimentHistory.Id);
+            //foreach (var file in files)
+            //{
+            //    experimentHistoryRepository.DeleteAttachedFile(file);
+            //    await storageLogic.DeleteFileAsync(ResourceType.ExperimentHistoryAttachedFiles, file.StoredPath);
+            //}
 
 
 
-        //    experimentHistoryRepository.Delete(experimentHistory);
-        //    unitOfWork.Commit();
+            experimentHistoryRepository.Delete(experimentHistory);
+            unitOfWork.Commit();
 
 
 
-        //    // DBへタグ削除結果のコミット
-        //    unitOfWork.Commit();
+            // DBへタグ削除結果のコミット
+            unitOfWork.Commit();
 
-        //    // ストレージ内の実験データを削除する
-        //    await storageLogic.DeleteResultsAsync(ResourceType.ExperimentContainerAttachedFiles, experimentHistory.Id);
-        //    await storageLogic.DeleteResultsAsync(ResourceType.EperimentContainerOutputFiles, experimentHistory.Id);
+            // ストレージ内の実験データを削除する
+            await storageLogic.DeleteResultsAsync(ResourceType.ExperimentContainerAttachedFiles, experimentHistory.Id);
+            await storageLogic.DeleteResultsAsync(ResourceType.ExperimentContainerOutputFiles, experimentHistory.Id);
 
-        //    return JsonNoContent();
-        //}
+            return JsonNoContent();
+        }
 
     }
 }

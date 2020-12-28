@@ -1300,17 +1300,6 @@ namespace Nssol.Platypus.Logic
             }
 
             var registryMap = registryLogic.GetCurrentRegistryMap(experimentHistory.Template.PreprocessContainerRegistryId.Value);
-            var InputDataId = aquariumDataSetRepository.GetDataSetVersionWithDataAsync(experimentHistory.DataSetId, experimentHistory.DataSet.Version);
-            //var InputData = await dataRepository.GetDataIncludeAllAsync(InputDataId);
-            //string tags = "-t " + experimentHistory.Template.Name; //生成されるデータのタグを設定
-            //foreach (var tag in InputData.Tags)
-            //{
-            //    tags += " -t " + tag;
-            //}
-
-
-
-
             // 上書き可の環境変数
             var editableEnvList = new Dictionary<string, string>()
             {
@@ -1327,7 +1316,9 @@ namespace Nssol.Platypus.Logic
             var notEditableEnvList = new Dictionary<string, string>()
             {
                 { "DATASET_ID", experimentHistory.DataSet.DataSetId.ToString()},
+                { "DATA_NAME", experimentHistory.DataSet.AquariumDataSet.Name },
                 { "EXPERIMENT_ID", experimentHistory.TemplateId.ToString()},
+                { "PREPROCESSD_DATA_PATH", "/kqi/output/preprocessed_data/" },
                 { "COMMIT_ID", experimentHistory.Template.PreprocessRepositoryCommitId},
                 { "KQI_SERVER", containerOptions.WebServerUrl },
                 { "KQI_TOKEN", loginLogic.GenerateToken().AccessToken },
@@ -1342,7 +1333,7 @@ namespace Nssol.Platypus.Logic
                 ID = experimentHistory.Id,
                 TenantName = TenantName,
                 LoginUser = CurrentUserInfo.Alias, //アカウントはエイリアスから指定
-                Name = "preproc-" + experimentHistory.Key,
+                Name = "experiment-" + experimentHistory.Key,
                 ContainerImage = registryMap.Registry.GetImagePath(experimentHistory.Template.PreprocessContainerImage, experimentHistory.Template.PreprocessContainerTag),
                 ScriptType = "experiment_preproc", // 実行スクリプトの指定
                 Cpu = experimentHistory.Template.PreprocessCpu,
@@ -1350,7 +1341,7 @@ namespace Nssol.Platypus.Logic
                 Gpu = experimentHistory.Template.PreprocessGpu,
                 KqiToken = loginLogic.GenerateToken().AccessToken,
                 KqiImage = "kamonohashi/cli:" + versionLogic.GetVersion(),
-                LogPath = "/kqi/attach/experiment_preproc_stdout_stderr_${EXPERIMENT_ID}_${DATASET_ID}.log",
+                LogPath = "/kqi/attach/experiment_preproc_stdout_stderr_${EXPERIMENT_ID}.log",
                 NfsVolumeMounts = new List<NfsVolumeMountModel>()
                 {
                     // 添付ファイルを保存するディレクトリ
@@ -1531,7 +1522,7 @@ namespace Nssol.Platypus.Logic
                 ID = experimentHistory.Id,
                 TenantName = TenantName,
                 LoginUser = CurrentUserInfo.Alias, //アカウントはエイリアスから指定
-                Name = "training-" + experimentHistory.Key,
+                Name = "experiment-" + experimentHistory.Key,
                 ContainerImage = registryMap.Registry.GetImagePath(experimentHistory.Template.TrainingContainerImage, experimentHistory.Template.TrainingContainerTag),
                 ScriptType = "experiment_training",
                 Cpu = experimentHistory.Template.TrainingCpu,
