@@ -35,14 +35,14 @@ namespace Nssol.Platypus.Logic
         private readonly IClusterManagementService clusterManagementService;
         private readonly ContainerManageOptions containerOptions;
         private readonly ActiveDirectoryOptions adOptions;
-        private readonly IAqiariumDataSetRepository aquariumDataSetRepository;
+        private readonly IAquariumDataSetRepository aquariumDataSetRepository;
         private readonly IDataRepository dataRepository;
 
         /// <summary>
         /// コンストラクタ
         /// </summary>
         public ClusterManagementLogic(
-            IAqiariumDataSetRepository aquariumDataSetRepository,
+            IAquariumDataSetRepository aquariumDataSetRepository,
             ICommonDiLogic commonDiLogic,
             IUserRepository userRepository,
             INodeRepository nodeRepository,

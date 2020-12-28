@@ -10,7 +10,7 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
     /// <summary>
     /// アクアリウムデータセット関連テーブルにアクセスするためのリポジトリクラス
     /// </summary>
-    public class AquariumDataSetRepository : RepositoryForTenantBase<DataSet>, IAqiariumDataSetRepository
+    public class AquariumDataSetRepository : RepositoryForTenantBase<DataSet>, IAquariumDataSetRepository
     {
         public AquariumDataSetRepository(CommonDbContext context, IHttpContextAccessor accessor)
         : base(context, accessor) {}
