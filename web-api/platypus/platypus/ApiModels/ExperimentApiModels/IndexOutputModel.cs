@@ -27,5 +27,11 @@ namespace Nssol.Platypus.ApiModels.ExperimentApiModels
         /// テンプレート
         /// </summary>
         public TemplateApiModels.IndexOutputModel Template { get; set; }
+
+        /// <summary>
+        /// 出力値
+        /// </summary>
+        public string OutputValue { get; set; }
+
     }
 }

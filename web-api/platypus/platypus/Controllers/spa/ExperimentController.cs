@@ -133,7 +133,7 @@ namespace Nssol.Platypus.Controllers.spa
             var status = history.GetStatus();
             if (status.Exist())
             {
-                //学習がまだ進行中の場合、情報を更新する
+                //実験がまだ進行中の場合、情報を更新する
                 var newStatus = await clusterManagementLogic.GetContainerStatusAsync(history.Name, CurrentUserInfo.SelectedTenant.Name, false);
 
                 if (status.Key != newStatus.Key)
@@ -144,6 +144,14 @@ namespace Nssol.Platypus.Controllers.spa
 
                     model.Status = newStatus.Name;
                 }
+            }
+            // storageへの出力値があれば取得し、modelに格納
+            var outputFileName = "confusion_matrix.csv";   //値を読み込むファイル名
+            var outputPath = history.Id + "/" + outputFileName;
+            var content = await storageLogic.GetFileContentAsync(ResourceType.ExperimentContainerOutputFiles, outputPath, outputFileName, true);
+            if (content != null)
+            {
+                model.OutputValue = content;
             }
             return model;
         }
