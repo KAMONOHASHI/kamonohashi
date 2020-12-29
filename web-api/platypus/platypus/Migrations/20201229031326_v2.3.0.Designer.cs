@@ -10,7 +10,7 @@ using Nssol.Platypus.DataAccess;
 namespace Nssol.Platypus.Migrations
 {
     [DbContext(typeof(CommonDbContext))]
-    [Migration("20201218124246_v2.3.0")]
+    [Migration("20201229031326_v2.3.0")]
     partial class v230
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -831,6 +831,49 @@ namespace Nssol.Platypus.Migrations
                     b.HasIndex("TenantId");
 
                     b.ToTable("ExperimentHistories");
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.ExperimentTensorBoardContainer", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired();
+
+                    b.Property<long>("ExperimentHistoryId");
+
+                    b.Property<int?>("ExpiresIn")
+                        .IsRequired();
+
+                    b.Property<string>("Host");
+
+                    b.Property<DateTime>("ModifiedAt");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired();
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.Property<int?>("PortNo");
+
+                    b.Property<DateTime>("StartedAt");
+
+                    b.Property<string>("Status")
+                        .IsRequired();
+
+                    b.Property<long>("TenantId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExperimentHistoryId");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("ExperimentTensorBoardContainers");
                 });
 
             modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.InferenceHistory", b =>
@@ -1992,6 +2035,19 @@ namespace Nssol.Platypus.Migrations
                     b.HasOne("Nssol.Platypus.Models.ModelTemplate", "Template")
                         .WithMany()
                         .HasForeignKey("TemplateId");
+
+                    b.HasOne("Nssol.Platypus.Models.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.ExperimentTensorBoardContainer", b =>
+                {
+                    b.HasOne("Nssol.Platypus.Models.TenantModels.ExperimentHistory", "ExperimentHistory")
+                        .WithMany()
+                        .HasForeignKey("ExperimentHistoryId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Nssol.Platypus.Models.Tenant", "Tenant")
                         .WithMany()

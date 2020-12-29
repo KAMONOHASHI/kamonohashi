@@ -32,7 +32,7 @@ namespace Nssol.Platypus.Controllers.spa
     {
         private readonly IExperimentHistoryRepository experimentHistoryRepository;
         private readonly IInferenceHistoryRepository inferenceHistoryRepository;
-        private readonly ITensorBoardContainerRepository tensorBoardContainerRepository;
+        private readonly IExperimentTensorBoardContainerRepository tensorBoardContainerRepository;
         private readonly DataAccess.Repositories.Interfaces.TenantRepositories.IAquariumDataSetRepository dataSetRepository;
         private readonly ITemplateRepository templateRepository;
         private readonly ITagRepository tagRepository;
@@ -51,7 +51,7 @@ namespace Nssol.Platypus.Controllers.spa
         public ExperimentController(
             IExperimentHistoryRepository experimentHistoryRepository,
             IInferenceHistoryRepository inferenceHistoryRepository,
-            ITensorBoardContainerRepository tensorBoardContainerRepository,
+            IExperimentTensorBoardContainerRepository tensorBoardContainerRepository,
             DataAccess.Repositories.Interfaces.TenantRepositories.IAquariumDataSetRepository dataSetRepository,
             IDataLogic dataLogic,
             ITemplateRepository templateRepository,
@@ -477,178 +477,200 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 実験履歴添付ファイルの一覧を取得する。
         /// </summary>
-        /// <param name="id">対象の学習履歴ID</param>
-        /// <param name="withUrl">結果にダウンロード用のURLを含めるか</param>
-        //[HttpGet("{id}/files")]
-        //[Filters.PermissionFilter(MenuCode.Experiment)]
-        //[ProducesResponseType(typeof(IEnumerable<AttachedFileOutputModel>), (int)HttpStatusCode.OK)]
-        //public async Task<IActionResult> GetAttachedFiles(long id, [FromQuery] bool withUrl = false)
-        //{
-        //    //データの存在チェック
-        //    var experimentHistory = await experimentHistoryRepository.GetByIdAsync(id);
-        //    if (experimentHistory == null)
-        //    {
-        //        return JsonNotFound($"Experiment ID {id} is not found.");
-        //    }
+        /// <param name = "id" > 対象の学習履歴ID </ param >
+        /// < param name="withUrl">結果にダウンロード用のURLを含めるか</param>
+         [HttpGet("{id}/files")]
+         [Filters.PermissionFilter(MenuCode.Experiment)]
+         [ProducesResponseType(typeof(IEnumerable<AttachedFileOutputModel>), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetAttachedFiles(long id, [FromQuery] bool withUrl = false)
+        {
+            //データの存在チェック
+            var experimentHistory = await experimentHistoryRepository.GetByIdAsync(id);
+            if (experimentHistory == null)
+            {
+                return JsonNotFound($"Experiment ID {id} is not found.");
+            }
 
-        //    var underDir = await storageLogic.GetUnderDirAsync(ResourceType.ExperimentContainerAttachedFiles, $"{id}/");
-        //    if (underDir.IsSuccess == false)
-        //    {
-        //        return JsonError(HttpStatusCode.ServiceUnavailable, "Failed to access the storage service. Please contact to system administrators.");
-        //    }
+            var underDir = await storageLogic.GetUnderDirAsync(ResourceType.ExperimentContainerAttachedFiles, $"{id}/");
+            if (underDir.IsSuccess == false)
+            {
+                return JsonError(HttpStatusCode.ServiceUnavailable, "Failed to access the storage service. Please contact to system administrators.");
+            }
 
-        //    var containerAttachedFiles = new List<AttachedFileOutputModel>();
-        //    containerAttachedFiles.AddRange(underDir.Value.Files.Select(
-        //        f => new AttachedFileOutputModel(experimentHistory.Id, f.FileName, -1)
-        //        {
-        //            Url = withUrl ? storageLogic.GetPreSignedUriForGetFromKey(f.Key, f.FileName, true).ToString() : null,
-        //            IsLocked = true
-        //        }
-        //        ));
+            var containerAttachedFiles = new List<AttachedFileOutputModel>();
+            containerAttachedFiles.AddRange(underDir.Value.Files.Select(
+                f => new AttachedFileOutputModel(experimentHistory.Id, f.FileName, -1)
+                {
+                    Url = withUrl ? storageLogic.GetPreSignedUriForGetFromKey(f.Key, f.FileName, true).ToString() : null,
+                    IsLocked = true
+                }
+                ));
 
-        //    var userAttachedFiles = new List<AttachedFileOutputModel>();
+            var userAttachedFiles = new List<AttachedFileOutputModel>();
 
-        //    var filesOnDB = await experimentHistoryRepository.GetAllAttachedFilesAsync(id);
-        //    userAttachedFiles.AddRange(filesOnDB.Select(
-        //        f => new AttachedFileOutputModel(experimentHistory.Id, f.FileName, f.Id)
-        //        {
-        //            Url = withUrl ? storageLogic.GetPreSignedUriForGet(ResourceType.ExperimentHistoryAttachedFiles, f.StoredPath, f.FileName, true).ToString() : null,
-        //            IsLocked = false
-        //        }
-        //        ));
+            var filesOnDB = await experimentHistoryRepository.GetAllAttachedFilesAsync(id);
+            userAttachedFiles.AddRange(filesOnDB.Select(
+                f => new AttachedFileOutputModel(experimentHistory.Id, f.FileName, f.Id)
+                {
+                    Url = withUrl ? storageLogic.GetPreSignedUriForGet(ResourceType.ExperimentHistoryAttachedFiles, f.StoredPath, f.FileName, true).ToString() : null,
+                    IsLocked = false
+                }
+                ));
 
-        //    var result = containerAttachedFiles.Concat(userAttachedFiles);
-        //    return JsonOK(result);
-        //}
+            var result = containerAttachedFiles.Concat(userAttachedFiles);
+            return JsonOK(result);
+        }
 
         /// <summary>
         /// 学習履歴添付ファイルを削除する
         /// </summary>
         /// <param name="id">対象の学習履歴ID</param>
         /// <param name="fileId">削除するファイルのID</param>
-        //[HttpDelete("{id}/files/{fileId}")]
-        //[Filters.PermissionFilter(MenuCode.Experiment)]
-        //[ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [HttpDelete("{id}/files/{fileId}")]
+        [Filters.PermissionFilter(MenuCode.Experiment)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        public async Task<IActionResult> DeleteAttachedFile(long id, long? fileId)
+        {
+            if (fileId == null)
+            {
+                return JsonBadRequest("File ID is required.");
+            }
+            if (fileId.Value < 0)
+            {
+                return JsonBadRequest("The file is locked. You can NOT delete the file.");
+            }
+            //存在チェック
+            //子の添付ファイルが存在すれば親の学習履歴は必ず存在するはずなので、そっちはチェックしない
+            ExperimentHistoryAttachedFile file = await experimentHistoryRepository.GetAttachedFileAsync(fileId.Value);
+            if (file == null)
+            {
+                return JsonNotFound($"File ID {fileId.Value} is not found.");
+            }
 
+            experimentHistoryRepository.DeleteAttachedFile(file);
+            await storageLogic.DeleteFileAsync(ResourceType.ExperimentHistoryAttachedFiles, file.StoredPath);
+            unitOfWork.Commit();
+
+            return JsonNoContent();
+        }
 
         /// <summary>
         /// 指定したTensorBoardコンテナ情報を取得する
         /// </summary>
         /// <param name="id">対象の学習履歴ID</param>
-        //[HttpGet("{id}/tensorboard")]
-        //[Filters.PermissionFilter(MenuCode.Experiment)]
-        //[ProducesResponseType(typeof(TensorBoardOutputModel), (int)HttpStatusCode.OK)]
-        //public async Task<IActionResult> GetTensorBoardStatus(long id)
-        //{
-        //    //データの存在チェック
-        //    var experimentHistory = await experimentHistoryRepository.GetByIdAsync(id);
-        //    if (experimentHistory == null)
-        //    {
-        //        return JsonNotFound($"Experiment ID {id} is not found.");
-        //    }
+        [HttpGet("{id}/tensorboard")]
+        [Filters.PermissionFilter(MenuCode.Experiment)]
+        [ProducesResponseType(typeof(TensorBoardOutputModel), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetTensorBoardStatus(long id)
+        {
+            //データの存在チェック
+            var experimentHistory = await experimentHistoryRepository.GetByIdAsync(id);
+            if (experimentHistory == null)
+            {
+                return JsonNotFound($"Experiment ID {id} is not found.");
+            }
 
-        //    //実験履歴IDとテナントIDが等しく、Disable状態じゃないコンテナをDBから取得する
-        //    TensorBoardContainer container = tensorBoardContainerRepository.GetAvailableContainer(id);
+            //実験履歴IDとテナントIDが等しく、Disable状態じゃないコンテナをDBから取得する
+            ExperimentTensorBoardContainer container = tensorBoardContainerRepository.GetAvailableContainer(id);
 
-        //    //以下、Jsonで返却するパラメータ
-        //    ContainerStatus status = ContainerStatus.None; //コンテナのステータス
+            //以下、Jsonで返却するパラメータ
+            ContainerStatus status = ContainerStatus.None; //コンテナのステータス
 
-        //    // 対象コンテナ情報が存在する場合、その結果を返す
-        //    if (container != null)
-        //    {
-        //        //コンテナのステータスを最新にする
-        //        status = await clusterManagementLogic.SyncContainerStatusAsync(container, false);
-        //    }
+            // 対象コンテナ情報が存在する場合、その結果を返す
+            if (container != null)
+            {
+                //コンテナのステータスを最新にする
+                status = await clusterManagementLogic.SyncExperimentContainerStatusAsync(container, false);
+            }
 
-        //    return JsonOK(new TensorBoardOutputModel(container, status, containerOptions.WebEndPoint));
-        //}
+            return JsonOK(new TensorBoardOutputModel(container, status, containerOptions.WebEndPoint));
+        }
 
         #region TensorBoard
 
         /// <summary>
         /// 指定した実験のTensor Boardを立てる
         /// </summary>
-        /// <param name="id">対象の学習履歴ID</param>
+        /// <param name="id">対象の実験履歴ID</param>
         /// <param name="model">起動モデル</param>
-        //[HttpPut("{id}/tensorboard")] //TensorBoardはIDをユーザに通知するわけではないので、POSTではなくPUTで扱う
-        //[Filters.PermissionFilter(MenuCode.Experiment)]
-        //[ProducesResponseType(typeof(TensorBoardOutputModel), (int)HttpStatusCode.OK)]
-        //public async Task<IActionResult> RunTensorBoard(long id, [FromBody] TensorBoardInputModel model)
-        //{
-        //    //データの存在チェック
-        //    var experimentHistory = await experimentHistoryRepository.GetByIdAsync(id);
-        //    if (experimentHistory == null)
-        //    {
-        //        return JsonNotFound($"Experiment ID {id} is not found.");
-        //    }
+        [HttpPut("{id}/tensorboard")] //TensorBoardはIDをユーザに通知するわけではないので、POSTではなくPUTで扱う
+        [Filters.PermissionFilter(MenuCode.Experiment)]
+        [ProducesResponseType(typeof(TensorBoardOutputModel), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> RunTensorBoard(long id, [FromBody] TensorBoardInputModel model)
+        {
+            //データの存在チェック
+            var experimentHistory = await experimentHistoryRepository.GetByIdAsync(id);
+            if (experimentHistory == null)
+            {
+                return JsonNotFound($"Experiment ID {id} is not found.");
+            }
 
-        //    //実験履歴IDとテナントIDが等しく、Disable状態じゃないコンテナを取得する
-        //    TensorBoardContainer container = tensorBoardContainerRepository.GetAvailableContainer(id);
-        //    // 当該レコードが存在する場合、時間差で他の人が立てたとみなし、何もしない
-        //    if (container != null)
-        //    {
-        //        var status = ContainerStatus.Convert(container.Status);
-        //        return JsonOK(new TensorBoardOutputModel(container, status, containerOptions.WebEndPoint));
-        //    }
+            //実験履歴IDとテナントIDが等しく、Disable状態じゃないコンテナを取得する
+            ExperimentTensorBoardContainer container = tensorBoardContainerRepository.GetAvailableContainer(id);
+            // 当該レコードが存在する場合、時間差で他の人が立てたとみなし、何もしない
+            if (container != null)
+            {
+                var status = ContainerStatus.Convert(container.Status);
+                return JsonOK(new TensorBoardOutputModel(container, status, containerOptions.WebEndPoint));
+            }
 
-        //    // コンテナ生存期間
-        //    int expiresIn = 0; // 無期限だが、DeleteTensorBoardContainerTimerの動作タイミングで削除する
-        //    if (model.ExpiresIn.HasValue)
-        //    {
-        //        // 値が存在する場合、その期間起動させる
-        //        expiresIn = model.ExpiresIn.Value;
-        //    }
+            // コンテナ生存期間
+            int expiresIn = 0; // 無期限だが、DeleteTensorBoardContainerTimerの動作タイミングで削除する
+            if (model.ExpiresIn.HasValue)
+            {
+                // 値が存在する場合、その期間起動させる
+                expiresIn = model.ExpiresIn.Value;
+            }
 
-        //    //新規にTensorBoardコンテナを起動する。
-        //    var result = await clusterManagementLogic.RunTensorBoardContainerAsync(experimentHistory, expiresIn, model.selectedHistoryIds);
-        //    if (result == null || result.Status.Succeed() == false)
-        //    {
-        //        //起動に失敗した場合、ステータス Failed で返す。
-        //        return JsonError(HttpStatusCode.ServiceUnavailable, $"Failed to run tensorboard container: {result.Status}");
-        //    }
+            //新規にTensorBoardコンテナを起動する。
+            var result = await clusterManagementLogic.RunExperimentTensorBoardContainerAsync(experimentHistory, expiresIn);
+            if (result == null || result.Status.Succeed() == false)
+            {
+                //起動に失敗した場合、ステータス Failed で返す。
+                return JsonError(HttpStatusCode.ServiceUnavailable, $"Failed to run tensorboard container: {result.Status}");
+            }
 
-        //    container = new TensorBoardContainer()
-        //    {
-        //        Name = result.Name,
-        //        StartedAt = DateTime.Now,
-        //        Status = result.Status.Name,
-        //        TenantId = CurrentUserInfo.SelectedTenant.Id,
-        //        ExperimentHistoryId = id,
-        //        Host = result.Host,
-        //        PortNo = result.Port,
-        //        ExpiresIn = expiresIn,
-        //        MountedExperimentHistoryIdList = model.selectedHistoryIds
-        //    };
+            container = new ExperimentTensorBoardContainer()
+            {
+                Name = result.Name,
+                StartedAt = DateTime.Now,
+                Status = result.Status.Name,
+                TenantId = CurrentUserInfo.SelectedTenant.Id,
+                ExperimentHistoryId = id,
+                Host = result.Host,
+                PortNo = result.Port,
+                ExpiresIn = expiresIn
+            };
 
-        //    // コンテナテーブルにInsertする
-        //    tensorBoardContainerRepository.Add(container);
+            // コンテナテーブルにInsertする
+            tensorBoardContainerRepository.Add(container);
 
-        //    unitOfWork.Commit();
+            unitOfWork.Commit();
 
-        //    return JsonOK(new TensorBoardOutputModel(container, result.Status, containerOptions.WebEndPoint));
-        //}
+            return JsonOK(new TensorBoardOutputModel(container, result.Status, containerOptions.WebEndPoint));
+        }
 
         /// <summary>
-        /// 指定した学習のTensor Boardを削除する
+        /// 指定した実験のTensor Boardを削除する
         /// </summary>
         /// <param name="id">対象の学習履歴ID</param>
-        //[HttpDelete("{id}/tensorboard")]
-        //[Filters.PermissionFilter(MenuCode.Experiment)]
-        //[ProducesResponseType((int)HttpStatusCode.NoContent)]
-        //public async Task<IActionResult> DeleteTensorBoard(long id)
-        //{
-        //    //学習履歴IDとテナントIDが等しく、Disable状態じゃないコンテナを取得する
-        //    TensorBoardContainer container = tensorBoardContainerRepository.GetAvailableContainer(id);
-        //    // 当該レコードが存在しない場合、404エラー
-        //    if (container == null)
-        //    {
-        //        return JsonNotFound($"TensorBoard container for ExperimentHistory ID {id} is not found.");
-        //    }
+        [HttpDelete("{id}/tensorboard")]
+        [Filters.PermissionFilter(MenuCode.Experiment)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        public async Task<IActionResult> DeleteTensorBoard(long id)
+        {
+            //実験履歴IDとテナントIDが等しく、Disable状態じゃないコンテナを取得する
+            ExperimentTensorBoardContainer container = tensorBoardContainerRepository.GetAvailableContainer(id);
+            // 当該レコードが存在しない場合、404エラー
+            if (container == null)
+            {
+                return JsonNotFound($"TensorBoard container for ExperimentHistory ID {id} is not found.");
+            }
 
-        //    await experimentLogic.DeleteTensorBoardAsync(container, false);
+            await experimentLogic.DeleteTensorBoardAsync(container, false);
 
-        //    return JsonNoContent();
-        //}
+            return JsonNoContent();
+        }
 
         # endregion
 

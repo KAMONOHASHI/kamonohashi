@@ -27,9 +27,14 @@ namespace Nssol.Platypus.DataAccess
         public virtual DbSet<Tenant> Tenants { get; set; }
 
         /// <summary>
-        /// コンテナ
+        /// 学習用のtensorboardコンテナ
         /// </summary>
         public virtual DbSet<TensorBoardContainer> TensorBoardContainers { get; set; }
+
+        /// <summary>
+        /// 実験用のtensorboardコンテナ
+        /// </summary>
+        public virtual DbSet<ExperimentTensorBoardContainer> ExperimentTensorBoardContainers { get; set; }
 
         /// <summary>
         /// Git

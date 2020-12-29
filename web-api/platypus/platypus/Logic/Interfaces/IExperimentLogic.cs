@@ -25,6 +25,6 @@ namespace Nssol.Platypus.Logic.Interfaces
         /// </summary>
         /// <param name="container">対象コンテナ</param>
         /// <param name="force">他テナントに対する変更を許可するか</param>
-        Task DeleteTensorBoardAsync(TensorBoardContainer container, bool force);
+        Task DeleteTensorBoardAsync(ExperimentTensorBoardContainer container, bool force);
     }
 }

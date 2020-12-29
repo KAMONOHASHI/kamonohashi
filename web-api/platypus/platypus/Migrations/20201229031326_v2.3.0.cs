@@ -201,6 +201,42 @@ namespace Nssol.Platypus.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "ExperimentTensorBoardContainers",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    CreatedBy = table.Column<string>(nullable: false),
+                    CreatedAt = table.Column<DateTime>(nullable: false),
+                    ModifiedBy = table.Column<string>(nullable: false),
+                    ModifiedAt = table.Column<DateTime>(nullable: false),
+                    TenantId = table.Column<long>(nullable: false),
+                    Name = table.Column<string>(nullable: false),
+                    Host = table.Column<string>(nullable: true),
+                    PortNo = table.Column<int>(nullable: true),
+                    ExperimentHistoryId = table.Column<long>(nullable: false),
+                    Status = table.Column<string>(nullable: false),
+                    StartedAt = table.Column<DateTime>(nullable: false),
+                    ExpiresIn = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ExperimentTensorBoardContainers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ExperimentTensorBoardContainers_ExperimentHistories_Experim~",
+                        column: x => x.ExperimentHistoryId,
+                        principalTable: "ExperimentHistories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ExperimentTensorBoardContainers_Tenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "Tenants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AquariumDatasets_TenantId",
                 table: "AquariumDatasets",
@@ -237,6 +273,16 @@ namespace Nssol.Platypus.Migrations
                 column: "TenantId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ExperimentTensorBoardContainers_ExperimentHistoryId",
+                table: "ExperimentTensorBoardContainers",
+                column: "ExperimentHistoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ExperimentTensorBoardContainers_TenantId",
+                table: "ExperimentTensorBoardContainers",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Templates_PreprocessContainerRegistryId",
                 table: "Templates",
                 column: "PreprocessContainerRegistryId");
@@ -261,10 +307,13 @@ namespace Nssol.Platypus.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ExperimentHistories");
+                name: "ExperimentTensorBoardContainers");
 
             migrationBuilder.DropTable(
                 name: "TemplateTenantMaps");
+
+            migrationBuilder.DropTable(
+                name: "ExperimentHistories");
 
             migrationBuilder.DropTable(
                 name: "AquariumDatasetVersions");

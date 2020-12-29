@@ -70,5 +70,41 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories
         /// <param name="force">他テナントに対する変更を許可するか</param>
         Task UpdateStatusAsync(long id, ContainerStatus status, DateTime? startedAt, DateTime completedAt, bool force);
 
+        #region 添付ファイル操作
+
+        /// <summary>
+        /// 指定したIDの実験履歴に紐づく全ての添付ファイルを取得します。
+        /// </summary>
+        /// <param name="id">実験履歴ID</param>
+        /// <returns>添付ファイル一覧</returns>
+        Task<IEnumerable<ExperimentHistoryAttachedFile>> GetAllAttachedFilesAsync(long id);
+
+        /// <summary>
+        /// 指定したIDの実験履歴添付ファイルを取得します。
+        /// </summary>
+        /// <param name="id">実験履歴ID</param>
+        /// <returns>添付ファイル</returns>
+        Task<ExperimentHistoryAttachedFile> GetAttachedFileAsync(long id);
+
+        /// <summary>
+        /// 指定したIDの実験履歴に、指定した名前の添付ファイルが登録済みか。
+        /// </summary>
+        /// <param name="id">実験履歴ID</param>
+        /// <param name="fileName">ファイル名</param>
+        /// <returns> True:登録済み　False:未登録</returns>
+        Task<bool> ExistsAttachedFileAsync(long id, string fileName);
+
+        /// <summary>
+        /// 実験履歴添付ファイルを追加します。
+        /// </summary>
+        /// <param name="file">追加対象のファイル</param>
+        void AddAttachedFile(ExperimentHistoryAttachedFile file);
+
+        /// <summary>
+        /// 指定した実験履歴添付ファイルを削除します。
+        /// </summary>
+        /// <param name="file">削除対象のファイル</param>
+        void DeleteAttachedFile(ExperimentHistoryAttachedFile file);
+        #endregion
     }
 }

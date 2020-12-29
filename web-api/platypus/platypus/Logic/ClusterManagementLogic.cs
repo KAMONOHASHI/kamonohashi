@@ -27,6 +27,7 @@ namespace Nssol.Platypus.Logic
         private readonly IUserRepository userRepository;
         private readonly INodeRepository nodeRepository;
         private readonly ITensorBoardContainerRepository tensorBoardContainerRepository;
+        private readonly IExperimentTensorBoardContainerRepository experimentTensorBoardContainerRepository;
         private readonly IUnitOfWork unitOfWork;
         private readonly ILoginLogic loginLogic;
         private readonly IGitLogic gitLogic;
@@ -48,6 +49,7 @@ namespace Nssol.Platypus.Logic
             INodeRepository nodeRepository,
             IDataRepository dataRepository,
             ITensorBoardContainerRepository tensorBoardContainerRepository,
+            IExperimentTensorBoardContainerRepository experimentTensorBoardContainerRepository,
             IClusterManagementService clusterManagementService,
             IUnitOfWork unitOfWork,
             ILoginLogic loginLogic,
@@ -59,6 +61,7 @@ namespace Nssol.Platypus.Logic
             ) : base(commonDiLogic)
         {
             this.tensorBoardContainerRepository = tensorBoardContainerRepository;
+            this.experimentTensorBoardContainerRepository = experimentTensorBoardContainerRepository;
             this.userRepository = userRepository;
             this.nodeRepository = nodeRepository;
             this.dataRepository = dataRepository;
@@ -988,7 +991,7 @@ namespace Nssol.Platypus.Logic
                 Configuration = outModel.Value.Configuration
             };
         }
-
+        
         /// <summary>
         /// 指定したTensorBoardコンテナのステータスをクラスタ管理サービスに問い合わせ、結果でDBを更新する。
         /// </summary>
@@ -1047,6 +1050,177 @@ namespace Nssol.Platypus.Logic
             }
             return result;
         }
+        #endregion
+
+        #region 実験のTensorboard
+        /// <summary>
+        /// 新規に実験用のTensorBoard表示用のコンテナを作成する。
+        /// 成功した場合は作成結果が、失敗した場合はnullが返る。
+        /// </summary>
+        /// <param name="expeimentHistory">対象の実験履歴</param>
+        /// <param name="expiresIn">生存期間(秒)</param>
+        /// <returns>作成したコンテナのステータス</returns>
+        public async Task<ContainerInfo> RunExperimentTensorBoardContainerAsync(ExperimentHistory experimentHistory, int expiresIn)
+        {
+            //コンテナ名は自動生成
+            //使用できる文字など、命名規約はコンテナ管理サービス側によるが、
+            //ユーザ入力値検証の都合でどうせ決め打ちしないといけないので、ロジック層で作ってしまう
+            string tenantId = CurrentUserInfo.SelectedTenant.Id.ToString("0000");
+            string containerName = $"tensorboard-{tenantId}-{experimentHistory.Id}-{DateTime.Now.ToString("yyyyMMddHHmmssffffff")}";
+
+            string token = await GetUserAccessTokenAsync();
+            if (token == null)
+            {
+                //トークンがない場合、結果はnull
+                return new ContainerInfo() { Status = ContainerStatus.Forbidden };
+            }
+
+            var nodes = GetAccessibleNode();
+            if (nodes == null || nodes.Count == 0)
+            {
+                //デプロイ可能なノードがゼロなら、エラー扱い
+                return new ContainerInfo() { Status = ContainerStatus.Forbidden };
+            }
+
+            // 上書き不可の環境変数
+            var notEditableEnvList = new Dictionary<string, string>()
+            {
+                { "EXPERIMENT_ID", experimentHistory.Id.ToString() },
+                { "KQI_SERVER", containerOptions.WebServerUrl },
+                { "KQI_TOKEN", loginLogic.GenerateToken().AccessToken },
+                { "http_proxy", containerOptions.Proxy },
+                { "https_proxy", containerOptions.Proxy },
+                { "no_proxy", containerOptions.NoProxy },
+                { "HTTP_PROXY", containerOptions.Proxy },
+                { "HTTPS_PROXY", containerOptions.Proxy },
+                { "NO_PROXY", containerOptions.NoProxy },
+                { "PYTHONUNBUFFERED", "true" }, // python実行時の標準出力・エラーのバッファリングをなくす
+                { "LC_ALL", "C.UTF-8"}, // python実行時のエラー回避
+                { "LANG", "C.UTF-8"},  // python実行時のエラー回避
+                { "EXPIRES_IN", expiresIn != 0 ? expiresIn.ToString() : "infinity"}  // コンテナ生存期間
+            };
+
+            string entryPoint = "/usr/local/bin/tensorboard --bind_all --logdir /kqi/output";
+            List<NfsVolumeMountModel> NfsVolumeMounts = new List<NfsVolumeMountModel>()
+            {
+                // 結果が保存されているディレクトリ
+                new NfsVolumeMountModel()
+                {
+                    Name = "nfs-output",
+                    MountPath = "/kqi/output",
+                    SubPath = experimentHistory.Id.ToString(),
+                    Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
+                    ServerPath = CurrentUserInfo.SelectedTenant.TrainingContainerOutputNfsPath
+                }
+            };
+            //コンテナを起動するために必要な設定値をインスタンス化
+            var inputModel = new RunContainerInputModel()
+            {
+                ID = experimentHistory.Id,
+                TenantName = TenantName,
+                LoginUser = CurrentUserInfo.Alias, //アカウントはエイリアスから指定
+                Name = containerName,
+                ContainerImage = "tensorflow/tensorflow:2.3.1",    // tensorboardで利用するイメージはtensorflow/tensorflow:2.3.1で固定
+                ScriptType = "tensorboard",
+                Cpu = 1,
+                Memory = 1, //メモリは1GBで仮決め
+                Gpu = 0,
+                KqiImage = "kamonohashi/cli:" + versionLogic.GetVersion(),
+                KqiToken = loginLogic.GenerateToken().AccessToken,
+                NfsVolumeMounts = NfsVolumeMounts,
+
+                PrepareAndFinishContainerEnvList = notEditableEnvList, // 上書き不可の環境変数を設定
+                MainContainerEnvList = notEditableEnvList, // 上書き不可の環境変数を設定
+
+                ConstraintList = new Dictionary<string, List<string>>() {
+                    { TenantName, new List<string> { "true" } }, // tenantNameの許可がされているサーバでのみ実行
+                    { containerOptions.ContainerLabelTensorBoardEnabled, new List<string> { "true" } } // tensorboardの実行が許可されているサーバでのみ実行
+                },
+                PortMappings = new PortMappingModel[]
+                {
+                    new PortMappingModel() { Protocol = "TCP", Port = 6006, TargetPort = 6006, Name = "tensorboard" }
+                },
+                ClusterManagerToken = token,
+                IsNodePort = true, //ランダムポート指定。アクセス先ポートが動的に決まるようになる。
+                EntryPoint = entryPoint
+            };
+
+            var outModel = await clusterManagementService.RunContainerAsync(inputModel);
+
+            if (outModel.IsSuccess == false)
+            {
+                return new ContainerInfo() { Status = ContainerStatus.Failed };
+            }
+            var port = outModel.Value.PortMappings.Find(p => p.Name == "tensorboard");
+            return new ContainerInfo()
+            {
+                Name = containerName,
+                Status = outModel.Value.Status,
+                Host = outModel.Value.Host,
+                Port = port.NodePort,
+                Configuration = outModel.Value.Configuration
+            };
+        }
+
+        /// <summary>
+        /// 指定したTensorBoardコンテナのステータスをクラスタ管理サービスに問い合わせ、結果でDBを更新する。
+        /// </summary>
+        /// <remark>
+        /// TensorBoardコンテナの場合、以下の理由から、エラーが発生した場合は即DBからも削除してしまう。
+        /// ・履歴管理をする必要がない
+        /// ・名前に時刻が入っているので、もしコンテナが残っていても次回起動には支障がない。
+        /// </remark>
+        public async Task<ContainerStatus> SyncExperimentContainerStatusAsync(ExperimentTensorBoardContainer container, bool force)
+        {
+            ContainerStatus result;
+            if (string.IsNullOrEmpty(container.Host))
+            {
+                //ホストが決まっていない＝リソースに空きがなくて、待っている状態
+
+                var info = await GetContainerEndpointInfoAsync(container.Name, CurrentUserInfo.SelectedTenant.Name, false);
+                result = info.Status;
+                var endpoint = info.EndPoints?.FirstOrDefault(e => e.Key == "tensorboard");
+                if (endpoint != null)
+                {
+                    //ノードが立ったので、ポート情報を更新する
+                    //どんな状態のインスタンスが引数で与えられるかわからないので、改めて取得して更新
+                    var nextStatusContainer = await experimentTensorBoardContainerRepository.GetByIdAsync(container.Id);
+                    nextStatusContainer.Host = endpoint.Host;
+                    nextStatusContainer.PortNo = endpoint.Port;
+                    nextStatusContainer.Status = result.Name;
+                    experimentTensorBoardContainerRepository.Update(nextStatusContainer);
+                    unitOfWork.Commit();
+
+                    return info.Status;
+                }
+                //まだホストが決まっていない場合は、後段処理を実行（対象コンテナがないかもしれないから）
+            }
+            else
+            {
+                result = await GetContainerStatusAsync(container.Name, container.Tenant.Name, force);
+            }
+
+
+            if (result.Exist() == false)
+            {
+                //コンテナがすでに停止しているので、ログを出した後でDBから対象レコードを削除
+                LogInformation($"ステータス {result.Name} のTensorBoardコンテナ {container.Id} {container.Name} を削除します。");
+                experimentTensorBoardContainerRepository.Delete(container, force);
+                unitOfWork.Commit();
+            }
+            else
+            {
+                bool updateResult = experimentTensorBoardContainerRepository.UpdateStatus(container.Id, result.Name, true);
+                if (updateResult == false)
+                {
+                    //削除対象がすでに消えていた場合
+                    return ContainerStatus.None;
+                }
+                unitOfWork.Commit();
+            }
+            return result;
+        }
+
         #endregion
 
         #region Notebookコンテナ管理

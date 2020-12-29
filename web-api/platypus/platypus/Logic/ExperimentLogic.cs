@@ -12,13 +12,13 @@ namespace Nssol.Platypus.Logic
     public class ExperimentLogic : PlatypusLogicBase, IExperimentLogic
     {
         private readonly IExperimentHistoryRepository experimentHistoryRepository;
-        private readonly ITensorBoardContainerRepository tensorBoardContainerRepository;
+        private readonly IExperimentTensorBoardContainerRepository tensorBoardContainerRepository;
         private readonly IClusterManagementLogic clusterManagementLogic;
         private readonly IUnitOfWork unitOfWork;
 
         public ExperimentLogic(
             IExperimentHistoryRepository experimentHistoryRepository,
-            ITensorBoardContainerRepository tensorBoardContainerRepository,
+            IExperimentTensorBoardContainerRepository tensorBoardContainerRepository,
             IClusterManagementLogic clusterManagementLogic,
             IUnitOfWork unitOfWork,
             ICommonDiLogic commonDiLogic) : base(commonDiLogic)
@@ -69,7 +69,7 @@ namespace Nssol.Platypus.Logic
         /// </summary>
         /// <param name="container">対象コンテナ</param>
         /// <param name="force">他テナントに対する変更を許可するか</param>
-        public async Task DeleteTensorBoardAsync(TensorBoardContainer container, bool force)
+        public async Task DeleteTensorBoardAsync(ExperimentTensorBoardContainer container, bool force)
         {
             //TensorBoardコンテナを削除する。
             await clusterManagementLogic.DeleteContainerAsync(ContainerType.TensorBoard, container.Name, CurrentUserInfo.SelectedTenant.Name, force);
