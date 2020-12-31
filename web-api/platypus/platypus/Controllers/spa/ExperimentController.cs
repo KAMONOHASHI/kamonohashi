@@ -414,24 +414,6 @@ namespace Nssol.Platypus.Controllers.spa
             }
         }
 
-        /// <summary>
-        /// 実験履歴作成の入力モデルのチェックを行う。
-
-
-        /// <summary>
-        /// 実験履歴の編集
-        /// </summary>
-        /// <param name="id">変更対象の実験履歴ID</param>
-        /// <param name="model">変更内容</param>
-
-
-
-        /// <summary>
-        /// 実験履歴添付ファイルを登録する。
-        /// </summary>
-        /// <param name="id">対象の実験履歴ID</param>
-        /// <param name="model">追加するファイル情報</param>
-
 
 
         /// <summary>
@@ -486,7 +468,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// 実験履歴添付ファイルの一覧を取得する。
         /// </summary>
         /// <param name = "id" > 対象の学習履歴ID </ param >
-        /// < param name="withUrl">結果にダウンロード用のURLを含めるか</param>
+        /// <param name="withUrl">結果にダウンロード用のURLを含めるか</param>
          [HttpGet("{id}/files")]
          [Filters.PermissionFilter(MenuCode.Experiment)]
          [ProducesResponseType(typeof(IEnumerable<AttachedFileOutputModel>), (int)HttpStatusCode.OK)]
@@ -787,23 +769,22 @@ namespace Nssol.Platypus.Controllers.spa
                     ContainerType.Experiment, experimentHistory.Key, CurrentUserInfo.SelectedTenant.Name, false);
             }
 
-            //TODO
             //TensorBoardを起動中だった場合は、そっちも消す
-            //TensorBoardContainer container = tensorBoardContainerRepository.GetAvailableContainer(experimentHistory.Id);
-            //if (container != null)
-            //{
-            //    await clusterManagementLogic.DeleteContainerAsync(
-            //        ContainerType.TensorBoard, container.Name, CurrentUserInfo.SelectedTenant.Name, false);
-            //    tensorBoardContainerRepository.Delete(container, true);
-            //}
+            ExperimentTensorBoardContainer container = tensorBoardContainerRepository.GetAvailableContainer(experimentHistory.Id);
+            if (container != null)
+            {
+                await clusterManagementLogic.DeleteContainerAsync(
+                    ContainerType.TensorBoard, container.Name, CurrentUserInfo.SelectedTenant.Name, false);
+                tensorBoardContainerRepository.Delete(container, true);
+            }
 
-            //添付ファイルがあったらまとめて消す
-            //var files = await experimentHistoryRepository.GetAllAttachedFilesAsync(experimentHistory.Id);
-            //foreach (var file in files)
-            //{
-            //    experimentHistoryRepository.DeleteAttachedFile(file);
-            //    await storageLogic.DeleteFileAsync(ResourceType.ExperimentHistoryAttachedFiles, file.StoredPath);
-            //}
+            // 添付ファイルがあったらまとめて消す
+            var files = await experimentHistoryRepository.GetAllAttachedFilesAsync(experimentHistory.Id);
+            foreach (var file in files)
+            {
+                experimentHistoryRepository.DeleteAttachedFile(file);
+                await storageLogic.DeleteFileAsync(ResourceType.ExperimentHistoryAttachedFiles, file.StoredPath);
+            }
 
 
 
