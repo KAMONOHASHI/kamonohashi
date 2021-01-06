@@ -145,6 +145,7 @@ namespace Nssol.Platypus
             services.AddTransient<INodeTenantMapRepository, NodeTenantMapRepository>();
             services.AddTransient<ITemplateRepository, TemplateRepository>();
             services.AddTransient<IExperimentHistoryRepository, ExperimentHistoryRepository>();
+            services.AddTransient<IExperimentPreprocessHistoryRepository, ExperimentPreprocessHistoryRepository>();
             services.AddTransient<IAquariumDataSetRepository, AquariumDataSetRepository>();
             services.AddTransient<IExperimentTensorBoardContainerRepository, ExperimentTensorBoardContainerRepository>();
 

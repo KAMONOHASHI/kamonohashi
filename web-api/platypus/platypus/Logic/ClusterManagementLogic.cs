@@ -1462,9 +1462,9 @@ namespace Nssol.Platypus.Logic
         /// <summary>
         /// 新規に実験前処理用コンテナを作成する。
         /// </summary>
-        /// <param name="experimentHistory">対象の実験履歴</param>
+        /// <param name="experimentPreprocessHistory">対象の実験の前処理履歴</param>
         /// <returns>作成したコンテナのステータス</returns>
-        public async Task<Result<ContainerInfo, string>> RunExperimentPreprocessContainerAsync(ExperimentHistory experimentHistory)
+        public async Task<Result<ContainerInfo, string>> RunExperimentPreprocessContainerAsync(ExperimentPreprocessHistory experimentPreprocessHistory)
         {
             string token = await GetUserAccessTokenAsync();
             if (token == null)
@@ -1473,7 +1473,7 @@ namespace Nssol.Platypus.Logic
                 return Result<ContainerInfo, string>.CreateErrorResult("Access denied. Failed to get token to access the cluster management system.");
             }
 
-            var registryMap = registryLogic.GetCurrentRegistryMap(experimentHistory.Template.PreprocessContainerRegistryId.Value);
+            var registryMap = registryLogic.GetCurrentRegistryMap(experimentPreprocessHistory.Template.PreprocessContainerRegistryId.Value);
             // 上書き可の環境変数
             var editableEnvList = new Dictionary<string, string>()
             {
@@ -1489,11 +1489,11 @@ namespace Nssol.Platypus.Logic
             // 上書き不可の環境変数
             var notEditableEnvList = new Dictionary<string, string>()
             {
-                { "DATASET_ID", experimentHistory.DataSet.DataSetId.ToString()},
-                { "DATA_NAME", experimentHistory.DataSet.AquariumDataSet.Name },
-                { "EXPERIMENT_ID", experimentHistory.TemplateId.ToString()},
+                { "DATASET_ID", experimentPreprocessHistory.DataSet.DataSetId.ToString()},
+                { "DATA_NAME", experimentPreprocessHistory.DataSet.AquariumDataSet.Name },
+                { "EXPERIMENT_ID", experimentPreprocessHistory.TemplateId.ToString()},
                 { "PREPROCESSD_DATA_PATH", "/kqi/output/preprocessed_data/" },
-                { "COMMIT_ID", experimentHistory.Template.PreprocessRepositoryCommitId},
+                { "COMMIT_ID", experimentPreprocessHistory.Template.PreprocessRepositoryCommitId},
                 { "KQI_SERVER", containerOptions.WebServerUrl },
                 { "KQI_TOKEN", loginLogic.GenerateToken().AccessToken },
                 { "PYTHONUNBUFFERED", "true" }, // python実行時の標準出力・エラーのバッファリングをなくす
@@ -1504,15 +1504,15 @@ namespace Nssol.Platypus.Logic
             //コンテナを起動するために必要な設定値をインスタンス化
             var inputModel = new RunContainerInputModel()
             {
-                ID = experimentHistory.Id,
+                ID = experimentPreprocessHistory.Id,
                 TenantName = TenantName,
                 LoginUser = CurrentUserInfo.Alias, //アカウントはエイリアスから指定
-                Name = "experiment-" + experimentHistory.Key,
-                ContainerImage = registryMap.Registry.GetImagePath(experimentHistory.Template.PreprocessContainerImage, experimentHistory.Template.PreprocessContainerTag),
+                Name = "experiment-" + experimentPreprocessHistory.Key,
+                ContainerImage = registryMap.Registry.GetImagePath(experimentPreprocessHistory.Template.PreprocessContainerImage, experimentPreprocessHistory.Template.PreprocessContainerTag),
                 ScriptType = "experiment_preproc", // 実行スクリプトの指定
-                Cpu = experimentHistory.Template.PreprocessCpu,
-                Memory = experimentHistory.Template.PreprocessMemory,
-                Gpu = experimentHistory.Template.PreprocessGpu,
+                Cpu = experimentPreprocessHistory.Template.PreprocessCpu,
+                Memory = experimentPreprocessHistory.Template.PreprocessMemory,
+                Gpu = experimentPreprocessHistory.Template.PreprocessGpu,
                 KqiToken = loginLogic.GenerateToken().AccessToken,
                 KqiImage = "kamonohashi/cli:" + versionLogic.GetVersion(),
                 LogPath = "/kqi/attach/experiment_preproc_stdout_stderr_${EXPERIMENT_ID}.log",
@@ -1524,7 +1524,7 @@ namespace Nssol.Platypus.Logic
                     {
                         Name = "nfs-experiment-preproc-attach",
                         MountPath = "/kqi/attach",
-                        SubPath = experimentHistory.Id.ToString(),
+                        SubPath = experimentPreprocessHistory.Id.ToString(),
                         Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
                         ServerPath = CurrentUserInfo.SelectedTenant.ExperimentContainerAttachedNfsPath,
                         ReadOnly = false
@@ -1541,7 +1541,7 @@ namespace Nssol.Platypus.Logic
                 PrepareAndFinishContainerEnvList = editableEnvList, // 上書き可の環境変数を設定
                 MainContainerEnvList = editableEnvList, // 上書き可の環境変数を設定
 
-                EntryPoint = experimentHistory.Template.PreprocessEntryPoint,
+                EntryPoint = experimentPreprocessHistory.Template.PreprocessEntryPoint,
 
                 ClusterManagerToken = token,
                 RegistryTokenName = registryMap.RegistryTokenKey,
@@ -1549,12 +1549,12 @@ namespace Nssol.Platypus.Logic
             };
 
             // 前処理はGitの未指定も許可するため、その判定
-            if (experimentHistory.Template.PreprocessRepositoryGitId != null)
+            if (experimentPreprocessHistory.Template.PreprocessRepositoryGitId != null)
             {
-                long gitId = experimentHistory.Template.PreprocessRepositoryGitId == -1 ?
-                    CurrentUserInfo.SelectedTenant.DefaultGitId.Value : experimentHistory.Template.PreprocessRepositoryGitId.Value;
+                long gitId = experimentPreprocessHistory.Template.PreprocessRepositoryGitId == -1 ?
+                    CurrentUserInfo.SelectedTenant.DefaultGitId.Value : experimentPreprocessHistory.Template.PreprocessRepositoryGitId.Value;
 
-                var gitEndpointResult = await gitLogic.GetPullUrlAsync(experimentHistory.Template.PreprocessRepositoryGitId.Value, experimentHistory.Template.PreprocessRepositoryName, experimentHistory.Template.PreprocessRepositoryOwner);
+                var gitEndpointResult = await gitLogic.GetPullUrlAsync(experimentPreprocessHistory.Template.PreprocessRepositoryGitId.Value, experimentPreprocessHistory.Template.PreprocessRepositoryName, experimentPreprocessHistory.Template.PreprocessRepositoryOwner);
 
                 if (!gitEndpointResult.IsSuccess)
                 {
@@ -1575,7 +1575,7 @@ namespace Nssol.Platypus.Logic
             }
 
             // ユーザの任意追加環境変数をマージする
-            AddEnvListToInputModel(experimentHistory.OptionDic, inputModel.MainContainerEnvList);
+            AddEnvListToInputModel(experimentPreprocessHistory.OptionDic, inputModel.MainContainerEnvList);
 
             // 上書き不可の追加環境変数をマージする
             AddEnvListToInputModel(notEditableEnvList, inputModel.PrepareAndFinishContainerEnvList);

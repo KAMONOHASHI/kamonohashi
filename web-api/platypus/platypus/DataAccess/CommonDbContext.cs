@@ -214,6 +214,12 @@ namespace Nssol.Platypus.DataAccess
         /// 実験履歴
         /// </summary>
         public virtual DbSet<ExperimentHistory> ExperimentHistories { get; set; }
+
+        /// <summary>
+        /// 実験の前処理履歴
+        /// </summary>
+        public virtual DbSet<ExperimentPreprocessHistory> ExperimentPreprocessHistories { get; set; }
+
         /// <summary>
         /// アクアリウムデータセット
         /// </summary>

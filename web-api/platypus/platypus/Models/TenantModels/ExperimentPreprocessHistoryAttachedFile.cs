@@ -11,13 +11,19 @@ namespace Nssol.Platypus.Models.TenantModels
     /// <summary>
     /// 実験履歴用添付ファイル
     /// </summary>
-    public class ExperimentHistoryAttachedFile : TenantModelBase
+    public class ExperimentPreprocessHistoryAttachedFile : TenantModelBase
     {
         /// <summary>
-        /// 実験履歴ID
+        /// 実験の前処理履歴ID
         /// </summary>
         [Required]
-        public long ExperimentHistoryId { get; set; }
+        public long ExperimentPreprocessHistoryId { get; set; }
+
+        /// <summary>
+        /// アクアリウムデータセットID
+        /// </summary>
+        [Required]
+        public long DataSetId { get; set; }
 
         /// <summary>
         /// ファイルを識別するためのキー

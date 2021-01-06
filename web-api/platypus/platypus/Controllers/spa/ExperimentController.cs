@@ -24,19 +24,22 @@ using System.Threading.Tasks;
 namespace Nssol.Platypus.Controllers.spa
 {
     /// <summary>
-    /// Trainを扱うためのAPI集
+    /// Experimentを扱うためのAPI集
     /// </summary>
     [ApiVersion("1"), ApiVersion("2")]
     [Route("api/v{api-version:apiVersion}/experiment")]
     public class ExperimentController : PlatypusApiControllerBase
     {
         private readonly IExperimentHistoryRepository experimentHistoryRepository;
+        private readonly IExperimentPreprocessHistoryRepository experimentPreprocessHistoryRepository;
         private readonly IInferenceHistoryRepository inferenceHistoryRepository;
         private readonly IExperimentTensorBoardContainerRepository tensorBoardContainerRepository;
         private readonly DataAccess.Repositories.Interfaces.TenantRepositories.IAquariumDataSetRepository dataSetRepository;
         private readonly ITemplateRepository templateRepository;
         private readonly ITagRepository tagRepository;
         private readonly ITenantRepository tenantRepository;
+        private readonly ITagLogic tagLogic;
+        private readonly IDataRepository dataRepository;
         private readonly INodeRepository nodeRepository;
         private readonly IExperimentLogic experimentLogic;
         private readonly IStorageLogic storageLogic;
@@ -50,12 +53,14 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         public ExperimentController(
             IExperimentHistoryRepository experimentHistoryRepository,
+            IExperimentPreprocessHistoryRepository experimentPreprocessHistoryRepository,
             IInferenceHistoryRepository inferenceHistoryRepository,
             IExperimentTensorBoardContainerRepository tensorBoardContainerRepository,
             DataAccess.Repositories.Interfaces.TenantRepositories.IAquariumDataSetRepository dataSetRepository,
             IDataLogic dataLogic,
             ITemplateRepository templateRepository,
             ITenantRepository tenantRepository,
+            IDataRepository dataRepository,
             INodeRepository nodeRepository,
             ITagLogic tagLogic,
             IExperimentLogic experimentLogic,
@@ -67,15 +72,17 @@ namespace Nssol.Platypus.Controllers.spa
             IHttpContextAccessor accessor) : base(accessor)
         {
             this.experimentHistoryRepository = experimentHistoryRepository;
+            this.experimentPreprocessHistoryRepository = experimentPreprocessHistoryRepository;
             this.inferenceHistoryRepository = inferenceHistoryRepository;
             this.tensorBoardContainerRepository = tensorBoardContainerRepository;
+            this.dataRepository = dataRepository;
             this.dataSetRepository = dataSetRepository;
             this.templateRepository = templateRepository;
             this.tenantRepository = tenantRepository;
             this.nodeRepository = nodeRepository;
             this.experimentLogic = experimentLogic;
-            this.storageLogic = storageLogic;
-            this.gitLogic = gitLogic;
+            this.tagLogic = tagLogic;
+            this.storageLogic = storageLogic;            this.gitLogic = gitLogic;
             this.clusterManagementLogic = clusterManagementLogic;
             this.containerOptions = containerOptions.Value;
             this.unitOfWork = unitOfWork;
@@ -260,6 +267,8 @@ namespace Nssol.Platypus.Controllers.spa
             }
         }
 
+        #region 実験実行
+
         /// <summary>
         /// 新規に実験を開始する
         /// </summary>
@@ -270,6 +279,10 @@ namespace Nssol.Platypus.Controllers.spa
         public async Task<IActionResult> Create([FromBody] CreateInputModel model)
         {
             var dataSet = await dataSetRepository.GetByIdAsync(model.DataSetId.Value);
+            if (dataSet == null)
+            {
+                return JsonNotFound($"DataSet ID {model.DataSetId} is not found.");
+            }
             var dataSetVersion = await dataSetRepository.GetDataSetVersionWithDataAsync(model.DataSetId.Value, model.DataSetVersion.Value);
             if (dataSetVersion == null)
             {
@@ -293,20 +306,15 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonNotFound($"Training of Template {template.Name} can not be run because a container image has not been selected properly yet.");
             }
 
-            // 前処理・学習コンテナの各リソースの超過チェック
+            // 学習コンテナの各リソースの超過チェック
             Tenant tenant = tenantRepository.Get(CurrentUserInfo.SelectedTenant.Id);
-            string preprocessErrorMessage = clusterManagementLogic.CheckQuota(tenant, template.PreprocessCpu, template.PreprocessMemory, template.PreprocessGpu);
-            if (preprocessErrorMessage != null)
-            {
-                return JsonBadRequest(preprocessErrorMessage);
-            }
             string trainingErrorMessage = clusterManagementLogic.CheckQuota(tenant, template.TrainingCpu, template.TrainingMemory, template.TrainingGpu);
             if (trainingErrorMessage != null)
             {
                 return JsonBadRequest(trainingErrorMessage);
             }
 
-            // TODO: テンプレートの前処理コンテナについて実行済みか判断する
+            // TODO: テンプレートの学習コンテナについて実行済みか判断する
             //テンプレートが既に実行中か確認する
             var experimentHistory = experimentHistoryRepository.Find(pph => pph.DataSetId == model.DataSetId && pph.TemplateId == template.Id);
             if (experimentHistory != null)
@@ -314,8 +322,8 @@ namespace Nssol.Platypus.Controllers.spa
                 string status = ContainerStatus.Convert(experimentHistory.Status).Key;
                 return JsonNotFound($"DataSet {dataSet.Id}:{dataSet.Name} version {dataSetVersion.Version} has already been used by {template.Id}:{template.Name}. Status:{status}");
             }
-                // 環境変数名のチェック
-                if (model.Options != null && model.Options.Count > 0)
+            // 環境変数名のチェック
+            if (model.Options != null && model.Options.Count > 0)
             {
                 foreach (var env in model.Options)
                 {
@@ -333,14 +341,14 @@ namespace Nssol.Platypus.Controllers.spa
 
             //コンテナの実行前に、学習履歴を作成する（コンテナの実行に失敗した場合、そのステータスをユーザに表示するため）
 
-                experimentHistory = new ExperimentHistory()
-                {
-                    Name = model.Name,
-                    DataSetId = dataSetVersion.Id,
-                    TemplateId = template.Id,
-                    Template = template,
-                    Status = ContainerStatus.Running.Key
-                };
+            experimentHistory = new ExperimentHistory()
+            {
+                Name = model.Name,
+                DataSetId = dataSetVersion.Id,
+                TemplateId = template.Id,
+                Template = template,
+                Status = ContainerStatus.Running.Key
+            };
 
             experimentHistory.OptionDic = model.Options ?? new Dictionary<string, string>(); // オプションはnullの可能性があるので、その時は初期化
             if (experimentHistory.OptionDic.ContainsKey("")) // 空文字は除外する
@@ -352,14 +360,13 @@ namespace Nssol.Platypus.Controllers.spa
 
             unitOfWork.Commit();
 
-            // TODO: 詳細情報の取得が必要なものを記述
 
 
             //コンテナを起動する
             //指定したテンプレート内に前処理がない場合、テンプレート実行の学習コンテナのみ起動する
             //指定したテンプレート内に前処理がある場合ではじめて実行されるデータの場合、テンプレート実行の前処理コンテナ起動後、学習コンテナを起動する
             //TODO:指定したテンプレート内に前処理がある場合ですでに前処理実行済みのデータがある場合,前処理結果を探し/kqi/inputに配置後学習起動する。
-            if (string.IsNullOrWhiteSpace(template.PreprocessEntryPoint))
+            if (string.IsNullOrWhiteSpace(template.PreprocessContainerImage))
             {
                 var trainingResult = await clusterManagementLogic.RunExperimentTrainContainerAsync(experimentHistory);
                 if (trainingResult.IsSuccess == false)
@@ -388,45 +395,205 @@ namespace Nssol.Platypus.Controllers.spa
             }
             else
             {
-                var preprocessResult = await clusterManagementLogic.RunExperimentPreprocessContainerAsync(experimentHistory);
-                if (preprocessResult.IsSuccess == false)
-                {
-                    //コンテナの起動に失敗した状態。エラーを出力して、保存した学習履歴も削除する。
-                    experimentHistoryRepository.Delete(experimentHistory);
-                    unitOfWork.Commit();
-
-                    return JsonError(HttpStatusCode.ServiceUnavailable, "Failed to run Experiment. The message bellow may be help to resolve: " + preprocessResult.Error);
-                }
-                //結果に従い、前処理結果を更新する。
-                //実行には時間がかかりうるので、DBから最新の情報を取ってくる
-                experimentHistory = await experimentHistoryRepository.GetByIdAsync(experimentHistory.Id);
-                experimentHistory.Status = preprocessResult.Value.Status.Key;
-                unitOfWork.Commit();
-
-                if (preprocessResult.Value.Status.Succeed())
-                {
-                    return JsonCreated(new SimpleOutputModel(experimentHistory));
-                }
-                else
-                {
-                    return JsonError(HttpStatusCode.ServiceUnavailable, $"Failed to run Experiment. Status={preprocessResult.Value.Status.Name}. Please contact your server administrator.");
-                }
+                var preprocessResult = await RunPreprocessHistory(model.TemplateId.Value,model);
+                return preprocessResult;
             }
         }
 
+        /// <summary>
+        /// 新規に実験の前処理を実行し、履歴を作成する。
+        /// </summary>
+        /// <remarks>
+        /// 実験の前処理実行用のコンテナを起動する。
+        /// 作成された前処理履歴は実行中のステータスとなり、前処理結果の追加が可能な状態になる。
+        /// </remarks>
+        /// <param name="id">テンプレートID</param>
+        /// <param name="model">実行設定</param>
+        [HttpPost("{id}/preprocess/run")]
+        [Filters.PermissionFilter(MenuCode.Experiment)]
+        [ProducesResponseType(typeof(PreprocessHistoriesOutputModel), (int)HttpStatusCode.Created)]
+        public async Task<IActionResult> RunPreprocessHistory([FromRoute] long id, [FromBody]CreateInputModel model)
+        {
+            // テンプレートの存在確認
+            var template = await templateRepository.GetByIdAsync(model.TemplateId.Value);
+            if (template == null)
+            {
+                return JsonNotFound($"Template ID {template.Id} is not found.");
+            }
+            // 各リソースの超過チェック
+            Tenant tenant = tenantRepository.Get(CurrentUserInfo.SelectedTenant.Id);
+            string preprocessErrorMessage = clusterManagementLogic.CheckQuota(tenant, template.PreprocessCpu, template.PreprocessMemory, template.PreprocessGpu);
+            if (preprocessErrorMessage != null)
+            {
+                return JsonBadRequest(preprocessErrorMessage);
+            }
+            var validateResult = await ValidateCreatePreprocessHistoryInputModelAsync(id, model.DataSetId);
+            if (validateResult.IsSuccess == false)
+            {
+                return validateResult.Error;
+            }
 
+            ExperimentPreprocessHistory experimentPreprocessHistory = validateResult.Value;
+            experimentPreprocessHistory.OptionDic = model.Options ?? new Dictionary<string, string>(); // オプションはnullの可能性があるので、その時は初期化
+            if (experimentPreprocessHistory.OptionDic.ContainsKey("")) // 空文字は除外する
+            {
+                experimentPreprocessHistory.OptionDic.Remove("");
+            }
+
+            experimentPreprocessHistoryRepository.Add(experimentPreprocessHistory);
+
+            unitOfWork.Commit();
+
+            // TODO:入力データの詳細情報がないので、必要に応じて取得
+
+            var result = await clusterManagementLogic.RunExperimentPreprocessContainerAsync(experimentPreprocessHistory);
+            if (result.IsSuccess == false)
+            {
+                // コンテナの起動に失敗した状態。エラーを出力して、保存した学習履歴も削除する。
+                experimentPreprocessHistoryRepository.Delete(experimentPreprocessHistory);
+
+                return JsonError(HttpStatusCode.ServiceUnavailable, "Failed to run experiment preprocessing. The message bellow may be help to resolve: " + result.Error);
+            }
+
+
+            // 結果に従い、前処理実験結果を更新する。
+            // 実行には時間がかかりうるので、DBから最新の情報を取ってくる
+            experimentPreprocessHistory = await experimentPreprocessHistoryRepository.GetByIdAsync(experimentPreprocessHistory.Id);
+            experimentPreprocessHistory.Status = result.Value.Status.Key;
+            unitOfWork.Commit();
+
+            if (result.Value.Status.Succeed())
+            {
+                return JsonCreated(new PreprocessHistoriesOutputModel(experimentPreprocessHistory));
+            }
+            else
+            {
+                return JsonError(HttpStatusCode.ServiceUnavailable, $"Failed to run experiment-preprocessing. Status={result.Value.Status.Name}. Please contact your server administrator.");
+            }
+
+        }
 
         /// <summary>
-        /// コンテナの出力ファイルの一覧を取得する。
+        /// 前処理履歴作成の入力モデルのチェックを行う。
         /// </summary>
-        /// <remarks> 
-        /// コンテナの/output/配下から指定ディレクトリパスの直下を検索する
-        /// 検索対象ディレクトリが見つからない場合もファイル・ディレクトリが空の結果を返す
-        /// </remarks>
-        /// <param name="id">対象の学習履歴ID</param>
-        /// <param name="path">検索対象ディレクトリ。使用可能文字は「-_1-9a-zA-Z/」</param>
-        /// <param name="withUrl">結果にダウンロード用のURLを含めるか</param>
-        [HttpGet("{id}/container-files")]
+        /// <param name="templateId">テンプレートID</param>
+        /// <param name="inputDataSetId">入力データセットID</param>
+        private async Task<Result<ExperimentPreprocessHistory, IActionResult>> ValidateCreatePreprocessHistoryInputModelAsync(long? templateId, long? inputDataSetId)
+        {
+            if (inputDataSetId == null)
+            {
+                return Result<ExperimentPreprocessHistory, IActionResult>.CreateErrorResult(JsonBadRequest("Data ID is requried."));
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return Result<ExperimentPreprocessHistory, IActionResult>.CreateErrorResult(JsonBadRequest("Invalid Input"));
+            }
+
+            // データIDの存在確認
+            var dataSet = await dataSetRepository.GetByIdAsync(inputDataSetId.Value);
+            if (dataSet == null)
+            {
+                return Result<ExperimentPreprocessHistory, IActionResult>.CreateErrorResult(JsonNotFound($"DataSet ID {inputDataSetId} is not found."));
+            }
+            
+            // テンプレートの存在確認
+            var template = await templateRepository.GetByIdAsync(templateId.Value);
+            if (template == null)
+            {
+                return Result<ExperimentPreprocessHistory, IActionResult>.CreateErrorResult(JsonNotFound($"Template ID {template.Id} is not found."));
+            }
+            // イメージが指定されていない前処理テンプレートは起動不能
+            if (string.IsNullOrEmpty(template.PreprocessContainerImage) || string.IsNullOrEmpty(template.PreprocessContainerTag))
+            {
+                return Result<ExperimentPreprocessHistory, IActionResult>.CreateErrorResult(JsonNotFound($"Preprocessing {template.Name} can not be run because a container image has not been selected properly yet."));
+            }
+            // 前処理が既に実行中か確認する
+            var experimentPreprocessHistory = experimentPreprocessHistoryRepository.Find(pph => pph.DataSetId == inputDataSetId && pph.TemplateId == template.Id);
+            if (experimentPreprocessHistory != null)
+            {
+                string status = ContainerStatus.Convert(experimentPreprocessHistory.Status).Name;
+                return Result<ExperimentPreprocessHistory, IActionResult>.CreateErrorResult(JsonNotFound($"DataSet {dataSet.Id}:{dataSet.Name} has already been processed by {template.Id}:{template.Name}. Status:{status}"));
+            }
+            experimentPreprocessHistory = new ExperimentPreprocessHistory()
+            {
+                DataSetId = dataSet.Id,
+                TemplateId = template.Id,
+                Template = template,
+                Status = ContainerStatus.Running.Key
+            };
+
+            return Result<ExperimentPreprocessHistory, IActionResult>.CreateResult(experimentPreprocessHistory);
+
+        }
+        /// <summary>
+        /// 前処理履歴に出力データを追加する。
+        /// 追加する対象の前処理履歴は実行中のステータスのみ許可される。
+        /// </summary>
+        /// <param name="id">テンプレートID</param>
+        /// <param name="dataSetId">入力データセットID</param>
+        /// <param name="model">データ情報</param>
+        [HttpPost("{id}/preprocess/histories/{dataSetId}/data")]
+        [Filters.PermissionFilter(MenuCode.Experiment)]
+        [ProducesResponseType(typeof(PreprocessHistoriesOutputModel), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> UploadPreprocessImage([FromRoute] long id, [FromRoute] long dataSetId,
+            [FromBody] AddOutputDataInputModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return JsonBadRequest("Invalid inputs.");
+            }
+            // データの存在チェック
+            var experimentPreprocessHistory = await experimentPreprocessHistoryRepository.GetPreprocessIncludeDataSetAndTemplateAsync(id, dataSetId);
+            if (experimentPreprocessHistory == null)
+            {
+                return JsonNotFound($"Experiment Preprocessing History about Template {id} to DataSet {dataSetId} is not found.");
+            }
+            var status = ContainerStatus.Convert(experimentPreprocessHistory.Status);
+            if (status.IsOpened() == false)
+            {
+                // 追加できるのは開放中のコンテナだけ（ローカルの結果を追加することがあるので、Runningとは限らない）
+                return JsonBadRequest($"Experiment Preprocessing History {experimentPreprocessHistory.Id} is not opened.");
+            }
+
+            // データを追加する
+            Data newData = new Data()
+            {
+                // データ名が未指定であれば、デフォルトの値を入れる
+                Name = string.IsNullOrEmpty(model.Name) ? $"{experimentPreprocessHistory.DataSet.DataSet.Name}_{experimentPreprocessHistory.Template.Name}" : model.Name,
+                Memo = model.Memo
+            };
+            dataRepository.Add(newData);
+            foreach (var file in model.Files)
+            {
+                dataRepository.AddFile(newData, file.FileName, file.StoredPath);
+            }
+            // タグの登録
+            List<string> tags = new List<string>() { experimentPreprocessHistory.Template.Name };
+            tagLogic.CreateDataTags(newData, tags);
+
+            experimentPreprocessHistoryRepository.AddOutputData(experimentPreprocessHistory.Id, newData);
+
+            unitOfWork.Commit();
+
+            return JsonOK(new PreprocessHistoriesOutputModel(experimentPreprocessHistory));
+        }
+            #endregion
+
+            #region コンテナ出力・添付ファイル
+
+
+            /// <summary>
+            /// コンテナの出力ファイルの一覧を取得する。
+            /// </summary>
+            /// <remarks> 
+            /// コンテナの/output/配下から指定ディレクトリパスの直下を検索する
+            /// 検索対象ディレクトリが見つからない場合もファイル・ディレクトリが空の結果を返す
+            /// </remarks>
+            /// <param name="id">対象の学習履歴ID</param>
+            /// <param name="path">検索対象ディレクトリ。使用可能文字は「-_1-9a-zA-Z/」</param>
+            /// <param name="withUrl">結果にダウンロード用のURLを含めるか</param>
+            [HttpGet("{id}/container-files")]
         [Filters.PermissionFilter(MenuCode.Experiment)]
         [ProducesResponseType(typeof(StorageListResultInfo), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetUnderDir(long id, [FromQuery] string path = "/", [FromQuery] bool withUrl = false)
@@ -544,6 +711,9 @@ namespace Nssol.Platypus.Controllers.spa
             return JsonNoContent();
         }
 
+        #endregion
+
+        #region TensorBoard
         /// <summary>
         /// 指定したTensorBoardコンテナ情報を取得する
         /// </summary>
@@ -576,7 +746,7 @@ namespace Nssol.Platypus.Controllers.spa
             return JsonOK(new TensorBoardOutputModel(container, status, containerOptions.WebEndPoint));
         }
 
-        #region TensorBoard
+
 
         /// <summary>
         /// 指定した実験のTensor Boardを立てる
@@ -662,7 +832,9 @@ namespace Nssol.Platypus.Controllers.spa
             return JsonNoContent();
         }
 
-        # endregion
+        #endregion
+
+        #region 停止・削除
 
         /// <summary>
         /// 実験を途中で強制終了させる。
@@ -802,6 +974,7 @@ namespace Nssol.Platypus.Controllers.spa
 
             return JsonNoContent();
         }
+        #endregion
 
     }
 }

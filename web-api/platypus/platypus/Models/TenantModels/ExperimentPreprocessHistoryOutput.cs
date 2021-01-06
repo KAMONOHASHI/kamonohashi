@@ -11,7 +11,7 @@ namespace Nssol.Platypus.Models.TenantModels
     /// <summary>
     /// 実験の前処理履歴出力
     /// </summary>
-    public class ExperimentHistoryOutput : TenantModelBase
+    public class ExperimentPreprocessHistoryOutput : TenantModelBase
     {
         /// <summary>
         /// 実験の前処理履歴ID
@@ -29,7 +29,7 @@ namespace Nssol.Platypus.Models.TenantModels
         /// 実験の前処理履歴
         /// </summary>
         [ForeignKey(nameof(ExperimentHistoryId))]
-        public virtual ExperimentHistory ExperimentHistory { get; set; }
+        public virtual ExperimentPreprocessHistory ExperimentPreprocessHistory { get; set; }
 
         /// <summary>
         /// 出力データ
