@@ -1,10 +1,10 @@
 <template>
   <div>
     <h2>アクアリウムダッシュボード</h2>
-    <div>新しくモデルをトレーニングする</div>
+    <div>データの準備を行う</div>
     <div class="aqarium-dashboard">
       <div
-        v-for="(menu, index) in modelTrain"
+        v-for="(menu, index) in dataset"
         :key="'m' + index"
         class="card-container"
       >
@@ -30,10 +30,36 @@
         </router-link>
       </div>
     </div>
-    <div>推論をおこなう</div>
+    <div>実験を行う</div>
     <div class="aqarium-dashboard">
       <div
-        v-for="(menu, index) in inference"
+        v-for="(menu, index) in training"
+        :key="'i' + index"
+        class="card-container"
+      >
+        <router-link :to="menu.url">
+          <el-card
+            class="menu"
+            style="border: solid 1px #ebeef5; width: 400px; height: 200px;"
+          >
+            <div class="menu-name">
+              {{ menu.name }}
+            </div>
+            <div
+              class="menu-description"
+              style="padding: 10px; font-size: 14px;"
+            >
+              {{ menu.description }}
+            </div>
+            <div class="menu-start" style="padding: 20px; font-size: 14px;">
+              <icon :name="iconname" scale="1.5" class="menu-icon" />
+              開始
+            </div>
+          </el-card>
+        </router-link>
+      </div>
+      <div
+        v-for="(menu, index) in validation"
         :key="'i' + index"
         class="card-container"
       >
@@ -106,27 +132,35 @@ export default {
   data() {
     return {
       iconname: 'pl-arrow-right',
-      modelTrain: [
+      dataset: [
+        {
+          category: '',
+          name: 'データセット',
+          url: '/aquarium/dataset',
+          description: 'データアップロード、データセット作成を行います。',
+        },
+      ],
+      training: [
         {
           category: '',
           name: '学習',
-          url: '/dataset',
-          description: 'モデルをトレーニングします。',
+          url: '/aquarium/experiment/template',
+          description: 'テンプレートを選択し目的に応じたAIを作成します。',
         },
       ],
-      inference: [
+      validation: [
         {
           category: '',
-          name: '推論',
-          url: '',
-          description: '学習済みモデルの選択、データ選択を行い推論を行います。',
+          name: '評価',
+          url: '/aquarium/experiment',
+          description: '作成したAIの精度を確認し評価します。',
         },
       ],
       template: [
         {
           category: '',
           name: 'テンプレート管理',
-          url: '',
+          url: '/aquarium/model-template',
           description: 'テンプレートの閲覧、編集、新規登録をします。',
         },
       ],
