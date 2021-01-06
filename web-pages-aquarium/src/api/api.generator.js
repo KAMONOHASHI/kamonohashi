@@ -821,7 +821,6 @@ export const ApiV2AquariumDatasetsByIdDeleteURL = function(parameters = {}) {
  * raw_url: ApiV2AquariumDatasetsByIdVersionsByVersionIdGet_RAW_URL
  * @param id - 取得するアクアリウムデータセットID
  * @param versionId - 取得するアクアリウムデータセットバージョンID
- * @param withUrl - 結果にダウンロード用のURLを含めるか
  */
 export const ApiV2AquariumDatasetsByIdVersionsByVersionIdGet = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -837,9 +836,6 @@ export const ApiV2AquariumDatasetsByIdVersionsByVersionIdGet = function(paramete
   path = path.replace('{versionId}', `${parameters['versionId']}`)
   if (parameters['versionId'] === undefined) {
     return Promise.reject(new Error('Missing required  parameter: versionId'))
-  }
-  if (parameters['withUrl'] !== undefined) {
-    queryParameters['withUrl'] = parameters['withUrl']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -860,9 +856,6 @@ export const ApiV2AquariumDatasetsByIdVersionsByVersionIdGetURL = function(param
   let path = '/api/v2/aquarium/datasets/{id}/versions/{versionId}'
   path = path.replace('{id}', `${parameters['id']}`)
   path = path.replace('{versionId}', `${parameters['versionId']}`)
-  if (parameters['withUrl'] !== undefined) {
-    queryParameters['withUrl'] = parameters['withUrl']
-  }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]
@@ -1596,6 +1589,57 @@ export const ApiV2DataByIdFilesByNameGetURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/data/{id}/files/{name}'
+  path = path.replace('{id}', `${parameters['id']}`)
+  path = path.replace('{name}', `${parameters['name']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * ファイルのサイズ(Byte)を取得する
+ * request: ApiV2DataByIdFilesByNameSizeGet
+ * url: ApiV2DataByIdFilesByNameSizeGetURL
+ * method: ApiV2DataByIdFilesByNameSizeGet_TYPE
+ * raw_url: ApiV2DataByIdFilesByNameSizeGet_RAW_URL
+ * @param id - 対象データID
+ * @param name - 対象ファイル名
+ */
+export const ApiV2DataByIdFilesByNameSizeGet = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/data/{id}/files/{name}/size'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  path = path.replace('{name}', `${parameters['name']}`)
+  if (parameters['name'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: name'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2DataByIdFilesByNameSizeGet_RAW_URL = function() {
+  return '/api/v2/data/{id}/files/{name}/size'
+}
+export const ApiV2DataByIdFilesByNameSizeGet_TYPE = function() {
+  return 'get'
+}
+export const ApiV2DataByIdFilesByNameSizeGetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/data/{id}/files/{name}/size'
   path = path.replace('{id}', `${parameters['id']}`)
   path = path.replace('{name}', `${parameters['name']}`)
   if (parameters.$queryParameters) {
@@ -2476,6 +2520,51 @@ export const ApiV2ExperimentByIdGetURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * 実験履歴を削除する。
+ * request: ApiV2ExperimentByIdDelete
+ * url: ApiV2ExperimentByIdDeleteURL
+ * method: ApiV2ExperimentByIdDelete_TYPE
+ * raw_url: ApiV2ExperimentByIdDelete_RAW_URL
+ * @param id - 実験履歴ID
+ */
+export const ApiV2ExperimentByIdDelete = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/experiment/{id}'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('delete', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2ExperimentByIdDelete_RAW_URL = function() {
+  return '/api/v2/experiment/{id}'
+}
+export const ApiV2ExperimentByIdDelete_TYPE = function() {
+  return 'delete'
+}
+export const ApiV2ExperimentByIdDeleteURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/experiment/{id}'
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * 指定された実験履歴のエラーイベントを取得します。
  * request: ApiV2ExperimentByIdEventsGet
  * url: ApiV2ExperimentByIdEventsGetURL
@@ -2564,15 +2653,122 @@ export const ApiV2ExperimentRunPostURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
- * 
- * request: ApiV2ExperimentByIdContainer_filesGet
- * url: ApiV2ExperimentByIdContainer_filesGetURL
- * method: ApiV2ExperimentByIdContainer_filesGet_TYPE
- * raw_url: ApiV2ExperimentByIdContainer_filesGet_RAW_URL
- * @param id - 
- * @param path - 
- * @param withUrl - 
- */
+* 実験の前処理実行用のコンテナを起動する。
+作成された前処理履歴は実行中のステータスとなり、前処理結果の追加が可能な状態になる。
+* request: ApiV2ExperimentByIdPreprocessRunPost
+* url: ApiV2ExperimentByIdPreprocessRunPostURL
+* method: ApiV2ExperimentByIdPreprocessRunPost_TYPE
+* raw_url: ApiV2ExperimentByIdPreprocessRunPost_RAW_URL
+     * @param id - テンプレートID
+     * @param model - 実行設定
+*/
+export const ApiV2ExperimentByIdPreprocessRunPost = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/experiment/{id}/preprocess/run'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  if (parameters['model'] !== undefined) {
+    body = parameters['model']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('post', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2ExperimentByIdPreprocessRunPost_RAW_URL = function() {
+  return '/api/v2/experiment/{id}/preprocess/run'
+}
+export const ApiV2ExperimentByIdPreprocessRunPost_TYPE = function() {
+  return 'post'
+}
+export const ApiV2ExperimentByIdPreprocessRunPostURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/experiment/{id}/preprocess/run'
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+* 前処理履歴に出力データを追加する。
+追加する対象の前処理履歴は実行中のステータスのみ許可される。
+* request: ApiV2ExperimentByIdPreprocessHistoriesByDataSetIdDataPost
+* url: ApiV2ExperimentByIdPreprocessHistoriesByDataSetIdDataPostURL
+* method: ApiV2ExperimentByIdPreprocessHistoriesByDataSetIdDataPost_TYPE
+* raw_url: ApiV2ExperimentByIdPreprocessHistoriesByDataSetIdDataPost_RAW_URL
+     * @param id - テンプレートID
+     * @param dataSetId - 入力データセットID
+     * @param model - データ情報
+*/
+export const ApiV2ExperimentByIdPreprocessHistoriesByDataSetIdDataPost = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/experiment/{id}/preprocess/histories/{dataSetId}/data'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  path = path.replace('{dataSetId}', `${parameters['dataSetId']}`)
+  if (parameters['dataSetId'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: dataSetId'))
+  }
+  if (parameters['model'] !== undefined) {
+    body = parameters['model']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('post', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2ExperimentByIdPreprocessHistoriesByDataSetIdDataPost_RAW_URL = function() {
+  return '/api/v2/experiment/{id}/preprocess/histories/{dataSetId}/data'
+}
+export const ApiV2ExperimentByIdPreprocessHistoriesByDataSetIdDataPost_TYPE = function() {
+  return 'post'
+}
+export const ApiV2ExperimentByIdPreprocessHistoriesByDataSetIdDataPostURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/experiment/{id}/preprocess/histories/{dataSetId}/data'
+  path = path.replace('{id}', `${parameters['id']}`)
+  path = path.replace('{dataSetId}', `${parameters['dataSetId']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+* コンテナの/output/配下から指定ディレクトリパスの直下を検索する
+検索対象ディレクトリが見つからない場合もファイル・ディレクトリが空の結果を返す
+* request: ApiV2ExperimentByIdContainer_filesGet
+* url: ApiV2ExperimentByIdContainer_filesGetURL
+* method: ApiV2ExperimentByIdContainer_filesGet_TYPE
+* raw_url: ApiV2ExperimentByIdContainer_filesGet_RAW_URL
+     * @param id - 対象の学習履歴ID
+     * @param path - 検索対象ディレクトリ。使用可能文字は「-_1-9a-zA-Z/」
+     * @param withUrl - 結果にダウンロード用のURLを含めるか
+*/
 export const ApiV2ExperimentByIdContainer_filesGet = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
@@ -2623,13 +2819,65 @@ export const ApiV2ExperimentByIdContainer_filesGetURL = function(parameters = {}
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * 
+ * request: ApiV2ExperimentByIdFilesGet
+ * url: ApiV2ExperimentByIdFilesGetURL
+ * method: ApiV2ExperimentByIdFilesGet_TYPE
+ * raw_url: ApiV2ExperimentByIdFilesGet_RAW_URL
+ * @param id - 
+ * @param withUrl - 
+ */
+export const ApiV2ExperimentByIdFilesGet = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/experiment/{id}/files'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  if (parameters['withUrl'] !== undefined) {
+    queryParameters['withUrl'] = parameters['withUrl']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2ExperimentByIdFilesGet_RAW_URL = function() {
+  return '/api/v2/experiment/{id}/files'
+}
+export const ApiV2ExperimentByIdFilesGet_TYPE = function() {
+  return 'get'
+}
+export const ApiV2ExperimentByIdFilesGetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/experiment/{id}/files'
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['withUrl'] !== undefined) {
+    queryParameters['withUrl'] = parameters['withUrl']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * 学習履歴添付ファイルを削除する
  * request: ApiV2ExperimentByIdFilesByFileIdDelete
  * url: ApiV2ExperimentByIdFilesByFileIdDeleteURL
  * method: ApiV2ExperimentByIdFilesByFileIdDelete_TYPE
  * raw_url: ApiV2ExperimentByIdFilesByFileIdDelete_RAW_URL
  * @param id - 対象の学習履歴ID
- * @param fileId - 
+ * @param fileId - 削除するファイルのID
  */
 export const ApiV2ExperimentByIdFilesByFileIdDelete = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -2674,7 +2922,101 @@ export const ApiV2ExperimentByIdFilesByFileIdDeleteURL = function(parameters = {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
- * 学習履歴添付ファイルを削除する
+ * 指定したTensorBoardコンテナ情報を取得する
+ * request: ApiV2ExperimentByIdTensorboardGet
+ * url: ApiV2ExperimentByIdTensorboardGetURL
+ * method: ApiV2ExperimentByIdTensorboardGet_TYPE
+ * raw_url: ApiV2ExperimentByIdTensorboardGet_RAW_URL
+ * @param id - 対象の学習履歴ID
+ */
+export const ApiV2ExperimentByIdTensorboardGet = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/experiment/{id}/tensorboard'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2ExperimentByIdTensorboardGet_RAW_URL = function() {
+  return '/api/v2/experiment/{id}/tensorboard'
+}
+export const ApiV2ExperimentByIdTensorboardGet_TYPE = function() {
+  return 'get'
+}
+export const ApiV2ExperimentByIdTensorboardGetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/experiment/{id}/tensorboard'
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 指定した実験のTensor Boardを立てる
+ * request: ApiV2ExperimentByIdTensorboardPut
+ * url: ApiV2ExperimentByIdTensorboardPutURL
+ * method: ApiV2ExperimentByIdTensorboardPut_TYPE
+ * raw_url: ApiV2ExperimentByIdTensorboardPut_RAW_URL
+ * @param id - 対象の実験履歴ID
+ * @param model - 起動モデル
+ */
+export const ApiV2ExperimentByIdTensorboardPut = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/experiment/{id}/tensorboard'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  if (parameters['model'] !== undefined) {
+    body = parameters['model']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('put', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2ExperimentByIdTensorboardPut_RAW_URL = function() {
+  return '/api/v2/experiment/{id}/tensorboard'
+}
+export const ApiV2ExperimentByIdTensorboardPut_TYPE = function() {
+  return 'put'
+}
+export const ApiV2ExperimentByIdTensorboardPutURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/experiment/{id}/tensorboard'
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 指定した実験のTensor Boardを削除する
  * request: ApiV2ExperimentByIdTensorboardDelete
  * url: ApiV2ExperimentByIdTensorboardDeleteURL
  * method: ApiV2ExperimentByIdTensorboardDelete_TYPE
@@ -2719,12 +3061,12 @@ export const ApiV2ExperimentByIdTensorboardDeleteURL = function(parameters = {})
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
- * 学習履歴添付ファイルを削除する
+ * 実験を途中で強制終了させる。
  * request: ApiV2ExperimentByIdHaltPost
  * url: ApiV2ExperimentByIdHaltPostURL
  * method: ApiV2ExperimentByIdHaltPost_TYPE
  * raw_url: ApiV2ExperimentByIdHaltPost_RAW_URL
- * @param id - 対象の学習履歴ID
+ * @param id - 学習履歴ID
  */
 export const ApiV2ExperimentByIdHaltPost = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
