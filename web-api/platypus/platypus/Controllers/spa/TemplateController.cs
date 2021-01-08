@@ -5,6 +5,7 @@ using Nssol.Platypus.ApiModels.TemplateApiModels;
 using Nssol.Platypus.Controllers.Util;
 using Nssol.Platypus.DataAccess.Core;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces;
+using Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories;
 using Nssol.Platypus.Filters;
 using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Infrastructure.Infos;
@@ -27,6 +28,7 @@ namespace Nssol.Platypus.Controllers.spa
     {
         private readonly ITemplateRepository templateRepository;
         private readonly ITenantRepository tenantRepository;
+        private readonly IExperimentHistoryRepository experimentHistoryRepository;
         private readonly IClusterManagementLogic clusterManagementLogic;
         private readonly IUnitOfWork unitOfWork;
         private readonly IGitLogic gitLogic;
@@ -77,25 +79,25 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 接続中のテナントに有効なテンプレート一覧を取得
         /// </summary>
-        //[HttpGet("tenant/templates")]
-        //[PermissionFilter(MenuCode.Template)]
-        //[ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
-        //public IActionResult GetTemplatesByGroupId([FromQuery] int? perPage, [FromQuery] int page = 1, bool withTotal = false)
-        //{
-        //    var templates = templateRepository.GetAccessibleTemplates(CurrentUserInfo.SelectedTenant.Id);
+        [HttpGet("tenant/templates")]
+        [PermissionFilter(MenuCode.Template)]
+        [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
+        public IActionResult GetTemplatesByGroupId([FromQuery] int? perPage, [FromQuery] int page = 1, bool withTotal = false)
+        {
+            var templates = templateRepository.GetAccessibleTemplates(CurrentUserInfo.SelectedTenant.Id);
 
-        //    if (withTotal)
-        //    {
-        //        //テンプレートの場合は件数が少ない想定なので、別のSQLを投げずにカウントしてしまう
-        //        SetTotalCountToHeader(templates.Count());
-        //    }
+            if (withTotal)
+            {
+                //テンプレートの場合は件数が少ない想定なので、別のSQLを投げずにカウントしてしまう
+                SetTotalCountToHeader(templates.Count());
+            }
 
-        //    //if (perPage.HasValue)
-        //    //{
-        //    //    templates = templates.Paging(page, perPage.Value);
-        //    //}
-        //    return JsonOK(templates.Select(t => new IndexOutputModel(t)));
-        //}
+            //if (perPage.HasValue)
+            //{
+            //    templates = templates.Paging(page, perPage.Value);
+            //}
+            return JsonOK(templates.Select(t => new IndexOutputModel(t)));
+        }
 
         /// <summary>
         /// テンプレートアクセスレベルの一覧を取得する
@@ -343,7 +345,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// テンプレートを削除する。
         /// </summary>
         /// <remarks>
-        /// 一度でも前処理が実行されていた場合、削除不可
+        /// 一度でもテンプレートが実行されていた場合、削除不可
         /// </remarks>
         /// <param name="id">テンプレートID</param>
         [HttpDelete("admin/templates/{id}")]
@@ -363,13 +365,13 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonNotFound($"Template ID {id.Value} is not found.");
             }
 
-            //TODO テンプレート実行履歴の有無をチェック
-            //var history = templateHistoryRepository.Find(p => p.PreprocessId == id.Value);
-            //if (history != null)
-            //{
-            //    // 過去にテンプレートを実行済みなので、削除できない
-            //    return JsonConflict($"Template ID {id.Value} is already executed. History ID = {history.Id} ");
-            //}
+            //テンプレート実行履歴の有無をチェック
+            var history = experimentHistoryRepository.Find(t => t.TemplateId == id.Value);
+            if (history != null)
+            {
+                // 過去にテンプレートを実行済みなので、削除できない
+                return JsonConflict($"Template ID {id.Value} is already executed. Experiment History ID = {history.Id} ");
+            }
 
             templateRepository.Delete(template);
             unitOfWork.Commit();
