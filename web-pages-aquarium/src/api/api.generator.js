@@ -8590,6 +8590,52 @@ export const ApiV2AdminTemplatesPostURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * 接続中のテナントに有効なテンプレート一覧を取得
+ * request: ApiV2TenantTemplatesGet
+ * url: ApiV2TenantTemplatesGetURL
+ * method: ApiV2TenantTemplatesGet_TYPE
+ * raw_url: ApiV2TenantTemplatesGet_RAW_URL
+ * @param withTotal - 
+ */
+export const ApiV2TenantTemplatesGet = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/tenant/templates'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['withTotal'] !== undefined) {
+    queryParameters['withTotal'] = parameters['withTotal']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2TenantTemplatesGet_RAW_URL = function() {
+  return '/api/v2/tenant/templates'
+}
+export const ApiV2TenantTemplatesGet_TYPE = function() {
+  return 'get'
+}
+export const ApiV2TenantTemplatesGetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/tenant/templates'
+  if (parameters['withTotal'] !== undefined) {
+    queryParameters['withTotal'] = parameters['withTotal']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * テンプレートアクセスレベルの一覧を取得する
  * request: ApiV2AdminTemplate_access_levelsGet
  * url: ApiV2AdminTemplate_access_levelsGetURL
@@ -8723,7 +8769,7 @@ export const ApiV2AdminTemplatesByIdPostURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
- * 一度でも前処理が実行されていた場合、削除不可
+ * 一度でもテンプレートが実行されていた場合、削除不可
  * request: ApiV2AdminTemplatesByIdDelete
  * url: ApiV2AdminTemplatesByIdDeleteURL
  * method: ApiV2AdminTemplatesByIdDelete_TYPE

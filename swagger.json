@@ -7300,6 +7300,45 @@
         ]
       }
     },
+    "/api/v2/tenant/templates": {
+      "get": {
+        "tags": [
+          "Template"
+        ],
+        "summary": "接続中のテナントに有効なテンプレート一覧を取得",
+        "operationId": "ApiV2TenantTemplatesGet",
+        "consumes": [],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "withTotal",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "default": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "uniqueItems": false,
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Nssol.Platypus.ApiModels.TemplateApiModels.IndexOutputModel"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
     "/api/v2/admin/template-access-levels": {
       "get": {
         "tags": [
@@ -7420,7 +7459,7 @@
           "Template"
         ],
         "summary": "テンプレートを削除する。",
-        "description": "一度でも前処理が実行されていた場合、削除不可",
+        "description": "一度でもテンプレートが実行されていた場合、削除不可",
         "operationId": "ApiV2AdminTemplatesByIdDelete",
         "consumes": [],
         "produces": [],
@@ -13795,14 +13834,10 @@
           "description": "グループID",
           "type": "integer"
         },
-        "assignedTenantIds": {
+        "assignedTenantId": {
+          "format": "int64",
           "description": "このテンプレートを使用できるテナントのID。\r\nNssol.Platypus.ApiModels.TemplateApiModels.CreateInputModel.AccessLevelがNssol.Platypus.Infrastructure.TemplateAccessLevel.Privateの時のみ指定可能。\r\nそれ以外の場合は無視される。",
-          "uniqueItems": false,
-          "type": "array",
-          "items": {
-            "format": "int64",
-            "type": "integer"
-          }
+          "type": "integer"
         },
         "preprocessEntryPoint": {
           "description": "エントリポイント",
@@ -13990,14 +14025,10 @@
           ],
           "type": "integer"
         },
-        "assignedTenantIds": {
+        "assignedTenantId": {
+          "format": "int64",
           "description": "このテンプレートを使用できるテナントのID。\r\nNssol.Platypus.ApiModels.TemplateApiModels.EditInputModel.AccessLevelがNssol.Platypus.Infrastructure.TemplateAccessLevel.Privateの時のみ指定可能。\r\nそれ以外の場合は無視される。",
-          "uniqueItems": false,
-          "type": "array",
-          "items": {
-            "format": "int64",
-            "type": "integer"
-          }
+          "type": "integer"
         }
       }
     },
