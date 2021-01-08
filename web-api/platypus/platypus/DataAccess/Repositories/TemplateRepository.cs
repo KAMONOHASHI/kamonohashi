@@ -57,28 +57,25 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// 指定したテンプレートにテナントをアサインする。
         /// テナントIDの存在チェックは行わない。
         /// </summary>
-        public void AssignTenants(ModelTemplate template, IEnumerable<long> tenantIds, bool isCreate)
+        public void AssignTenant(ModelTemplate template, long tenantId, bool isCreate)
         {
-            if (template.AccessLevel != Infrastructure.TemplateAccessLevel.Private)
+            if (template.AccessLevel == Infrastructure.TemplateAccessLevel.Disabled )
             {
-                throw new UnauthorizedAccessException("An only private access level templates is allowed to manage which tenants assigned.");
+                throw new UnauthorizedAccessException("Private or public access level templates are allowed to manage which tenants assigned.");
             }
-            foreach (long tenantId in tenantIds)
+            var map = new TemplateTenantMap()
             {
-                var map = new TemplateTenantMap()
-                {
-                    TenantId = tenantId
-                };
-                if (isCreate)
-                {
-                    map.Template = template;
-                }
-                else
-                {
-                    map.TemplateId = template.Id;
-                }
-                AddModel<TemplateTenantMap>(map);
+                TenantId = tenantId
+            };
+            if (isCreate)
+            {
+                map.Template = template;
             }
+            else
+            {
+                map.TemplateId = template.Id;
+            }
+            AddModel<TemplateTenantMap>(map);
         }
 
         /// <summary>
@@ -87,12 +84,13 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// </summary>
         public IEnumerable<ModelTemplate> GetAccessibleTemplates(long tenantId)
         {
-            //プライベートノードで、そのテナントがアクセス可能なノードID一覧を取得
+            //プライベートのテンプレートで、そのテナントがアクセス可能なテンプレートID一覧を取得
             var privateTemplateIds = FindModelAll<TemplateTenantMap>(map => map.TenantId == tenantId).Select(map => map.TemplateId).ToList();
 
-            //Publicか、あるいはアクセス可能なプライベートノードか
+            //Publicか、あるいはアクセス可能なプライベートテンプレートか
             return GetAll().Where(n => n.AccessLevel == Infrastructure.TemplateAccessLevel.Public ||
                 (n.AccessLevel == Infrastructure.TemplateAccessLevel.Private && privateTemplateIds.Contains(n.Id)));
         }
+
     }
 }

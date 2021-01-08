@@ -34,7 +34,7 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces
         /// 指定したテンプレートにテナントをアサインする。
         /// テナントIDの存在チェックは行わない。
         /// </summary>
-        void AssignTenants(ModelTemplate modelTemplate, IEnumerable<long> tenantIds, bool isCreate);
+        void AssignTenant(ModelTemplate modelTemplate, long tenantId, bool isCreate);
 
         /// <summary>
         /// 指定したテナントがアクセス可能なテンプレート一覧を取得する。

@@ -46,7 +46,7 @@ namespace Nssol.Platypus.ApiModels.TemplateApiModels
         /// <see cref="AccessLevel"/>が<see cref="TemplateAccessLevel.Private"/>の時のみ指定可能。
         /// それ以外の場合は無視される。
         /// </summary>
-        public IEnumerable<long> AssignedTenantIds { get; set; }
+        public long? AssignedTenantId { get; set; }
 
         #region 前処理コンテナ
         /// <summary>

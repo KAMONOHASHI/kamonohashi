@@ -82,7 +82,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpGet("tenant/templates")]
         [PermissionFilter(MenuCode.Template)]
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
-        public IActionResult GetTemplatesByGroupId([FromQuery] int? perPage, [FromQuery] int page = 1, bool withTotal = false)
+        public IActionResult GetTemplatesforTenant(bool withTotal = false)
         {
             var templates = templateRepository.GetAccessibleTemplates(CurrentUserInfo.SelectedTenant.Id);
 
@@ -92,10 +92,6 @@ namespace Nssol.Platypus.Controllers.spa
                 SetTotalCountToHeader(templates.Count());
             }
 
-            //if (perPage.HasValue)
-            //{
-            //    templates = templates.Paging(page, perPage.Value);
-            //}
             return JsonOK(templates.Select(t => new IndexOutputModel(t)));
         }
 
@@ -198,35 +194,14 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
 
-            if (template.AccessLevel != TemplateAccessLevel.Disabled)
+            if (template.AccessLevel == TemplateAccessLevel.Private)
             {
-                if (template.AccessLevel == TemplateAccessLevel.Private)
-                {
-                    //テナントをアサイン
-                    if (model.AssignedTenantIds != null)
-                    {
-                        foreach (long tenantId in model.AssignedTenantIds)
-                        {
-                            Tenant tenant = tenantRepository.Get(tenantId);
-                            if (tenant == null)
-                            {
-                                return JsonNotFound($"Tenant ID {tenantId} is not found.");
-                            }
-                            await clusterManagementLogic.UpdateTenantEnabledLabelAsync(template.Name, tenant.Name, true);
-                        }
-                        templateRepository.AssignTenants(template, model.AssignedTenantIds, true);
-                    }
-                }
-                else
-                {
-                    // アクセスレベルが "Public" の場合、全てのテナントをアサイン
-                    var tenants = tenantRepository.GetAllTenants();
-                    foreach (Tenant tenant in tenants)
-                    {
-                        await clusterManagementLogic.UpdateTenantEnabledLabelAsync(template.Name, tenant.Name, true);
-                    }
-                }
+                //現在のテナントをアサイン   
+                model.AssignedTenantId = CurrentUserInfo.SelectedTenant.Id;
+                templateRepository.AssignTenant(template, (long)model.AssignedTenantId, true);
+                    
             }
+
             templateRepository.Add(template);
             unitOfWork.Commit();
             return JsonCreated(new IndexOutputModel(template));
@@ -308,32 +283,17 @@ namespace Nssol.Platypus.Controllers.spa
 
             if (template.AccessLevel != TemplateAccessLevel.Disabled)
             {
+                // まずは全てのアサイン情報を削除する
+                templateRepository.ResetAssinedTenants((long)id);
                 if (template.AccessLevel == TemplateAccessLevel.Private)
                 {
-                    //テナントをアサイン
-                    if (model.AssignedTenantIds != null)
-                    {
-                        foreach (long tenantId in model.AssignedTenantIds)
-                        {
-                            Tenant tenant = tenantRepository.Get(tenantId);
-                            if (tenant == null)
-                            {
-                                return JsonNotFound($"Tenant ID {tenantId} is not found.");
-                            }
-                            await clusterManagementLogic.UpdateTenantEnabledLabelAsync(template.Name, tenant.Name, true);
-                        }
-                        templateRepository.AssignTenants(template, model.AssignedTenantIds, true);
-                    }
+                    //現在のテナントをアサイン   
+                    model.AssignedTenantId = CurrentUserInfo.SelectedTenant.Id;
+                    templateRepository.AssignTenant(template, (long)model.AssignedTenantId, true);
+                    
                 }
-                else
-                {
-                    // アクセスレベルが "Public" の場合、全てのテナントをアサイン
-                    var tenants = tenantRepository.GetAllTenants();
-                    foreach (Tenant tenant in tenants)
-                    {
-                        await clusterManagementLogic.UpdateTenantEnabledLabelAsync(template.Name, tenant.Name, true);
-                    }
-                }
+
+                
             }
 
             unitOfWork.Commit();
