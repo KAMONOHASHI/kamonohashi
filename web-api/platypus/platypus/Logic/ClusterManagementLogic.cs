@@ -1528,6 +1528,17 @@ namespace Nssol.Platypus.Logic
                         Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
                         ServerPath = CurrentUserInfo.SelectedTenant.ExperimentContainerAttachedNfsPath,
                         ReadOnly = false
+                    },
+
+                    // データをマウントするディレクトリ
+                    // テナントのDataディレクトリを/kqi/rawにマウントする
+                    new NfsVolumeMountModel()
+                    {
+                        Name = "nfs-data",
+                        MountPath = "/kqi/raw",
+                        Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
+                        ServerPath = CurrentUserInfo.SelectedTenant.DataNfsPath,
+                        ReadOnly = true
                     }
                 },
                 ContainerSharedPath = new Dictionary<string, string>()
@@ -1704,7 +1715,7 @@ namespace Nssol.Platypus.Logic
                 Gpu = experimentHistory.Template.TrainingGpu,
                 KqiImage = "kamonohashi/cli:" + versionLogic.GetVersion(),
                 KqiToken = loginLogic.GenerateToken().AccessToken,
-                LogPath = "/kqi/attach/experiment_training_stdout_stderr_${TRAINING_ID}.log",
+                LogPath = "/kqi/attach/experiment_training_stdout_stderr_${EXPERIMENT_ID}.log",
                 NfsVolumeMounts = new List<NfsVolumeMountModel>()
                 {
                     // 結果保存するディレクトリ
