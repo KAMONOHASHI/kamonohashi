@@ -46,7 +46,7 @@ namespace Nssol.Platypus.ApiModels.ExperimentApiModels
         /// </summary>
         public string CreatedAt { get; set; }
         /// <summary>
-        /// 元データID
+        /// 元アクアリウムデータセットID
         /// </summary>
         public long DataSetId { get; set; }
         /// <summary>
