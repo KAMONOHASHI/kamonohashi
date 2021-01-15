@@ -13,7 +13,7 @@ data:
     kqi data download-files -d /kqi/input/$DATA_ID $DATA_ID && kqi data get -d /kqi/input/meta.json $DATA_ID
     if [ $? -ne 0 ]; then
         echo "data download-files failed"
-        kqi experiment halt $EXPERIMENT_ID
+        curl "${KQI_SERVER}/api/v2/experiment/${EXPERIMENT_ID}/halt" --data "" --output /dev/null -H "accept: application/json" -H "Authorization: Bearer ${KQI_TOKEN}" --fail --speed-time 30 --silent --show-error --connect-timeout 30
     fi
   main: |
     bash /kqi/scripts/common/wait-ready
@@ -31,6 +31,6 @@ data:
       kqi experiment complete $EXPERIMENT_ID
     else
       echo "------------------------- [KAMONOHASHI Finish] retrun code is $RESULT. kill  -------------------------"
-      kqi experiment halt $EXPERIMENT_ID
+      curl "${KQI_SERVER}/api/v2/experiment/${EXPERIMENT_ID}/halt" --data "" --output /dev/null -H "accept: application/json" -H "Authorization: Bearer ${KQI_TOKEN}" --fail --speed-time 30 --silent --show-error --connect-timeout 30
     fi
    
