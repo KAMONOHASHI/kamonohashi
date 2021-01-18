@@ -73,13 +73,13 @@ export default {
       this.showSuccessMessage()
     },
     openCreateDialog() {
-      this.$router.push('/aqarium/xperiment/create')
+      this.$router.push('/aqarium/experiment/create')
     },
     openEditDialog(selectedRow) {
-      this.$router.push('/aqarium/xperiment/edit/' + selectedRow.id)
+      this.$router.push('/aqarium/experiment/edit/' + selectedRow.id)
     },
     handleCopy(id) {
-      this.$router.push('/aqarium/xperiment/create/' + id)
+      this.$router.push('/aqarium/experiment/create/' + id)
     },
     async search() {
       await this.retrieveData()

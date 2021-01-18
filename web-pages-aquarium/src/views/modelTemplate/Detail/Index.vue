@@ -6,17 +6,17 @@
     </h2>
 
     <el-tabs v-model="activeName" @tab-click="handleClick">
-      <el-tab-pane label="基本設定" name="baseSetting"
-        ><base-setting
-      /></el-tab-pane>
-      <el-tab-pane label="前処理" name="preprocessing"
-        ><preprocessing
-      /></el-tab-pane>
+      <el-tab-pane label="基本設定" name="baseSetting">
+        <base-setting :datail="detail" />
+      </el-tab-pane>
+      <el-tab-pane label="前処理" name="preprocessing">
+        <preprocessing :datail="detail" />
+      </el-tab-pane>
       <el-tab-pane label="学習と推論" name="train">
-        <training />
+        <training :datail="detail" />
       </el-tab-pane>
     </el-tabs>
-    <router-view @cancel="closeDialog" @done="done" @copy="handleCopy" />
+    <router-view @cancel="closeDialog" @done="done" />
   </div>
 </template>
 
@@ -25,7 +25,7 @@ import { createNamespacedHelpers } from 'vuex'
 import BaseSetting from './BaseSetting'
 import Preprocessing from './Preprocessing'
 import Training from './Training'
-const { mapGetters, mapActions } = createNamespacedHelpers('dataSet')
+const { mapGetters, mapActions } = createNamespacedHelpers('template')
 
 export default {
   title: 'モデルテンプレート',
@@ -56,28 +56,29 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['dataSets', 'total']),
+    ...mapGetters(['detail', 'total']),
   },
-
+  props: {
+    id: {
+      type: String,
+      default: null,
+    },
+  },
   async created() {
     await this.retrieveData()
   },
   methods: {
-    ...mapActions(['fetchDataSets']),
+    ...mapActions(['fetchDetail', 'delete']),
     handleClick() {},
     async currentChange(page) {
       this.pageStatus.currentPage = page
       await this.retrieveData()
     },
     async retrieveData() {
-      let params = this.searchCondition
-      params.page = this.pageStatus.currentPage
-      params.perPage = this.pageStatus.currentPageSize
-      params.withTotal = true
-      await this.fetchDataSets(params)
+      await this.fetchDetail(this.id)
     },
     closeDialog() {
-      this.$router.push('/dataset')
+      this.$router.push('/aquarium/model-template')
     },
     async done(type) {
       if (type === 'delete') {
@@ -93,15 +94,7 @@ export default {
       await this.retrieveData()
       this.showSuccessMessage()
     },
-    openCreateDialog() {
-      this.$router.push('/dataset/create')
-    },
-    openEditDialog(selectedRow) {
-      this.$router.push('/dataset/edit/' + selectedRow.id)
-    },
-    handleCopy(id) {
-      this.$router.push('/dataset/create/' + id)
-    },
+
     async search() {
       this.pageStatus.currentPage = 1
       await this.retrieveData()

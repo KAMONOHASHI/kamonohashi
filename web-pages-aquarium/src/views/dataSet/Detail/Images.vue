@@ -18,11 +18,7 @@
     <el-row>
       <el-col :span="4">
         <h3 style="padding:15px">ファイル一覧</h3>
-        <el-menu
-          class="el-menu-vertical-demo"
-          @open="handleOpen"
-          @close="handleClose"
-        >
+        <el-menu class="el-menu-vertical-demo">
           <el-submenu
             v-for="(list, index) in fileList"
             :key="index"
@@ -69,7 +65,7 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex'
-const { mapGetters, mapActions } = createNamespacedHelpers('dataSet')
+const { mapGetters, mapActions } = createNamespacedHelpers('aquariumDataSet')
 
 export default {
   title: 'データセット',

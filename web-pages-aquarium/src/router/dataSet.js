@@ -4,7 +4,7 @@ import Detail from '@/views/dataSet/Detail/Index'
 
 export default [
   {
-    path: '/dataset',
+    path: '/aquarium/dataset',
     component: Index,
     children: [
       {
@@ -21,8 +21,9 @@ export default [
     ],
   },
   {
-    path: '/dataset/detail/:id',
+    path: '/aquarium/dataset/detail/:id',
     component: Detail,
+    props: true,
     children: [],
   },
 ]

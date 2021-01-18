@@ -29,7 +29,7 @@ export default [
   // },
   // TODO:APIができたら↑に修正
   {
-    path: '/aquarium/model-template/1',
+    path: '/aquarium/model-template/:id',
     component: Detail,
     props: true,
   },

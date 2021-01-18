@@ -4,6 +4,7 @@ import account from './modules/account'
 import cluster from './modules/cluster'
 import data from './modules/data'
 import dataSet from './modules/dataSet'
+import aquariumDataSet from './modules/aquariumDataSet'
 import git from './modules/git'
 import gitSelector from './modules/gitSelector'
 import inference from './modules/inference'
@@ -30,6 +31,7 @@ export default new Vuex.Store({
     cluster,
     data,
     dataSet,
+    aquariumDataSet,
     git,
     gitSelector,
     inference,

@@ -144,6 +144,16 @@ let api = {
     getFileSize: gen.ApiV2DataByIdFilesByNameSizeGet,
   },
 
+  aquariumDatasets: {
+    get: gen.ApiV2AquariumDatasetsGet,
+    post: gen.ApiV2AquariumDatasetsPost,
+    getByIdVersions: gen.ApiV2AquariumDatasetsByIdVersionsGet,
+    postByIdVersions: gen.ApiV2AquariumDatasetsByIdVersionsPost,
+    getByIdVersionsByVersionId:
+      gen.ApiV2AquariumDatasetsByIdVersionsByVersionIdGet,
+    delete: gen.ApiV2AquariumDatasetsByIdDelete,
+  },
+
   datasets: {
     get: gen.ApiV2DatasetsGet,
     post: gen.ApiV2DatasetsPost,
