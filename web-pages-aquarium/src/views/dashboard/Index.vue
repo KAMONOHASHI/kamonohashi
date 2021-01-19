@@ -59,8 +59,8 @@
         </router-link>
       </div>
       <div
-        v-for="(menu, index) in validation"
-        :key="'i' + index"
+        v-for="(menu, index) in experiment"
+        :key="'e' + index"
         class="card-container"
       >
         <router-link :to="menu.url">
@@ -144,14 +144,14 @@ export default {
         {
           category: '',
           name: '学習',
-          url: '/aquarium/experiment/template',
+          url: 'aquarium/experiment/create',
           description: 'テンプレートを選択し目的に応じたAIを作成します。',
         },
       ],
-      validation: [
+      experiment: [
         {
           category: '',
-          name: '評価',
+          name: '実験履歴',
           url: '/aquarium/experiment',
           description: '作成したAIの精度を確認し評価します。',
         },
