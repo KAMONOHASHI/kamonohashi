@@ -13,7 +13,7 @@
     <div v-if="importfile == 1" class="importfile-detail">
       <h3>パソコンから画像をアップロード</h3>
       任意のファイル形式がアップロードできます。画像の表示はJPG,PNG,ZIPがサポートされています。<br />
-      1回のアップロードでさいだいXXXファイル送信できます。アップロードしたファイルはKAMONOHASHIのデータ、データセットに保存されます。
+      1回のアップロードで最大10000ファイル送信できます。アップロードしたファイルはKAMONOHASHIのデータ、データセットに保存されます。
 
       <el-row>
         <kqi-upload-form ref="uploadForm" title="File" :type="type" />
@@ -28,14 +28,66 @@
     </div>
     <div v-else-if="importfile == 2" class="importfile-detail">
       <h3>KAMONOHASHIからデータセットを選択</h3>
+      KAMONOHASHIに登録してあるデータを複数選択できます。<br />
       <el-button
         type="plain"
         plain
         style="display:block;margin-top:10px"
-        @click="openDialog()"
+        @click="drawer = true"
       >
         データを選択
       </el-button>
+      <el-drawer
+        title="データの選択"
+        :visible.sync="drawer"
+        :direction="direction"
+        :before-close="handleClose"
+      >
+        <div style="padding:20px">
+          <el-select
+            v-model="selectedData"
+            placeholder="Select"
+            @change="selectData"
+          >
+            <el-option
+              v-for="item in datas"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            >
+            </el-option>
+          </el-select>
+          <div
+            style="width:80%;height:450px;padding:20px;border:1px solid #CCC;border-radius:5px;margin-top:5px"
+          >
+            <el-checkbox-group v-model="checkList">
+              <div v-for="item in dataList" :key="item.fileId">
+                <el-checkbox :label="item.fileId">{{
+                  item.fileName
+                }}</el-checkbox>
+              </div>
+            </el-checkbox-group>
+          </div>
+          <el-row>
+            <el-button
+              type="plain"
+              plain
+              style="margin-top:10px"
+              @click="submit"
+            >
+              選択
+            </el-button>
+            <el-button
+              type="plain"
+              plain
+              style="margin-top:10px"
+              @click="closeDrawer"
+            >
+              キャンセル
+            </el-button></el-row
+          >
+        </div>
+      </el-drawer>
     </div>
   </div>
 </template>
@@ -49,12 +101,15 @@ export default {
   data() {
     return {
       type: 'Data',
+      drawer: false,
+      direction: 'rtl',
       importfile: null,
       searchCondition: {},
       pageStatus: {
         currentPage: 1,
         currentPageSize: 10,
       },
+      checkList: [],
     }
   },
   computed: {
@@ -63,6 +118,8 @@ export default {
       total: ['aquariumDataSet/total'],
       versions: ['aquariumDataSet/versions'],
       detail: ['dataSet/detail'],
+      datas: ['data/data'],
+      dataList: ['data/uploadedFiles'],
     }),
   },
   props: {
@@ -88,13 +145,30 @@ export default {
 
       'data/post',
       'data/put',
+      'data/fetchData',
+      'data/fetchUploadedFiles',
+      'data/clearUploadedFiles',
 
       'data/putFile',
       'dataSet/fetchDetail',
       'dataSet/post',
-      'data/uploadedFiles',
     ]),
+    handleClose(done) {
+      done()
+    },
+    async selectData(dataId) {
+      //セレクトボックスからデータを選択
+      await this['data/fetchUploadedFiles'](dataId)
+    },
+    closeDrawer() {
+      //
+      this.drawer = false
+      this['data/clearUploadedFiles']()
+    },
+    //ローカルからアップロード
+
     async submit() {
+      this.closeDrawer()
       try {
         await this.postDataSet()
         this.$emit('done')
@@ -129,6 +203,7 @@ export default {
     },
     async postDataSet() {
       //アクアリウムデータセットバージョン一覧を取得し、最新バージョンのデータセットIdを取得する
+      //TODO 最新はとれてるはず？
       let newVer = null
       let dataSetId = null
       for (let i in this.versions) {
@@ -147,11 +222,18 @@ export default {
       for (let i in datas) {
         flatEntry.push({ id: datas[i]['id'] })
       }
-      //ローカルからのデータリストを登録する
-      let dataId = await this.uploadFile(this.datasetname)
 
-      //新しく追加したデータをデータリストに追加
-      flatEntry.push({ id: dataId })
+      if (this.importfile == 1) {
+        //ローカルからのデータリストを登録する
+        let dataId = await this.uploadFile(this.datasetname)
+        //新しく追加したデータをデータリストに追加
+        flatEntry.push({ id: dataId })
+      } else if (this.importfile == 2) {
+        //カモノハシのデータを登録する
+        for (let i in this.checkList) {
+          flatEntry.push({ id: this.checkList[i] })
+        }
+      }
       //カモノハシのデータセットを登録する
       let datasetparams = {
         entries: {},
@@ -176,13 +258,19 @@ export default {
       await this.retrieveData()
     },
     async retrieveData() {
-      let params = this.searchCondition
-      params.page = this.pageStatus.currentPage
-      params.perPage = this.pageStatus.currentPageSize
+      let params = {}
+      params.page = 1
+      params.perPage = 10
       params.withTotal = true
       params.id = this.id
       await this['aquariumDataSet/fetchDataSets'](params)
       await this['aquariumDataSet/fetchVersions'](this.id)
+      let params2 = this.searchCondition
+      params2.page = this.pageStatus.currentPage
+      params2.perPage = this.pageStatus.currentPageSize
+      params2.withTotal = true
+      await this['data/fetchData'](params2)
+      console.log(this.datas)
     },
     closeDialog() {
       this.$router.push('/dataset')
