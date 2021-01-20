@@ -102,11 +102,14 @@ export default {
       importfile: null,
       dataSetName: '',
       dataSetUrl: '',
-      templateUrl: '/aquarium/model-template/1',
+      templateUrl: '',
     }
   },
   computed: {
     ...mapGetters(['detail', 'events']),
+  },
+  async created() {
+    await this.initialize()
   },
 
   methods: {
@@ -119,6 +122,10 @@ export default {
       'delete',
       'deleteFile',
     ]),
+    async initialize() {
+      this.dataSetUrl = '/aquarium/dataset/' + this.detail.dataSet.id
+      this.templateUrl = '/aquarium/model-template/' + this.detail.template.id
+    },
     handleClick() {},
     async retrieveData() {
       await this.fetchDetail(this.value.id)
