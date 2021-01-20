@@ -32,26 +32,31 @@ class DataSetApiModelsEditEntriesInputModel(object):
     """
     swagger_types = {
         'entries': 'dict(str, list[DataSetApiModelsCreateInputModelEntry])',
+        'flat_entries': 'list[DataSetApiModelsCreateInputModelEntry]',
         'memo': 'str',
         'name': 'str'
     }
 
     attribute_map = {
         'entries': 'entries',
+        'flat_entries': 'flatEntries',
         'memo': 'memo',
         'name': 'name'
     }
 
-    def __init__(self, entries=None, memo=None, name=None):  # noqa: E501
+    def __init__(self, entries=None, flat_entries=None, memo=None, name=None):  # noqa: E501
         """DataSetApiModelsEditEntriesInputModel - a model defined in Swagger"""  # noqa: E501
 
         self._entries = None
+        self._flat_entries = None
         self._memo = None
         self._name = None
         self.discriminator = None
 
         if entries is not None:
             self.entries = entries
+        if flat_entries is not None:
+            self.flat_entries = flat_entries
         if memo is not None:
             self.memo = memo
         if name is not None:
@@ -77,6 +82,27 @@ class DataSetApiModelsEditEntriesInputModel(object):
         """
 
         self._entries = entries
+
+    @property
+    def flat_entries(self):
+        """Gets the flat_entries of this DataSetApiModelsEditEntriesInputModel.  # noqa: E501
+
+
+        :return: The flat_entries of this DataSetApiModelsEditEntriesInputModel.  # noqa: E501
+        :rtype: list[DataSetApiModelsCreateInputModelEntry]
+        """
+        return self._flat_entries
+
+    @flat_entries.setter
+    def flat_entries(self, flat_entries):
+        """Sets the flat_entries of this DataSetApiModelsEditEntriesInputModel.
+
+
+        :param flat_entries: The flat_entries of this DataSetApiModelsEditEntriesInputModel.  # noqa: E501
+        :type: list[DataSetApiModelsCreateInputModelEntry]
+        """
+
+        self._flat_entries = flat_entries
 
     @property
     def memo(self):

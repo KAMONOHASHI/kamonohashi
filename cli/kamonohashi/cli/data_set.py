@@ -175,11 +175,17 @@ def download_files(id, destination, data_type):
     api = rest.DataSetApi(configuration.get_api_client())
     result = api.list_dataset_files(id, with_url=True)
     pool_manager = api.api_client.rest_client.pool_manager
-    for entry in result.entries:
-        if not data_type or entry.type in data_type:
-            for file in entry.files:
-                destination_dir_path = os.path.join(destination, entry.type, str(file.id))
-                object_storage.download_file(pool_manager, file.url, destination_dir_path, file.file_name)
+    if result.is_flat:
+        for file in result.flat_entries:
+            destination_dir_path = os.path.join(destination, str(file.id))
+            object_storage.download_file(pool_manager, file.url, destination_dir_path, file.file_name)
+    else:
+        for entry in result.entries:
+            if not data_type or entry.type in data_type:
+                for file in entry.files:
+                    destination_dir_path = os.path.join(destination, entry.type, str(file.id))
+                    object_storage.download_file(pool_manager, file.url, destination_dir_path, file.file_name)
+
 
 @data_set.command('list-path-pairs')
 @click.argument('id', type=int)
@@ -188,8 +194,9 @@ def list_path_pairs(id):
     api = rest.DataSetApi(configuration.get_api_client())
     result = api.list_dataset_pathpairs(id)
     for x in result:
-      print(repr(x.data_path)[1:-1])
-      print(repr(x.stored_path)[1:-1])
+        print(repr(x.data_path)[1:-1])
+        print(repr(x.stored_path)[1:-1])
+
 
 @data_set.command('list-data-types')
 def list_data_types():

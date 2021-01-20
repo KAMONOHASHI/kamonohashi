@@ -33,6 +33,7 @@ class DataApiModelsDataFileOutputModel(object):
     swagger_types = {
         'file_id': 'int',
         'file_name': 'str',
+        'file_size': 'int',
         'id': 'int',
         'key': 'str',
         'url': 'str'
@@ -41,16 +42,18 @@ class DataApiModelsDataFileOutputModel(object):
     attribute_map = {
         'file_id': 'fileId',
         'file_name': 'fileName',
+        'file_size': 'fileSize',
         'id': 'id',
         'key': 'key',
         'url': 'url'
     }
 
-    def __init__(self, file_id=None, file_name=None, id=None, key=None, url=None):  # noqa: E501
+    def __init__(self, file_id=None, file_name=None, file_size=None, id=None, key=None, url=None):  # noqa: E501
         """DataApiModelsDataFileOutputModel - a model defined in Swagger"""  # noqa: E501
 
         self._file_id = None
         self._file_name = None
+        self._file_size = None
         self._id = None
         self._key = None
         self._url = None
@@ -60,6 +63,8 @@ class DataApiModelsDataFileOutputModel(object):
             self.file_id = file_id
         if file_name is not None:
             self.file_name = file_name
+        if file_size is not None:
+            self.file_size = file_size
         if id is not None:
             self.id = id
         if key is not None:
@@ -108,6 +113,27 @@ class DataApiModelsDataFileOutputModel(object):
         """
 
         self._file_name = file_name
+
+    @property
+    def file_size(self):
+        """Gets the file_size of this DataApiModelsDataFileOutputModel.  # noqa: E501
+
+
+        :return: The file_size of this DataApiModelsDataFileOutputModel.  # noqa: E501
+        :rtype: int
+        """
+        return self._file_size
+
+    @file_size.setter
+    def file_size(self, file_size):
+        """Sets the file_size of this DataApiModelsDataFileOutputModel.
+
+
+        :param file_size: The file_size of this DataApiModelsDataFileOutputModel.  # noqa: E501
+        :type: int
+        """
+
+        self._file_size = file_size
 
     @property
     def id(self):

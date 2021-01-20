@@ -7,6 +7,7 @@ using Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories;
 using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Logic.Interfaces;
 using Nssol.Platypus.Models.TenantModels;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -26,6 +27,7 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly IDataTypeRepository dataTypeRepository;
         private readonly IDataLogic dataLogic;
         private readonly IUnitOfWork unitOfWork;
+        private static readonly string dummyDataType = "training";
 
         /// <summary>
         /// コンストラクタ
@@ -123,6 +125,7 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 //エントリの作成開始
                 var entities = new Dictionary<string, List<ApiModels.DataApiModels.IndexOutputModel>>();
+                var flatEntries = new List<ApiModels.DataApiModels.IndexOutputModel>();
 
                 //空のデータ種別も表示したい＆順番を統一したいので、先に初期化しておく
                 foreach (var dataType in dataTypeRepository.GetAllWithOrderby(d => d.SortOrder, true))
@@ -133,18 +136,27 @@ namespace Nssol.Platypus.Controllers.spa
                 //エントリを一つずつ突っ込んでいく。件数次第では遅いかも。
                 foreach (var entry in dataSet.DataSetEntries)
                 {
-                    string key = entry.DataType.Name;
                     var dataFile = new ApiModels.DataApiModels.IndexOutputModel(entry.Data);
-                    entities[key].Add(dataFile);
+                    if (dataSet.IsFlat)
+                    {
+                        flatEntries.Add(dataFile);
+                    }
+                    else
+                    {
+                        string key = entry.DataType.Name;
+                        entities[key].Add(dataFile);
+                    }
                 }
 
                 //各種別内のデータについて、データIDの降順に並び替える
                 foreach (var dataType in dataTypeRepository.GetAllWithOrderby(d => d.SortOrder, true))
                 {
-                    entities[dataType.Name].Reverse();
+                    entities[dataType.Name].Sort((x, y) => y.Id.CompareTo(x.Id));
                 }
+                flatEntries.Sort((x, y) => y.Id.CompareTo(x.Id));
 
                 model.Entries = entities;
+                model.FlatEntries = flatEntries;
             }
 
             model.IsLocked = dataSet.IsLocked;
@@ -175,8 +187,9 @@ namespace Nssol.Platypus.Controllers.spa
 
             if (dataSet.DataSetEntries != null)
             {
-                //エントリの作成開始。最初はDictionary形式で
+                //エントリの作成開始
                 var entities = new Dictionary<string, List<ApiModels.DataApiModels.DataFileOutputModel>>();
+                var flatEntries = new ConcurrentQueue<ApiModels.DataApiModels.DataFileOutputModel>();
 
                 //空のデータ種別も表示したい＆順番を統一したいので、先に初期化しておく
                 foreach (var dataType in dataTypeRepository.GetAllWithOrderby(d => d.SortOrder, true))
@@ -185,17 +198,34 @@ namespace Nssol.Platypus.Controllers.spa
                 }
 
                 //エントリを並列で取得する
-                dataSet.DataSetEntries.AsParallel().ForAll(entry =>
+                if (dataSet.IsFlat)
                 {
-                    string key = entry.DataType.Name;
-                    var dataFiles = dataLogic.GetDataFiles(entry.Data, withUrl);
-                    lock (entities)
+                    dataSet.DataSetEntries.AsParallel().ForAll(entry =>
                     {
-                        entities[key].AddRange(dataFiles);
-                    }
-                });
+                        var dataFiles = dataLogic.GetDataFiles(entry.Data, withUrl);
+                        foreach (var x in dataFiles)
+                        {
+                            flatEntries.Enqueue(x);
+                        }
+                    });
+                }
+                else
+                {
+                    dataSet.DataSetEntries.AsParallel().ForAll(entry =>
+                    {
+                        var key = entry.DataType.Name;
+                        var dataFiles = dataLogic.GetDataFiles(entry.Data, withUrl);
+                        lock (entities)
+                        {
+                            entities[key].AddRange(dataFiles);
+                        }
+
+                    });
+
+                }
 
                 model.SetEntries(entities);
+                model.FlatEntries = flatEntries;
             }
 
             return JsonOK(model);
@@ -241,7 +271,9 @@ namespace Nssol.Platypus.Controllers.spa
                 {
                     lock (pathPairs)
                     {
-                        pathPairs.Add(new PathPairOutputModel($"{dataTypeName}/{entry.DataId}/{data.Key}", data.DataFile.StoredPath));
+                        pathPairs.Add(new PathPairOutputModel(
+                            dataSet.IsFlat ? $"{entry.DataId}/{data.Key}" : $"{dataTypeName}/{entry.DataId}/{data.Key}",
+                            data.DataFile.StoredPath));
                     }
                 }
             }
@@ -267,14 +299,22 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 Name = model.Name,
                 Memo = model.Memo,
-                IsLocked = false
+                IsLocked = false,
+                IsFlat = model.IsFlat,
             };
             dataSetRepository.Add(dataSet);
 
-            if (model.Entries == null)
+            if ((model.IsFlat && model.FlatEntries == null)
+                || (!model.IsFlat && model.Entries == null))
             {
                 unitOfWork.Commit();
                 return JsonOK(new IndexOutputModel(dataSet));
+            }
+
+            if (model.IsFlat)
+            {
+                model.Entries.Clear();
+                model.Entries[dummyDataType] = model.FlatEntries;
             }
 
             return await InsertDataSetEntryAsync(dataSet, model.Entries, true);
@@ -361,10 +401,17 @@ namespace Nssol.Platypus.Controllers.spa
             dataSetRepository.DeleteAllEntries(dataSet.Id);
 
             //値があれば登録
-            if (model.Entries == null)
+            if ((dataSet.IsFlat && model.FlatEntries == null)
+                || (!dataSet.IsFlat && model.Entries == null))
             {
                 unitOfWork.Commit();
                 return JsonOK(new IndexOutputModel(dataSet));
+            }
+
+            if (dataSet.IsFlat)
+            {
+                model.Entries.Clear();
+                model.Entries[dummyDataType] = model.FlatEntries;
             }
 
             return await InsertDataSetEntryAsync(dataSet, model.Entries, false);

@@ -35,7 +35,9 @@ class DataSetApiModelsDataFileOutputModel(object):
         'created_by': 'str',
         'display_id': 'int',
         'entries': 'list[DataSetApiModelsDataFileOutputModelEntry]',
+        'flat_entries': 'list[DataApiModelsDataFileOutputModel]',
         'id': 'int',
+        'is_flat': 'bool',
         'memo': 'str',
         'modified_at': 'str',
         'modified_by': 'str',
@@ -47,21 +49,25 @@ class DataSetApiModelsDataFileOutputModel(object):
         'created_by': 'createdBy',
         'display_id': 'displayId',
         'entries': 'entries',
+        'flat_entries': 'flatEntries',
         'id': 'id',
+        'is_flat': 'isFlat',
         'memo': 'memo',
         'modified_at': 'modifiedAt',
         'modified_by': 'modifiedBy',
         'name': 'name'
     }
 
-    def __init__(self, created_at=None, created_by=None, display_id=None, entries=None, id=None, memo=None, modified_at=None, modified_by=None, name=None):  # noqa: E501
+    def __init__(self, created_at=None, created_by=None, display_id=None, entries=None, flat_entries=None, id=None, is_flat=None, memo=None, modified_at=None, modified_by=None, name=None):  # noqa: E501
         """DataSetApiModelsDataFileOutputModel - a model defined in Swagger"""  # noqa: E501
 
         self._created_at = None
         self._created_by = None
         self._display_id = None
         self._entries = None
+        self._flat_entries = None
         self._id = None
+        self._is_flat = None
         self._memo = None
         self._modified_at = None
         self._modified_by = None
@@ -76,8 +82,12 @@ class DataSetApiModelsDataFileOutputModel(object):
             self.display_id = display_id
         if entries is not None:
             self.entries = entries
+        if flat_entries is not None:
+            self.flat_entries = flat_entries
         if id is not None:
             self.id = id
+        if is_flat is not None:
+            self.is_flat = is_flat
         if memo is not None:
             self.memo = memo
         if modified_at is not None:
@@ -172,6 +182,27 @@ class DataSetApiModelsDataFileOutputModel(object):
         self._entries = entries
 
     @property
+    def flat_entries(self):
+        """Gets the flat_entries of this DataSetApiModelsDataFileOutputModel.  # noqa: E501
+
+
+        :return: The flat_entries of this DataSetApiModelsDataFileOutputModel.  # noqa: E501
+        :rtype: list[DataApiModelsDataFileOutputModel]
+        """
+        return self._flat_entries
+
+    @flat_entries.setter
+    def flat_entries(self, flat_entries):
+        """Sets the flat_entries of this DataSetApiModelsDataFileOutputModel.
+
+
+        :param flat_entries: The flat_entries of this DataSetApiModelsDataFileOutputModel.  # noqa: E501
+        :type: list[DataApiModelsDataFileOutputModel]
+        """
+
+        self._flat_entries = flat_entries
+
+    @property
     def id(self):
         """Gets the id of this DataSetApiModelsDataFileOutputModel.  # noqa: E501
 
@@ -191,6 +222,27 @@ class DataSetApiModelsDataFileOutputModel(object):
         """
 
         self._id = id
+
+    @property
+    def is_flat(self):
+        """Gets the is_flat of this DataSetApiModelsDataFileOutputModel.  # noqa: E501
+
+
+        :return: The is_flat of this DataSetApiModelsDataFileOutputModel.  # noqa: E501
+        :rtype: bool
+        """
+        return self._is_flat
+
+    @is_flat.setter
+    def is_flat(self, is_flat):
+        """Sets the is_flat of this DataSetApiModelsDataFileOutputModel.
+
+
+        :param is_flat: The is_flat of this DataSetApiModelsDataFileOutputModel.  # noqa: E501
+        :type: bool
+        """
+
+        self._is_flat = is_flat
 
     @property
     def memo(self):
