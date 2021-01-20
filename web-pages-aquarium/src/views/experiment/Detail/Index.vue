@@ -1,14 +1,25 @@
 <template>
   <div>
-    <h2>（実験名）</h2>
-    <el-tabs v-model="activeName" @tab-click="handleClick">
-      <el-tab-pane label="実行情報" name="info"> <info /> </el-tab-pane>
+    <h2>{{ title }}</h2>
+    <el-row>
+      <el-col :span="8" class="back">
+        <span @click="openExperiment">
+          実験一覧
+        </span>
+        <i class="el-icon-arrow-right" />
+        <span>{{ id }}:{{ name }}</span>
+      </el-col>
+    </el-row>
+    <el-tabs v-model="activeName">
+      <el-tab-pane label="実行情報" name="info">
+        <info v-model="infoForm" />
+      </el-tab-pane>
       <el-tab-pane label="実行結果" name="result">
         <result />
       </el-tab-pane>
       <el-tab-pane label="推論" name="inference"><inference /></el-tab-pane>
     </el-tabs>
-    <router-view @done="done" @copy="handleCopy" />
+    <router-view @done="done" />
   </div>
 </template>
 
@@ -18,71 +29,87 @@ import Info from './Info'
 import Result from './Result'
 
 import Inference from './Inference'
-const { mapGetters, mapActions } = createNamespacedHelpers('dataSet')
+const { mapGetters, mapActions } = createNamespacedHelpers('experiment')
 
 export default {
-  title: '実験',
+  title: '実験詳細',
   components: { Info, Result, Inference },
+  props: {
+    id: {
+      type: String,
+      default: null,
+    },
+  },
   data() {
     return {
       iconname: 'pl-plus',
-
-      searchCondition: {},
-      searchConfigs: [
-        { prop: 'id', name: 'ID', type: 'number' },
-        { prop: 'name', name: 'データセット名', type: 'text' },
-        { prop: 'type', name: '種類', type: 'text' },
-        { prop: 'totalImageNumber', name: 'イメージの総数', type: 'text' },
-        {
-          prop: 'labeledImageNumber',
-          name: 'ラベル付きのイメージ数',
-          type: 'text',
-        },
-        { prop: 'lastModified', name: '最終更新日時', type: 'date' },
-        { prop: 'status', name: 'ステータス', type: 'text' },
-      ],
-      tableData: [],
+      name: null,
+      infoForm: {
+        id: null,
+        createdAt: '',
+        createdBy: '',
+        dataSetId: null,
+        dataSetVersion: null,
+        templateId: null,
+        templateName: '',
+      },
       activeName: 'info',
     }
   },
   computed: {
-    ...mapGetters(['dataSets', 'total']),
+    ...mapGetters(['detail', 'events']),
   },
 
   async created() {
-    await this.retrieveData()
+    await this.initialize()
   },
   methods: {
-    ...mapActions(['fetchDataSets']),
-
-    async currentChange() {
+    ...mapActions([
+      'fetchDetail',
+      'fetchEvents',
+      'postUserCancel',
+      'postFiles',
+      'put',
+      'delete',
+      'deleteFile',
+    ]),
+    async initialize() {
+      this.title = '実験履歴'
       await this.retrieveData()
+      this.name = this.detail.name
+      this.infoForm.createdAt = this.detail.createdAt
+      this.infoForm.createdBy = this.detail.createdBy
+      this.infoForm.id = this.detail.id
+      this.infoForm.dataSetId = this.detail.dataSet.aquariumDataSetId
+      this.infoForm.dataSetVersion = this.detail.dataSet.version
+      this.infoForm.templateId = this.detail.template.id
+      this.infoForm.templateName = this.detail.template.name
     },
     async retrieveData() {
-      let params = this.searchCondition
-
-      params.withTotal = true
-      await this.fetchDataSets(params)
+      await this.fetchDetail(this.id)
+      if (
+        this.detail.statusType === 'Running' ||
+        this.detail.statusType === 'Error'
+      ) {
+        await this.fetchEvents(this.detail.id)
+      }
     },
-    closeDialog() {
-      this.$router.push('/dataset')
+    async deleteJob() {
+      try {
+        await this.delete(this.detail.id)
+        this.$emit('done', 'delete')
+        this.error = null
+      } catch (e) {
+        this.error = e
+      }
     },
     async done() {
       this.closeDialog()
       await this.retrieveData()
       this.showSuccessMessage()
     },
-    openCreateDialog() {
-      this.$router.push('/aqarium/xperiment/create')
-    },
-    openEditDialog(selectedRow) {
-      this.$router.push('/aqarium/xperiment/edit/' + selectedRow.id)
-    },
-    handleCopy(id) {
-      this.$router.push('/aqarium/xperiment/create/' + id)
-    },
-    async search() {
-      await this.retrieveData()
+    async openExperiment() {
+      this.$router.push('/aquarium/experiment')
     },
   },
 }
@@ -92,7 +119,13 @@ export default {
 .right-top-button {
   text-align: right;
 }
-
+.back {
+  padding-bottom: 20px;
+  cursor: pointer;
+  :hover {
+    color: #409eff;
+  }
+}
 .search {
   text-align: right;
   padding-top: 10px;

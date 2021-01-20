@@ -7,20 +7,24 @@ export default [
     path: '/aquarium/experiment',
     component: Index,
     children: [],
+    props: true,
   },
   {
     path: '/aquarium/experiment/create',
     component: Edit,
     children: [],
+    props: true,
   },
   {
     path: '/aquarium/experiment/createStep',
     component: EditStep,
     children: [],
+    props: true,
   },
   {
     path: '/aquarium/experiment/detail/:id',
     component: Detail,
     children: [],
+    props: true,
   },
 ]
