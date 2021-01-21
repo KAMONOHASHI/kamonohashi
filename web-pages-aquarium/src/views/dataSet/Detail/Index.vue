@@ -1,13 +1,14 @@
 <template>
   <div>
-    <h2>（データセット名）</h2>
-    <el-tabs v-model="activeName" @tab-click="handleClick">
+    <h2>{{ dataSets[0].name }}</h2>
+    <el-tabs v-model="activeName">
       <el-tab-pane label="アップロード" name="upload">
-        <upload />
+        <upload :id="id" :datasetname="dataSets[0].name" />
       </el-tab-pane>
-      <el-tab-pane label="イメージ" name="image"><images /></el-tab-pane>
+      <el-tab-pane label="イメージ" name="image">
+        <images :id="id" />
+      </el-tab-pane>
     </el-tabs>
-    <router-view @cancel="closeDialog" @done="done" @copy="handleCopy" />
   </div>
 </template>
 
@@ -15,7 +16,7 @@
 import { createNamespacedHelpers } from 'vuex'
 import Upload from './Upload'
 import Images from './Images'
-const { mapGetters, mapActions } = createNamespacedHelpers('dataSet')
+const { mapGetters, mapActions } = createNamespacedHelpers('aquariumDataSet')
 
 export default {
   title: 'データセット',
@@ -23,52 +24,34 @@ export default {
   data() {
     return {
       iconname: 'pl-plus',
-
       searchCondition: {},
-      searchConfigs: [
-        { prop: 'id', name: 'ID', type: 'number' },
-        { prop: 'name', name: 'データセット名', type: 'text' },
-        { prop: 'type', name: '種類', type: 'text' },
-        { prop: 'totalImageNumber', name: 'イメージの総数', type: 'text' },
-        {
-          prop: 'labeledImageNumber',
-          name: 'ラベル付きのイメージ数',
-          type: 'text',
-        },
-        { prop: 'lastModified', name: '最終更新日時', type: 'date' },
-        { prop: 'status', name: 'ステータス', type: 'text' },
-      ],
-      tableData: [],
+
       activeName: 'upload',
     }
   },
   computed: {
-    ...mapGetters(['dataSets', 'total']),
+    ...mapGetters(['versions', 'dataSets']),
+  },
+
+  props: {
+    id: {
+      type: String,
+      default: null,
+    },
   },
 
   async created() {
     await this.retrieveData()
   },
   methods: {
-    ...mapActions(['fetchDataSets']),
-
+    ...mapActions(['fetchVersions', 'fetchDataSets']),
     async currentChange() {
       await this.retrieveData()
     },
     async retrieveData() {
-      let params = this.searchCondition
+      await this.fetchDataSets(this.id)
+    },
 
-      params.withTotal = true
-      await this.fetchDataSets(params)
-    },
-    closeDialog() {
-      this.$router.push('/dataset')
-    },
-    async done() {
-      this.closeDialog()
-      await this.retrieveData()
-      this.showSuccessMessage()
-    },
     openCreateDialog() {
       this.$router.push('/dataset/create')
     },
