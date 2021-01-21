@@ -32,18 +32,18 @@
             <template slot="title">
               <span style="margin-left:20px;display:inline-block;width:220px">
                 <span
-                  style="margin-left:20px;display:inline-block;width:160px"
+                  style="margin-left:0px;display:inline-block;width:160px"
                   @click="dataClick(item)"
-                  >{{ item.name }}</span
+                  >データ:{{ item.name }}</span
                 >
-                <i class="el-icon-delete" @click="openDeleteDialog(item)"></i>
+                <!--TODO 削除<i class="el-icon-delete" @click="openDeleteDialog(item)"></i>-->
               </span>
             </template>
             <ul style="margin-left:20px">
               <li
                 v-for="(file, subIndex) in item.list"
                 :key="subIndex"
-                style="list-style-type: none;padding-left:30px"
+                style="list-style-type: none;padding-left:10px"
                 :index="subIndex"
                 class="file-li "
                 @click="fileClick(file, $event)"
@@ -111,7 +111,12 @@ export default {
       type: String,
       default: null,
     },
+    latestVersionId: {
+      type: Number,
+      default: null,
+    },
   },
+
   data() {
     return {
       deleteDialog: false,
@@ -121,6 +126,7 @@ export default {
       versionValue: null,
     }
   },
+
   computed: {
     ...mapGetters({
       dataSets: ['aquariumDataSet/dataSets'],
@@ -133,9 +139,16 @@ export default {
     }),
   },
 
+  watch: {
+    async latestVersionId() {
+      this.versionValue = this.latestVersionId
+    },
+  },
+
   async created() {
     await this.retrieveData()
   },
+
   methods: {
     ...mapActions([
       'aquariumDataSet/post',
@@ -160,30 +173,27 @@ export default {
       this.deleteDialog = true
     },
     fileClick(file, e) {
-      //e.$el.classList.remove('is-active')
-      //TODO is-active2 cssつける
       for (let i in this.selectImageList) {
         if (this.selectImageList[i].fileId == file.fileId) {
           //同じものをクリックした場合、リストから削除する
           this.selectImageList.splice(i, 1)
-          e.target.classList.remove('is-active2')
+          e.target.classList.remove('active-datafile')
           return
         }
       }
 
-      e.target.classList.add('is-active2')
+      e.target.classList.add('active-datafile')
       this.selectImageList.push(file)
     },
     async dataClick(item) {
       //データのファイルリストを取得する
       await this['data/fetchUploadedFiles'](item.id)
       item['list'] = this.dataList.concat()
-      //TODO 強制再描画で良い？
+
       this.$forceUpdate()
     },
     async deleteData() {
       this.deleteDialog = false
-      console.log(this.selectDeleteData)
       //カモノハシデータセットを新規作成
       //アクアリウム新バージョンを作成
       //再描画
@@ -240,14 +250,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.el-menu-item.is-active2 {
-  color: #409eff;
-  background-color: #40a0ff77;
-}
 .file-li {
   cursor: pointer;
 }
-.is-active2 {
+.active-datafile {
   color: #409eff;
   background-color: #40a0ff25;
 }

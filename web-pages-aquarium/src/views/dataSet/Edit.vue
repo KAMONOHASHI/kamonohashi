@@ -142,9 +142,7 @@ export default {
         }
       })
     },
-    handlePreview(file) {
-      console.log(file)
-    },
+
     // ファイルリストの×を押下した時
     handleRemove: function(file, fileList) {
       this.form.datalist = fileList
@@ -182,7 +180,6 @@ export default {
       let dataset = null
 
       if (this.form.upload == 1) {
-        console.log(this.form.datalist)
         //ローカルからのデータリストを登録する
         let dataId = await this.uploadFile(this.form.name)
 
