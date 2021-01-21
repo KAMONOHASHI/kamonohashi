@@ -95,6 +95,7 @@ export default {
         currentPageSize: 10,
       },
       checkList: [],
+      datas: [],
     }
   },
   computed: {
@@ -102,8 +103,9 @@ export default {
       dataSets: ['aquariumDataSet/dataSets'],
       total: ['aquariumDataSet/total'],
       versions: ['aquariumDataSet/versions'],
+      detailVersion: ['aquariumDataSet/detailVersion'],
       detail: ['dataSet/detail'],
-      datas: ['data/data'],
+      allDatas: ['data/data'],
       dataList: ['data/uploadedFiles'],
     }),
   },
@@ -127,7 +129,7 @@ export default {
       'aquariumDataSet/fetchVersions',
       'aquariumDataSet/fetchDataSets',
       'aquariumDataSet/fetchTest',
-
+      'aquariumDataSet/fetchDetailVersion',
       'data/post',
       'data/put',
       'data/fetchData',
@@ -234,15 +236,15 @@ export default {
       //アクアリウムデータセットは登録しない
 
       //アクアリウムデータセットバージョンを登録する
-      this['aquariumDataSet/postByIdVersions']({
+      let version = await this['aquariumDataSet/postByIdVersions']({
         //id: aqDataset.data.id,
         id: this.id,
         model: { datasetId: dataset.data.id },
       })
+
+      this.$emit('latestVersionId', version.id)
     },
-    async currentChange() {
-      await this.retrieveData()
-    },
+
     async retrieveData() {
       let params = {}
       params.page = 1
@@ -251,11 +253,36 @@ export default {
       params.id = this.id
       await this['aquariumDataSet/fetchDataSets'](params)
       await this['aquariumDataSet/fetchVersions'](this.id)
+      let latestVersionId = null
+      for (let v in this.versions) {
+        if (this.versions[v].version == this.dataSets[0].latestVersion) {
+          latestVersionId = this.versions[v].id
+        }
+      }
+      this.$emit('latestVersionId', latestVersionId)
+      await this['aquariumDataSet/fetchDetailVersion']({
+        id: this.id,
+        versionId: latestVersionId,
+      })
       let params2 = this.searchCondition
       params2.page = this.pageStatus.currentPage
       params2.perPage = this.pageStatus.currentPageSize
       params2.withTotal = true
       await this['data/fetchData'](params2)
+      this.datas = []
+      for (let i in this.allDatas) {
+        //最新のバージョンに存在するDataはカモノハシデータリストのdatasに入れない
+        let same = false
+        for (let j in this.detailVersion.flatEntries) {
+          if (this.allDatas[i].id == this.detailVersion.flatEntries[j].id) {
+            same = true
+            break
+          }
+        }
+        if (!same) {
+          this.datas.push(this.allDatas[i])
+        }
+      }
     },
     closeDialog() {
       this.$router.push('/dataset')

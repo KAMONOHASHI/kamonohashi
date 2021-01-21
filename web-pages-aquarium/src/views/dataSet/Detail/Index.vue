@@ -1,12 +1,12 @@
 <template>
   <div>
-    <h2>{{ dataSets[0].name }}</h2>
+    <h2>{{ name }}</h2>
     <el-tabs v-model="activeName">
       <el-tab-pane label="アップロード" name="upload">
-        <upload :id="id" :datasetname="dataSets[0].name" />
+        <upload :id="id" :datasetname="name" @latestVersionId="setVersionId" />
       </el-tab-pane>
       <el-tab-pane label="イメージ" name="image">
-        <images :id="id" />
+        <images :id="id" :latest-version-id="latestVersionId" />
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -25,8 +25,9 @@ export default {
     return {
       iconname: 'pl-plus',
       searchCondition: {},
-
+      latestVersionId: null,
       activeName: 'upload',
+      name: null,
     }
   },
   computed: {
@@ -45,11 +46,15 @@ export default {
   },
   methods: {
     ...mapActions(['fetchVersions', 'fetchDataSets']),
+    setVersionId(x) {
+      this.latestVersionId = x
+    },
     async currentChange() {
       await this.retrieveData()
     },
     async retrieveData() {
       await this.fetchDataSets(this.id)
+      this.name = this.dataSets[0].name
     },
 
     openCreateDialog() {
