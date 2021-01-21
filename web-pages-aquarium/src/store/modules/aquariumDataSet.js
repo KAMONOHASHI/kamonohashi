@@ -53,12 +53,15 @@ const actions = {
     }
   },
 
-  async fetchDetailVersion({ commit }, id) {
-    if (id === null) {
+  async fetchDetailVersion({ commit }, params) {
+    if (params['id'] === null) {
       commit('clearDetailVersion')
     } else {
       let detailVersion = (
-        await api.aquariumDatasets.getByIdVersionsByVersionId({ id: id })
+        await api.aquariumDatasets.getByIdVersionsByVersionId({
+          id: params['id'],
+          versionId: params['versionId'],
+        })
       ).data
       commit('setDetailVersion', { detailVersion })
     }

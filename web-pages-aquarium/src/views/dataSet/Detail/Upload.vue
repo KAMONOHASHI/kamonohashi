@@ -19,7 +19,7 @@
         <kqi-upload-form ref="uploadForm" title="File" :type="type" />
         <el-link
           type="info"
-          style="display:block;margin-top:10px ;padding:15px"
+          style="margin-top:10px ;padding:15px"
           @click="submit()"
         >
           続行
@@ -44,27 +44,12 @@
         :before-close="handleClose"
       >
         <div style="padding:20px">
-          <el-select
-            v-model="selectedData"
-            placeholder="Select"
-            @change="selectData"
-          >
-            <el-option
-              v-for="item in datas"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id"
-            >
-            </el-option>
-          </el-select>
           <div
             style="width:80%;height:450px;padding:20px;border:1px solid #CCC;border-radius:5px;margin-top:5px"
           >
             <el-checkbox-group v-model="checkList">
-              <div v-for="item in dataList" :key="item.fileId">
-                <el-checkbox :label="item.fileId">{{
-                  item.fileName
-                }}</el-checkbox>
+              <div v-for="item in datas" :key="item.id">
+                <el-checkbox :label="item.id">{{ item.name }}</el-checkbox>
               </div>
             </el-checkbox-group>
           </div>
@@ -161,18 +146,19 @@ export default {
       await this['data/fetchUploadedFiles'](dataId)
     },
     closeDrawer() {
-      //
       this.drawer = false
       this['data/clearUploadedFiles']()
+      this.checkList = []
     },
     //ローカルからアップロード
 
     async submit() {
-      this.closeDrawer()
       try {
         await this.postDataSet()
         this.$emit('done')
         this.error = null
+        this.closeDrawer()
+        this.retrieveData()
       } catch (e) {
         this.error = e
       }
@@ -270,7 +256,6 @@ export default {
       params2.perPage = this.pageStatus.currentPageSize
       params2.withTotal = true
       await this['data/fetchData'](params2)
-      console.log(this.datas)
     },
     closeDialog() {
       this.$router.push('/dataset')

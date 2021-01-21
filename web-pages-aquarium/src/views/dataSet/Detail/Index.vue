@@ -26,7 +26,6 @@ export default {
       iconname: 'pl-plus',
       searchCondition: {},
 
-      tableData: [],
       activeName: 'upload',
     }
   },
