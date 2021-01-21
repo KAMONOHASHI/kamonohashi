@@ -83,6 +83,16 @@ import { mapActions, mapGetters } from 'vuex'
 export default {
   title: 'データセット',
   components: { KqiUploadForm },
+  props: {
+    id: {
+      type: String,
+      default: null,
+    },
+    datasetname: {
+      type: String,
+      default: null,
+    },
+  },
   data() {
     return {
       type: 'Data',
@@ -109,16 +119,7 @@ export default {
       dataList: ['data/uploadedFiles'],
     }),
   },
-  props: {
-    id: {
-      type: String,
-      default: null,
-    },
-    datasetname: {
-      type: String,
-      default: null,
-    },
-  },
+
   async created() {
     await this.retrieveData()
   },

@@ -21,6 +21,13 @@ const { mapGetters, mapActions } = createNamespacedHelpers('aquariumDataSet')
 export default {
   title: 'データセット',
   components: { Upload, Images },
+  props: {
+    id: {
+      type: String,
+      default: null,
+    },
+  },
+
   data() {
     return {
       iconname: 'pl-plus',
@@ -32,13 +39,6 @@ export default {
   },
   computed: {
     ...mapGetters(['versions', 'dataSets']),
-  },
-
-  props: {
-    id: {
-      type: String,
-      default: null,
-    },
   },
 
   async created() {

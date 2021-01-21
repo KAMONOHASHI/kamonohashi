@@ -116,6 +116,7 @@ export default {
       default: null,
     },
   },
+
   data() {
     return {
       deleteDialog: false,
@@ -125,6 +126,7 @@ export default {
       versionValue: null,
     }
   },
+
   computed: {
     ...mapGetters({
       dataSets: ['aquariumDataSet/dataSets'],
@@ -137,9 +139,16 @@ export default {
     }),
   },
 
+  watch: {
+    async latestVersionId() {
+      this.versionValue = this.latestVersionId
+    },
+  },
+
   async created() {
     await this.retrieveData()
   },
+
   methods: {
     ...mapActions([
       'aquariumDataSet/post',
@@ -235,11 +244,6 @@ export default {
     },
     async search() {
       await this.retrieveData()
-    },
-  },
-  watch: {
-    async latestVersionId() {
-      this.versionValue = this.latestVersionId
     },
   },
 }
