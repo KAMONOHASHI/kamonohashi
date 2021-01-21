@@ -6,40 +6,63 @@
     </div>
     <el-row class="info">
       <el-col :span="3">実行日時</el-col>
-      <el-col :span="4">{{ experimentDate }}</el-col>
+      <el-col :span="4">{{ value.createdAt }}</el-col>
     </el-row>
     <el-row class="info">
       <el-col :span="3">実行者</el-col>
-      <el-col :span="4">{{ userName }}</el-col>
+      <el-col :span="4">{{ value.createdBy }}</el-col>
     </el-row>
     <el-row class="info">
-      <!-- TODO
-        登録したテンプレートをカード形式で表示 -->
-      <div class="dashboard">
-        <div
-          v-for="(template, index) in experimentInfoList"
-          :key="index"
-          class="card-container"
-        >
-          <router-link to="/aquarium/model-template/1">
+      <div>
+        <div class="card-container">
+          <router-link :to="dataSetUrl">
             <el-card
-              class="template"
+              class="info"
               style="border: solid 1px #ebeef5;  width: 400px; height: 250px;"
             >
-              <div class="template-name">
-                {{ template.name }}
+              <div class="info-name">
+                データセット
               </div>
 
               <div
-                class="template-description"
+                class="info-description"
                 style="padding: 10px; font-size: 14px;"
               >
-                {{ template.memo }}
+                ID: {{ value.dataSetId }}
+                <br />
+                <!-- TODO:アクアリウムデータセット名を取得  -->
+                <!-- NAME: -->
 
                 <div style="margin:20px 0px 20px 0px">
                   <el-tag type="info" class="tag">
-                    {{ template.version }}</el-tag
+                    v{{ value.dataSetVersion }}</el-tag
                   >
+                </div>
+              </div>
+              <div style="padding: 20px; font-size: 14px;">
+                <icon name="pl-arrow-right" scale="1.5" class="menu-icon" />
+                詳細
+              </div>
+            </el-card>
+          </router-link>
+          <router-link :to="templateUrl">
+            <el-card
+              class="info"
+              style="border: solid 1px #ebeef5;  width: 400px; height: 250px;"
+            >
+              <div class="info-name">
+                テンプレート
+              </div>
+
+              <div
+                class="info-description"
+                style="padding: 10px; font-size: 14px;"
+              >
+                ID: {{ value.templateId }}
+                <br />
+                NAME:{{ value.templateName }}
+                <div style="margin:20px 0px 20px 0px">
+                  <el-tag type="info" class="tag"> v1</el-tag>
                 </div>
               </div>
               <div style="padding: 20px; font-size: 14px;">
@@ -56,63 +79,80 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex'
-const { mapGetters, mapActions } = createNamespacedHelpers('dataSet')
+const { mapGetters, mapActions } = createNamespacedHelpers('experiment')
 
 export default {
   title: '実験情報',
   components: {},
+  props: {
+    // 選択した実験情報
+    value: {
+      type: Object,
+      default: () => ({
+        id: null,
+        createdAt: '',
+        createdBy: '',
+        dataSetId: null,
+        dataSetVersion: null,
+      }),
+    },
+  },
   data() {
     return {
       importfile: null,
-      experimentDate: '2020/12/01 10:00',
-      userName: 'UserName',
-      experimentInfoList: [
-        //TODO 後で消す
-        { name: 'データセット', memo: '製造所A部品データ１', version: 'v1' },
-        {
-          name: 'テンプレート',
-          memo: 'A部署異常検知',
-          version: 'v1',
-        },
-      ],
+      dataSetName: '',
+      dataSetUrl: '',
+      templateUrl: '',
     }
   },
   computed: {
-    ...mapGetters(['dataSets', 'total']),
+    ...mapGetters(['detail', 'events']),
   },
-
   async created() {
-    await this.retrieveData()
+    await this.initialize()
   },
-  methods: {
-    ...mapActions(['fetchDataSets']),
 
-    async currentChange() {
-      await this.retrieveData()
+  methods: {
+    ...mapActions([
+      'fetchDetail',
+      'fetchEvents',
+      'postUserCancel',
+      'postFiles',
+      'put',
+      'delete',
+      'deleteFile',
+    ]),
+    async initialize() {
+      this.dataSetUrl = '/aquarium/dataset/' + this.detail.dataSet.id
+      this.templateUrl = '/aquarium/model-template/' + this.detail.template.id
     },
+    handleClick() {},
     async retrieveData() {
-      let params = this.searchCondition
-      await this.fetchDataSets(params)
+      await this.fetchDetail(this.value.id)
+      if (
+        this.detail.statusType === 'Running' ||
+        this.detail.statusType === 'Error'
+      ) {
+        await this.fetchEvents(this.value.id)
+      }
     },
-    closeDialog() {
-      this.$router.push('/dataset')
+    async handleHalt() {
+      try {
+        await this.postHalt(this.value.id) // 異常停止（Status=Killed）
+        await this.retrieveData()
+        this.error = null
+      } catch (e) {
+        this.error = e
+      }
     },
-    async done() {
-      this.closeDialog()
-      await this.retrieveData()
-      this.showSuccessMessage()
-    },
-    openCreateDialog() {
-      this.$router.push('/dataset/create')
-    },
-    openEditDialog(selectedRow) {
-      this.$router.push('/dataset/edit/' + selectedRow.id)
-    },
-    handleCopy(id) {
-      this.$router.push('/dataset/create/' + id)
-    },
-    async search() {
-      await this.retrieveData()
+    async handleUserCancel() {
+      try {
+        await this.postUserCancel(this.value.id) // 正常停止（Status=UserCanceled）
+        await this.retrieveData()
+        this.error = null
+      } catch (e) {
+        this.error = e
+      }
     },
   },
 }
@@ -152,19 +192,19 @@ a {
   padding-left: 20px;
   padding-right: 20px;
 }
-.template {
+.info {
   &:hover {
     transform: scale(1.05);
   }
 }
 
-.template-name {
+.info-name {
   font-weight: bold;
   padding: 20px 10px;
   font-size: 18px;
 }
 
-.template-description {
+.info-description {
   font-weight: lighter;
   border-bottom: 1px solid #ebeef5;
 }

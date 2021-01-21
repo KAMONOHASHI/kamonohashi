@@ -7,7 +7,7 @@ title
           ≡
         </el-button>
         <router-link to="/">
-          <img class="logo" src="@/assets/KAMONOHASHI_logo_white.png" alt="" />
+          <img class="logo" src="@/assets/logo_aquarium.png" alt="" />
         </router-link>
       </el-col>
       <el-col :span="12" class="user">

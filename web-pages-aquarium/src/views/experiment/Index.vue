@@ -23,25 +23,26 @@
     <el-row class="test">
       <el-table
         class="data-table pl-index-table"
-        :data="experimentList"
+        :data="histories"
         border
         @row-click="openEditExperiment"
       >
         <el-table-column prop="id" label="ID" width="120px" />
         <el-table-column prop="name" label="名前" width="auto" />
-        <el-table-column prop="dataset" label="データセット" width="auto" />
-        <el-table-column prop="template" label="テンプレート" width="auto" />
+        <el-table-column
+          prop="dataSet.aquariumDataSetId"
+          label="データセット"
+          width="auto"
+        />
+        <el-table-column
+          prop="template.name"
+          label="テンプレート"
+          width="auto"
+        />
 
-        <el-table-column
-          prop="averagePrecisionRate"
-          label="平均適合率"
-          width="auto"
-        />
-        <el-table-column
-          prop="lastModified"
-          label="最終更新日時"
-          width="auto"
-        />
+        <el-table-column prop="outputValue" label="平均適合率" width="auto" />
+
+        <el-table-column prop="createdAt" label="開始日時" width="auto" />
         <el-table-column prop="status" label="ステータス" width="auto" />
       </el-table>
     </el-row>
@@ -52,14 +53,19 @@
         @change="retrieveData"
       />
     </el-row>
-    <router-view @cancel="closeDialog" @done="done" @copy="handleCopy" />
+    <router-view
+      @cancel="closeDialog"
+      @done="done"
+      @return="back"
+      @copy="handleCopy"
+    />
   </div>
 </template>
 
 <script>
 import KqiPagination from '@/components/KqiPagination'
 import { createNamespacedHelpers } from 'vuex'
-const { mapGetters, mapActions } = createNamespacedHelpers('dataSet')
+const { mapGetters, mapActions } = createNamespacedHelpers('experiment')
 
 export default {
   title: '実験',
@@ -76,36 +82,50 @@ export default {
       searchCondition: {},
       searchConfigs: [
         { prop: 'name', name: '名前', type: 'text' },
-        { prop: 'dataset', name: 'データセット', type: 'text' },
-        { prop: 'template', name: 'テンプレート', type: 'text' },
-        { prop: 'averagePrecisionRate', name: '平均適合率', type: 'text' },
-
-        { prop: 'lastModified', name: '最終更新日時', type: 'date' },
-        { prop: 'status', name: 'ステータス', type: 'text' },
-      ],
-      tableData: [],
-      experimentList: [
-        //TODO APIから取得したら消す
         {
-          name: 'FLOWER_training',
-          dataset: 'FLOWER',
-          template: '●●画像分類ver.2',
-          averagePrecisionRate: '0.95',
-          lastModified: '2020/10/08',
-          status: '学習完了',
+          prop: 'dataSet.aquariumDataSetId',
+          name: 'データセット',
+          type: 'text',
+        },
+        { prop: 'template.name', name: 'テンプレート', type: 'text' },
+        { prop: 'outputValue', name: '平均適合率', type: 'text' },
+
+        { prop: 'createdAt', name: '開始日時', type: 'date' },
+        {
+          prop: 'status',
+          name: 'ステータス',
+          type: 'select',
+          option: {
+            items: [
+              'None',
+              'Pending',
+              'Succeeded',
+              'Running',
+              'Completed',
+              'UserCanceled',
+              'Failed',
+              'Killed',
+              'Invalid',
+              'Forbidden',
+              'Multiple',
+              'Empty',
+              'Error',
+            ],
+          },
         },
       ],
+      tableData: [],
     }
   },
   computed: {
-    ...mapGetters(['dataSets', 'total']),
+    ...mapGetters(['histories', 'total']),
   },
 
   async created() {
     await this.retrieveData()
   },
   methods: {
-    ...mapActions(['fetchDataSets']),
+    ...mapActions(['fetchHistories', 'delete']),
 
     async currentChange(page) {
       this.pageStatus.currentPage = page
@@ -116,7 +136,7 @@ export default {
       params.page = this.pageStatus.currentPage
       params.perPage = this.pageStatus.currentPageSize
       params.withTotal = true
-      await this.fetchDataSets(params)
+      await this.fetchHistories(params)
     },
 
     async done(type) {
@@ -133,6 +153,12 @@ export default {
       await this.retrieveData()
       this.showSuccessMessage()
     },
+    closeDialog() {
+      this.$router.push('/aquarium/experiment')
+    },
+    back() {
+      this.$router.go(-1)
+    },
     openCreateDialog() {
       this.$router.push('/aquarium/experiment/create')
     },
@@ -145,6 +171,9 @@ export default {
     async search() {
       this.pageStatus.currentPage = 1
       await this.retrieveData()
+    },
+    files(id) {
+      this.$router.push('/aquarium/experiment/' + id + '/files')
     },
   },
 }

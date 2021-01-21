@@ -14,10 +14,15 @@ namespace Nssol.Platypus.Models.TenantModels
     public class ExperimentHistory : TenantModelBase
     {
         /// <summary>
-        /// TODO：アクアリウムデータセットIDに変更
+        /// アクアリウムデータセットID
         /// </summary>
         [Required]
         public long DataSetId { get; set; }
+
+        /// <summary>
+        /// データID
+        /// </summary>
+        public long InputDataId { get; set; }
 
         /// <summary>
         /// テンプレートID
@@ -64,7 +69,7 @@ namespace Nssol.Platypus.Models.TenantModels
         public Dictionary<string, string> OptionDic { get; set; }
 
         /// <summary>
-        /// TODO アクアリウムデータセットに変更
+        /// アクアリウムデータセッ
         /// </summary>
         [ForeignKey(nameof(DataSetId))]
         public virtual Models.TenantModels.Aquarium.DataSetVersion
@@ -75,6 +80,12 @@ namespace Nssol.Platypus.Models.TenantModels
         /// </summary>
         [ForeignKey(nameof(TemplateId))]
         public virtual ModelTemplate Template{ get; set; }
+
+        /// <summary>
+        /// データ
+        /// </summary>
+        [ForeignKey(nameof(InputDataId))]
+        public virtual Data InputData { get; set; }
 
 
         /// <summary>

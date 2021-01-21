@@ -8,6 +8,7 @@ import './kqi-inference'
 import './kqi-tenant-setting'
 import './kqi-system-setting'
 import './kqi-arrow-right'
+import './kqi-aquarium'
 
 // icon を全部読み込むと重いので使うもののみ読み込む
 import 'vue-awesome/icons/user'

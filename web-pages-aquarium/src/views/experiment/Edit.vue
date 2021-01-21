@@ -19,7 +19,7 @@
         登録したテンプレートをカード形式で表示 -->
       <div class="dashboard">
         <div
-          v-for="(template, index) in preprocessings"
+          v-for="(template, index) in templates"
           :key="index"
           class="card-container"
         >
@@ -83,7 +83,7 @@ export default {
         { prop: 'name', name: 'テンプレート名', type: 'text' },
         { prop: 'tag', name: 'タグ', type: 'text', multiple: true },
       ],
-      preprocessings: [
+      templates: [
         //TODO 後で消す
         { name: 'A工場●●分類', memo: '説明文説明文', tag: 'Classification' },
         {
@@ -105,24 +105,46 @@ export default {
     }
   },
   computed: {
-    // TODO template API に変更
-    ...mapGetters(['preprocessings']),
+    ...mapGetters({
+      dataSets: ['dataSet/dataSets'],
+      registries: ['registrySelector/registries'],
+      defaultRegistryId: ['registrySelector/defaultRegistryId'],
+      images: ['registrySelector/images'],
+      tags: ['registrySelector/tags'],
+      gits: ['gitSelector/gits'],
+      defaultGitId: ['gitSelector/defaultGitId'],
+      repositories: ['gitSelector/repositories'],
+      branches: ['gitSelector/branches'],
+      commits: ['gitSelector/commits'],
+      commitDetail: ['gitSelector/commitDetail'],
+      loadingRepositories: ['gitSelector/loadingRepositories'],
+      detail: ['experiment/detail'],
+    }),
   },
   async created() {
-    // TODO template API に変更
-    await this.retrieveData()
+    await this.initialize()
   },
 
   methods: {
-    // TODO template API に変更
-    ...mapActions(['fetchPreprocessings']),
+    ...mapActions(
+      'fetchDetail',
+      'postHalt',
+      'postUserCancel',
+      'postFiles',
+      'put',
+      'delete',
+    ),
 
     async retrieveData() {
-      let params = this.searchCondition
-      params.page = this.pageStatus.currentPage
-      params.perPage = this.pageStatus.currentPageSize
-      params.withTotal = true
-      await this.fetchPreprocessings(params)
+      await this.fetchDetail(this.id)
+      await this.fetchUploadedFiles(this.detail.id)
+
+      if (
+        this.detail.statusType === 'Running' ||
+        this.detail.statusType === 'Error'
+      ) {
+        await this.fetchEvents(this.detail.id)
+      }
     },
     async search() {
       this.pageStatus.currentPage = 1
@@ -142,18 +164,14 @@ export default {
       await this.retrieveData()
       this.showSuccessMessage()
     },
-    // openEditDialog(selectedTemplate) {
-    //   this.$router.push('/aquarium/model-template/edit/' + selectedTemplate.id)
-    // },
-    // TODO テンプレートIDを引数にとってページ遷移
     openEditDialog() {
-      this.$router.push('/aquarium/model-template/edit/')
+      this.$router.push('/aquarium/experiment/edit/')
     },
     openCreateDialog() {
-      this.$router.push('/aquarium/model-template/create')
+      this.$router.push('/aquarium/experiment/create')
     },
     closeDialog() {
-      this.$router.push('/aquarium/model-template')
+      this.$router.push('/aquarium/experiment')
     },
   },
 }

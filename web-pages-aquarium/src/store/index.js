@@ -23,6 +23,7 @@ import training from './modules/training'
 import user from './modules/user'
 import version from './modules/version'
 import template from './modules/template'
+import experiment from './modules/experiment'
 
 Vue.use(Vuex)
 export default new Vuex.Store({
@@ -50,6 +51,7 @@ export default new Vuex.Store({
     user,
     version,
     template,
+    experiment,
   },
   state: {
     // ログイン情報

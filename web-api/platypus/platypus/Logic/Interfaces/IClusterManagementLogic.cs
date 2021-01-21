@@ -57,16 +57,26 @@ namespace Nssol.Platypus.Logic.Interfaces
         /// <summary>
         /// 新規に実験用前処理コンテナを作成する。
         /// </summary>
-        /// <param name="experimentHistory">対象の実験履歴</param>
+        /// /// <param name="experimentPreprocessHistory">対象の実験の前処理履歴</param>
         /// <returns>作成したコンテナのステータス</returns>
         Task<Result<ContainerInfo, string>> RunExperimentPreprocessContainerAsync(ExperimentPreprocessHistory experimentPreprocessHistory);
 
         /// <summary>
         /// 新規に実験用学習コンテナを作成する。
         /// </summary>
-        /// <param name="experimentPreprocessHistory">対象の実験の前処理履歴</param>
+        /// <param name="experimentHistory">対象の実験履歴</param>
         /// <returns>作成したコンテナのステータス</returns>
         Task<Result<ContainerInfo, string>> RunExperimentTrainContainerAsync(ExperimentHistory experimentHistory);
+
+        /// <summary>
+        /// 新規に実験用前処理後の学習コンテナを作成する。
+        /// </summary>
+        /// <param name="experimentHistory">対象の実験の前処理履歴</param>
+        /// <returns>作成したコンテナのステータス</returns>
+        Task<Result<ContainerInfo, string>> RunExperimentTrainAfterPreprocessingContainerAsync(ExperimentHistory experimentHistory);
+
+
+        
 
         /// <summary>
         /// 新規に実験のTensorBoard表示用のコンテナを作成する。

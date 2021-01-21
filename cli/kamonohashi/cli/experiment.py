@@ -20,15 +20,6 @@ from kamonohashi.cli import util
 def experiment():
     """Create and manage KAMONOHASHI experiment"""
 
-@experiment.command()
-@click.argument('id', type=int)
-def halt(id):
-    """Halt experiment"""
-    api = rest.ExperimentApi(configuration.get_api_client())
-    result = api.halt_experiment(id)
-    print('halted', result.id)
-
-
 @experiment.command('build-preprocess-history-files')
 @click.argument('id', type=int)
 @click.option('-did', '--dataset-id', type=int, required=True, help='A source dataSet id')

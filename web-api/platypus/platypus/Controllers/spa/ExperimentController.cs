@@ -395,8 +395,38 @@ namespace Nssol.Platypus.Controllers.spa
             }
             else
             {
+                // テンプレート前処理を実行
                 var preprocessResult = await RunPreprocessHistory(model.TemplateId.Value,model);
-                return preprocessResult;
+
+
+                // 前処理生成データの詳細情報がないので、取得
+                experimentHistory.InputData = await dataRepository.GetDataIncludeAllAsync(experimentHistory.InputDataId);
+
+                // テンプレート前処理で生成されたデータを入力にする学習コンテナを起動
+                var trainingResult = await clusterManagementLogic.RunExperimentTrainAfterPreprocessingContainerAsync(experimentHistory);
+                if (trainingResult.IsSuccess == false)
+                {
+                    //コンテナの起動に失敗した状態。エラーを出力して、保存した学習履歴も削除する。
+                    experimentHistoryRepository.Delete(experimentHistory);
+                    unitOfWork.Commit();
+
+                    return JsonError(HttpStatusCode.ServiceUnavailable, "Failed to run Experiment. The message bellow may be help to resolve: " + trainingResult.Error);
+                }
+
+                //結果に従い、学習結果を更新する。
+                //実行には時間がかかりうるので、DBから最新の情報を取ってくる
+                experimentHistory = await experimentHistoryRepository.GetByIdAsync(experimentHistory.Id);
+                experimentHistory.Status = trainingResult.Value.Status.Key;
+                unitOfWork.Commit();
+
+                if (trainingResult.Value.Status.Succeed())
+                {
+                    return JsonCreated(new SimpleOutputModel(experimentHistory));
+                }
+                else
+                {
+                    return JsonError(HttpStatusCode.ServiceUnavailable, $"Failed to run Experiment. Status={trainingResult.Value.Status.Name}. Please contact your server administrator.");
+                }
             }
         }
 
@@ -444,7 +474,6 @@ namespace Nssol.Platypus.Controllers.spa
 
             unitOfWork.Commit();
 
-            // TODO:入力データの詳細情報がないので、必要に応じて取得
 
             var result = await clusterManagementLogic.RunExperimentPreprocessContainerAsync(experimentPreprocessHistory);
             if (result.IsSuccess == false)
@@ -526,6 +555,7 @@ namespace Nssol.Platypus.Controllers.spa
             return Result<ExperimentPreprocessHistory, IActionResult>.CreateResult(experimentPreprocessHistory);
 
         }
+
         /// <summary>
         /// 前処理履歴に出力データを追加する。
         /// 追加する対象の前処理履歴は実行中のステータスのみ許可される。
@@ -578,22 +608,77 @@ namespace Nssol.Platypus.Controllers.spa
 
             return JsonOK(new PreprocessHistoriesOutputModel(experimentPreprocessHistory));
         }
-            #endregion
 
-            #region コンテナ出力・添付ファイル
+        /// <summary>
+        /// 実験の前処理のステータスを更新して、出力モデルに変換する
+        /// </summary>
+        /// <param name="history">前処理履歴</param>
+        /// <param name="model">出力モデル</param>
+        private async Task<PreprocessHistoriesOutputModel> GetUpdatedPreproccessIndexOutputModelAsync(ExperimentPreprocessHistory history, PreprocessHistoriesOutputModel model)
+        {
+            var status = ContainerStatus.Convert(history.Status);
+            model.StatusType = status.StatusType;
+            if (status.Exist())
+            {
+                // コンテナがまだ存在している場合、情報を更新する
+                var newStatus = await clusterManagementLogic.GetContainerStatusAsync(history.Name, CurrentUserInfo.SelectedTenant.Name, false);
+
+                if (status.Key != newStatus.Key)
+                {
+                    // 更新があったので、変更処理
+                    history.Status = newStatus.Key;
+                    unitOfWork.Commit();
+
+                    model.Status = newStatus.Name;
+                    model.StatusType = newStatus.StatusType;
+                }
+            }
+            return model;
+        }
+
+        /// <summary>
+        /// 指定されたアクアリウムデータセットに対するテンプレート前処理実行の履歴を取得。
+        /// </summary>
+        /// <param name="id">テンプレートID</param>
+        /// <param name="dataSetId">アクアリウムデータセットID</param>
+        [HttpGet("{id}/preprocess/histories/{dataSetId}")]
+        [Filters.PermissionFilter(MenuCode.Experiment)]
+        [ProducesResponseType(typeof(PreprocessHistoryDetailsOutputModel), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetDetailHistory([FromRoute] long id, [FromRoute] long? dataSetId)
+        {
+            if (dataSetId == null)
+            {
+                return JsonBadRequest("Aquarium DataSet ID is required.");
+            }
+
+            var history = await experimentPreprocessHistoryRepository.GetPreprocessIncludeDataSetAndTemplateAsync(id, dataSetId.Value);
+            if (history == null)
+            {
+                return JsonNotFound($"Preprocessing History about Template {id} to Aquarium DataSet {dataSetId} is not found.");
+            }
+
+            var result = new PreprocessHistoryDetailsOutputModel(history);
+            result = await GetUpdatedPreproccessIndexOutputModelAsync(history, result) as PreprocessHistoryDetailsOutputModel;
+
+            result.OutputDataIds = experimentPreprocessHistoryRepository.GetExperimentPreprocessOutputs(history.Id);
+            return JsonOK(result);
+        }
+        #endregion
+
+        #region コンテナ出力・添付ファイル
 
 
-            /// <summary>
-            /// コンテナの出力ファイルの一覧を取得する。
-            /// </summary>
-            /// <remarks> 
-            /// コンテナの/output/配下から指定ディレクトリパスの直下を検索する
-            /// 検索対象ディレクトリが見つからない場合もファイル・ディレクトリが空の結果を返す
-            /// </remarks>
-            /// <param name="id">対象の学習履歴ID</param>
-            /// <param name="path">検索対象ディレクトリ。使用可能文字は「-_1-9a-zA-Z/」</param>
-            /// <param name="withUrl">結果にダウンロード用のURLを含めるか</param>
-            [HttpGet("{id}/container-files")]
+        /// <summary>
+        /// コンテナの出力ファイルの一覧を取得する。
+        /// </summary>
+        /// <remarks> 
+        /// コンテナの/output/配下から指定ディレクトリパスの直下を検索する
+        /// 検索対象ディレクトリが見つからない場合もファイル・ディレクトリが空の結果を返す
+        /// </remarks>
+        /// <param name="id">対象の学習履歴ID</param>
+        /// <param name="path">検索対象ディレクトリ。使用可能文字は「-_1-9a-zA-Z/」</param>
+        /// <param name="withUrl">結果にダウンロード用のURLを含めるか</param>
+        [HttpGet("{id}/container-files")]
         [Filters.PermissionFilter(MenuCode.Experiment)]
         [ProducesResponseType(typeof(StorageListResultInfo), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetUnderDir(long id, [FromQuery] string path = "/", [FromQuery] bool withUrl = false)
