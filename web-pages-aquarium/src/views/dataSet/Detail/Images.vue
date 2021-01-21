@@ -164,7 +164,6 @@ export default {
       this.deleteDialog = true
     },
     fileClick(file, e) {
-
       for (let i in this.selectImageList) {
         if (this.selectImageList[i].fileId == file.fileId) {
           //同じものをクリックした場合、リストから削除する
