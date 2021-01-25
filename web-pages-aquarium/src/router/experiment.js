@@ -16,7 +16,7 @@ export default [
     props: true,
   },
   {
-    path: '/aquarium/experiment/createStep',
+    path: '/aquarium/experiment/createStep/:templateId',
     component: EditStep,
     children: [],
     props: true,

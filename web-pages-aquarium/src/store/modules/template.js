@@ -33,6 +33,16 @@ const actions = {
       commit('setTotal', parseInt(total))
     }
   },
+  async fetchTenantModelTemplates({ commit }, params) {
+    let response = await api.templates.admin.getTenantTemplate(params)
+    let templates = response.data
+    let total = response.headers['x-total-count']
+    commit('setTemplates', { templates })
+    // params.withTotal=trueの時は件数が取れているため設定
+    if (total !== undefined) {
+      commit('setTotal', parseInt(total))
+    }
+  },
 
   async fetchDetail({ commit }, id) {
     let detail = (await api.templates.admin.getById({ id: id })).data

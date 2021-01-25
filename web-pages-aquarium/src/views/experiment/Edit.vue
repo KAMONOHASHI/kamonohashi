@@ -2,10 +2,11 @@
   <div>
     <h2>新しくモデルをトレーニングする</h2>
     <h3>テンプレートを選択しAIを作成します</h3>
-    <div class="model-template">
+    <div class="">
       <!-- TODO 検索ボタンデザイン -->
-      <el-row :gutter="20">
-        <el-col class="search">
+
+      <el-row :gutter="20" style="margin-top:20px">
+        <el-col class="search" :span="12">
           <kqi-smart-search-input
             v-model="searchCondition"
             style="width:300px"
@@ -14,7 +15,6 @@
           />
         </el-col>
       </el-row>
-
       <!-- TODO
         登録したテンプレートをカード形式で表示 -->
       <div class="dashboard">
@@ -23,7 +23,7 @@
           :key="index"
           class="card-container"
         >
-          <router-link to="/aquarium/experiment/createStep">
+          <router-link :to="`/aquarium/experiment/createStep/${template.id}`">
             <el-card
               class="template"
               style="border: solid 1px #ebeef5; width: 360px; height: 300px;"
@@ -46,9 +46,9 @@
                 <div style="padding:20px">
                   <el-button type="primary">Pytorch</el-button>
                 </div>
-                <div>
-                  <el-tag class="tag"> {{ template.tag }}</el-tag>
-                </div>
+                <!-- <div>
+                      <el-tag class="tag"> {{ template.tag }}</el-tag>
+                    </div> -->
               </div>
             </el-card>
           </router-link>
@@ -63,10 +63,9 @@
 import { createNamespacedHelpers } from 'vuex'
 import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index'
 // TODO template API に変更
-const { mapGetters, mapActions } = createNamespacedHelpers('preprocessing')
-
+const { mapGetters, mapActions } = createNamespacedHelpers('template')
 export default {
-  title: 'モデルテンプレート',
+  title: '新規学習実行',
   components: {
     KqiSmartSearchInput,
   },
@@ -83,95 +82,28 @@ export default {
         { prop: 'name', name: 'テンプレート名', type: 'text' },
         { prop: 'tag', name: 'タグ', type: 'text', multiple: true },
       ],
-      templates: [
-        //TODO 後で消す
-        { name: 'A工場●●分類', memo: '説明文説明文', tag: 'Classification' },
-        {
-          name: 'A部署異常検知前処理',
-          memo: '事前学習済みXXXモデルを使用',
-          tag: 'Classification',
-        },
-        {
-          name: 'D工場X画像前処理',
-          memo: '説明文説明文',
-          tag: 'Classification',
-        },
-        {
-          name: '●●部署●●セグメント',
-          memo: '説明文説明文',
-          tag: 'Classification',
-        },
-      ],
     }
   },
   computed: {
-    ...mapGetters({
-      dataSets: ['dataSet/dataSets'],
-      registries: ['registrySelector/registries'],
-      defaultRegistryId: ['registrySelector/defaultRegistryId'],
-      images: ['registrySelector/images'],
-      tags: ['registrySelector/tags'],
-      gits: ['gitSelector/gits'],
-      defaultGitId: ['gitSelector/defaultGitId'],
-      repositories: ['gitSelector/repositories'],
-      branches: ['gitSelector/branches'],
-      commits: ['gitSelector/commits'],
-      commitDetail: ['gitSelector/commitDetail'],
-      loadingRepositories: ['gitSelector/loadingRepositories'],
-      detail: ['experiment/detail'],
-    }),
+    ...mapGetters(['templates']),
   },
   async created() {
-    await this.initialize()
+    await this.retrieveData()
   },
 
   methods: {
-    ...mapActions(
-      'fetchDetail',
-      'postHalt',
-      'postUserCancel',
-      'postFiles',
-      'put',
-      'delete',
-    ),
+    ...mapActions(['fetchTenantModelTemplates']),
 
     async retrieveData() {
-      await this.fetchDetail(this.id)
-      await this.fetchUploadedFiles(this.detail.id)
-
-      if (
-        this.detail.statusType === 'Running' ||
-        this.detail.statusType === 'Error'
-      ) {
-        await this.fetchEvents(this.detail.id)
-      }
+      let params = this.searchCondition
+      params.page = this.pageStatus.currentPage
+      params.perPage = this.pageStatus.currentPageSize
+      params.withTotal = true
+      await this.fetchTenantModelTemplates(params)
     },
     async search() {
       this.pageStatus.currentPage = 1
       await this.retrieveData()
-    },
-    async done(type) {
-      if (type === 'delete') {
-        // 削除時、表示していたページにデータが無くなっている可能性がある。
-        // 総数 % ページサイズ === 1の時、残り1の状態で削除したため、currentPageが1で無ければ1つ前のページに戻す
-        if (this.total % this.pageStatus.currentPageSize === 1) {
-          if (this.pageStatus.currentPage !== 1) {
-            this.pageStatus.currentPage -= 1
-          }
-        }
-      }
-      this.closeDialog()
-      await this.retrieveData()
-      this.showSuccessMessage()
-    },
-    openEditDialog() {
-      this.$router.push('/aquarium/experiment/edit/')
-    },
-    openCreateDialog() {
-      this.$router.push('/aquarium/experiment/create')
-    },
-    closeDialog() {
-      this.$router.push('/aquarium/experiment')
     },
   },
 }

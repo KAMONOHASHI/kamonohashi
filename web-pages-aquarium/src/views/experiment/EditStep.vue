@@ -1,9 +1,11 @@
 <template>
   <div>
+    <el-row :gutter="20" style="border-bottom:1px solid #CCC">
+      <h2>テンプレート名{{ templateName }}</h2>
+    </el-row>
     <el-row :gutter="20"><h2>新しいモデルのトレーニング</h2></el-row>
-    <el-row :gutter="20"> <h2>（A工場●●分類）</h2></el-row>
     <el-row :gutter="20">
-      <el-col :span="20">
+      <el-col :span="20" style="padding-left:30px">
         <el-form
           ref="createForm"
           :model="form"
@@ -27,9 +29,11 @@
             <kqi-display-text-form v-if="isEditDialog" label="ID" :value="id" />
 
             <el-form-item label="モデル名" prop="name">
-              <el-input v-model="form.name" />
+              <el-input v-model="form.name" @change="step1Disabled = false" />
             </el-form-item>
-            <el-button>続行</el-button>
+            <el-button :disabled="step1Disabled" @click="changeName"
+              >続行</el-button
+            >
           </el-form>
           <!-- step 2 -->
           <div class="step-title">
@@ -44,12 +48,72 @@
             :rules="rules"
             style="margin:10px;padding: 0px 10px 10px 30px;border-left:2px solid #CCC"
           >
-            <el-button>データセットを選択</el-button>
+            <el-button :disabled="step2Disabled" @click="drawer = true"
+              >データセットを選択</el-button
+            >
             <el-form-item label="" prop="dataset">
-              <el-input v-model="form.dataset" />
+              <el-input v-model="selectedDataSetVersionName" :disabled="true" />
             </el-form-item>
+            <el-drawer
+              title="データの選択"
+              :visible.sync="drawer"
+              :direction="direction"
+              :before-close="handleClose"
+            >
+              <div style="padding:20px">
+                <h3 v-if="listType == 'dataSet'">データセット一覧</h3>
+                <h3 v-if="listType == 'version'">
+                  {{ selectedDataSetName }}
+                </h3>
+                <div
+                  style="width:80%;height:450px;padding:20px;border:1px solid #CCC;border-radius:5px;margin-top:5px"
+                >
+                  <ul v-if="listType == 'dataSet'">
+                    <li
+                      v-for="item in dataSets"
+                      :key="item.id"
+                      class="li"
+                      style="list-style-type: none;padding-left:10px"
+                      @click="selectDataSet(item, $event)"
+                    >
+                      {{ item.name }}
+                    </li>
+                  </ul>
+                  <ul v-if="listType == 'version'">
+                    <li
+                      v-for="item in versions"
+                      :key="item.id"
+                      class="li"
+                      style="list-style-type: none;padding-left:10px"
+                      @click="selectVersion(item, $event)"
+                    >
+                      V{{ item.version }}
+                    </li>
+                  </ul>
+                </div>
+                <el-row>
+                  <el-button
+                    type="plain"
+                    plain
+                    style="margin-top:10px"
+                    @click="select"
+                  >
+                    選択
+                  </el-button>
+                  <el-button
+                    type="plain"
+                    plain
+                    style="margin-top:10px"
+                    @click="closeDrawer"
+                  >
+                    キャンセル
+                  </el-button></el-row
+                >
+              </div>
+            </el-drawer>
           </el-form>
           <!-- step 3 -->
+          <!-- 
           <div class="step-title">
             <div class="el-step__icon is-text">
               <div class="el-step__icon-inner">3</div>
@@ -68,7 +132,13 @@
             <el-radio v-model="selectResource" label="2"
               >手動でリソース量を設定</el-radio
             >
-          </el-form>
+
+            <el-row v-if="selectResource == 2" style="padding-left:30px">
+              <el-col :span="12">
+                <kqi-resource-selector v-model="form.resource" :quota="quota" />
+              </el-col>
+            </el-row>
+          </el-form>-->
           <span>
             <el-button type="primary" @click="submit">
               トレーニングを開始する
@@ -84,39 +154,43 @@
 <script>
 import KqiDisplayError from '@/components/KqiDisplayError'
 import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
-import registrySelectorUtil from '@/util/registrySelectorUtil'
-import gitSelectorUtil from '@/util/gitSelectorUtil'
-import { mapActions, mapGetters } from 'vuex'
 
+import { mapActions, mapGetters } from 'vuex'
 export default {
   components: {
     KqiDisplayError,
     KqiDisplayTextForm,
   },
   props: {
-    id: {
+    templateId: {
       type: String,
       default: null,
     },
   },
   data() {
     return {
+      step1Disabled: true,
+      step2Disabled: true,
+      oldDataSetE: null,
+      oldVersionE: null,
+      listType: 'dataSet',
+      direction: 'rtl',
+      selectedDataSet: null,
+      selectedDataSetName: null,
+      selectedVersion: null,
+      selectedVersionName: null,
+      selectedDataSetVersionName: null,
+      searchCondition: {},
+      pageStatus: {
+        currentPage: 1,
+        currentPageSize: 10,
+      },
+      drawer: false,
+      templateName: null,
       selectResource: 0,
       form: {
         name: null,
-        entryPoint: null,
-        memo: null,
-        containerImage: {
-          registry: null,
-          image: null,
-          tag: null,
-        },
-        gitModel: {
-          git: null,
-          repository: null,
-          branch: null,
-          commit: null,
-        },
+
         resource: {
           cpu: 1,
           memory: 1,
@@ -128,7 +202,6 @@ export default {
       error: null,
       isCreateDialog: false,
       isEditDialog: false,
-      isPatch: false, // 利用済み前処理の場合name, memo, resourceのみ更新可能
 
       rules: {
         name: [{ required: true, trigger: 'blur', message: '必須項目です' }],
@@ -137,6 +210,8 @@ export default {
   },
   computed: {
     ...mapGetters({
+      versions: ['aquariumDataSet/versions'],
+      dataSets: ['aquariumDataSet/dataSets'],
       registries: ['registrySelector/registries'],
       defaultRegistryId: ['registrySelector/defaultRegistryId'],
       images: ['registrySelector/images'],
@@ -151,6 +226,7 @@ export default {
       detail: ['preprocessing/detail'],
       histories: ['preprocessing/histories'],
       quota: ['cluster/quota'],
+      templateDetail: ['template/detail'],
     }),
   },
   watch: {
@@ -164,10 +240,10 @@ export default {
   },
   methods: {
     ...mapActions([
-      'modelTemplate/fetchDetail',
-      'modelTemplate/post',
-      'modelTemplate/put',
-      'modelTemplate/delete',
+      'template/fetchDetail',
+      'template/post',
+      'template/put',
+      'template/delete',
       'registrySelector/fetchRegistries',
       'registrySelector/fetchImages',
       'registrySelector/fetchTags',
@@ -177,24 +253,21 @@ export default {
       'gitSelector/fetchCommits',
       'gitSelector/fetchCommitDetail',
       'cluster/fetchQuota',
+      'experiment/post',
+      'aquariumDataSet/fetchDataSets',
+      'aquariumDataSet/fetchVersions',
     ]),
     async initialize() {
-      let url = this.$route.path
-      let type = url.split('/')[3] // ["", "preprocessing", "{type}", "{id}"]
-      switch (type) {
-        case 'create':
-          this.title = '新しいテンプレートの登録'
-          this.isCreateDialog = true
-          this.isCopyCreation = this.id !== null
-          this.isEditDialog = false
-          break
-        case 'edit':
-          this.title = 'テンプレートの詳細'
-          this.isCreateDialog = false
-          this.isCopyCreation = false
-          this.isEditDialog = true
-          break
-      }
+      //TODO 500error出る
+      //await this['template/fetchDetail'](this.templateId)
+      //console.log(this.templateDetail)
+      //this.templateName = this.templateDetail.name
+      //アクアリウムデータセットリストを取得
+      let params = this.searchCondition
+      params.page = this.pageStatus.currentPage
+      params.perPage = this.pageStatus.currentPageSize
+      params.withTotal = true
+      await this['aquariumDataSet/fetchDataSets'](params)
 
       // クォータ情報を取得
       await this['cluster/fetchQuota']()
@@ -233,76 +306,76 @@ export default {
         }
       })
     },
+    changeName() {
+      if (this.form.name != null && this.form.name != '') {
+        this.step2Disabled = false
+      }
+    },
     previous() {
       if (this.active-- < 0) {
         this.active = 0
       }
     },
+    handleClose(done) {
+      done()
+    },
+
+    closeDrawer() {
+      this.drawer = false
+    },
+    //データセット一覧からデータセットを選択
+    selectDataSet(item, e) {
+      //元のactiveを外す
+      if (this.oldDataSetE) {
+        this.oldDataSetE.target.classList.remove('active-li')
+      }
+      e.target.classList.add('active-li')
+      this.oldDataSetE = e
+      this.selectedDataSet = item
+      this.selectedDataSetName = item.name
+    },
+    selectVersion(item, e) {
+      //元のactiveを外す
+      if (this.oldVersionE) {
+        this.oldVersionE.target.classList.remove('active-li')
+      }
+      e.target.classList.add('active-li')
+      this.oldVersionE = e
+      this.selectedVersion = item
+      this.selectedVersionName = item.version
+    },
+    //選択ボタン押下
+    async select() {
+      if (this.listType == 'dataSet') {
+        this.listType = 'version'
+        await this['aquariumDataSet/fetchVersions'](this.selectedDataSet.id)
+      } else if (this.listType == 'version') {
+        this.listType = 'dataSet'
+        this.drawer = false
+        this.selectedDataSetVersionName =
+          'dataset id:' +
+          this.selectedDataSet.id +
+          ' dataset name:' +
+          this.selectedDataSetName +
+          ' version:' +
+          this.selectedVersionName
+      }
+    },
     async submit() {
-      //TODO
       let form = this.$refs.createForm
       await form.validate(async valid => {
         if (valid) {
           try {
-            if (this.isPatch) {
-              // 名称・メモ・リソースのみ更新
-              await this.patchTemplates()
-            } else {
-              // コンテナイメージの指定
-              // イメージとタグが指定されている場合、コンテナイメージを指定して登録
-              // イメージとタグが指定されていない場合、コンテナイメージは未指定(null)として登録
-              let containerImage = null
-              if (
-                this.form.containerImage.image !== null &&
-                this.form.containerImage.tag !== null
-              ) {
-                containerImage = {
-                  registryId: this.form.containerImage.registry.id,
-                  image: this.form.containerImage.image,
-                  tag: this.form.containerImage.tag,
-                }
-              }
-
-              // gitモデルの指定
-              // リポジトリとブランチが指定されている場合、gitモデルを指定して登録
-              // リポジトリとブランチが指定されていない場合、gitモデルは未指定(null)として登録
-              let gitModel = null
-              if (
-                this.form.gitModel.repository !== null &&
-                this.form.gitModel.branch !== null
-              ) {
-                // HEAD指定の時はcommitsの先頭要素をcommitIDに指定する。コピー実行時の再現性を担保するため
-                gitModel = {
-                  gitId: this.form.gitModel.git.id,
-                  repository: this.form.gitModel.repository.name,
-                  owner: this.form.gitModel.repository.owner,
-                  branch: this.form.gitModel.branch.branchName,
-                  commitId: this.form.gitModel.commit
-                    ? this.form.gitModel.commit.commitId
-                    : this.commits[0].commitId,
-                }
-              }
-              let params = {
-                name: this.form.name,
-                entryPoint: this.form.entryPoint,
-                ContainerImage: containerImage,
-                GitModel: gitModel,
-                memo: this.form.memo,
-                cpu: this.form.resource.cpu,
-                memory: this.form.resource.memory,
-                gpu: this.form.resource.gpu,
-              }
-              if (this.isCreateDialog) {
-                // 新規作成
-                await this['experiment/post'](params)
-              } else {
-                // 編集
-                await this['experiment/put']({
-                  id: this.id,
-                  params: params,
-                })
-              }
+            let params = {
+              name: this.form.name,
+              dataSetId: this.selectedVersion.dataSetId, //TOOD これはアクアリウムdatasetじゃなくてdataset？
+              dataSetVersion: this.selectedVersion.id,
+              templateId: this.id,
+              options: null,
             }
+            //TODO 500error出る
+
+            await this['experiment/post'](params)
 
             this.$emit('done')
             this.error = null
@@ -311,75 +384,6 @@ export default {
           }
         }
       })
-    },
-
-    async patchTemplates() {
-      let params = {
-        name: this.form.name,
-        memo: this.form.memo,
-        cpu: this.form.resource.cpu,
-        memory: this.form.resource.memory,
-        gpu: this.form.resource.gpu,
-      }
-      await this['modelTemplate/patch']({
-        id: this.id,
-        params: params,
-      })
-    },
-    async deleteTemplate() {
-      try {
-        await this['modelTemplate/delete'](this.id)
-        this.$emit('done', 'delete')
-      } catch (e) {
-        this.error = e
-      }
-    },
-    // コンテナイメージ
-    async selectRegistry(registryId) {
-      await registrySelectorUtil.selectRegistry(
-        this.form,
-        this['registrySelector/fetchImages'],
-        registryId,
-      )
-    },
-    async selectImage(image) {
-      await registrySelectorUtil.selectImage(
-        this.form,
-        this['registrySelector/fetchTags'],
-        this.form.containerImage.registry.id,
-        image,
-      )
-    },
-
-    // モデル
-    async selectGit(gitId) {
-      await gitSelectorUtil.selectGit(
-        this.form,
-        this['gitSelector/fetchRepositories'],
-        gitId,
-        this.$store,
-      )
-    },
-    // repositoryの型がstring：手入力, object: 選択
-    async selectRepository(repository) {
-      try {
-        await gitSelectorUtil.selectRepository(
-          this.form,
-          this['gitSelector/fetchBranches'],
-          repository,
-        )
-      } catch (message) {
-        this.$notify.error({
-          message: message,
-        })
-      }
-    },
-    async selectBranch(branchName) {
-      await gitSelectorUtil.selectBranch(
-        this.form,
-        this['gitSelector/fetchCommits'],
-        branchName,
-      )
     },
   },
 }
@@ -414,5 +418,9 @@ export default {
   font-weight: bold !important;
   color: #409eff;
   border-color: #409eff;
+}
+.active-li {
+  color: #409eff;
+  background-color: #40a0ff25;
 }
 </style>
