@@ -1653,7 +1653,7 @@ namespace Nssol.Platypus.Logic
             // 上書き不可の環境変数
             var notEditableEnvList = new Dictionary<string, string>()
             {
-                { "DATA_ID", experimentHistory.InputDataId.ToString()},
+                { "DATA_ID", experimentHistory.InputDataSetId.ToString()},
                 { "EXPERIMENT_ID", experimentHistory.Id.ToString()},
                 { "COMMIT_ID", experimentHistory.Template.TrainingRepositoryCommitId},
                 { "KQI_SERVER", containerOptions.WebServerUrl },
@@ -1869,7 +1869,8 @@ namespace Nssol.Platypus.Logic
                 ID = experimentHistory.Id,
                 TenantName = TenantName,
                 LoginUser = CurrentUserInfo.Alias, //アカウントはエイリアスから指定
-                Name = "experiment-" + experimentHistory.Key,
+//                Name = "experiment-" + experimentHistory.Key,
+                Name = experimentHistory.Key,
                 ContainerImage = registryMap.Registry.GetImagePath(experimentHistory.Template.TrainingContainerImage, experimentHistory.Template.TrainingContainerTag),
                 ScriptType = "experiment_training",
                 Cpu = experimentHistory.Template.TrainingCpu,

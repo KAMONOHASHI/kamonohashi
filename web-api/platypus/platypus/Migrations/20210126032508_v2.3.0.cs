@@ -171,7 +171,7 @@ namespace Nssol.Platypus.Migrations
                     ModifiedAt = table.Column<DateTime>(nullable: false),
                     TenantId = table.Column<long>(nullable: false),
                     DataSetId = table.Column<long>(nullable: false),
-                    InputDataId = table.Column<long>(nullable: false),
+                    InputDataSetId = table.Column<long>(nullable: false),
                     TemplateId = table.Column<long>(nullable: true),
                     StartedAt = table.Column<DateTime>(nullable: true),
                     CompletedAt = table.Column<DateTime>(nullable: true),
@@ -189,9 +189,9 @@ namespace Nssol.Platypus.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ExperimentHistories_Data_InputDataId",
-                        column: x => x.InputDataId,
-                        principalTable: "Data",
+                        name: "FK_ExperimentHistories_DataSets_InputDataSetId",
+                        column: x => x.InputDataSetId,
+                        principalTable: "DataSets",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -349,9 +349,9 @@ namespace Nssol.Platypus.Migrations
                 column: "DataSetId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ExperimentHistories_InputDataId",
+                name: "IX_ExperimentHistories_InputDataSetId",
                 table: "ExperimentHistories",
-                column: "InputDataId");
+                column: "InputDataSetId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ExperimentHistories_TemplateId",
