@@ -68,7 +68,7 @@
           </router-link>
         </div>
       </div>
-      <router-view />
+      <router-view @cancel="closeDialog" />
     </div>
   </div>
 </template>
