@@ -37,21 +37,17 @@
             </el-form-item>
             <el-form-item
               label="公開設定 "
-              prop="publishing"
+              prop="accessLevel"
               style="display:block"
               ><br />
-              <el-radio
-                v-model="form.publishing"
-                label="1"
-                style="display:block"
-                >現在のテナント
-              </el-radio>
-              <el-radio
-                v-model="form.publishing"
-                label="2"
-                style="display:block"
-                >全テナントに公開</el-radio
-              >
+              <el-radio-group v-model="form.accessLevel">
+                <el-radio :label="1" style="margin:10px"
+                  >現在のテナント </el-radio
+                ><br />
+                <el-radio :label="2" style="margin:10px"
+                  >全テナントに公開</el-radio
+                >
+              </el-radio-group>
             </el-form-item>
           </el-form>
           <!-- step 2 -->
@@ -59,18 +55,18 @@
             <el-row :gutter="20">
               <el-col :span="12">
                 <kqi-container-selector
-                  v-model="form.containerImage"
+                  v-model="form.preprocess.containerImage"
                   :disabled="isPatch"
                   :registries="registries"
                   :images="images"
                   :tags="tags"
                   heading="前処理実行コンテナイメージ"
-                  @selectRegistry="selectRegistry"
-                  @selectImage="selectImage"
+                  @selectRegistry="selectPreprocessRegistry"
+                  @selectImage="selectPreprocessImage"
                 />
 
                 <kqi-git-selector
-                  v-model="form.gitModel"
+                  v-model="form.preprocess.gitModel"
                   :disabled="isPatch"
                   :gits="gits"
                   :repositories="repositories"
@@ -78,13 +74,13 @@
                   :commits="commits"
                   :loading-repositories="loadingRepositories"
                   heading="スクリプト"
-                  @selectGit="selectGit"
-                  @selectRepository="selectRepository"
-                  @selectBranch="selectBranch"
+                  @selectGit="selectPreprocessGit"
+                  @selectRepository="selectPreprocessRepository"
+                  @selectBranch="selectPreprocessBranch"
                 />
                 <el-form-item label="実行コマンド" prop="entryPoint">
                   <el-input
-                    v-model="form.entryPoint"
+                    v-model="form.preprocess.entryPoint"
                     type="textarea"
                     :autosize="{ minRows: 2 }"
                     :disabled="isPatch"
@@ -93,7 +89,10 @@
               </el-col>
 
               <el-col :span="12">
-                <kqi-resource-selector v-model="form.resource" :quota="quota" />
+                <kqi-resource-selector
+                  v-model="form.preprocess.resource"
+                  :quota="quota"
+                />
               </el-col>
             </el-row>
           </el-form>
@@ -102,17 +101,17 @@
             <el-row :gutter="20">
               <el-col :span="12">
                 <kqi-container-selector
-                  v-model="form.containerImage"
+                  v-model="form.training.containerImage"
                   :disabled="isPatch"
                   :registries="registries"
                   :images="images"
                   :tags="tags"
                   heading="学習・推論コンテナイメージ"
-                  @selectRegistry="selectRegistry"
-                  @selectImage="selectImage"
+                  @selectRegistry="selectTrainingRegistry"
+                  @selectImage="selectTrainingImage"
                 />
                 <kqi-git-selector
-                  v-model="form.gitModel"
+                  v-model="form.training.gitModel"
                   :disabled="isPatch"
                   :gits="gits"
                   :repositories="repositories"
@@ -120,13 +119,13 @@
                   :commits="commits"
                   :loading-repositories="loadingRepositories"
                   heading="スクリプト"
-                  @selectGit="selectGit"
-                  @selectRepository="selectRepository"
-                  @selectBranch="selectBranch"
+                  @selectGit="selectTrainingGit"
+                  @selectRepository="selectTrainingRepository"
+                  @selectBranch="selectTrainingBranch"
                 />
                 <el-form-item label="実行コマンド" prop="entryPoint">
                   <el-input
-                    v-model="form.entryPoint"
+                    v-model="form.training.entryPoint"
                     type="textarea"
                     :autosize="{ minRows: 2 }"
                     :disabled="isPatch"
@@ -135,7 +134,10 @@
               </el-col>
 
               <el-col :span="12">
-                <kqi-resource-selector v-model="form.resource" :quota="quota" />
+                <kqi-resource-selector
+                  v-model="form.training.resource"
+                  :quota="quota"
+                />
               </el-col>
             </el-row>
           </el-form>
@@ -203,21 +205,44 @@ export default {
         name: null,
         entryPoint: null,
         memo: null,
-        preprocessContainerImage: {
-          registry: null,
-          image: null,
-          tag: null,
+        accessLevel: 1,
+        preprocess: {
+          containerImage: {
+            registry: null,
+            image: null,
+            tag: null,
+          },
+          gitModel: {
+            git: null,
+            repository: null,
+            branch: null,
+            commit: null,
+          },
+          resource: {
+            cpu: 1,
+            memory: 1,
+            gpu: 0,
+          },
+          entryPoint: null,
         },
-        preprocessGitModel: {
-          git: null,
-          repository: null,
-          branch: null,
-          commit: null,
-        },
-        preprocessResource: {
-          cpu: 1,
-          memory: 1,
-          gpu: 0,
+        training: {
+          containerImage: {
+            registry: null,
+            image: null,
+            tag: null,
+          },
+          gitModel: {
+            git: null,
+            repository: null,
+            branch: null,
+            commit: null,
+          },
+          resource: {
+            cpu: 1,
+            memory: 1,
+            gpu: 0,
+          },
+          entryPoint: null,
         },
       },
       title: '',
@@ -298,16 +323,26 @@ export default {
       // 指定に必要な情報を取得
       // レジストリ一覧を取得し、デフォルトレジストリを設定
       await this['registrySelector/fetchRegistries']()
-      this.form.preprocessContainerImage.registry = this.registries.find(
+      this.form.preprocess.containerImage.registry = this.registries.find(
         registry => {
           return registry.id === this.defaultRegistryId
         },
       )
-      await this.SelectRegistry(this.defaultRegistryId)
+      this.form.training.containerImage.registry = this.registries.find(
+        registry => {
+          return registry.id === this.defaultRegistryId
+        },
+      )
+
+      await this.selectPreprocessRegistry(this.defaultRegistryId) //TODO defaultRegistryId？
+      await this.selectTrainingRegistry(this.defaultRegistryId) //TODO defaultRegistryId？
 
       // gitサーバ一覧を取得し、デフォルトgitサーバを設定
       await this['gitSelector/fetchGits']()
-      this.form.preprocessGitModel.git = this.gits.find(git => {
+      this.form.preprocess.gitModel.git = this.gits.find(git => {
+        return git.id === this.defaultGitId
+      })
+      this.form.training.gitModel.git = this.gits.find(git => {
         return git.id === this.defaultGitId
       })
       await this['gitSelector/fetchRepositories'](this.defaultGitId)
@@ -348,46 +383,87 @@ export default {
               // コンテナイメージの指定
               // イメージとタグが指定されている場合、コンテナイメージを指定して登録
               // イメージとタグが指定されていない場合、コンテナイメージは未指定(null)として登録
+              ////前処理
               let preprocessContainerImage = null
               if (
-                this.form.preprocessContainerImage.image !== null &&
-                this.form.preprocessContainerImage.tag !== null
+                this.form.preprocess.containerImage.image !== null &&
+                this.form.preprocess.containerImage.tag !== null
               ) {
                 preprocessContainerImage = {
-                  registryId: this.form.preprocessContainerImage.registry.id,
-                  image: this.form.preprocessContainerImage.image,
-                  tag: this.form.preprocessContainerImage.tag,
+                  registryId: this.form.preprocess.containerImage.registry.id,
+                  image: this.form.preprocess.containerImage.image,
+                  tag: this.form.preprocess.containerImage.tag,
                 }
               }
-
+              ////学習
+              let trainingContainerImage = null
+              if (
+                this.form.training.containerImage.image !== null &&
+                this.form.training.containerImage.tag !== null
+              ) {
+                trainingContainerImage = {
+                  registryId: this.form.training.containerImage.registry.id,
+                  image: this.form.training.containerImage.image,
+                  tag: this.form.training.containerImage.tag,
+                }
+              }
               // gitモデルの指定
               // リポジトリとブランチが指定されている場合、gitモデルを指定して登録
               // リポジトリとブランチが指定されていない場合、gitモデルは未指定(null)として登録
+              ////前処理
               let preprocessGitModel = null
               if (
-                this.form.preprocessGitModel.repository !== null &&
-                this.form.preprocessGitModel.branch !== null
+                this.form.preprocess.gitModel.repository !== null &&
+                this.form.preprocess.gitModel.branch !== null
               ) {
                 // HEAD指定の時はcommitsの先頭要素をcommitIDに指定する。コピー実行時の再現性を担保するため
                 preprocessGitModel = {
-                  gitId: this.form.gitModel.git.id,
-                  repository: this.form.gitModel.repository.name,
-                  owner: this.form.gitModel.repository.owner,
-                  branch: this.form.gitModel.branch.branchName,
-                  commitId: this.form.gitModel.commit
-                    ? this.form.gitModel.commit.commitId
+                  gitId: this.form.preprocess.gitModel.git.id,
+                  repository: this.form.preprocess.gitModel.repository.name,
+                  owner: this.form.preprocess.gitModel.repository.owner,
+                  branch: this.form.preprocess.gitModel.branch.branchName,
+                  commitId: this.form.preprocess.gitModel.commit
+                    ? this.form.preprocess.gitModel.commit.commitId
+                    : this.commits[0].commitId,
+                }
+              }
+              ////学習
+              let trainingGitModel = null
+              if (
+                this.form.training.gitModel.repository !== null &&
+                this.form.training.gitModel.branch !== null
+              ) {
+                // HEAD指定の時はcommitsの先頭要素をcommitIDに指定する。コピー実行時の再現性を担保するため
+                trainingGitModel = {
+                  gitId: this.form.training.gitModel.git.id,
+                  repository: this.form.training.gitModel.repository.name,
+                  owner: this.form.training.gitModel.repository.owner,
+                  branch: this.form.training.gitModel.branch.branchName,
+                  commitId: this.form.training.gitModel.commit
+                    ? this.form.training.gitModel.commit.commitId
                     : this.commits[0].commitId,
                 }
               }
               let params = {
                 name: this.form.name,
-                preprocessEntryPoint: this.form.preprocessEntryPoint,
+                memo: this.form.memo,
+                accessLevel: this.form.accessLevel,
+                version: 0, //TODO
+                groupId: 0, //TODO
+                assignedTenantIds: [], //TODO
+                preprocessEntryPoint: this.form.preprocess.entryPoint,
                 preprocessContainerImage: preprocessContainerImage,
                 preprocessGitModel: preprocessGitModel,
-                memo: this.form.memo,
-                cpu: this.form.preprocessResource.cpu,
-                memory: this.form.preprocessResource.memory,
-                gpu: this.form.preprocessResource.gpu,
+                preprocessCpu: this.form.preprocess.resource.cpu,
+                preprocessMemory: this.form.preprocess.resource.memory,
+                preprocessGpu: this.form.preprocess.resource.gpu,
+
+                trainingEntryPoint: this.form.training.entryPoint,
+                trainingContainerImage: trainingContainerImage,
+                trainingGitModel: trainingGitModel,
+                trainingCpu: this.form.training.resource.cpu,
+                trainingMemory: this.form.training.resource.memory,
+                trainingGpu: this.form.training.resource.gpu,
               }
               if (this.isCreateDialog) {
                 // 新規作成
@@ -403,8 +479,12 @@ export default {
 
             this.$emit('done')
             this.error = null
+            //dialogを閉じる
+            this.dialogVisible = false
           } catch (e) {
             this.error = e
+            //dialogを閉じる
+            this.dialogVisible = false
           }
         }
       })
@@ -432,36 +512,60 @@ export default {
       }
     },
     // コンテナイメージ
-    async selectRegistry(registryId) {
+    async selectPreprocessRegistry(registryId) {
       await registrySelectorUtil.selectRegistry(
-        this.form,
+        this.form.preprocess,
         this['registrySelector/fetchImages'],
         registryId,
       )
     },
-    async selectImage(image) {
+    async selectTrainingRegistry(registryId) {
+      await registrySelectorUtil.selectRegistry(
+        this.form.training,
+        this['registrySelector/fetchImages'],
+        registryId,
+      )
+    },
+    async selectPreprocessImage(image) {
       await registrySelectorUtil.selectImage(
-        this.form,
+        this.form.form.preprocess,
         this['registrySelector/fetchTags'],
-        this.form.containerImage.registry.id,
+        this.form.preprocess.containerImage.registry.id,
+        image,
+      )
+      this.form
+    },
+    async selectTrainingImage(image) {
+      await registrySelectorUtil.selectImage(
+        this.form.training,
+        this['registrySelector/fetchTags'],
+        this.form.training.containerImage.registry.id,
         image,
       )
     },
-
     // モデル
-    async selectGit(gitId) {
+    async selectPreprocessGit(gitId) {
       await gitSelectorUtil.selectGit(
-        this.form,
+        this.form.preprocess,
         this['gitSelector/fetchRepositories'],
         gitId,
         this.$store,
       )
     },
+    async selectTrainingGit(gitId) {
+      await gitSelectorUtil.selectGit(
+        this.form.training,
+        this['gitSelector/fetchRepositories'],
+        gitId,
+        this.$store,
+      )
+    },
+
     // repositoryの型がstring：手入力, object: 選択
-    async selectRepository(repository) {
+    async selectPreprocessRepository(repository) {
       try {
         await gitSelectorUtil.selectRepository(
-          this.form,
+          this.form.preprocess,
           this['gitSelector/fetchBranches'],
           repository,
         )
@@ -471,9 +575,29 @@ export default {
         })
       }
     },
-    async selectBranch(branchName) {
+    async selectTrainingRepository(repository) {
+      try {
+        await gitSelectorUtil.selectRepository(
+          this.form.training,
+          this['gitSelector/fetchBranches'],
+          repository,
+        )
+      } catch (message) {
+        this.$notify.error({
+          message: message,
+        })
+      }
+    },
+    async selectPreprocessBranch(branchName) {
       await gitSelectorUtil.selectBranch(
-        this.form,
+        this.form.preprocess,
+        this['gitSelector/fetchCommits'],
+        branchName,
+      )
+    },
+    async selectTrainingBranch(branchName) {
+      await gitSelectorUtil.selectBranch(
+        this.form.training,
         this['gitSelector/fetchCommits'],
         branchName,
       )

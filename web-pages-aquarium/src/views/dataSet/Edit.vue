@@ -16,30 +16,23 @@
       </el-row>
       <el-row>
         <el-form-item label="" prop="name">
-          <el-radio v-model="form.publishing" label="1" style="display:block"
-            >パソコンから画像をアップロード</el-radio
-          >
+          <el-radio v-model="form.upload" label="1" style="display:block">
+            パソコンから画像をアップロード
+          </el-radio>
         </el-form-item>
       </el-row>
-      <el-row>
-        <h3>パソコンから画像をアップロード</h3>
-        パソコンから画像をアップロード
-        任意のファイル形式がアップロードできまうｓ。画像の表示はJPG,PNG,***がサポートされています。<br />
-        一回のアップロードで最大XXXファイル送信できます。アップロードしたファイルはKAMONOHASHIのデータ、データセットに保存されます。
-      </el-row>
-      <el-row>
-        <el-upload
-          class="upload-demo"
-          :on-preview="handlePreview"
-          :on-remove="handleRemove"
-          :before-remove="beforeRemove"
-          multiple
-          :limit="3"
-          :on-exceed="handleExceed"
-          :file-list="fileList"
-        >
-          <el-button size="small">ファイルを選択</el-button>
-        </el-upload>
+      <el-row v-if="form.upload == 1">
+        <h3 style="margin-bottom:10px;margin-top:30px">
+          パソコンから画像をアップロード
+        </h3>
+        <div style="margin:20px">
+          パソコンから画像をアップロード
+          任意のファイル形式がアップロードできます。画像の表示はJPG,PNG,***がサポートされています。<br />
+          一回のアップロードで最大{{
+            fileNumLimit
+          }}ファイル送信できます。アップロードしたファイルはKAMONOHASHIのデータ、データセットに保存されます。
+        </div>
+        <kqi-upload-form ref="uploadForm" title="File" :type="type" />
       </el-row>
     </el-form>
   </kqi-dialog>
@@ -48,30 +41,27 @@
 <script>
 import KqiDialog from '@/components/KqiDialog'
 import KqiDisplayError from '@/components/KqiDisplayError'
-
-import { createNamespacedHelpers } from 'vuex'
-const { mapGetters, mapMutations, mapActions } = createNamespacedHelpers(
-  'dataSet',
-)
+import KqiUploadForm from '@/components/KqiUploadForm'
+import { mapActions, mapGetters } from 'vuex'
+//import { createNamespacedHelpers } from 'vuex'
+//const { mapGetters, mapActions } = createNamespacedHelpers('aquariumDataSet')
 
 export default {
   components: {
     KqiDialog,
     KqiDisplayError,
+    KqiUploadForm,
   },
-  props: {
-    id: {
-      type: String,
-      default: null,
-    },
-  },
+
   data() {
     return {
       submitText: '新規登録',
-
+      type: 'Data',
+      fileNumLimit: 10,
       form: {
         name: '',
-        publishing: '',
+        upload: '',
+        datalist: [],
       },
       title: '',
       isCreateDialog: false,
@@ -85,8 +75,12 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['detail', 'dataTypes']),
+    ...mapGetters({
+      registries: ['aquariumDataSet/detail'],
+      uploadedFiles: ['data/uploadedFiles'],
+    }),
   },
+
   watch: {
     async $route() {
       // 通常の作成とコピー作成が同一コンポーネントのため、コピー作成の実行はrouterの変化により検知する
@@ -100,17 +94,30 @@ export default {
 
   methods: {
     ...mapActions([
-      'fetchDetail',
-      'fetchDataTypes',
-      'post',
-      'put',
-      'patch',
-      'delete',
+      'aquariumDataSet/post',
+      'aquariumDataSet/postByIdVersions',
+      'data/post',
+      'data/put',
+      'data/putFile',
+      'dataSet/post',
+      'data/uploadedFiles',
     ]),
-    ...mapMutations(['setDataTypes']),
+
+    async deleteAttachedFile(fileId) {
+      try {
+        await this.deleteFile({
+          id: this.id,
+          fileId: fileId,
+        })
+        this.retrieveData()
+        this.error = null
+      } catch (e) {
+        this.error = e
+      }
+    },
     async initialize() {
       let url = this.$route.path
-      let type = url.split('/')[2] // ["", "dataset", "{type}", "{id}"]
+      let type = url.split('/')[3] // ["", "dataset", "{type}", "{id}"]
       switch (type) {
         case 'create':
           this.title = '新しいデータセットの作成'
@@ -118,44 +125,6 @@ export default {
           this.isCopyCreation = this.id !== null
           this.isLocked = false
           break
-      }
-
-      // 新規作成時はデータタイプを設定
-      if (this.isCreateDialog && !this.isCopyCreation) {
-        try {
-          await this.fetchDataTypes()
-          this.form.entries = {}
-          this.dataTypes.forEach(type => {
-            this.form.entries[type.name] = []
-          })
-          this.error = null
-        } catch (e) {
-          this.error = e
-        }
-      }
-
-      // 編集時/コピー作成時は、既に登録されている情報を各項目を設定
-      if (this.isCopyCreation) {
-        await this.retrieveData()
-      }
-    },
-    async retrieveData() {
-      this.form.entries = null
-      try {
-        await this.fetchDetail(this.id)
-        this.form.name = this.detail.name
-        let ent = {}
-        let types = []
-        for (let key in this.detail.entries) {
-          ent[key] = this.detail.entries[key]
-          types.push({ name: key })
-        }
-        this.form.entries = ent
-
-        this.setDataTypes(types)
-        this.error = null
-      } catch (e) {
-        this.error = e
       }
     },
 
@@ -174,33 +143,69 @@ export default {
       })
     },
 
+    // ファイルリストの×を押下した時
+    handleRemove: function(file, fileList) {
+      this.form.datalist = fileList
+    },
+    // ファイルを追加した時
+    handleAdd: function(file, fileList) {
+      this.form.datalist = fileList
+    },
+
+    // データファイルのアップロード
+    async updateData(filename) {
+      let model = {
+        name: filename,
+        memo: '',
+        tags: '',
+        isRaw: true,
+      }
+      let result = null
+      result = (await this['data/post'](model)).data
+      return result.id
+    },
+
+    async uploadFile(datasetname) {
+      //データファイルのアップロード
+      let dataFileInfos = await this.$refs.uploadForm.uploadFile()
+      let dataId = null
+      dataId = await this.updateData('aquarium_' + datasetname)
+      await this['data/putFile']({
+        id: dataId,
+        fileInfo: dataFileInfos,
+      })
+      return dataId
+    },
     async postDataSet() {
-      let postEntries = {}
-      for (let key in this.form.entries) {
-        postEntries[key] = []
-        this.form.entries[key].forEach(entry => {
-          postEntries[key].push({
-            id: entry.id,
-          })
-        })
-      }
-      let params = {
-        entries: postEntries,
-        name: this.form.name,
-        memo: this.form.memo,
-      }
-      if (this.isCreateDialog) {
-        // 新規作成
-        await this.post(params)
-      } else {
-        // 編集
-        if (this.isLocked) {
-          // 編集不可の時は、名前とメモのみ編集可
-          await this.patch({ id: this.id, params: params })
-        } else {
-          // 編集可の時は、データも編集可
-          await this.put({ id: this.id, params: params })
+      let dataset = null
+
+      if (this.form.upload == 1) {
+        //ローカルからのデータリストを登録する
+        let dataId = await this.uploadFile(this.form.name)
+
+        //カモノハシのデータセットを登録する
+        let datasetparams = {
+          entries: {},
+          flatEntries: [{ id: dataId }],
+          isFlat: true,
+          name: 'aquqrium_' + this.form.name,
+          memo: '',
         }
+
+        dataset = await this['dataSet/post'](datasetparams)
+      }
+      //アクアリウムデータセットを登録する
+      let aquariumDataSetparams = {
+        name: this.form.name,
+      }
+      let aqDataset = await this['aquariumDataSet/post'](aquariumDataSetparams)
+
+      //アクアリウムデータセットバージョンを登録する
+      if (this.form.upload == 1) {
+        this['aquariumDataSet/postByIdVersions']({
+          id: aqDataset.data.id,
+          model: { datasetId: dataset.data.id },
+        })
       }
     },
 

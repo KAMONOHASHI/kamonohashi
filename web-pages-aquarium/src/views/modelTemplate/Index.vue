@@ -2,10 +2,10 @@
   <div>
     <h2>モデルテンプレート</h2>
     <h3>AI作成のためのテンプレートを登録できます</h3>
-    <div class="model-template">
+    <div class="">
       <!-- TODO 検索ボタンデザイン -->
-      <el-row :gutter="20">
-        <el-col class="search">
+      <el-row :gutter="20" style="margin-top:20px">
+        <el-col class="search" :span="12">
           <kqi-smart-search-input
             v-model="searchCondition"
             style="width:300px"
@@ -13,10 +13,8 @@
             @search="search"
           />
         </el-col>
-      </el-row>
-      <!-- TODO新規登録ボタンデザイン -->
-      <el-row type="flex" justify="space-between" :gutter="20">
-        <el-col class="right-top-button" :span="2">
+        <!-- TODO新規登録ボタンデザイン -->
+        <el-col class="right-top-button" :span="6">
           <el-button
             icon="el-icon-edit-outline"
             type="primary"
@@ -30,45 +28,49 @@
 
       <!-- TODO
         登録したテンプレートをカード形式で表示 -->
-      <div class="dashboard">
-        <div
-          v-for="(template, index) in templates"
-          :key="index"
-          class="card-container"
-        >
-          <!-- TODO /aquarium/model-template/<templateid>に飛ぶようにする -->
-          <router-link to="/aquarium/model-template/1">
-            <el-card
-              class="template"
-              style="border: solid 1px #ebeef5; width: 360px; height: 300px;"
+      <el-row>
+        <el-col>
+          <div class="dashboard">
+            <div
+              v-for="(template, index) in templates"
+              :key="index"
+              class="card-container"
             >
-              <div class="template-name">
-                {{ template.name }}
-              </div>
+              <!-- TODO /aquarium/model-template/<templateid>に飛ぶようにする -->
+              <router-link :to="`/aquarium/model-template/${template.id}`">
+                <el-card
+                  class="template"
+                  style="border: solid 1px #ebeef5; width: 360px; height: 300px;"
+                >
+                  <div class="template-name">
+                    {{ template.name }}
+                  </div>
 
-              <div
-                class="template-description"
-                style="padding: 10px; font-size: 14px;"
-              >
-                {{ template.memo }}
-              </div>
-              <!-- タグを想定 -->
-              <div
-                class="template-description"
-                style="padding: 20px; font-size: 18px;text-align:center;"
-              >
-                <div style="padding:20px">
-                  <el-button type="primary">Pytorch</el-button>
-                </div>
-                <div>
-                  <el-tag class="tag"> {{ template.tag }}</el-tag>
-                </div>
-              </div>
-            </el-card>
-          </router-link>
-        </div>
-      </div>
-      <router-view @cancel="closeDialog" />
+                  <div
+                    class="template-description"
+                    style="padding: 10px; font-size: 14px;"
+                  >
+                    {{ template.memo }}
+                  </div>
+                  <!-- タグを想定 -->
+                  <div
+                    class="template-description"
+                    style="padding: 20px; font-size: 18px;text-align:center;"
+                  >
+                    <div style="padding:20px">
+                      <el-button type="primary">Pytorch</el-button>
+                    </div>
+                    <!-- <div>
+                      <el-tag class="tag"> {{ template.tag }}</el-tag>
+                    </div> -->
+                  </div>
+                </el-card>
+              </router-link>
+            </div>
+          </div>
+        </el-col>
+      </el-row>
+      <router-view @cancel="closeDialog" @done="done" />
     </div>
   </div>
 </template>
@@ -88,7 +90,7 @@ export default {
     return {
       pageStatus: {
         currentPage: 1,
-        currentPageSize: 10,
+        currentPageSize: 100,
       },
       unwatchLogin: undefined,
       searchCondition: {},

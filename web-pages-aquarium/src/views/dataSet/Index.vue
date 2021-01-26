@@ -28,13 +28,12 @@
       >
         <el-table-column prop="id" label="ID" width="120px" />
         <el-table-column prop="name" label="データセット名" width="auto" />
-        <el-table-column prop="version" label="最新バージョン" width="auto" />
-
         <el-table-column
-          prop="lastModified"
-          label="最終更新日時"
+          prop="latestVersion"
+          label="最新バージョン"
           width="auto"
         />
+        <el-table-column prop="modifiedAt" label="最終更新日時" width="auto" />
         <el-table-column prop="status" label="ステータス" width="auto" />
       </el-table>
     </el-row>
@@ -52,7 +51,7 @@
 <script>
 import KqiPagination from '@/components/KqiPagination'
 import { createNamespacedHelpers } from 'vuex'
-const { mapGetters, mapActions } = createNamespacedHelpers('dataSet')
+const { mapGetters, mapActions } = createNamespacedHelpers('aquariumDataSet')
 
 export default {
   title: 'データセット',
@@ -70,9 +69,9 @@ export default {
       searchConfigs: [
         { prop: 'id', name: 'ID', type: 'number' },
         { prop: 'name', name: 'データセット名', type: 'text' },
-        { prop: 'version', name: '最新バージョン', type: 'text' },
+        { prop: 'latestVersion', name: '最新バージョン', type: 'text' },
 
-        { prop: 'lastModified', name: '最終更新日時', type: 'date' },
+        { prop: 'modifiedAt', name: '最終更新日時', type: 'date' },
         { prop: 'status', name: 'ステータス', type: 'text' },
       ],
       tableData: [],
@@ -100,7 +99,7 @@ export default {
       await this.fetchDataSets(params)
     },
     closeDialog() {
-      this.$router.push('/dataset')
+      this.$router.push('/aquarium/dataset')
     },
     async done(type) {
       if (type === 'delete') {
@@ -117,13 +116,13 @@ export default {
       this.showSuccessMessage()
     },
     openCreateDialog() {
-      this.$router.push('/dataset/create')
+      this.$router.push('/aquarium/dataset/create')
     },
     openEditDataset(selectedRow) {
-      this.$router.push('/dataset/detail/' + selectedRow.id)
+      this.$router.push('/aquarium/dataset/detail/' + selectedRow.id)
     },
     handleCopy(id) {
-      this.$router.push('/dataset/create/' + id)
+      this.$router.push('/aquarium/dataset/create/' + id)
     },
     async search() {
       this.pageStatus.currentPage = 1

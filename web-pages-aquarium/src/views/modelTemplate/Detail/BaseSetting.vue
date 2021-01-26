@@ -56,13 +56,7 @@ export default {
   data() {
     return {
       form: { name: null, memo: null, publishing: null },
-      template: {
-        name: 'A●●工場分類',
-        explanation: 'A工場の●●を分類するモデル',
-        training: 'トレーニング時の使い方',
-        reasoning: '推論時の使い方',
-        tag: 'Classification',
-      },
+
       rules: {
         name: [{ required: true, trigger: 'blur', message: '必須項目です' }],
       },
@@ -78,7 +72,13 @@ export default {
     await this.retrieveData()
   },
   methods: {
-    ...mapActions(['fetchModelTemplates']),
+    async retrieveData() {
+      if (this.detail != null) {
+        this.form.name = this.detail.name
+        this.form.publishing = this.detail.publishing
+        this.form.memo = this.detail.memo
+      }
+    },
   },
 }
 </script>
