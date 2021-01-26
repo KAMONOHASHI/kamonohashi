@@ -212,20 +212,7 @@ export default {
     ...mapGetters({
       versions: ['aquariumDataSet/versions'],
       dataSets: ['aquariumDataSet/dataSets'],
-      registries: ['registrySelector/registries'],
-      defaultRegistryId: ['registrySelector/defaultRegistryId'],
-      images: ['registrySelector/images'],
-      tags: ['registrySelector/tags'],
-      gits: ['gitSelector/gits'],
-      defaultGitId: ['gitSelector/defaultGitId'],
-      repositories: ['gitSelector/repositories'],
-      branches: ['gitSelector/branches'],
-      commits: ['gitSelector/commits'],
-      commitDetail: ['gitSelector/commitDetail'],
-      loadingRepositories: ['gitSelector/loadingRepositories'],
-      detail: ['preprocessing/detail'],
-      histories: ['preprocessing/histories'],
-      quota: ['cluster/quota'],
+
       templateDetail: ['template/detail'],
     }),
   },
@@ -244,15 +231,6 @@ export default {
       'template/post',
       'template/put',
       'template/delete',
-      'registrySelector/fetchRegistries',
-      'registrySelector/fetchImages',
-      'registrySelector/fetchTags',
-      'gitSelector/fetchGits',
-      'gitSelector/fetchRepositories',
-      'gitSelector/fetchBranches',
-      'gitSelector/fetchCommits',
-      'gitSelector/fetchCommitDetail',
-      'cluster/fetchQuota',
       'experiment/post',
       'aquariumDataSet/fetchDataSets',
       'aquariumDataSet/fetchVersions',
@@ -268,24 +246,6 @@ export default {
       params.perPage = this.pageStatus.currentPageSize
       params.withTotal = true
       await this['aquariumDataSet/fetchDataSets'](params)
-
-      // クォータ情報を取得
-      await this['cluster/fetchQuota']()
-
-      // 指定に必要な情報を取得
-      // レジストリ一覧を取得し、デフォルトレジストリを設定
-      await this['registrySelector/fetchRegistries']()
-      this.form.containerImage.registry = this.registries.find(registry => {
-        return registry.id === this.defaultRegistryId
-      })
-      await this.selectRegistry(this.defaultRegistryId)
-
-      // gitサーバ一覧を取得し、デフォルトgitサーバを設定
-      await this['gitSelector/fetchGits']()
-      this.form.gitModel.git = this.gits.find(git => {
-        return git.id === this.defaultGitId
-      })
-      await this['gitSelector/fetchRepositories'](this.defaultGitId)
     },
     async next() {
       let form = null

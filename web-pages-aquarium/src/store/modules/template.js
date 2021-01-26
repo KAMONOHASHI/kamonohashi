@@ -75,6 +75,10 @@ const mutations = {
     state.detail = detail
   },
 
+  setTotal(state, { total }) {
+    state.total = total
+  },
+
   clearDetail(state) {
     state.detail = {}
   },
