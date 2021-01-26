@@ -4,7 +4,7 @@
     "version": "v2",
     "title": "KAMONOHASHI API",
     "description": "A platform for deep learning",
-    "termsOfService": "Copyright (C) 2016-2019 NS Solutions Corporation, All Rights Reserved.",
+    "termsOfService": "Copyright (C) 2016-2021 NS Solutions Corporation, All Rights Reserved.",
     "contact": {
       "name": "KAMONOHASHI Support",
       "email": "kamonohashi-support@jp.nssol.nipponsteel.com"
@@ -2303,6 +2303,50 @@
             "description": "Success",
             "schema": {
               "$ref": "#/definitions/Nssol.Platypus.ApiModels.ExperimentApiModels.PreprocessHistoriesOutputModel"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/api/v2/experiment/{id}/preprocess/histories/{dataSetId}": {
+      "get": {
+        "tags": [
+          "Experiment"
+        ],
+        "summary": "指定されたアクアリウムデータセットに対するテンプレート前処理実行の履歴を取得。",
+        "operationId": "ApiV2ExperimentByIdPreprocessHistoriesByDataSetIdGet",
+        "consumes": [],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "テンプレートID",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "dataSetId",
+            "in": "path",
+            "description": "アクアリウムデータセットID",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Nssol.Platypus.ApiModels.ExperimentApiModels.PreprocessHistoryDetailsOutputModel"
             }
           }
         },
@@ -10584,7 +10628,7 @@
         },
         "dataSetId": {
           "format": "int64",
-          "description": "元データID",
+          "description": "元アクアリウムデータセットID",
           "type": "integer"
         },
         "dataName": {
@@ -10628,6 +10672,53 @@
           "items": {
             "$ref": "#/definitions/Nssol.Platypus.ApiModels.Components.AddFileInputModel"
           }
+        }
+      }
+    },
+    "Nssol.Platypus.ApiModels.ExperimentApiModels.PreprocessHistoryDetailsOutputModel": {
+      "type": "object",
+      "properties": {
+        "outputDataIds": {
+          "uniqueItems": false,
+          "type": "array",
+          "items": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "key": {
+          "description": "コンテナ名になる一意識別文字列",
+          "type": "string"
+        },
+        "status": {
+          "description": "ステータス",
+          "type": "string"
+        },
+        "statusType": {
+          "description": "ステータスの種類。\r\nNone: 存在しない。\r\nRunning: ジョブが正常に実行されている。\r\nError: ジョブが異常な状態で実行されている。\r\nClosed: ジョブ実行が正常に完了し、実行結果が保存された。\r\nFailed: ジョブ実行が異常終了した。",
+          "type": "string"
+        },
+        "createdAt": {
+          "description": "登録日",
+          "type": "string"
+        },
+        "dataSetId": {
+          "format": "int64",
+          "description": "元アクアリウムデータセットID",
+          "type": "integer"
+        },
+        "dataName": {
+          "description": "元データ名",
+          "type": "string"
+        },
+        "preprocessId": {
+          "format": "int64",
+          "description": "前処理ID",
+          "type": "integer"
+        },
+        "preprocessName": {
+          "description": "前処理名",
+          "type": "string"
         }
       }
     },
