@@ -72,6 +72,7 @@ export default {
     await this.retrieveData()
   },
   methods: {
+    ...mapActions(['fetchModelTemplates']),
     async retrieveData() {
       if (this.detail != null) {
         this.form.name = this.detail.name

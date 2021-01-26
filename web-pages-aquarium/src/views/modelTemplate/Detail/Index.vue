@@ -30,6 +30,12 @@ const { mapGetters, mapActions } = createNamespacedHelpers('template')
 export default {
   title: 'モデルテンプレート',
   components: { BaseSetting, Preprocessing, Training },
+  props: {
+    id: {
+      type: String,
+      default: null,
+    },
+  },
   data() {
     return {
       iconname: 'pl-plus',
@@ -57,12 +63,6 @@ export default {
   },
   computed: {
     ...mapGetters(['detail', 'total']),
-  },
-  props: {
-    id: {
-      type: String,
-      default: null,
-    },
   },
   async created() {
     await this.retrieveData()
