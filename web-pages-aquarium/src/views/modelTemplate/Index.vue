@@ -97,25 +97,6 @@ export default {
         { prop: 'name', name: 'テンプレート名', type: 'text' },
         { prop: 'tag', name: 'タグ', type: 'text', multiple: true },
       ],
-      preprocessings: [
-        //TODO 後で消す
-        { name: 'A工場●●分類', memo: '説明文説明文', tag: 'Classification' },
-        {
-          name: 'A部署異常検知前処理',
-          memo: '事前学習済みXXXモデルを使用',
-          tag: 'Classification',
-        },
-        {
-          name: 'D工場X画像前処理',
-          memo: '説明文説明文',
-          tag: 'Classification',
-        },
-        {
-          name: '●●部署●●セグメント',
-          memo: '説明文説明文',
-          tag: 'Classification',
-        },
-      ],
     }
   },
   computed: {
