@@ -34,7 +34,8 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly IExperimentPreprocessHistoryRepository experimentPreprocessHistoryRepository;
         private readonly IInferenceHistoryRepository inferenceHistoryRepository;
         private readonly IExperimentTensorBoardContainerRepository tensorBoardContainerRepository;
-        private readonly DataAccess.Repositories.Interfaces.TenantRepositories.IAquariumDataSetRepository dataSetRepository;
+        private readonly DataAccess.Repositories.Interfaces.TenantRepositories.IAquariumDataSetRepository aquariumDataSetRepository;
+        private readonly IDataSetRepository dataSetRepository;
         private readonly ITemplateRepository templateRepository;
         private readonly ITagRepository tagRepository;
         private readonly ITenantRepository tenantRepository;
@@ -56,7 +57,8 @@ namespace Nssol.Platypus.Controllers.spa
             IExperimentPreprocessHistoryRepository experimentPreprocessHistoryRepository,
             IInferenceHistoryRepository inferenceHistoryRepository,
             IExperimentTensorBoardContainerRepository tensorBoardContainerRepository,
-            DataAccess.Repositories.Interfaces.TenantRepositories.IAquariumDataSetRepository dataSetRepository,
+            DataAccess.Repositories.Interfaces.TenantRepositories.IAquariumDataSetRepository aquariumDataSetRepository,
+            IDataSetRepository dataSetRepository,
             IDataLogic dataLogic,
             ITemplateRepository templateRepository,
             ITenantRepository tenantRepository,
@@ -76,6 +78,7 @@ namespace Nssol.Platypus.Controllers.spa
             this.inferenceHistoryRepository = inferenceHistoryRepository;
             this.tensorBoardContainerRepository = tensorBoardContainerRepository;
             this.dataRepository = dataRepository;
+            this.aquariumDataSetRepository = aquariumDataSetRepository;
             this.dataSetRepository = dataSetRepository;
             this.templateRepository = templateRepository;
             this.tenantRepository = tenantRepository;
@@ -278,12 +281,12 @@ namespace Nssol.Platypus.Controllers.spa
         [ProducesResponseType(typeof(SimpleOutputModel), (int)HttpStatusCode.Created)]
         public async Task<IActionResult> Create([FromBody] CreateInputModel model)
         {
-            var dataSet = await dataSetRepository.GetByIdAsync(model.DataSetId.Value);
+            var dataSet = await aquariumDataSetRepository.GetByIdAsync(model.DataSetId.Value);
             if (dataSet == null)
             {
                 return JsonNotFound($"DataSet ID {model.DataSetId} is not found.");
             }
-            var dataSetVersion = await dataSetRepository.GetDataSetVersionWithDataAsync(model.DataSetId.Value, model.DataSetVersion.Value);
+            var dataSetVersion = await aquariumDataSetRepository.GetDataSetVersionWithDataAsync(model.DataSetId.Value, model.DataSetVersion.Value);
             if (dataSetVersion == null)
             {
                 return JsonNotFound($"DataSet ID {model.DataSetId} and VersionId {model.DataSetVersion}  is not found.");
@@ -345,6 +348,7 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 Name = model.Name,
                 DataSetId = dataSetVersion.Id,
+                InputDataSetId = dataSetVersion.DataSetId,
                 TemplateId = template.Id,
                 Template = template,
                 Status = ContainerStatus.Running.Key
@@ -400,7 +404,7 @@ namespace Nssol.Platypus.Controllers.spa
 
 
                 // 前処理生成データの詳細情報がないので、取得
-                experimentHistory.InputData = await dataRepository.GetDataIncludeAllAsync(experimentHistory.InputDataId);
+                experimentHistory.InputDataSet = await dataSetRepository.GetByIdAsync(experimentHistory.InputDataSetId);
 
                 // テンプレート前処理で生成されたデータを入力にする学習コンテナを起動
                 var trainingResult = await clusterManagementLogic.RunExperimentTrainAfterPreprocessingContainerAsync(experimentHistory);
@@ -520,7 +524,7 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             // データIDの存在確認
-            var dataSet = await dataSetRepository.GetByIdAsync(inputDataSetId.Value);
+            var dataSet = await aquariumDataSetRepository.GetByIdAsync(inputDataSetId.Value);
             if (dataSet == null)
             {
                 return Result<ExperimentPreprocessHistory, IActionResult>.CreateErrorResult(JsonNotFound($"DataSet ID {inputDataSetId} is not found."));

@@ -10,7 +10,7 @@ using Nssol.Platypus.DataAccess;
 namespace Nssol.Platypus.Migrations
 {
     [DbContext(typeof(CommonDbContext))]
-    [Migration("20210115091122_v2.3.0")]
+    [Migration("20210126032508_v2.3.0")]
     partial class v230
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -804,7 +804,7 @@ namespace Nssol.Platypus.Migrations
 
                     b.Property<long>("DataSetId");
 
-                    b.Property<long>("InputDataId");
+                    b.Property<long>("InputDataSetId");
 
                     b.Property<DateTime>("ModifiedAt");
 
@@ -828,7 +828,7 @@ namespace Nssol.Platypus.Migrations
 
                     b.HasIndex("DataSetId");
 
-                    b.HasIndex("InputDataId");
+                    b.HasIndex("InputDataSetId");
 
                     b.HasIndex("TemplateId");
 
@@ -2111,9 +2111,9 @@ namespace Nssol.Platypus.Migrations
                         .HasForeignKey("DataSetId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Nssol.Platypus.Models.TenantModels.Data", "InputData")
+                    b.HasOne("Nssol.Platypus.Models.TenantModels.DataSet", "InputDataSet")
                         .WithMany()
-                        .HasForeignKey("InputDataId")
+                        .HasForeignKey("InputDataSetId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Nssol.Platypus.Models.ModelTemplate", "Template")

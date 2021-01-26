@@ -802,7 +802,7 @@ namespace Nssol.Platypus.Migrations
 
                     b.Property<long>("DataSetId");
 
-                    b.Property<long>("InputDataId");
+                    b.Property<long>("InputDataSetId");
 
                     b.Property<DateTime>("ModifiedAt");
 
@@ -826,7 +826,7 @@ namespace Nssol.Platypus.Migrations
 
                     b.HasIndex("DataSetId");
 
-                    b.HasIndex("InputDataId");
+                    b.HasIndex("InputDataSetId");
 
                     b.HasIndex("TemplateId");
 
@@ -2109,9 +2109,9 @@ namespace Nssol.Platypus.Migrations
                         .HasForeignKey("DataSetId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Nssol.Platypus.Models.TenantModels.Data", "InputData")
+                    b.HasOne("Nssol.Platypus.Models.TenantModels.DataSet", "InputDataSet")
                         .WithMany()
-                        .HasForeignKey("InputDataId")
+                        .HasForeignKey("InputDataSetId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Nssol.Platypus.Models.ModelTemplate", "Template")
