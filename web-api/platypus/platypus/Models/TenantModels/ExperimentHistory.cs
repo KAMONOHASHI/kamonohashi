@@ -16,18 +16,23 @@ namespace Nssol.Platypus.Models.TenantModels
         /// <summary>
         /// アクアリウムデータセットID
         /// </summary>
-        [Required]
         public long DataSetId { get; set; }
 
         /// <summary>
-        /// データID
+        /// アクアリウムデータセットバージョンID
         /// </summary>
-        public long InputDataSetId { get; set; }
+        public long DataSetVersionId { get; set; }
+
+        /// <summary>
+        /// 学習の入力となるkamonohashiデータセットID
+        /// (前処理があるなら前処理後のデータセット)
+        /// </summary>
+        public long? InputDataSetId { get; set; }
 
         /// <summary>
         /// テンプレートID
         /// </summary>
-        public long? TemplateId { get; set; }
+        public long TemplateId { get; set; }
 
         /// <summary>
         /// 実行開始日時
@@ -69,11 +74,16 @@ namespace Nssol.Platypus.Models.TenantModels
         public Dictionary<string, string> OptionDic { get; set; }
 
         /// <summary>
-        /// アクアリウムデータセッ
+        /// アクアリウムデータセット
         /// </summary>
         [ForeignKey(nameof(DataSetId))]
-        public virtual Models.TenantModels.Aquarium.DataSetVersion
-            DataSet { get; set; }
+        public virtual Models.TenantModels.Aquarium.DataSet DataSet { get; set; }
+
+        /// <summary>
+        /// アクアリウムデータセットバージョン
+        /// </summary>
+        [ForeignKey(nameof(DataSetVersionId))]
+        public virtual Models.TenantModels.Aquarium.DataSetVersion DataSetVersion { get; set; }
 
         /// <summary>
         /// テンプレート
@@ -82,7 +92,7 @@ namespace Nssol.Platypus.Models.TenantModels
         public virtual ModelTemplate Template{ get; set; }
 
         /// <summary>
-        /// データ
+        /// 学習の入力となるkamonohashiデータセット
         /// </summary>
         [ForeignKey(nameof(InputDataSetId))]
         public virtual DataSet InputDataSet { get; set; }
