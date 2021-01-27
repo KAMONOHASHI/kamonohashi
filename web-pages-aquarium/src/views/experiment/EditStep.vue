@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-row :gutter="20" style="border-bottom:1px solid #CCC">
-      <h2>テンプレート名{{ templateName }}</h2>
+      <h2>{{ templateName }}</h2>
     </el-row>
     <el-row :gutter="20"><h2>新しいモデルのトレーニング</h2></el-row>
     <el-row :gutter="20">
@@ -55,15 +55,20 @@
               <el-input v-model="selectedDataSetVersionName" :disabled="true" />
             </el-form-item>
             <el-drawer
-              title="データの選択"
+              title="データセットの選択"
               :visible.sync="drawer"
               :direction="direction"
-              :before-close="handleClose"
+              :before-close="closeDrawer"
             >
               <div style="padding:20px">
                 <h3 v-if="listType == 'dataSet'">データセット一覧</h3>
                 <h3 v-if="listType == 'version'">
-                  {{ selectedDataSetName }}
+                  <i
+                    class="el-icon-arrow-left"
+                    style="margin-right:10px;cursor: pointer;"
+                    @click="backSelect"
+                  ></i
+                  >{{ selectedDataSetName }}
                 </h3>
                 <div
                   style="width:80%;height:450px;padding:20px;border:1px solid #CCC;border-radius:5px;margin-top:5px"
@@ -73,7 +78,7 @@
                       v-for="item in dataSets"
                       :key="item.id"
                       class="li"
-                      style="list-style-type: none;padding-left:10px"
+                      style="list-style-type: none;padding-left:10px;cursor: pointer;"
                       @click="selectDataSet(item, $event)"
                     >
                       {{ item.name }}
@@ -84,7 +89,7 @@
                       v-for="item in versions"
                       :key="item.id"
                       class="li"
-                      style="list-style-type: none;padding-left:10px"
+                      style="list-style-type: none;padding-left:10px;cursor: pointer;"
                       @click="selectVersion(item, $event)"
                     >
                       V{{ item.version }}
@@ -236,10 +241,9 @@ export default {
       'aquariumDataSet/fetchVersions',
     ]),
     async initialize() {
-      //TODO 500error出る
-      //await this['template/fetchDetail'](this.templateId)
-      //console.log(this.templateDetail)
-      //this.templateName = this.templateDetail.name
+      await this['template/fetchDetail'](this.templateId)
+
+      this.templateName = this.templateDetail.name
       //アクアリウムデータセットリストを取得
       let params = this.searchCondition
       params.page = this.pageStatus.currentPage
@@ -276,12 +280,23 @@ export default {
         this.active = 0
       }
     },
-    handleClose(done) {
-      done()
-    },
 
     closeDrawer() {
+      this.listType = 'dataSet'
+      this.selectedVersion = null
+      this.selectedVersionName = null
+      this.selectedDataSet = null
+      this.selectedDataSetName = null
       this.drawer = false
+      this.selectedDataSetVersionName = null
+    },
+    //バージョン一覧から戻るをクリック
+    backSelect() {
+      this.listType = 'dataSet'
+      this.selectedVersion = null
+      this.selectedVersionName = null
+      this.selectedDataSet = null
+      this.selectedDataSetName = null
     },
     //データセット一覧からデータセットを選択
     selectDataSet(item, e) {
@@ -307,18 +322,28 @@ export default {
     //選択ボタン押下
     async select() {
       if (this.listType == 'dataSet') {
-        this.listType = 'version'
-        await this['aquariumDataSet/fetchVersions'](this.selectedDataSet.id)
+        if (this.selectedDataSet.id != null) {
+          this.listType = 'version'
+          await this['aquariumDataSet/fetchVersions'](this.selectedDataSet.id)
+          this.selectedVersionName = null
+        }
       } else if (this.listType == 'version') {
+        if (this.selectedVersionName != null) {
+          this.listType = 'dataSet'
+          this.drawer = false
+          this.selectedDataSetVersionName =
+            'dataset id:' +
+            this.selectedDataSet.id +
+            ' dataset name:' +
+            this.selectedDataSetName +
+            ' version:' +
+            this.selectedVersionName
+        } else {
+          this.selectedDataSet = null
+          this.selectedVersionName = null
+          this.listType = 'dataSet'
+        }
         this.listType = 'dataSet'
-        this.drawer = false
-        this.selectedDataSetVersionName =
-          'dataset id:' +
-          this.selectedDataSet.id +
-          ' dataset name:' +
-          this.selectedDataSetName +
-          ' version:' +
-          this.selectedVersionName
       }
     },
     async submit() {
@@ -328,15 +353,16 @@ export default {
           try {
             let params = {
               name: this.form.name,
-              dataSetId: this.selectedVersion.dataSetId, //TOOD これはアクアリウムdatasetじゃなくてdataset？
+              //dataSetId: this.selectedDataSet.id,
+              dataSetId: this.selectedVersion.dataSetId,
               dataSetVersion: this.selectedVersion.id,
-              templateId: this.id,
+              templateId: this.templateId,
               options: null,
             }
-            //TODO 500error出る
-
+            console.log(params)
+            //TODO APIまだ
             await this['experiment/post'](params)
-
+            this.$router.push('/aquarium/experiment')
             this.$emit('done')
             this.error = null
           } catch (e) {
