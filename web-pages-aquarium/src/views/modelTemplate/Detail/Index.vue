@@ -10,7 +10,7 @@
         <base-setting :datail="detail" />
       </el-tab-pane>
       <el-tab-pane label="前処理" name="preprocessing">
-        <preprocessing :datail="detail" />
+        <preprocessing v-if="preprocForm" v-model="preprocForm" />
       </el-tab-pane>
       <el-tab-pane label="学習と推論" name="train">
         <training :datail="detail" />
@@ -59,6 +59,7 @@ export default {
       ],
       tableData: [],
       activeName: 'baseSetting',
+      preprocForm: null,
     }
   },
   computed: {
@@ -76,6 +77,12 @@ export default {
     },
     async retrieveData() {
       await this.fetchDetail(this.id)
+      console.log('index', this.detail)
+      this.preprocForm = {
+        containerImage: { ...this.detail.preprocessContainerImage },
+        gitModel: { ...this.detail.preprocessGitModel },
+        entryPoint: this.detail.preprocessEntryPoint,
+      }
     },
     closeDialog() {
       this.$router.push('/aquarium/model-template')

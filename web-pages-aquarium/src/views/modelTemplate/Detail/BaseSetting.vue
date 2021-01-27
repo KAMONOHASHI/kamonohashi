@@ -4,8 +4,6 @@
       <el-col :span="12">
         <el-form>
           <el-form ref="form0" :model="form" :rules="rules">
-            <kqi-display-error :error="error" />
-
             <el-form-item label="テンプレート名" prop="name">
               <el-input v-model="form.name" />
             </el-form-item>
