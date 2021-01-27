@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Nssol.Platypus.ApiModels.DataSetApiModels
 {
@@ -18,5 +14,10 @@ namespace Nssol.Platypus.ApiModels.DataSetApiModels
         /// キーにデータ種別、値にデータIDの集合を取るディクショナリ
         /// </summary>
         public Dictionary<string, IEnumerable<CreateInputModel.Entry>> Entries { get; set; }
+
+        /// <summary>
+        /// IsFlat == trueの場合に参照されるエントリ
+        /// </summary>
+        public IEnumerable<CreateInputModel.Entry> FlatEntries { get; set; }
     }
 }

@@ -3,7 +3,7 @@
   <!-- this.entryListに結果を格納し、その内容をemitする -->
   <div>
     <!-- all data, training... の欄の表示/非表示を切り替えるチェックボックス -->
-    <div :style="{ marginLeft: '20px', marginBottom: '20px' }">
+    <div v-if="!isFlat" :style="{ marginLeft: '20px', marginBottom: '20px' }">
       <el-checkbox-group
         v-model="selectedList"
         :min="1"
@@ -88,6 +88,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    isFlat: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -145,12 +149,15 @@ export default {
       this.handleFilter({ entryName, filter: null })
       this.handlePaging({ entryName, page: 1 })
     }
-
-    // 要素なしEntryは非表示
-    let nonEmptyEntries = Object.keys(this.entryList).filter(
-      x => this.entryList[x].length > 0,
-    )
-    this.selectedList = [this.dataViewInfo.entryName].concat(nonEmptyEntries)
+    if (this.isFlat) {
+      this.selectedList = [this.dataViewInfo.entryName, 'selected']
+    } else {
+      // 要素なしEntryは非表示
+      let nonEmptyEntries = Object.keys(this.entryList).filter(
+        x => this.entryList[x].length > 0,
+      )
+      this.selectedList = [this.dataViewInfo.entryName].concat(nonEmptyEntries)
+    }
     this.handleViewGroupChange()
   },
   methods: {

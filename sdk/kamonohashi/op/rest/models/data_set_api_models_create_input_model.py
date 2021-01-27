@@ -32,25 +32,35 @@ class DataSetApiModelsCreateInputModel(object):
     """
     swagger_types = {
         'entries': 'dict(str, list[DataSetApiModelsCreateInputModelEntry])',
+        'flat_entries': 'list[DataSetApiModelsCreateInputModelEntry]',
+        'is_flat': 'bool',
         'memo': 'str',
         'name': 'str'
     }
 
     attribute_map = {
         'entries': 'entries',
+        'flat_entries': 'flatEntries',
+        'is_flat': 'isFlat',
         'memo': 'memo',
         'name': 'name'
     }
 
-    def __init__(self, entries=None, memo=None, name=None):  # noqa: E501
+    def __init__(self, entries=None, flat_entries=None, is_flat=None, memo=None, name=None):  # noqa: E501
         """DataSetApiModelsCreateInputModel - a model defined in Swagger"""  # noqa: E501
 
         self._entries = None
+        self._flat_entries = None
+        self._is_flat = None
         self._memo = None
         self._name = None
         self.discriminator = None
 
         self.entries = entries
+        if flat_entries is not None:
+            self.flat_entries = flat_entries
+        if is_flat is not None:
+            self.is_flat = is_flat
         if memo is not None:
             self.memo = memo
         self.name = name
@@ -77,6 +87,48 @@ class DataSetApiModelsCreateInputModel(object):
             raise ValueError("Invalid value for `entries`, must not be `None`")  # noqa: E501
 
         self._entries = entries
+
+    @property
+    def flat_entries(self):
+        """Gets the flat_entries of this DataSetApiModelsCreateInputModel.  # noqa: E501
+
+
+        :return: The flat_entries of this DataSetApiModelsCreateInputModel.  # noqa: E501
+        :rtype: list[DataSetApiModelsCreateInputModelEntry]
+        """
+        return self._flat_entries
+
+    @flat_entries.setter
+    def flat_entries(self, flat_entries):
+        """Sets the flat_entries of this DataSetApiModelsCreateInputModel.
+
+
+        :param flat_entries: The flat_entries of this DataSetApiModelsCreateInputModel.  # noqa: E501
+        :type: list[DataSetApiModelsCreateInputModelEntry]
+        """
+
+        self._flat_entries = flat_entries
+
+    @property
+    def is_flat(self):
+        """Gets the is_flat of this DataSetApiModelsCreateInputModel.  # noqa: E501
+
+
+        :return: The is_flat of this DataSetApiModelsCreateInputModel.  # noqa: E501
+        :rtype: bool
+        """
+        return self._is_flat
+
+    @is_flat.setter
+    def is_flat(self, is_flat):
+        """Sets the is_flat of this DataSetApiModelsCreateInputModel.
+
+
+        :param is_flat: The is_flat of this DataSetApiModelsCreateInputModel.  # noqa: E501
+        :type: bool
+        """
+
+        self._is_flat = is_flat
 
     @property
     def memo(self):

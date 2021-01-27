@@ -1,8 +1,6 @@
 ﻿using Nssol.Platypus.Models.TenantModels;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Nssol.Platypus.ApiModels.DataSetApiModels
 {
@@ -12,6 +10,11 @@ namespace Nssol.Platypus.ApiModels.DataSetApiModels
         /// データセットのエントリ
         /// </summary>
         public IEnumerable<Entry> Entries { get; private set; }
+
+        /// <summary>
+        /// IsFlat == trueの場合に参照されるエントリ
+        /// </summary>
+        public IEnumerable<DataApiModels.DataFileOutputModel> FlatEntries { get; set; }
 
         public DataFileOutputModel(DataSet dataSet) : base(dataSet)
         {
@@ -35,7 +38,7 @@ namespace Nssol.Platypus.ApiModels.DataSetApiModels
             /// <summary>
             /// ファイル情報のリスト
             /// </summary>
-            public IEnumerable<ApiModels.DataApiModels.DataFileOutputModel> Files { get; set; }
+            public IEnumerable<DataApiModels.DataFileOutputModel> Files { get; set; }
         }
     }
 }

@@ -35,7 +35,9 @@ class DataSetApiModelsDetailsOutputModel(object):
         'created_by': 'str',
         'display_id': 'int',
         'entries': 'dict(str, list[DataApiModelsIndexOutputModel])',
+        'flat_entries': 'list[DataApiModelsIndexOutputModel]',
         'id': 'int',
+        'is_flat': 'bool',
         'is_locked': 'bool',
         'memo': 'str',
         'modified_at': 'str',
@@ -48,7 +50,9 @@ class DataSetApiModelsDetailsOutputModel(object):
         'created_by': 'createdBy',
         'display_id': 'displayId',
         'entries': 'entries',
+        'flat_entries': 'flatEntries',
         'id': 'id',
+        'is_flat': 'isFlat',
         'is_locked': 'isLocked',
         'memo': 'memo',
         'modified_at': 'modifiedAt',
@@ -56,14 +60,16 @@ class DataSetApiModelsDetailsOutputModel(object):
         'name': 'name'
     }
 
-    def __init__(self, created_at=None, created_by=None, display_id=None, entries=None, id=None, is_locked=None, memo=None, modified_at=None, modified_by=None, name=None):  # noqa: E501
+    def __init__(self, created_at=None, created_by=None, display_id=None, entries=None, flat_entries=None, id=None, is_flat=None, is_locked=None, memo=None, modified_at=None, modified_by=None, name=None):  # noqa: E501
         """DataSetApiModelsDetailsOutputModel - a model defined in Swagger"""  # noqa: E501
 
         self._created_at = None
         self._created_by = None
         self._display_id = None
         self._entries = None
+        self._flat_entries = None
         self._id = None
+        self._is_flat = None
         self._is_locked = None
         self._memo = None
         self._modified_at = None
@@ -79,8 +85,12 @@ class DataSetApiModelsDetailsOutputModel(object):
             self.display_id = display_id
         if entries is not None:
             self.entries = entries
+        if flat_entries is not None:
+            self.flat_entries = flat_entries
         if id is not None:
             self.id = id
+        if is_flat is not None:
+            self.is_flat = is_flat
         if is_locked is not None:
             self.is_locked = is_locked
         if memo is not None:
@@ -177,6 +187,27 @@ class DataSetApiModelsDetailsOutputModel(object):
         self._entries = entries
 
     @property
+    def flat_entries(self):
+        """Gets the flat_entries of this DataSetApiModelsDetailsOutputModel.  # noqa: E501
+
+
+        :return: The flat_entries of this DataSetApiModelsDetailsOutputModel.  # noqa: E501
+        :rtype: list[DataApiModelsIndexOutputModel]
+        """
+        return self._flat_entries
+
+    @flat_entries.setter
+    def flat_entries(self, flat_entries):
+        """Sets the flat_entries of this DataSetApiModelsDetailsOutputModel.
+
+
+        :param flat_entries: The flat_entries of this DataSetApiModelsDetailsOutputModel.  # noqa: E501
+        :type: list[DataApiModelsIndexOutputModel]
+        """
+
+        self._flat_entries = flat_entries
+
+    @property
     def id(self):
         """Gets the id of this DataSetApiModelsDetailsOutputModel.  # noqa: E501
 
@@ -196,6 +227,27 @@ class DataSetApiModelsDetailsOutputModel(object):
         """
 
         self._id = id
+
+    @property
+    def is_flat(self):
+        """Gets the is_flat of this DataSetApiModelsDetailsOutputModel.  # noqa: E501
+
+
+        :return: The is_flat of this DataSetApiModelsDetailsOutputModel.  # noqa: E501
+        :rtype: bool
+        """
+        return self._is_flat
+
+    @is_flat.setter
+    def is_flat(self, is_flat):
+        """Sets the is_flat of this DataSetApiModelsDetailsOutputModel.
+
+
+        :param is_flat: The is_flat of this DataSetApiModelsDetailsOutputModel.  # noqa: E501
+        :type: bool
+        """
+
+        self._is_flat = is_flat
 
     @property
     def is_locked(self):
