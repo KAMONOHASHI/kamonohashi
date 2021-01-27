@@ -52,7 +52,7 @@ namespace Nssol.Platypus.Logic
                 {
                     // 再確認してもまだ存在していたら、コンテナ削除
                     await clusterManagementLogic.DeleteContainerAsync(
-                        ContainerType.Training, experimentHistory.Key, CurrentUserInfo.SelectedTenant.Name, force);
+                        ContainerType.Experiment, experimentHistory.Key, CurrentUserInfo.SelectedTenant.Name, force);
                 }
             }
             else

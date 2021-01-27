@@ -42,10 +42,17 @@
 </template>
 
 <script>
+import { createNamespacedHelpers } from 'vuex'
+const { mapGetters, mapActions } = createNamespacedHelpers('template')
 export default {
   title: 'モデルテンプレート',
   components: {},
-  props: { detail: { type: Object, default: null } },
+  props: {
+    id: {
+      type: String,
+      default: null,
+    },
+  },
   data() {
     return {
       form: { name: null, memo: null, publishing: null },
@@ -57,12 +64,15 @@ export default {
       isPatch: false,
     }
   },
-  computed: {},
+  computed: {
+    ...mapGetters(['templates']),
+  },
 
   async created() {
     await this.retrieveData()
   },
   methods: {
+    ...mapActions(['fetchModelTemplates']),
     async retrieveData() {
       if (this.detail != null) {
         this.form.name = this.detail.name

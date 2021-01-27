@@ -2759,6 +2759,57 @@ export const ApiV2ExperimentByIdPreprocessHistoriesByDataSetIdDataPostURL = func
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * 指定されたアクアリウムデータセットに対するテンプレート前処理実行の履歴を取得。
+ * request: ApiV2ExperimentByIdPreprocessHistoriesByDataSetIdGet
+ * url: ApiV2ExperimentByIdPreprocessHistoriesByDataSetIdGetURL
+ * method: ApiV2ExperimentByIdPreprocessHistoriesByDataSetIdGet_TYPE
+ * raw_url: ApiV2ExperimentByIdPreprocessHistoriesByDataSetIdGet_RAW_URL
+ * @param id - テンプレートID
+ * @param dataSetId - アクアリウムデータセットID
+ */
+export const ApiV2ExperimentByIdPreprocessHistoriesByDataSetIdGet = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/experiment/{id}/preprocess/histories/{dataSetId}'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  path = path.replace('{dataSetId}', `${parameters['dataSetId']}`)
+  if (parameters['dataSetId'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: dataSetId'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2ExperimentByIdPreprocessHistoriesByDataSetIdGet_RAW_URL = function() {
+  return '/api/v2/experiment/{id}/preprocess/histories/{dataSetId}'
+}
+export const ApiV2ExperimentByIdPreprocessHistoriesByDataSetIdGet_TYPE = function() {
+  return 'get'
+}
+export const ApiV2ExperimentByIdPreprocessHistoriesByDataSetIdGetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/experiment/{id}/preprocess/histories/{dataSetId}'
+  path = path.replace('{id}', `${parameters['id']}`)
+  path = path.replace('{dataSetId}', `${parameters['dataSetId']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
 * コンテナの/output/配下から指定ディレクトリパスの直下を検索する
 検索対象ディレクトリが見つからない場合もファイル・ディレクトリが空の結果を返す
 * request: ApiV2ExperimentByIdContainer_filesGet

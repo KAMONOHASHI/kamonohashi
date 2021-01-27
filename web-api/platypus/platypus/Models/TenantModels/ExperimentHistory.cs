@@ -22,7 +22,7 @@ namespace Nssol.Platypus.Models.TenantModels
         /// <summary>
         /// データID
         /// </summary>
-        public long InputDataId { get; set; }
+        public long InputDataSetId { get; set; }
 
         /// <summary>
         /// テンプレートID
@@ -84,8 +84,8 @@ namespace Nssol.Platypus.Models.TenantModels
         /// <summary>
         /// データ
         /// </summary>
-        [ForeignKey(nameof(InputDataId))]
-        public virtual Data InputData { get; set; }
+        [ForeignKey(nameof(InputDataSetId))]
+        public virtual DataSet InputDataSet { get; set; }
 
 
         /// <summary>
