@@ -24,23 +24,32 @@
       </el-table-column>
     </el-table>
 
-    <el-button type="primary" @click="submit">
-      詳細をグラフで見る
-    </el-button>
+    <aqualium-tensorboard-handler
+      :id="String(id)"
+      :visible="tesorboardVisible"
+    />
   </div>
 </template>
 
 <script>
 import { createNamespacedHelpers } from 'vuex'
+import AqualiumTensorboardHandler from './AqualiumTensorboardHandler.vue'
 const { mapGetters, mapActions } = createNamespacedHelpers('dataSet')
 
 export default {
   title: '実験結果',
-  components: {},
+  components: { AqualiumTensorboardHandler },
+  props: {
+    id: {
+      type: String,
+      default: null,
+    },
+  },
   data() {
     return {
       importfile: null,
       labelName: ['sunflowers', 'dandelion', 'tulips', 'roses', 'daisy'],
+      tesorboardVisible: true,
       matrixdata: [
         {
           true: 'sunflowers',
