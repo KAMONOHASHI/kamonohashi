@@ -34,7 +34,7 @@ generate() {
   top="$1"
   filtered_spec="$(mktemp --suffix=.json -p "${tempdir}")"
   shift
-  python filter-sdk.py "$@" < swagger.json > "${filtered_spec}"
+  python filter-sdk.py "$@" --input_file_path swagger.json --output_file_path "${filtered_spec}"
   rm -rf "${top}"
   java -jar "${codegen_jar}" generate --input-spec "${filtered_spec}" --output "${top}" "${gen_opt[@]}" &>> "${codegen_log}"
   (cd "${top}/${package}" && cp -pr . "../${package_dir}")
@@ -44,4 +44,4 @@ generate() {
 
 rm -f "${codegen_log}"
 generate output
-generate output.with_comment --preserve-comment
+generate output.with_comment --preserve_comment

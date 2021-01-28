@@ -21,6 +21,9 @@
         <el-form-item label="メモ" prop="memo">
           <el-input v-model="form.memo" type="textarea" />
         </el-form-item>
+        <el-form-item label="配置種別">
+          <el-switch v-model="form.isFlat"></el-switch>フラット
+        </el-form-item>
       </el-row>
       <el-row v-else>
         <el-col :span="12">
@@ -45,18 +48,38 @@
           <el-form-item label="登録日時">
             <kqi-display-text-form v-model="detail.createdAt" />
           </el-form-item>
+          <el-form-item label="配置種別">
+            <el-switch v-model="detail.isFlat" :disabled="isEditDialog">
+            </el-switch
+            >フラット
+          </el-form-item>
         </el-col>
       </el-row>
 
-      <el-form-item label="データ" prop="entries" />
-      <el-form-item>
-        <pl-dataset-transfer
-          v-if="form.entries"
-          v-model="form.entries"
-          :disabled="isLocked"
-          @showData="handleShowData"
-        />
-      </el-form-item>
+      <div v-if="form.isFlat">
+        <el-form-item label="データ" prop="flatEntries" />
+        <el-form-item>
+          <pl-flat-dataset-transfer
+            v-if="form.flatEntries"
+            v-model="form.flatEntries"
+            :is-flat="true"
+            :disabled="isLocked"
+            @showData="handleShowData"
+          />
+        </el-form-item>
+      </div>
+      <div v-else>
+        <el-form-item label="データ" prop="entries" />
+        <el-form-item>
+          <pl-dataset-transfer
+            v-if="form.entries"
+            v-model="form.entries"
+            :is-flat="false"
+            :disabled="isLocked"
+            @showData="handleShowData"
+          />
+        </el-form-item>
+      </div>
     </el-form>
   </kqi-dialog>
 </template>
@@ -77,6 +100,7 @@ export default {
     KqiDisplayError,
     KqiDisplayTextForm,
     'pl-dataset-transfer': DataSetTransfer,
+    'pl-flat-dataset-transfer': DataSetTransfer,
   },
   props: {
     id: {
@@ -89,7 +113,9 @@ export default {
       form: {
         name: '',
         memo: '',
+        isFlat: false,
         entries: null,
+        flatEntries: [],
       },
       title: '',
       isCreateDialog: false,
@@ -103,6 +129,7 @@ export default {
         entries: [
           {
             required: true,
+            that: this,
             trigger: 'blur',
             validator(rule, value, callback) {
               let exists = false
@@ -111,9 +138,27 @@ export default {
                   exists = true
                 }
               }
-              if (exists) {
+              if (exists || this.that.form.isFlat) {
                 callback()
               } else {
+                callback(new Error('必須項目です'))
+              }
+            },
+          },
+        ],
+        flatEntries: [
+          {
+            required: true,
+            trigger: 'blur',
+            that: this,
+            validator(rule, value, callback) {
+              let exists = false
+              if (value.selected.length > 0) {
+                exists = true
+              }
+              if (exists) {
+                callback()
+              } else if (this.that.form.isFlat) {
                 callback(new Error('必須項目です'))
               }
             },
@@ -123,7 +168,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['detail', 'dataTypes']),
+    ...mapGetters(['data', 'detail', 'dataTypes', 'dataTotal']),
   },
   watch: {
     async $route() {
@@ -138,6 +183,7 @@ export default {
 
   methods: {
     ...mapActions([
+      'fetchData',
       'fetchDetail',
       'fetchDataTypes',
       'post',
@@ -171,19 +217,27 @@ export default {
         try {
           await this.fetchDataTypes()
           this.form.entries = {}
+          this.form.flatEntries = {}
           this.dataTypes.forEach(type => {
             this.form.entries[type.name] = []
+            this.form.flatEntries['selected'] = []
           })
           this.error = null
         } catch (e) {
           this.error = e
         }
       }
-
+      this.dataViewInfo = this.makeViewInfo({
+        colorIndex: 0,
+        showAssign: true,
+      })
       // 編集時/コピー作成時は、既に登録されている情報を各項目を設定
       if (this.isEditDialog || this.isCopyCreation) {
         await this.retrieveData()
       }
+    },
+    makeViewInfo(optionalProps) {
+      return Object.assign(optionalProps, this.defaultViewInfo)
     },
     async retrieveData() {
       this.form.entries = null
@@ -191,13 +245,19 @@ export default {
         await this.fetchDetail(this.id)
         this.form.name = this.detail.name
         this.form.memo = this.detail.memo
+        this.form.isFlat = this.detail.isFlat
         let ent = {}
         let types = []
+
         for (let key in this.detail.entries) {
           ent[key] = this.detail.entries[key]
           types.push({ name: key })
         }
+
         this.form.entries = ent
+        this.form.flatEntries = {
+          selected: this.detail.flatEntries,
+        }
         if (this.isEditDialog) {
           // 編集時は編集可否を設定
           this.isLocked = this.detail.isLocked
@@ -235,7 +295,11 @@ export default {
           })
         })
       }
+      let postFlatEntries = this.form.flatEntries.selected
+
       let params = {
+        isFlat: this.form.isFlat,
+        flatEntries: postFlatEntries,
         entries: postEntries,
         name: this.form.name,
         memo: this.form.memo,
@@ -287,9 +351,26 @@ export default {
 .dialog /deep/ label {
   font-weight: bold !important;
 }
+.el-transfer {
+  width: 100%;
+}
+.el-transfer > :nth-child(3),
+.el-transfer > :nth-child(1) {
+  /*.el-transfer-panel で適用させたかったが何故かできない…*/
+  width: 40% !important;
+}
 
-.right-button-group {
-  padding-top: 0px;
-  text-align: right;
+div.el-transfer
+  > :nth-child(1)
+  > :nth-child(2)
+  > :nth-child(2)
+  > :nth-child(n + 1),
+div.el-transfer
+  > :nth-child(3)
+  > :nth-child(2)
+  > :nth-child(2)
+  > :nth-child(n + 1) {
+  /*label.el-checkbox で適用させたかったが何故かできない…*/
+  margin-right: 0px !important;
 }
 </style>
