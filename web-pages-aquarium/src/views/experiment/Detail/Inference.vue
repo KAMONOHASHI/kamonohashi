@@ -1,7 +1,7 @@
 <template>
   <div>
     <h2>推論一覧</h2>
-    作成したAIの評価の履歴一覧です
+    作成したAIの評価の履歴一覧例です
     <el-row>
       <el-col :span="18">
         <el-table :data="inferenceList" style="width: 100%">
@@ -14,7 +14,7 @@
     </el-row>
     <el-row>
       <el-col> </el-col>
-      <el-button type="primary" style="margin-top:20px">
+      <el-button type="primary" style="margin-top:20px" @click="open">
         別のデータで推論を実行
       </el-button>
     </el-row>
@@ -32,10 +32,10 @@ export default {
     return {
       importfile: null,
       inferenceList: [
-        { id: '1', data: '製造所A部品データ1', result: '成功' },
-        { id: '2', data: '製造所A部品B', result: '実行中' },
-        { id: '3', data: '製造所A部品データ2', result: 'エラー' },
-        { id: '4', data: '製造所A部品データ3', result: 'エラー' },
+        { id: '1', data: 'テストデータ01', result: '完了' },
+        { id: '2', data: 'テストデータ02', result: '完了' },
+        { id: '3', data: 'テストデータ03', result: '実行中' },
+        { id: '4', data: 'テストデータ04', result: 'エラー' },
       ],
     }
   },
@@ -75,6 +75,11 @@ export default {
     },
     async search() {
       await this.retrieveData()
+    },
+    open() {
+      this.$alert('推論機能は体験版で使用可能予定です', 'お知らせ', {
+        confirmButtonText: 'OK',
+      })
     },
   },
 }
