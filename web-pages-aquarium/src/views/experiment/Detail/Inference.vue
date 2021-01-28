@@ -14,7 +14,7 @@
     </el-row>
     <el-row>
       <el-col> </el-col>
-      <el-button type="primary" style="margin-top:20px" @click="submit">
+      <el-button type="primary" style="margin-top:20px">
         別のデータで推論を実行
       </el-button>
     </el-row>

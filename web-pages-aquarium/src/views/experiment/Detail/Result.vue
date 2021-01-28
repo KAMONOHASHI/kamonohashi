@@ -24,7 +24,7 @@
       </el-table-column>
     </el-table>
 
-    <el-button type="primary" @click="submit">
+    <el-button type="primary">
       詳細をグラフで見る
     </el-button>
   </div>

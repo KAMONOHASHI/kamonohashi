@@ -15,7 +15,7 @@
     <el-row class="info">
       <div>
         <div class="card-container">
-          <router-link :to="dataSetUrl">
+          <router-link :to="value.dataSetURL">
             <el-card
               class="info"
               style="border: solid 1px #ebeef5;  width: 400px; height: 250px;"
@@ -45,7 +45,7 @@
               </div>
             </el-card>
           </router-link>
-          <router-link :to="templateUrl">
+          <router-link :to="value.templateURL">
             <el-card
               class="info"
               style="border: solid 1px #ebeef5;  width: 400px; height: 250px;"
@@ -94,22 +94,14 @@ export default {
         createdBy: '',
         dataSetId: null,
         dataSetVersion: null,
+        dataSetURL: '',
+        templateURL: '',
       }),
     },
   },
-  data() {
-    return {
-      importfile: null,
-      dataSetName: '',
-      dataSetUrl: '',
-      templateUrl: '',
-    }
-  },
+
   computed: {
     ...mapGetters(['detail', 'events']),
-  },
-  async created() {
-    await this.initialize()
   },
 
   methods: {
@@ -122,49 +114,11 @@ export default {
       'delete',
       'deleteFile',
     ]),
-    async initialize() {
-      this.dataSetUrl = '/aquarium/dataset/' + this.detail.dataSet.id
-      this.templateUrl = '/aquarium/model-template/' + this.detail.template.id
-    },
-    handleClick() {},
-    async retrieveData() {
-      await this.fetchDetail(this.value.id)
-      if (
-        this.detail.statusType === 'Running' ||
-        this.detail.statusType === 'Error'
-      ) {
-        await this.fetchEvents(this.value.id)
-      }
-    },
-    async handleHalt() {
-      try {
-        await this.postHalt(this.value.id) // 異常停止（Status=Killed）
-        await this.retrieveData()
-        this.error = null
-      } catch (e) {
-        this.error = e
-      }
-    },
-    async handleUserCancel() {
-      try {
-        await this.postUserCancel(this.value.id) // 正常停止（Status=UserCanceled）
-        await this.retrieveData()
-        this.error = null
-      } catch (e) {
-        this.error = e
-      }
-    },
   },
 }
 </script>
 
 <style lang="scss" scoped>
-.importfile-detail {
-  padding-top: 50px;
-}
-.importfile-detail > h3 {
-  padding-bottom: 10px;
-}
 .right-top-button {
   text-align: right;
 }

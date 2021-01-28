@@ -52,6 +52,8 @@ export default {
         dataSetVersion: null,
         templateId: null,
         templateName: '',
+        dataSetURL: '',
+        templateURL: '',
       },
       activeName: 'info',
     }
@@ -84,6 +86,10 @@ export default {
       this.infoForm.dataSetVersion = this.detail.dataSet.version
       this.infoForm.templateId = this.detail.template.id
       this.infoForm.templateName = this.detail.template.name
+      this.infoForm.dataSetURL =
+        '/aquarium/dataset/detail/' + this.detail.dataSet.aquariumDataSetId
+      this.infoForm.templateURL =
+        '/aquarium/model-template/' + this.detail.template.id
     },
     async retrieveData() {
       await this.fetchDetail(this.id)
