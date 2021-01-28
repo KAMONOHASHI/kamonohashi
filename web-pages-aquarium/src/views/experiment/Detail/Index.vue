@@ -14,7 +14,7 @@
       <el-tab-pane label="実行情報" name="info">
         <info v-model="infoForm" />
       </el-tab-pane>
-      <el-tab-pane id="id" label="実行結果" name="result">
+      <el-tab-pane label="実行結果" name="result">
         <result :id="infoForm.id" />
       </el-tab-pane>
       <el-tab-pane label="推論" name="inference"><inference /></el-tab-pane>
