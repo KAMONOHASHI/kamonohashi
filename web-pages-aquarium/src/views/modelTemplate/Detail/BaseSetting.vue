@@ -10,29 +10,25 @@
             <el-form-item label="説明文" prop="memo">
               <el-input v-model="form.memo" type="textarea" />
             </el-form-item>
-            <el-form-item label="公開設定 " prop="publishing"
+            <el-form-item label="公開設定 " prop="accessLevel"
               ><br />
               <div style="display:block">
                 <el-radio
-                  v-model="form.publishing"
-                  label="1"
+                  v-model.number="form.accessLevel"
+                  v-bind:label="1"
                   style="display:block"
                   >現在のテナント
                 </el-radio>
 
                 <el-radio
-                  v-model="form.publishing"
-                  label="2"
+                  v-model.number="form.accessLevel"
+                  v-bind:label="2"
                   style="display:block"
                   >全テナントに公開</el-radio
                 >
               </div>
             </el-form-item>
           </el-form>
-
-          <el-button type="primary" plain @click="openCreateDialog()">
-            更新
-          </el-button>
         </el-form>
       </el-col>
     </el-row>
@@ -45,16 +41,9 @@ const { mapGetters, mapActions } = createNamespacedHelpers('template')
 export default {
   title: 'モデルテンプレート',
   components: {},
-  props: {
-    id: {
-      type: String,
-      default: null,
-    },
-  },
+  props: ['value'],
   data() {
     return {
-      form: { name: null, memo: null, publishing: null },
-
       rules: {
         name: [{ required: true, trigger: 'blur', message: '必須項目です' }],
       },
@@ -64,20 +53,21 @@ export default {
   },
   computed: {
     ...mapGetters(['templates']),
+    form: {
+      get() {
+        return this.value
+      },
+      set(value) {
+        this.$emit('input', value)
+      },
+    },
   },
 
   async created() {
-    await this.retrieveData()
+    this.form = { ...this.value }
   },
   methods: {
     ...mapActions(['fetchModelTemplates']),
-    async retrieveData() {
-      if (this.detail != null) {
-        this.form.name = this.detail.name
-        this.form.publishing = this.detail.publishing
-        this.form.memo = this.detail.memo
-      }
-    },
   },
 }
 </script>
