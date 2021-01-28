@@ -37,6 +37,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// コンストラクタ
         /// </summary>
         public TemplateController(
+            IExperimentHistoryRepository experimentHistoryRepository,
             ITemplateRepository templateRepository,
             ITenantRepository tenantRepository,
             IGitLogic gitLogic,
@@ -44,6 +45,7 @@ namespace Nssol.Platypus.Controllers.spa
             IClusterManagementLogic clusterManagementLogic,
             IHttpContextAccessor accessor) : base(accessor)
         {
+            this.experimentHistoryRepository = experimentHistoryRepository;
             this.templateRepository = templateRepository;
             this.tenantRepository = tenantRepository;
             this.unitOfWork = unitOfWork;
@@ -94,7 +96,7 @@ namespace Nssol.Platypus.Controllers.spa
 
             return JsonOK(templates.Select(t => new IndexOutputModel(t)));
         }
-
+/*
         /// <summary>
         /// テンプレートアクセスレベルの一覧を取得する
         /// </summary>
@@ -107,7 +109,7 @@ namespace Nssol.Platypus.Controllers.spa
 
             return JsonOK(accessLevels.Select(n => new EnumInfo() { Id = (int)n, Name = n.ToString() }));
         }
-
+*/
         /// <summary>
         /// 指定されたIDのテンプレート情報を取得。
         /// </summary>
@@ -132,6 +134,7 @@ namespace Nssol.Platypus.Controllers.spa
             if (model.AccessLevel == TemplateAccessLevel.Private)
             {
                 //プライベートモードの時に限り、アクセス可能なテナントを探索する
+                var tenants = templateRepository.GetAssignedTenants(template.Id);
                 model.AssignedTenants = templateRepository.GetAssignedTenants(template.Id).Select(t => new DetailsOutputModel.AssignedTenant()
                 {
                     Id = t.Id,
@@ -192,6 +195,7 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return errorResult;
             }
+            template.Version = 1;
 
 
             if (template.AccessLevel == TemplateAccessLevel.Private)
@@ -207,6 +211,7 @@ namespace Nssol.Platypus.Controllers.spa
             return JsonCreated(new IndexOutputModel(template));
         }
 
+/*
         /// <summary>
         /// バージョンを変更するテンプレート情報の編集
         /// </summary>
@@ -300,6 +305,7 @@ namespace Nssol.Platypus.Controllers.spa
 
             return JsonOK(new IndexOutputModel(template));
         }
+*/
 
         /// <summary>
         /// テンプレートを削除する。

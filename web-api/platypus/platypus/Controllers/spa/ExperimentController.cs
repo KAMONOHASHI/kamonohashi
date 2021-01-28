@@ -319,12 +319,8 @@ namespace Nssol.Platypus.Controllers.spa
 
             // TODO: テンプレートの学習コンテナについて実行済みか判断する
             //テンプレートが既に実行中か確認する
-            var experimentHistory = experimentHistoryRepository.Find(pph => pph.DataSetId == model.DataSetId && pph.TemplateId == template.Id);
-            if (experimentHistory != null)
-            {
-                string status = ContainerStatus.Convert(experimentHistory.Status).Key;
-                return JsonNotFound($"DataSet {dataSet.Id}:{dataSet.Name} version {dataSetVersion.Version} has already been used by {template.Id}:{template.Name}. Status:{status}");
-            }
+
+            
             // 環境変数名のチェック
             if (model.Options != null && model.Options.Count > 0)
             {
@@ -344,13 +340,13 @@ namespace Nssol.Platypus.Controllers.spa
 
             //コンテナの実行前に、学習履歴を作成する（コンテナの実行に失敗した場合、そのステータスをユーザに表示するため）
 
-            experimentHistory = new ExperimentHistory()
+            var experimentHistory = new ExperimentHistory()
             {
                 Name = model.Name,
-                DataSetId = dataSetVersion.Id,
+                DataSetId = dataSet.Id,
+                DataSetVersionId = dataSetVersion.Id,
                 InputDataSetId = dataSetVersion.DataSetId,
                 TemplateId = template.Id,
-                Template = template,
                 Status = ContainerStatus.Running.Key
             };
 
@@ -404,7 +400,7 @@ namespace Nssol.Platypus.Controllers.spa
 
 
                 // 前処理生成データの詳細情報がないので、取得
-                experimentHistory.InputDataSet = await dataSetRepository.GetByIdAsync(experimentHistory.InputDataSetId);
+                //experimentHistory.InputDataSet = await dataSetRepository.GetByIdAsync(experimentHistory.InputDataSetId);
 
                 // テンプレート前処理で生成されたデータを入力にする学習コンテナを起動
                 var trainingResult = await clusterManagementLogic.RunExperimentTrainAfterPreprocessingContainerAsync(experimentHistory);

@@ -1815,7 +1815,7 @@ namespace Nssol.Platypus.Logic
             // 上書き不可の環境変数
             var notEditableEnvList = new Dictionary<string, string>()
             {
-                { "DATASET_ID", experimentHistory.DataSet.DataSetId.ToString()},
+                { "DATASET_ID", experimentHistory.DataSetVersion.DataSetId.ToString()},
                 { "EXPERIMENT_ID", experimentHistory.Id.ToString()},
                 { "COMMIT_ID", experimentHistory.Template.TrainingRepositoryCommitId},
                 { "KQI_SERVER", containerOptions.WebServerUrl },
