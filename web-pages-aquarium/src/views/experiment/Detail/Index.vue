@@ -15,7 +15,7 @@
         <info v-model="infoForm" />
       </el-tab-pane>
       <el-tab-pane label="実行結果" name="result">
-        <result />
+        <result :id="infoForm.id" />
       </el-tab-pane>
       <el-tab-pane label="推論" name="inference"><inference /></el-tab-pane>
     </el-tabs>

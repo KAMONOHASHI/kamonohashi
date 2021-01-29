@@ -1110,7 +1110,7 @@ namespace Nssol.Platypus.Logic
                     MountPath = "/kqi/output",
                     SubPath = experimentHistory.Id.ToString(),
                     Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
-                    ServerPath = CurrentUserInfo.SelectedTenant.TrainingContainerOutputNfsPath
+                    ServerPath = CurrentUserInfo.SelectedTenant.ExperimentContainerOutputNfsPath
                 }
             };
             //コンテナを起動するために必要な設定値をインスタンス化
