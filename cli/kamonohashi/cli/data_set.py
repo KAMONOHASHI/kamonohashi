@@ -171,6 +171,7 @@ def delete(id):
 @click.option('-t', '--type', 'data_type', type=click.Choice(['training', 'testing', 'validation']), multiple=True,
               help='A data type to download  [multiple]')
 def download_files(id, destination, data_type):
+    """Download files of a dataset"""
     api = rest.DataSetApi(configuration.get_api_client())
     result = api.list_dataset_files(id, with_url=True)
     pool_manager = api.api_client.rest_client.pool_manager
