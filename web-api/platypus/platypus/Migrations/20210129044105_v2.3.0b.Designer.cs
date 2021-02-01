@@ -10,8 +10,8 @@ using Nssol.Platypus.DataAccess;
 namespace Nssol.Platypus.Migrations
 {
     [DbContext(typeof(CommonDbContext))]
-    [Migration("20210126032508_v2.3.0")]
-    partial class v230
+    [Migration("20210129044105_v2.3.0b")]
+    partial class v230b
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -804,7 +804,9 @@ namespace Nssol.Platypus.Migrations
 
                     b.Property<long>("DataSetId");
 
-                    b.Property<long>("InputDataSetId");
+                    b.Property<long>("DataSetVersionId");
+
+                    b.Property<long?>("InputDataSetId");
 
                     b.Property<DateTime>("ModifiedAt");
 
@@ -820,13 +822,15 @@ namespace Nssol.Platypus.Migrations
 
                     b.Property<string>("Status");
 
-                    b.Property<long?>("TemplateId");
+                    b.Property<long>("TemplateId");
 
                     b.Property<long>("TenantId");
 
                     b.HasKey("Id");
 
                     b.HasIndex("DataSetId");
+
+                    b.HasIndex("DataSetVersionId");
 
                     b.HasIndex("InputDataSetId");
 
@@ -2106,19 +2110,24 @@ namespace Nssol.Platypus.Migrations
 
             modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.ExperimentHistory", b =>
                 {
-                    b.HasOne("Nssol.Platypus.Models.TenantModels.Aquarium.DataSetVersion", "DataSet")
+                    b.HasOne("Nssol.Platypus.Models.TenantModels.Aquarium.DataSet", "DataSet")
                         .WithMany()
                         .HasForeignKey("DataSetId")
                         .OnDelete(DeleteBehavior.Cascade);
 
+                    b.HasOne("Nssol.Platypus.Models.TenantModels.Aquarium.DataSetVersion", "DataSetVersion")
+                        .WithMany()
+                        .HasForeignKey("DataSetVersionId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("Nssol.Platypus.Models.TenantModels.DataSet", "InputDataSet")
                         .WithMany()
-                        .HasForeignKey("InputDataSetId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("InputDataSetId");
 
                     b.HasOne("Nssol.Platypus.Models.ModelTemplate", "Template")
                         .WithMany()
-                        .HasForeignKey("TemplateId");
+                        .HasForeignKey("TemplateId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Nssol.Platypus.Models.Tenant", "Tenant")
                         .WithMany()

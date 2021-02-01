@@ -30,7 +30,7 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
         /// </summary>
         public IQueryable<ExperimentHistory> GetAllIncludeDataSet()
         {
-            return GetAll().Include(t => t.DataSet);
+            return GetAll().Include(t => t.DataSetVersion);
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
         public IQueryable<ExperimentHistory> GetAllIncludeDataSetAndParentWithOrdering()
         {
             return GetAll().OrderByDescending(t => t.Id)
-                .Include(t => t.DataSet)
+                .Include(t => t.DataSetVersion)
                 .Include(t => t.Template);
         }
 
@@ -59,7 +59,7 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
         /// <param name="id">実験履歴ID</param>
         public async Task<ExperimentHistory> GetIncludeAllAsync(long id)
         {
-            return await FindAll(t => t.Id == id).Include(t => t.DataSet)
+            return await FindAll(t => t.Id == id).Include(t => t.DataSetVersion)
                 .Include(t => t.Template)
                 .SingleOrDefaultAsync();
         }

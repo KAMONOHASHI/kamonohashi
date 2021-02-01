@@ -2,8 +2,9 @@
 #
 #  Filter swagger.json for kamonohashi-sdk
 
+import argparse
 import json
-import sys
+
 
 def traverse(obj, callback):
     def traverse_list(obj):
@@ -23,6 +24,7 @@ def traverse(obj, callback):
                 traverse_list(value)
 
     traverse_dict(obj)
+
 
 def remove_unused_api_and_rename_operation_id(spec):
     used_api = {
@@ -190,6 +192,7 @@ def remove_unused_api_and_rename_operation_id(spec):
         else:
             del paths[x]
 
+
 def remove_unused_model(spec):
     used_models = set()
     paths = spec['paths']
@@ -207,6 +210,7 @@ def remove_unused_model(spec):
     for x in list(definitions.keys()):
         if x not in used_models:
             del definitions[x]
+
 
 def rename_model(spec):
     rename = (
@@ -232,6 +236,7 @@ def rename_model(spec):
 
     traverse(spec, callback)
 
+
 def remove_comment(spec):
     comment = []
     paths = spec['paths']
@@ -247,14 +252,18 @@ def remove_comment(spec):
     for obj, key in comment:
         del obj[key]
 
-fin = sys.stdin
-fout = sys.stdout
-spec = json.load(fin)
 
-remove_unused_api_and_rename_operation_id(spec)
-remove_unused_model(spec)
-rename_model(spec)
-if len(sys.argv) <= 1 or sys.argv[1] != '--preserve-comment':
-    remove_comment(spec)
+parser = argparse.ArgumentParser()
+parser.add_argument('--input_file_path', required=True)
+parser.add_argument('--output_file_path', required=True)
+parser.add_argument('--preserve_comment', action='store_true')
+args = parser.parse_args()
 
-json.dump(spec, fout, sort_keys=True, indent=2, ensure_ascii=False)
+with open(args.input_file_path) as fin, open(args.output_file_path, 'w') as fout:
+    spec = json.load(fin)
+    remove_unused_api_and_rename_operation_id(spec)
+    remove_unused_model(spec)
+    rename_model(spec)
+    if not args.preserve_comment:
+        remove_comment(spec)
+    json.dump(spec, fout, sort_keys=True, indent=2, ensure_ascii=False)

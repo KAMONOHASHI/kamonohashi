@@ -7,6 +7,7 @@ using Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories;
 using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Logic.Interfaces;
 using Nssol.Platypus.Models.TenantModels;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -150,8 +151,9 @@ namespace Nssol.Platypus.Controllers.spa
                 //各種別内のデータについて、データIDの降順に並び替える
                 foreach (var dataType in dataTypeRepository.GetAllWithOrderby(d => d.SortOrder, true))
                 {
-                    entities[dataType.Name].Reverse();
+                    entities[dataType.Name].Sort((x, y) => y.Id.CompareTo(x.Id));
                 }
+                flatEntries.Sort((x, y) => y.Id.CompareTo(x.Id));
 
                 model.Entries = entities;
                 model.FlatEntries = flatEntries;
@@ -185,8 +187,9 @@ namespace Nssol.Platypus.Controllers.spa
 
             if (dataSet.DataSetEntries != null)
             {
-                //エントリの作成開始。最初はDictionary形式で
+                //エントリの作成開始
                 var entities = new Dictionary<string, List<ApiModels.DataApiModels.DataFileOutputModel>>();
+                var flatEntries = new ConcurrentQueue<ApiModels.DataApiModels.DataFileOutputModel>();
 
                 //空のデータ種別も表示したい＆順番を統一したいので、先に初期化しておく
                 foreach (var dataType in dataTypeRepository.GetAllWithOrderby(d => d.SortOrder, true))
@@ -195,17 +198,34 @@ namespace Nssol.Platypus.Controllers.spa
                 }
 
                 //エントリを並列で取得する
-                dataSet.DataSetEntries.AsParallel().ForAll(entry =>
+                if (dataSet.IsFlat)
                 {
-                    string key = entry.DataType.Name;
-                    var dataFiles = dataLogic.GetDataFiles(entry.Data, withUrl, false);
-                    lock (entities)
+                    dataSet.DataSetEntries.AsParallel().ForAll(entry =>
                     {
-                        entities[key].AddRange(dataFiles);
-                    }
-                });
+                        var dataFiles = dataLogic.GetDataFiles(entry.Data, withUrl);
+                        foreach (var x in dataFiles)
+                        {
+                            flatEntries.Enqueue(x);
+                        }
+                    });
+                }
+                else
+                {
+                    dataSet.DataSetEntries.AsParallel().ForAll(entry =>
+                    {
+                        var key = entry.DataType.Name;
+                        var dataFiles = dataLogic.GetDataFiles(entry.Data, withUrl);
+                        lock (entities)
+                        {
+                            entities[key].AddRange(dataFiles);
+                        }
+
+                    });
+
+                }
 
                 model.SetEntries(entities);
+                model.FlatEntries = flatEntries;
             }
 
             return JsonOK(model);

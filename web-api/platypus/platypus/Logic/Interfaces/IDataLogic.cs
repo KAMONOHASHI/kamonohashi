@@ -25,8 +25,7 @@ namespace Nssol.Platypus.Logic.Interfaces
         /// </summary>
         /// <param name="data">データ</param>
         /// <param name="withUrl">結果にダウンロード用のURLを含めるか</param>
-        /// <param name="withFileSize">結果にファイルサイズを含めるか</param>
-        IEnumerable<DataFileOutputModel> GetDataFiles(Data data, bool withUrl, bool withFileSize);
+        IEnumerable<DataFileOutputModel> GetDataFiles(Data data, bool withUrl);
 
         /// <summary>
         /// 指定されたIDのデータを削除する。

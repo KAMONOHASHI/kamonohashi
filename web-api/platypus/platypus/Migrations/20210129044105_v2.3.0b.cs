@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Nssol.Platypus.Migrations
 {
-    public partial class v230 : Migration
+    public partial class v230b : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -171,8 +171,9 @@ namespace Nssol.Platypus.Migrations
                     ModifiedAt = table.Column<DateTime>(nullable: false),
                     TenantId = table.Column<long>(nullable: false),
                     DataSetId = table.Column<long>(nullable: false),
-                    InputDataSetId = table.Column<long>(nullable: false),
-                    TemplateId = table.Column<long>(nullable: true),
+                    DataSetVersionId = table.Column<long>(nullable: false),
+                    InputDataSetId = table.Column<long>(nullable: true),
+                    TemplateId = table.Column<long>(nullable: false),
                     StartedAt = table.Column<DateTime>(nullable: true),
                     CompletedAt = table.Column<DateTime>(nullable: true),
                     Status = table.Column<string>(nullable: true),
@@ -183,8 +184,14 @@ namespace Nssol.Platypus.Migrations
                 {
                     table.PrimaryKey("PK_ExperimentHistories", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ExperimentHistories_AquariumDatasetVersions_DataSetId",
+                        name: "FK_ExperimentHistories_AquariumDatasets_DataSetId",
                         column: x => x.DataSetId,
+                        principalTable: "AquariumDatasets",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ExperimentHistories_AquariumDatasetVersions_DataSetVersionId",
+                        column: x => x.DataSetVersionId,
                         principalTable: "AquariumDatasetVersions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -193,13 +200,13 @@ namespace Nssol.Platypus.Migrations
                         column: x => x.InputDataSetId,
                         principalTable: "DataSets",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ExperimentHistories_Templates_TemplateId",
                         column: x => x.TemplateId,
                         principalTable: "Templates",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_ExperimentHistories_Tenants_TenantId",
                         column: x => x.TenantId,
@@ -347,6 +354,11 @@ namespace Nssol.Platypus.Migrations
                 name: "IX_ExperimentHistories_DataSetId",
                 table: "ExperimentHistories",
                 column: "DataSetId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ExperimentHistories_DataSetVersionId",
+                table: "ExperimentHistories",
+                column: "DataSetVersionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ExperimentHistories_InputDataSetId",

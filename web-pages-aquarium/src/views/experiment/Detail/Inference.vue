@@ -77,7 +77,7 @@ export default {
       await this.retrieveData()
     },
     open() {
-      this.$alert('推論機能は体験版で使用可能予定です', 'お知らせ', {
+      this.$alert('推論機能は製品版で使用可能予定です', 'お知らせ', {
         confirmButtonText: 'OK',
       })
     },
