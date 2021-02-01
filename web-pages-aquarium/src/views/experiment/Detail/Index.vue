@@ -24,13 +24,10 @@
 </template>
 
 <script>
-import { createNamespacedHelpers } from 'vuex'
 import Info from './Info'
 import Result from './Result'
-
 import Inference from './Inference'
-const { mapGetters, mapActions } = createNamespacedHelpers('experiment')
-
+import { mapActions, mapGetters } from 'vuex'
 export default {
   title: '実験詳細',
   components: { Info, Result, Inference },
@@ -46,12 +43,17 @@ export default {
       name: null,
       infoForm: {
         id: null,
+        name: '',
+        status: '',
         createdAt: '',
         createdBy: '',
+        completedAt: '',
         dataSetId: null,
+        dataSetName: '',
         dataSetVersion: null,
         templateId: null,
         templateName: '',
+        templateVersion: null,
         dataSetURL: '',
         templateURL: '',
       },
@@ -59,7 +61,11 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['detail', 'events']),
+    ...mapGetters({
+      detail: ['experiment/detail'],
+      events: ['experiment/events'],
+      dataSets: ['aquariumDataSet/dataSets'],
+    }),
   },
 
   async created() {
@@ -67,13 +73,14 @@ export default {
   },
   methods: {
     ...mapActions([
-      'fetchDetail',
-      'fetchEvents',
-      'postUserCancel',
-      'postFiles',
-      'put',
-      'delete',
-      'deleteFile',
+      'experiment/fetchDetail',
+      'experiment/fetchEvents',
+      'experiment/postUserCancel',
+      'experiment/postFiles',
+      'experiment/put',
+      'experiment/delete',
+      'experiment/deleteFile',
+      'aquariumDataSet/fetchDataSets',
     ]),
     async initialize() {
       this.title = '実験履歴'
@@ -81,28 +88,36 @@ export default {
       this.name = this.detail.name
       this.infoForm.createdAt = this.detail.createdAt
       this.infoForm.createdBy = this.detail.createdBy
+      this.infoForm.completedAt = this.detail.completedAt
       this.infoForm.id = this.detail.id
+      this.infoForm.name = this.detail.name
+      this.infoForm.status = this.detail.status
       this.infoForm.dataSetId = this.detail.dataSet.aquariumDataSetId
+      this.infoForm.dataSetName = this.dataSets[0].name
       this.infoForm.dataSetVersion = this.detail.dataSet.version
       this.infoForm.templateId = this.detail.template.id
       this.infoForm.templateName = this.detail.template.name
+      this.infoForm.templateVersion = this.detail.template.version
       this.infoForm.dataSetURL =
         '/aquarium/dataset/detail/' + this.detail.dataSet.aquariumDataSetId
       this.infoForm.templateURL =
         '/aquarium/model-template/' + this.detail.template.id
     },
     async retrieveData() {
-      await this.fetchDetail(this.id)
+      await this['experiment/fetchDetail'](this.id)
       if (
         this.detail.statusType === 'Running' ||
         this.detail.statusType === 'Error'
       ) {
         await this.fetchEvents(this.detail.id)
       }
+      await this['aquariumDataSet/fetchDataSets']({
+        id: this.detail.dataSet.aquariumDataSetId,
+      })
     },
     async deleteJob() {
       try {
-        await this.delete(this.detail.id)
+        await this['experiment/delete'](this.detail.id)
         this.$emit('done', 'delete')
         this.error = null
       } catch (e) {

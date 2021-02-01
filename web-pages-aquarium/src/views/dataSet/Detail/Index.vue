@@ -53,7 +53,7 @@ export default {
       await this.retrieveData()
     },
     async retrieveData() {
-      await this.fetchDataSets(this.id)
+      await this.fetchDataSets({ id: this.id })
       this.name = this.dataSets[0].name
     },
 
