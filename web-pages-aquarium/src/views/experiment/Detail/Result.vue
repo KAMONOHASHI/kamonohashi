@@ -1,28 +1,42 @@
 <template>
   <div>
-    <h2>Confusion Matrix</h2>
-    <div>
-      この表では、モデルで各ラベルが正しく分類された頻度（青色）と、そのラベルに対して最も多く混同されたラベル（灰色）を示します。
+    <h2>実験結果</h2>
+    <div class="confusion-matrix">
+      <!-- TODO outputValueがnullでなかった場合にconfusionmatrix.csvをファイルから取得して描画 -->
+      <!-- <div v-if="outputValue"> -->
+      <h3>Confusion Matrix</h3>
+      <div>
+        製品版で実装予定です。
+        コンテナ出力ファイルにconfusion_matrix.csvが出力されていた場合にmatrixを描画します。
+        <!-- この表では、モデルで各ラベルが正しく分類された頻度（青色）と、そのラベルに対して最も多く混同されたラベル（灰色）を示します。 -->
+      </div>
+      <el-table
+        :data="matrixdata"
+        style="width: 100%;margin-top:30px;margin-bottom:30px"
+      >
+        <el-table-column prop="" label="" width="150">
+          <el-table-column prop="true" label="Trueラベル" width="150">
+          </el-table-column>
+        </el-table-column>
+        <el-table-column label="予測ラベル">
+          <el-table-column
+            v-for="(name, index) in labelName"
+            :key="index"
+            :prop="name"
+            :label="name"
+            width="120"
+          >
+          </el-table-column>
+        </el-table-column>
+      </el-table>
     </div>
-    <el-table
-      :data="matrixdata"
-      style="width: 100%;margin-top:30px;margin-bottom:30px"
-    >
-      <el-table-column prop="" label="" width="150">
-        <el-table-column prop="true" label="Trueラベル" width="150">
-        </el-table-column>
-      </el-table-column>
-      <el-table-column label="予測ラベル">
-        <el-table-column
-          v-for="(name, index) in labelName"
-          :key="index"
-          :prop="name"
-          :label="name"
-          width="120"
-        >
-        </el-table-column>
-      </el-table-column>
-    </el-table>
+    <!-- <div v-else>
+        <h3>Confusion Matrix</h3>
+        <div>
+          コンテナ出力ファイルにconfusion_matrix.csvが出力されていた場合にmatrixを描画します。
+        </div>
+      </div> -->
+    <!-- </div> -->
 
     <aqualium-tensorboard-handler
       :id="String(id)"
@@ -48,89 +62,70 @@ export default {
   data() {
     return {
       importfile: null,
-      labelName: ['sunflowers', 'dandelion', 'tulips', 'roses', 'daisy'],
+      labelName: [
+        'labelname1',
+        'labelname2',
+        'labelname3',
+        'labelname4',
+        'labelname5',
+      ],
       tesorboardVisible: true,
+      outputValue: null,
       matrixdata: [
         {
-          true: 'sunflowers',
-          sunflowers: 94,
-          dandelion: 1,
-          tulips: 1,
-          roses: 1,
-          daisy: 1,
+          true: 'labelname1',
+          labelname1: 94,
+          labelname2: 1,
+          labelname3: 1,
+          labelname4: 1,
+          labelname5: 1,
         },
         {
-          true: 'dandelion',
-          sunflowers: 0,
-          dandelion: 100,
-          tulips: 0,
-          roses: 0,
-          daisy: 0,
+          true: 'labelname2',
+          labelname1: 0,
+          labelname2: 100,
+          labelname3: 0,
+          labelname4: 0,
+          labelname5: 0,
         },
         {
-          true: 'tulips',
-          sunflowers: 0,
-          dandelion: 0,
-          tulips: 95,
-          roses: 5,
-          daisy: 0,
+          true: 'labelname3',
+          labelname1: 0,
+          labelname2: 0,
+          labelname3: 95,
+          labelname4: 5,
+          labelname5: 0,
         },
         {
-          true: 'roses',
-          sunflowers: 0,
-          dandelion: 0,
-          tulips: 6,
-          roses: 92,
-          daisy: 2,
+          true: 'labelname4',
+          labelname1: 0,
+          labelname2: 0,
+          labelname3: 6,
+          labelname4: 92,
+          labelname5: 2,
         },
         {
-          true: 'daisy',
-          sunflowers: 0,
-          dandelion: 3,
-          tulips: 0,
-          roses: 2,
-          daisy: 95,
+          true: 'labelname5',
+          labelname1: 0,
+          labelname2: 3,
+          labelname3: 0,
+          labelname4: 2,
+          labelname5: 95,
         },
       ],
     }
   },
   computed: {
-    ...mapGetters(['dataSets', 'total']),
+    ...mapGetters(['detail']),
   },
 
   async created() {
     await this.retrieveData()
   },
   methods: {
-    ...mapActions(['fetchDataSets']),
+    ...mapActions(['fetchDetail']),
 
-    async currentChange() {
-      await this.retrieveData()
-    },
-    async retrieveData() {
-      let params = this.searchCondition
-      await this.fetchDataSets(params)
-    },
-    closeDialog() {
-      this.$router.push('/dataset')
-    },
-    async done() {
-      this.closeDialog()
-      await this.retrieveData()
-      this.showSuccessMessage()
-    },
-    openCreateDialog() {
-      this.$router.push('/dataset/create')
-    },
-    openEditDialog(selectedRow) {
-      this.$router.push('/dataset/edit/' + selectedRow.id)
-    },
-    handleCopy(id) {
-      this.$router.push('/dataset/create/' + id)
-    },
-    async search() {
-      await this.retrieveData()
-    },
+    async retrieveData() {},
   },
 }
 </script>
@@ -157,5 +152,15 @@ export default {
 .pagination /deep/ .el-input {
   text-align: left;
   width: 120px;
+}
+.confusion-matrix {
+  margin: 40px 0;
+}
+h3 {
+  font-size: 20px;
+  margin: 10px 0;
+}
+.el-table .nonactive-row {
+  background: red;
 }
 </style>

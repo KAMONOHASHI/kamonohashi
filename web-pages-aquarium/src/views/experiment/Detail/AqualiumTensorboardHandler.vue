@@ -29,7 +29,7 @@
     </span>
     <span v-else-if="statusName === 'None'">
       <el-row>
-        <el-col :offset="1" :span="23">
+        <el-col :span="23">
           <el-button type="primary" @click="runTensorBoard">
             詳細をグラフで見る
           </el-button>
