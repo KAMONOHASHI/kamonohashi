@@ -36,6 +36,8 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories
         /// <param name="id">実験履歴ID</param>
         Task<ExperimentHistory> GetIncludeAllAsync(long id);
 
+        Task<ExperimentHistory> GetIncludePreprocessdDataAsync(long id);
+
         /// <summary>
         /// データセットIDに紐づく実験履歴が存在するかチェックします。
         /// </summary>

@@ -156,6 +156,18 @@ namespace Nssol.Platypus.Models
                 return $"{Storage.NfsRootPath}{StorageBucket}/{ResourceType.ExperimentContainerAttachedFiles}";
             }
         }
+
+        /// <summary>
+        /// 実験前処理のコンテナ添付ファイル用のNFSマウント元パス
+        /// </summary>
+        [NotMapped]
+        public string ExperimentPreprocContainerAttachedNfsPath
+        {
+            get
+            {
+                return $"{Storage.NfsRootPath}{StorageBucket}/{ResourceType.ExperimentPreprocContainerAttachedFiles}";
+            }
+        }
         #endregion
 
         /// <summary>

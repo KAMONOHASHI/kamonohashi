@@ -16,8 +16,12 @@ namespace Nssol.Platypus.Models.TenantModels
         /// <summary>
         /// アクアリウムデータセットID
         /// </summary>
-        [Required]
         public long DataSetId { get; set; }
+
+        /// <summary>
+        /// アクアリウムデータセットバージョンID
+        /// </summary>
+        public long DataSetVersionId { get; set; }
 
         /// <summary>
         /// テンプレートID
@@ -64,11 +68,16 @@ namespace Nssol.Platypus.Models.TenantModels
         public Dictionary<string, string> OptionDic { get; set; }
 
         /// <summary>
-        ///　アクアリウムデータセット
+        /// アクアリウムデータセット
         /// </summary>
         [ForeignKey(nameof(DataSetId))]
-        public virtual Models.TenantModels.Aquarium.DataSetVersion
-            DataSet { get; set; }
+        public virtual Models.TenantModels.Aquarium.DataSet DataSet { get; set; }
+
+        /// <summary>
+        /// アクアリウムデータセットバージョン
+        /// </summary>
+        [ForeignKey(nameof(DataSetVersionId))]
+        public virtual Models.TenantModels.Aquarium.DataSetVersion DataSetVersion { get; set; }
 
         /// <summary>
         /// テンプレート
@@ -85,16 +94,9 @@ namespace Nssol.Platypus.Models.TenantModels
             get
             {
                 //実験履歴IDはユニークなので、それをもとに名前を決める
-                return $"experiment-{Id}-preprocess";
+                return $"experiment-preprocess-{Id}";
             }
         }
-
-
-        /// <summary>
-        /// 名前
-        /// </summary>
-        [Required]
-        public string Name { get; set; }
 
         /// <summary>
         /// 環境変数のディクショナリ表現
@@ -120,10 +122,19 @@ namespace Nssol.Platypus.Models.TenantModels
         }
 
         /// <summary>
-        /// データセットエントリ
+        /// 前処理結果のkamonohashiデータセットID
         /// </summary>
-        public virtual ICollection<ExperimentPreprocessHistoryOutput> ExperimentPreprocessHistoryOutputs { get; set; }
+        public long? OutputDataSetId { get; set; }
 
+        /// <summary>
+        /// 前処理結果のkamonohashiデータセット
+        /// </summary>
+        [ForeignKey(nameof(OutputDataSetId))]
+        public virtual DataSet OutPutDataSet { get; set; }
 
+        /// <summary>
+        /// 前処理結果kamonohashiデータ
+        /// </summary>
+        public virtual IEnumerable<ExperimentPreprocessHistoryOutput> ExperimentPreprocessHistoryOutputs { get; set; }
     }
 }

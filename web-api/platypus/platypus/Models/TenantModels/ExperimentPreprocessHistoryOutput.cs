@@ -1,10 +1,5 @@
-﻿using Nssol.Platypus.Infrastructure;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Models.TenantModels
 {
@@ -17,7 +12,7 @@ namespace Nssol.Platypus.Models.TenantModels
         /// 実験の前処理履歴ID
         /// </summary>
         [Required]
-        public long ExperimentHistoryId { get; set; }
+        public long ExperimentPreprocessedHistoryId { get; set; }
 
         /// <summary>
         /// 出力データID
@@ -28,7 +23,7 @@ namespace Nssol.Platypus.Models.TenantModels
         /// <summary>
         /// 実験の前処理履歴
         /// </summary>
-        [ForeignKey(nameof(ExperimentHistoryId))]
+        [ForeignKey(nameof(ExperimentPreprocessedHistoryId))]
         public virtual ExperimentPreprocessHistory ExperimentPreprocessHistory { get; set; }
 
         /// <summary>

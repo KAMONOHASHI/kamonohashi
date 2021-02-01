@@ -23,7 +23,7 @@ namespace Nssol.Platypus.Models.TenantModels.Aquarium
         public long DataSetId { get; set; }
 
         /// <summary>
-        /// データセット
+        /// アクアリウムデータセット
         /// </summary>
         [ForeignKey(nameof(AquariumDataSetId))]
         public virtual DataSet AquariumDataSet { get; set; }
@@ -32,6 +32,6 @@ namespace Nssol.Platypus.Models.TenantModels.Aquarium
         /// データセット
         /// </summary>
         [ForeignKey(nameof(DataSetId))]
-        public virtual Models.TenantModels.DataSet DataSet { get; set; }
+        public virtual TenantModels.DataSet DataSet { get; set; }
     }
 }

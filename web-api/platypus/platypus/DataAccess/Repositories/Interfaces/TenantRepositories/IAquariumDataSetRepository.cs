@@ -21,7 +21,7 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories
         /// </summary>
         /// <param name="aquariumDatasetId">アクアリウムデータセットID</param>
         /// <param name="versionId">アクアリウムデータセットバージョンID</param>
-        /// <returns>アクアリウムデータセッバージョント</returns>
+        /// <returns>アクアリウムデータセットバージョン</returns>
         Task<DataSetVersion> GetDataSetVersionWithDataAsync(long aquariumDatasetId, long versionId);
 
         /// <summary>
