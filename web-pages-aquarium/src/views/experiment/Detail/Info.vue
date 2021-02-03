@@ -1,78 +1,117 @@
 <template>
   <div>
-    <h2>実行条件</h2>
+    <h2>実験情報</h2>
     <div style="width:600px;padding-top:20px;padding-bottom:40px">
       学習の情報を確認できます。
     </div>
-    <el-row class="info">
-      <el-col :span="3">実行日時</el-col>
-      <el-col :span="4">{{ value.createdAt }}</el-col>
-    </el-row>
-    <el-row class="info">
-      <el-col :span="3">実行者</el-col>
-      <el-col :span="4">{{ value.createdBy }}</el-col>
-    </el-row>
-    <el-row class="info">
-      <div>
-        <div class="card-container">
-          <router-link :to="dataSetUrl">
-            <el-card
-              class="info"
-              style="border: solid 1px #ebeef5;  width: 400px; height: 250px;"
-            >
-              <div class="info-name">
-                データセット
-              </div>
+    <el-card
+      style="margin: 10px;border: solid 1px #ebeef5;  width: 550px; height: 250px;"
+    >
+      <el-row class="">
+        <el-col :span="8">
+          <div class="info-name">
+            概要
+          </div>
+        </el-col>
+      </el-row>
+      <div style="padding: 10px; font-size: 14px;">
+        <el-row class="">
+          <el-col :span="8">
+            <div style="margin:20px 0px 20px 0px">実験名</div>
+          </el-col>
+          <el-col :span="8">
+            <div style="margin:20px 0px 20px 0px">
+              {{ value.name }}
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div style="margin:10px 0px 10px 0px">
+              ステータス
+              <el-tag :type="tagType(value.status)" class="tag">
+                {{ value.status }}
+              </el-tag>
+            </div></el-col
+          >
+        </el-row>
 
-              <div
-                class="info-description"
-                style="padding: 10px; font-size: 14px;"
-              >
-                ID: {{ value.dataSetId }}
-                <br />
-                <!-- TODO:アクアリウムデータセット名を取得  -->
-                <!-- NAME: -->
-
-                <div style="margin:20px 0px 20px 0px">
-                  <el-tag type="info" class="tag">
-                    v{{ value.dataSetVersion }}</el-tag
-                  >
-                </div>
-              </div>
-              <div style="padding: 20px; font-size: 14px;">
-                <icon name="pl-arrow-right" scale="1.5" class="menu-icon" />
-                詳細
-              </div>
-            </el-card>
-          </router-link>
-          <router-link :to="templateUrl">
-            <el-card
-              class="info"
-              style="border: solid 1px #ebeef5;  width: 400px; height: 250px;"
-            >
-              <div class="info-name">
-                テンプレート
-              </div>
-
-              <div
-                class="info-description"
-                style="padding: 10px; font-size: 14px;"
-              >
-                ID: {{ value.templateId }}
-                <br />
-                NAME:{{ value.templateName }}
-                <div style="margin:20px 0px 20px 0px">
-                  <el-tag type="info" class="tag"> v1</el-tag>
-                </div>
-              </div>
-              <div style="padding: 20px; font-size: 14px;">
-                <icon name="pl-arrow-right" scale="1.5" class="menu-icon" />
-                詳細
-              </div>
-            </el-card>
-          </router-link>
-        </div>
+        <el-row>
+          <el-col :span="8">実行日時</el-col>
+          <el-col :span="16">{{ value.createdAt }}</el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="8">完了日時</el-col>
+          <el-col :span="16">{{ value.completedAt }}</el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="8">実行者</el-col>
+          <el-col :span="16">{{ value.createdBy }}</el-col>
+        </el-row>
       </div>
+    </el-card>
+
+    <el-row>
+      <el-col :span="12">
+        <router-link :to="value.dataSetURL">
+          <el-card
+            class="info"
+            style="border: solid 1px #ebeef5;  width: 550px; height: 280px;"
+          >
+            <div class="info-name">
+              データセット
+            </div>
+
+            <div
+              class="info-description"
+              style="padding: 10px; font-size: 14px;"
+            >
+              ID: {{ value.dataSetId }}
+              <br />
+              NAME: {{ value.dataSetName }}
+              <!-- NAME: -->
+              <div style="margin:20px 0px 20px 0px">
+                バージョン<el-tag type="info" class="tag">
+                  v{{ value.dataSetVersion }}</el-tag
+                >
+              </div>
+            </div>
+
+            <div style="padding: 20px; font-size: 14px;">
+              <icon name="pl-arrow-right" scale="1.5" class="menu-icon" />
+              詳細
+            </div>
+          </el-card>
+        </router-link>
+      </el-col>
+      <el-col :span="12">
+        <router-link :to="value.templateURL">
+          <el-card
+            class="info"
+            style="border: solid 1px #ebeef5;  width: 550px; height: 280px;"
+          >
+            <div class="info-name">
+              テンプレート
+            </div>
+
+            <div
+              class="info-description"
+              style="padding: 10px; font-size: 14px;"
+            >
+              ID: {{ value.templateId }}
+              <br />
+              NAME:{{ value.templateName }}
+              <div style="margin:20px 0px 20px 0px">
+                バージョン<el-tag type="info" class="tag">
+                  v{{ value.templateVersion }}</el-tag
+                >
+              </div>
+            </div>
+            <div style="padding: 20px; font-size: 14px;">
+              <icon name="pl-arrow-right" scale="1.5" class="menu-icon" />
+              詳細
+            </div>
+          </el-card>
+        </router-link>
+      </el-col>
     </el-row>
   </div>
 </template>
@@ -90,26 +129,19 @@ export default {
       type: Object,
       default: () => ({
         id: null,
+        name: '',
         createdAt: '',
         createdBy: '',
         dataSetId: null,
         dataSetVersion: null,
+        dataSetURL: '',
+        templateURL: '',
       }),
     },
   },
-  data() {
-    return {
-      importfile: null,
-      dataSetName: '',
-      dataSetUrl: '',
-      templateUrl: '',
-    }
-  },
+
   computed: {
     ...mapGetters(['detail', 'events']),
-  },
-  async created() {
-    await this.initialize()
   },
 
   methods: {
@@ -122,49 +154,32 @@ export default {
       'delete',
       'deleteFile',
     ]),
-    async initialize() {
-      this.dataSetUrl = '/aquarium/dataset/' + this.detail.dataSet.id
-      this.templateUrl = '/aquarium/model-template/' + this.detail.template.id
-    },
-    handleClick() {},
-    async retrieveData() {
-      await this.fetchDetail(this.value.id)
-      if (
-        this.detail.statusType === 'Running' ||
-        this.detail.statusType === 'Error'
+    tagType(val) {
+      let tag = null
+      if (val == 'Running' || val == 'Opened') {
+        tag = ''
+      } else if (val == 'Completed') {
+        tag = 'success'
+      } else if (val == 'None' || val == 'Empty') {
+        tag = 'info'
+      } else if (val == 'Killed' || val == 'UserCanceled' || val == 'Empty') {
+        tag = 'warning'
+      } else if (
+        val == 'Invalid' ||
+        val == 'Forbidden' ||
+        val == 'Failed' ||
+        val == 'Invalid' ||
+        val == 'Error'
       ) {
-        await this.fetchEvents(this.value.id)
+        tag = 'danger'
       }
-    },
-    async handleHalt() {
-      try {
-        await this.postHalt(this.value.id) // 異常停止（Status=Killed）
-        await this.retrieveData()
-        this.error = null
-      } catch (e) {
-        this.error = e
-      }
-    },
-    async handleUserCancel() {
-      try {
-        await this.postUserCancel(this.value.id) // 正常停止（Status=UserCanceled）
-        await this.retrieveData()
-        this.error = null
-      } catch (e) {
-        this.error = e
-      }
+      return tag
     },
   },
 }
 </script>
 
 <style lang="scss" scoped>
-.importfile-detail {
-  padding-top: 50px;
-}
-.importfile-detail > h3 {
-  padding-bottom: 10px;
-}
 .right-top-button {
   text-align: right;
 }

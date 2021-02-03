@@ -20,7 +20,7 @@
     </el-row>
 
     <el-row>
-      <el-col :span="4">
+      <el-col :span="8">
         <h3 style="padding:15px">ファイル一覧</h3>
         <el-collapse>
           <el-collapse-item
@@ -30,13 +30,11 @@
             :index="index"
           >
             <template slot="title">
-              <span style="margin-left:20px;display:inline-block;width:220px">
-                <span
-                  style="margin-left:0px;display:inline-block;width:160px"
-                  @click="dataClick(item)"
+              <span style="margin-left:20px;display:inline-block;width:400px">
+                <span class="data-name" style="" @click="dataClick(item)"
                   >データ:{{ item.name }}</span
                 >
-                <!--TODO 削除<i class="el-icon-delete" @click="openDeleteDialog(item)"></i>-->
+                <i class="el-icon-delete" @click="openDeleteDialog(item)"></i>
               </span>
             </template>
             <ul style="margin-left:20px">
@@ -67,7 +65,7 @@
           </span>
         </el-dialog>
       </el-col>
-      <el-col :span="18">
+      <el-col :span="16">
         <el-row>
           <el-col>
             <h3 style="padding:15px">プレビュー</h3>
@@ -194,10 +192,45 @@ export default {
     },
     async deleteData() {
       this.deleteDialog = false
+      let flatEntry = []
+
+      for (let i in this.detailVersion.flatEntries) {
+        //selectDeleteData
+        if (
+          this.selectDeleteData.id != this.detailVersion.flatEntries[i]['id']
+        ) {
+          flatEntry.push({
+            id: this.detailVersion.flatEntries[i]['id'],
+          })
+        }
+      }
       //カモノハシデータセットを新規作成
-      //アクアリウム新バージョンを作成
+      //カモノハシのデータセットを登録する
+      let datasetparams = {
+        entries: {},
+        flatEntries: flatEntry,
+        isFlat: true,
+        name: 'aquqrium_' + this.datasetname,
+        memo: '',
+      }
+
+      let dataset = await this['dataSet/post'](datasetparams)
+      //アクアリウムデータセットバージョンを登録する
+      let version = await this['aquariumDataSet/postByIdVersions']({
+        //id: aqDataset.data.id,
+        id: this.id,
+        model: { datasetId: dataset.data.id },
+      })
+      this.$emit('latestVersionId', version.id)
+      this.retrieveData()
+      this.versionValue = version.id
+
       //再描画
       this.$forceUpdate()
+      await this.$notify.success({
+        type: 'Success',
+        message: `データを削除して新しいデータセットバージョンを作成しました。`,
+      })
     },
 
     async currentChange(version) {
@@ -304,5 +337,14 @@ export default {
 
 .clearfix:after {
   clear: both;
+}
+
+.data-name {
+  margin-left: 0px;
+  display: inline-block;
+  width: 360px;
+}
+.data-name:hover {
+  color: #409eff;
 }
 </style>

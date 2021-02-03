@@ -2,7 +2,7 @@
   <div>
     <h2>インポートするファイルの選択</h2>
     <div style="width:600px;padding-top:20px;padding-bottom:40px">
-      カスタムモデルを作成するには、最初に一連の画像をインポートしてトレーニングする必要があります。各画像はラベルで分類する必要があります（ラベルは画像を特定する方法をモデルに伝えるために不可欠です）
+      データセットにデータを追加することができます。
     </div>
     <el-radio v-model="importfile" label="1" style="display:block;padding:10px">
       パソコンから画像をアップロード
@@ -12,18 +12,15 @@
     </el-radio>
     <div v-if="importfile == 1" class="importfile-detail">
       <h3>パソコンから画像をアップロード</h3>
-      任意のファイル形式がアップロードできます。画像の表示はJPG,PNG,ZIPがサポートされています。<br />
+      任意のファイル形式がアップロードできます。画像の表示はJPG,PNGがサポートされています。<br />
       1回のアップロードで最大10000ファイル送信できます。アップロードしたファイルはKAMONOHASHIのデータ、データセットに保存されます。
 
       <el-row>
         <kqi-upload-form ref="uploadForm" title="File" :type="type" />
-        <el-link
-          type="info"
-          style="margin-top:10px ;padding:15px"
-          @click="submit()"
-        >
+        <br />
+        <el-button type="plain" plain style="margin-top:10px" @click="submit()">
           続行
-        </el-link>
+        </el-button>
       </el-row>
     </div>
     <div v-else-if="importfile == 2" class="importfile-detail">
@@ -162,8 +159,21 @@ export default {
         this.error = null
         this.closeDrawer()
         this.retrieveData()
+        await this.$notify.success({
+          type: 'Success',
+          message: `データを追加して新しいデータセットバージョンを作成しました。`,
+        })
       } catch (e) {
         this.error = e
+      }
+      // エラーがない場合、詳細イメージタブ画面に遷移
+      if (this.error === null) {
+        this.$emit('handleTabChange', 'image')
+      } else {
+        this.$notify.error({
+          title: 'Error',
+          message: 'データ追加に失敗しました',
+        })
       }
     },
     // データファイルのアップロード
@@ -285,23 +295,7 @@ export default {
         }
       }
     },
-    closeDialog() {
-      this.$router.push('/dataset')
-    },
-    async done() {
-      this.closeDialog()
-      await this.retrieveData()
-      this.showSuccessMessage()
-    },
-    openCreateDialog() {
-      this.$router.push('/dataset/create')
-    },
-    openEditDialog(selectedRow) {
-      this.$router.push('/dataset/edit/' + selectedRow.id)
-    },
-    handleCopy(id) {
-      this.$router.push('/dataset/create/' + id)
-    },
+
     async search() {
       await this.retrieveData()
     },
