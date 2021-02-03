@@ -14,7 +14,7 @@ namespace Nssol.Platypus.ApiModels.ExperimentApiModels
         /// <param name="history">実験履歴</param>
         public IndexOutputModel(ExperimentHistory history) : base(history)
         {
-            DataSet = new Aquarium.DataSetApiModels.VersionIndexOutputModel(history.DataSet);
+            DataSet = new Aquarium.DataSetApiModels.VersionIndexOutputModel(history.DataSetVersion);
             Template = new TemplateApiModels.IndexOutputModel(history.Template);
         }
 

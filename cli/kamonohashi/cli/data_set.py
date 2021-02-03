@@ -171,15 +171,16 @@ def delete(id):
 @click.option('-t', '--type', 'data_type', type=click.Choice(['training', 'testing', 'validation']), multiple=True,
               help='A data type to download  [multiple]')
 def download_files(id, destination, data_type):
+    """Download files of a dataset"""
     api = rest.DataSetApi(configuration.get_api_client())
     result = api.list_dataset_files(id, with_url=True)
     pool_manager = api.api_client.rest_client.pool_manager
-    for entry in result.entries:
-        if result.is_flat:
-            for file in entry.files:
-                destination_dir_path = os.path.join(destination, str(file.id))
-                object_storage.download_file(pool_manager, file.url, destination_dir_path, file.file_name)
-        else:
+    if result.is_flat:
+        for file in result.flat_entries:
+            destination_dir_path = os.path.join(destination, str(file.id))
+            object_storage.download_file(pool_manager, file.url, destination_dir_path, file.file_name)
+    else:
+        for entry in result.entries:
             if not data_type or entry.type in data_type:
                 for file in entry.files:
                     destination_dir_path = os.path.join(destination, entry.type, str(file.id))

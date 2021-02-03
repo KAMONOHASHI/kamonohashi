@@ -129,7 +129,13 @@
           <el-option
             v-for="item in commits"
             :key="item.commitId"
-            :label="item.commitId"
+            :label="
+              createCommitIdAndComment(
+                item.commitId,
+                item.committerName,
+                item.comment,
+              )
+            "
             :value="item"
           />
         </el-select>
@@ -325,6 +331,36 @@ export default {
         gitModel.commit = commit
       }
       this.$emit('input', gitModel)
+    },
+
+    // コミットidとコミットメッセージを組み合わせたメッセージを生成する
+    createCommitIdAndComment(commitId, committerName, comment) {
+      if (comment === null || comment.length === 0) {
+        return (
+          commitId.slice(0, 10) +
+          ',,, (コミッター:' +
+          committerName +
+          ', コメント: なし)'
+        )
+      } else if (comment.length <= 20) {
+        return (
+          commitId.slice(0, 10) +
+          ',,, (コミッター:' +
+          committerName +
+          ', コメント: ' +
+          comment +
+          ')'
+        )
+      } else {
+        return (
+          commitId.slice(0, 10) +
+          ',,, (コミッター:' +
+          committerName +
+          ', コメント: ' +
+          comment.slice(0, 20) +
+          ',,,)'
+        )
+      }
     },
   },
 }
