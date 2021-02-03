@@ -1,6 +1,4 @@
-﻿using Nssol.Platypus.ApiModels.Components;
-using Nssol.Platypus.Controllers.Util;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Nssol.Platypus.ApiModels.ExperimentApiModels
@@ -17,32 +15,24 @@ namespace Nssol.Platypus.ApiModels.ExperimentApiModels
         [MinLength(1)]
         public string Name { get; set; }
 
-
-
         /// <summary>
         /// アクアリウムデータセットID
         /// </summary>
-        [Required]
-        public long? DataSetId { get; set; }
+        public long DataSetId { get; set; }
 
         /// <summary>
-        /// アクアリウムデータセットIDのバージョン
+        /// アクアリウムデータセットバージョンID
         /// </summary>
-        [Required]
-        public long? DataSetVersion { get; set; }
+        public long DataSetVersionId { get; set; }
 
         /// <summary>
         ///　テンプレートID
         /// </summary>
-        [Required]
-        public long? TemplateId { get; set; }
-
+        public long TemplateId { get; set; }
 
         /// <summary>
         /// 追加環境変数
         /// </summary>
         public Dictionary<string, string> Options { get; set; }
-
-
     }
 }

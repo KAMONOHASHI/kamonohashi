@@ -139,5 +139,12 @@ namespace Nssol.Platypus.Models.TenantModels
         {
             return ContainerStatus.Convert(Status);
         }
+
+        public long? ExperimentPreprocessHistoryId { get; set; }
+        /// <summary>
+        /// 学習の入力となるkamonohashiデータセット
+        /// </summary>
+        [ForeignKey(nameof(ExperimentPreprocessHistoryId))]
+        public virtual ExperimentPreprocessHistory ExperimentPreprocessHistory { get; set; }
     }
 }

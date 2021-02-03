@@ -64,6 +64,15 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
                 .SingleOrDefaultAsync();
         }
 
+
+        public async Task<ExperimentHistory> GetIncludePreprocessdDataAsync(long id)
+        {
+            return await GetAll().Include(x => x.ExperimentPreprocessHistory)
+                .ThenInclude(x => x.ExperimentPreprocessHistoryOutputs)
+                .Include(x => x.Template)
+                .SingleOrDefaultAsync(x => x.Id == id);
+        }
+
         /// <summary>
         /// データセットIDに紐づく実験履歴が存在するかチェックします。
         /// </summary>

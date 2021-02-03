@@ -1464,7 +1464,7 @@ namespace Nssol.Platypus.Logic
         /// </summary>
         /// <param name="experimentPreprocessHistory">対象の実験の前処理履歴</param>
         /// <returns>作成したコンテナのステータス</returns>
-        public async Task<Result<ContainerInfo, string>> RunExperimentPreprocessContainerAsync(ExperimentPreprocessHistory experimentPreprocessHistory)
+        public async Task<Result<ContainerInfo, string>> RunExperimentPreprocessContainerAsync(ExperimentHistory experimentHistory, ExperimentPreprocessHistory experimentPreprocessHistory)
         {
             string token = await GetUserAccessTokenAsync();
             if (token == null)
@@ -1489,16 +1489,17 @@ namespace Nssol.Platypus.Logic
             // 上書き不可の環境変数
             var notEditableEnvList = new Dictionary<string, string>()
             {
-                { "DATASET_ID", experimentPreprocessHistory.DataSet.DataSetId.ToString()},
-                { "DATA_NAME", experimentPreprocessHistory.DataSet.AquariumDataSet.Name },
-                { "EXPERIMENT_ID", experimentPreprocessHistory.TemplateId.ToString()},
+                { "DATASET_ID", experimentPreprocessHistory.DataSetVersion.DataSetId.ToString()},
+                { "DATA_NAME", experimentPreprocessHistory.DataSet.Name },
+                { "EXPERIMENT_ID", experimentHistory.Id.ToString()},
                 { "PREPROCESSD_DATA_PATH", "/kqi/output/preprocessed_data/" },
                 { "COMMIT_ID", experimentPreprocessHistory.Template.PreprocessRepositoryCommitId},
                 { "KQI_SERVER", containerOptions.WebServerUrl },
                 { "KQI_TOKEN", loginLogic.GenerateToken().AccessToken },
                 { "PYTHONUNBUFFERED", "true" }, // python実行時の標準出力・エラーのバッファリングをなくす
                 { "LC_ALL", "C.UTF-8"},  // python実行時のエラー回避
-                { "LANG", "C.UTF-8"}  // python実行時のエラー回避
+                { "LANG", "C.UTF-8"},  // python実行時のエラー回避
+                { "LOCAL_DATASET", "True" }
             };
 
             //コンテナを起動するために必要な設定値をインスタンス化
@@ -1507,7 +1508,7 @@ namespace Nssol.Platypus.Logic
                 ID = experimentPreprocessHistory.Id,
                 TenantName = TenantName,
                 LoginUser = CurrentUserInfo.Alias, //アカウントはエイリアスから指定
-                Name = "experiment-" + experimentPreprocessHistory.Key,
+                Name = experimentPreprocessHistory.Key,
                 ContainerImage = registryMap.Registry.GetImagePath(experimentPreprocessHistory.Template.PreprocessContainerImage, experimentPreprocessHistory.Template.PreprocessContainerTag),
                 ScriptType = "experiment_preproc", // 実行スクリプトの指定
                 Cpu = experimentPreprocessHistory.Template.PreprocessCpu,
@@ -1526,7 +1527,7 @@ namespace Nssol.Platypus.Logic
                         MountPath = "/kqi/attach",
                         SubPath = experimentPreprocessHistory.Id.ToString(),
                         Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
-                        ServerPath = CurrentUserInfo.SelectedTenant.ExperimentContainerAttachedNfsPath,
+                        ServerPath = CurrentUserInfo.SelectedTenant.ExperimentPreprocContainerAttachedNfsPath,
                         ReadOnly = false
                     },
 
@@ -1653,14 +1654,15 @@ namespace Nssol.Platypus.Logic
             // 上書き不可の環境変数
             var notEditableEnvList = new Dictionary<string, string>()
             {
-                { "DATA_ID", experimentHistory.InputDataSetId.ToString()},
+                { "DATASET_ID", experimentHistory.InputDataSetId.ToString()},
                 { "EXPERIMENT_ID", experimentHistory.Id.ToString()},
                 { "COMMIT_ID", experimentHistory.Template.TrainingRepositoryCommitId},
                 { "KQI_SERVER", containerOptions.WebServerUrl },
                 { "KQI_TOKEN", loginLogic.GenerateToken().AccessToken },
                 { "PYTHONUNBUFFERED", "true" }, // python実行時の標準出力・エラーのバッファリングをなくす
                 { "LC_ALL", "C.UTF-8"},  // python実行時のエラー回避
-                { "LANG", "C.UTF-8"}  // python実行時のエラー回避
+                { "LANG", "C.UTF-8"},  // python実行時のエラー回避
+                { "LOCAL_DATASET", "True" }
             };
 
             var registryMap = registryLogic.GetCurrentRegistryMap(experimentHistory.Template.TrainingContainerRegistryId.Value);
@@ -1707,7 +1709,7 @@ namespace Nssol.Platypus.Logic
                 ID = experimentHistory.Id,
                 TenantName = TenantName,
                 LoginUser = CurrentUserInfo.Alias, //アカウントはエイリアスから指定
-                Name = "experiment-" + experimentHistory.Key,
+                Name = experimentHistory.Key,
                 ContainerImage = registryMap.Registry.GetImagePath(experimentHistory.Template.TrainingContainerImage, experimentHistory.Template.TrainingContainerTag),
                 ScriptType = "experiment_training_afeter_preproc",
                 Cpu = experimentHistory.Template.TrainingCpu,
@@ -1722,7 +1724,7 @@ namespace Nssol.Platypus.Logic
                     new NfsVolumeMountModel()
                     {
                         Name = "nfs-output",
-                        MountPath = "/kqi/output/training",
+                        MountPath = "/kqi/output",
                         SubPath = experimentHistory.Id.ToString(),
                         Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
                         ServerPath = CurrentUserInfo.SelectedTenant.ExperimentContainerOutputNfsPath,
@@ -1733,11 +1735,21 @@ namespace Nssol.Platypus.Logic
                     new NfsVolumeMountModel()
                     {
                         Name = "nfs-attach",
-                        MountPath = "/kqi/attach/training",
+                        MountPath = "/kqi/attach",
                         SubPath = experimentHistory.Id.ToString(),
                         Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
                         ServerPath = CurrentUserInfo.SelectedTenant.ExperimentContainerAttachedNfsPath,
                         ReadOnly = false
+                    },
+                    // データをマウントするディレクトリ
+                    // テナントのDataディレクトリを/kqi/rawにマウントする
+                    new NfsVolumeMountModel()
+                    {
+                        Name = "nfs-data",
+                        MountPath = "/kqi/raw",
+                        Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
+                        ServerPath = CurrentUserInfo.SelectedTenant.DataNfsPath,
+                        ReadOnly = true
                     }
                 },
                 ContainerSharedPath = new Dictionary<string, string>()
@@ -1822,7 +1834,8 @@ namespace Nssol.Platypus.Logic
                 { "KQI_TOKEN", loginLogic.GenerateToken().AccessToken },
                 { "PYTHONUNBUFFERED", "true" }, // python実行時の標準出力・エラーのバッファリングをなくす
                 { "LC_ALL", "C.UTF-8"},  // python実行時のエラー回避
-                { "LANG", "C.UTF-8"}  // python実行時のエラー回避
+                { "LANG", "C.UTF-8"},  // python実行時のエラー回避
+                { "LOCAL_DATASET", "True" }
             };
 
             var registryMap = registryLogic.GetCurrentRegistryMap(experimentHistory.Template.TrainingContainerRegistryId.Value);
@@ -1885,7 +1898,7 @@ namespace Nssol.Platypus.Logic
                     new NfsVolumeMountModel()
                     {
                         Name = "nfs-output",
-                        MountPath = "/kqi/output/training",
+                        MountPath = "/kqi/output",
                         SubPath = experimentHistory.Id.ToString(),
                         Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
                         ServerPath = CurrentUserInfo.SelectedTenant.ExperimentContainerOutputNfsPath,
@@ -1896,7 +1909,7 @@ namespace Nssol.Platypus.Logic
                     new NfsVolumeMountModel()
                     {
                         Name = "nfs-attach",
-                        MountPath = "/kqi/attach/training",
+                        MountPath = "/kqi/attach",
                         SubPath = experimentHistory.Id.ToString(),
                         Server = CurrentUserInfo.SelectedTenant.Storage.NfsServer,
                         ServerPath = CurrentUserInfo.SelectedTenant.ExperimentContainerAttachedNfsPath,
