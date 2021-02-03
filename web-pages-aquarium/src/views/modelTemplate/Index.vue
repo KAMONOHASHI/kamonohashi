@@ -57,9 +57,6 @@
                     class="template-description"
                     style="padding: 20px; font-size: 18px;text-align:center;"
                   >
-                    <div style="padding:20px">
-                      <el-button type="primary">Pytorch</el-button>
-                    </div>
                     <!-- <div>
                       <el-tag class="tag"> {{ template.tag }}</el-tag>
                     </div> -->
