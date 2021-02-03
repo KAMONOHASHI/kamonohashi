@@ -34,7 +34,6 @@
           width="auto"
         />
         <el-table-column prop="modifiedAt" label="最終更新日時" width="auto" />
-        <el-table-column prop="status" label="ステータス" width="auto" />
       </el-table>
     </el-row>
     <el-row>
@@ -72,7 +71,6 @@ export default {
         { prop: 'latestVersion', name: '最新バージョン', type: 'text' },
 
         { prop: 'modifiedAt', name: '最終更新日時', type: 'date' },
-        { prop: 'status', name: 'ステータス', type: 'text' },
       ],
       tableData: [],
     }
@@ -101,19 +99,14 @@ export default {
     closeDialog() {
       this.$router.push('/aquarium/dataset')
     },
-    async done(type) {
-      if (type === 'delete') {
-        // 削除時、表示していたページにデータが無くなっている可能性がある。
-        // 総数 % ページサイズ === 1の時、残り1の状態で削除したため、currentPageが1で無ければ1つ前のページに戻す
-        if (this.total % this.pageStatus.currentPageSize === 1) {
-          if (this.pageStatus.currentPage !== 1) {
-            this.pageStatus.currentPage -= 1
-          }
-        }
-      }
-      this.closeDialog()
-      await this.retrieveData()
-      this.showSuccessMessage()
+    async done() {
+      let that = this
+      setTimeout(function() {
+        that.showSuccessMessage()
+        //アクアリウムデータセットとアクアリウムデータセットバージョンが登録されるタイミングにずれがあるので一覧データ再読み込みは少し待つ
+        that.retrieveData()
+        that.closeDialog()
+      }, 500)
     },
     openCreateDialog() {
       this.$router.push('/aquarium/dataset/create')
