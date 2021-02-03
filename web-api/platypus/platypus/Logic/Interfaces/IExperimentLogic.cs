@@ -21,6 +21,15 @@ namespace Nssol.Platypus.Logic.Interfaces
         Task ExitAsync(ExperimentHistory experimentHistory, ContainerStatus status, bool force);
 
         /// <summary>
+        /// 前処理コンテナを削除し、ステータスを変更する。
+        /// </summary>
+        /// <param name="history"></param>
+        /// <param name="status"></param>
+        /// <param name="force"></param>
+        /// <returns></returns>
+        Task ExitPreprocessAsync(ExperimentPreprocessHistory history, ContainerStatus status, bool force);
+
+        /// <summary>
         /// TensorBoardコンテナを削除する。
         /// </summary>
         /// <param name="container">対象コンテナ</param>

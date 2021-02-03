@@ -12,18 +12,21 @@ namespace Nssol.Platypus.Logic
     public class ExperimentLogic : PlatypusLogicBase, IExperimentLogic
     {
         private readonly IExperimentHistoryRepository experimentHistoryRepository;
+        private readonly IExperimentPreprocessHistoryRepository experimentPreprocessHistoryRepository;
         private readonly IExperimentTensorBoardContainerRepository tensorBoardContainerRepository;
         private readonly IClusterManagementLogic clusterManagementLogic;
         private readonly IUnitOfWork unitOfWork;
 
         public ExperimentLogic(
             IExperimentHistoryRepository experimentHistoryRepository,
+            IExperimentPreprocessHistoryRepository experimentPreprocessHistoryRepository,
             IExperimentTensorBoardContainerRepository tensorBoardContainerRepository,
             IClusterManagementLogic clusterManagementLogic,
             IUnitOfWork unitOfWork,
             ICommonDiLogic commonDiLogic) : base(commonDiLogic)
         {
             this.experimentHistoryRepository = experimentHistoryRepository;
+            this.experimentPreprocessHistoryRepository = experimentPreprocessHistoryRepository;
             this.tensorBoardContainerRepository = tensorBoardContainerRepository;
             this.clusterManagementLogic = clusterManagementLogic;
             this.unitOfWork = unitOfWork;
@@ -59,6 +62,35 @@ namespace Nssol.Platypus.Logic
             {
                 await experimentHistoryRepository.UpdateStatusAsync(experimentHistory.Id, status, force);
                 
+                // DBの更新を確定する
+                unitOfWork.Commit();
+            }
+        }
+
+        public async Task ExitPreprocessAsync(ExperimentPreprocessHistory history, ContainerStatus status, bool force)
+        {
+            // コンテナの生存確認
+            if (history.GetStatus().Exist())
+            {
+                var info = await clusterManagementLogic.GetContainerDetailsInfoAsync(history.Key, CurrentUserInfo.SelectedTenant.Name, force);
+
+                // コンテナ削除の前に、DBの更新を先に実行
+                await experimentPreprocessHistoryRepository.UpdateStatusAsync(history.Id, status, info.CreatedAt, DateTime.Now, force);
+
+                // 実コンテナ削除の結果は確認せず、DBの更新を先に確定する（コンテナがいないなら、そのまま消しても問題ない想定）
+                unitOfWork.Commit();
+
+                if (info.Status.Exist())
+                {
+                    // 再確認してもまだ存在していたら、コンテナ削除
+                    await clusterManagementLogic.DeleteContainerAsync(
+                        ContainerType.Experiment, history.Key, CurrentUserInfo.SelectedTenant.Name, force);
+                }
+            }
+            else
+            {
+                await experimentPreprocessHistoryRepository.UpdateStatusAsync(history.Id, status, force);
+
                 // DBの更新を確定する
                 unitOfWork.Commit();
             }

@@ -34,6 +34,8 @@
         /// <summary>実験(テンプレート)のコンテナ出力ファイル結果</summary>
         ExperimentContainerOutputFiles,
         /// <summary>ユーザーの添付した実験履歴添付ファイル</summary>
-        ExperimentHistoryAttachedFiles
+        ExperimentHistoryAttachedFiles,
+        /// <summary>コンテナが添付した実験前処理履歴添付ファイル</summary>
+        ExperimentPreprocContainerAttachedFiles,
     }
 }

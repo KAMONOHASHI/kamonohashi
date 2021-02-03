@@ -59,7 +59,7 @@ namespace Nssol.Platypus.Logic.Interfaces
         /// </summary>
         /// /// <param name="experimentPreprocessHistory">対象の実験の前処理履歴</param>
         /// <returns>作成したコンテナのステータス</returns>
-        Task<Result<ContainerInfo, string>> RunExperimentPreprocessContainerAsync(ExperimentPreprocessHistory experimentPreprocessHistory);
+        Task<Result<ContainerInfo, string>> RunExperimentPreprocessContainerAsync(ExperimentHistory experimentHistory, ExperimentPreprocessHistory experimentPreprocessHistory);
 
         /// <summary>
         /// 新規に実験用学習コンテナを作成する。

@@ -8,13 +8,32 @@ data:
     bash /kqi/scripts/common/show-logo
     bash /kqi/scripts/common/prepare-kqi-conf
     bash /kqi/scripts/common/prepare-git
-    echo "------------------------- [KAMONOHASHI Main] deploy data into /kqi/input/$DATA_ID . -------------------------"
-    mkdir -p /kqi/input/$DATA_ID
-    kqi data download-files -d /kqi/input/$DATA_ID $DATA_ID && kqi data get -d /kqi/input/meta.json $DATA_ID
+
+    echo "------------------------- [KAMONOHASHI Prepare] deploy dataset $DATASET_ID into /kqi/input . -------------------------"
+    kqi dataset get -d /kqi/input/meta.json $DATASET_ID && kqi dataset list-path-pairs $DATASET_ID > /kqi/tmp/datapairs.txt
     if [ $? -ne 0 ]; then
-        echo "data download-files failed"
-        curl "${KQI_SERVER}/api/v2/experiment/${EXPERIMENT_ID}/halt" --data "" --output /dev/null -H "accept: application/json" -H "Authorization: Bearer ${KQI_TOKEN}" --fail --speed-time 30 --silent --show-error --connect-timeout 30
+        echo "dataset get failed"
+        kqi training halt $EXPERIMENT_ID
     fi
+
+    # default: create symlink to raw-data, $LOCAL_DATASET = True : copy raw-data to local
+    prepare_cmd='ln -s "/kqi/raw/${stored_path}" "/kqi/input/${file_path_c_quote}"'
+    if [ $LOCAL_DATASET = "True" ]; then
+        prepare_cmd='cp "/kqi/raw/${stored_path}" "/kqi/input/${file_path_c_quote}"'
+    fi
+    while true
+    do
+        read -r file_path
+        read -r stored_path
+        if [ -z "$stored_path" ] ; then break; fi
+        printf -v file_path_c_quote %b "$file_path"
+        mkdir -p /kqi/input/$(dirname "${file_path}") && eval ${prepare_cmd}
+        if [ $? -ne 0 ]; then
+            echo "create dataset failed"
+            curl "${KQI_SERVER}/api/v2/experiment/${EXPERIMENT_ID}/halt" --data "" --output /dev/null -H "accept: application/json" -H "Authorization: Bearer ${KQI_TOKEN}" --fail --speed-time 30 --silent --show-error --connect-timeout 30
+            exit 0
+        fi
+    done </kqi/tmp/datapairs.txt
   main: |
     bash /kqi/scripts/common/wait-ready
     cd /kqi/git
@@ -24,13 +43,12 @@ data:
   finish: |
     bash /kqi/scripts/common/prepare-kqi-conf
     bash /kqi/scripts/common/wait-finish
-  
+
     if [ $(cat /kqi/tmp/result_exit_code) -eq 0 ]
     then
       echo "------------------------- [KAMONOHASHI Finish] retrun code is 0. complete  -------------------------"
-      curl -X POST "${KQI_SERVER}/api/v2/experiment/$EXPERIMENT_ID/complete" --dataev/null -H "accept: application/json" -H "Authorization: Bearer ${KQI_TOKEN}" --fail --speed-time 30 --silent --show-error --connect-timeout 30 "" --output /
+      curl "${KQI_SERVER}/api/v2/experiment/${EXPERIMENT_ID}/complete" --data "" --output /dev/null -H "accept: application/json" -H "Authorization: Bearer ${KQI_TOKEN}" --fail --speed-time 30 --silent --show-error --connect-timeout 30
     else
       echo "------------------------- [KAMONOHASHI Finish] retrun code is $RESULT. kill  -------------------------"
       curl "${KQI_SERVER}/api/v2/experiment/${EXPERIMENT_ID}/halt" --data "" --output /dev/null -H "accept: application/json" -H "Authorization: Bearer ${KQI_TOKEN}" --fail --speed-time 30 --silent --show-error --connect-timeout 30
     fi
-   

@@ -40,7 +40,7 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
         public async Task<IEnumerable<ExperimentPreprocessHistory>> GetAllNameAsync()
         {
             return await GetAll()
-                .Select(t => new ExperimentPreprocessHistory() { Id = t.Id, Name = t.Name, Status = t.Status })
+                .Select(t => new ExperimentPreprocessHistory() { Id = t.Id, Status = t.Status })
                 .OrderByDescending(t => t.Id).ToListAsync();
         }
 
@@ -52,6 +52,7 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
         {
             return await FindAll(t => t.Id == id).Include(t => t.DataSet)
                 .Include(t => t.Template)
+                .Include(t => t.ExperimentPreprocessHistoryOutputs)
                 .SingleOrDefaultAsync();
         }
 
@@ -96,7 +97,7 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
         {
             ExperimentPreprocessHistoryOutput image = new ExperimentPreprocessHistoryOutput()
             {
-                ExperimentHistoryId = historyId,
+                ExperimentPreprocessedHistoryId = historyId,
                 OutputData = newData
             };
             AddModel<ExperimentPreprocessHistoryOutput>(image);
@@ -165,7 +166,7 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
         /// </summary>
         public IEnumerable<long> GetExperimentPreprocessOutputs(long id)
         {
-            return FindModelAll<ExperimentPreprocessHistoryOutput>(p => p.ExperimentHistoryId == id).Select(p => p.OutputDataId);
+            return FindModelAll<ExperimentPreprocessHistoryOutput>(p => p.ExperimentPreprocessedHistoryId == id).Select(p => p.OutputDataId);
         }
 
         /// <summary>

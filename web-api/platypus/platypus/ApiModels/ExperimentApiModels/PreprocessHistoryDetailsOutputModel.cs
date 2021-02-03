@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Nssol.Platypus.ApiModels.ExperimentApiModels
 {
-    public class PreprocessHistoryDetailsOutputModel : PreprocessHistoriesOutputModel
+    public class PreprocessHistoryDetailsOutputModel : PreprocessHistoryIndexOutputModel
     {
         public PreprocessHistoryDetailsOutputModel(ExperimentPreprocessHistory history) : base(history)
         {
