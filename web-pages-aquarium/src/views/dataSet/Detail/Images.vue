@@ -227,6 +227,10 @@ export default {
 
       //再描画
       this.$forceUpdate()
+      await this.$notify.success({
+        type: 'Success',
+        message: `データを削除して新しいデータセットバージョンを作成しました。`,
+      })
     },
 
     async currentChange(version) {

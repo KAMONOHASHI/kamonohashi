@@ -3,12 +3,18 @@
     <h2>{{ name }}</h2>
     <el-tabs v-model="activeName">
       <el-tab-pane label="アップロード" name="upload">
-        <upload :id="id" :datasetname="name" @latestVersionId="setVersionId" />
+        <upload
+          :id="id"
+          :datasetname="name"
+          @latestVersionId="setVersionId"
+          @handleTabChange="changeActiveTab"
+        />
       </el-tab-pane>
       <el-tab-pane label="イメージ" name="image">
         <images :id="id" :latest-version-id="latestVersionId" />
       </el-tab-pane>
     </el-tabs>
+    <router-view @done="done" />
   </div>
 </template>
 
@@ -49,6 +55,9 @@ export default {
     setVersionId(x) {
       this.latestVersionId = x
     },
+    changeActiveTab(tabName) {
+      this.activeName = tabName
+    },
     async currentChange() {
       await this.retrieveData()
     },
@@ -57,17 +66,17 @@ export default {
       this.name = this.dataSets[0].name
     },
 
-    openCreateDialog() {
-      this.$router.push('/dataset/create')
-    },
-    openEditDialog(selectedRow) {
-      this.$router.push('/dataset/edit/' + selectedRow.id)
-    },
-    handleCopy(id) {
-      this.$router.push('/dataset/create/' + id)
-    },
     async search() {
       await this.retrieveData()
+    },
+
+    async done() {
+      await this.retrieveData()
+      this.closeDialog()
+      this.showSuccessMessage()
+    },
+    closeDialog() {
+      this.$router.push('/aquarium/dataset')
     },
   },
 }
