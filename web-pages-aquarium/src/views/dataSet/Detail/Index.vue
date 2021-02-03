@@ -33,7 +33,7 @@ export default {
       iconname: 'pl-plus',
       searchCondition: {},
       latestVersionId: null,
-      activeName: 'upload',
+      activeName: 'image',
       name: null,
     }
   },

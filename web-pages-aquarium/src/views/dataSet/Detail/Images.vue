@@ -30,10 +30,8 @@
             :index="index"
           >
             <template slot="title">
-              <span style="margin-left:20px;display:inline-block;width:220px">
-                <span
-                  style="margin-left:0px;display:inline-block;width:160px"
-                  @click="dataClick(item)"
+              <span style="margin-left:20px;display:inline-block;width:400px">
+                <span class="data-name" style="" @click="dataClick(item)"
                   >データ:{{ item.name }}</span
                 >
                 <i class="el-icon-delete" @click="openDeleteDialog(item)"></i>
@@ -335,5 +333,14 @@ export default {
 
 .clearfix:after {
   clear: both;
+}
+
+.data-name {
+  margin-left: 0px;
+  display: inline-block;
+  width: 360px;
+}
+.data-name:hover {
+  color: #409eff;
 }
 </style>
