@@ -57,7 +57,33 @@ export default {
     KqiGitSelector,
     KqiResourceSelector,
   },
-  props: ['value'],
+  props: {
+    value: {
+      type: Object,
+      default: () => {
+        return {
+          containerImage: {
+            registryId: 0,
+            image: 'string',
+            tag: 'string',
+          },
+          gitModel: {
+            gitId: 0,
+            repository: 'string',
+            owner: 'string',
+            branch: 'string',
+            commitId: 'string',
+          },
+          entryPoint: '',
+          resource: {
+            cpu: 1,
+            memory: 1,
+            gpu: 1,
+          },
+        }
+      },
+    },
+  },
   data() {
     return {
       rules: {

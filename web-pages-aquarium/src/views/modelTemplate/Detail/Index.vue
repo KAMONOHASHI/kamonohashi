@@ -79,12 +79,14 @@ export default {
     ...mapActions(['fetchDetail', 'delete', 'post']),
     async retrieveData() {
       await this.fetchDetail(this.id)
+
       this.baseForm = {
         name: this.detail.name,
         memo: this.detail.memo,
         accessLevel: this.detail.accessLevel,
         assignedTenants: this.detail.assignedTenants,
       }
+
       this.preprocForm = {
         containerImage: { ...this.detail.preprocessContainerImage },
         gitModel: { ...this.detail.preprocessGitModel },
@@ -121,7 +123,7 @@ export default {
           repository: this.preprocForm.gitModel.repository.split('/')[1],
           owner: this.preprocForm.gitModel.repository.split('/')[0],
           branch: this.preprocForm.gitModel.branch,
-          commitId: this.preprocForm.gitModel.commit.id,
+          commitId: this.preprocForm.gitModel.commit.commitId,
         },
         preprocessCpu: this.preprocForm.resource.cpu,
         preprocessMemory: this.preprocForm.resource.memory,
@@ -133,7 +135,7 @@ export default {
           repository: this.trainingForm.gitModel.repository.split('/')[1],
           owner: this.trainingForm.gitModel.repository.split('/')[0],
           branch: this.trainingForm.gitModel.branch,
-          commitId: this.trainingForm.gitModel.commit.id,
+          commitId: this.trainingForm.gitModel.commit.commitId,
         },
         trainingCpu: this.trainingForm.resource.cpu,
         trainingMemory: this.trainingForm.resource.memory,
@@ -141,7 +143,9 @@ export default {
       }
       params
       //await this['post'](params)
-      alert('体験版では編集は未実装です。新規登録をご利用ください')
+      this.$alert('編集は製品版で使用可能予定です', 'お知らせ', {
+        confirmButtonText: 'OK',
+      })
     },
   },
 }
