@@ -59,6 +59,12 @@ namespace Nssol.Platypus.ApiModels.TemplateApiModels
                 };
             }
             TrainingEntryPoint = template.TrainingEntryPoint;
+            PreprocessCpu = template.PreprocessCpu;
+            PreprocessMemory = template.PreprocessMemory;
+            PreprocessGpu = template.PreprocessGpu;
+            TrainingCpu = template.TrainingCpu;
+            TrainingMemory = template.TrainingMemory;
+            TrainingGpu = template.TrainingGpu;
         }
         #region 前処理
         /// <summary>
@@ -113,5 +119,37 @@ namespace Nssol.Platypus.ApiModels.TemplateApiModels
 
 
         }
+
+        /// <summary>
+        /// CPUコア数のデフォルト値
+        /// </summary>
+        public int PreprocessCpu { get; set; }
+
+        /// <summary>
+        /// メモリ容量（GB）のデフォルト値
+        /// </summary>
+        public int PreprocessMemory { get; set; }
+
+        /// <summary>
+        /// GPU数のデフォルト値
+        /// </summary>
+        public int PreprocessGpu { get; set; }
+
+        /// <summary>
+        /// CPUコア数のデフォルト値
+        /// </summary>
+        public int TrainingCpu { get; set; }
+
+        /// <summary>
+        /// メモリ容量（GB）のデフォルト値
+        /// </summary>
+        public int TrainingMemory { get; set; }
+
+        /// <summary>
+        /// GPU数のデフォルト値
+        /// </summary>
+        public int TrainingGpu { get; set; }
+
+
     }
 }

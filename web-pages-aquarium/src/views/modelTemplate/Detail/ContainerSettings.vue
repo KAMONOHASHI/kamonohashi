@@ -5,24 +5,22 @@
         <el-col :span="12">
           <kqi-container-selector
             v-model="form.containerImage"
-            :disabled="isPatch"
             :registries="registries"
             :images="images"
             :tags="tags"
-            heading="前処理実行コンテナイメージ"
+            heading="Dockerレジストリ"
             @selectRegistry="selectRegistry"
             @selectImage="selectImage"
           />
 
           <kqi-git-selector
             v-model="form.gitModel"
-            :disabled="isPatch"
             :gits="gits"
             :repositories="repositories"
             :branches="branches"
             :commits="commits"
             :loading-repositories="loadingRepositories"
-            heading="スクリプト"
+            heading="Gitサービス"
             @selectGit="selectGit"
             @selectRepository="selectRepository"
             @selectBranch="selectBranch"
@@ -40,11 +38,6 @@
         <el-col :span="6">
           <kqi-resource-selector v-model="form.resource" :quota="quota" />
         </el-col>
-      </el-row>
-      <el-row>
-        <el-button type="primary" plain @click="openCreateDialog()">
-          更新
-        </el-button>
       </el-row>
     </el-form>
   </div>
@@ -64,26 +57,35 @@ export default {
     KqiGitSelector,
     KqiResourceSelector,
   },
+  props: {
+    value: {
+      type: Object,
+      default: () => {
+        return {
+          containerImage: {
+            registryId: 0,
+            image: 'string',
+            tag: 'string',
+          },
+          gitModel: {
+            gitId: 0,
+            repository: 'string',
+            owner: 'string',
+            branch: 'string',
+            commitId: 'string',
+          },
+          entryPoint: '',
+          resource: {
+            cpu: 1,
+            memory: 1,
+            gpu: 1,
+          },
+        }
+      },
+    },
+  },
   data() {
     return {
-      form: {
-        containerImage: {
-          registry: null,
-          image: null,
-          tag: null,
-        },
-        gitModel: {
-          git: null,
-          repository: null,
-          branch: null,
-          commit: null,
-        },
-        resource: {
-          cpu: 1,
-          memory: 1,
-          gpu: 0,
-        },
-      },
       rules: {
         containerImage: [
           { required: true, trigger: 'blur', message: '必須項目です' },
@@ -107,12 +109,80 @@ export default {
       loadingRepositories: ['gitSelector/loadingRepositories'],
       commits: ['gitSelector/commits'],
     }),
+    form: {
+      get() {
+        return this.value
+      },
+      set(value) {
+        this.$emit('input', value)
+      },
+    },
   },
 
   async created() {
-    //await this.retrieveData()
+    const gitModel = { ...this.value.gitModel }
+    const containerImage = { ...this.value.containerImage }
+
+    // クォータ情報を取得
+    await this['cluster/fetchQuota']()
+
+    const formContainerImage = await this.setupFromContainerImage(
+      containerImage,
+    )
+    const formGitModel = await this.setupFormGitModel(gitModel)
+    this.form = {
+      entryPoint: this.value.entryPoint,
+      gitModel: formGitModel,
+      containerImage: formContainerImage,
+      resource: { ...this.value.resource },
+    }
   },
   methods: {
+    async setupFromContainerImage(containerImage) {
+      await this['registrySelector/fetchRegistries']()
+      await this['registrySelector/fetchImages'](containerImage.registryId)
+      await this['registrySelector/fetchTags']({ ...containerImage })
+      const registry = this.registries.find(registry => {
+        return registry.id === containerImage.registryId
+      })
+      return { ...containerImage, registry }
+    },
+    async setupFormGitModel(gitModel) {
+      const formGitModel = {}
+      const repositoryName = gitModel.repository
+      await this['gitSelector/fetchGits']()
+      formGitModel.git = this.gits.find(git => {
+        return git.id === gitModel.gitId
+      })
+
+      formGitModel.repository = `${gitModel.owner}/${repositoryName}`
+
+      formGitModel.branch = gitModel.branch
+
+      const fetchCommitArg = {
+        gitId: gitModel.gitId,
+        commitId: gitModel.commitId,
+        repository: {
+          owner: gitModel.owner,
+          name: repositoryName,
+        },
+      }
+
+      await this['gitSelector/fetchCommits'](fetchCommitArg)
+
+      let commit = this.commits.find(commit => {
+        return commit.commitId === gitModel.commitId
+      })
+
+      await this['gitSelector/fetchCommitDetail'](fetchCommitArg)
+
+      if (commit) {
+        formGitModel.commit = commit
+      } else {
+        formGitModel.commit = this.commitDetail
+      }
+      return formGitModel
+    },
     async selectRegistry(registryId) {
       await registrySelectorUtil.selectRegistry(
         this.form,
@@ -172,42 +242,6 @@ export default {
       'gitSelector/fetchCommitDetail',
       'cluster/fetchQuota',
     ]),
-    async initialize() {
-      let url = this.$route.path
-      let type = url.split('/')[3] // ["", "preprocessing", "{type}", "{id}"]
-      switch (type) {
-        case 'create':
-          this.title = '新しいテンプレートの登録'
-          this.isCreateDialog = true
-          this.isCopyCreation = this.id !== null
-          this.isEditDialog = false
-          break
-        case 'edit':
-          this.title = 'テンプレートの詳細'
-          this.isCreateDialog = false
-          this.isCopyCreation = false
-          this.isEditDialog = true
-          break
-      }
-
-      // クォータ情報を取得
-      await this['cluster/fetchQuota']()
-
-      // 指定に必要な情報を取得
-      // レジストリ一覧を取得し、デフォルトレジストリを設定
-      await this['registrySelector/fetchRegistries']()
-      this.form.containerImage.registry = this.registries.find(registry => {
-        return registry.id === this.defaultRegistryId
-      })
-      await this.selectRegistry(this.defaultRegistryId)
-
-      // gitサーバ一覧を取得し、デフォルトgitサーバを設定
-      await this['gitSelector/fetchGits']()
-      this.form.gitModel.git = this.gits.find(git => {
-        return git.id === this.defaultGitId
-      })
-      await this['gitSelector/fetchRepositories'](this.defaultGitId)
-    },
   },
 }
 </script>
