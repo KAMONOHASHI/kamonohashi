@@ -62,7 +62,7 @@ namespace Nssol.Platypus.Controllers.spa
         public IActionResult GetAllTemplatesForAdmin([FromQuery] int? perPage, [FromQuery] int page = 1, bool withTotal = false)
         {
             var templates = templateRepository.GetAll();
-
+            templates = templates.OrderByDescending(t => t.Id);
             if (withTotal)
             {
                 //テンプレートの場合は件数が少ない想定なので、別のSQLを投げずにカウントしてしまう
@@ -87,7 +87,7 @@ namespace Nssol.Platypus.Controllers.spa
         public IActionResult GetTemplatesforTenant(bool withTotal = false)
         {
             var templates = templateRepository.GetAccessibleTemplates(CurrentUserInfo.SelectedTenant.Id);
-
+            templates = templates.OrderByDescending(t => t.Id);
             if (withTotal)
             {
                 //テンプレートの場合は件数が少ない想定なので、別のSQLを投げずにカウントしてしまう

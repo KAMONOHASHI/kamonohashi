@@ -6,15 +6,15 @@
       <!-- TODO 検索ボタンデザイン -->
       <el-row :gutter="20" style="margin-top:20px">
         <el-col class="search" :span="12">
-          <kqi-smart-search-input
+          <!-- <kqi-smart-search-input
             v-model="searchCondition"
             style="width:300px"
             :configs="searchConfigs"
             @search="search"
-          />
+          /> -->
         </el-col>
         <!-- TODO新規登録ボタンデザイン -->
-        <el-col class="right-top-button" :span="6">
+        <el-col class="right-top-button" :span="18">
           <el-button
             icon="el-icon-edit-outline"
             type="primary"
@@ -74,14 +74,14 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex'
-import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index'
+// import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index'
 // TODO template API に変更
 const { mapGetters, mapActions } = createNamespacedHelpers('template')
 
 export default {
   title: 'モデルテンプレート',
   components: {
-    KqiSmartSearchInput,
+    // KqiSmartSearchInput,
   },
   data() {
     return {
@@ -191,5 +191,8 @@ a {
 }
 .tag {
   border-radius: 15px;
+}
+.right-top-button {
+  text-align: right;
 }
 </style>

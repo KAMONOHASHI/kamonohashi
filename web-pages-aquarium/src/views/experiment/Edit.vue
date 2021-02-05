@@ -7,12 +7,12 @@
 
       <el-row :gutter="20" style="margin-top:20px">
         <el-col class="search" :span="12">
-          <kqi-smart-search-input
+          <!-- <kqi-smart-search-input
             v-model="searchCondition"
             style="width:300px"
             :configs="searchConfigs"
             @search="search"
-          />
+          /> -->
         </el-col>
       </el-row>
       <!-- TODO
@@ -43,9 +43,6 @@
                 class="template-description"
                 style="padding: 20px; font-size: 18px;text-align:center;"
               >
-                <div style="padding:20px">
-                  <el-button type="primary">Pytorch</el-button>
-                </div>
                 <!-- <div>
                       <el-tag class="tag"> {{ template.tag }}</el-tag>
                     </div> -->
@@ -61,13 +58,13 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex'
-import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index'
+// import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index'
 // TODO template API に変更
 const { mapGetters, mapActions } = createNamespacedHelpers('template')
 export default {
   title: '新規学習実行',
   components: {
-    KqiSmartSearchInput,
+    // KqiSmartSearchInput,
   },
   data() {
     return {
