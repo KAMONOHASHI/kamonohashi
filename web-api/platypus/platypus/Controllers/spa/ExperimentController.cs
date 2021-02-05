@@ -147,7 +147,7 @@ namespace Nssol.Platypus.Controllers.spa
             if (status.Exist())
             {
                 //実験がまだ進行中の場合、情報を更新する
-                var newStatus = await clusterManagementLogic.GetContainerStatusAsync(history.Name, CurrentUserInfo.SelectedTenant.Name, false);
+                var newStatus = await clusterManagementLogic.GetContainerStatusAsync(history.Key, CurrentUserInfo.SelectedTenant.Name, false);
 
                 if (status.Key != newStatus.Key)
                 {
