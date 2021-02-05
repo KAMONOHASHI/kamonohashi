@@ -353,14 +353,11 @@ export default {
           try {
             let params = {
               name: this.form.name,
-              //dataSetId: this.selectedDataSet.id,
-              dataSetId: this.selectedVersion.dataSetId,
-              dataSetVersion: this.selectedVersion.id,
+              dataSetId: this.selectedVersion.aquariumDataSetId,
+              dataSetVersionId: this.selectedVersion.id,
               templateId: this.templateId,
               options: null,
             }
-            console.log(params)
-            //TODO APIまだ
             await this['experiment/post'](params)
             this.$router.push('/aquarium/experiment')
             this.$emit('done')
