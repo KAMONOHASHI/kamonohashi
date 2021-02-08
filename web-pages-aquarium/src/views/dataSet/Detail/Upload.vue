@@ -8,7 +8,7 @@
       パソコンから画像をアップロード
     </el-radio>
     <el-radio v-model="importfile" label="2" style="display:block;padding:10px">
-      KAMONOHASHIからデータセットを選択
+      KAMONOHASHIからデータを選択
     </el-radio>
     <div v-if="importfile == 1" class="importfile-detail">
       <h3>パソコンから画像をアップロード</h3>
@@ -16,6 +16,7 @@
       1回のアップロードで最大10000ファイル送信できます。アップロードしたファイルはKAMONOHASHIのデータ、データセットに保存されます。
 
       <el-row>
+        <kqi-display-error :error="error" />
         <kqi-upload-form ref="uploadForm" title="File" :type="type" />
         <br />
         <el-button type="plain" plain style="margin-top:10px" @click="submit()">
@@ -24,7 +25,7 @@
       </el-row>
     </div>
     <div v-else-if="importfile == 2" class="importfile-detail">
-      <h3>KAMONOHASHIからデータセットを選択</h3>
+      <h3>KAMONOHASHIからデータを選択</h3>
       KAMONOHASHIに登録してあるデータを複数選択できます。<br />
       <el-button
         type="plain"
@@ -76,10 +77,11 @@
 
 <script>
 import KqiUploadForm from '@/components/KqiUploadForm'
+import KqiDisplayError from '@/components/KqiDisplayError'
 import { mapActions, mapGetters } from 'vuex'
 export default {
   title: 'データセット',
-  components: { KqiUploadForm },
+  components: { KqiUploadForm, KqiDisplayError },
   props: {
     id: {
       type: String,
@@ -103,6 +105,7 @@ export default {
       },
       checkList: [],
       datas: [],
+      error: null,
     }
   },
   computed: {
@@ -154,6 +157,13 @@ export default {
 
     async submit() {
       try {
+        if (
+          this.$refs.uploadForm._data.selectedFiles == null ||
+          this.$refs.uploadForm._data.selectedFiles.length == 0
+        ) {
+          this.error = new Error('ファイルを選択してください')
+          return
+        }
         await this.postDataSet()
         this.$emit('done')
         this.error = null
@@ -221,7 +231,6 @@ export default {
       for (let i in datas) {
         flatEntry.push({ id: datas[i]['id'] })
       }
-
       if (this.importfile == 1) {
         //ローカルからのデータリストを登録する
         let dataId = await this.uploadFile(this.datasetname)
