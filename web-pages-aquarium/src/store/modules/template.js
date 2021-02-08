@@ -34,7 +34,7 @@ const actions = {
     }
   },
   async fetchTenantModelTemplates({ commit }, params) {
-    let response = await api.templates.admin.getTenantTemplate(params)
+    let response = await api.templates.getTenantTemplate(params)
     let templates = response.data
     let total = response.headers['x-total-count']
     commit('setTemplates', { templates })

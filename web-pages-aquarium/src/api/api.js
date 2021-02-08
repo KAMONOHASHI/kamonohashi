@@ -79,10 +79,10 @@ let api = {
   templates: {
     admin: {
       get: gen.ApiV2AdminTemplatesGet,
-      getTenantTemplate: gen.ApiV2TenantTemplatesGet,
       post: gen.ApiV2AdminTemplatesPost,
       getById: gen.ApiV2AdminTemplatesByIdGet,
     },
+    getTenantTemplate: gen.ApiV2TenantTemplatesGet,
   },
   registry: {
     admin: {
