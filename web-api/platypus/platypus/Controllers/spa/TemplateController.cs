@@ -82,7 +82,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// 接続中のテナントに有効なテンプレート一覧を取得
         /// </summary>
         [HttpGet("tenant/templates")]
-        [PermissionFilter(MenuCode.Template)]
+        [PermissionFilter(MenuCode.Training, MenuCode.Preprocess, MenuCode.Inference, MenuCode.Notebook)]
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetTemplatesforTenant(bool withTotal = false)
         {
@@ -116,7 +116,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="id">テンプレートID</param>
         /// <param name="templateTenantMapRepository">DI用</param>
         [HttpGet("admin/templates/{id}")]
-        [PermissionFilter(MenuCode.Template)]
+        [PermissionFilter(MenuCode.Training, MenuCode.Preprocess, MenuCode.Inference, MenuCode.Notebook)]
         [ProducesResponseType(typeof(DetailsOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetDetail(long? id, [FromServices] ITemplateTenantMapRepository templateTenantMapRepository)
         {
