@@ -51,7 +51,7 @@ export default {
     return {
       submitText: '新規登録',
       type: 'Data',
-      fileNumLimit: 10,
+      fileNumLimit: 10000,
       form: {
         name: '',
         datalist: [],
@@ -180,13 +180,10 @@ export default {
     },
     async postDataSet() {
       let dataset = null
-      let dataId
+
       //ローカルからのデータリストを登録する
-      try {
-        dataId = await this.uploadFile(this.form.name)
-      } catch (e) {
-        throw this.error
-      }
+      let dataId = await this.uploadFile(this.form.name)
+
       //カモノハシのデータセットを登録する
       let datasetparams = {
         entries: {},
@@ -205,12 +202,11 @@ export default {
       let aqDataset = await this['aquariumDataSet/post'](aquariumDataSetparams)
 
       //アクアリウムデータセットバージョンを登録する
-      if (this.form.upload == 1) {
-        this['aquariumDataSet/postByIdVersions']({
-          id: aqDataset.data.id,
-          model: { datasetId: dataset.data.id },
-        })
-      }
+
+      this['aquariumDataSet/postByIdVersions']({
+        id: aqDataset.data.id,
+        model: { datasetId: dataset.data.id },
+      })
     },
 
     async deleteDataSet() {
