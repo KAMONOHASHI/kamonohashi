@@ -1,7 +1,8 @@
 <template>
   <div>
     <h2>推論一覧</h2>
-    作成したAIの評価の履歴一覧例です
+    作成したAIの評価の履歴一覧例です。<br />
+    ※表示データは体験版用ダミーデータです。
     <el-row>
       <el-col :span="18">
         <el-table :data="inferenceList" style="width: 100%">
@@ -32,10 +33,10 @@ export default {
     return {
       importfile: null,
       inferenceList: [
-        { id: '1', data: 'テストデータ01', result: '完了' },
-        { id: '2', data: 'テストデータ02', result: '完了' },
-        { id: '3', data: 'テストデータ03', result: '実行中' },
-        { id: '4', data: 'テストデータ04', result: 'エラー' },
+        { id: '1', data: '体験版用ダミー01', result: '完了' },
+        { id: '2', data: '体験版用ダミー02', result: '完了' },
+        { id: '3', data: '体験版用ダミー03', result: '実行中' },
+        { id: '4', data: '体験版用ダミー04', result: 'エラー' },
       ],
     }
   },
