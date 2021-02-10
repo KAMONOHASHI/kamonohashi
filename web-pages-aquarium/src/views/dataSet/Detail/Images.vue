@@ -171,6 +171,13 @@ export default {
       this.deleteDialog = true
     },
     fileClick(file, e) {
+      let imgList = ['png', 'PNG', 'jpg', 'JPG', 'jpeg', 'JPEG']
+      let nm = file.key.split('.').slice(-1)[0]
+      let filenm = file.fileName.split('.').slice(-1)[0]
+      if (imgList.indexOf(nm) == -1 && imgList.indexOf(filenm) == -1) {
+        //画像ファイルではないときは何も表示しない
+        return
+      }
       for (let i in this.selectImageList) {
         if (this.selectImageList[i].fileId == file.fileId) {
           //同じものをクリックした場合、リストから削除する
@@ -179,7 +186,6 @@ export default {
           return
         }
       }
-
       e.target.classList.add('active-datafile')
       this.selectImageList.push(file)
     },
