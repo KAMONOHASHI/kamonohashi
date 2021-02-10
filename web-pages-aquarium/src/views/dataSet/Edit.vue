@@ -14,14 +14,8 @@
           <el-input v-model="form.name" />
         </el-form-item>
       </el-row>
+
       <el-row>
-        <el-form-item label="" prop="name">
-          <el-radio v-model="form.upload" label="1" style="display:block">
-            パソコンから画像をアップロード
-          </el-radio>
-        </el-form-item>
-      </el-row>
-      <el-row v-if="form.upload == 1">
         <h3 style="margin-bottom:10px;margin-top:30px">
           パソコンから画像をアップロード
         </h3>
@@ -57,10 +51,9 @@ export default {
     return {
       submitText: '新規登録',
       type: 'Data',
-      fileNumLimit: 10,
+      fileNumLimit: 10000,
       form: {
         name: '',
-        upload: '',
         datalist: [],
       },
       title: '',
@@ -132,6 +125,13 @@ export default {
       let form = this.$refs.createForm
       await form.validate(async valid => {
         if (valid) {
+          if (
+            this.$refs.uploadForm._data.selectedFiles == null ||
+            this.$refs.uploadForm._data.selectedFiles.length == 0
+          ) {
+            this.error = new Error('ファイルを選択してください')
+            return
+          }
           try {
             await this.postDataSet()
             this.$emit('done')
@@ -167,7 +167,9 @@ export default {
 
     async uploadFile(datasetname) {
       //データファイルのアップロード
+
       let dataFileInfos = await this.$refs.uploadForm.uploadFile()
+
       let dataId = null
       dataId = await this.updateData('aquarium_' + datasetname)
       await this['data/putFile']({
@@ -179,21 +181,20 @@ export default {
     async postDataSet() {
       let dataset = null
 
-      if (this.form.upload == 1) {
-        //ローカルからのデータリストを登録する
-        let dataId = await this.uploadFile(this.form.name)
+      //ローカルからのデータリストを登録する
+      let dataId = await this.uploadFile(this.form.name)
 
-        //カモノハシのデータセットを登録する
-        let datasetparams = {
-          entries: {},
-          flatEntries: [{ id: dataId }],
-          isFlat: true,
-          name: 'aquqrium_' + this.form.name,
-          memo: '',
-        }
-
-        dataset = await this['dataSet/post'](datasetparams)
+      //カモノハシのデータセットを登録する
+      let datasetparams = {
+        entries: {},
+        flatEntries: [{ id: dataId }],
+        isFlat: true,
+        name: 'aquqrium_' + this.form.name,
+        memo: '',
       }
+
+      dataset = await this['dataSet/post'](datasetparams)
+
       //アクアリウムデータセットを登録する
       let aquariumDataSetparams = {
         name: this.form.name,
@@ -201,12 +202,11 @@ export default {
       let aqDataset = await this['aquariumDataSet/post'](aquariumDataSetparams)
 
       //アクアリウムデータセットバージョンを登録する
-      if (this.form.upload == 1) {
-        this['aquariumDataSet/postByIdVersions']({
-          id: aqDataset.data.id,
-          model: { datasetId: dataset.data.id },
-        })
-      }
+
+      this['aquariumDataSet/postByIdVersions']({
+        id: aqDataset.data.id,
+        model: { datasetId: dataset.data.id },
+      })
     },
 
     async deleteDataSet() {

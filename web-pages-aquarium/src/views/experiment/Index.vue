@@ -23,17 +23,19 @@
     <el-row class="test">
       <el-table
         class="data-table pl-index-table"
-        :data="histories"
+        :data="viewHistoryes"
         border
         @row-click="openEditExperiment"
       >
         <el-table-column prop="id" label="ID" width="120px" />
         <el-table-column prop="name" label="名前" width="auto" />
+
         <el-table-column
-          prop="dataSet.aquariumDataSetId"
+          prop="dataSet.aquariumDataSetName"
           label="データセット"
           width="auto"
         />
+
         <el-table-column
           prop="template.name"
           label="テンプレート"
@@ -85,9 +87,9 @@
 
 <script>
 import KqiPagination from '@/components/KqiPagination'
-import { createNamespacedHelpers } from 'vuex'
-const { mapGetters, mapActions } = createNamespacedHelpers('experiment')
-
+//import { createNamespacedHelpers } from 'vuex'
+//const { mapGetters, mapActions } = createNamespacedHelpers('experiment')
+import { mapActions, mapGetters } from 'vuex'
 export default {
   title: '実験',
   components: {
@@ -95,6 +97,7 @@ export default {
   },
   data() {
     return {
+      viewHistoryes: [],
       iconname: 'pl-plus',
       pageStatus: {
         currentPage: 1,
@@ -139,14 +142,22 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['histories', 'total', 'preprocessHistories']),
+    ...mapGetters({
+      histories: ['experiment/histories'],
+      total: ['experiment/total'],
+      dataSets: ['aquariumDataSet/dataSets'],
+    }),
   },
 
   async created() {
     await this.retrieveData()
   },
   methods: {
-    ...mapActions(['fetchHistories', 'delete']),
+    ...mapActions([
+      'experiment/fetchHistories',
+      'experiment/delete',
+      'aquariumDataSet/fetchDataSets',
+    ]),
 
     async currentChange(page) {
       this.pageStatus.currentPage = page
@@ -157,7 +168,18 @@ export default {
       params.page = this.pageStatus.currentPage
       params.perPage = this.pageStatus.currentPageSize
       params.withTotal = true
-      await this.fetchHistories(params)
+      await this['experiment/fetchHistories'](params)
+      //実験履歴一覧それぞれについてデータセット名を取得する
+      this.viewHistoryes = []
+      for (let i in this.histories) {
+        await this['aquariumDataSet/fetchDataSets']({
+          id: this.histories[i].dataSet.aquariumDataSetId,
+        })
+        let obj = JSON.parse(JSON.stringify(this.histories[i]))
+        obj['dataSet']['aquariumDataSetName'] = this.dataSets[0].name
+
+        this.viewHistoryes.push(obj)
+      }
     },
 
     async done(type) {
