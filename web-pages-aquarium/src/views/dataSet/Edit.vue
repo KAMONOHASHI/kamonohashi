@@ -7,7 +7,14 @@
     @delete="deleteDataSet"
     @close="$emit('cancel')"
   >
-    <el-form ref="createForm" :model="form" :rules="rules">
+    <el-form
+      ref="createForm"
+      v-loading="loading"
+      :model="form"
+      :rules="rules"
+      element-loading-spinner=" "
+      element-loading-background="rgba(255, 255, 255, 0.7)"
+    >
       <kqi-display-error :error="error" />
       <el-row>
         <el-form-item label="データセット名" prop="name">
@@ -51,6 +58,7 @@ export default {
     return {
       submitText: '新規登録',
       type: 'Data',
+      loading: false,
       fileNumLimit: 10000,
       form: {
         name: '',
@@ -125,6 +133,8 @@ export default {
       let form = this.$refs.createForm
       await form.validate(async valid => {
         if (valid) {
+          this.$store.commit('setLoading', false)
+          this.loading = true
           if (
             this.$refs.uploadForm._data.selectedFiles == null ||
             this.$refs.uploadForm._data.selectedFiles.length == 0
@@ -138,6 +148,10 @@ export default {
             this.error = null
           } catch (e) {
             this.error = e
+          } finally {
+            // 共通側ローディングを再度有効化
+            this.loading = false
+            this.$store.commit('setLoading', true)
           }
         }
       })

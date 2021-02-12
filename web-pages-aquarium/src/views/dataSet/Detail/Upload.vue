@@ -16,12 +16,25 @@
       1回のアップロードで最大10000ファイル送信できます。アップロードしたファイルはKAMONOHASHIのデータ、データセットに保存されます。
 
       <el-row>
-        <kqi-display-error :error="error" />
-        <kqi-upload-form ref="uploadForm" title="File" :type="type" />
-        <br />
-        <el-button type="plain" plain style="margin-top:10px" @click="submit()">
-          続行
-        </el-button>
+        <el-form
+          ref="createForm"
+          v-loading="loading"
+          :rules="rules"
+          element-loading-spinner=" "
+          element-loading-background="rgba(255, 255, 255, 0.7)"
+        >
+          <kqi-display-error :error="error" />
+          <kqi-upload-form ref="uploadForm" title="File" :type="type" />
+          <br />
+          <el-button
+            type="plain"
+            plain
+            style="margin-top:10px"
+            @click="submit()"
+          >
+            続行
+          </el-button>
+        </el-form>
       </el-row>
     </div>
     <div v-else-if="importfile == 2" class="importfile-detail">
@@ -95,6 +108,7 @@ export default {
   data() {
     return {
       type: 'Data',
+      loading: false,
       drawer: false,
       direction: 'rtl',
       importfile: null,
@@ -156,6 +170,8 @@ export default {
     //ローカルからアップロード
 
     async submit() {
+      this.$store.commit('setLoading', false)
+      this.loading = true
       try {
         if (
           this.$refs.uploadForm._data.selectedFiles == null ||
@@ -175,6 +191,10 @@ export default {
         })
       } catch (e) {
         this.error = e
+      } finally {
+        // 共通側ローディングを再度有効化
+        this.loading = false
+        this.$store.commit('setLoading', true)
       }
       // エラーがない場合、詳細イメージタブ画面に遷移
       if (this.error === null) {
