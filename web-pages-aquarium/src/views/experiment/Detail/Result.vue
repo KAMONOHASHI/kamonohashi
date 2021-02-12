@@ -119,13 +119,8 @@ export default {
     ...mapGetters(['detail']),
   },
 
-  async created() {
-    await this.retrieveData()
-  },
   methods: {
     ...mapActions(['fetchDetail']),
-
-    async retrieveData() {},
   },
 }
 </script>

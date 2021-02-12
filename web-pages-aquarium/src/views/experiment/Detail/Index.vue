@@ -45,6 +45,8 @@ export default {
         id: null,
         name: '',
         status: '',
+        preprocessStatus: '',
+        experimentPreprocessHistoryId: null,
         createdAt: '',
         createdBy: '',
         completedAt: '',
@@ -65,6 +67,7 @@ export default {
       detail: ['experiment/detail'],
       events: ['experiment/events'],
       dataSets: ['aquariumDataSet/dataSets'],
+      preprocessHistory: ['experiment/preprocessHistories'],
     }),
   },
 
@@ -74,6 +77,7 @@ export default {
   methods: {
     ...mapActions([
       'experiment/fetchDetail',
+      'experiment/fetchPreprocessHistories',
       'experiment/fetchEvents',
       'experiment/postUserCancel',
       'experiment/postFiles',
@@ -102,6 +106,8 @@ export default {
         '/aquarium/dataset/detail/' + this.detail.dataSet.aquariumDataSetId
       this.infoForm.templateURL =
         '/aquarium/model-template/' + this.detail.template.id
+      this.infoForm.experimentPreprocessHistoryId = this.detail.experimentPreprocessHistoryId
+      this.infoForm.preprocessStatus = this.preprocessHistory.status
     },
     async retrieveData() {
       await this['experiment/fetchDetail'](this.id)
@@ -114,6 +120,11 @@ export default {
       await this['aquariumDataSet/fetchDataSets']({
         id: this.detail.dataSet.aquariumDataSetId,
       })
+      if (this.detail.experimentPreprocessHistoryId !== null) {
+        await this['experiment/fetchPreprocessHistories']({
+          id: this.detail.id,
+        })
+      }
     },
     async deleteJob() {
       try {

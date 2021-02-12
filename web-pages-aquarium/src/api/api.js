@@ -285,6 +285,7 @@ let api = {
     post: gen.ApiV2ExperimentRunPost,
     getById: gen.ApiV2ExperimentByIdGet,
     deleteById: gen.ApiV2ExperimentByIdDelete,
+    getPreprocessById: gen.ApiV2ExperimentByIdPreprocessGet,
     getFilesById: gen.ApiV2ExperimentByIdFilesGet,
     getContainerFilesById: gen.ApiV2ExperimentByIdContainer_filesGet,
     deleteByIdFilesByFileId: gen.ApiV2ExperimentByIdFilesByFileIdDelete,

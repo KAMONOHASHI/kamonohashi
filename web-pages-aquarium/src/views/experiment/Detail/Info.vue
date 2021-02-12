@@ -5,7 +5,7 @@
       学習の情報を確認できます。
     </div>
     <el-card
-      style="margin: 10px;border: solid 1px #ebeef5;  width: 550px; height: 250px;"
+      style="margin: 10px;border: solid 1px #ebeef5;  width: 550px; height: 300px;"
     >
       <el-row class="">
         <el-col :span="8">
@@ -19,19 +19,35 @@
           <el-col :span="8">
             <div style="margin:20px 0px 20px 0px">実験名</div>
           </el-col>
-          <el-col :span="8">
+          <el-col :span="16">
             <div style="margin:20px 0px 20px 0px">
               {{ value.name }}
             </div>
           </el-col>
+        </el-row>
+        <el-row v-if="value.experimentPreprocessHistoryId > 0">
           <el-col :span="8">
             <div style="margin:10px 0px 10px 0px">
-              ステータス
-              <el-tag :type="tagType(value.status)" class="tag">
-                {{ value.status }}
-              </el-tag>
-            </div></el-col
-          >
+              前処理ステータス
+            </div>
+          </el-col>
+          <el-col :span="16">
+            <el-tag :type="tagType(value.preprocessStatus)" class="tag">
+              {{ value.preprocessStatus }}
+            </el-tag>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="8">
+            <div style="margin:10px 0px 10px 0px">
+              学習ステータス
+            </div>
+          </el-col>
+          <el-col :span="16">
+            <el-tag :type="tagType(value.status)" class="tag">
+              {{ value.status }}
+            </el-tag>
+          </el-col>
         </el-row>
 
         <el-row>

@@ -20,27 +20,6 @@ namespace Nssol.Platypus.ApiModels.ExperimentApiModels
         {
             Key = history.Name;
             Options = new List<KeyValuePair<string, string>>();
-            // 前処理コンテナと学習コンテナをばらけさせて表示する場合
-            //GitModel = new GitCommitOutputModel()
-            //{
-            //    GitId = history.ModelGitId,
-            //    Repository = history.ModelRepository,
-            //    Owner = history.ModelRepositoryOwner,
-            //    Branch = history.ModelBranch,
-            //    CommitId = history.ModelCommitId
-            //};
-            //ContainerImage = new ContainerImageOutputModel()
-            //{
-            //    RegistryId = history.ContainerRegistryId.Value,
-            //    RegistryName = history.ContainerRegistry.Name,
-            //    Image = history.ContainerImage,
-            //    Tag = history.ContainerTag
-            //};
-            //Cpu = history.Cpu;
-            //Memory = history.Memory;
-            //Gpu = history.Gpu;
-
-
             CompletedAt = history.CompletedAt?.ToFormatedString();
             StartedAt = history.StartedAt?.ToFormatedString();
 
@@ -52,17 +31,14 @@ namespace Nssol.Platypus.ApiModels.ExperimentApiModels
 
             // 待機時間と実行時間の設定
             SetWaitingAndExecutionTimes(history);
+            ExperimentPreprocessHistoryId = history.ExperimentPreprocessHistoryId;
+
         }
 
         /// <summary>
         /// コンテナ名になる一意識別文字列
         /// </summary>
         public string Key { get; set; }
-
-        ///// <summary>
-        ///// 学習モデルGit情報
-        ///// </summary>
-        //public GitCommitOutputModel GitModel { get; set; }
 
         /// <summary>
         /// オプション。
@@ -71,11 +47,9 @@ namespace Nssol.Platypus.ApiModels.ExperimentApiModels
         public List<KeyValuePair<string, string>> Options { get; set; }
 
         /// <summary>
-        /// コンテナイメージ
+        ///実験の前処理履歴ID
         /// </summary>
-        //public ContainerImageOutputModel ContainerImage { get; set; }
-
-
+        public long? ExperimentPreprocessHistoryId { get; set; }
         /// <summary>
         /// 完了日時
         /// </summary>
@@ -85,25 +59,6 @@ namespace Nssol.Platypus.ApiModels.ExperimentApiModels
         /// 開始日時
         /// </summary>
         public string StartedAt { get; set; }
-
-
-
-        ///// <summary>
-        ///// CPUコア数
-        ///// </summary>
-        //public int Cpu { get; set; }
-
-        ///// <summary>
-        ///// メモリ容量（GB）
-        ///// </summary>
-        //public int Memory { get; set; }
-
-        ///// <summary>
-        ///// GPU数
-        ///// </summary>
-        //public int Gpu { get; set; }
-
-
 
         /// <summary>
         /// ステータスの種類。
@@ -191,5 +146,6 @@ namespace Nssol.Platypus.ApiModels.ExperimentApiModels
             TimeSpan span = finshedTime.Value - startingTime.Value;
             return span.ToString(@"%d'd '%h'h '%m'm'", CultureInfo.InvariantCulture);
         }
+
     }
 }

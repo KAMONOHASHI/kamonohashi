@@ -242,6 +242,36 @@ namespace Nssol.Platypus.Controllers.spa
         }
 
         /// <summary>
+        /// 指定された実験履歴の実験前処理の情報を取得します。
+        /// </summary>
+        /// <param name="id">実験履歴ID</param>
+        [HttpGet("{id}/preprocess")]
+        [Filters.PermissionFilter(MenuCode.Experiment, MenuCode.Preprocess, MenuCode.Training, MenuCode.Inference)]
+        [ProducesResponseType(typeof(PreprocessHistoryIndexOutputModel), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetPreprocessHitory(long? id)
+        {
+            if (id == null)
+            {
+                return JsonBadRequest("Experiment ID is required.");
+            }
+            var history = await experimentHistoryRepository.GetByIdAsync(id.Value);
+            if (history == null)
+            {
+                return JsonNotFound($"Experiment ID {id.Value} is not found.");
+            }
+            if(history.ExperimentPreprocessHistoryId == null)
+            {
+                return JsonNotFound($"Experiment ID {id.Value} does not have preprocessing result.");
+            }
+            var experimentPreprocessHistory = await experimentPreprocessHistoryRepository.GetIncludeAllAsync(history.ExperimentPreprocessHistoryId.Value);
+            var model = new PreprocessHistoryIndexOutputModel(experimentPreprocessHistory);
+            
+            var experimentPreprocessStatus = experimentPreprocessHistory.GetStatus();
+            model.StatusType = experimentPreprocessStatus.StatusType;
+            return JsonOK(model);
+        }
+        
+        /// <summary>
         /// 指定された実験履歴のエラーイベントを取得します。
         /// </summary>
         /// <param name="id">実験履歴ID</param>

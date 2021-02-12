@@ -51,7 +51,7 @@
               "
             >
               <i class="el-icon-time" style="color: #889683;" />
-              学習準備中
+              学習実行前
             </div>
             <div v-else-if="scope.row.status === 'Running'">
               <i class="el-icon-success" style="color: #67C23A;" />
