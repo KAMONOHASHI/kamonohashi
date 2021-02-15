@@ -60,7 +60,7 @@
               :direction="direction"
               :before-close="closeDrawer"
             >
-              <div style="padding:20px">
+              <div style="overflow:auto;padding:20px;height:100%">
                 <h3 v-if="listType == 'dataSet'">データセット一覧</h3>
                 <h3 v-if="listType == 'version'">
                   <i
@@ -71,7 +71,7 @@
                   >{{ selectedDataSetName }}
                 </h3>
                 <div
-                  style="width:80%;height:450px;padding:20px;border:1px solid #CCC;border-radius:5px;margin-top:5px"
+                  style="overflow:auto;width:80%;height:60%;padding:20px;border:1px solid #CCC;border-radius:5px;margin-top:5px"
                 >
                   <ul v-if="listType == 'dataSet'">
                     <li
@@ -249,7 +249,8 @@ export default {
       params.page = this.pageStatus.currentPage
       params.perPage = this.pageStatus.currentPageSize
       params.withTotal = true
-      await this['aquariumDataSet/fetchDataSets'](params)
+      //TODO ページングをつける？
+      await this['aquariumDataSet/fetchDataSets']({})
     },
     async next() {
       let form = null
