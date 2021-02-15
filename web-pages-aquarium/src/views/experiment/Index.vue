@@ -42,10 +42,31 @@
           width="auto"
         />
 
-        <el-table-column prop="outputValue" label="平均適合率" width="auto" />
-
         <el-table-column prop="createdAt" label="開始日時" width="auto" />
-        <el-table-column prop="status" label="ステータス" width="auto" />
+        <el-table-column label="ステータス" width="auto">
+          <div slot-scope="scope">
+            <div
+              v-if="
+                (scope.row.status === 'None') | (scope.row.status === 'Pending')
+              "
+            >
+              <i class="el-icon-time" style="color: #889683;" />
+              学習実行前
+            </div>
+            <div v-else-if="scope.row.status === 'Running'">
+              <i class="el-icon-success" style="color: #67C23A;" />
+              実行中
+            </div>
+            <div v-else-if="scope.row.status === 'Completed'">
+              <i class="el-icon-success" style="color: #67C23A;" />
+              完了
+            </div>
+            <div v-else>
+              <i class="el-icon-warning" style="color: #E6A23C;" />
+              {{ scope.row.status }}
+            </div>
+          </div>
+        </el-table-column>
       </el-table>
     </el-row>
     <el-row>

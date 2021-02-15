@@ -9,12 +9,16 @@ const state = {
   events: {},
   tensorboard: {},
   fileList: [],
+  preprocessHistories: {},
 }
 
 // getters
 const getters = {
   histories(state) {
     return state.histories
+  },
+  preprocessHistories(state) {
+    return state.preprocessHistories
   },
   total(state) {
     return state.total
@@ -45,7 +49,11 @@ const actions = {
       commit('setTotal', parseInt(total))
     }
   },
-
+  async fetchPreprocessHistories({ commit }, id) {
+    let response = await api.experiment.getPreprocessById(id)
+    let preprocessHistories = response.data
+    commit('setPreprocessHistories', { preprocessHistories })
+  },
   async fetchDetail({ commit }, id) {
     let detail = (await api.experiment.getById({ id: id })).data
     commit('setDetail', { detail })
@@ -154,6 +162,9 @@ const mutations = {
 
   setDetail(state, { detail }) {
     state.detail = detail
+  },
+  setPreprocessHistories(state, { preprocessHistories }) {
+    state.preprocessHistories = preprocessHistories
   },
   setEvents(state, { events }) {
     state.events = events
