@@ -54,7 +54,7 @@
 import { createNamespacedHelpers } from 'vuex'
 import AqualiumTensorboardHandler from './AqualiumTensorboardHandler.vue'
 import AqualiumLogFileManager from './AqualiumLogFileManager.vue'
-const { mapGetters, mapActions } = createNamespacedHelpers('dataSet')
+const { mapGetters, mapActions } = createNamespacedHelpers('experiment')
 
 export default {
   title: '実験結果',

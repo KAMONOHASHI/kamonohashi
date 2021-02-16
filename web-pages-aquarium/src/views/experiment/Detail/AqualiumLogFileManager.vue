@@ -42,7 +42,7 @@ export default {
   methods: {
     ...mapActions(['fetchLogFiles']),
     async retrieveData() {
-      await this.fetchLogFiles(this.id)
+      await this.fetchLogFiles(String(this.id))
     },
   },
 }
