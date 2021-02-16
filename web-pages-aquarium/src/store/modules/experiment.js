@@ -8,8 +8,8 @@ const state = {
   detail: {},
   events: {},
   tensorboard: {},
-  fileList: [],
   preprocessHistories: {},
+  logFiles: {},
 }
 
 // getters
@@ -29,11 +29,11 @@ const getters = {
   events(state) {
     return state.events
   },
+  logFiles(state) {
+    return state.logFiles
+  },
   tensorboard(state) {
     return state.tensorboard
-  },
-  fileList(state) {
-    return state.fileList
   },
 }
 
@@ -59,8 +59,17 @@ const actions = {
     commit('setDetail', { detail })
   },
   async fetchEvents({ commit }, id) {
-    let events = (await api.training.getEventsById({ id: id })).data
+    let events = (await api.experiment.getEventsById({ id: id })).data
     commit('setEvents', { events })
+  },
+  async fetchLogFiles({ commit }, id) {
+    let logFiles = (
+      await api.experiment.getFilesById({
+        id: id,
+        withUrl: true,
+      })
+    ).data
+    commit('setLogFiles', { logFiles })
   },
 
   // eslint-disable-next-line no-unused-vars
@@ -168,6 +177,9 @@ const mutations = {
   },
   setEvents(state, { events }) {
     state.events = events
+  },
+  setLogFiles(state, { logFiles }) {
+    state.logFiles = logFiles
   },
   clearDetail(state) {
     state.detail = {}

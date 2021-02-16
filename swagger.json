@@ -10362,6 +10362,11 @@
             "$ref": "#/definitions/System.Collections.Generic.KeyValuePair`2[[System.String, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]"
           }
         },
+        "experimentPreprocessHistoryId": {
+          "format": "int64",
+          "description": "実験の前処理履歴ID",
+          "type": "integer"
+        },
         "completedAt": {
           "description": "完了日時",
           "type": "string"

@@ -277,7 +277,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="id">実験履歴ID</param>
         /// <returns>ログファイル</returns>
         [HttpGet("{id}/events")]
-        [Filters.PermissionFilter(MenuCode.Experiment)]
+        [Filters.PermissionFilter(MenuCode.Experiment, MenuCode.Preprocess, MenuCode.Training, MenuCode.Inference)]
         [ProducesResponseType(typeof(ContainerEventInfo), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetErrorEventAsync(long id)
         {
@@ -825,7 +825,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="path">検索対象ディレクトリ。使用可能文字は「-_1-9a-zA-Z/」</param>
         /// <param name="withUrl">結果にダウンロード用のURLを含めるか</param>
         [HttpGet("{id}/container-files")]
-        [Filters.PermissionFilter(MenuCode.Experiment)]
+        [Filters.PermissionFilter(MenuCode.Experiment, MenuCode.Preprocess, MenuCode.Training, MenuCode.Inference)]
         [ProducesResponseType(typeof(StorageListResultInfo), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetUnderDir(long id, [FromQuery] string path = "/", [FromQuery] bool withUrl = false)
         {
@@ -868,7 +868,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name = "id" > 対象の学習履歴ID </ param >
         /// <param name="withUrl">結果にダウンロード用のURLを含めるか</param>
          [HttpGet("{id}/files")]
-         [Filters.PermissionFilter(MenuCode.Experiment)]
+         [Filters.PermissionFilter(MenuCode.Experiment, MenuCode.Preprocess, MenuCode.Training, MenuCode.Inference)]
          [ProducesResponseType(typeof(IEnumerable<AttachedFileOutputModel>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetAttachedFiles(long id, [FromQuery] bool withUrl = false)
         {
@@ -894,19 +894,7 @@ namespace Nssol.Platypus.Controllers.spa
                 }
                 ));
 
-            var userAttachedFiles = new List<AttachedFileOutputModel>();
-
-            var filesOnDB = await experimentHistoryRepository.GetAllAttachedFilesAsync(id);
-            userAttachedFiles.AddRange(filesOnDB.Select(
-                f => new AttachedFileOutputModel(experimentHistory.Id, f.FileName, f.Id)
-                {
-                    Url = withUrl ? storageLogic.GetPreSignedUriForGet(ResourceType.ExperimentHistoryAttachedFiles, f.StoredPath, f.FileName, true).ToString() : null,
-                    IsLocked = false
-                }
-                ));
-
-            var result = containerAttachedFiles.Concat(userAttachedFiles);
-            return JsonOK(result);
+            return JsonOK(containerAttachedFiles);
         }
 
         /// <summary>
@@ -915,7 +903,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="id">対象の学習履歴ID</param>
         /// <param name="fileId">削除するファイルのID</param>
         [HttpDelete("{id}/files/{fileId}")]
-        [Filters.PermissionFilter(MenuCode.Experiment)]
+        [Filters.PermissionFilter(MenuCode.Experiment, MenuCode.Preprocess, MenuCode.Training, MenuCode.Inference)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         public async Task<IActionResult> DeleteAttachedFile(long id, long? fileId)
         {
@@ -950,7 +938,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="id">対象の学習履歴ID</param>
         [HttpGet("{id}/tensorboard")]
-        [Filters.PermissionFilter(MenuCode.Experiment)]
+        [Filters.PermissionFilter(MenuCode.Experiment, MenuCode.Preprocess, MenuCode.Training, MenuCode.Inference)]
         [ProducesResponseType(typeof(TensorBoardOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetTensorBoardStatus(long id)
         {
@@ -985,7 +973,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="id">対象の実験履歴ID</param>
         /// <param name="model">起動モデル</param>
         [HttpPut("{id}/tensorboard")] //TensorBoardはIDをユーザに通知するわけではないので、POSTではなくPUTで扱う
-        [Filters.PermissionFilter(MenuCode.Experiment)]
+        [Filters.PermissionFilter(MenuCode.Experiment, MenuCode.Preprocess, MenuCode.Training, MenuCode.Inference)]
         [ProducesResponseType(typeof(TensorBoardOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> RunTensorBoard(long id, [FromBody] TensorBoardInputModel model)
         {
@@ -1046,7 +1034,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="id">対象の学習履歴ID</param>
         [HttpDelete("{id}/tensorboard")]
-        [Filters.PermissionFilter(MenuCode.Experiment)]
+        [Filters.PermissionFilter(MenuCode.Experiment, MenuCode.Preprocess, MenuCode.Training, MenuCode.Inference)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         public async Task<IActionResult> DeleteTensorBoard(long id)
         {
