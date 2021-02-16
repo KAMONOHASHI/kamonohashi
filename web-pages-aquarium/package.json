@@ -6,9 +6,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "generate-api": "node swagger-to-api.js",
-    "storybook": "start-storybook -p 9001 -c .storybook",
-    "buid-storybook": "build-storybook -s public"
+    "generate-api": "node swagger-to-api.js"
   },
   "dependencies": {
     "axios": "^0.19.2",
