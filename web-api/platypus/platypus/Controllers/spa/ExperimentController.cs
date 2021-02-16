@@ -930,6 +930,46 @@ namespace Nssol.Platypus.Controllers.spa
             return JsonNoContent();
         }
 
+        /// <summary>
+        /// 実験前処理添付ファイルの一覧を取得する。
+        /// </summary>
+        /// <param name = "id" > 対象の実験前処理履歴ID </ param >
+        /// <param name="withUrl">結果にダウンロード用のURLを含めるか</param>
+        [HttpGet("{id}/preprocess/files")]
+        [Filters.PermissionFilter(MenuCode.Experiment, MenuCode.Preprocess, MenuCode.Training, MenuCode.Inference)]
+        [ProducesResponseType(typeof(IEnumerable<AttachedFileOutputModel>), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetPreprocessAttachedFiles(long id, [FromQuery] bool withUrl = false)
+        {
+            //データの存在チェック
+            var experimentHistory = await experimentHistoryRepository.GetByIdAsync(id);
+            if (experimentHistory == null)
+            {
+                return JsonNotFound($"Experiment ID {id} is not found.");
+            }
+            var experimentPreprocessHistoryId = experimentHistory.ExperimentPreprocessHistoryId;
+            if (experimentPreprocessHistoryId == null)
+            {
+                return JsonNotFound($"Preprocess result of Experiment ID {id} is not found.");
+            }
+
+            var underDir = await storageLogic.GetUnderDirAsync(ResourceType.ExperimentPreprocContainerAttachedFiles, $"{experimentPreprocessHistoryId}/");
+            if (underDir.IsSuccess == false)
+            {
+                return JsonError(HttpStatusCode.ServiceUnavailable, "Failed to access the storage service. Please contact to system administrators.");
+            }
+
+            var containerAttachedFiles = new List<AttachedFileOutputModel>();
+            containerAttachedFiles.AddRange(underDir.Value.Files.Select(
+                f => new AttachedFileOutputModel(experimentHistory.Id, f.FileName, -1)
+                {
+                    Url = withUrl ? storageLogic.GetPreSignedUriForGetFromKey(f.Key, f.FileName, true).ToString() : null,
+                    IsLocked = true
+                }
+                ));
+
+            return JsonOK(containerAttachedFiles);
+        }
+
         #endregion
 
         #region TensorBoard

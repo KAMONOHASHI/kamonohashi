@@ -10,6 +10,7 @@ const state = {
   tensorboard: {},
   preprocessHistories: {},
   logFiles: {},
+  preprocessLogFiles: {},
 }
 
 // getters
@@ -31,6 +32,9 @@ const getters = {
   },
   logFiles(state) {
     return state.logFiles
+  },
+  preprocessLogFiles(state) {
+    return state.preprocessLogFiles
   },
   tensorboard(state) {
     return state.tensorboard
@@ -70,6 +74,15 @@ const actions = {
       })
     ).data
     commit('setLogFiles', { logFiles })
+  },
+  async fetchPreprocessLogFiles({ commit }, id) {
+    let logFiles = (
+      await api.experiment.getPreprocessById({
+        id: id,
+        withUrl: true,
+      })
+    ).data
+    commit('setPreprocessLogFiles', { logFiles })
   },
 
   // eslint-disable-next-line no-unused-vars
@@ -180,6 +193,9 @@ const mutations = {
   },
   setLogFiles(state, { logFiles }) {
     state.logFiles = logFiles
+  },
+  setPreprocessLogFiles(state, { logFiles }) {
+    state.preprocessLogFiles = logFiles
   },
   clearDetail(state) {
     state.detail = {}

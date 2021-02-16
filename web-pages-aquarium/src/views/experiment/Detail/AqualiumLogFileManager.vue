@@ -11,8 +11,13 @@
         />
       </div>
     </div>
-    <div v-else>
-      参照できるログファイルはありません
+    <div v-if="preprocessLogFiles && preprocessLogFiles.length > 0">
+      <div v-for="(preprocessLog, index) in preprocessLogFiles" :key="index">
+        <kqi-download-button
+          :download-url="preprocessLog.url"
+          :file-name="preprocessLog.fileName"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -32,17 +37,22 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['logFiles']),
+    ...mapGetters(['logFiles', 'preprocessLogFiles']),
   },
 
   async created() {
-    await this.retrieveData()
+    // idが取れていたらログを取得する
+    // このままだとidが取れていない場合に値が更新されず意図しないログが表示される
+    if (this.id >= 0) {
+      await this.retrieveData()
+    }
   },
 
   methods: {
-    ...mapActions(['fetchLogFiles']),
+    ...mapActions(['fetchLogFiles', 'fetchPreprocessFiles']),
     async retrieveData() {
       await this.fetchLogFiles(String(this.id))
+      await this.fetchPreprocessLogFiles(String(this.id))
     },
   },
 }

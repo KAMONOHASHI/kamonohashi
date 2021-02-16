@@ -287,6 +287,7 @@ let api = {
     deleteById: gen.ApiV2ExperimentByIdDelete,
     getPreprocessById: gen.ApiV2ExperimentByIdPreprocessGet,
     getFilesById: gen.ApiV2ExperimentByIdFilesGet,
+    getPreprocessFilesById: gen.ApiV2ExperimentByIdPreprocessFilesGet,
     getContainerFilesById: gen.ApiV2ExperimentByIdContainer_filesGet,
     deleteByIdFilesByFileId: gen.ApiV2ExperimentByIdFilesByFileIdDelete,
     getTensorboardById: gen.ApiV2ExperimentByIdTensorboardGet,

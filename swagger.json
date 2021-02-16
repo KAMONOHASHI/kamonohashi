@@ -2427,6 +2427,51 @@
         ]
       }
     },
+    "/api/v2/experiment/{id}/preprocess/files": {
+      "get": {
+        "tags": [
+          "Experiment"
+        ],
+        "operationId": "ApiV2ExperimentByIdPreprocessFilesGet",
+        "consumes": [],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "withUrl",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "default": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "uniqueItems": false,
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Nssol.Platypus.ApiModels.ExperimentApiModels.AttachedFileOutputModel"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
     "/api/v2/experiment/{id}/tensorboard": {
       "get": {
         "tags": [
