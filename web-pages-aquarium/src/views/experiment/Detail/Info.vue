@@ -25,27 +25,25 @@
             </div>
           </el-col>
         </el-row>
-        <el-row v-if="value.experimentPreprocessHistoryId > 0">
-          <el-col :span="8">
-            <div style="margin:10px 0px 10px 0px">
-              前処理ステータス
-            </div>
-          </el-col>
-          <el-col :span="16">
-            <el-tag :type="tagType(value.preprocessStatus)" class="tag">
-              {{ value.preprocessStatus }}
-            </el-tag>
-          </el-col>
-        </el-row>
         <el-row>
           <el-col :span="8">
             <div style="margin:10px 0px 10px 0px">
-              学習ステータス
+              ステータス
             </div>
           </el-col>
-          <el-col :span="16">
+          <el-col
+            v-if="
+              value.status == 'None' && value.experimentPreprocessHistoryId > 0
+            "
+            :span="16"
+          >
+            <el-tag :type="tagType(value.preprocessStatus)" class="tag">
+              Preprocess:{{ value.preprocessStatus }}
+            </el-tag>
+          </el-col>
+          <el-col v-else :span="16">
             <el-tag :type="tagType(value.status)" class="tag">
-              {{ value.status }}
+              Training:{{ value.status }}
             </el-tag>
           </el-col>
         </el-row>
