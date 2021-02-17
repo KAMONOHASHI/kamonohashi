@@ -157,13 +157,12 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['detail', 'events']),
+    ...mapGetters(['detail']),
   },
 
   methods: {
     ...mapActions([
       'fetchDetail',
-      'fetchEvents',
       'postUserCancel',
       'postFiles',
       'put',
