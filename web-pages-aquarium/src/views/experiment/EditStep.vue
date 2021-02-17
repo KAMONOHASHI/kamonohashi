@@ -3,7 +3,7 @@
     <el-row :gutter="20" style="border-bottom:1px solid #CCC">
       <h2>{{ templateName }}</h2>
     </el-row>
-    <el-row :gutter="20"><h2>新しいモデルのトレーニング</h2></el-row>
+    <el-row :gutter="20"><h2>新しい実験の開始</h2></el-row>
     <el-row :gutter="20">
       <el-col :span="20" style="padding-left:30px">
         <el-form
@@ -17,7 +17,7 @@
             <div class="el-step__icon is-text ">
               <div class="el-step__icon-inner">1</div>
             </div>
-            モデルの定義
+            実験名
           </div>
           <el-form
             ref="form0"
@@ -28,7 +28,7 @@
             <kqi-display-error :error="error" />
             <kqi-display-text-form v-if="isEditDialog" label="ID" :value="id" />
 
-            <el-form-item label="モデル名" prop="name">
+            <el-form-item label="名前" prop="name">
               <el-input v-model="form.name" @change="step1Disabled = false" />
             </el-form-item>
             <el-button :disabled="step1Disabled" @click="changeName"
@@ -146,7 +146,7 @@
           </el-form>-->
           <span>
             <el-button type="primary" @click="submit">
-              トレーニングを開始する
+              実験を開始する
             </el-button>
           </span>
         </el-form>

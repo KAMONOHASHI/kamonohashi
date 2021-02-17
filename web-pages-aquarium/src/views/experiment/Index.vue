@@ -15,7 +15,7 @@
           plain
           @click="openCreateDialog()"
         >
-          新しくモデルをトレーニングする
+          新しく実験を開始する
         </el-button>
       </el-col>
     </el-row>
