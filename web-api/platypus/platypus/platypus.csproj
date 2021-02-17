@@ -129,6 +129,15 @@
     <None Update="ServiceModels\KubernetesModels\Templates\create_service_account.yaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="ServiceModels\KubernetesModels\Templates\ConfigMap\experiment_preproc_scripts.yaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="ServiceModels\KubernetesModels\Templates\ConfigMap\experiment_training_afeter_preproc_scripts.yaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="ServiceModels\KubernetesModels\Templates\ConfigMap\experiment_training_scripts.yaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ProjectExtensions>
     <VisualStudio><UserProperties appsettings_1json__JSONSchema="" /></VisualStudio>
