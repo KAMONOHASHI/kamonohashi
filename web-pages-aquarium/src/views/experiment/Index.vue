@@ -15,7 +15,7 @@
           plain
           @click="openCreateDialog()"
         >
-          新しくモデルをトレーニングする
+          新しく実験を開始する
         </el-button>
       </el-col>
     </el-row>
@@ -51,7 +51,7 @@
               "
             >
               <i class="el-icon-time" style="color: #889683;" />
-              学習実行前
+              実行準備中
             </div>
             <div v-else-if="scope.row.status === 'Running'">
               <i class="el-icon-success" style="color: #67C23A;" />
@@ -63,7 +63,7 @@
             </div>
             <div v-else>
               <i class="el-icon-warning" style="color: #E6A23C;" />
-              {{ scope.row.status }}
+              異常終了
             </div>
           </div>
         </el-table-column>

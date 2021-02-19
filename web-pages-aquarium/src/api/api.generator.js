@@ -2911,6 +2911,58 @@ export const ApiV2ExperimentByIdFilesByFileIdDeleteURL = function(parameters = {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * 
+ * request: ApiV2ExperimentByIdPreprocessFilesGet
+ * url: ApiV2ExperimentByIdPreprocessFilesGetURL
+ * method: ApiV2ExperimentByIdPreprocessFilesGet_TYPE
+ * raw_url: ApiV2ExperimentByIdPreprocessFilesGet_RAW_URL
+ * @param id - 
+ * @param withUrl - 
+ */
+export const ApiV2ExperimentByIdPreprocessFilesGet = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/experiment/{id}/preprocess/files'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  if (parameters['withUrl'] !== undefined) {
+    queryParameters['withUrl'] = parameters['withUrl']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2ExperimentByIdPreprocessFilesGet_RAW_URL = function() {
+  return '/api/v2/experiment/{id}/preprocess/files'
+}
+export const ApiV2ExperimentByIdPreprocessFilesGet_TYPE = function() {
+  return 'get'
+}
+export const ApiV2ExperimentByIdPreprocessFilesGetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/experiment/{id}/preprocess/files'
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['withUrl'] !== undefined) {
+    queryParameters['withUrl'] = parameters['withUrl']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * 指定したTensorBoardコンテナ情報を取得する
  * request: ApiV2ExperimentByIdTensorboardGet
  * url: ApiV2ExperimentByIdTensorboardGetURL

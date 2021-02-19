@@ -13,7 +13,7 @@ data:
     kqi dataset get -d /kqi/input/meta.json $DATASET_ID && kqi dataset list-path-pairs $DATASET_ID > /kqi/tmp/datapairs.txt
     if [ $? -ne 0 ]; then
         echo "dataset get failed"
-        kqi training halt $EXPERIMENT_ID
+        curl "${KQI_SERVER}/api/v2/experiment/${EXPERIMENT_ID}/halt" --data "" --output /dev/null -H "accept: application/json" -H "Authorization: Bearer ${KQI_TOKEN}" --fail --speed-time 30 --silent --show-error --connect-timeout 30
     fi
 
     # default: create symlink to raw-data, $LOCAL_DATASET = True : copy raw-data to local
