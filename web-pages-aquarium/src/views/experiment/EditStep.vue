@@ -81,7 +81,7 @@
                       style="list-style-type: none;padding-left:10px;cursor: pointer;"
                       @click="selectDataSet(item, $event)"
                     >
-                      {{ item.name }}
+                      id:{{ item.id }}, name:{{ item.name }}
                     </li>
                   </ul>
                   <ul v-if="listType == 'version'">
@@ -96,6 +96,13 @@
                     </li>
                   </ul>
                 </div>
+                <el-row>
+                  <kqi-pagination
+                    v-if="listType == 'dataSet'"
+                    v-model="pageStatus"
+                    :total="total"
+                    @change="initialize"
+                /></el-row>
                 <el-row>
                   <el-button
                     type="plain"
@@ -159,12 +166,13 @@
 <script>
 import KqiDisplayError from '@/components/KqiDisplayError'
 import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
-
+import KqiPagination from '@/components/KqiPagination'
 import { mapActions, mapGetters } from 'vuex'
 export default {
   components: {
     KqiDisplayError,
     KqiDisplayTextForm,
+    KqiPagination,
   },
   props: {
     templateId: {
@@ -217,7 +225,7 @@ export default {
     ...mapGetters({
       versions: ['aquariumDataSet/versions'],
       dataSets: ['aquariumDataSet/dataSets'],
-
+      total: ['aquariumDataSet/total'],
       templateDetail: ['template/detail'],
     }),
   },
@@ -249,8 +257,7 @@ export default {
       params.page = this.pageStatus.currentPage
       params.perPage = this.pageStatus.currentPageSize
       params.withTotal = true
-      //TODO ページングをつける？
-      await this['aquariumDataSet/fetchDataSets']({})
+      await this['aquariumDataSet/fetchDataSets'](params)
     },
     async next() {
       let form = null
@@ -290,9 +297,21 @@ export default {
       this.selectedDataSetName = null
       this.drawer = false
       this.selectedDataSetVersionName = null
+      if (this.oldVersionE) {
+        this.oldVersionE.target.classList.remove('active-li')
+      }
+      if (this.oldDataSetE) {
+        this.oldDataSetE.target.classList.remove('active-li')
+      }
     },
     //バージョン一覧から戻るをクリック
     backSelect() {
+      if (this.oldVersionE) {
+        this.oldVersionE.target.classList.remove('active-li')
+      }
+      if (this.oldDataSetE) {
+        this.oldDataSetE.target.classList.remove('active-li')
+      }
       this.listType = 'dataSet'
       this.selectedVersion = null
       this.selectedVersionName = null
@@ -324,14 +343,12 @@ export default {
     async select() {
       if (this.listType == 'dataSet') {
         if (this.selectedDataSet.id != null) {
-          this.listType = 'version'
           await this['aquariumDataSet/fetchVersions'](this.selectedDataSet.id)
           this.selectedVersionName = null
+          this.listType = 'version'
         }
       } else if (this.listType == 'version') {
         if (this.selectedVersionName != null) {
-          this.listType = 'dataSet'
-          this.drawer = false
           this.selectedDataSetVersionName =
             'dataset id:' +
             this.selectedDataSet.id +
@@ -339,12 +356,10 @@ export default {
             this.selectedDataSetName +
             ' version:' +
             this.selectedVersionName
-        } else {
-          this.selectedDataSet = null
-          this.selectedVersionName = null
+
+          this.drawer = false
           this.listType = 'dataSet'
         }
-        this.listType = 'dataSet'
       }
     },
     async submit() {
