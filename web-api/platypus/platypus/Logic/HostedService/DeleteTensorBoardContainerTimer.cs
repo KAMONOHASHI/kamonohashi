@@ -18,6 +18,7 @@ namespace Nssol.Platypus.Logic.HostedService
     {
         // DI で注入されるオブジェクト類
         private readonly ITensorBoardContainerRepository tensorBoardContainerRepository;
+        private readonly IExperimentTensorBoardContainerRepository experimentTensorBoardContainerRepository;
         private readonly IClusterManagementService clusterManagementService;
         private readonly IUnitOfWork unitOfWork;
 
@@ -31,6 +32,7 @@ namespace Nssol.Platypus.Logic.HostedService
         /// </summary>
         public DeleteTensorBoardContainerTimer(
             ITensorBoardContainerRepository tensorBoardContainerRepository,
+            IExperimentTensorBoardContainerRepository experimentTensorBoardContainerRepository,
             IClusterManagementService clusterManagementService,
             IUnitOfWork unitOfWork,
             IOptions<ContainerManageOptions> containerManageOptions,
@@ -40,6 +42,7 @@ namespace Nssol.Platypus.Logic.HostedService
         {
             // 各 DI オブジェクトの設定
             this.tensorBoardContainerRepository = tensorBoardContainerRepository;
+            this.experimentTensorBoardContainerRepository = experimentTensorBoardContainerRepository;
             this.clusterManagementService = clusterManagementService;
             this.unitOfWork = unitOfWork;
 
@@ -67,53 +70,92 @@ namespace Nssol.Platypus.Logic.HostedService
         /// </summary>
         protected override void DoWork(object state, int doWorkCount)
         {
-            LogInfo($"テーブル TensorBoardContainers のレコードと、対応する kubernetes 上の実コンテナを削除します。(第 {doWorkCount} 回目)");
+            LogInfo($"テーブル TensorBoardContainers と ExperimentTensorBoardContainers のレコードと、対応する kubernetes 上の実コンテナを削除します。(第 {doWorkCount} 回目)");
             try
             {
+                // Training の Tensorboard に対する処理
                 // 削除対象のテーブル TensorBoardContainers の全レコードを取得
                 var containers = tensorBoardContainerRepository.GetAllIncludePortAndTenantAsync().Result;
-                if (containers.Count() == 0)
+                // 削除対象のテーブル ExperimentTensorBoardContainers の全レコードを取得
+                var experimentContainers = experimentTensorBoardContainerRepository.GetAllIncludePortAndTenantAsync().Result;
+                if (containers.Count() == 0 && experimentContainers.Count() == 0)
                 {
                     // 削除対象が存在しなければ終了
-                    LogInfo("削除対象のレコードは1つも存在しませんでした。");
+                    LogInfo("TensorBoardContainers と ExperimentTensorBoardContainers には削除対象のレコードは1つも存在しませんでした。");
                     return;
                 }
                 // 削除したレコードをカウントする変数
                 var dbDeleteCount = 0;
                 // 削除した kubernetes 上の実コンテナ数をカウントする変数
                 var deleteContainerCount = 0;
-                foreach (TensorBoardContainer container in containers)
-                {
-                    // 経過時間を取得
-                    long elapsedTicks = DateTime.Now.Ticks - container.StartedAt.Ticks;
-                    TimeSpan elapsedSpan = new TimeSpan(elapsedTicks);
-
-                    // 生存期間が "0" または 経過時間超過の場合は削除対象
-                    if (container.ExpiresIn == 0 || elapsedSpan.TotalSeconds > container.ExpiresIn)
+                if (containers.Count() > 0) {
+                    foreach (TensorBoardContainer container in containers)
                     {
-                        try
-                        {
-                            // kubernetes 上の実コンテナを削除
-                            var destroyResult = clusterManagementService.DeleteContainerAsync(ContainerType.TensorBoard, container.Name, container.Tenant.Name, kubernetesToken).Result;
-                            if (destroyResult)
-                            {
-                                // 実際に対応する削除したならカウントアップ
-                                deleteContainerCount++;
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            // 何らかの例外をキャッチしたが ERROR ログを出力して処理を継続
-                            LogError($"kubernetes 上の実コンテナ削除で例外をキャッチしましたが処理を継続します。 例外メッセージ=\"{e.Message}\"");
-                        }
-                        // テーブル TensorBoardContainers のレコード削除
-                        tensorBoardContainerRepository.Delete(container, true);
-                        // レコードを削除したのでカウントアップ
-                        dbDeleteCount++;
-                    }
+                        // 経過時間を取得
+                        long elapsedTicks = DateTime.Now.Ticks - container.StartedAt.Ticks;
+                        TimeSpan elapsedSpan = new TimeSpan(elapsedTicks);
 
+                        // 生存期間が "0" または 経過時間超過の場合は削除対象
+                        if (container.ExpiresIn == 0 || elapsedSpan.TotalSeconds > container.ExpiresIn)
+                        {
+                            try
+                            {
+                                // kubernetes 上の実コンテナを削除
+                                var destroyResult = clusterManagementService.DeleteContainerAsync(ContainerType.TensorBoard, container.Name, container.Tenant.Name, kubernetesToken).Result;
+                                if (destroyResult)
+                                {
+                                    // 実際に対応する削除したならカウントアップ
+                                    deleteContainerCount++;
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                // 何らかの例外をキャッチしたが ERROR ログを出力して処理を継続
+                                LogError($"kubernetes 上の実コンテナ削除で例外をキャッチしましたが処理を継続します。 例外メッセージ=\"{e.Message}\"");
+                            }
+                            // テーブル TensorBoardContainers のレコード削除
+                            tensorBoardContainerRepository.Delete(container, true);
+                            // レコードを削除したのでカウントアップ
+                            dbDeleteCount++;
+                        }
+                    }
                 }
-                // テーブル TensorBoardContainers の削除レコードをコミット
+                // experiment の tensorboard に対する処理
+                if (experimentContainers.Count() > 0)
+                {
+                    foreach (ExperimentTensorBoardContainer experimentContainer in experimentContainers)
+                    {
+                        // 経過時間を取得
+                        long experimentElapsedTicks = DateTime.Now.Ticks - experimentContainer.StartedAt.Ticks;
+                        TimeSpan experimentElapsedSpan = new TimeSpan(experimentElapsedTicks);
+
+                        // 生存期間が "0" または 経過時間超過の場合は削除対象
+                        if (experimentContainer.ExpiresIn == 0 || experimentElapsedSpan.TotalSeconds > experimentContainer.ExpiresIn)
+                        {
+                            try
+                            {
+                                // kubernetes 上の実コンテナを削除
+                                var destroyResult = clusterManagementService.DeleteContainerAsync(ContainerType.TensorBoard, experimentContainer.Name, experimentContainer.Tenant.Name, kubernetesToken).Result;
+                                if (destroyResult)
+                                {
+                                    // 実際に対応する削除したならカウントアップ
+                                    deleteContainerCount++;
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                // 何らかの例外をキャッチしたが ERROR ログを出力して処理を継続
+                                LogError($"kubernetes 上の実コンテナ削除で例外をキャッチしましたが処理を継続します。 例外メッセージ=\"{e.Message}\"");
+                            }
+                            // テーブル TensorBoardContainers のレコード削除
+                            experimentTensorBoardContainerRepository.Delete(experimentContainer, true);
+                            // レコードを削除したのでカウントアップ
+                            dbDeleteCount++;
+                        }
+
+                    }
+                }
+                // 削除レコードをコミット
                 unitOfWork.Commit();
                 if (dbDeleteCount == deleteContainerCount)
                 {

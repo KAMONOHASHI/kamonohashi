@@ -603,10 +603,14 @@ namespace Nssol.Platypus.Controllers.spa
                     //C#は各caseがスコープ共通のため、同一変数名を使えない。止む無く変数名を分ける。
                     var trainingLogicForTensorBoard = commonDiLogic.DynamicDi<ITrainingLogic>();
                     var experimentLogicForTensorBoard = commonDiLogic.DynamicDi<IExperimentLogic>();
-                    //学習のTensorBoardコンテナを削除する
-                    await trainingLogicForTensorBoard.DeleteTensorBoardAsync(container.Item2 as TensorBoardContainer, force);
-                    //実験のTensorBoardコンテナを削除する
-                    await experimentLogicForTensorBoard.DeleteTensorBoardAsync(container.Item2 as ExperimentTensorBoardContainer, force);
+                    if (typeof(TensorBoardContainer).IsInstanceOfType(container.Item2))
+                    {
+                        await trainingLogicForTensorBoard.DeleteTensorBoardAsync(container.Item2 as TensorBoardContainer, force);
+                    }
+                    else if (typeof(ExperimentTensorBoardContainer).IsInstanceOfType(container.Item2))
+                    {
+                        await experimentLogicForTensorBoard.DeleteTensorBoardAsync(container.Item2 as ExperimentTensorBoardContainer, force);
+                    }
                     break;
                 case ContainerType.Training:
                     //学習コンテナを強制終了させる
