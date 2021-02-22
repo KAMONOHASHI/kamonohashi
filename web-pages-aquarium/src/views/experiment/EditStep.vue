@@ -61,8 +61,8 @@
               :before-close="closeDrawer"
             >
               <div style="overflow:auto;padding:20px;height:100%">
-                <h3 v-if="listType == 'dataSet'">データセット一覧</h3>
-                <h3 v-if="listType == 'version'">
+                <h3 v-show="listType == 'dataSet'">データセット一覧</h3>
+                <h3 v-show="listType == 'version'">
                   <i
                     class="el-icon-arrow-left"
                     style="margin-right:10px;cursor: pointer;"
@@ -73,32 +73,32 @@
                 <div
                   style="overflow:auto;width:80%;height:60%;padding:20px;border:1px solid #CCC;border-radius:5px;margin-top:5px"
                 >
-                  <ul v-if="listType == 'dataSet'">
+                  <ul v-show="listType == 'dataSet'">
                     <li
-                      v-for="item in dataSets"
-                      :key="item.id"
+                      v-for="itemD in dataSets"
+                      :key="itemD.id"
                       class="li"
                       style="list-style-type: none;padding-left:10px;cursor: pointer;"
-                      @click="selectDataSet(item, $event)"
+                      @click="selectDataSet(itemD, $event)"
                     >
-                      id:{{ item.id }}, name:{{ item.name }}
+                      id:{{ itemD.id }}, name:{{ itemD.name }}
                     </li>
                   </ul>
-                  <ul v-if="listType == 'version'">
+                  <ul v-show="listType == 'version'">
                     <li
-                      v-for="item in versions"
-                      :key="item.id"
+                      v-for="itemV in versions"
+                      :key="itemV.id"
                       class="li"
                       style="list-style-type: none;padding-left:10px;cursor: pointer;"
-                      @click="selectVersion(item, $event)"
+                      @click="selectVersion(itemV, $event)"
                     >
-                      V{{ item.version }}
+                      V{{ itemV.version }}
                     </li>
                   </ul>
                 </div>
                 <el-row>
                   <kqi-pagination
-                    v-if="listType == 'dataSet'"
+                    v-show="listType == 'dataSet'"
                     v-model="pageStatus"
                     :total="total"
                     @change="initialize"
@@ -297,12 +297,6 @@ export default {
       this.selectedDataSetName = null
       this.drawer = false
       this.selectedDataSetVersionName = null
-      if (this.oldVersionE) {
-        this.oldVersionE.target.classList.remove('active-li')
-      }
-      if (this.oldDataSetE) {
-        this.oldDataSetE.target.classList.remove('active-li')
-      }
     },
     //バージョン一覧から戻るをクリック
     backSelect() {
@@ -345,6 +339,7 @@ export default {
         if (this.selectedDataSet.id != null) {
           await this['aquariumDataSet/fetchVersions'](this.selectedDataSet.id)
           this.selectedVersionName = null
+
           this.listType = 'version'
         }
       } else if (this.listType == 'version') {
@@ -358,7 +353,11 @@ export default {
             this.selectedVersionName
 
           this.drawer = false
+          console.log(this.oldDataSetE.target.classList)
+          console.log(this.oldDataSetE)
           this.listType = 'dataSet'
+          console.log(this.oldDataSetE.target.classList)
+          console.log(this.oldDataSetE)
         }
       }
     },
