@@ -47,6 +47,15 @@
           <div slot-scope="scope">
             <div
               v-if="
+                (scope.row.preprocessStatus === 'Killed') |
+                  (scope.row.preprocessStatus === 'Failed')
+              "
+            >
+              <i class="el-icon-warning" style="color: #E6A23C;" />
+              異常終了
+            </div>
+            <div
+              v-else-if="
                 (scope.row.status === 'None') | (scope.row.status === 'Pending')
               "
             >
@@ -138,7 +147,6 @@ export default {
           },
         },
       ],
-      tableData: [],
     }
   },
   computed: {
@@ -146,6 +154,8 @@ export default {
       histories: ['experiment/histories'],
       total: ['experiment/total'],
       dataSets: ['aquariumDataSet/dataSets'],
+      detail: ['experiment/detail'],
+      preprocessHistory: ['experiment/preprocessHistories'],
     }),
   },
 
@@ -155,8 +165,10 @@ export default {
   methods: {
     ...mapActions([
       'experiment/fetchHistories',
+      'experiment/fetchPreprocessHistories',
       'experiment/delete',
       'aquariumDataSet/fetchDataSets',
+      'experiment/fetchDetail',
     ]),
 
     async currentChange(page) {
@@ -169,15 +181,23 @@ export default {
       params.perPage = this.pageStatus.currentPageSize
       params.withTotal = true
       await this['experiment/fetchHistories'](params)
-      //実験履歴一覧それぞれについてデータセット名を取得する
+      //実験履歴一覧それぞれについてデータセット名と前処理のステータスを取得する
       this.viewHistoryes = []
       for (let i in this.histories) {
         await this['aquariumDataSet/fetchDataSets']({
           id: this.histories[i].dataSet.aquariumDataSetId,
         })
+        await this['experiment/fetchDetail'](this.histories[i].id)
+        if (this.detail.experimentPreprocessHistoryId !== null) {
+          await this['experiment/fetchPreprocessHistories']({
+            id: this.detail.id,
+          })
+        }
         let obj = JSON.parse(JSON.stringify(this.histories[i]))
         obj['dataSet']['aquariumDataSetName'] = this.dataSets[0].name
-
+        if (this.preprocessHistory !== null) {
+          obj['preprocessStatus'] = this.preprocessHistory.status
+        }
         this.viewHistoryes.push(obj)
       }
     },
