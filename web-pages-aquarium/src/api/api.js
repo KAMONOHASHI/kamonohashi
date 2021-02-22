@@ -295,6 +295,7 @@ let api = {
     deleteTensorboardById: gen.ApiV2ExperimentByIdTensorboardDelete,
     postHaltById: gen.ApiV2ExperimentByIdHaltPost,
     postUserCancelById: gen.ApiV2ExperimentByIdUser_cancelPost,
+    getEventsById: gen.ApiV2ExperimentByIdEventsGet,
   },
 
   storage: {
