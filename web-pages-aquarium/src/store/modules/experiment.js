@@ -77,7 +77,7 @@ const actions = {
   },
   async fetchPreprocessLogFiles({ commit }, id) {
     let logFiles = (
-      await api.experiment.getPreprocessById({
+      await api.experiment.getPreprocessFilesById({
         id: id,
         withUrl: true,
       })

@@ -43,20 +43,24 @@ export default {
   computed: {
     ...mapGetters(['logFiles', 'preprocessLogFiles']),
   },
+  watch: {
+    async id() {
+      await this.retrieveData()
+    },
+    async dataId() {
+      await this.retrieveData()
+    },
+  },
 
   async created() {
-    // idが取れていたらログを取得する
-    // このままだとidが取れていない場合に値が更新されず意図しないログが表示される
-    if (this.id >= 0) {
-      await this.retrieveData()
-    }
+    await this.retrieveData()
   },
 
   methods: {
-    ...mapActions(['fetchLogFiles', 'fetchPreprocessFiles']),
+    ...mapActions(['fetchLogFiles', 'fetchPreprocessLogFiles']),
     async retrieveData() {
       await this.fetchLogFiles(String(this.id))
-      if (this.experimentPreprocessHistoryId != null) {
+      if (this.experimentPreprocessHistoryId !== null) {
         await this.fetchPreprocessLogFiles(String(this.id))
       }
     },
