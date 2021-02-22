@@ -60,9 +60,9 @@
               :direction="direction"
               :before-close="closeDrawer"
             >
-              <div style="padding:20px">
-                <h3 v-if="listType == 'dataSet'">データセット一覧</h3>
-                <h3 v-if="listType == 'version'">
+              <div style="overflow:auto;padding:20px;height:100%">
+                <h3 v-show="listType == 'dataSet'">データセット一覧</h3>
+                <h3 v-show="listType == 'version'">
                   <i
                     class="el-icon-arrow-left"
                     style="margin-right:10px;cursor: pointer;"
@@ -71,31 +71,38 @@
                   >{{ selectedDataSetName }}
                 </h3>
                 <div
-                  style="width:80%;height:450px;padding:20px;border:1px solid #CCC;border-radius:5px;margin-top:5px"
+                  style="overflow:auto;width:80%;height:60%;padding:20px;border:1px solid #CCC;border-radius:5px;margin-top:5px"
                 >
-                  <ul v-if="listType == 'dataSet'">
+                  <ul v-show="listType == 'dataSet'">
                     <li
-                      v-for="item in dataSets"
-                      :key="item.id"
+                      v-for="itemD in dataSets"
+                      :key="itemD.id"
                       class="li"
                       style="list-style-type: none;padding-left:10px;cursor: pointer;"
-                      @click="selectDataSet(item, $event)"
+                      @click="selectDataSet(itemD, $event)"
                     >
-                      {{ item.name }}
+                      id:{{ itemD.id }}, name:{{ itemD.name }}
                     </li>
                   </ul>
-                  <ul v-if="listType == 'version'">
+                  <ul v-show="listType == 'version'">
                     <li
-                      v-for="item in versions"
-                      :key="item.id"
+                      v-for="itemV in versions"
+                      :key="itemV.id"
                       class="li"
                       style="list-style-type: none;padding-left:10px;cursor: pointer;"
-                      @click="selectVersion(item, $event)"
+                      @click="selectVersion(itemV, $event)"
                     >
-                      V{{ item.version }}
+                      V{{ itemV.version }}
                     </li>
                   </ul>
                 </div>
+                <el-row>
+                  <kqi-pagination
+                    v-show="listType == 'dataSet'"
+                    v-model="pageStatus"
+                    :total="total"
+                    @change="initialize"
+                /></el-row>
                 <el-row>
                   <el-button
                     type="plain"
@@ -159,12 +166,13 @@
 <script>
 import KqiDisplayError from '@/components/KqiDisplayError'
 import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
-
+import KqiPagination from '@/components/KqiPagination'
 import { mapActions, mapGetters } from 'vuex'
 export default {
   components: {
     KqiDisplayError,
     KqiDisplayTextForm,
+    KqiPagination,
   },
   props: {
     templateId: {
@@ -217,7 +225,7 @@ export default {
     ...mapGetters({
       versions: ['aquariumDataSet/versions'],
       dataSets: ['aquariumDataSet/dataSets'],
-
+      total: ['aquariumDataSet/total'],
       templateDetail: ['template/detail'],
     }),
   },
@@ -292,6 +300,12 @@ export default {
     },
     //バージョン一覧から戻るをクリック
     backSelect() {
+      if (this.oldVersionE) {
+        this.oldVersionE.target.classList.remove('active-li')
+      }
+      if (this.oldDataSetE) {
+        this.oldDataSetE.target.classList.remove('active-li')
+      }
       this.listType = 'dataSet'
       this.selectedVersion = null
       this.selectedVersionName = null
@@ -323,14 +337,13 @@ export default {
     async select() {
       if (this.listType == 'dataSet') {
         if (this.selectedDataSet.id != null) {
-          this.listType = 'version'
           await this['aquariumDataSet/fetchVersions'](this.selectedDataSet.id)
           this.selectedVersionName = null
+
+          this.listType = 'version'
         }
       } else if (this.listType == 'version') {
         if (this.selectedVersionName != null) {
-          this.listType = 'dataSet'
-          this.drawer = false
           this.selectedDataSetVersionName =
             'dataset id:' +
             this.selectedDataSet.id +
@@ -338,12 +351,11 @@ export default {
             this.selectedDataSetName +
             ' version:' +
             this.selectedVersionName
-        } else {
-          this.selectedDataSet = null
-          this.selectedVersionName = null
+
+          this.drawer = false
+
           this.listType = 'dataSet'
         }
-        this.listType = 'dataSet'
       }
     },
     async submit() {

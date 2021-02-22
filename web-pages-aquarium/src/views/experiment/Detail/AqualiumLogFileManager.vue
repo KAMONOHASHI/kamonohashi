@@ -30,6 +30,10 @@ const { mapGetters, mapActions } = createNamespacedHelpers('experiment')
 export default {
   components: { KqiDownloadButton },
   props: {
+    experimentPreprocessHistoryId: {
+      type: Number,
+      default: null,
+    },
     id: {
       type: String,
       default: null,
@@ -52,7 +56,9 @@ export default {
     ...mapActions(['fetchLogFiles', 'fetchPreprocessFiles']),
     async retrieveData() {
       await this.fetchLogFiles(String(this.id))
-      await this.fetchPreprocessLogFiles(String(this.id))
+      if (this.experimentPreprocessHistoryId != null) {
+        await this.fetchPreprocessLogFiles(String(this.id))
+      }
     },
   },
 }
