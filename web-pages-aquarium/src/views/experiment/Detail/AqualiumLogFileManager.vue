@@ -47,7 +47,7 @@ export default {
     async id() {
       await this.retrieveData()
     },
-    async dataId() {
+    async experimentPreprocessHistoryId() {
       await this.retrieveData()
     },
   },
