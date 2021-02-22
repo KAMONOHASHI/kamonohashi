@@ -353,11 +353,8 @@ export default {
             this.selectedVersionName
 
           this.drawer = false
-          console.log(this.oldDataSetE.target.classList)
-          console.log(this.oldDataSetE)
+
           this.listType = 'dataSet'
-          console.log(this.oldDataSetE.target.classList)
-          console.log(this.oldDataSetE)
         }
       }
     },
