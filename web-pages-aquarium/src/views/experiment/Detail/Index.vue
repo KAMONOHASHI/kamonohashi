@@ -15,7 +15,12 @@
         <info v-model="infoForm" />
       </el-tab-pane>
       <el-tab-pane label="実行結果" name="result">
-        <result :id="String(infoForm.id)" />
+        <result
+          :id="id"
+          :experiment-preprocess-history-id="
+            detail.experimentPreprocessHistoryId
+          "
+        />
       </el-tab-pane>
       <el-tab-pane label="推論" name="inference"><inference /></el-tab-pane>
     </el-tabs>
@@ -111,6 +116,12 @@ export default {
     },
     async retrieveData() {
       await this['experiment/fetchDetail'](this.id)
+      if (
+        this.detail.statusType === 'Running' ||
+        this.detail.statusType === 'Error'
+      ) {
+        await this['experiment/fetchEvents'](this.detail.id)
+      }
       await this['aquariumDataSet/fetchDataSets']({
         id: this.detail.dataSet.aquariumDataSetId,
       })
