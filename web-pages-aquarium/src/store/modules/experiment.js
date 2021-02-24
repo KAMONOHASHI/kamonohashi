@@ -66,7 +66,9 @@ const actions = {
     let events = (await api.experiment.getEventsById({ id: id })).data
     commit('setEvents', { events })
   },
+
   async fetchLogFiles({ commit }, id) {
+    commit('clearLogfiles')
     let logFiles = (
       await api.experiment.getFilesById({
         id: id,
@@ -199,6 +201,10 @@ const mutations = {
   },
   clearDetail(state) {
     state.detail = {}
+  },
+  clearLogfiles(state) {
+    state.preprocessLogFiles = {}
+    state.logFiles = {}
   },
 
   setTensorboard(state, { tensorboard }) {
