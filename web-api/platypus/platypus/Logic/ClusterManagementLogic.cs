@@ -1516,7 +1516,7 @@ namespace Nssol.Platypus.Logic
                 Gpu = experimentPreprocessHistory.Template.PreprocessGpu,
                 KqiToken = loginLogic.GenerateToken().AccessToken,
                 KqiImage = "kamonohashi/cli:" + versionLogic.GetVersion(),
-                LogPath = "/kqi/attach/experiment_preproc_stdout_stderr}.log",
+                LogPath = "/kqi/attach/experiment_preproc_stdout_stderr.log",
                 NfsVolumeMounts = new List<NfsVolumeMountModel>()
                 {
                     // 添付ファイルを保存するディレクトリ
