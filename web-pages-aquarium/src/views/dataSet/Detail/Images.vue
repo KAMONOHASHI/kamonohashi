@@ -23,33 +23,50 @@
       <el-col :span="8">
         <h3 style="padding:15px">ファイル一覧</h3>
         <el-collapse>
-          <el-collapse-item
+          <div
             v-for="(item, index) in detailVersion.flatEntries"
             :key="index"
             :name="index"
             :index="index"
           >
-            <template slot="title">
-              <span style="margin-left:20px;display:inline-block;width:400px">
-                <span class="data-name" style="" @click="dataClick(item)"
+            <div>
+              <span
+                style="margin-left:0px;padding:5px;display:inline-block;width:400px"
+              >
+                <span class="data-name" style="" @click="dataClick(item)">
+                  <i
+                    v-show="!item.show || item.show == null"
+                    style="display:inline-block;width:20px"
+                    class="el-icon-arrow-down"
+                  ></i>
+                  <i
+                    v-show="item.show"
+                    style="display:inline-block;width:20px"
+                    class="el-icon-arrow-up"
+                  ></i
                   >データ:{{ item.name }}</span
                 >
                 <i class="el-icon-delete" @click="openDeleteDialog(item)"></i>
               </span>
-            </template>
-            <ul style="margin-left:20px">
-              <li
-                v-for="(file, subIndex) in item.list"
-                :key="subIndex"
-                style="list-style-type: none;padding-left:10px"
-                :index="subIndex"
-                class="file-li "
-                @click="fileClick(file, $event)"
+            </div>
+            <div>
+              <ul
+                v-show="item.show"
+                style="margin-left:20px;height:200px;overflow:auto;"
               >
-                {{ file.fileName }}
-              </li>
-            </ul>
-          </el-collapse-item>
+                <li
+                  v-for="(file, subIndex) in item.list"
+                  :key="subIndex"
+                  style="list-style-type: none;padding-left:10px"
+                  :index="subIndex"
+                  class="file-li "
+                  @click="fileClick(file, $event)"
+                >
+                  {{ file.fileName }}
+                </li>
+              </ul>
+            </div>
+          </div>
         </el-collapse>
         <el-dialog title="" :visible.sync="deleteDialog" width="30%">
           <span
@@ -72,7 +89,7 @@
           </el-col>
         </el-row>
 
-        <div style="padding:10px">
+        <div style="padding:10px;height:600px;overflow:auto;">
           <el-card
             v-for="(file, index) in selectImageList"
             :key="index"
@@ -191,9 +208,16 @@ export default {
     },
     async dataClick(item) {
       //データのファイルリストを取得する
-      await this['data/fetchUploadedFiles'](item.id)
-      item['list'] = this.dataList.concat()
 
+      if (item['show'] == null) {
+        item['show'] = true
+        await this['data/fetchUploadedFiles'](item.id)
+        item['list'] = this.dataList.concat()
+      } else if (item['show'] == true) {
+        item['show'] = false
+      } else if (item['show'] == false) {
+        item['show'] = true
+      }
       this.$forceUpdate()
     },
     async deleteData() {
