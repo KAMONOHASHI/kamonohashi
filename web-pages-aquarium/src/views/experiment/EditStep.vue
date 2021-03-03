@@ -29,11 +29,8 @@
             <kqi-display-text-form v-if="isEditDialog" label="ID" :value="id" />
 
             <el-form-item label="名前" prop="name">
-              <el-input v-model="form.name" @change="step1Disabled = false" />
+              <el-input v-model="form.name" />
             </el-form-item>
-            <el-button :disabled="step1Disabled" @click="changeName"
-              >続行</el-button
-            >
           </el-form>
           <!-- step 2 -->
           <div class="step-title">
@@ -48,9 +45,7 @@
             :rules="rules"
             style="margin:10px;padding: 0px 10px 10px 30px;border-left:2px solid #CCC"
           >
-            <el-button :disabled="step2Disabled" @click="drawer = true"
-              >データセットを選択</el-button
-            >
+            <el-button @click="drawer = true">データセットを選択</el-button>
             <el-form-item label="" prop="dataset">
               <el-input v-model="selectedDataSetVersionName" :disabled="true" />
             </el-form-item>
@@ -182,8 +177,6 @@ export default {
   },
   data() {
     return {
-      step1Disabled: true,
-      step2Disabled: true,
       oldDataSetE: null,
       oldVersionE: null,
       listType: 'dataSet',
@@ -278,11 +271,7 @@ export default {
         }
       })
     },
-    changeName() {
-      if (this.form.name != null && this.form.name != '') {
-        this.step2Disabled = false
-      }
-    },
+
     previous() {
       if (this.active-- < 0) {
         this.active = 0
