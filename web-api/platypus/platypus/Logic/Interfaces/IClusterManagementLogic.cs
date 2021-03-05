@@ -55,6 +55,38 @@ namespace Nssol.Platypus.Logic.Interfaces
         Task<Result<ContainerInfo, string>> RunNotebookContainerAsync(NotebookHistory notebookHistory);
 
         /// <summary>
+        /// 新規に実験用前処理コンテナを作成する。
+        /// </summary>
+        /// /// <param name="experimentPreprocessHistory">対象の実験の前処理履歴</param>
+        /// <returns>作成したコンテナのステータス</returns>
+        Task<Result<ContainerInfo, string>> RunExperimentPreprocessContainerAsync(ExperimentHistory experimentHistory, ExperimentPreprocessHistory experimentPreprocessHistory);
+
+        /// <summary>
+        /// 新規に実験用学習コンテナを作成する。
+        /// </summary>
+        /// <param name="experimentHistory">対象の実験履歴</param>
+        /// <returns>作成したコンテナのステータス</returns>
+        Task<Result<ContainerInfo, string>> RunExperimentTrainContainerAsync(ExperimentHistory experimentHistory);
+
+        /// <summary>
+        /// 新規に実験用前処理後の学習コンテナを作成する。
+        /// </summary>
+        /// <param name="experimentHistory">対象の実験の前処理履歴</param>
+        /// <returns>作成したコンテナのステータス</returns>
+        Task<Result<ContainerInfo, string>> RunExperimentTrainAfterPreprocessingContainerAsync(ExperimentHistory experimentHistory);
+
+
+        
+
+        /// <summary>
+        /// 新規に実験のTensorBoard表示用のコンテナを作成する。
+        /// </summary>
+        /// <param name="experimentHistory">対象の実験履歴</param>
+        /// <param name="expiresIn">生存期間(秒)</param>
+        /// <returns>作成したコンテナのステータス</returns>
+        Task<ContainerInfo> RunExperimentTensorBoardContainerAsync(ExperimentHistory experimentHistory, int expiresIn);
+
+        /// <summary>
         /// 新規にバケット(テナントデータ)削除用のコンテナを作成する。
         /// </summary>
         /// <param name="tenant">対象のテナント</param>
@@ -90,6 +122,11 @@ namespace Nssol.Platypus.Logic.Interfaces
         /// 指定したTensorBoardコンテナのステータスをクラスタ管理サービスに問い合わせ、結果でDBを更新する。
         /// </summary>
         Task<ContainerStatus> SyncContainerStatusAsync(TensorBoardContainer container, bool force);
+
+        /// <summary>
+        /// 指定した実験用TensorBoardコンテナのステータスをクラスタ管理サービスに問い合わせ、結果でDBを更新する。
+        /// </summary>
+        Task<ContainerStatus> SyncExperimentContainerStatusAsync(ExperimentTensorBoardContainer container, bool force);
 
         /// <summary>
         /// 指定したコンテナを削除する。

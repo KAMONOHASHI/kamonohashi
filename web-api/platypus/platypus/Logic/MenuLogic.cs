@@ -49,7 +49,10 @@ namespace Nssol.Platypus.Logic
                 UserMenu,
                 NodeMenu,
                 MenuAccessMenu,
-                ResourceMenu
+                ResourceMenu,
+
+                TemplateMenu,
+                ExperimentMenu
             };
 
             MenuMap = new Dictionary<MenuCode, MenuItemInfo>();
@@ -376,7 +379,32 @@ namespace Nssol.Platypus.Logic
             ShowSideMenu = true,
             MenuType = MenuType.Tenant
         };
-
+        internal static MenuItemInfo ExperimentMenu = new MenuItemInfo()
+        {
+            Name = "実験管理",
+            NameEn = "Experiment",
+            Description = "アクアリウムのジョブを投入するための各種管理",
+            DescriptionEn = "Managing Experiment Status and Histories",
+            Category = "pl-experiment",
+            Code = MenuCode.Experiment,
+            Url = "/experiment",
+            ShowTopMenu = true,
+            ShowSideMenu = true,
+            MenuType = MenuType.Tenant
+        };
+        internal static MenuItemInfo TemplateMenu = new MenuItemInfo()
+        {
+            Name = "モデルテンプレート",
+            NameEn = "ModelTemplate",
+            Description = "学習用テンプレートコンテナの共有",
+            DescriptionEn = "model template for sharing",
+            Category = "pl-template",
+            Code = MenuCode.Template,
+            Url = "/aquarium/model-template",
+            ShowTopMenu = true,
+            ShowSideMenu = true,
+            MenuType = MenuType.System
+        };
         internal static MenuItemInfo TenantSettingMenu = new MenuItemInfo()
         {
             Name = "接続テナント設定",
@@ -529,6 +557,8 @@ namespace Nssol.Platypus.Logic
             ShowSideMenu = true,
             MenuType = MenuType.System
         };
+
+
 
         #endregion
 

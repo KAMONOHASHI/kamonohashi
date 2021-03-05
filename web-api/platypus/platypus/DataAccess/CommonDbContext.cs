@@ -27,9 +27,14 @@ namespace Nssol.Platypus.DataAccess
         public virtual DbSet<Tenant> Tenants { get; set; }
 
         /// <summary>
-        /// コンテナ
+        /// 学習用のtensorboardコンテナ
         /// </summary>
         public virtual DbSet<TensorBoardContainer> TensorBoardContainers { get; set; }
+
+        /// <summary>
+        /// 実験用のtensorboardコンテナ
+        /// </summary>
+        public virtual DbSet<ExperimentTensorBoardContainer> ExperimentTensorBoardContainers { get; set; }
 
         /// <summary>
         /// Git
@@ -80,6 +85,16 @@ namespace Nssol.Platypus.DataAccess
         /// クラスタノードとテナントの中間テーブル
         /// </summary>
         public virtual DbSet<NodeTenantMap> NodeTenantMaps { get; set; }
+
+        /// <summary>
+        /// テンプレート
+        /// </summary>
+        public virtual DbSet<ModelTemplate> Templates { get; set; }
+
+        /// <summary>
+        /// テンプレートとテナントの中間テーブル
+        /// </summary>
+        public virtual DbSet<TemplateTenantMap> TemplateTenantMaps { get; set; }
 
         /// <summary>
         /// ユーザとロールの中間テーブル
@@ -194,6 +209,25 @@ namespace Nssol.Platypus.DataAccess
         /// ノートブック履歴と親推論履歴の中間テーブル
         /// </summary>
         public virtual DbSet<NotebookHistoryParentInferenceMap> NotebookHistoryParentInferenceMaps { get; set; }
+        
+        /// <summary>
+        /// 実験履歴
+        /// </summary>
+        public virtual DbSet<ExperimentHistory> ExperimentHistories { get; set; }
+
+        /// <summary>
+        /// 実験の前処理履歴
+        /// </summary>
+        public virtual DbSet<ExperimentPreprocessHistory> ExperimentPreprocessHistories { get; set; }
+
+        /// <summary>
+        /// アクアリウムデータセット
+        /// </summary>
+        public virtual DbSet<Models.TenantModels.Aquarium.DataSet> AquariumDatasets { get; set; }
+        /// <summary>
+        /// アクアリウムデータセットバージョン
+        /// </summary>
+        public virtual DbSet<Models.TenantModels.Aquarium.DataSetVersion> AquariumDatasetVersions { get; set; }
 
         #endregion
 
@@ -241,6 +275,9 @@ namespace Nssol.Platypus.DataAccess
                     .IsUnique();
             modelBuilder.Entity<NodeTenantMap>()
                     .HasIndex(e => new { e.NodeId, e.TenantId })
+                    .IsUnique();
+            modelBuilder.Entity<TemplateTenantMap>()
+                    .HasIndex(e => new { e.TemplateId, e.TenantId })
                     .IsUnique();
             modelBuilder.Entity<TenantGitMap>()
                     .HasIndex(e => new { e.TenantId, e.GitId })

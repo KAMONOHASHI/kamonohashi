@@ -1,0 +1,55 @@
+
+* {
+  font-family: 'Noto Sans CJK JP', 'Avenir', Helvetica, Arial, meiryo, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  height: 100%;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+h1 {
+  color: #555;
+  font-size: 1.5rem;
+}
+
+h2 {
+  color: #555;
+  font-size: 1.5rem;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+hr {
+  height: 1px;
+  background-color: #E5E5E5;
+  border: none;
+}
+
+.el-dialog {
+  margin-top: 3vh !important;
+  min-width: 540px;
+}
+
+.pl-index-table {
+  margin-top: 10px;
+  margin-bottom: 40px;
+  border: none !important;
+  border-right: none !important;
+  width: 100%;
+}
+
+.pl-index-table > div > table > thead > tr > th,
+.pl-index-table > div > table > tbody > tr > td {
+  border-right: none !important;
+}
+
+.pl-index-table:after {
+  border-right: none !important;
+  border-buttom: none !important;
+  background-color: #ffffff !important;
+}

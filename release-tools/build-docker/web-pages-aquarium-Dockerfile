@@ -1,0 +1,16 @@
+FROM node:12.18.4-stretch AS build
+
+COPY / /src
+RUN cd /src/ && npm install && npm run build 
+
+
+FROM node:12.18.4-stretch
+RUN npm install -g http-server
+RUN groupadd -r -g 900 platypus-aquarium && \
+    useradd -r -s /bin/false -g platypus-aquarium -u 900 platypus-aquarium
+COPY --from=build /src/dist /app
+RUN chown -R platypus-aquarium:platypus-aquarium /app
+USER platypus-aquarium
+WORKDIR /app
+
+CMD ["http-server", "/app"]
