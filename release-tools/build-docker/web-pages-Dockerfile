@@ -1,14 +1,18 @@
 FROM node:12.20.1-stretch AS build
 
-COPY / /src
-RUN cd /src/ && npm install && npm run build 
+COPY /web-pages /src/web-pages
+COPY /web-pages-aquarium /src/web-pages-aquarium
+
+RUN cd /src/web-pages && npm install && npm run build 
+RUN cd /src/web-pages-aquarium && npm install && npm run build 
 
 
 FROM node:12.20.1-stretch
 RUN npm install -g http-server
 RUN groupadd -r -g 900 platypus-pages && \
     useradd -r -s /bin/false -g platypus-pages -u 900 platypus-pages
-COPY --from=build /src/dist /app
+COPY --from=build /src/web-pages/dist /app/kamonohashi
+COPY --from=build /src/web-pages-aquarium/dist /app/aquarium
 RUN chown -R platypus-pages:platypus-pages /app
 USER platypus-pages
 WORKDIR /app
