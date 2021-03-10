@@ -92,6 +92,16 @@ namespace Nssol.Platypus.DataAccess
         public virtual DbSet<ModelTemplate> Templates { get; set; }
 
         /// <summary>
+        /// テンプレート
+        /// </summary>
+        public virtual DbSet<Template> Templates2 { get; set; }
+
+        /// <summary>
+        /// テンプレートバージョン
+        /// </summary>
+        public virtual DbSet<TemplateVersion> TemplateVersions { get; set; }
+
+        /// <summary>
         /// テンプレートとテナントの中間テーブル
         /// </summary>
         public virtual DbSet<TemplateTenantMap> TemplateTenantMaps { get; set; }
