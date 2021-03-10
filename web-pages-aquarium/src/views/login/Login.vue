@@ -3,7 +3,7 @@
     <p>
       <el-row>
         <el-col class="image">
-          <img class="logo" src="@/assets/logo_A.png" alt="" />
+          <img class="logo" src="@/assets/logo_login_aquarium.png" alt="" />
         </el-col>
       </el-row>
 
