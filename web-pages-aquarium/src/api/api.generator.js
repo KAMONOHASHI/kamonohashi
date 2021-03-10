@@ -8857,6 +8857,300 @@ export const ApiV2AdminTemplatesByIdDeleteURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * 全テンプレート一覧を取得する
+ * request: ApiV2AdminTemplates2Get
+ * url: ApiV2AdminTemplates2GetURL
+ * method: ApiV2AdminTemplates2Get_TYPE
+ * raw_url: ApiV2AdminTemplates2Get_RAW_URL
+ * @param perPage - 
+ * @param page - 
+ * @param withTotal - 
+ */
+export const ApiV2AdminTemplates2Get = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/admin/templates2'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['perPage'] !== undefined) {
+    queryParameters['perPage'] = parameters['perPage']
+  }
+  if (parameters['page'] !== undefined) {
+    queryParameters['page'] = parameters['page']
+  }
+  if (parameters['withTotal'] !== undefined) {
+    queryParameters['withTotal'] = parameters['withTotal']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2AdminTemplates2Get_RAW_URL = function() {
+  return '/api/v2/admin/templates2'
+}
+export const ApiV2AdminTemplates2Get_TYPE = function() {
+  return 'get'
+}
+export const ApiV2AdminTemplates2GetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/admin/templates2'
+  if (parameters['perPage'] !== undefined) {
+    queryParameters['perPage'] = parameters['perPage']
+  }
+  if (parameters['page'] !== undefined) {
+    queryParameters['page'] = parameters['page']
+  }
+  if (parameters['withTotal'] !== undefined) {
+    queryParameters['withTotal'] = parameters['withTotal']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * テンプレートを作成する
+ * request: ApiV2AdminTemplates2Post
+ * url: ApiV2AdminTemplates2PostURL
+ * method: ApiV2AdminTemplates2Post_TYPE
+ * raw_url: ApiV2AdminTemplates2Post_RAW_URL
+ * @param model - 
+ */
+export const ApiV2AdminTemplates2Post = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/admin/templates2'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['model'] !== undefined) {
+    body = parameters['model']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('post', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2AdminTemplates2Post_RAW_URL = function() {
+  return '/api/v2/admin/templates2'
+}
+export const ApiV2AdminTemplates2Post_TYPE = function() {
+  return 'post'
+}
+export const ApiV2AdminTemplates2PostURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/admin/templates2'
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 接続中のテナントに有効なテンプレート一覧を取得する
+ * request: ApiV2TenantTemplates2Get
+ * url: ApiV2TenantTemplates2GetURL
+ * method: ApiV2TenantTemplates2Get_TYPE
+ * raw_url: ApiV2TenantTemplates2Get_RAW_URL
+ * @param withTotal - 
+ */
+export const ApiV2TenantTemplates2Get = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/tenant/templates2'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['withTotal'] !== undefined) {
+    queryParameters['withTotal'] = parameters['withTotal']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2TenantTemplates2Get_RAW_URL = function() {
+  return '/api/v2/tenant/templates2'
+}
+export const ApiV2TenantTemplates2Get_TYPE = function() {
+  return 'get'
+}
+export const ApiV2TenantTemplates2GetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/tenant/templates2'
+  if (parameters['withTotal'] !== undefined) {
+    queryParameters['withTotal'] = parameters['withTotal']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * テンプレートバージョン一覧を取得する
+ * request: ApiV2AdminTemplates2ByIdVersionsGet
+ * url: ApiV2AdminTemplates2ByIdVersionsGetURL
+ * method: ApiV2AdminTemplates2ByIdVersionsGet_TYPE
+ * raw_url: ApiV2AdminTemplates2ByIdVersionsGet_RAW_URL
+ * @param id - 取得するテンプレートのID
+ */
+export const ApiV2AdminTemplates2ByIdVersionsGet = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/admin/templates2/{id}/versions'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2AdminTemplates2ByIdVersionsGet_RAW_URL = function() {
+  return '/api/v2/admin/templates2/{id}/versions'
+}
+export const ApiV2AdminTemplates2ByIdVersionsGet_TYPE = function() {
+  return 'get'
+}
+export const ApiV2AdminTemplates2ByIdVersionsGetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/admin/templates2/{id}/versions'
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * テンプレートバージョンを作成する
+ * request: ApiV2AdminTemplates2ByIdVersionsPost
+ * url: ApiV2AdminTemplates2ByIdVersionsPostURL
+ * method: ApiV2AdminTemplates2ByIdVersionsPost_TYPE
+ * raw_url: ApiV2AdminTemplates2ByIdVersionsPost_RAW_URL
+ * @param id - 
+ * @param model - 
+ */
+export const ApiV2AdminTemplates2ByIdVersionsPost = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/admin/templates2/{id}/versions'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  if (parameters['model'] !== undefined) {
+    body = parameters['model']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('post', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2AdminTemplates2ByIdVersionsPost_RAW_URL = function() {
+  return '/api/v2/admin/templates2/{id}/versions'
+}
+export const ApiV2AdminTemplates2ByIdVersionsPost_TYPE = function() {
+  return 'post'
+}
+export const ApiV2AdminTemplates2ByIdVersionsPostURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/admin/templates2/{id}/versions'
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * テンプレートバージョン一覧を取得する
+ * request: ApiV2AdminTemplates2ByIdVersionsByVersionIdGet
+ * url: ApiV2AdminTemplates2ByIdVersionsByVersionIdGetURL
+ * method: ApiV2AdminTemplates2ByIdVersionsByVersionIdGet_TYPE
+ * raw_url: ApiV2AdminTemplates2ByIdVersionsByVersionIdGet_RAW_URL
+ * @param id - テンプレートID
+ * @param versionId - テンプレートバージョンID
+ */
+export const ApiV2AdminTemplates2ByIdVersionsByVersionIdGet = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/admin/templates2/{id}/versions/{versionId}'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  path = path.replace('{versionId}', `${parameters['versionId']}`)
+  if (parameters['versionId'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: versionId'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2AdminTemplates2ByIdVersionsByVersionIdGet_RAW_URL = function() {
+  return '/api/v2/admin/templates2/{id}/versions/{versionId}'
+}
+export const ApiV2AdminTemplates2ByIdVersionsByVersionIdGet_TYPE = function() {
+  return 'get'
+}
+export const ApiV2AdminTemplates2ByIdVersionsByVersionIdGetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/admin/templates2/{id}/versions/{versionId}'
+  path = path.replace('{id}', `${parameters['id']}`)
+  path = path.replace('{versionId}', `${parameters['versionId']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * テナント一覧を取得
  * request: ApiV2AdminTenantsGet
  * url: ApiV2AdminTenantsGetURL
