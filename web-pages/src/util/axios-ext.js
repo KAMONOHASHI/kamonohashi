@@ -2,12 +2,12 @@ import store from '@/store'
 import { Loading } from 'element-ui'
 import Vue from 'vue'
 import Util from '@/util/util'
+import router from '@/router'
 
 // output logs
 export function axiosLoggerInterceptors($axios) {
   $axios.interceptors.request.use(
     function(config) {
-      // console.log(`request : ` + config.url);
       return config
     },
     function(error) {
@@ -99,12 +99,11 @@ export function axiosErrorHandlingInterceptors($axios, errorCallback) {
   let vue = new Vue()
   let moveErrorPage = function(status, message) {
     let url =
-      window.location.origin +
-      '/#/error?status=' +
+      '/error?status=' +
       encodeURIComponent(status) +
       '&message=' +
       encodeURIComponent(message)
-    window.location.href = url
+    router.push(url)
   }
   let success = response => {
     return response
@@ -123,14 +122,12 @@ export function axiosErrorHandlingInterceptors($axios, errorCallback) {
         let status = error.response.status
         let returnUrl = window.location.hash.slice(1)
         let url =
-          window.location.origin +
-          '/#/login?timeout=true&return_url=' +
-          encodeURIComponent(returnUrl)
+          '/login?timeout=true&return_url=' + encodeURIComponent(returnUrl)
 
         // auth check
         if (status === 401) {
           Util.deleteCookie('.Platypus.Auth')
-          window.location.href = url
+          router.push(url)
           vue.$notify.info({
             title: 'ログインしてください',
             message: '有効な認証情報がありません',
