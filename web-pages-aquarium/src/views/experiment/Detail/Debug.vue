@@ -12,8 +12,7 @@
       </el-row>
       <el-row style="margin-bottom:10px">
         <el-col :span="6">前処理ログ</el-col>
-        <el-col :span="18"
-          >実験の標準出力をダウンロードできます。
+        <el-col :span="18">
           <div class="el-input">
             <div v-if="preprocessLogFiles && preprocessLogFiles.length > 0">
               <div
@@ -25,13 +24,14 @@
                   :file-name="preprocessLog.fileName"
                 />
               </div>
-            </div></div
-        ></el-col>
+            </div>
+            <div v-else>この実験には前処理はありません</div>
+          </div>
+        </el-col>
       </el-row>
       <el-row style="margin-bottom:10px">
         <el-col :span="6">学習ログ</el-col>
         <el-col :span="18">
-          実験の標準出力をダウンロードできます。
           <div class="el-input">
             <div v-if="logFiles && logFiles.length > 0">
               <div v-for="(logFile, index) in logFiles" :key="index">
@@ -40,8 +40,10 @@
                   :file-name="logFile.fileName"
                 />
               </div>
-            </div></div
-        ></el-col>
+            </div>
+            <div v-else>この実験には学習はありません</div>
+          </div>
+        </el-col>
       </el-row>
       <el-row style="margin-bottom:10px">
         <el-col :span="6">前処理ステータス</el-col>
@@ -115,14 +117,12 @@ export default {
         var req = new XMLHttpRequest()
         req.open('GET', this.logFiles[i].url, true)
         req.responseType = 'blob'
-        console.log(this.logFiles[i].url)
+
         var that = this
         //読込終了後の処理
         req.onload = function(e) {
           //テキストエリアに表示する
-          console.log('blob')
           var blob = e.target.response
-          console.log(blob)
 
           var reader = new FileReader()
           //テキスト形式で読み込む
