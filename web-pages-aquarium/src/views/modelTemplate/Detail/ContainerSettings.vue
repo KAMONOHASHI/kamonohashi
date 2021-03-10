@@ -166,6 +166,7 @@ export default {
           owner: gitModel.owner,
           name: repositoryName,
         },
+        branchName: gitModel.branch,
       }
 
       await this['gitSelector/fetchCommits'](fetchCommitArg)
