@@ -19,7 +19,6 @@
         <el-form
           ref="createForm"
           v-loading="loading"
-          :rules="rules"
           element-loading-spinner=" "
           element-loading-background="rgba(255, 255, 255, 0.7)"
         >
@@ -195,6 +194,8 @@ export default {
         // 共通側ローディングを再度有効化
         this.loading = false
         this.$store.commit('setLoading', true)
+        this['data/clearUploadedFiles']()
+        this.$refs.uploadForm.showProgress = false
       }
       // エラーがない場合、詳細イメージタブ画面に遷移
       if (this.error === null) {

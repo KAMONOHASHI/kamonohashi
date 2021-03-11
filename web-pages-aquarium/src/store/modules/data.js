@@ -58,7 +58,9 @@ const actions = {
     let tenantTags = (await api.data.getDataTags()).data
     commit('setTenantTags', tenantTags)
   },
-
+  async clearUploadedFiles({ commit }) {
+    commit('clearUploadedFiles')
+  },
   async fetchUploadedFiles({ commit }, id) {
     let uploadedFiles = (
       await api.data.getFilesById({

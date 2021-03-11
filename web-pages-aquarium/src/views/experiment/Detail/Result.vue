@@ -42,28 +42,17 @@
       :id="String(id)"
       :visible="tesorboardVisible"
     />
-    <h3 style="margin-top:20px;">ログ</h3>
-    <div style="margin-top:10px;">
-      実験の標準出力をダウンロードできます。
-    </div>
-
-    <aqualium-log-file-manager
-      :id="String(id)"
-      :experiment-preprocess-history-id="experimentPreprocessHistoryId"
-      style="margin-left:10px;"
-    />
   </div>
 </template>
 
 <script>
 import { createNamespacedHelpers } from 'vuex'
 import AqualiumTensorboardHandler from './AqualiumTensorboardHandler.vue'
-import AqualiumLogFileManager from './AqualiumLogFileManager.vue'
 const { mapGetters, mapActions } = createNamespacedHelpers('experiment')
 
 export default {
   title: '実験結果',
-  components: { AqualiumTensorboardHandler, AqualiumLogFileManager },
+  components: { AqualiumTensorboardHandler },
   props: {
     id: {
       type: String,
