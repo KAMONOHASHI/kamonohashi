@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Nssol.Platypus.DataAccess;
@@ -9,9 +10,10 @@ using Nssol.Platypus.DataAccess;
 namespace Nssol.Platypus.Migrations
 {
     [DbContext(typeof(CommonDbContext))]
-    partial class CommonDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210317080657_v2.3.0e")]
+    partial class v230e
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -326,7 +328,7 @@ namespace Nssol.Platypus.Migrations
 
                     b.HasIndex("CreaterUserId");
 
-                    b.ToTable("Templates");
+                    b.ToTable("Templates2");
                 });
 
             modelBuilder.Entity("Nssol.Platypus.Models.TemplateVersion", b =>

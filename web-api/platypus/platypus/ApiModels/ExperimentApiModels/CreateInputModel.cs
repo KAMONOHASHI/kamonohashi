@@ -4,15 +4,14 @@ using System.ComponentModel.DataAnnotations;
 namespace Nssol.Platypus.ApiModels.ExperimentApiModels
 {
     /// <summary>
-    /// 新規実験実行モデル
+    /// 実験開始の入力モデル
     /// </summary>
     public class CreateInputModel
     {
         /// <summary>
-        /// 識別名
+        /// 実験名
         /// </summary>
         [Required]
-        [MinLength(1)]
         public string Name { get; set; }
 
         /// <summary>
@@ -31,8 +30,8 @@ namespace Nssol.Platypus.ApiModels.ExperimentApiModels
         public long TemplateId { get; set; }
 
         /// <summary>
-        /// 追加環境変数
+        ///　テンプレートバージョンID
         /// </summary>
-        public Dictionary<string, string> Options { get; set; }
+        public long TemplateVersionId { get; set; }
     }
 }

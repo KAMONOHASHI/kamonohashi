@@ -1,37 +1,45 @@
-﻿using Nssol.Platypus.Models.TenantModels;
-using System.Collections.Generic;
+﻿using Nssol.Platypus.Infrastructure;
+using Nssol.Platypus.Models.TenantModels;
 
 namespace Nssol.Platypus.ApiModels.ExperimentApiModels
 {
     /// <summary>
-    /// 実験履歴のうち、Indexで表示する最低情報だけを保持する
+    /// 実験の出力モデル
     /// </summary>
     public class IndexOutputModel : SimpleOutputModel
     {
-        /// <summary>
-        /// コンストラクタ
-        /// </summary>
-        /// <param name="history">実験履歴</param>
-        public IndexOutputModel(ExperimentHistory history) : base(history)
+        public IndexOutputModel(Experiment experiment, string status) : base(experiment)
         {
-            DataSet = new Aquarium.DataSetApiModels.VersionIndexOutputModel(history.DataSetVersion);
-            Template = new TemplateApiModels.IndexOutputModel(history.Template);
+            StartedAt = experiment.CreatedAt.ToFormatedString();
+            CompletedAt = experiment.TrainingHistory?.CompletedAt?.ToFormatedString();
+            Status = status;
+            DataSet = new Aquarium.DataSetApiModels.IndexOutputModel(experiment.DataSet);
+            Template = new TemplateApiModels.IndexOutputModel(experiment.Template);
         }
+
+        /// <summary>
+        /// 開始日時
+        /// </summary>
+        public string StartedAt { get; set; }
+
+        /// <summary>
+        /// 完了日時
+        /// </summary>
+        public string CompletedAt { get; set; }
+
+        /// <summary>
+        /// ステータス
+        /// </summary>
+        public string Status { get; set; }
 
         /// <summary>
         /// データセット
         /// </summary>
-        public Aquarium.DataSetApiModels.VersionIndexOutputModel DataSet { get; set; }
+        public Aquarium.DataSetApiModels.IndexOutputModel DataSet { get; set; }
 
         /// <summary>
         /// テンプレート
         /// </summary>
         public TemplateApiModels.IndexOutputModel Template { get; set; }
-
-        /// <summary>
-        /// 出力値
-        /// </summary>
-        public string OutputValue { get; set; }
-
     }
 }
