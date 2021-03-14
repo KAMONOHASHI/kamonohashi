@@ -55,7 +55,7 @@ namespace Nssol.Platypus.Controllers.spa
             this.clusterManagementLogic = clusterManagementLogic;
             this.gitLogic = gitLogic;
         }
-
+        #region old
         /// <summary>
         /// 全テンプレート一覧を取得
         /// </summary>
@@ -469,7 +469,7 @@ namespace Nssol.Platypus.Controllers.spa
 
             return null;
         }
-
+        #endregion
         #region new
         private async Task<IActionResult> SetTemplateDetails2(TemplateVersion templateVersion, Template template, VersionCreateInputModel model)
         {
@@ -700,6 +700,25 @@ namespace Nssol.Platypus.Controllers.spa
         }
 
         /// <summary>
+        /// テンプレートを取得する
+        /// </summary>
+        /// <param name="id">テンプレートID</param>
+        [HttpGet("admin/templates2/{id}")]
+        [PermissionFilter(MenuCode.Training, MenuCode.Preprocess, MenuCode.Inference, MenuCode.Notebook)]
+        [ProducesResponseType(typeof(IndexOutputModel2), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetTemplateDetail(long id)
+        {
+            var template = await template2Repository.GetByIdAsync(id);
+            if (template == null)
+            {
+                return JsonNotFound($"Template ID {id} is not found.");
+            }
+
+            var result = new IndexOutputModel2(template);
+            return JsonOK(result);
+        }
+
+        /// <summary>
         /// テンプレートバージョンを作成する
         /// </summary>
         [HttpPost("admin/templates2/{id}/versions")]
@@ -763,7 +782,7 @@ namespace Nssol.Platypus.Controllers.spa
         }
 
         /// <summary>
-        /// テンプレートバージョン一覧を取得する
+        /// テンプレートバージョンを取得する
         /// </summary>
         /// <param name="id">テンプレートID</param>
         /// <param name="versionId">テンプレートバージョンID</param>
