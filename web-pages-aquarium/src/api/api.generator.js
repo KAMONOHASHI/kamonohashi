@@ -9006,6 +9006,51 @@ export const ApiV2TenantTemplates2GetURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * テンプレートを取得する
+ * request: ApiV2AdminTemplates2ByIdGet
+ * url: ApiV2AdminTemplates2ByIdGetURL
+ * method: ApiV2AdminTemplates2ByIdGet_TYPE
+ * raw_url: ApiV2AdminTemplates2ByIdGet_RAW_URL
+ * @param id - テンプレートID
+ */
+export const ApiV2AdminTemplates2ByIdGet = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/admin/templates2/{id}'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2AdminTemplates2ByIdGet_RAW_URL = function() {
+  return '/api/v2/admin/templates2/{id}'
+}
+export const ApiV2AdminTemplates2ByIdGet_TYPE = function() {
+  return 'get'
+}
+export const ApiV2AdminTemplates2ByIdGetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/admin/templates2/{id}'
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * テンプレートバージョン一覧を取得する
  * request: ApiV2AdminTemplates2ByIdVersionsGet
  * url: ApiV2AdminTemplates2ByIdVersionsGetURL
@@ -9100,7 +9145,7 @@ export const ApiV2AdminTemplates2ByIdVersionsPostURL = function(parameters = {})
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
- * テンプレートバージョン一覧を取得する
+ * テンプレートバージョンを取得する
  * request: ApiV2AdminTemplates2ByIdVersionsByVersionIdGet
  * url: ApiV2AdminTemplates2ByIdVersionsByVersionIdGetURL
  * method: ApiV2AdminTemplates2ByIdVersionsByVersionIdGet_TYPE
