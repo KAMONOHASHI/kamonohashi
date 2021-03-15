@@ -813,6 +813,40 @@ namespace Nssol.Platypus.Controllers.spa
             return JsonOK(model);
         }
 
+        /// <summary>
+        /// テンプレートを編集する
+        /// </summary>
+        [HttpPut("admin/templates2/{id}")]
+        [PermissionFilter(MenuCode.Template)]
+        [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> EditTemplate(long id, [FromBody] EditInputModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return JsonBadRequest("Invalid inputs.");
+            }
+            var template = await template2Repository.GetByIdAsync(id);
+            if (template == null)
+            {
+                return JsonNotFound($"Template ID {id} is not found.");
+            }
+            if (model.AccessLevel != null)
+            {
+                if (model.AccessLevel != TemplateAccessLevel.Disabled
+                    && model.AccessLevel != TemplateAccessLevel.Private
+                    && model.AccessLevel != TemplateAccessLevel.Public)
+                {
+                    return JsonBadRequest("Invalid access level");
+                }
+                template.AccessLevel = model.AccessLevel.Value;
+            }
+            template.Name = EditColumnNotEmpty(model.Name, template.Name);
+            template.Memo = EditColumn(model.Memo, template.Memo);
+            unitOfWork.Commit();
+
+            return JsonOK(new IndexOutputModel2(template));
+        }
+
         #endregion
     }
 }
