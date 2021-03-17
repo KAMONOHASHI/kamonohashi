@@ -19,6 +19,20 @@
     <MvcRazorCompileOnPublish>false</MvcRazorCompileOnPublish>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Migrations\20210314021855_v2.3.0e.cs" />
+    <Compile Remove="Migrations\20210314021855_v2.3.0e.Designer.cs" />
+    <Compile Remove="Migrations\20210314041152_v2.3.0e.cs" />
+    <Compile Remove="Migrations\20210314041152_v2.3.0e.Designer.cs" />
+    <Compile Remove="Migrations\20210314232611_v2.3.0e.cs" />
+    <Compile Remove="Migrations\20210314232611_v2.3.0e.Designer.cs" />
+    <Compile Remove="Migrations\20210315092945_v2.3.0e.cs" />
+    <Compile Remove="Migrations\20210315092945_v2.3.0e.Designer.cs" />
+    <Compile Remove="Migrations\20210315094047_v2.3.0e.cs" />
+    <Compile Remove="Migrations\20210315094047_v2.3.0e.Designer.cs" />
+    <Compile Remove="Migrations\20210317080240_v2.3.0e.cs" />
+    <Compile Remove="Migrations\20210317080240_v2.3.0e.Designer.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="AWSSDK.Core" Version="3.3.32.1" />
     <PackageReference Include="AWSSDK.S3" Version="3.3.31.23" />
     <PackageReference Include="log4net" Version="2.0.8" />
@@ -132,7 +146,7 @@
     <None Update="ServiceModels\KubernetesModels\Templates\ConfigMap\experiment_preproc_scripts.yaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="ServiceModels\KubernetesModels\Templates\ConfigMap\experiment_training_afeter_preproc_scripts.yaml">
+    <None Update="ServiceModels\KubernetesModels\Templates\ConfigMap\experiment_training_after_preproc_scripts.yaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="ServiceModels\KubernetesModels\Templates\ConfigMap\experiment_training_scripts.yaml">

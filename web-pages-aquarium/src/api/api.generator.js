@@ -2342,46 +2342,7 @@ export const ApiV2DatatypesGetURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
- * 全学習履歴のIDと名前を取得
- * request: ApiV2ExperimentSimpleGet
- * url: ApiV2ExperimentSimpleGetURL
- * method: ApiV2ExperimentSimpleGet_TYPE
- * raw_url: ApiV2ExperimentSimpleGet_RAW_URL
- */
-export const ApiV2ExperimentSimpleGet = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/api/v2/experiment/simple'
-  let body
-  let queryParameters = {}
-  let form = {}
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('get', domain + path, body, queryParameters, form, config)
-}
-export const ApiV2ExperimentSimpleGet_RAW_URL = function() {
-  return '/api/v2/experiment/simple'
-}
-export const ApiV2ExperimentSimpleGet_TYPE = function() {
-  return 'get'
-}
-export const ApiV2ExperimentSimpleGetURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/api/v2/experiment/simple'
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
-* 指定された条件でページングされた状態で、全実験履歴を取得
+* 指定された条件でページングされた状態で、実験一覧を取得する
 * request: ApiV2ExperimentGet
 * url: ApiV2ExperimentGetURL
 * method: ApiV2ExperimentGet_TYPE
@@ -2395,10 +2356,9 @@ e.g.（比較文字列は半角でOK）
 "2018/01/01" → 2018/01/01 00:00:00 以降 ～ 2018/01/02 00:00:00 より前
 "＞2018/01/01" → 2018/01/01 00:00:00 以降
 "＜2018/01/01" → 2018/01/01 00:00:00 以前
-     * @param status - ステータス
      * @param perPage - 表示件数。指定がない場合は上限(1000件)。
      * @param page - ページ番号。デフォルトは1。
-     * @param withTotal - 合計件数をレスポンスヘッダ(X-Total-Count)に含めるか。デフォルトはfalse。
+     * @param withTotal - 
 */
 export const ApiV2ExperimentGet = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -2415,9 +2375,6 @@ export const ApiV2ExperimentGet = function(parameters = {}) {
   }
   if (parameters['startedAt'] !== undefined) {
     queryParameters['StartedAt'] = parameters['startedAt']
-  }
-  if (parameters['status'] !== undefined) {
-    queryParameters['Status'] = parameters['status']
   }
   if (parameters['perPage'] !== undefined) {
     queryParameters['perPage'] = parameters['perPage']
@@ -2454,9 +2411,6 @@ export const ApiV2ExperimentGetURL = function(parameters = {}) {
   if (parameters['startedAt'] !== undefined) {
     queryParameters['StartedAt'] = parameters['startedAt']
   }
-  if (parameters['status'] !== undefined) {
-    queryParameters['Status'] = parameters['status']
-  }
   if (parameters['perPage'] !== undefined) {
     queryParameters['perPage'] = parameters['perPage']
   }
@@ -2475,12 +2429,12 @@ export const ApiV2ExperimentGetURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
- * 指定されたIDの実験履歴の詳細情報を取得。
+ * 実験を取得する
  * request: ApiV2ExperimentByIdGet
  * url: ApiV2ExperimentByIdGetURL
  * method: ApiV2ExperimentByIdGet_TYPE
  * raw_url: ApiV2ExperimentByIdGet_RAW_URL
- * @param id - 実験履歴ID
+ * @param id - 実験ID
  */
 export const ApiV2ExperimentByIdGet = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -2520,147 +2474,12 @@ export const ApiV2ExperimentByIdGetURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
- * 実験履歴を削除する。
- * request: ApiV2ExperimentByIdDelete
- * url: ApiV2ExperimentByIdDeleteURL
- * method: ApiV2ExperimentByIdDelete_TYPE
- * raw_url: ApiV2ExperimentByIdDelete_RAW_URL
- * @param id - 実験履歴ID
- */
-export const ApiV2ExperimentByIdDelete = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/api/v2/experiment/{id}'
-  let body
-  let queryParameters = {}
-  let form = {}
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters['id'] === undefined) {
-    return Promise.reject(new Error('Missing required  parameter: id'))
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('delete', domain + path, body, queryParameters, form, config)
-}
-export const ApiV2ExperimentByIdDelete_RAW_URL = function() {
-  return '/api/v2/experiment/{id}'
-}
-export const ApiV2ExperimentByIdDelete_TYPE = function() {
-  return 'delete'
-}
-export const ApiV2ExperimentByIdDeleteURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/api/v2/experiment/{id}'
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
- * 指定された実験履歴の実験前処理の情報を取得します。
- * request: ApiV2ExperimentByIdPreprocessGet
- * url: ApiV2ExperimentByIdPreprocessGetURL
- * method: ApiV2ExperimentByIdPreprocessGet_TYPE
- * raw_url: ApiV2ExperimentByIdPreprocessGet_RAW_URL
- * @param id - 実験履歴ID
- */
-export const ApiV2ExperimentByIdPreprocessGet = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/api/v2/experiment/{id}/preprocess'
-  let body
-  let queryParameters = {}
-  let form = {}
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters['id'] === undefined) {
-    return Promise.reject(new Error('Missing required  parameter: id'))
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('get', domain + path, body, queryParameters, form, config)
-}
-export const ApiV2ExperimentByIdPreprocessGet_RAW_URL = function() {
-  return '/api/v2/experiment/{id}/preprocess'
-}
-export const ApiV2ExperimentByIdPreprocessGet_TYPE = function() {
-  return 'get'
-}
-export const ApiV2ExperimentByIdPreprocessGetURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/api/v2/experiment/{id}/preprocess'
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
- * 指定された実験履歴のエラーイベントを取得します。
- * request: ApiV2ExperimentByIdEventsGet
- * url: ApiV2ExperimentByIdEventsGetURL
- * method: ApiV2ExperimentByIdEventsGet_TYPE
- * raw_url: ApiV2ExperimentByIdEventsGet_RAW_URL
- * @param id - 実験履歴ID
- */
-export const ApiV2ExperimentByIdEventsGet = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/api/v2/experiment/{id}/events'
-  let body
-  let queryParameters = {}
-  let form = {}
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters['id'] === undefined) {
-    return Promise.reject(new Error('Missing required  parameter: id'))
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('get', domain + path, body, queryParameters, form, config)
-}
-export const ApiV2ExperimentByIdEventsGet_RAW_URL = function() {
-  return '/api/v2/experiment/{id}/events'
-}
-export const ApiV2ExperimentByIdEventsGet_TYPE = function() {
-  return 'get'
-}
-export const ApiV2ExperimentByIdEventsGetURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/api/v2/experiment/{id}/events'
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
- * 新規に実験を開始する
+ * 実験を開始する
  * request: ApiV2ExperimentRunPost
  * url: ApiV2ExperimentRunPostURL
  * method: ApiV2ExperimentRunPost_TYPE
  * raw_url: ApiV2ExperimentRunPost_RAW_URL
- * @param model - 新規実験実行内容
+ * @param model - 
  */
 export const ApiV2ExperimentRunPost = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -2689,591 +2508,6 @@ export const ApiV2ExperimentRunPostURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/experiment/run'
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
-* 前処理履歴に出力データを追加する。
-追加する対象の前処理履歴は実行中のステータスのみ許可される。
-* request: ApiV2ExperimentByIdPreprocessingDataPost
-* url: ApiV2ExperimentByIdPreprocessingDataPostURL
-* method: ApiV2ExperimentByIdPreprocessingDataPost_TYPE
-* raw_url: ApiV2ExperimentByIdPreprocessingDataPost_RAW_URL
-     * @param id - 実験ID
-     * @param model - データ情報
-*/
-export const ApiV2ExperimentByIdPreprocessingDataPost = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/api/v2/experiment/{id}/preprocessing/data'
-  let body
-  let queryParameters = {}
-  let form = {}
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters['id'] === undefined) {
-    return Promise.reject(new Error('Missing required  parameter: id'))
-  }
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('post', domain + path, body, queryParameters, form, config)
-}
-export const ApiV2ExperimentByIdPreprocessingDataPost_RAW_URL = function() {
-  return '/api/v2/experiment/{id}/preprocessing/data'
-}
-export const ApiV2ExperimentByIdPreprocessingDataPost_TYPE = function() {
-  return 'post'
-}
-export const ApiV2ExperimentByIdPreprocessingDataPostURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/api/v2/experiment/{id}/preprocessing/data'
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
-* コンテナの/output/配下から指定ディレクトリパスの直下を検索する
-検索対象ディレクトリが見つからない場合もファイル・ディレクトリが空の結果を返す
-* request: ApiV2ExperimentByIdContainer_filesGet
-* url: ApiV2ExperimentByIdContainer_filesGetURL
-* method: ApiV2ExperimentByIdContainer_filesGet_TYPE
-* raw_url: ApiV2ExperimentByIdContainer_filesGet_RAW_URL
-     * @param id - 対象の学習履歴ID
-     * @param path - 検索対象ディレクトリ。使用可能文字は「-_1-9a-zA-Z/」
-     * @param withUrl - 結果にダウンロード用のURLを含めるか
-*/
-export const ApiV2ExperimentByIdContainer_filesGet = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/api/v2/experiment/{id}/container-files'
-  let body
-  let queryParameters = {}
-  let form = {}
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters['id'] === undefined) {
-    return Promise.reject(new Error('Missing required  parameter: id'))
-  }
-  if (parameters['path'] !== undefined) {
-    queryParameters['path'] = parameters['path']
-  }
-  if (parameters['withUrl'] !== undefined) {
-    queryParameters['withUrl'] = parameters['withUrl']
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('get', domain + path, body, queryParameters, form, config)
-}
-export const ApiV2ExperimentByIdContainer_filesGet_RAW_URL = function() {
-  return '/api/v2/experiment/{id}/container-files'
-}
-export const ApiV2ExperimentByIdContainer_filesGet_TYPE = function() {
-  return 'get'
-}
-export const ApiV2ExperimentByIdContainer_filesGetURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/api/v2/experiment/{id}/container-files'
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters['path'] !== undefined) {
-    queryParameters['path'] = parameters['path']
-  }
-  if (parameters['withUrl'] !== undefined) {
-    queryParameters['withUrl'] = parameters['withUrl']
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
- * 
- * request: ApiV2ExperimentByIdFilesGet
- * url: ApiV2ExperimentByIdFilesGetURL
- * method: ApiV2ExperimentByIdFilesGet_TYPE
- * raw_url: ApiV2ExperimentByIdFilesGet_RAW_URL
- * @param id - 
- * @param withUrl - 
- */
-export const ApiV2ExperimentByIdFilesGet = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/api/v2/experiment/{id}/files'
-  let body
-  let queryParameters = {}
-  let form = {}
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters['id'] === undefined) {
-    return Promise.reject(new Error('Missing required  parameter: id'))
-  }
-  if (parameters['withUrl'] !== undefined) {
-    queryParameters['withUrl'] = parameters['withUrl']
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('get', domain + path, body, queryParameters, form, config)
-}
-export const ApiV2ExperimentByIdFilesGet_RAW_URL = function() {
-  return '/api/v2/experiment/{id}/files'
-}
-export const ApiV2ExperimentByIdFilesGet_TYPE = function() {
-  return 'get'
-}
-export const ApiV2ExperimentByIdFilesGetURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/api/v2/experiment/{id}/files'
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters['withUrl'] !== undefined) {
-    queryParameters['withUrl'] = parameters['withUrl']
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
- * 学習履歴添付ファイルを削除する
- * request: ApiV2ExperimentByIdFilesByFileIdDelete
- * url: ApiV2ExperimentByIdFilesByFileIdDeleteURL
- * method: ApiV2ExperimentByIdFilesByFileIdDelete_TYPE
- * raw_url: ApiV2ExperimentByIdFilesByFileIdDelete_RAW_URL
- * @param id - 対象の学習履歴ID
- * @param fileId - 削除するファイルのID
- */
-export const ApiV2ExperimentByIdFilesByFileIdDelete = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/api/v2/experiment/{id}/files/{fileId}'
-  let body
-  let queryParameters = {}
-  let form = {}
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters['id'] === undefined) {
-    return Promise.reject(new Error('Missing required  parameter: id'))
-  }
-  path = path.replace('{fileId}', `${parameters['fileId']}`)
-  if (parameters['fileId'] === undefined) {
-    return Promise.reject(new Error('Missing required  parameter: fileId'))
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('delete', domain + path, body, queryParameters, form, config)
-}
-export const ApiV2ExperimentByIdFilesByFileIdDelete_RAW_URL = function() {
-  return '/api/v2/experiment/{id}/files/{fileId}'
-}
-export const ApiV2ExperimentByIdFilesByFileIdDelete_TYPE = function() {
-  return 'delete'
-}
-export const ApiV2ExperimentByIdFilesByFileIdDeleteURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/api/v2/experiment/{id}/files/{fileId}'
-  path = path.replace('{id}', `${parameters['id']}`)
-  path = path.replace('{fileId}', `${parameters['fileId']}`)
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
- * 
- * request: ApiV2ExperimentByIdPreprocessFilesGet
- * url: ApiV2ExperimentByIdPreprocessFilesGetURL
- * method: ApiV2ExperimentByIdPreprocessFilesGet_TYPE
- * raw_url: ApiV2ExperimentByIdPreprocessFilesGet_RAW_URL
- * @param id - 
- * @param withUrl - 
- */
-export const ApiV2ExperimentByIdPreprocessFilesGet = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/api/v2/experiment/{id}/preprocess/files'
-  let body
-  let queryParameters = {}
-  let form = {}
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters['id'] === undefined) {
-    return Promise.reject(new Error('Missing required  parameter: id'))
-  }
-  if (parameters['withUrl'] !== undefined) {
-    queryParameters['withUrl'] = parameters['withUrl']
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('get', domain + path, body, queryParameters, form, config)
-}
-export const ApiV2ExperimentByIdPreprocessFilesGet_RAW_URL = function() {
-  return '/api/v2/experiment/{id}/preprocess/files'
-}
-export const ApiV2ExperimentByIdPreprocessFilesGet_TYPE = function() {
-  return 'get'
-}
-export const ApiV2ExperimentByIdPreprocessFilesGetURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/api/v2/experiment/{id}/preprocess/files'
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters['withUrl'] !== undefined) {
-    queryParameters['withUrl'] = parameters['withUrl']
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
- * 指定したTensorBoardコンテナ情報を取得する
- * request: ApiV2ExperimentByIdTensorboardGet
- * url: ApiV2ExperimentByIdTensorboardGetURL
- * method: ApiV2ExperimentByIdTensorboardGet_TYPE
- * raw_url: ApiV2ExperimentByIdTensorboardGet_RAW_URL
- * @param id - 対象の学習履歴ID
- */
-export const ApiV2ExperimentByIdTensorboardGet = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/api/v2/experiment/{id}/tensorboard'
-  let body
-  let queryParameters = {}
-  let form = {}
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters['id'] === undefined) {
-    return Promise.reject(new Error('Missing required  parameter: id'))
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('get', domain + path, body, queryParameters, form, config)
-}
-export const ApiV2ExperimentByIdTensorboardGet_RAW_URL = function() {
-  return '/api/v2/experiment/{id}/tensorboard'
-}
-export const ApiV2ExperimentByIdTensorboardGet_TYPE = function() {
-  return 'get'
-}
-export const ApiV2ExperimentByIdTensorboardGetURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/api/v2/experiment/{id}/tensorboard'
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
- * 指定した実験のTensor Boardを立てる
- * request: ApiV2ExperimentByIdTensorboardPut
- * url: ApiV2ExperimentByIdTensorboardPutURL
- * method: ApiV2ExperimentByIdTensorboardPut_TYPE
- * raw_url: ApiV2ExperimentByIdTensorboardPut_RAW_URL
- * @param id - 対象の実験履歴ID
- * @param model - 起動モデル
- */
-export const ApiV2ExperimentByIdTensorboardPut = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/api/v2/experiment/{id}/tensorboard'
-  let body
-  let queryParameters = {}
-  let form = {}
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters['id'] === undefined) {
-    return Promise.reject(new Error('Missing required  parameter: id'))
-  }
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('put', domain + path, body, queryParameters, form, config)
-}
-export const ApiV2ExperimentByIdTensorboardPut_RAW_URL = function() {
-  return '/api/v2/experiment/{id}/tensorboard'
-}
-export const ApiV2ExperimentByIdTensorboardPut_TYPE = function() {
-  return 'put'
-}
-export const ApiV2ExperimentByIdTensorboardPutURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/api/v2/experiment/{id}/tensorboard'
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
- * 指定した実験のTensor Boardを削除する
- * request: ApiV2ExperimentByIdTensorboardDelete
- * url: ApiV2ExperimentByIdTensorboardDeleteURL
- * method: ApiV2ExperimentByIdTensorboardDelete_TYPE
- * raw_url: ApiV2ExperimentByIdTensorboardDelete_RAW_URL
- * @param id - 対象の学習履歴ID
- */
-export const ApiV2ExperimentByIdTensorboardDelete = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/api/v2/experiment/{id}/tensorboard'
-  let body
-  let queryParameters = {}
-  let form = {}
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters['id'] === undefined) {
-    return Promise.reject(new Error('Missing required  parameter: id'))
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('delete', domain + path, body, queryParameters, form, config)
-}
-export const ApiV2ExperimentByIdTensorboardDelete_RAW_URL = function() {
-  return '/api/v2/experiment/{id}/tensorboard'
-}
-export const ApiV2ExperimentByIdTensorboardDelete_TYPE = function() {
-  return 'delete'
-}
-export const ApiV2ExperimentByIdTensorboardDeleteURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/api/v2/experiment/{id}/tensorboard'
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
- * 実験を途中で強制終了させる。
- * request: ApiV2ExperimentByIdHaltPost
- * url: ApiV2ExperimentByIdHaltPostURL
- * method: ApiV2ExperimentByIdHaltPost_TYPE
- * raw_url: ApiV2ExperimentByIdHaltPost_RAW_URL
- * @param id - 学習履歴ID
- */
-export const ApiV2ExperimentByIdHaltPost = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/api/v2/experiment/{id}/halt'
-  let body
-  let queryParameters = {}
-  let form = {}
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters['id'] === undefined) {
-    return Promise.reject(new Error('Missing required  parameter: id'))
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('post', domain + path, body, queryParameters, form, config)
-}
-export const ApiV2ExperimentByIdHaltPost_RAW_URL = function() {
-  return '/api/v2/experiment/{id}/halt'
-}
-export const ApiV2ExperimentByIdHaltPost_TYPE = function() {
-  return 'post'
-}
-export const ApiV2ExperimentByIdHaltPostURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/api/v2/experiment/{id}/halt'
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
-* 実験を途中で強制終了させる。
-ユーザ自身がジョブを停止させた場合。
-* request: ApiV2ExperimentByIdUser_cancelPost
-* url: ApiV2ExperimentByIdUser_cancelPostURL
-* method: ApiV2ExperimentByIdUser_cancelPost_TYPE
-* raw_url: ApiV2ExperimentByIdUser_cancelPost_RAW_URL
-     * @param id - 実験履歴ID
-*/
-export const ApiV2ExperimentByIdUser_cancelPost = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/api/v2/experiment/{id}/user-cancel'
-  let body
-  let queryParameters = {}
-  let form = {}
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters['id'] === undefined) {
-    return Promise.reject(new Error('Missing required  parameter: id'))
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('post', domain + path, body, queryParameters, form, config)
-}
-export const ApiV2ExperimentByIdUser_cancelPost_RAW_URL = function() {
-  return '/api/v2/experiment/{id}/user-cancel'
-}
-export const ApiV2ExperimentByIdUser_cancelPost_TYPE = function() {
-  return 'post'
-}
-export const ApiV2ExperimentByIdUser_cancelPostURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/api/v2/experiment/{id}/user-cancel'
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
- * 実験を正常終了させる。
- * request: ApiV2ExperimentByIdCompletePost
- * url: ApiV2ExperimentByIdCompletePostURL
- * method: ApiV2ExperimentByIdCompletePost_TYPE
- * raw_url: ApiV2ExperimentByIdCompletePost_RAW_URL
- * @param id - 学習履歴ID
- */
-export const ApiV2ExperimentByIdCompletePost = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/api/v2/experiment/{id}/complete'
-  let body
-  let queryParameters = {}
-  let form = {}
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters['id'] === undefined) {
-    return Promise.reject(new Error('Missing required  parameter: id'))
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('post', domain + path, body, queryParameters, form, config)
-}
-export const ApiV2ExperimentByIdCompletePost_RAW_URL = function() {
-  return '/api/v2/experiment/{id}/complete'
-}
-export const ApiV2ExperimentByIdCompletePost_TYPE = function() {
-  return 'post'
-}
-export const ApiV2ExperimentByIdCompletePostURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/api/v2/experiment/{id}/complete'
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
- * 前処理を途中で強制終了させる。
- * request: ApiV2ExperimentByIdPreprocessingHaltPost
- * url: ApiV2ExperimentByIdPreprocessingHaltPostURL
- * method: ApiV2ExperimentByIdPreprocessingHaltPost_TYPE
- * raw_url: ApiV2ExperimentByIdPreprocessingHaltPost_RAW_URL
- * @param id - 学習履歴ID
- */
-export const ApiV2ExperimentByIdPreprocessingHaltPost = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/api/v2/experiment/{id}/preprocessing/halt'
-  let body
-  let queryParameters = {}
-  let form = {}
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters['id'] === undefined) {
-    return Promise.reject(new Error('Missing required  parameter: id'))
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('post', domain + path, body, queryParameters, form, config)
-}
-export const ApiV2ExperimentByIdPreprocessingHaltPost_RAW_URL = function() {
-  return '/api/v2/experiment/{id}/preprocessing/halt'
-}
-export const ApiV2ExperimentByIdPreprocessingHaltPost_TYPE = function() {
-  return 'post'
-}
-export const ApiV2ExperimentByIdPreprocessingHaltPostURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/api/v2/experiment/{id}/preprocessing/halt'
-  path = path.replace('{id}', `${parameters['id']}`)
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]
@@ -8618,7 +7852,7 @@ export const ApiV2DownloadUrlGetURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
- * 全テンプレート一覧を取得
+ * 全テンプレート一覧を取得する
  * request: ApiV2AdminTemplatesGet
  * url: ApiV2AdminTemplatesGetURL
  * method: ApiV2AdminTemplatesGet_TYPE
@@ -8678,7 +7912,7 @@ export const ApiV2AdminTemplatesGetURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
- * 新規にテンプレートを登録する
+ * テンプレートを作成する
  * request: ApiV2AdminTemplatesPost
  * url: ApiV2AdminTemplatesPostURL
  * method: ApiV2AdminTemplatesPost_TYPE
@@ -8721,7 +7955,7 @@ export const ApiV2AdminTemplatesPostURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
- * 接続中のテナントに有効なテンプレート一覧を取得
+ * 接続中のテナントに有効なテンプレート一覧を取得する
  * request: ApiV2TenantTemplatesGet
  * url: ApiV2TenantTemplatesGetURL
  * method: ApiV2TenantTemplatesGet_TYPE
@@ -8767,7 +8001,7 @@ export const ApiV2TenantTemplatesGetURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
- * 指定されたIDのテンプレート情報を取得。
+ * テンプレートを取得する
  * request: ApiV2AdminTemplatesByIdGet
  * url: ApiV2AdminTemplatesByIdGetURL
  * method: ApiV2AdminTemplatesByIdGet_TYPE
@@ -8812,257 +8046,18 @@ export const ApiV2AdminTemplatesByIdGetURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
- * 一度でもテンプレートが実行されていた場合、削除不可
- * request: ApiV2AdminTemplatesByIdDelete
- * url: ApiV2AdminTemplatesByIdDeleteURL
- * method: ApiV2AdminTemplatesByIdDelete_TYPE
- * raw_url: ApiV2AdminTemplatesByIdDelete_RAW_URL
- * @param id - テンプレートID
- */
-export const ApiV2AdminTemplatesByIdDelete = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/api/v2/admin/templates/{id}'
-  let body
-  let queryParameters = {}
-  let form = {}
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters['id'] === undefined) {
-    return Promise.reject(new Error('Missing required  parameter: id'))
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('delete', domain + path, body, queryParameters, form, config)
-}
-export const ApiV2AdminTemplatesByIdDelete_RAW_URL = function() {
-  return '/api/v2/admin/templates/{id}'
-}
-export const ApiV2AdminTemplatesByIdDelete_TYPE = function() {
-  return 'delete'
-}
-export const ApiV2AdminTemplatesByIdDeleteURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/api/v2/admin/templates/{id}'
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
- * 全テンプレート一覧を取得する
- * request: ApiV2AdminTemplates2Get
- * url: ApiV2AdminTemplates2GetURL
- * method: ApiV2AdminTemplates2Get_TYPE
- * raw_url: ApiV2AdminTemplates2Get_RAW_URL
- * @param perPage - 
- * @param page - 
- * @param withTotal - 
- */
-export const ApiV2AdminTemplates2Get = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/api/v2/admin/templates2'
-  let body
-  let queryParameters = {}
-  let form = {}
-  if (parameters['perPage'] !== undefined) {
-    queryParameters['perPage'] = parameters['perPage']
-  }
-  if (parameters['page'] !== undefined) {
-    queryParameters['page'] = parameters['page']
-  }
-  if (parameters['withTotal'] !== undefined) {
-    queryParameters['withTotal'] = parameters['withTotal']
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('get', domain + path, body, queryParameters, form, config)
-}
-export const ApiV2AdminTemplates2Get_RAW_URL = function() {
-  return '/api/v2/admin/templates2'
-}
-export const ApiV2AdminTemplates2Get_TYPE = function() {
-  return 'get'
-}
-export const ApiV2AdminTemplates2GetURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/api/v2/admin/templates2'
-  if (parameters['perPage'] !== undefined) {
-    queryParameters['perPage'] = parameters['perPage']
-  }
-  if (parameters['page'] !== undefined) {
-    queryParameters['page'] = parameters['page']
-  }
-  if (parameters['withTotal'] !== undefined) {
-    queryParameters['withTotal'] = parameters['withTotal']
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
- * テンプレートを作成する
- * request: ApiV2AdminTemplates2Post
- * url: ApiV2AdminTemplates2PostURL
- * method: ApiV2AdminTemplates2Post_TYPE
- * raw_url: ApiV2AdminTemplates2Post_RAW_URL
- * @param model - 
- */
-export const ApiV2AdminTemplates2Post = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/api/v2/admin/templates2'
-  let body
-  let queryParameters = {}
-  let form = {}
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('post', domain + path, body, queryParameters, form, config)
-}
-export const ApiV2AdminTemplates2Post_RAW_URL = function() {
-  return '/api/v2/admin/templates2'
-}
-export const ApiV2AdminTemplates2Post_TYPE = function() {
-  return 'post'
-}
-export const ApiV2AdminTemplates2PostURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/api/v2/admin/templates2'
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
- * 接続中のテナントに有効なテンプレート一覧を取得する
- * request: ApiV2TenantTemplates2Get
- * url: ApiV2TenantTemplates2GetURL
- * method: ApiV2TenantTemplates2Get_TYPE
- * raw_url: ApiV2TenantTemplates2Get_RAW_URL
- * @param withTotal - 
- */
-export const ApiV2TenantTemplates2Get = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/api/v2/tenant/templates2'
-  let body
-  let queryParameters = {}
-  let form = {}
-  if (parameters['withTotal'] !== undefined) {
-    queryParameters['withTotal'] = parameters['withTotal']
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('get', domain + path, body, queryParameters, form, config)
-}
-export const ApiV2TenantTemplates2Get_RAW_URL = function() {
-  return '/api/v2/tenant/templates2'
-}
-export const ApiV2TenantTemplates2Get_TYPE = function() {
-  return 'get'
-}
-export const ApiV2TenantTemplates2GetURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/api/v2/tenant/templates2'
-  if (parameters['withTotal'] !== undefined) {
-    queryParameters['withTotal'] = parameters['withTotal']
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
- * テンプレートを取得する
- * request: ApiV2AdminTemplates2ByIdGet
- * url: ApiV2AdminTemplates2ByIdGetURL
- * method: ApiV2AdminTemplates2ByIdGet_TYPE
- * raw_url: ApiV2AdminTemplates2ByIdGet_RAW_URL
- * @param id - テンプレートID
- */
-export const ApiV2AdminTemplates2ByIdGet = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/api/v2/admin/templates2/{id}'
-  let body
-  let queryParameters = {}
-  let form = {}
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters['id'] === undefined) {
-    return Promise.reject(new Error('Missing required  parameter: id'))
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('get', domain + path, body, queryParameters, form, config)
-}
-export const ApiV2AdminTemplates2ByIdGet_RAW_URL = function() {
-  return '/api/v2/admin/templates2/{id}'
-}
-export const ApiV2AdminTemplates2ByIdGet_TYPE = function() {
-  return 'get'
-}
-export const ApiV2AdminTemplates2ByIdGetURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/api/v2/admin/templates2/{id}'
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
  * テンプレートを編集する
- * request: ApiV2AdminTemplates2ByIdPut
- * url: ApiV2AdminTemplates2ByIdPutURL
- * method: ApiV2AdminTemplates2ByIdPut_TYPE
- * raw_url: ApiV2AdminTemplates2ByIdPut_RAW_URL
+ * request: ApiV2AdminTemplatesByIdPut
+ * url: ApiV2AdminTemplatesByIdPutURL
+ * method: ApiV2AdminTemplatesByIdPut_TYPE
+ * raw_url: ApiV2AdminTemplatesByIdPut_RAW_URL
  * @param id - 
  * @param model - 
  */
-export const ApiV2AdminTemplates2ByIdPut = function(parameters = {}) {
+export const ApiV2AdminTemplatesByIdPut = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
-  let path = '/api/v2/admin/templates2/{id}'
+  let path = '/api/v2/admin/templates/{id}'
   let body
   let queryParameters = {}
   let form = {}
@@ -9080,16 +8075,16 @@ export const ApiV2AdminTemplates2ByIdPut = function(parameters = {}) {
   }
   return request('put', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminTemplates2ByIdPut_RAW_URL = function() {
-  return '/api/v2/admin/templates2/{id}'
+export const ApiV2AdminTemplatesByIdPut_RAW_URL = function() {
+  return '/api/v2/admin/templates/{id}'
 }
-export const ApiV2AdminTemplates2ByIdPut_TYPE = function() {
+export const ApiV2AdminTemplatesByIdPut_TYPE = function() {
   return 'put'
 }
-export const ApiV2AdminTemplates2ByIdPutURL = function(parameters = {}) {
+export const ApiV2AdminTemplatesByIdPutURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/api/v2/admin/templates2/{id}'
+  let path = '/api/v2/admin/templates/{id}'
   path = path.replace('{id}', `${parameters['id']}`)
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -9101,16 +8096,16 @@ export const ApiV2AdminTemplates2ByIdPutURL = function(parameters = {}) {
 }
 /**
  * テンプレートバージョン一覧を取得する
- * request: ApiV2AdminTemplates2ByIdVersionsGet
- * url: ApiV2AdminTemplates2ByIdVersionsGetURL
- * method: ApiV2AdminTemplates2ByIdVersionsGet_TYPE
- * raw_url: ApiV2AdminTemplates2ByIdVersionsGet_RAW_URL
+ * request: ApiV2AdminTemplatesByIdVersionsGet
+ * url: ApiV2AdminTemplatesByIdVersionsGetURL
+ * method: ApiV2AdminTemplatesByIdVersionsGet_TYPE
+ * raw_url: ApiV2AdminTemplatesByIdVersionsGet_RAW_URL
  * @param id - 取得するテンプレートのID
  */
-export const ApiV2AdminTemplates2ByIdVersionsGet = function(parameters = {}) {
+export const ApiV2AdminTemplatesByIdVersionsGet = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
-  let path = '/api/v2/admin/templates2/{id}/versions'
+  let path = '/api/v2/admin/templates/{id}/versions'
   let body
   let queryParameters = {}
   let form = {}
@@ -9125,16 +8120,16 @@ export const ApiV2AdminTemplates2ByIdVersionsGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminTemplates2ByIdVersionsGet_RAW_URL = function() {
-  return '/api/v2/admin/templates2/{id}/versions'
+export const ApiV2AdminTemplatesByIdVersionsGet_RAW_URL = function() {
+  return '/api/v2/admin/templates/{id}/versions'
 }
-export const ApiV2AdminTemplates2ByIdVersionsGet_TYPE = function() {
+export const ApiV2AdminTemplatesByIdVersionsGet_TYPE = function() {
   return 'get'
 }
-export const ApiV2AdminTemplates2ByIdVersionsGetURL = function(parameters = {}) {
+export const ApiV2AdminTemplatesByIdVersionsGetURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/api/v2/admin/templates2/{id}/versions'
+  let path = '/api/v2/admin/templates/{id}/versions'
   path = path.replace('{id}', `${parameters['id']}`)
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -9146,17 +8141,17 @@ export const ApiV2AdminTemplates2ByIdVersionsGetURL = function(parameters = {}) 
 }
 /**
  * テンプレートバージョンを作成する
- * request: ApiV2AdminTemplates2ByIdVersionsPost
- * url: ApiV2AdminTemplates2ByIdVersionsPostURL
- * method: ApiV2AdminTemplates2ByIdVersionsPost_TYPE
- * raw_url: ApiV2AdminTemplates2ByIdVersionsPost_RAW_URL
+ * request: ApiV2AdminTemplatesByIdVersionsPost
+ * url: ApiV2AdminTemplatesByIdVersionsPostURL
+ * method: ApiV2AdminTemplatesByIdVersionsPost_TYPE
+ * raw_url: ApiV2AdminTemplatesByIdVersionsPost_RAW_URL
  * @param id - 
  * @param model - 
  */
-export const ApiV2AdminTemplates2ByIdVersionsPost = function(parameters = {}) {
+export const ApiV2AdminTemplatesByIdVersionsPost = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
-  let path = '/api/v2/admin/templates2/{id}/versions'
+  let path = '/api/v2/admin/templates/{id}/versions'
   let body
   let queryParameters = {}
   let form = {}
@@ -9174,16 +8169,16 @@ export const ApiV2AdminTemplates2ByIdVersionsPost = function(parameters = {}) {
   }
   return request('post', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminTemplates2ByIdVersionsPost_RAW_URL = function() {
-  return '/api/v2/admin/templates2/{id}/versions'
+export const ApiV2AdminTemplatesByIdVersionsPost_RAW_URL = function() {
+  return '/api/v2/admin/templates/{id}/versions'
 }
-export const ApiV2AdminTemplates2ByIdVersionsPost_TYPE = function() {
+export const ApiV2AdminTemplatesByIdVersionsPost_TYPE = function() {
   return 'post'
 }
-export const ApiV2AdminTemplates2ByIdVersionsPostURL = function(parameters = {}) {
+export const ApiV2AdminTemplatesByIdVersionsPostURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/api/v2/admin/templates2/{id}/versions'
+  let path = '/api/v2/admin/templates/{id}/versions'
   path = path.replace('{id}', `${parameters['id']}`)
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -9195,17 +8190,17 @@ export const ApiV2AdminTemplates2ByIdVersionsPostURL = function(parameters = {})
 }
 /**
  * テンプレートバージョンを取得する
- * request: ApiV2AdminTemplates2ByIdVersionsByVersionIdGet
- * url: ApiV2AdminTemplates2ByIdVersionsByVersionIdGetURL
- * method: ApiV2AdminTemplates2ByIdVersionsByVersionIdGet_TYPE
- * raw_url: ApiV2AdminTemplates2ByIdVersionsByVersionIdGet_RAW_URL
+ * request: ApiV2AdminTemplatesByIdVersionsByVersionIdGet
+ * url: ApiV2AdminTemplatesByIdVersionsByVersionIdGetURL
+ * method: ApiV2AdminTemplatesByIdVersionsByVersionIdGet_TYPE
+ * raw_url: ApiV2AdminTemplatesByIdVersionsByVersionIdGet_RAW_URL
  * @param id - テンプレートID
  * @param versionId - テンプレートバージョンID
  */
-export const ApiV2AdminTemplates2ByIdVersionsByVersionIdGet = function(parameters = {}) {
+export const ApiV2AdminTemplatesByIdVersionsByVersionIdGet = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
-  let path = '/api/v2/admin/templates2/{id}/versions/{versionId}'
+  let path = '/api/v2/admin/templates/{id}/versions/{versionId}'
   let body
   let queryParameters = {}
   let form = {}
@@ -9224,16 +8219,16 @@ export const ApiV2AdminTemplates2ByIdVersionsByVersionIdGet = function(parameter
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminTemplates2ByIdVersionsByVersionIdGet_RAW_URL = function() {
-  return '/api/v2/admin/templates2/{id}/versions/{versionId}'
+export const ApiV2AdminTemplatesByIdVersionsByVersionIdGet_RAW_URL = function() {
+  return '/api/v2/admin/templates/{id}/versions/{versionId}'
 }
-export const ApiV2AdminTemplates2ByIdVersionsByVersionIdGet_TYPE = function() {
+export const ApiV2AdminTemplatesByIdVersionsByVersionIdGet_TYPE = function() {
   return 'get'
 }
-export const ApiV2AdminTemplates2ByIdVersionsByVersionIdGetURL = function(parameters = {}) {
+export const ApiV2AdminTemplatesByIdVersionsByVersionIdGetURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/api/v2/admin/templates2/{id}/versions/{versionId}'
+  let path = '/api/v2/admin/templates/{id}/versions/{versionId}'
   path = path.replace('{id}', `${parameters['id']}`)
   path = path.replace('{versionId}', `${parameters['versionId']}`)
   if (parameters.$queryParameters) {

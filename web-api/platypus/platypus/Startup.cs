@@ -101,7 +101,6 @@ namespace Nssol.Platypus
             services.AddTransient<IInferenceLogic, InferenceLogic>();
             services.AddTransient<IPreprocessLogic, PreprocessLogic>();
             services.AddTransient<INotebookLogic, NotebookLogic>();
-            services.AddTransient<IExperimentLogic, ExperimentLogic>();
             services.AddTransient<IStorageLogic, StorageLogic>();
             services.AddTransient<ITagLogic, TagLogic>();
             services.AddTransient<IGitLogic, GitLogic>();
@@ -144,12 +143,8 @@ namespace Nssol.Platypus
             services.AddTransient<ISettingRepository, SettingRepository>();
             services.AddTransient<INodeTenantMapRepository, NodeTenantMapRepository>();
             services.AddTransient<ITemplateRepository, TemplateRepository>();
-            services.AddTransient<ITemplate2Repository, Template2Repository>();
-            services.AddTransient<IExperimentHistoryRepository, ExperimentHistoryRepository>();
-            services.AddTransient<IExperimentPreprocessHistoryRepository, ExperimentPreprocessHistoryRepository>();
+            services.AddTransient<IExperimentRepository, ExperimentRepository>();
             services.AddTransient<IAquariumDataSetRepository, AquariumDataSetRepository>();
-            services.AddTransient<IExperimentTensorBoardContainerRepository, ExperimentTensorBoardContainerRepository>();
-            services.AddTransient<ITemplateTenantMapRepository, TemplateTenantMapRepository>();
 
             // その他のDI設定
             services.AddTransient<IUnitOfWork, UnitOfWork>();

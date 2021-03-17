@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Nssol.Platypus.Infrastructure
+﻿namespace Nssol.Platypus.Infrastructure
 {
     /// <summary>
     /// テンプレートのアクセスレベル。
@@ -11,15 +6,15 @@ namespace Nssol.Platypus.Infrastructure
     public enum TemplateAccessLevel
     {
         /// <summary>
-        /// <see cref="Nssol.Platypus.Models.TemplateTenantMap"/> の値に関わらず全テナントで利用できない
+        /// 全テナントで利用できない
         /// </summary>
         Disabled = 0,
         /// <summary>
-        /// <see cref="Nssol.Platypus.Models.TemplateTenantMap"/> で許可されたテナント以外は利用できない
+        /// 許可されたテナント以外は利用できない
         /// </summary>
         Private = 1,
         /// <summary>
-        /// <see cref="Nssol.Platypus.Models.TemplateTenantMap"/> の値に関わらず全テナントで利用可能
+        /// 全テナントで利用可能
         /// </summary>
         Public = 2
     }
