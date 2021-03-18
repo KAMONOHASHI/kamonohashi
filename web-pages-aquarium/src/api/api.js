@@ -81,8 +81,17 @@ let api = {
       get: gen.ApiV2AdminTemplatesGet,
       post: gen.ApiV2AdminTemplatesPost,
       getById: gen.ApiV2AdminTemplatesByIdGet,
+      getById2: gen.ApiV2AdminTemplates2ByIdGet,
+      get2: gen.ApiV2AdminTemplates2Get,
+      post2: gen.ApiV2AdminTemplates2Post,
+      put2: gen.ApiV2AdminTemplates2ByIdPut,
+      getByIdVersions2: gen.ApiV2AdminTemplates2ByIdVersionsGet,
+      postByIdVersions2: gen.ApiV2AdminTemplates2ByIdVersionsPost,
+      getByIdVersionsByVersionId2:
+        gen.ApiV2AdminTemplates2ByIdVersionsByVersionIdGet,
     },
     getTenantTemplate: gen.ApiV2TenantTemplatesGet,
+    getTenantTemplate2: gen.ApiV2TenantTemplates2Get,
   },
   registry: {
     admin: {

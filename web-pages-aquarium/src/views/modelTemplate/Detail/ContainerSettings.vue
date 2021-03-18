@@ -108,6 +108,7 @@ export default {
 
       loadingRepositories: ['gitSelector/loadingRepositories'],
       commits: ['gitSelector/commits'],
+      commitDetail: ['gitSelector/commitDetail'],
     }),
     form: {
       get() {
@@ -142,6 +143,7 @@ export default {
       await this['registrySelector/fetchRegistries']()
       await this['registrySelector/fetchImages'](containerImage.registryId)
       await this['registrySelector/fetchTags']({ ...containerImage })
+
       const registry = this.registries.find(registry => {
         return registry.id === containerImage.registryId
       })
@@ -151,6 +153,7 @@ export default {
       const formGitModel = {}
       const repositoryName = gitModel.repository
       await this['gitSelector/fetchGits']()
+
       formGitModel.git = this.gits.find(git => {
         return git.id === gitModel.gitId
       })
@@ -171,13 +174,19 @@ export default {
 
       await this['gitSelector/fetchCommits'](fetchCommitArg)
 
-      let commit = this.commits.find(commit => {
-        return commit.commitId === gitModel.commitId
-      })
+      let commit = null
+      if (this.commits != null) {
+        commit = this.commits.find(commit => {
+          return commit.commitId === gitModel.commitId
+        })
+      }
+      if (fetchCommitArg.gitId != null) {
+        await this['gitSelector/fetchCommitDetail'](fetchCommitArg)
+      }
 
-      await this['gitSelector/fetchCommitDetail'](fetchCommitArg)
-
-      if (commit) {
+      if (commit == null) {
+        formGitModel.commit = null
+      } else if (commit) {
         formGitModel.commit = commit
       } else {
         formGitModel.commit = this.commitDetail

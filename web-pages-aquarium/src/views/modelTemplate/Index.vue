@@ -108,15 +108,14 @@ export default {
   },
 
   methods: {
-    // TODO template API に変更
-    ...mapActions(['fetchModelTemplates']),
+    ...mapActions(['fetchModelTemplates2']),
 
     async retrieveData() {
       let params = this.searchCondition
       params.page = this.pageStatus.currentPage
       params.perPage = this.pageStatus.currentPageSize
       params.withTotal = true
-      await this.fetchModelTemplates(params)
+      await this.fetchModelTemplates2(params)
     },
     async search() {
       this.pageStatus.currentPage = 1
