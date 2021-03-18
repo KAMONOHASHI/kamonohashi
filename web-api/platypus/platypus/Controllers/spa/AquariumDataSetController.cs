@@ -133,7 +133,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="filter">検索条件</param>
         /// <param name="withTotal">合計件数をレスポンスヘッダ(X-Total-Count)に含めるか。デフォルトはfalse。</param>
         [HttpGet]
-        [Filters.PermissionFilter(MenuCode.AquariumDataSet)]
+        [Filters.PermissionFilter(MenuCode.AquariumDataSet, MenuCode.Experiment)]
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetDataSetList([FromQuery]SearchInputModel filter, [FromQuery]int? perPage,
             [FromQuery]int page = 1, bool withTotal = false)
@@ -164,7 +164,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="id">取得するアクアリウムデータセットのID</param>
         [HttpGet("{id}/versions")]
-        [Filters.PermissionFilter(MenuCode.AquariumDataSet)]
+        [Filters.PermissionFilter(MenuCode.AquariumDataSet, MenuCode.Experiment)]
         [ProducesResponseType(typeof(IEnumerable<VersionIndexOutputModel>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetDataSetVersionList(long id)
         {
@@ -184,7 +184,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="id">取得するアクアリウムデータセットID</param>
         /// <param name="versionId">取得するアクアリウムデータセットバージョンID</param>
         [HttpGet("{id}/versions/{versionId}")]
-        [Filters.PermissionFilter(MenuCode.AquariumDataSet)]
+        [Filters.PermissionFilter(MenuCode.AquariumDataSet, MenuCode.Experiment)]
         [ProducesResponseType(typeof(VersionDetailsOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetDataSetVersion(long id, long versionId)
         {
