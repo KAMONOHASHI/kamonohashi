@@ -86,6 +86,7 @@ namespace Nssol.Platypus.Controllers.spa
                 .GetAllWithOrderby(x => x.Id, false)
                 .Include(x => x.Template)
                 .Include(x => x.DataSet)
+                .Include(x => x.ExperimentPreprocess).ThenInclude(x => x.TrainingHistory).ThenInclude(x => x.DataSet)
                 .Include(x => x.TrainingHistory).ThenInclude(x => x.DataSet)
                 .SearchLong(d => d.Id, filter.Id)
                 .SearchString(d => d.Name, filter.Name)
@@ -99,27 +100,42 @@ namespace Nssol.Platypus.Controllers.spa
             var result = new List<IndexOutputModel>();
             foreach (var x in experiments.Paging(page, pageCount))
             {
-                var status = await UpdateStatus(x.TrainingHistory);
-                result.Add(new IndexOutputModel(x, status));
+                var status = await GetExperimentStatus(x);
+                result.Add(new IndexOutputModel(x, status.ToString()));
             }
 
             return JsonOK(result);
         }
 
         /// <summary>
-        /// ステータスを更新する
+        /// 前処理と学習のステータスに基づいて、エンドユーザ表示用の実験ステータスを作成する
         /// </summary>
-        private async Task<string> UpdateStatus(TrainingHistory history)
+        /// <param name="experiment"></param>
+        /// <returns></returns>
+        private async Task<ContainerStatus> GetExperimentStatus(Experiment experiment)
         {
-            if (history != null)
+            var preprocessStatus = await UpdateStatus(experiment.ExperimentPreprocess?.TrainingHistory);
+            var trainingStatus = await UpdateStatus(experiment.TrainingHistory);
+            if (trainingStatus.Type != ContainerStatus.ContainerStatusType.None)
             {
-                var traningModel = await TrainingController.DoGetUpdatedIndexOutputModelAsync(history,
-                    clusterManagementLogic, CurrentUserInfo, trainingHistoryRepository, unitOfWork);
-                return traningModel.Status;
+                return trainingStatus;
             }
-
-            return ContainerStatus.None.ToString();
+            if (preprocessStatus.Type == ContainerStatus.ContainerStatusType.Failed
+                || preprocessStatus.Type == ContainerStatus.ContainerStatusType.Error)
+            {
+                return preprocessStatus;
+            }
+            return ContainerStatus.None;
         }
+
+        /// <summary>
+        /// kamonohashi学習のステータスを更新し、最新ステータスを返す
+        /// </summary>
+        private async Task<ContainerStatus> UpdateStatus(TrainingHistory history)
+            => history != null
+            ? await TrainingController.DoGetUpdatedIndexOutputModelAsync(history,
+                    clusterManagementLogic, CurrentUserInfo, trainingHistoryRepository, unitOfWork)
+            : ContainerStatus.None;
 
         /// <summary>
         /// 実験を取得する
@@ -144,12 +160,8 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonNotFound($"Experiment ID {id} is not found.");
             }
 
-            if (experiment.ExperimentPreprocess != null)
-            {
-                await UpdateStatus(experiment.ExperimentPreprocess.TrainingHistory);
-            }
-            var status = await UpdateStatus(experiment.TrainingHistory);
-            var model = new DetailsOutputModel(experiment, status);
+            var status = await GetExperimentStatus(experiment);
+            var model = new DetailsOutputModel(experiment, status.ToString());
 
             return JsonOK(model);
         }
@@ -427,7 +439,7 @@ namespace Nssol.Platypus.Controllers.spa
         }
 
         /// <summary>
-        /// 前処理を正常終了させる。
+        /// 前処理を正常終了させ、後続の学習を開始する
         /// </summary>
         /// <param name="id">学習履歴ID</param>
         [HttpPost("{id}/preprocessing/complete")]

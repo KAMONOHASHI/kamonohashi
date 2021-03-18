@@ -129,15 +129,16 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="history">学習履歴</param>
         private async Task<IndexOutputModel> GetUpdatedIndexOutputModelAsync(TrainingHistory history)
         {
-            return await DoGetUpdatedIndexOutputModelAsync(history, clusterManagementLogic, CurrentUserInfo, trainingHistoryRepository, unitOfWork);
+            var status = await DoGetUpdatedIndexOutputModelAsync(history, clusterManagementLogic, CurrentUserInfo, trainingHistoryRepository, unitOfWork);
+            var model = new IndexOutputModel(history);
+            model.Status = status.Name;
+            return model;
         }
 
-        public static async Task<IndexOutputModel> DoGetUpdatedIndexOutputModelAsync(TrainingHistory history,
+        public static async Task<ContainerStatus> DoGetUpdatedIndexOutputModelAsync(TrainingHistory history,
             IClusterManagementLogic clusterManagementLogic, UserInfo currentUserInfo, ITrainingHistoryRepository trainingHistoryRepository,
             IUnitOfWork unitOfWork)
         {
-            var model = new IndexOutputModel(history);
-
             var status = history.GetStatus();
             if (status.Exist())
             {
@@ -149,13 +150,11 @@ namespace Nssol.Platypus.Controllers.spa
                     //更新があったので、変更処理
                     await trainingHistoryRepository.UpdateStatusAsync(history.Id, newStatus, false);
                     unitOfWork.Commit();
-
-                    model.Status = newStatus.Name;
+                    return newStatus;
                 }
             }
-            return model;
+            return status;
         }
-
 
 
         /// <summary>
