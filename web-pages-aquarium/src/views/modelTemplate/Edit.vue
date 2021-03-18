@@ -580,7 +580,7 @@ export default {
               if (this.isCreateDialog) {
                 // 新規作成
                 //await this['template/post'](templateParams)
-               
+
                 //新規テンプレート登録後、テンプレートバージョンの登録をする
                 let ret = await this['template/post2'](templateParams)
                 let params = { id: ret.data.id, model: versionParams }
