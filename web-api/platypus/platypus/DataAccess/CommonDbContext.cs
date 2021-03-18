@@ -206,9 +206,14 @@ namespace Nssol.Platypus.DataAccess
         public virtual DbSet<NotebookHistoryParentInferenceMap> NotebookHistoryParentInferenceMaps { get; set; }
         
         /// <summary>
-        /// 実験履歴
+        /// 実験
         /// </summary>
-        public virtual DbSet<Experiment> Experiment { get; set; }
+        public virtual DbSet<Experiment> Experiments { get; set; }
+
+        /// <summary>
+        /// 実験前処理
+        /// </summary>
+        public virtual DbSet<ExperimentPreprocess> ExperimentPreprocesses { get; set; }
 
         /// <summary>
         /// アクアリウムデータセット
