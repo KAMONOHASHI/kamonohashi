@@ -107,6 +107,7 @@ namespace Nssol.Platypus
             services.AddTransient<IRegistryLogic, RegistryLogic>();
             services.AddTransient<IMenuLogic, MenuLogic>();
             services.AddTransient<IVersionLogic, VersionLogic>();
+            services.AddTransient<ITemplateLogic, TemplateLogic>();
 
             // ServiceのDI設定
             services.AddTransient<IClusterManagementService, KubernetesService>();
@@ -143,7 +144,9 @@ namespace Nssol.Platypus
             services.AddTransient<ISettingRepository, SettingRepository>();
             services.AddTransient<INodeTenantMapRepository, NodeTenantMapRepository>();
             services.AddTransient<ITemplateRepository, TemplateRepository>();
+            services.AddTransient<ITemplateVersionRepository, TemplateVersionRepository>();
             services.AddTransient<IExperimentRepository, ExperimentRepository>();
+            services.AddTransient<IExperimentPreprocessRepository, ExperimentPreprocessRepository>();
             services.AddTransient<IAquariumDataSetRepository, AquariumDataSetRepository>();
 
             // その他のDI設定
