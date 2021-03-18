@@ -100,7 +100,9 @@ namespace Nssol.Platypus.Controllers.spa
             var result = new List<IndexOutputModel>();
             foreach (var x in experiments.Paging(page, pageCount))
             {
-                var status = await GetExperimentStatus(x);
+                var preprocessStatus = await UpdateStatus(x.ExperimentPreprocess?.TrainingHistory);
+                var trainingStatus = await UpdateStatus(x.TrainingHistory);
+                var status = GetExperimentStatus(preprocessStatus, trainingStatus);
                 result.Add(new IndexOutputModel(x, status.ToString()));
             }
 
@@ -108,24 +110,17 @@ namespace Nssol.Platypus.Controllers.spa
         }
 
         /// <summary>
-        /// 前処理と学習のステータスに基づいて、エンドユーザ表示用の実験ステータスを作成する
+        /// エンドユーザ表示用の実験ステータスを作成する
         /// </summary>
-        /// <param name="experiment"></param>
-        /// <returns></returns>
-        private async Task<ContainerStatus> GetExperimentStatus(Experiment experiment)
+        private ContainerStatus GetExperimentStatus(ContainerStatus preprocessStatus, ContainerStatus trainingStatus)
         {
-            var preprocessStatus = await UpdateStatus(experiment.ExperimentPreprocess?.TrainingHistory);
-            var trainingStatus = await UpdateStatus(experiment.TrainingHistory);
-            if (trainingStatus.Type != ContainerStatus.ContainerStatusType.None)
-            {
-                return trainingStatus;
-            }
-            if (preprocessStatus.Type == ContainerStatus.ContainerStatusType.Failed
-                || preprocessStatus.Type == ContainerStatus.ContainerStatusType.Error)
+            if (trainingStatus.Type == ContainerStatus.ContainerStatusType.None
+                && (preprocessStatus.Type == ContainerStatus.ContainerStatusType.Failed
+                || preprocessStatus.Type == ContainerStatus.ContainerStatusType.Error))
             {
                 return preprocessStatus;
             }
-            return ContainerStatus.None;
+            return trainingStatus;
         }
 
         /// <summary>
@@ -160,7 +155,9 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonNotFound($"Experiment ID {id} is not found.");
             }
 
-            var status = await GetExperimentStatus(experiment);
+            var preprocessStatus = await UpdateStatus(experiment.ExperimentPreprocess?.TrainingHistory);
+            var trainingStatus = await UpdateStatus(experiment.TrainingHistory);
+            var status = GetExperimentStatus(preprocessStatus, trainingStatus);
             var model = new DetailsOutputModel(experiment, status.ToString());
 
             return JsonOK(model);

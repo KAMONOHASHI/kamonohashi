@@ -26,19 +26,16 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly ITemplateRepository templateRepository;
         private readonly IUnitOfWork unitOfWork;
         private readonly IGitLogic gitLogic;
-        private readonly IMultiTenancyLogic multiTenancyLogic;
 
         /// <summary>
         /// コンストラクタ
         /// </summary>
         public TemplateController(
-            IMultiTenancyLogic multiTenancyLogic,
             ITemplateRepository template2Repository,
             IGitLogic gitLogic,
             IUnitOfWork unitOfWork,
             IHttpContextAccessor accessor) : base(accessor)
         {
-            this.multiTenancyLogic = multiTenancyLogic;
             this.templateRepository = template2Repository;
             this.unitOfWork = unitOfWork;
             this.gitLogic = gitLogic;
@@ -223,7 +220,7 @@ namespace Nssol.Platypus.Controllers.spa
         public IActionResult GetAllByTenant(bool withTotal = false)
         {
             var templates = templateRepository.GetAll()
-                .Where(x => (x.AccessLevel == TemplateAccessLevel.Private && x.CreaterTenantId == multiTenancyLogic.TenantId)
+                .Where(x => (x.AccessLevel == TemplateAccessLevel.Private && x.CreaterTenantId == CurrentUserInfo.SelectedTenant.Id)
                 || (x.AccessLevel == TemplateAccessLevel.Public));
             templates = templates.OrderByDescending(t => t.Id);
             if (withTotal)
@@ -238,18 +235,13 @@ namespace Nssol.Platypus.Controllers.spa
         /// テンプレートを作成する
         /// </summary>
         [HttpPost("admin/templates")]
-        [PermissionFilter(MenuCode.Template, MenuCode.Experiment)]
+        [PermissionFilter(MenuCode.Template)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.Created)]
         public IActionResult Create([FromBody] CreateInputModel model)
         {
             if (!ModelState.IsValid)
             {
                 return JsonBadRequest("Invalid inputs.");
-            }
-            var userInfo = multiTenancyLogic.CurrentUserInfo;
-            if (userInfo == null)
-            {
-                return JsonBadRequest("Couldn't get activated user informations");
             }
             if (model.AccessLevel != TemplateAccessLevel.Disabled
                 && model.AccessLevel != TemplateAccessLevel.Private
@@ -264,8 +256,8 @@ namespace Nssol.Platypus.Controllers.spa
                 Memo = model.Memo,
                 LatestVersion = 0,
                 AccessLevel = model.AccessLevel,
-                CreaterUserId = userInfo.Id,
-                CreaterTenantId = userInfo.SelectedTenant.Id,
+                CreaterUserId = CurrentUserInfo.Id,
+                CreaterTenantId = CurrentUserInfo.SelectedTenant.Id,
             };
             templateRepository.Add(template);
             unitOfWork.Commit();
@@ -295,7 +287,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// テンプレートバージョンを作成する
         /// </summary>
         [HttpPost("admin/templates/{id}/versions")]
-        [PermissionFilter(MenuCode.Template, MenuCode.Experiment)]
+        [PermissionFilter(MenuCode.Template)]
         [ProducesResponseType(typeof(VersionIndexOutputModel), (int)HttpStatusCode.Created)]
         public async Task<IActionResult> CreateTemplateVersion(long id, [FromBody] VersionCreateInputModel model)
         {
@@ -391,7 +383,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// テンプレートを編集する
         /// </summary>
         [HttpPut("admin/templates/{id}")]
-        [PermissionFilter(MenuCode.Template, MenuCode.Experiment)]
+        [PermissionFilter(MenuCode.Template)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> Edit(long id, [FromBody] EditInputModel model)
         {

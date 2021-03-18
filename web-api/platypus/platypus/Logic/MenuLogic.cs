@@ -384,7 +384,7 @@ namespace Nssol.Platypus.Logic
         {
             Name = "アクアリウムデータセット管理",
             NameEn = "AquariumDataSet",
-            Description = "アクアリウムデータセット管理の各種管理",
+            Description = "アクアリウムデータセットの各種管理",
             DescriptionEn = "Managing Aquarium DataSet",
             Category = "pl-experiment",
             Code = MenuCode.AquariumDataSet,
