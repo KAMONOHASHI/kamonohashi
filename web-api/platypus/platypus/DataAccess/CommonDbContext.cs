@@ -32,11 +32,6 @@ namespace Nssol.Platypus.DataAccess
         public virtual DbSet<TensorBoardContainer> TensorBoardContainers { get; set; }
 
         /// <summary>
-        /// 実験用のtensorboardコンテナ
-        /// </summary>
-        public virtual DbSet<ExperimentTensorBoardContainer> ExperimentTensorBoardContainers { get; set; }
-
-        /// <summary>
         /// Git
         /// </summary>
         public virtual DbSet<Git> Gits { get; set; }
@@ -89,22 +84,12 @@ namespace Nssol.Platypus.DataAccess
         /// <summary>
         /// テンプレート
         /// </summary>
-        public virtual DbSet<ModelTemplate> Templates { get; set; }
-
-        /// <summary>
-        /// テンプレート
-        /// </summary>
-        public virtual DbSet<Template> Templates2 { get; set; }
+        public virtual DbSet<Template> Templates { get; set; }
 
         /// <summary>
         /// テンプレートバージョン
         /// </summary>
         public virtual DbSet<TemplateVersion> TemplateVersions { get; set; }
-
-        /// <summary>
-        /// テンプレートとテナントの中間テーブル
-        /// </summary>
-        public virtual DbSet<TemplateTenantMap> TemplateTenantMaps { get; set; }
 
         /// <summary>
         /// ユーザとロールの中間テーブル
@@ -221,14 +206,14 @@ namespace Nssol.Platypus.DataAccess
         public virtual DbSet<NotebookHistoryParentInferenceMap> NotebookHistoryParentInferenceMaps { get; set; }
         
         /// <summary>
-        /// 実験履歴
+        /// 実験
         /// </summary>
-        public virtual DbSet<ExperimentHistory> ExperimentHistories { get; set; }
+        public virtual DbSet<Experiment> Experiments { get; set; }
 
         /// <summary>
-        /// 実験の前処理履歴
+        /// 実験前処理
         /// </summary>
-        public virtual DbSet<ExperimentPreprocessHistory> ExperimentPreprocessHistories { get; set; }
+        public virtual DbSet<ExperimentPreprocess> ExperimentPreprocesses { get; set; }
 
         /// <summary>
         /// アクアリウムデータセット
@@ -285,9 +270,6 @@ namespace Nssol.Platypus.DataAccess
                     .IsUnique();
             modelBuilder.Entity<NodeTenantMap>()
                     .HasIndex(e => new { e.NodeId, e.TenantId })
-                    .IsUnique();
-            modelBuilder.Entity<TemplateTenantMap>()
-                    .HasIndex(e => new { e.TemplateId, e.TenantId })
                     .IsUnique();
             modelBuilder.Entity<TenantGitMap>()
                     .HasIndex(e => new { e.TenantId, e.GitId })

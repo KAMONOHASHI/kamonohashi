@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Nssol.Platypus.DataAccess;
@@ -9,9 +10,10 @@ using Nssol.Platypus.DataAccess;
 namespace Nssol.Platypus.Migrations
 {
     [DbContext(typeof(CommonDbContext))]
-    partial class CommonDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210317081419_v2.3.0f")]
+    partial class v230f
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -876,7 +878,7 @@ namespace Nssol.Platypus.Migrations
 
                     b.HasIndex("TrainingHistoryId");
 
-                    b.ToTable("Experiments");
+                    b.ToTable("Experiment");
                 });
 
             modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.ExperimentPreprocess", b =>
@@ -920,7 +922,7 @@ namespace Nssol.Platypus.Migrations
 
                     b.HasIndex("TrainingHistoryId");
 
-                    b.ToTable("ExperimentPreprocesses");
+                    b.ToTable("ExperimentPreprocess");
                 });
 
             modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.InferenceHistory", b =>
