@@ -81,7 +81,6 @@ export default {
   computed: {
     ...mapGetters({
       detail: ['experiment/detail'],
-      events: ['experiment/events'],
       dataSets: ['aquariumDataSet/dataSets'],
       preprocessHistory: ['experiment/preprocessHistories'],
     }),
@@ -94,7 +93,6 @@ export default {
     ...mapActions([
       'experiment/fetchDetail',
       'experiment/fetchPreprocessHistories',
-      'experiment/fetchEvents',
       'experiment/postUserCancel',
       'experiment/postFiles',
       'experiment/put',
@@ -127,12 +125,7 @@ export default {
     },
     async retrieveData() {
       await this['experiment/fetchDetail'](this.id)
-      if (
-        this.detail.statusType === 'Running' ||
-        this.detail.statusType === 'Error'
-      ) {
-        await this['experiment/fetchEvents'](this.detail.id)
-      }
+
       await this['aquariumDataSet/fetchDataSets']({
         id: this.detail.dataSet.aquariumDataSetId,
       })
