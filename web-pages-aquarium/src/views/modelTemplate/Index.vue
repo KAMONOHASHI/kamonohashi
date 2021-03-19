@@ -108,14 +108,14 @@ export default {
   },
 
   methods: {
-    ...mapActions(['fetchModelTemplates2']),
+    ...mapActions(['fetchModelTemplates']),
 
     async retrieveData() {
       let params = this.searchCondition
       params.page = this.pageStatus.currentPage
       params.perPage = this.pageStatus.currentPageSize
       params.withTotal = true
-      await this.fetchModelTemplates2(params)
+      await this.fetchModelTemplates(params)
     },
     async search() {
       this.pageStatus.currentPage = 1

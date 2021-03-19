@@ -101,18 +101,16 @@ export default {
   },
   methods: {
     ...mapActions([
+      'fetchModelTemplate',
+      'fetchVersions',
       'fetchDetail',
-      'delete',
-      'fetchModelTemplate2',
-      'fetchVersions2',
-      'fetchDetail2',
-      'postByIdVersions2',
-      'post2',
-      'put2',
+      'postByIdVersions',
+      'post',
+      'put',
     ]),
     async retrieveData() {
-      await this.fetchModelTemplate2(this.id)
-      await this.fetchVersions2(this.id)
+      await this.fetchModelTemplate(this.id)
+      await this.fetchVersions(this.id)
       if (this.versionValue == null) {
         for (let i in this.versions) {
           // 最新版を保持させる
@@ -129,7 +127,7 @@ export default {
         assignedTenants: this.detail.assignedTenants,
       }
       //最新バージョンを取得する
-      await this.fetchDetail2({
+      await this.fetchDetail({
         id: this.id,
         versionId: this.versionValue,
       })
@@ -193,7 +191,7 @@ export default {
         this.detail.accessLevel != baseParam.accessLevel
       ) {
         //基本情報更新
-        await this['put2']({ id: this.id, model: baseParam })
+        await this['put']({ id: this.id, model: baseParam })
       }
     },
 
@@ -424,7 +422,7 @@ export default {
       }
 
       //新規バージョン作成
-      await this['postByIdVersions2']({ id: this.id, model: params })
+      await this['postByIdVersions']({ id: this.id, model: params })
       /*this.$alert('編集は製品版で使用可能予定です', 'お知らせ', {
         confirmButtonText: 'OK',
       })*/
