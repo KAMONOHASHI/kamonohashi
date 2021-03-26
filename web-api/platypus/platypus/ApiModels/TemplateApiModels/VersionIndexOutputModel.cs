@@ -1,5 +1,4 @@
-﻿using Nssol.Platypus.Infrastructure;
-using Nssol.Platypus.Models;
+﻿using Nssol.Platypus.Models;
 
 namespace Nssol.Platypus.ApiModels.TemplateApiModels
 {

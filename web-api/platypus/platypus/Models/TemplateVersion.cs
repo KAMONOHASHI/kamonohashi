@@ -56,6 +56,11 @@ namespace Nssol.Platypus.Models
         public string PreprocessRepositoryCommitId { get; set; }
 
         /// <summary>
+        /// Gitトークン
+        /// </summary>
+        public string PreprocessRepositoryToken { get; set; }
+
+        /// <summary>
         /// Dockerリポジトリ
         /// </summary>
         public long? PreprocessContainerRegistryId { get; set; }
@@ -69,6 +74,11 @@ namespace Nssol.Platypus.Models
         /// コンテナタグ（＝バージョン）
         /// </summary>
         public string PreprocessContainerTag { get; set; }
+
+        /// <summary>
+        /// レジストリトークン
+        /// </summary>
+        public string PreprocessContainerToken { get; set; }
 
         /// <summary>
         /// CPUコア数
@@ -135,6 +145,11 @@ namespace Nssol.Platypus.Models
         public string TrainingRepositoryCommitId { get; set; }
 
         /// <summary>
+        /// Gitトークン
+        /// </summary>
+        public string TrainingRepositoryToken { get; set; }
+
+        /// <summary>
         /// Dockerリポジトリ
         /// </summary>
         public long TrainingContainerRegistryId { get; set; }
@@ -150,6 +165,11 @@ namespace Nssol.Platypus.Models
         /// </summary>
         [Required]
         public string TrainingContainerTag { get; set; }
+
+        /// <summary>
+        /// レジストリトークン
+        /// </summary>
+        public string TrainingContainerToken { get; set; }
 
         /// <summary>
         /// CPUコア数
@@ -211,6 +231,11 @@ namespace Nssol.Platypus.Models
         public string EvaluationRepositoryCommitId { get; set; }
 
         /// <summary>
+        /// Gitトークン
+        /// </summary>
+        public string EvaluationRepositoryToken { get; set; }
+
+        /// <summary>
         /// Dockerリポジトリ
         /// </summary>
         public long? EvaluationContainerRegistryId { get; set; }
@@ -224,6 +249,11 @@ namespace Nssol.Platypus.Models
         /// コンテナタグ（＝バージョン）
         /// </summary>
         public string EvaluationContainerTag { get; set; }
+
+        /// <summary>
+        /// レジストリトークン
+        /// </summary>
+        public string EvaluationContainerToken { get; set; }
 
         /// <summary>
         /// CPUコア数

@@ -54,16 +54,19 @@ namespace Nssol.Platypus.Controllers.spa
             string preprocessOwner = null;
             string preprocessBranch = null;
             string preprocessCommitId = null;
+            string preprocessGitToken = null;
             long trainingGitId = 0;
             string trainingRepository = null;
             string trainingOwner = null;
             string trainingBranch = null;
             string trainingCommitId = null;
+            string trainingGitToken = null;
             long? evaluationGitId = null;
             string evaluationRepository = null;
             string evaluationOwner = null;
             string evaluationBranch = null;
             string evaluationCommitId = null;
+            string evaluationGitToken = null;
 
             if (model.PreprocessGitModel != null)
             {
@@ -82,6 +85,7 @@ namespace Nssol.Platypus.Controllers.spa
                         return JsonNotFound($"The branch {preprocessBranch} for {preprocessGitId.Value}/{model.PreprocessGitModel.Owner}/{ model.PreprocessGitModel.Repository} is not found.");
                     }
                 }
+                preprocessGitToken = model.PreprocessGitModel.Token;
             }
             if (model.TrainingGitModel != null)
             {
@@ -100,6 +104,7 @@ namespace Nssol.Platypus.Controllers.spa
                         return JsonNotFound($"The branch {trainingBranch} for {trainingGitId}/{model.TrainingGitModel.Owner}/{ model.TrainingGitModel.Repository} is not found.");
                     }
                 }
+                trainingGitToken = model.TrainingGitModel.Token;
             }
             if (model.EvaluationGitModel != null)
             {
@@ -118,34 +123,41 @@ namespace Nssol.Platypus.Controllers.spa
                         return JsonNotFound($"The branch {evaluationBranch} for {evaluationGitId}/{model.EvaluationGitModel.Owner}/{ model.EvaluationGitModel.Repository} is not found.");
                     }
                 }
+                evaluationGitToken = model.EvaluationGitModel.Token;
             }
 
             long? preprocessRegistryId = null;
             string preprocessImage = null;
             string preprocessTag = null;
+            string preprocessRegistryToken = null;
             if (model.PreprocessContainerImage != null)
             {
                 preprocessRegistryId = model.PreprocessContainerImage.RegistryId ?? CurrentUserInfo.SelectedTenant.DefaultRegistry?.Id;
                 preprocessImage = model.PreprocessContainerImage.Image;
                 preprocessTag = model.PreprocessContainerImage.Tag;
+                preprocessRegistryToken = model.PreprocessContainerImage.Token;
             }
             long trainingRegistryId = 0;
             string trainingImage = null;
             string trainingTag = null;
+            string trainingRegistryToken = null;
             if (model.TrainingContainerImage != null)
             {
                 trainingRegistryId = (model.TrainingContainerImage.RegistryId ?? CurrentUserInfo.SelectedTenant.DefaultRegistry?.Id).Value;
                 trainingImage = model.TrainingContainerImage.Image;
                 trainingTag = model.TrainingContainerImage.Tag;
+                trainingRegistryToken = model.TrainingContainerImage.Token;
             }
             long? evaluationRegistryId = null;
             string evaluationImage = null;
             string evaluationTag = null;
+            string evaluationRegistryToken = null;
             if (model.EvaluationContainerImage != null)
             {
                 evaluationRegistryId = (model.EvaluationContainerImage.RegistryId ?? CurrentUserInfo.SelectedTenant.DefaultRegistry?.Id).Value;
                 evaluationImage = model.EvaluationContainerImage.Image;
                 evaluationTag = model.EvaluationContainerImage.Tag;
+                evaluationRegistryToken = model.EvaluationContainerImage.Token;
             }
 
             templateVersion.TemplateId = template.Id;
@@ -155,11 +167,13 @@ namespace Nssol.Platypus.Controllers.spa
             templateVersion.PreprocessContainerRegistryId = preprocessRegistryId;
             templateVersion.PreprocessContainerImage = preprocessImage;
             templateVersion.PreprocessContainerTag = preprocessTag; // latestは運用上使用されていないハズなので、そのまま直接代入
+            templateVersion.PreprocessContainerToken = preprocessRegistryToken;
             templateVersion.PreprocessRepositoryGitId = preprocessGitId;
             templateVersion.PreprocessRepositoryName = preprocessRepository;
             templateVersion.PreprocessRepositoryOwner = preprocessOwner;
             templateVersion.PreprocessRepositoryBranch = preprocessBranch;
             templateVersion.PreprocessRepositoryCommitId = preprocessCommitId;
+            templateVersion.PreprocessRepositoryToken = preprocessGitToken;
             templateVersion.PreprocessCpu = model.PreprocessCpu;
             templateVersion.PreprocessMemory = model.PreprocessMemory;
             templateVersion.PreprocessGpu = model.PreprocessGpu;
@@ -168,11 +182,13 @@ namespace Nssol.Platypus.Controllers.spa
             templateVersion.TrainingContainerRegistryId = trainingRegistryId;
             templateVersion.TrainingContainerImage = trainingImage;
             templateVersion.TrainingContainerTag = trainingTag; // latestは運用上使用されていないハズなので、そのまま直接代入
+            templateVersion.TrainingContainerToken = trainingRegistryToken;
             templateVersion.TrainingRepositoryGitId = trainingGitId;
             templateVersion.TrainingRepositoryName = trainingRepository;
             templateVersion.TrainingRepositoryOwner = trainingOwner;
             templateVersion.TrainingRepositoryBranch = trainingBranch;
             templateVersion.TrainingRepositoryCommitId = trainingCommitId;
+            templateVersion.TrainingRepositoryToken = trainingGitToken;
             templateVersion.TrainingCpu = model.TrainingCpu;
             templateVersion.TrainingMemory = model.TrainingMemory;
             templateVersion.TrainingGpu = model.TrainingGpu;
@@ -181,11 +197,13 @@ namespace Nssol.Platypus.Controllers.spa
             templateVersion.EvaluationContainerRegistryId = evaluationRegistryId;
             templateVersion.EvaluationContainerImage = evaluationImage;
             templateVersion.EvaluationContainerTag = evaluationTag; // latestは運用上使用されていないハズなので、そのまま直接代入
+            templateVersion.EvaluationContainerToken = evaluationRegistryToken;
             templateVersion.EvaluationRepositoryGitId = evaluationGitId;
             templateVersion.EvaluationRepositoryName = evaluationRepository;
             templateVersion.EvaluationRepositoryOwner = evaluationOwner;
             templateVersion.EvaluationRepositoryBranch = evaluationBranch;
             templateVersion.EvaluationRepositoryCommitId = evaluationCommitId;
+            templateVersion.EvaluationRepositoryToken = evaluationGitToken;
             templateVersion.EvaluationCpu = model.EvaluationCpu;
             templateVersion.EvaluationMemory = model.EvaluationMemory;
             templateVersion.EvaluationGpu = model.EvaluationGpu;
