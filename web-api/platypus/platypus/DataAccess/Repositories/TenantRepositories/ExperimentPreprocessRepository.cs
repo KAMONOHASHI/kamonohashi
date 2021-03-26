@@ -6,11 +6,11 @@ using Nssol.Platypus.Models.TenantModels;
 namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
 {
     /// <summary>
-    /// 実験テーブルにアクセスするためのリポジトリクラス
+    /// 実験前処理テーブルにアクセスするためのリポジトリクラス
     /// </summary>
-    public class ExperimentRepository : RepositoryForTenantBase<Experiment>, IExperimentRepository
+    public class ExperimentPreprocessRepository : RepositoryForTenantBase<ExperimentPreprocess>, IExperimentPreprocessRepository
     {
-        public ExperimentRepository(CommonDbContext context, IHttpContextAccessor accessor)
+        public ExperimentPreprocessRepository(CommonDbContext context, IHttpContextAccessor accessor) 
             : base(context, accessor) {}
     }
 }

@@ -24,6 +24,8 @@ namespace Nssol.Platypus.Controllers.spa
     public class TemplateController : PlatypusApiControllerBase
     {
         private readonly ITemplateRepository templateRepository;
+        private readonly ITemplateVersionRepository templateVersionRepository;
+        private readonly ITemplateLogic templateLogic;
         private readonly IUnitOfWork unitOfWork;
         private readonly IGitLogic gitLogic;
 
@@ -31,12 +33,16 @@ namespace Nssol.Platypus.Controllers.spa
         /// コンストラクタ
         /// </summary>
         public TemplateController(
-            ITemplateRepository template2Repository,
+            ITemplateRepository templateRepository,
+            ITemplateVersionRepository templateVersionRepository,
+            ITemplateLogic templateLogic,
             IGitLogic gitLogic,
             IUnitOfWork unitOfWork,
             IHttpContextAccessor accessor) : base(accessor)
         {
-            this.templateRepository = template2Repository;
+            this.templateRepository = templateRepository;
+            this.templateVersionRepository = templateVersionRepository;
+            this.templateLogic = templateLogic;
             this.unitOfWork = unitOfWork;
             this.gitLogic = gitLogic;
         }
@@ -219,13 +225,12 @@ namespace Nssol.Platypus.Controllers.spa
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetAllByTenant(bool withTotal = false)
         {
-            var templates = templateRepository.GetAll()
-                .Where(x => (x.AccessLevel == TemplateAccessLevel.Private && x.CreaterTenantId == CurrentUserInfo.SelectedTenant.Id)
-                || (x.AccessLevel == TemplateAccessLevel.Public));
-            templates = templates.OrderByDescending(t => t.Id);
+            var templates = templateRepository
+                .GetAll()
+                .OrderByDescending(x => x.Id)
+                .Where(x => templateLogic.Accessible(x, CurrentUserInfo.SelectedTenant));
             if (withTotal)
             {
-                //テンプレートの場合は件数が少ない想定なので、別のSQLを投げずにカウントしてしまう
                 SetTotalCountToHeader(templates.Count());
             }
             return JsonOK(templates.Select(t => new IndexOutputModel(t)));
@@ -323,7 +328,7 @@ namespace Nssol.Platypus.Controllers.spa
                 return errorResult;
             }
 
-            templateRepository.Add(templateVersion);
+            templateVersionRepository.Add(templateVersion);
             unitOfWork.Commit();
             return JsonCreated(new VersionIndexOutputModel(templateVersion));
         }
@@ -357,23 +362,29 @@ namespace Nssol.Platypus.Controllers.spa
         [ProducesResponseType(typeof(VersionDetailsOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetDetailTemplateVersion(long id, long versionId)
         {
-            var tempalteVersion = await templateRepository.GetTemplateVersionAsync(id, versionId);
-            if (tempalteVersion == null)
+            var templateVersion = await templateVersionRepository
+                .GetAll()
+                .Include(x => x.PreprocessContainerRegistry)
+                .Include(x => x.TrainingContainerRegistry)
+                .Include(x => x.EvaluationContainerRegistry)
+                .SingleOrDefaultAsync(x => x.Id == versionId && x.TemplateId == id);
+
+            if (templateVersion == null)
             {
                 return JsonNotFound($"TemplateVersion (Id {id} VersionId {versionId}) is not found.");
             }
 
-            var model = new VersionDetailsOutputModel(tempalteVersion);
+            var model = new VersionDetailsOutputModel(templateVersion);
 
             // Gitの表示用URLを作る
-            if (tempalteVersion.PreprocessRepositoryGitId != null)
+            if (templateVersion.PreprocessRepositoryGitId != null)
             {
-                model.PreprocessGitModel.Url = gitLogic.GetTreeUiUrl(tempalteVersion.PreprocessRepositoryGitId.Value, tempalteVersion.PreprocessRepositoryName, tempalteVersion.PreprocessRepositoryOwner, tempalteVersion.PreprocessRepositoryCommitId);
+                model.PreprocessGitModel.Url = gitLogic.GetTreeUiUrl(templateVersion.PreprocessRepositoryGitId.Value, templateVersion.PreprocessRepositoryName, templateVersion.PreprocessRepositoryOwner, templateVersion.PreprocessRepositoryCommitId);
             }
-            model.TrainingGitModel.Url = gitLogic.GetTreeUiUrl(tempalteVersion.TrainingRepositoryGitId, tempalteVersion.TrainingRepositoryName, tempalteVersion.TrainingRepositoryOwner, tempalteVersion.TrainingRepositoryCommitId);
-            if (tempalteVersion.EvaluationRepositoryGitId != null)
+            model.TrainingGitModel.Url = gitLogic.GetTreeUiUrl(templateVersion.TrainingRepositoryGitId, templateVersion.TrainingRepositoryName, templateVersion.TrainingRepositoryOwner, templateVersion.TrainingRepositoryCommitId);
+            if (templateVersion.EvaluationRepositoryGitId != null)
             {
-                model.EvaluationGitModel.Url = gitLogic.GetTreeUiUrl(tempalteVersion.EvaluationRepositoryGitId.Value, tempalteVersion.EvaluationRepositoryName, tempalteVersion.EvaluationRepositoryOwner, tempalteVersion.EvaluationRepositoryCommitId);
+                model.EvaluationGitModel.Url = gitLogic.GetTreeUiUrl(templateVersion.EvaluationRepositoryGitId.Value, templateVersion.EvaluationRepositoryName, templateVersion.EvaluationRepositoryOwner, templateVersion.EvaluationRepositoryCommitId);
             }
 
             return JsonOK(model);
