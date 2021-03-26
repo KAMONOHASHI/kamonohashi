@@ -1,5 +1,4 @@
-﻿using Nssol.Platypus.ApiModels.Components;
-using Nssol.Platypus.Models;
+﻿using Nssol.Platypus.Models;
 
 namespace Nssol.Platypus.ApiModels.TemplateApiModels
 {
@@ -16,7 +15,8 @@ namespace Nssol.Platypus.ApiModels.TemplateApiModels
                     Repository = templateVersion.PreprocessRepositoryName,
                     Owner = templateVersion.PreprocessRepositoryOwner,
                     Branch = templateVersion.PreprocessRepositoryBranch,
-                    CommitId = templateVersion.PreprocessRepositoryCommitId
+                    CommitId = templateVersion.PreprocessRepositoryCommitId,
+                    Token = templateVersion.PreprocessRepositoryToken,
                 };
             }
             if (!string.IsNullOrEmpty(templateVersion.PreprocessContainerImage))
@@ -26,7 +26,8 @@ namespace Nssol.Platypus.ApiModels.TemplateApiModels
                     RegistryId = templateVersion.PreprocessContainerRegistryId,
                     RegistryName = templateVersion.PreprocessContainerRegistry.Name,
                     Image = templateVersion.PreprocessContainerImage,
-                    Tag = templateVersion.PreprocessContainerTag
+                    Tag = templateVersion.PreprocessContainerTag,
+                    Token = templateVersion.PreprocessContainerToken,
                 };
             }
             PreprocessCpu = templateVersion.PreprocessCpu;
@@ -40,14 +41,16 @@ namespace Nssol.Platypus.ApiModels.TemplateApiModels
                 Repository = templateVersion.TrainingRepositoryName,
                 Owner = templateVersion.TrainingRepositoryOwner,
                 Branch = templateVersion.TrainingRepositoryBranch,
-                CommitId = templateVersion.TrainingRepositoryCommitId
+                CommitId = templateVersion.TrainingRepositoryCommitId,
+                Token = templateVersion.TrainingRepositoryToken,
             };
             TrainingContainerImage = new ContainerImageOutputModel()
             {
                 RegistryId = templateVersion.TrainingContainerRegistryId,
                 RegistryName = templateVersion.TrainingContainerRegistry.Name,
                 Image = templateVersion.TrainingContainerImage,
-                Tag = templateVersion.TrainingContainerTag
+                Tag = templateVersion.TrainingContainerTag,
+                Token = templateVersion.TrainingContainerToken,
             };
             TrainingCpu = templateVersion.TrainingCpu;
             TrainingMemory = templateVersion.TrainingMemory;
@@ -62,7 +65,8 @@ namespace Nssol.Platypus.ApiModels.TemplateApiModels
                     Repository = templateVersion.EvaluationRepositoryName,
                     Owner = templateVersion.EvaluationRepositoryOwner,
                     Branch = templateVersion.EvaluationRepositoryBranch,
-                    CommitId = templateVersion.EvaluationRepositoryCommitId
+                    CommitId = templateVersion.EvaluationRepositoryCommitId,
+                    Token = templateVersion.EvaluationRepositoryToken,
                 };
             }
             if (!string.IsNullOrEmpty(templateVersion.EvaluationContainerImage))
@@ -72,7 +76,8 @@ namespace Nssol.Platypus.ApiModels.TemplateApiModels
                     RegistryId = templateVersion.EvaluationContainerRegistryId,
                     RegistryName = templateVersion.EvaluationContainerRegistry.Name,
                     Image = templateVersion.EvaluationContainerImage,
-                    Tag = templateVersion.EvaluationContainerTag
+                    Tag = templateVersion.EvaluationContainerTag,
+                    Token = templateVersion.EvaluationContainerToken,
                 };
             }
             EvaluationCpu = templateVersion.EvaluationCpu;

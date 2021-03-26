@@ -1,13 +1,9 @@
-﻿using Nssol.Platypus.Infrastructure;
-using System.Collections.Generic;
-using Nssol.Platypus.ApiModels.Components;
-using Nssol.Platypus.Controllers.Util;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Nssol.Platypus.ApiModels.TemplateApiModels
 {
     /// <summary>
-    /// テンプレート作成の入力モデル
+    /// テンプレートバージョン作成の入力モデル
     /// </summary>
     public class VersionCreateInputModel
     {
