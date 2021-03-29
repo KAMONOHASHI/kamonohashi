@@ -409,7 +409,9 @@ namespace Nssol.Platypus.Controllers.spa
             UserInfo currentUserInfo,
             ModelStateDictionary modelState,
             string requestUrl,
-            string scriptType
+            string scriptType,
+            string regisryTokenName,
+            string gitToken
             )
         {
             //データの入力チェック
@@ -543,7 +545,7 @@ namespace Nssol.Platypus.Controllers.spa
             }
             unitOfWork.Commit();
 
-            var result = await clusterManagementLogic.RunTrainContainerAsync(trainingHistory, scriptType);
+            var result = await clusterManagementLogic.RunTrainContainerAsync(trainingHistory, scriptType, regisryTokenName, gitToken);
             if (result.IsSuccess == false)
             {
                 //コンテナの起動に失敗した状態。エラーを出力して、保存した学習履歴も削除する。
@@ -586,7 +588,7 @@ namespace Nssol.Platypus.Controllers.spa
             (var _, var result) = await DoCreate(model,
                 dataSetRepository, nodeRepository, tenantRepository, trainingHistoryRepository,
                 clusterManagementLogic, gitLogic, tagLogic,
-                unitOfWork, CurrentUserInfo, ModelState, RequestUrl, "training");
+                unitOfWork, CurrentUserInfo, ModelState, RequestUrl, "training", null, null);
             return result;
         }
 
