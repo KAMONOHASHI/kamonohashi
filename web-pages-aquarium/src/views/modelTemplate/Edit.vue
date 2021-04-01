@@ -552,9 +552,9 @@ export default {
             //
 
             //新規テンプレート登録後、テンプレートバージョンの登録をする
-            let ret = await this['template/post2'](templateParams)
+            let ret = await this['template/post'](templateParams)
             let params = { id: ret.data.id, model: versionParams }
-            await this['template/postByIdVersions2'](params)
+            await this['template/postByIdVersions'](params)
 
             this.$emit('done')
             this.error = null
