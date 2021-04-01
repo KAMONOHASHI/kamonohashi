@@ -601,7 +601,7 @@ export default {
     },
     async selectPreprocessImage(image) {
       await registrySelectorUtil.selectImage(
-        this.form.form.preprocess,
+        this.form.preprocess,
         this['registrySelector/fetchTags'],
         this.form.preprocess.containerImage.registry.id,
         image,
