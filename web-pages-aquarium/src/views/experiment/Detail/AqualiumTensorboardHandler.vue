@@ -54,7 +54,7 @@
 <script>
 import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
 import { createNamespacedHelpers } from 'vuex'
-const { mapGetters, mapActions } = createNamespacedHelpers('experiment')
+const { mapGetters, mapActions } = createNamespacedHelpers('training')
 const kqiHost = process.env.VUE_APP_KAMONOHASHI_HOST || window.location.hostname
 
 export default {

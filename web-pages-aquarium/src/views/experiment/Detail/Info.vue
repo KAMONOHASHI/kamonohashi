@@ -5,6 +5,7 @@
       学習の情報を確認できます。
     </div>
     <el-card
+      v-if="value != null"
       style="margin: 10px;border: solid 1px #ebeef5;  width: 550px; height: 300px;"
     >
       <el-row class="">
@@ -63,7 +64,7 @@
       </div>
     </el-card>
 
-    <el-row>
+    <el-row v-if="value != null">
       <el-col :span="12">
         <router-link :to="value.dataSetURL">
           <el-card

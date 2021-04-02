@@ -58,10 +58,6 @@ export default {
       type: String,
       default: null,
     },
-    experimentPreprocessHistoryId: {
-      type: Number,
-      default: null,
-    },
   },
   data() {
     return {

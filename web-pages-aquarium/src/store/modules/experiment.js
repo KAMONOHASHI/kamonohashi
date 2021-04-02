@@ -1,9 +1,8 @@
 import api from '@/api/api'
-import Util from '@/util/util'
 
 // initial state
 const state = {
-  histories: [],
+  experiments: [],
   total: 0,
   detail: {},
   events: {},
@@ -15,18 +14,20 @@ const state = {
 
 // getters
 const getters = {
-  histories(state) {
-    return state.histories
+  experiments(state) {
+    return state.experiments
   },
+  detail(state) {
+    return state.detail
+  },
+
   preprocessHistories(state) {
     return state.preprocessHistories
   },
   total(state) {
     return state.total
   },
-  detail(state) {
-    return state.detail
-  },
+
   events(state) {
     return state.events
   },
@@ -43,25 +44,38 @@ const getters = {
 
 // actions
 const actions = {
-  async fetchHistories({ commit }, params) {
+  async fetchExperiments({ commit }, params) {
     let response = await api.experiment.get(params)
-    let histories = response.data
+    let experiments = response.data
     let total = response.headers['x-total-count']
-    commit('setHistories', { histories })
+    commit('setExperiments', { experiments })
     // params.withTotal=trueの時は件数が取れているため設定
     if (total !== undefined) {
       commit('setTotal', parseInt(total))
     }
   },
+  async fetchDetail({ commit }, id) {
+    let detail = (await api.experiment.getById({ id: id })).data
+    commit('setDetail', { detail })
+  },
+  // eslint-disable-next-line no-unused-vars
+  async post({ commit }, params) {
+    return await api.experiment.post({ model: params })
+  },
+  // eslint-disable-next-line no-unused-vars
+  async postPreprocessingComplete({ commit }, { id, params }) {
+    return await api.experiment.postPreprocessingCompleteById({
+      id: id,
+      model: params,
+    })
+  },
+
   async fetchPreprocessHistories({ commit }, id) {
     let response = await api.experiment.getPreprocessById(id)
     let preprocessHistories = response.data
     commit('setPreprocessHistories', { preprocessHistories })
   },
-  async fetchDetail({ commit }, id) {
-    let detail = (await api.experiment.getById({ id: id })).data
-    commit('setDetail', { detail })
-  },
+
   async fetchEvents({ commit }, id) {
     let events = (await api.experiment.getEventsById({ id: id })).data
     commit('setEvents', { events })
@@ -85,11 +99,6 @@ const actions = {
       })
     ).data
     commit('setPreprocessLogFiles', { logFiles })
-  },
-
-  // eslint-disable-next-line no-unused-vars
-  async post({ commit }, params) {
-    return await api.experiment.post({ model: params })
   },
 
   // eslint-disable-next-line no-unused-vars
@@ -130,52 +139,14 @@ const actions = {
       fileId: fileId,
     })
   },
-
-  // tensorboard関連
-  async fetchTensorboard({ commit }, id) {
-    let tensorboard = (
-      await api.experiment.getTensorboardById({
-        id: id,
-        $config: { apiDisabledLoading: true },
-      })
-    ).data
-    commit('setTensorboard', { tensorboard })
-  },
-
-  // eslint-disable-next-line no-unused-vars
-  async putTensorboard({ commit }, params) {
-    await api.experiment.putTensorboardById(params)
-  },
-
-  // eslint-disable-next-line no-unused-vars
-  async deleteTensorboard({ commit }, id) {
-    await api.experiment.deleteTensorboardById({ id: id })
-  },
-
-  async fetchFileList({ commit }, params) {
-    let response = (await api.experiment.getContainerFilesById(params)).data
-    let newList = []
-    response.dirs.forEach(d =>
-      newList.push({
-        isDirectory: true,
-        name: d.dirName,
-      }),
-    )
-    response.files.forEach(f =>
-      newList.push({
-        isDirectory: false,
-        name: f.fileName,
-        url: f.url,
-        size: Util.getByteString(f.size),
-        lastModified: f.lastModified,
-      }),
-    )
-    commit('setFileList', newList)
-  },
 }
 
 // mutations
 const mutations = {
+  setExperiments(state, { experiments }) {
+    state.experiments = experiments
+  },
+
   setHistories(state, { histories }) {
     state.histories = histories
   },

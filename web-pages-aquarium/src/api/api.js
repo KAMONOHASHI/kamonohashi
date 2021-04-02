@@ -285,22 +285,11 @@ let api = {
   },
 
   experiment: {
-    getSimple: gen.ApiV2ExperimentSimpleGet,
     get: gen.ApiV2ExperimentGet,
     post: gen.ApiV2ExperimentRunPost,
     getById: gen.ApiV2ExperimentByIdGet,
-    deleteById: gen.ApiV2ExperimentByIdDelete,
-    getPreprocessById: gen.ApiV2ExperimentByIdPreprocessGet,
-    getFilesById: gen.ApiV2ExperimentByIdFilesGet,
-    getPreprocessFilesById: gen.ApiV2ExperimentByIdPreprocessFilesGet,
-    getContainerFilesById: gen.ApiV2ExperimentByIdContainer_filesGet,
-    deleteByIdFilesByFileId: gen.ApiV2ExperimentByIdFilesByFileIdDelete,
-    getTensorboardById: gen.ApiV2ExperimentByIdTensorboardGet,
-    putTensorboardById: gen.ApiV2ExperimentByIdTensorboardPut,
-    deleteTensorboardById: gen.ApiV2ExperimentByIdTensorboardDelete,
-    postHaltById: gen.ApiV2ExperimentByIdHaltPost,
-    postUserCancelById: gen.ApiV2ExperimentByIdUser_cancelPost,
-    getEventsById: gen.ApiV2ExperimentByIdEventsGet,
+    postPreprocessingCompleteById:
+      gen.ApiV2ExperimentByIdPreprocessingCompletePost,
   },
 
   storage: {
