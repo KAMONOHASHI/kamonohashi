@@ -27,10 +27,13 @@ namespace Nssol.Platypus.Controllers.spa
     public class ExperimentController : PlatypusApiControllerBase
     {
         private readonly IExperimentRepository experimentRepository;
+        private readonly IExperimentPreprocessRepository experimentPreprocessRepository;
         private readonly IAquariumDataSetRepository aquariumDataSetRepository;
         private readonly IDataSetRepository dataSetRepository;
         private readonly ITemplateRepository templateRepository;
+        private readonly ITemplateVersionRepository templateVersionRepository;
         private readonly ITenantRepository tenantRepository;
+        private readonly ITemplateLogic templateLogic;
         private readonly ITagLogic tagLogic;
         private readonly INodeRepository nodeRepository;
         private readonly IGitLogic gitLogic;
@@ -38,17 +41,17 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly IUnitOfWork unitOfWork;
         private readonly ITrainingHistoryRepository trainingHistoryRepository;
 
-        /// <summary>
-        /// コンストラクタ
-        /// </summary>
         public ExperimentController(
             IExperimentRepository experimentRepository,
+            IExperimentPreprocessRepository experimentPreprocessRepository,
             IAquariumDataSetRepository aquariumDataSetRepository,
             IDataSetRepository dataSetRepository,
             ITrainingHistoryRepository trainingHistoryRepository,
             ITemplateRepository templateRepository,
+            ITemplateVersionRepository templateVersionRepository,
             ITenantRepository tenantRepository,
             INodeRepository nodeRepository,
+            ITemplateLogic templateLogic,
             ITagLogic tagLogic,
             IGitLogic gitLogic,
             IClusterManagementLogic clusterManagementLogic,
@@ -57,11 +60,14 @@ namespace Nssol.Platypus.Controllers.spa
         {
             this.trainingHistoryRepository = trainingHistoryRepository;
             this.experimentRepository = experimentRepository;
+            this.experimentPreprocessRepository = experimentPreprocessRepository;
             this.aquariumDataSetRepository = aquariumDataSetRepository;
             this.dataSetRepository = dataSetRepository;
             this.templateRepository = templateRepository;
+            this.templateVersionRepository = templateVersionRepository;
             this.tenantRepository = tenantRepository;
             this.nodeRepository = nodeRepository;
+            this.templateLogic = templateLogic;
             this.tagLogic = tagLogic;
             this.gitLogic = gitLogic;
             this.clusterManagementLogic = clusterManagementLogic;
@@ -112,7 +118,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// エンドユーザ表示用の実験ステータスを作成する
         /// </summary>
-        private ContainerStatus GetExperimentStatus(ContainerStatus preprocessStatus, ContainerStatus trainingStatus)
+        private static ContainerStatus GetExperimentStatus(ContainerStatus preprocessStatus, ContainerStatus trainingStatus)
         {
             if (trainingStatus.Type == ContainerStatus.ContainerStatusType.None
                 && (preprocessStatus.Type == ContainerStatus.ContainerStatusType.Failed
@@ -300,7 +306,7 @@ namespace Nssol.Platypus.Controllers.spa
                     TemplateVersionId = templateVersion.Id,
                     TrainingHistoryId = trainingHistory.Id,
                 };
-                experimentRepository.Add(experimentPreprocess);
+                experimentPreprocessRepository.Add(experimentPreprocess);
                 experiment.ExperimentPreprocess = experimentPreprocess;
                 experimentRepository.Update(experiment);
                 unitOfWork.Commit();
@@ -407,21 +413,34 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonNotFound($"DataSetVersion (DataSetId {model.DataSetId} and VersionId {model.DataSetVersionId}) is not found.");
             }
-            var templateVersion = await templateRepository.GetTemplateVersionAsync(model.TemplateId, model.TemplateVersionId);
+            var template = await templateRepository.GetByIdAsync(model.TemplateId);
+            if (template == null)
+            {
+                return JsonNotFound($"Template ID {model.TemplateId} is not found.");
+            }
+            if (!templateLogic.Accessible(template, CurrentUserInfo.SelectedTenant))
+            {
+                return JsonBadRequest($"Template ID {model.TemplateId} is not accesible.");
+            }
+            var templateVersion = await templateVersionRepository
+                .GetAll()
+                .SingleOrDefaultAsync(x => x.TemplateId == model.TemplateId && x.Id == model.TemplateVersionId);
             if (templateVersion == null)
             {
                 return JsonNotFound($"TemplateVersion (TemplateID {model.TemplateId} and VersionId {model.TemplateVersionId} is not found.");
             }
 
-            
             if (templateVersion.PreprocessContainerRegistryId == null)
             {
                 // テンプレートに前処理がない
                 return await RunExperimentTrainingWithoutPreprocess(model, templateVersion, dataSetVersion);
             }
 
-            var experimentPreprocess = experimentRepository
-                .GetExperimentPreprocess(model.TemplateId, model.TemplateVersionId, model.DataSetId, model.DataSetVersionId)
+            var experimentPreprocess = experimentPreprocessRepository
+                .GetAll()
+                .Include(x => x.TrainingHistory)
+                .Where(x => x.TemplateId == model.TemplateId && x.TemplateVersionId == model.TemplateVersionId
+                && x.DataSetId == model.DataSetId && x.DataSetVersionId == model.DataSetVersionId)
                 .AsEnumerable()
                 .FirstOrDefault(x => x.TrainingHistory.GetStatus() == ContainerStatus.Completed);
 
