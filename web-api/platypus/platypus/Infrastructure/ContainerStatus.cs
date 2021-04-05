@@ -195,7 +195,7 @@ namespace Nssol.Platypus.Infrastructure
         /// <summary>
         /// ステータスの大分類
         /// </summary>
-        private ContainerStatusType Type;
+        public ContainerStatusType Type { get; private set; }
 
         /// <summary>
         /// staticコンストラクタ。
@@ -262,7 +262,7 @@ namespace Nssol.Platypus.Infrastructure
         /// ステータスの大分類。
         /// 分類ごとに、ユーザの行動が変わるような差異を持つ。
         /// </summary>
-        private enum ContainerStatusType
+        public enum ContainerStatusType
         {
             /// <summary>
             /// DB上のレコード、クラスタ上のコンテナ、共に存在しない。

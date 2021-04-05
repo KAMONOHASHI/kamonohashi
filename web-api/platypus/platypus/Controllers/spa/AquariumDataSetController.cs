@@ -5,7 +5,6 @@ using Nssol.Platypus.Controllers.Util;
 using Nssol.Platypus.DataAccess.Core;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories;
 using Nssol.Platypus.Infrastructure;
-using Nssol.Platypus.Logic.Interfaces;
 using Nssol.Platypus.Models.TenantModels.Aquarium;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,27 +20,21 @@ namespace Nssol.Platypus.Controllers.spa
     [Route("api/v{api-version:apiVersion}/aquarium/datasets")]
     public class AquariumDataSetController : PlatypusApiControllerBase
     {
-        private readonly IDataRepository dataRepository;
         private readonly IAquariumDataSetRepository aquariumDataSetRepository;
         private readonly IDataSetRepository dataSetRepository;
         private readonly IDataTypeRepository dataTypeRepository;
-        private readonly IDataLogic dataLogic;
         private readonly IUnitOfWork unitOfWork;
 
         public AquariumDataSetController(
-            IDataRepository dataRepository,
             IAquariumDataSetRepository aquariumDataSetRepository,
             IDataSetRepository dataSetRepository,
             IDataTypeRepository dataTypeRepository,
-            IDataLogic dataLogic,
             IUnitOfWork unitOfWork,
             IHttpContextAccessor accessor) : base(accessor)
         {
-            this.dataRepository = dataRepository;
             this.aquariumDataSetRepository = aquariumDataSetRepository;
             this.dataSetRepository = dataSetRepository;
             this.dataTypeRepository = dataTypeRepository;
-            this.dataLogic = dataLogic;
             this.unitOfWork = unitOfWork;
         }
 
@@ -50,6 +43,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="model">作成するアクアリウムデータセット</param>
         [HttpPost]
+        [Filters.PermissionFilter(MenuCode.AquariumDataSet)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.Created)]
         public IActionResult CreateDataSet([FromBody]CreateInputModel model)
         {
@@ -75,6 +69,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="id">作成先のアクアリウムデータセットID</param>
         /// <param name="model">作成するアクアリウムデータセットバージョン</param>
         [HttpPost("{id}/versions")]
+        [Filters.PermissionFilter(MenuCode.AquariumDataSet)]
         [ProducesResponseType(typeof(VersionIndexOutputModel), (int)HttpStatusCode.Created)]
         public async Task<IActionResult> CreateDataSetVersion(long id, [FromBody]VersionCreateInputModel model)
         {
@@ -115,6 +110,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="id">削除するアクアリウムデータセットID</param>
         [HttpDelete("{id}")]
+        [Filters.PermissionFilter(MenuCode.AquariumDataSet)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         public async Task<IActionResult> DeleteDataSet(long id)
         {
@@ -137,6 +133,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="filter">検索条件</param>
         /// <param name="withTotal">合計件数をレスポンスヘッダ(X-Total-Count)に含めるか。デフォルトはfalse。</param>
         [HttpGet]
+        [Filters.PermissionFilter(MenuCode.AquariumDataSet, MenuCode.Experiment)]
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetDataSetList([FromQuery]SearchInputModel filter, [FromQuery]int? perPage,
             [FromQuery]int page = 1, bool withTotal = false)
@@ -167,6 +164,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="id">取得するアクアリウムデータセットのID</param>
         [HttpGet("{id}/versions")]
+        [Filters.PermissionFilter(MenuCode.AquariumDataSet, MenuCode.Experiment)]
         [ProducesResponseType(typeof(IEnumerable<VersionIndexOutputModel>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetDataSetVersionList(long id)
         {
@@ -186,6 +184,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="id">取得するアクアリウムデータセットID</param>
         /// <param name="versionId">取得するアクアリウムデータセットバージョンID</param>
         [HttpGet("{id}/versions/{versionId}")]
+        [Filters.PermissionFilter(MenuCode.AquariumDataSet, MenuCode.Experiment)]
         [ProducesResponseType(typeof(VersionDetailsOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetDataSetVersion(long id, long versionId)
         {

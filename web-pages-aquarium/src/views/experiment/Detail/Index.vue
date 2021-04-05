@@ -22,7 +22,17 @@
           "
         />
       </el-tab-pane>
-      <el-tab-pane label="推論" name="inference"><inference /></el-tab-pane>
+      <el-tab-pane label="推論" name="inference"><inference /> </el-tab-pane>
+
+      <el-tab-pane label="デバッグ" name="debug"
+        ><debug
+          :id="id"
+          v-model="infoForm"
+          :experiment-preprocess-history-id="
+            detail.experimentPreprocessHistoryId
+          "
+        />
+      </el-tab-pane>
     </el-tabs>
     <router-view @done="done" />
   </div>
@@ -32,10 +42,11 @@
 import Info from './Info'
 import Result from './Result'
 import Inference from './Inference'
+import Debug from './Debug'
 import { mapActions, mapGetters } from 'vuex'
 export default {
   title: '実験詳細',
-  components: { Info, Result, Inference },
+  components: { Info, Result, Inference, Debug },
   props: {
     id: {
       type: String,

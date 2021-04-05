@@ -439,24 +439,17 @@ namespace Nssol.Platypus.Controllers.spa
             //今はprefixだけで判断する
             if (containerName.StartsWith("tensorboard"))
             {
-                //学習のTensorBoardコンテナ
-                var trainingContainer = commonDiLogic.DynamicDi<ITensorBoardContainerRepository>().Find(t => t.Name == containerName, force);
-                //実験のTensorBoardコンテナ
-                var experimentContainer = commonDiLogic.DynamicDi<IExperimentTensorBoardContainerRepository>().Find(t => t.Name == containerName, force);
-
-                if (trainingContainer == null && experimentContainer == null)
+                //TensorBoardコンテナ
+                var container = commonDiLogic.DynamicDi<ITensorBoardContainerRepository>().Find(t => t.Name == containerName, force);
+                if (container == null)
                 {
                     // 存在しないハズのTensorBoardコンテナが生き残っている
                     LogWarning($"Find unknown TensorBoard container: {containerName}");
                     return new Tuple<ContainerType, TenantModelBase>(ContainerType.Unknown, null);
                 }
-                else if (trainingContainer != null)
-                {
-                    return new Tuple<ContainerType, TenantModelBase>(ContainerType.TensorBoard, trainingContainer);
-                }
                 else
                 {
-                    return new Tuple<ContainerType, TenantModelBase>(ContainerType.TensorBoard, experimentContainer);
+                    return new Tuple<ContainerType, TenantModelBase>(ContainerType.TensorBoard, container);
                 }
             }
             else if (containerName.StartsWith("preproc"))
@@ -543,28 +536,6 @@ namespace Nssol.Platypus.Controllers.spa
                     return new Tuple<ContainerType, TenantModelBase>(ContainerType.Training, container);
                 }
             }
-            else if (containerName.StartsWith("experiment"))
-            {
-                //実験コンテナ
-                var container = commonDiLogic.DynamicDi<IExperimentHistoryRepository>().Find(t => t.Key == containerName, force);
-                if (container == null)
-                {
-                    // 存在しないハズのコンテナが生き残っている
-                    LogWarning($"Find unknown container: {containerName}");
-                    return new Tuple<ContainerType, TenantModelBase>(ContainerType.Unknown, null);
-                }
-                else if (container.GetStatus().Exist() == false)
-                {
-                    // 既に終了しているハズのジョブのコンテナ＝何かの理由でコンテナだけ消せなかった
-                    // ジョブ側には何の影響も与えたくないので、未知のコンテナとして削除する
-                    LogWarning($"Find exited container: {containerName}");
-                    return new Tuple<ContainerType, TenantModelBase>(ContainerType.Unknown, null);
-                }
-                else
-                {
-                    return new Tuple<ContainerType, TenantModelBase>(ContainerType.Experiment, container);
-                }
-            }
             else
             {
                 // DBに登録していないテナントデータ削除用（管理者用）コンテナ
@@ -602,15 +573,8 @@ namespace Nssol.Platypus.Controllers.spa
                 case ContainerType.TensorBoard:
                     //C#は各caseがスコープ共通のため、同一変数名を使えない。止む無く変数名を分ける。
                     var trainingLogicForTensorBoard = commonDiLogic.DynamicDi<ITrainingLogic>();
-                    var experimentLogicForTensorBoard = commonDiLogic.DynamicDi<IExperimentLogic>();
-                    if (typeof(TensorBoardContainer).IsInstanceOfType(container.Item2))
-                    {
-                        await trainingLogicForTensorBoard.DeleteTensorBoardAsync(container.Item2 as TensorBoardContainer, force);
-                    }
-                    else if (typeof(ExperimentTensorBoardContainer).IsInstanceOfType(container.Item2))
-                    {
-                        await experimentLogicForTensorBoard.DeleteTensorBoardAsync(container.Item2 as ExperimentTensorBoardContainer, force);
-                    }
+                    //TensorBoardコンテナを削除する
+                    await trainingLogicForTensorBoard.DeleteTensorBoardAsync(container.Item2 as TensorBoardContainer, force);
                     break;
                 case ContainerType.Training:
                     //学習コンテナを強制終了させる
@@ -626,11 +590,6 @@ namespace Nssol.Platypus.Controllers.spa
                     //ノートブックコンテナを強制終了させる
                     var notebookLogic = commonDiLogic.DynamicDi<INotebookLogic>();
                     await notebookLogic.ExitAsync(container.Item2 as NotebookHistory, ContainerStatus.Killed, force);
-                    break;
-                case ContainerType.Experiment:
-                    //実験コンテナを強制終了させる
-                    var experimentLogic = commonDiLogic.DynamicDi<IExperimentLogic>();
-                    await experimentLogic.ExitAsync(container.Item2 as ExperimentHistory, ContainerStatus.Killed, force);
                     break;
                 case ContainerType.Preprocessing:
                     //前処理コンテナを強制終了させる

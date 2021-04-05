@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "@(Model.Name)"
+  namespace: "@(Model.NameSpace)"
+data:
+  prepare: |
+    bash /kqi/scripts/common/show-logo
+    bash /kqi/scripts/common/prepare-kqi-conf
+    bash /kqi/scripts/common/prepare-git
+
+  main: |
+    bash /kqi/scripts/common/wait-ready
+    cd /kqi/git
+    echo "------------------------- [KAMONOHASHI Main] start main command -------------------------"
+    @Raw(Model.EntryPoint)
+    bash /kqi/scripts/common/notify-finish $?
+  finish: |
+    bash /kqi/scripts/common/prepare-kqi-conf
+    bash /kqi/scripts/common/wait-finish
+
+    if [ $ZIP_FILE_CREATED = "True" ] && [ $(cat /kqi/tmp/result_exit_code) -eq 0 ]
+    then
+        echo "------------------------- [KAMONOHASHI Finish] zip /kqi/output  -------------------------"
+        zip -r /kqi/tmp/@Raw(Model.ScriptType)_output_${TRAINING_ID}.zip /kqi/output && mv /kqi/tmp/@Raw(Model.ScriptType)_output_${TRAINING_ID}.zip /kqi/attach
+        echo $? > /kqi/tmp/result_exit_code
+    fi
+  
+    if [ $(cat /kqi/tmp/result_exit_code) -eq 0 ]
+    then
+      echo "------------------------- [KAMONOHASHI Finish] retrun code is 0. complete  -------------------------"
+      kqi training complete $TRAINING_ID
+    else
+      echo "------------------------- [KAMONOHASHI Finish] retrun code is $RESULT. kill  -------------------------"
+      kqi training halt $TRAINING_ID
+    fi
+   

@@ -1,7 +1,4 @@
 ﻿using Nssol.Platypus.Infrastructure;
-using System.Collections.Generic;
-using Nssol.Platypus.ApiModels.Components;
-using Nssol.Platypus.Controllers.Util;
 
 namespace Nssol.Platypus.ApiModels.TemplateApiModels
 {
@@ -14,6 +11,7 @@ namespace Nssol.Platypus.ApiModels.TemplateApiModels
         /// 名前
         /// </summary>
         public string Name { get; set; }
+ 
         /// <summary>
         /// メモ
         /// </summary>
@@ -23,13 +21,5 @@ namespace Nssol.Platypus.ApiModels.TemplateApiModels
         /// アクセスレベル
         /// </summary>
         public TemplateAccessLevel? AccessLevel { get; set; }
-
-        /// <summary>
-        /// このテンプレートを使用できるテナントのID。
-        /// <see cref="AccessLevel"/>が<see cref="TemplateAccessLevel.Private"/>の時のみ指定可能。
-        /// それ以外の場合は無視される。
-        /// </summary>
-        public long? AssignedTenantId { get; set; }
-
     }
 }

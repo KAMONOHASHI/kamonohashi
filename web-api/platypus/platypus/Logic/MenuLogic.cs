@@ -51,6 +51,7 @@ namespace Nssol.Platypus.Logic
                 MenuAccessMenu,
                 ResourceMenu,
 
+                AquariumDataSetMenu,
                 TemplateMenu,
                 ExperimentMenu
             };
@@ -375,6 +376,19 @@ namespace Nssol.Platypus.Logic
             Category = "pl-inference",
             Code = MenuCode.Inference,
             Url = "/inference",
+            ShowTopMenu = true,
+            ShowSideMenu = true,
+            MenuType = MenuType.Tenant
+        };
+        internal static MenuItemInfo AquariumDataSetMenu = new MenuItemInfo()
+        {
+            Name = "アクアリウムデータセット管理",
+            NameEn = "AquariumDataSet",
+            Description = "アクアリウムデータセットの各種管理",
+            DescriptionEn = "Managing Aquarium DataSet",
+            Category = "pl-experiment",
+            Code = MenuCode.AquariumDataSet,
+            Url = "/aquarium/datasets",
             ShowTopMenu = true,
             ShowSideMenu = true,
             MenuType = MenuType.Tenant

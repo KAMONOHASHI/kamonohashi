@@ -123,8 +123,10 @@ namespace Nssol.Platypus.Infrastructure
         /// <summary>
         /// 実験管理
         /// </summary>
-        Experiment
-
-
+        Experiment,
+        /// <summary>
+        /// アクアリウムデータセット
+        /// </summary>
+        AquariumDataSet,
     }
 }

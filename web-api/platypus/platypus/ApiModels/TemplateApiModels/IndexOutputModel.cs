@@ -4,33 +4,40 @@ using Nssol.Platypus.Models;
 namespace Nssol.Platypus.ApiModels.TemplateApiModels
 {
     /// <summary>
-    /// テンプレート情報のうち、Indexで表示する最低情報だけを保持する
+    /// テンプレートの出力モデル
     /// </summary>
     public class IndexOutputModel : Components.OutputModelBase
     {
-        public IndexOutputModel(ModelTemplate template) : base(template)
+        public IndexOutputModel(Template template) : base(template)
         {
             Id = template.Id;
             Name = template.Name;
             Memo = template.Memo;
-            Version = template.Version;
-            GroupId = template.GroupId;
+            LatestVersion = template.LatestVersion;
             AccessLevel = template.AccessLevel;
-            AccessLevelStr = template.AccessLevel.ToString();
+            CreaterUserId = template.CreaterUserId;
+            CreaterTenantId = template.CreaterTenantId;
         }
 
         /// <summary>
         /// ID
         /// </summary>
         public long Id { get; set; }
+
         /// <summary>
         /// 名前
         /// </summary>
         public string Name { get; set; }
+
         /// <summary>
         /// メモ
         /// </summary>
         public string Memo { get; set; }
+
+        /// <summary>
+        /// 最新バージョン番号
+        /// </summary>
+        public long LatestVersion { get; set; }
 
         /// <summary>
         /// アクセスレベル
@@ -38,20 +45,13 @@ namespace Nssol.Platypus.ApiModels.TemplateApiModels
         public TemplateAccessLevel AccessLevel { get; set; }
 
         /// <summary>
-        /// アクセスレベルの表示名
+        /// テンプレート作成者ユーザID
         /// </summary>
-        public string AccessLevelStr { get; set; }
+        public long CreaterUserId { get; set; }
 
         /// <summary>
-        /// バージョン
+        /// テンプレート作成者テナントID
         /// </summary>
-        public long? Version { get; set; }
-
-        /// <summary>
-        /// グループID
-        /// </summary>
-        public long? GroupId { get; set; }
-
-
+        public long CreaterTenantId { get; set; }
     }
 }
