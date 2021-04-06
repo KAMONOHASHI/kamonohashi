@@ -12,7 +12,18 @@
             @selectRegistry="selectRegistry"
             @selectImage="selectImage"
           />
-
+          <el-form-item :label="heading" prop="containerImage">
+            <el-row>
+              <el-col :span="6" :offset="1">token</el-col>
+              <el-col :span="12">
+                <el-input
+                  v-model="form.containerImage.token"
+                  size="small"
+                  type="password"
+                />
+              </el-col>
+            </el-row>
+          </el-form-item>
           <kqi-git-selector
             v-model="form.gitModel"
             :gits="gits"
@@ -25,6 +36,17 @@
             @selectRepository="selectRepository"
             @selectBranch="selectBranch"
           />
+
+          <el-row>
+            <el-col :span="6" :offset="1">token</el-col>
+            <el-col :span="12">
+              <el-input
+                v-model="form.gitModel.token"
+                size="small"
+                type="password"
+              />
+            </el-col>
+          </el-row>
           <el-form-item label="実行コマンド" prop="entryPoint">
             <el-input
               v-model="form.entryPoint"
@@ -66,6 +88,7 @@ export default {
             registryId: 0,
             image: 'string',
             tag: 'string',
+            token: 'string',
           },
           gitModel: {
             gitId: 0,
@@ -73,6 +96,7 @@ export default {
             owner: 'string',
             branch: 'string',
             commitId: 'string',
+            token: 'string',
           },
           entryPoint: '',
           resource: {
@@ -131,6 +155,7 @@ export default {
       containerImage,
     )
     const formGitModel = await this.setupFormGitModel(gitModel)
+
     this.form = {
       entryPoint: this.value.entryPoint,
       gitModel: formGitModel,
@@ -161,7 +186,7 @@ export default {
       formGitModel.repository = `${gitModel.owner}/${repositoryName}`
 
       formGitModel.branch = gitModel.branch
-
+      formGitModel.token = gitModel.token
       const fetchCommitArg = {
         gitId: gitModel.gitId,
         commitId: gitModel.commitId,

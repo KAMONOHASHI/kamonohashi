@@ -64,6 +64,16 @@
                   @selectRegistry="selectPreprocessRegistry"
                   @selectImage="selectPreprocessImage"
                 />
+                <el-row>
+                  <el-col :span="6" :offset="1">token</el-col>
+                  <el-col :span="12">
+                    <el-input
+                      v-model="form.preprocess.containerImage.token"
+                      size="small"
+                      type="password"
+                    />
+                  </el-col>
+                </el-row>
 
                 <kqi-git-selector
                   v-model="form.preprocess.gitModel"
@@ -77,6 +87,17 @@
                   @selectRepository="selectPreprocessRepository"
                   @selectBranch="selectPreprocessBranch"
                 />
+
+                <el-row>
+                  <el-col :span="6" :offset="1">token</el-col>
+                  <el-col :span="12">
+                    <el-input
+                      v-model="form.preprocess.gitModel.token"
+                      size="small"
+                      type="password"
+                    />
+                  </el-col>
+                </el-row>
                 <el-form-item label="実行コマンド" prop="entryPoint">
                   <el-input
                     v-model="form.preprocess.entryPoint"
@@ -107,6 +128,16 @@
                   @selectRegistry="selectTrainingRegistry"
                   @selectImage="selectTrainingImage"
                 />
+                <el-row>
+                  <el-col :span="6" :offset="1">token</el-col>
+                  <el-col :span="12">
+                    <el-input
+                      v-model="form.training.containerImage.token"
+                      size="small"
+                      type="password"
+                    />
+                  </el-col>
+                </el-row>
                 <kqi-git-selector
                   v-model="form.training.gitModel"
                   :gits="gits"
@@ -119,6 +150,16 @@
                   @selectRepository="selectTrainingRepository"
                   @selectBranch="selectTrainingBranch"
                 />
+                <el-row>
+                  <el-col :span="6" :offset="1">token</el-col>
+                  <el-col :span="12">
+                    <el-input
+                      v-model="form.training.gitModel.token"
+                      size="small"
+                      type="password"
+                    />
+                  </el-col>
+                </el-row>
                 <el-form-item label="実行コマンド" prop="entryPoint">
                   <el-input
                     v-model="form.training.entryPoint"
@@ -149,6 +190,16 @@
                   @selectRegistry="selectEvaluationRegistry"
                   @selectImage="selectEvaluationImage"
                 />
+                <el-row>
+                  <el-col :span="6" :offset="1">token</el-col>
+                  <el-col :span="12">
+                    <el-input
+                      v-model="form.evaluation.containerImage.token"
+                      size="small"
+                      type="password"
+                    />
+                  </el-col>
+                </el-row>
                 <kqi-git-selector
                   v-model="form.evaluation.gitModel"
                   :gits="gits"
@@ -161,6 +212,16 @@
                   @selectRepository="selectEvaluationRepository"
                   @selectBranch="selectEvaluationBranch"
                 />
+                <el-row>
+                  <el-col :span="6" :offset="1">token</el-col>
+                  <el-col :span="12">
+                    <el-input
+                      v-model="form.evaluation.gitModel.token"
+                      size="small"
+                      type="password"
+                    />
+                  </el-col>
+                </el-row>
                 <el-form-item label="実行コマンド" prop="entryPoint">
                   <el-input
                     v-model="form.evaluation.entryPoint"
@@ -248,12 +309,14 @@ export default {
             registry: null,
             image: null,
             tag: null,
+            token: null,
           },
           gitModel: {
             git: null,
             repository: null,
             branch: null,
             commit: null,
+            token: null,
           },
           resource: {
             cpu: 1,
@@ -267,12 +330,14 @@ export default {
             registry: null,
             image: null,
             tag: null,
+            token: null,
           },
           gitModel: {
             git: null,
             repository: null,
             branch: null,
             commit: null,
+            token: null,
           },
           resource: {
             cpu: 1,
@@ -286,12 +351,14 @@ export default {
             registry: null,
             image: null,
             tag: null,
+            token: null,
           },
           gitModel: {
             git: null,
             repository: null,
             branch: null,
             commit: null,
+            token: null,
           },
           resource: {
             cpu: 1,
@@ -437,6 +504,7 @@ export default {
                 registryId: this.form.preprocess.containerImage.registry.id,
                 image: this.form.preprocess.containerImage.image,
                 tag: this.form.preprocess.containerImage.tag,
+                token: this.form.preprocess.containerImage.token,
               }
             }
             ////学習
@@ -449,6 +517,7 @@ export default {
                 registryId: this.form.training.containerImage.registry.id,
                 image: this.form.training.containerImage.image,
                 tag: this.form.training.containerImage.tag,
+                token: this.form.training.containerImage.token,
               }
             }
 
@@ -462,6 +531,7 @@ export default {
                 registryId: this.form.evaluation.containerImage.registry.id,
                 image: this.form.evaluation.containerImage.image,
                 tag: this.form.evaluation.containerImage.tag,
+                token: this.form.evaluation.containerImage.token,
               }
             }
             // gitモデルの指定
@@ -475,6 +545,7 @@ export default {
             ) {
               // HEAD指定の時はcommitsの先頭要素をcommitIDに指定する。コピー実行時の再現性を担保するため
               preprocessGitModel = {
+                token: this.form.preprocess.gitModel.git.token,
                 gitId: this.form.preprocess.gitModel.git.id,
                 repository: this.form.preprocess.gitModel.repository.name,
                 owner: this.form.preprocess.gitModel.repository.owner,
@@ -492,6 +563,7 @@ export default {
             ) {
               // HEAD指定の時はcommitsの先頭要素をcommitIDに指定する。コピー実行時の再現性を担保するため
               trainingGitModel = {
+                token: this.form.training.gitModel.git.token,
                 gitId: this.form.training.gitModel.git.id,
                 repository: this.form.training.gitModel.repository.name,
                 owner: this.form.training.gitModel.repository.owner,
@@ -509,6 +581,7 @@ export default {
             ) {
               // HEAD指定の時はcommitsの先頭要素をcommitIDに指定する。コピー実行時の再現性を担保するため
               evaluationGitModel = {
+                token: this.form.evaluation.gitModel.git.token,
                 gitId: this.form.evaluation.gitModel.git.id,
                 repository: this.form.evaluation.gitModel.repository.name,
                 owner: this.form.evaluation.gitModel.repository.owner,

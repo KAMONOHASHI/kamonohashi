@@ -216,7 +216,9 @@ export default {
           this.versionDetail.preprocessContainerImage.image !=
             this.preprocForm.containerImage.image ||
           this.versionDetail.preprocessContainerImage.tag !=
-            this.preprocForm.containerImage.tag
+            this.preprocForm.containerImage.tag ||
+          this.versionDetail.preprocessContainerImage.token !=
+            this.preprocForm.containerImage.token
         ) {
           update = true
         }
@@ -239,7 +241,9 @@ export default {
           this.versionDetail.preprocessGitModel.branch !=
             this.preprocForm.gitModel.branch ||
           this.versionDetail.preprocessGitModel.commitId !=
-            this.preprocForm.gitModel.commit.commitId
+            this.preprocForm.gitModel.commit.commitId ||
+          this.versionDetail.preprocessGitModel.token !=
+            this.preprocForm.gitModel.token
         ) {
           update = true
         }
@@ -262,6 +266,8 @@ export default {
           this.trainingForm.containerImage.image ||
         this.versionDetail.trainingContainerImage.tag !=
           this.trainingForm.containerImage.tag ||
+        this.versionDetail.trainingContainerImage.token !=
+          this.trainingForm.containerImage.token ||
         this.versionDetail.trainingGitModel.gitId !=
           this.trainingForm.gitModel.git.id ||
         this.versionDetail.trainingGitModel.repository !=
@@ -270,6 +276,8 @@ export default {
           this.trainingForm.gitModel.branch ||
         this.versionDetail.trainingGitModel.commitId !=
           this.trainingForm.gitModel.commit.commitId ||
+        this.versionDetail.trainingGitModel.token !=
+          this.trainingForm.gitModel.token ||
         this.versionDetail.trainingEntryPoint != this.trainingForm.entryPoint ||
         this.versionDetail.trainingCpu != this.trainingForm.resource.cpu ||
         this.versionDetail.trainingMemory !=
@@ -294,7 +302,9 @@ export default {
           this.versionDetail.evaluationContainerImage.image !=
             this.evaluationForm.containerImage.image ||
           this.versionDetail.evaluationContainerImage.tag !=
-            this.evaluationForm.containerImage.tag
+            this.evaluationForm.containerImage.tag ||
+          this.versionDetail.evaluationContainerImage.token !=
+            this.evaluationForm.containerImage.token
         ) {
           update = true
         }
@@ -316,7 +326,9 @@ export default {
           this.versionDetail.evaluationGitModel.branch !=
             this.evaluationForm.gitModel.branch ||
           this.versionDetail.evaluationGitModel.commitId !=
-            this.evaluationForm.gitModel.commit.commitId
+            this.evaluationForm.gitModel.commit.commitId ||
+          this.versionDetail.evaluationGitModel.token !=
+            this.evaluationForm.gitModel.token
         ) {
           update = true
         }
@@ -392,6 +404,7 @@ export default {
           owner: this.preprocForm.gitModel.repository.split('/')[0],
           branch: this.preprocForm.gitModel.branch,
           commitId: this.preprocForm.gitModel.commit.commitId,
+          token: this.preprocForm.gitModel.token,
         }
       } else {
         params['preprocessGitModel'] = null
@@ -404,6 +417,7 @@ export default {
           owner: this.trainingForm.gitModel.repository.split('/')[0],
           branch: this.trainingForm.gitModel.branch,
           commitId: this.trainingForm.gitModel.commit.commitId,
+          token: this.trainingForm.gitModel.token,
         }
       } else {
         params['trainingGitModel'] = null
@@ -416,6 +430,7 @@ export default {
           owner: this.evaluationForm.gitModel.repository.split('/')[0],
           branch: this.evaluationForm.gitModel.branch,
           commitId: this.evaluationForm.gitModel.commit.commitId,
+          token: this.evaluationForm.gitModel.token,
         }
       } else {
         params['evaluationGitModel'] = null
