@@ -212,7 +212,7 @@ export default {
       let model = {
         name: filename,
         memo: '',
-        tags: '',
+        tags: ['aquarium'],
         isRaw: true,
       }
       let result = null
@@ -224,7 +224,8 @@ export default {
       //データファイルのアップロード
       let dataFileInfos = await this.$refs.uploadForm.uploadFile()
       let dataId = null
-      dataId = await this.updateData('aquarium_' + datasetname)
+      let date = new Date().toLocaleString()
+      dataId = await this.updateData(`${datasetname} ${date}`)
       await this['data/putFile']({
         id: dataId,
         fileInfo: dataFileInfos,
