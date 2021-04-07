@@ -2517,7 +2517,7 @@ export const ApiV2ExperimentRunPostURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
- * 前処理を正常終了させる。
+ * 前処理を正常終了させ、後続の学習を開始する
  * request: ApiV2ExperimentByIdPreprocessingCompletePost
  * url: ApiV2ExperimentByIdPreprocessingCompletePostURL
  * method: ApiV2ExperimentByIdPreprocessingCompletePost_TYPE

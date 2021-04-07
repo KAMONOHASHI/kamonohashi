@@ -24,15 +24,23 @@
         >
           <kqi-display-error :error="error" />
           <kqi-upload-form ref="uploadForm" title="File" :type="type" />
+          <el-row style="marginTop: 30px">
+            <el-col :span="8">
+              <h3>アップロードメモ</h3>
+              <el-input v-model="uploadMemo" type="textarea" />
+            </el-col>
+          </el-row>
           <br />
-          <el-button
-            type="plain"
-            plain
-            style="margin-top:10px"
-            @click="submit()"
-          >
-            続行
-          </el-button>
+          <el-row>
+            <el-button
+              type="plain"
+              plain
+              style="margin-top:10px"
+              @click="submit()"
+            >
+              続行
+            </el-button>
+          </el-row>
         </el-form>
       </el-row>
     </div>
@@ -79,8 +87,8 @@
               @click="closeDrawer"
             >
               キャンセル
-            </el-button></el-row
-          >
+            </el-button>
+          </el-row>
         </div>
       </el-drawer>
     </div>
@@ -119,6 +127,8 @@ export default {
       checkList: [],
       datas: [],
       error: null,
+      memo: '',
+      uploadMemo: '',
     }
   },
   computed: {
@@ -211,7 +221,7 @@ export default {
     async updateData(filename) {
       let model = {
         name: filename,
-        memo: '',
+        memo: this.uploadMemo,
         tags: ['aquarium'],
         isRaw: true,
       }
@@ -270,7 +280,7 @@ export default {
         flatEntries: flatEntry,
         isFlat: true,
         name: 'aquqrium_' + this.datasetname,
-        memo: '',
+        memo: this.uploadMemo,
       }
 
       let dataset = await this['dataSet/post'](datasetparams)
@@ -285,6 +295,10 @@ export default {
       })
 
       this.$emit('latestVersionId', version.id)
+
+      // アップロード完了後の初期化
+      this.uploadMemo = ''
+      this.$refs.uploadForm._data.selectedFiles = null
     },
 
     async retrieveData() {
