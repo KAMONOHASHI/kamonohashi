@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-form ref="form1" :model="form" :rules="rules">
+    <el-form :model="form" :rules="rules">
       <el-row :gutter="20">
         <el-col :span="12">
           <kqi-container-selector
@@ -12,7 +12,7 @@
             @selectRegistry="selectRegistry"
             @selectImage="selectImage"
           />
-          <el-form-item :label="heading" prop="containerImage">
+          <el-form-item>
             <el-row>
               <el-col :span="6" :offset="1">token</el-col>
               <el-col :span="12">
@@ -20,6 +20,7 @@
                   v-model="form.containerImage.token"
                   size="small"
                   type="password"
+                  style="width:215px"
                 />
               </el-col>
             </el-row>
@@ -44,6 +45,7 @@
                 v-model="form.gitModel.token"
                 size="small"
                 type="password"
+                style="width:215px"
               />
             </el-col>
           </el-row>
@@ -57,9 +59,11 @@
           </el-form-item>
         </el-col>
 
-        <el-col :span="6">
-          <kqi-resource-selector v-model="form.resource" :quota="quota" />
-        </el-col>
+        <el-form-item>
+          <el-col :span="6">
+            <kqi-resource-selector v-model="form.resource" :quota="quota" />
+          </el-col>
+        </el-form-item>
       </el-row>
     </el-form>
   </div>
