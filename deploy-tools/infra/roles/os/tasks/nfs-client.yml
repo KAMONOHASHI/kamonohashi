@@ -1,5 +1,0 @@
-- name: Ensure NFS utilities are installed.
-  apt: 
-    name: nfs-common
-    state: installed
-    update_cache: yes

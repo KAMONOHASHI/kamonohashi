@@ -14,11 +14,6 @@
 * build-pypi/setup.sh test-upload の実行
 * pip installの確認
 * build-pypi/setup.sh master-upload の実行
-## デプロイツールのリリース
-* archive-deploy-tools/archive.sh の実行
-* deploy-tools-$VERSION.tar.gz がモノリポジトリトップに作られる
-* githubのリリースに添付する
-
 
 # developリリース
 * tagをつけずに`build-docker/build.sh`を実行するとdevelopタグでコンテナが作られる

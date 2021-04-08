@@ -18,7 +18,12 @@
         </el-select>
       </el-col>
     </el-row>
-
+    <el-row style="margin:15px">
+      <el-col :span="8">
+        <h3>メモ</h3>
+        <el-input v-model="detailVersion.memo" type="textarea" />
+      </el-col>
+    </el-row>
     <el-row>
       <el-col :span="8">
         <h3 style="padding:15px">ファイル一覧</h3>
@@ -74,6 +79,10 @@
               selectDeleteData.name
             }}"を削除して新しいデータセットバージョンを作成しますか？</span
           >
+          <el-row style="marginTop: 30px">
+            <h3>削除メモ</h3>
+            <el-input v-model="deleteMemo" type="textarea" />
+          </el-row>
           <span slot="footer" class="dialog-footer">
             <el-button @click="deleteDialog = false">Cancel</el-button>
             <el-button type="primary" @click="deleteData()">
@@ -137,7 +146,7 @@ export default {
       deleteDialog: false,
       selectDeleteData: { name: null },
       selectImageList: [],
-
+      deleteMemo: '',
       versionValue: null,
     }
   },
@@ -241,7 +250,7 @@ export default {
         flatEntries: flatEntry,
         isFlat: true,
         name: 'aquqrium_' + this.datasetname,
-        memo: '',
+        memo: this.deleteMemo,
       }
 
       let dataset = await this['dataSet/post'](datasetparams)

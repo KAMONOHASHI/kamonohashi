@@ -221,6 +221,7 @@ namespace Nssol.Platypus.Controllers.spa
                     }
                 }
             }
+            result.Memo = dataSet.Memo;
             return JsonOK(result);
         }
     }

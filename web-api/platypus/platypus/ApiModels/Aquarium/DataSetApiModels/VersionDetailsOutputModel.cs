@@ -21,5 +21,10 @@ namespace Nssol.Platypus.ApiModels.Aquarium.DataSetApiModels
         /// IsFlat == trueの場合に参照されるデータエントリ
         /// </summary>
         public IEnumerable<DataApiModels.IndexOutputModel> FlatEntries { get; set; }
+
+        /// <summary>
+        /// メモ。中身となるKAMONOHASHIのデータセットのメモが入る
+        /// </summary>
+        public string Memo { get; set; }
     }
 }
