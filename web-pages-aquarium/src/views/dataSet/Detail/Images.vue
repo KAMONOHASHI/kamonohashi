@@ -60,9 +60,16 @@
                   style="list-style-type: none;padding-left:10px"
                   :index="subIndex"
                   class="file-li "
-                  @click="fileClick(file, $event)"
                 >
-                  {{ file.fileName }}
+                  <div
+                    style="float:left;width:90%"
+                    @click="fileClick(file, $event)"
+                  >
+                    {{ file.fileName }}
+                  </div>
+                  <div style="float:left;width:10%">
+                    <a :href="file.url"><i class="el-icon-download"></i></a>
+                  </div>
                 </li>
               </ul>
             </div>
