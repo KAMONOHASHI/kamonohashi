@@ -222,7 +222,7 @@ namespace Nssol.Platypus.Controllers.spa
                 Memo = null,
                 Tags = null,
                 Zip = false,
-                LocalDataSet = true,
+                LocalDataSet = false,
             };
 
             // kamonohashi学習を開始
@@ -311,7 +311,7 @@ namespace Nssol.Platypus.Controllers.spa
                 Memo = null,
                 Tags = null,
                 Zip = false,
-                LocalDataSet = true,
+                LocalDataSet = false,
             };
 
             // kamonohashi学習を開始
@@ -393,7 +393,7 @@ namespace Nssol.Platypus.Controllers.spa
                 Memo = null,
                 Tags = null,
                 Zip = false,
-                LocalDataSet = true,
+                LocalDataSet = false,
             };
 
             // kamonohashi学習を開始
@@ -602,7 +602,7 @@ namespace Nssol.Platypus.Controllers.spa
                 Memo = null,
                 Tags = null,
                 Zip = false,
-                LocalDataSet = true,
+                LocalDataSet = false,
             };
 
             // kamonohashi学習を開始
