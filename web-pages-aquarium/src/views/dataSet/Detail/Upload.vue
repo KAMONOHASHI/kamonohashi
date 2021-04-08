@@ -170,15 +170,9 @@ export default {
 
     async submit() {
       this.$store.commit('setLoading', false)
+
       this.loading = true
       try {
-        if (
-          this.$refs.uploadForm._data.selectedFiles == null ||
-          this.$refs.uploadForm._data.selectedFiles.length == 0
-        ) {
-          this.error = new Error('ファイルを選択してください')
-          return
-        }
         await this.postDataSet()
         this.$emit('done')
         this.error = null
@@ -195,7 +189,9 @@ export default {
         this.loading = false
         this.$store.commit('setLoading', true)
         this['data/clearUploadedFiles']()
-        this.$refs.uploadForm.showProgress = false
+        if (this.$refs.uploadForm != null) {
+          this.$refs.uploadForm.showProgress = false
+        }
       }
       // エラーがない場合、詳細イメージタブ画面に遷移
       if (this.error === null) {
@@ -253,6 +249,14 @@ export default {
         flatEntry.push({ id: datas[i]['id'] })
       }
       if (this.importfile == 1) {
+        if (
+          this.$refs.uploadForm._data.selectedFiles == null ||
+          this.$refs.uploadForm._data.selectedFiles.length == 0
+        ) {
+          this.error = new Error('ファイルを選択してください')
+          return
+        }
+
         //ローカルからのデータリストを登録する
         let dataId = await this.uploadFile(this.datasetname)
         //新しく追加したデータをデータリストに追加
