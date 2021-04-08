@@ -401,7 +401,8 @@ namespace Nssol.Platypus.Logic
         /// </summary>
         /// <param name="trainHistory">対象の学習履歴</param>
         /// <returns>作成したコンテナのステータス</returns>
-        public async Task<Result<ContainerInfo, string>> RunTrainContainerAsync(TrainingHistory trainHistory, string scriptType)
+        public async Task<Result<ContainerInfo, string>> RunTrainContainerAsync(TrainingHistory trainHistory, string scriptType,
+            string regisryTokenName, string gitToken)
         {
             string token = await GetUserAccessTokenAsync();
             if (token == null)
@@ -414,7 +415,7 @@ namespace Nssol.Platypus.Logic
                 CurrentUserInfo.SelectedTenant.DefaultGitId.Value : trainHistory.ModelGitId;
 
             var registryMap = registryLogic.GetCurrentRegistryMap(trainHistory.ContainerRegistryId.Value);
-            var gitEndpointResult = await gitLogic.GetPullUrlAsync(gitId, trainHistory.ModelRepository, trainHistory.ModelRepositoryOwner);
+            var gitEndpointResult = await gitLogic.GetPullUrlAsync(gitId, trainHistory.ModelRepository, trainHistory.ModelRepositoryOwner, gitToken);
 
             if (! gitEndpointResult.IsSuccess) {
                 return Result<ContainerInfo, string>.CreateErrorResult(gitEndpointResult.Error);
@@ -529,7 +530,7 @@ namespace Nssol.Platypus.Logic
                 EntryPoint = trainHistory.EntryPoint,
 
                 ClusterManagerToken = token,
-                RegistryTokenName = registryMap.RegistryTokenKey,
+                RegistryTokenName = regisryTokenName ?? registryMap.RegistryTokenKey,
                 IsNodePort = true
             };
             // 親を指定した場合は親の出力結果を/kqi/parentにマウント
@@ -1547,6 +1548,28 @@ namespace Nssol.Platypus.Logic
             };
             return await clusterManagementService.RegistRegistryTokenyAsync(inModel);
         }
+
+        /// <summary>
+        /// クラスタ管理サービス上で、指定したユーザ＆テナントにコンテナレジストリを登録する。
+        /// idempotentを担保。
+        /// </summary>
+        public async Task<bool> RegistRegistryToTenantAsync(string tokenKey, string url, Registry registry, string selectedTenantName, string userName, string password)
+        {
+            string dockerCfg = registryLogic.GetDockerCfgAuthString(registry, userName, password);
+            if (dockerCfg == null)
+            {
+                return false;
+            }
+            var inModel = new RegistRegistryTokenInputModel()
+            {
+                TenantName = selectedTenantName,
+                RegistryTokenKey = tokenKey,
+                DockerCfgAuthString = dockerCfg,
+                Url = url,
+            };
+            return await clusterManagementService.RegistRegistryTokenyAsync(inModel);
+        }
+
 
         /// <summary>
         /// 指定したテナントを作成する。

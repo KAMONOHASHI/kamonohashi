@@ -30,6 +30,8 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly IExperimentPreprocessRepository experimentPreprocessRepository;
         private readonly IAquariumDataSetRepository aquariumDataSetRepository;
         private readonly IDataSetRepository dataSetRepository;
+        private readonly IGitRepository gitRepository;
+        private readonly IRegistryRepository registryRepository;
         private readonly ITemplateRepository templateRepository;
         private readonly ITemplateVersionRepository templateVersionRepository;
         private readonly ITenantRepository tenantRepository;
@@ -38,6 +40,7 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly INodeRepository nodeRepository;
         private readonly IGitLogic gitLogic;
         private readonly IClusterManagementLogic clusterManagementLogic;
+        private readonly IRegistryLogic registryLogic;
         private readonly IUnitOfWork unitOfWork;
         private readonly ITrainingHistoryRepository trainingHistoryRepository;
 
@@ -46,6 +49,8 @@ namespace Nssol.Platypus.Controllers.spa
             IExperimentPreprocessRepository experimentPreprocessRepository,
             IAquariumDataSetRepository aquariumDataSetRepository,
             IDataSetRepository dataSetRepository,
+            IGitRepository gitRepository,
+            IRegistryRepository registryRepository,
             ITrainingHistoryRepository trainingHistoryRepository,
             ITemplateRepository templateRepository,
             ITemplateVersionRepository templateVersionRepository,
@@ -55,6 +60,7 @@ namespace Nssol.Platypus.Controllers.spa
             ITagLogic tagLogic,
             IGitLogic gitLogic,
             IClusterManagementLogic clusterManagementLogic,
+            IRegistryLogic registryLogic,
             IUnitOfWork unitOfWork,
             IHttpContextAccessor accessor) : base(accessor)
         {
@@ -63,6 +69,8 @@ namespace Nssol.Platypus.Controllers.spa
             this.experimentPreprocessRepository = experimentPreprocessRepository;
             this.aquariumDataSetRepository = aquariumDataSetRepository;
             this.dataSetRepository = dataSetRepository;
+            this.gitRepository = gitRepository;
+            this.registryRepository = registryRepository;
             this.templateRepository = templateRepository;
             this.templateVersionRepository = templateVersionRepository;
             this.tenantRepository = tenantRepository;
@@ -71,6 +79,7 @@ namespace Nssol.Platypus.Controllers.spa
             this.tagLogic = tagLogic;
             this.gitLogic = gitLogic;
             this.clusterManagementLogic = clusterManagementLogic;
+            this.registryLogic = registryLogic;
             this.unitOfWork = unitOfWork;
         }
 
@@ -175,6 +184,14 @@ namespace Nssol.Platypus.Controllers.spa
         private async Task<IActionResult> RunExperimentTrainingWithoutPreprocess(CreateInputModel model,
             TemplateVersion templateVersion, DataSetVersion dataSetVersion)
         {
+            var registryTokenKey = await RegistRegistryToTenantAsync(templateVersion.TrainingContainerRegistry, templateVersion.TrainingContainerToken);
+            if (registryTokenKey == null)
+            {
+                return JsonBadRequest("Cannot register registry token");
+            }
+
+            var gitToken = templateVersion.TrainingRepositoryToken ?? UserGitToken(templateVersion.TrainingRepositoryGitId);
+
             // kamonohashi学習に必要な情報を設定
             var trainingCreateInputModel = new ApiModels.TrainingApiModels.CreateInputModel
             {
@@ -212,7 +229,7 @@ namespace Nssol.Platypus.Controllers.spa
             (var trainingHistory, var result) = await TrainingController.DoCreate(trainingCreateInputModel,
                 dataSetRepository, nodeRepository, tenantRepository, trainingHistoryRepository,
                 clusterManagementLogic, gitLogic, tagLogic, unitOfWork,
-                CurrentUserInfo, ModelState, RequestUrl, "training");
+                CurrentUserInfo, ModelState, RequestUrl, "training", registryTokenKey, gitToken);
 
             // 実験の学習とkamonohashi学習を結び付ける
             if (trainingHistory != null)
@@ -241,6 +258,14 @@ namespace Nssol.Platypus.Controllers.spa
         private async Task<IActionResult> RunExperimentPreprocess(CreateInputModel model,
             TemplateVersion templateVersion, DataSetVersion dataSetVersion)
         {
+            var registryTokenKey = await RegistRegistryToTenantAsync(templateVersion.PreprocessContainerRegistry, templateVersion.PreprocessContainerToken);
+            if (registryTokenKey == null)
+            {
+                return JsonBadRequest("Cannot register registry token");
+            }
+
+            var gitToken = templateVersion.PreprocessRepositoryToken ?? UserGitToken(templateVersion.PreprocessRepositoryGitId);
+
             // 実験IDを発行するため、Experimentをここで作成
             var experiment = new Experiment
             {
@@ -293,7 +318,7 @@ namespace Nssol.Platypus.Controllers.spa
             (var trainingHistory, var result) = await TrainingController.DoCreate(trainingCreateInputModel,
                 dataSetRepository, nodeRepository, tenantRepository, trainingHistoryRepository,
                 clusterManagementLogic, gitLogic, tagLogic, unitOfWork,
-                CurrentUserInfo, ModelState, RequestUrl, "experiment_preproc");
+                CurrentUserInfo, ModelState, RequestUrl, "experiment_preproc", registryTokenKey, gitToken);
 
             // 実験の前処理とkamonohashi学習を結び付ける
             if (trainingHistory != null)
@@ -328,6 +353,14 @@ namespace Nssol.Platypus.Controllers.spa
         private async Task<IActionResult> RunExperimentTrainingWithPreprocess(CreateInputModel model,
             TemplateVersion templateVersion, DataSetVersion dataSetVersion, ExperimentPreprocess experimentPreprocess)
         {
+            var registryTokenKey = await RegistRegistryToTenantAsync(templateVersion.TrainingContainerRegistry, templateVersion.TrainingContainerToken);
+            if (registryTokenKey == null)
+            {
+                return JsonBadRequest("Cannot register registry token");
+            }
+
+            var gitToken = templateVersion.TrainingRepositoryToken ?? UserGitToken(templateVersion.TrainingRepositoryGitId);
+
             // kamonohashi学習に必要な情報を設定
             var trainingCreateInputModel = new ApiModels.TrainingApiModels.CreateInputModel
             {
@@ -367,7 +400,7 @@ namespace Nssol.Platypus.Controllers.spa
             (var trainingHistory, var result) = await TrainingController.DoCreate(trainingCreateInputModel,
                 dataSetRepository, nodeRepository, tenantRepository, trainingHistoryRepository,
                 clusterManagementLogic, gitLogic, tagLogic, unitOfWork,
-                CurrentUserInfo, ModelState, RequestUrl, "experiment_training_after_preproc");
+                CurrentUserInfo, ModelState, RequestUrl, "experiment_training_after_preproc", registryTokenKey, gitToken);
 
             // 実験の学習とkamonohashi学習を結び付ける
             if (trainingHistory != null)
@@ -403,16 +436,19 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonBadRequest("Invalid inputs.");
             }
+
             var dataSet = await aquariumDataSetRepository.GetDataSetWithVersionsAsync(model.DataSetId);
             if (dataSet == null)
             {
                 return JsonNotFound($"DataSet ID {model.DataSetId} is not found.");
             }
+
             var dataSetVersion = dataSet.DataSetVersions.SingleOrDefault(x => x.Id == model.DataSetVersionId);
             if (dataSetVersion == null)
             {
                 return JsonNotFound($"DataSetVersion (DataSetId {model.DataSetId} and VersionId {model.DataSetVersionId}) is not found.");
             }
+
             var template = await templateRepository.GetByIdAsync(model.TemplateId);
             if (template == null)
             {
@@ -422,13 +458,50 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonBadRequest($"Template ID {model.TemplateId} is not accesible.");
             }
+
             var templateVersion = await templateVersionRepository
                 .GetAll()
+                .Include(x => x.PreprocessContainerRegistry)
+                .Include(x => x.TrainingContainerRegistry)
+                .Include(x => x.EvaluationContainerRegistry)
                 .SingleOrDefaultAsync(x => x.TemplateId == model.TemplateId && x.Id == model.TemplateVersionId);
             if (templateVersion == null)
             {
                 return JsonNotFound($"TemplateVersion (TemplateID {model.TemplateId} and VersionId {model.TemplateVersionId} is not found.");
             }
+
+            var registryMaps = registryRepository.GetUserTenantRegistryMapAll(CurrentUserInfo.SelectedTenant.Id, CurrentUserInfo.Id);
+            if (templateVersion.PreprocessContainerRegistryId.HasValue
+                && !registryMaps.Any(x => x.TenantRegistryMap.RegistryId == templateVersion.PreprocessContainerRegistryId.Value))
+            {
+                return JsonBadRequest($"Prprocess Container Registry ID {templateVersion.PreprocessContainerRegistryId.Value} is not accesible.");
+            }
+            if (!registryMaps.Any(x => x.TenantRegistryMap.RegistryId == templateVersion.TrainingContainerRegistryId))
+            {
+                return JsonBadRequest($"Training Container Registry ID {templateVersion.TrainingContainerRegistryId} is not accesible.");
+            }
+            if (templateVersion.EvaluationContainerRegistryId.HasValue
+                && !registryMaps.Any(x => x.TenantRegistryMap.RegistryId == templateVersion.EvaluationContainerRegistryId.Value))
+            {
+                return JsonBadRequest($"Evaluation Container Registry ID {templateVersion.EvaluationContainerRegistryId.Value} is not accesible.");
+            }
+
+            var gitMaps = gitRepository.GetUserTenantGitMapAll(CurrentUserInfo.SelectedTenant.Id, CurrentUserInfo.Id);
+            if (templateVersion.PreprocessRepositoryGitId.HasValue
+                && !gitMaps.Any(x => x.TenantGitMap.GitId == templateVersion.PreprocessRepositoryGitId.Value))
+            {
+                return JsonBadRequest($"Prprocess Repository Git ID {templateVersion.PreprocessRepositoryGitId.Value} is not accesible.");
+            }
+            if (!gitMaps.Any(x => x.TenantGitMap.GitId == templateVersion.TrainingRepositoryGitId))
+            {
+                return JsonBadRequest($"Training Repository Git ID {templateVersion.TrainingRepositoryGitId} is not accesible.");
+            }
+            if (templateVersion.EvaluationRepositoryGitId.HasValue
+                && !gitMaps.Any(x => x.TenantGitMap.GitId == templateVersion.EvaluationRepositoryGitId.Value))
+            {
+                return JsonBadRequest($"Evaluation Repository Git ID {templateVersion.EvaluationRepositoryGitId.Value} is not accesible.");
+            }
+
 
             if (templateVersion.PreprocessContainerRegistryId == null)
             {
@@ -465,7 +538,7 @@ namespace Nssol.Platypus.Controllers.spa
         {
             var experiment = await experimentRepository
                 .GetAll()
-                .Include(x => x.TemplateVersion)
+                .Include(x => x.TemplateVersion).ThenInclude(x => x.TrainingContainerRegistry)
                 .Include(x => x.DataSetVersion)
                 .Include(x => x.ExperimentPreprocess)
                 .SingleOrDefaultAsync(x => x.Id == id);
@@ -489,6 +562,14 @@ namespace Nssol.Platypus.Controllers.spa
             var templateVersion = experiment.TemplateVersion;
             var dataSetVersion = experiment.DataSetVersion;
             var experimentPreprocess = experiment.ExperimentPreprocess;
+
+            var registryTokenKey = await RegistRegistryToTenantAsync(templateVersion.TrainingContainerRegistry, templateVersion.TrainingContainerToken);
+            if (registryTokenKey == null)
+            {
+                return JsonBadRequest("Cannot register registry token");
+            }
+
+            var gitToken = templateVersion.TrainingRepositoryToken ?? UserGitToken(templateVersion.TrainingRepositoryGitId);
 
             var trainingCreateInputModel = new ApiModels.TrainingApiModels.CreateInputModel
             {
@@ -528,7 +609,7 @@ namespace Nssol.Platypus.Controllers.spa
             (var trainingHistory, var result) = await TrainingController.DoCreate(trainingCreateInputModel,
                 dataSetRepository, nodeRepository, tenantRepository, trainingHistoryRepository,
                 clusterManagementLogic, gitLogic, tagLogic, unitOfWork,
-                CurrentUserInfo, ModelState, RequestUrl, "experiment_training_after_preproc");
+                CurrentUserInfo, ModelState, RequestUrl, "experiment_training_after_preproc", registryTokenKey, gitToken);
 
             // 実験の学習とkamonohashi学習を結び付ける
             if (trainingHistory != null)
@@ -541,6 +622,29 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// アクアリウム用レジストリシークレットをk8sに登録する
+        /// </summary>
+        /// <returns></returns>
+        private async Task<string> RegistRegistryToTenantAsync(Registry registry, string token)
+        {
+            var registryMap = registryLogic.GetCurrentRegistryMap(registry.Id);
+            var tokenKey = $"aqiarium-registry-{registry.Name}-{CurrentUserInfo.Id}";
+            var url = registry.RegistryUrl;
+            var selectedTenantName = CurrentUserInfo.SelectedTenant.Name;
+            var userName = "";
+            var password = token ?? registryMap?.RegistryPassword ?? "";
+            
+            var result = await clusterManagementLogic.RegistRegistryToTenantAsync(tokenKey, url, registry, selectedTenantName,
+                userName, password);
+            return result ? tokenKey : null;
+        }
+
+        private string UserGitToken(long? gitId)
+        {
+            return gitId.HasValue ? gitRepository.GetUserTenantGitMap(CurrentUserInfo.Id, CurrentUserInfo.SelectedTenant.Id, gitId.Value).GitToken : "";
         }
     }
 }

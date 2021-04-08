@@ -169,11 +169,11 @@ namespace Nssol.Platypus.Logic
                 IGitService gitService = GetGitService(map?.Git);
                 var userNameResult = await gitService.GetUserNameByTokenAsync(map);
 
-                if (!userNameResult.IsSuccess) 
+                if (!userNameResult.IsSuccess)
                 {
                     return Result<GitEndpointModel, string>.CreateErrorResult(userNameResult.Error);
                 }
-                if(userNameResult.Value == null)
+                if (userNameResult.Value == null)
                 {
                     return Result<GitEndpointModel, string>.CreateErrorResult("invalid git service response");
                 }
@@ -185,6 +185,67 @@ namespace Nssol.Platypus.Logic
             }
 
             return Result<GitEndpointModel, string>.CreateResult(result);
+        }
+
+        /// <summary>
+        /// git pullするためのURLを取得する。
+        /// </summary>
+        /// <param name="gitId">Git ID</param>
+        /// <param name="repositoryName">リポジトリ名</param>
+        /// <param name="owner">オーナー名</param>
+        /// <returns>git pullするためのURL</returns>
+        public async Task<Result<GitEndpointModel, string>> GetPullUrlAsync(long gitId, string repositoryName, string owner, string extraToken)
+        {
+            if (string.IsNullOrEmpty(repositoryName) || string.IsNullOrEmpty(owner))
+            {
+                return Result<GitEndpointModel, string>.CreateResult(null);
+            }
+            UserTenantGitMap map = GetCurrentGitMap(gitId);
+            string gitUrl = map.Git.RepositoryUrl.TrimEnd('/');
+            string url = $"{gitUrl}/{owner}/{repositoryName}.git";
+            var orgToken = map.GitToken;
+            try
+            {
+                if (extraToken != null)
+                {
+                    map.GitToken = extraToken;
+                }
+                var result = new GitEndpointModel()
+                {
+                    Url = url,
+                    Token = map.GitToken
+                };
+                if (string.IsNullOrEmpty(map.GitToken))
+                {
+                    result.FullUrl = url;
+                }
+                else
+                {
+                    // http の場合、以下のようなフォーマットで git clone できる
+                    //  http://${user}:${token}@${host}/${owner}/${repositoryName}.git
+                    IGitService gitService = GetGitService(map?.Git);
+                    var userNameResult = await gitService.GetUserNameByTokenAsync(map);
+
+                    if (!userNameResult.IsSuccess)
+                    {
+                        return Result<GitEndpointModel, string>.CreateErrorResult(userNameResult.Error);
+                    }
+                    if (userNameResult.Value == null)
+                    {
+                        return Result<GitEndpointModel, string>.CreateErrorResult("invalid git service response");
+                    }
+
+                    UriBuilder builder = new UriBuilder(url);
+                    builder.UserName = userNameResult.Value;
+                    builder.Password = map.GitToken;
+                    result.FullUrl = builder.Uri.ToString();
+                }
+                return Result<GitEndpointModel, string>.CreateResult(result);
+            }
+            finally
+            {
+                map.GitToken = orgToken;
+            }
         }
 
         /// <summary>
