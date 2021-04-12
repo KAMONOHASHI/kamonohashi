@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-form ref="form1" :model="form" :rules="rules">
+    <el-form :model="form" :rules="rules">
       <el-row :gutter="20">
         <el-col :span="12">
           <kqi-container-selector
@@ -12,7 +12,19 @@
             @selectRegistry="selectRegistry"
             @selectImage="selectImage"
           />
-
+          <el-form-item>
+            <el-row>
+              <el-col :span="6" :offset="1">token</el-col>
+              <el-col :span="12">
+                <el-input
+                  v-model="form.containerImage.token"
+                  size="small"
+                  type="password"
+                  style="width:215px"
+                />
+              </el-col>
+            </el-row>
+          </el-form-item>
           <kqi-git-selector
             v-model="form.gitModel"
             :gits="gits"
@@ -25,6 +37,18 @@
             @selectRepository="selectRepository"
             @selectBranch="selectBranch"
           />
+
+          <el-row>
+            <el-col :span="6" :offset="1">token</el-col>
+            <el-col :span="12">
+              <el-input
+                v-model="form.gitModel.token"
+                size="small"
+                type="password"
+                style="width:215px"
+              />
+            </el-col>
+          </el-row>
           <el-form-item label="実行コマンド" prop="entryPoint">
             <el-input
               v-model="form.entryPoint"
@@ -35,9 +59,11 @@
           </el-form-item>
         </el-col>
 
-        <el-col :span="6">
-          <kqi-resource-selector v-model="form.resource" :quota="quota" />
-        </el-col>
+        <el-form-item>
+          <el-col :span="6">
+            <kqi-resource-selector v-model="form.resource" :quota="quota" />
+          </el-col>
+        </el-form-item>
       </el-row>
     </el-form>
   </div>
@@ -66,6 +92,7 @@ export default {
             registryId: 0,
             image: 'string',
             tag: 'string',
+            token: 'string',
           },
           gitModel: {
             git: null,
@@ -130,6 +157,7 @@ export default {
       containerImage,
     )
     const formGitModel = await this.setupFormGitModel(gitModel)
+
     this.form = {
       entryPoint: this.value.entryPoint,
       gitModel: formGitModel,
