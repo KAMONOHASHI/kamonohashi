@@ -68,9 +68,9 @@
                 <kqi-git-selector
                   v-model="form.preprocess.gitModel"
                   :gits="gits"
-                  :repositories="repositories"
-                  :branches="branches"
-                  :commits="commits"
+                  :repositories="preprocessRepositories"
+                  :branches="preprocessBranches"
+                  :commits="preprocessCommits"
                   :loading-repositories="loadingRepositories"
                   heading="スクリプト"
                   @selectGit="selectPreprocessGit"
@@ -110,9 +110,9 @@
                 <kqi-git-selector
                   v-model="form.training.gitModel"
                   :gits="gits"
-                  :repositories="repositories"
-                  :branches="branches"
-                  :commits="commits"
+                  :repositories="trainingRepositories"
+                  :branches="trainingBranches"
+                  :commits="trainingCommits"
                   :loading-repositories="loadingRepositories"
                   heading="スクリプト"
                   @selectGit="selectTrainingGit"
@@ -152,9 +152,9 @@
                 <kqi-git-selector
                   v-model="form.evaluation.gitModel"
                   :gits="gits"
-                  :repositories="repositories"
-                  :branches="branches"
-                  :commits="commits"
+                  :repositories="evaluationRepositories"
+                  :branches="evaluationBranches"
+                  :commits="evaluationCommits"
                   :loading-repositories="loadingRepositories"
                   heading="スクリプト"
                   @selectGit="selectEvaluationGit"
@@ -308,6 +308,21 @@ export default {
       rules: {
         name: [{ required: true, trigger: 'blur', message: '必須項目です' }],
       },
+      preprocessImages: [],
+      trainingImages: [],
+      evaluationImages: [],
+      preprocessTags: [],
+      trainingTags: [],
+      evaluationTags: [],
+      preprocessRepositories: [],
+      trainingRepositories: [],
+      evaluationRepositories: [],
+      preprocessBranches: [],
+      trainingBranches: [],
+      evaluationBranches: [],
+      preprocessCommits: [],
+      trainingCommits: [],
+      evaluationCommits: [],
     }
   },
   computed: {
@@ -318,9 +333,6 @@ export default {
       tags: ['registrySelector/tags'],
       gits: ['gitSelector/gits'],
       defaultGitId: ['gitSelector/defaultGitId'],
-      repositories: ['gitSelector/repositories'],
-      branches: ['gitSelector/branches'],
-      commits: ['gitSelector/commits'],
       commitDetail: ['gitSelector/commitDetail'],
       loadingRepositories: ['gitSelector/loadingRepositories'],
       detail: ['template/detail'],
@@ -346,11 +358,16 @@ export default {
 
       'registrySelector/fetchRegistries',
       'registrySelector/fetchImages',
+      'registrySelector/getImages',
       'registrySelector/fetchTags',
+      'registrySelector/getTags',
+
       'gitSelector/fetchGits',
-      'gitSelector/fetchRepositories',
+      'gitSelector/getRepositories',
       'gitSelector/fetchBranches',
+      'gitSelector/getBranches',
       'gitSelector/fetchCommits',
+      'gitSelector/getCommits',
       'gitSelector/fetchCommitDetail',
       'cluster/fetchQuota',
     ]),
@@ -393,7 +410,15 @@ export default {
       this.form.training.gitModel.git = this.gits.find(git => {
         return git.id === this.defaultGitId
       })
-      await this['gitSelector/fetchRepositories'](this.defaultGitId)
+      this.preprocessRepositories = await this['gitSelector/getRepositories'](
+        this.defaultGitId,
+      )
+      this.trainingRepositories = await this['gitSelector/getRepositories'](
+        this.defaultGitId,
+      )
+      this.evaluationRepositories = await this['gitSelector/getRepositories'](
+        this.defaultGitId,
+      )
     },
     async next() {
       let form = null
@@ -626,36 +651,34 @@ export default {
     },
     // モデル
     async selectPreprocessGit(gitId) {
-      await gitSelectorUtil.selectGit(
+      this.preprocessRepositories = await gitSelectorUtil.selectGit(
         this.form.preprocess,
-        this['gitSelector/fetchRepositories'],
+        this['gitSelector/getRepositories'],
         gitId,
-        this.$store,
       )
     },
     async selectTrainingGit(gitId) {
-      await gitSelectorUtil.selectGit(
+      this.trainingRepositories = await gitSelectorUtil.selectGit(
         this.form.training,
-        this['gitSelector/fetchRepositories'],
+        this['gitSelector/getRepositories'],
         gitId,
-        this.$store,
       )
     },
     async selectEvaluationGit(gitId) {
-      await gitSelectorUtil.selectGit(
+      this.evaluationRepositories = await gitSelectorUtil.selectGit(
         this.form.evaluation,
-        this['gitSelector/fetchRepositories'],
+        this['gitSelector/getRepositories'],
         gitId,
-        this.$store,
       )
     },
     // repositoryの型がstring：手入力, object: 選択
     async selectPreprocessRepository(repository) {
       try {
-        await gitSelectorUtil.selectRepository(
+        this.preprocessBranches = await gitSelectorUtil.selectRepository(
           this.form.preprocess,
-          this['gitSelector/fetchBranches'],
+          this['gitSelector/getBranches'],
           repository,
+          this.preprocessRepositories,
         )
       } catch (message) {
         this.$notify.error({
@@ -665,10 +688,11 @@ export default {
     },
     async selectTrainingRepository(repository) {
       try {
-        await gitSelectorUtil.selectRepository(
+        this.trainingBranches = await gitSelectorUtil.selectRepository(
           this.form.training,
-          this['gitSelector/fetchBranches'],
+          this['gitSelector/getBranches'],
           repository,
+          this.trainingRepositories,
         )
       } catch (message) {
         this.$notify.error({
@@ -678,10 +702,11 @@ export default {
     },
     async selectEvaluationRepository(repository) {
       try {
-        await gitSelectorUtil.selectRepository(
+        this.evaluationBranches = await gitSelectorUtil.selectRepository(
           this.form.evaluation,
-          this['gitSelector/fetchBranches'],
+          this['gitSelector/getBranches'],
           repository,
+          this.evaluationRepositories,
         )
       } catch (message) {
         this.$notify.error({
@@ -690,23 +715,23 @@ export default {
       }
     },
     async selectPreprocessBranch(branchName) {
-      await gitSelectorUtil.selectBranch(
+      this.preprocessCommits = await gitSelectorUtil.selectBranch(
         this.form.preprocess,
-        this['gitSelector/fetchCommits'],
+        this['gitSelector/getCommits'],
         branchName,
       )
     },
     async selectTrainingBranch(branchName) {
-      await gitSelectorUtil.selectBranch(
+      this.trainingCommits = await gitSelectorUtil.selectBranch(
         this.form.training,
-        this['gitSelector/fetchCommits'],
+        this['gitSelector/getCommits'],
         branchName,
       )
     },
     async selectEvaluationBranch(branchName) {
-      await gitSelectorUtil.selectBranch(
+      this.evaluationCommits = await gitSelectorUtil.selectBranch(
         this.form.evaluation,
-        this['gitSelector/fetchCommits'],
+        this['gitSelector/getCommits'],
         branchName,
       )
     },
