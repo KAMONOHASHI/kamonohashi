@@ -38,6 +38,22 @@
     <el-button type="primary" plain @click="submit()">
       更新
     </el-button>
+    <el-button type="primary" plain @click="deleteDialog = true">
+      テンプレートの削除
+    </el-button>
+    <el-dialog title="" :visible.sync="deleteDialog" width="30%">
+      <span>
+        テンプレートを削除すると全てのテンプレートバージョンが失われます。<br />
+        テンプレートを削除しますか？
+      </span>
+
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="deleteDialog = false">Cancel</el-button>
+        <el-button type="primary" @click="deleteTemplate()">
+          削除
+        </el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -64,6 +80,7 @@ export default {
   },
   data() {
     return {
+      deleteDialog: false,
       iconname: 'pl-plus',
       pageStatus: {
         currentPage: 1,
@@ -108,6 +125,11 @@ export default {
       'post',
       'put',
     ]),
+    deleteTemplate() {
+      this.deleteDialog = false
+
+      console.log('削除APIを実装する')
+    },
     async retrieveData() {
       await this.fetchModelTemplate(this.id)
       await this.fetchVersions(this.id)
