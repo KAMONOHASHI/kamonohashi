@@ -78,9 +78,6 @@ def remove_unused_api_and_rename_operation_id(spec):
         '/api/v2/datasets/{id}/pathpairs': {
             'get': 'list_dataset_pathpairs',
         },
-        '/api/v2/experiment/{id}/preprocessing/data': {
-            'post': 'add_experiment_preprocessing_files',
-        },
         '/api/v2/datatypes': {
             'get': 'list_dataset_datatypes',
         },
