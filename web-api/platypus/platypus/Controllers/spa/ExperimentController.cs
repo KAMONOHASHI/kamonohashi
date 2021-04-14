@@ -40,9 +40,14 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly INodeRepository nodeRepository;
         private readonly IGitLogic gitLogic;
         private readonly IClusterManagementLogic clusterManagementLogic;
+        private readonly IDataSetLogic dataSetLogic;
         private readonly IRegistryLogic registryLogic;
         private readonly IUnitOfWork unitOfWork;
         private readonly ITrainingHistoryRepository trainingHistoryRepository;
+        private readonly IInferenceHistoryRepository inferenceHistoryRepository;
+        private readonly ITensorBoardContainerRepository tensorBoardContainerRepository;
+        private readonly ITagRepository tagRepository;
+        private readonly IStorageLogic storageLogic;
 
         public ExperimentController(
             IExperimentRepository experimentRepository,
@@ -60,9 +65,14 @@ namespace Nssol.Platypus.Controllers.spa
             ITagLogic tagLogic,
             IGitLogic gitLogic,
             IClusterManagementLogic clusterManagementLogic,
+            IDataSetLogic dataSetLogic,
             IRegistryLogic registryLogic,
             IUnitOfWork unitOfWork,
-            IHttpContextAccessor accessor) : base(accessor)
+        IInferenceHistoryRepository inferenceHistoryRepository,
+        ITensorBoardContainerRepository tensorBoardContainerRepository,
+        ITagRepository tagRepository,
+        IStorageLogic storageLogic,
+        IHttpContextAccessor accessor) : base(accessor)
         {
             this.trainingHistoryRepository = trainingHistoryRepository;
             this.experimentRepository = experimentRepository;
@@ -79,7 +89,12 @@ namespace Nssol.Platypus.Controllers.spa
             this.tagLogic = tagLogic;
             this.gitLogic = gitLogic;
             this.clusterManagementLogic = clusterManagementLogic;
+            this.dataSetLogic = dataSetLogic;
             this.registryLogic = registryLogic;
+            this.inferenceHistoryRepository = inferenceHistoryRepository;
+            this.tensorBoardContainerRepository = tensorBoardContainerRepository;
+            this.tagRepository = tagRepository;
+            this.storageLogic = storageLogic;
             this.unitOfWork = unitOfWork;
         }
 
@@ -228,7 +243,7 @@ namespace Nssol.Platypus.Controllers.spa
             // kamonohashi学習を開始
             (var trainingHistory, var result) = await TrainingController.DoCreate(trainingCreateInputModel,
                 dataSetRepository, nodeRepository, tenantRepository, trainingHistoryRepository,
-                clusterManagementLogic, gitLogic, tagLogic, unitOfWork,
+                clusterManagementLogic, dataSetLogic, gitLogic, tagLogic, unitOfWork,
                 CurrentUserInfo, ModelState, RequestUrl, "training", registryTokenKey, gitToken);
 
             // 実験の学習とkamonohashi学習を結び付ける
@@ -317,7 +332,7 @@ namespace Nssol.Platypus.Controllers.spa
             // kamonohashi学習を開始
             (var trainingHistory, var result) = await TrainingController.DoCreate(trainingCreateInputModel,
                 dataSetRepository, nodeRepository, tenantRepository, trainingHistoryRepository,
-                clusterManagementLogic, gitLogic, tagLogic, unitOfWork,
+                clusterManagementLogic, dataSetLogic, gitLogic, tagLogic, unitOfWork,
                 CurrentUserInfo, ModelState, RequestUrl, "experiment_preproc", registryTokenKey, gitToken);
 
             // 実験の前処理とkamonohashi学習を結び付ける
@@ -399,7 +414,7 @@ namespace Nssol.Platypus.Controllers.spa
             // kamonohashi学習を開始
             (var trainingHistory, var result) = await TrainingController.DoCreate(trainingCreateInputModel,
                 dataSetRepository, nodeRepository, tenantRepository, trainingHistoryRepository,
-                clusterManagementLogic, gitLogic, tagLogic, unitOfWork,
+                clusterManagementLogic, dataSetLogic, gitLogic, tagLogic, unitOfWork,
                 CurrentUserInfo, ModelState, RequestUrl, "experiment_training_after_preproc", registryTokenKey, gitToken);
 
             // 実験の学習とkamonohashi学習を結び付ける
@@ -437,7 +452,10 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonBadRequest("Invalid inputs.");
             }
 
-            var dataSet = await aquariumDataSetRepository.GetDataSetWithVersionsAsync(model.DataSetId);
+            var dataSet = await aquariumDataSetRepository
+                .GetAll()
+                .Include(x => x.DataSetVersions)
+                .SingleOrDefaultAsync(x => x.Id == model.DataSetId);
             if (dataSet == null)
             {
                 return JsonNotFound($"DataSet ID {model.DataSetId} is not found.");
@@ -608,7 +626,7 @@ namespace Nssol.Platypus.Controllers.spa
             // kamonohashi学習を開始
             (var trainingHistory, var result) = await TrainingController.DoCreate(trainingCreateInputModel,
                 dataSetRepository, nodeRepository, tenantRepository, trainingHistoryRepository,
-                clusterManagementLogic, gitLogic, tagLogic, unitOfWork,
+                clusterManagementLogic, dataSetLogic, gitLogic, tagLogic, unitOfWork,
                 CurrentUserInfo, ModelState, RequestUrl, "experiment_training_after_preproc", registryTokenKey, gitToken);
 
             // 実験の学習とkamonohashi学習を結び付ける
@@ -645,6 +663,79 @@ namespace Nssol.Platypus.Controllers.spa
         private string UserGitToken(long? gitId)
         {
             return gitId.HasValue ? gitRepository.GetUserTenantGitMap(CurrentUserInfo.Id, CurrentUserInfo.SelectedTenant.Id, gitId.Value).GitToken : "";
+        }
+
+        /// <summary>
+        /// 実験を削除する
+        /// </summary>
+        /// <param name="id">実験ID</param>
+        [HttpDelete("{id}")]
+        [Filters.PermissionFilter(MenuCode.Experiment)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        public async Task<IActionResult> Delete(long id)
+        {
+            var experiment = await experimentRepository
+                .GetAll()
+                .Include(x => x.ExperimentPreprocess)
+                .SingleOrDefaultAsync(x => x.Id == id);
+            if (experiment == null)
+            {
+                return JsonNotFound($"Experiment ID {id} is not found.");
+            }
+
+            experimentRepository.Delete(experiment);
+            if (experiment.TrainingHistoryId != null)
+            {
+                (var status, var result) = await TrainingController.DoDelete(
+                    experiment.TrainingHistoryId.Value,
+                    trainingHistoryRepository,
+                    clusterManagementLogic,
+                    dataSetLogic,
+                    tagLogic,
+                    unitOfWork,
+                    CurrentUserInfo,
+                    ModelState,
+                    storageLogic,
+                    inferenceHistoryRepository,
+                    tensorBoardContainerRepository,
+                    tagRepository,
+                    RequestUrl);
+                if (!status)
+                {
+                    return result;
+                }
+            }
+
+            if (experiment.ExperimentPreprocessId != null)
+            {
+                var exists = await experimentRepository
+                    .ExistsAsync(x => x.ExperimentPreprocessId == experiment.ExperimentPreprocessId && x.Id != id);
+                if (!exists)
+                {
+                    experimentPreprocessRepository.Delete(experiment.ExperimentPreprocess);
+                    (var status, var result) = await TrainingController.DoDelete(
+                        experiment.ExperimentPreprocess.TrainingHistoryId,
+                        trainingHistoryRepository,
+                        clusterManagementLogic,
+                        dataSetLogic,
+                        tagLogic,
+                        unitOfWork,
+                        CurrentUserInfo,
+                        ModelState,
+                        storageLogic,
+                        inferenceHistoryRepository,
+                        tensorBoardContainerRepository,
+                        tagRepository,
+                        RequestUrl);
+                    if (!status)
+                    {
+                        return result;
+                    }
+                }
+            }
+
+            unitOfWork.Commit();
+            return JsonNoContent();
         }
     }
 }
