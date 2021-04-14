@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Nssol.Platypus.ApiModels.Aquarium.DataSetApiModels;
 using Nssol.Platypus.Controllers.Util;
 using Nssol.Platypus.DataAccess.Core;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories;
 using Nssol.Platypus.Infrastructure;
+using Nssol.Platypus.Logic.Interfaces;
 using Nssol.Platypus.Models.TenantModels.Aquarium;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,27 +23,39 @@ namespace Nssol.Platypus.Controllers.spa
     public class AquariumDataSetController : PlatypusApiControllerBase
     {
         private readonly IAquariumDataSetRepository aquariumDataSetRepository;
+        private readonly IAquariumDataSetVersionRepository aquariumDataSetVersionRepository;
+        private readonly IExperimentRepository experimentRepository;
+        private readonly IExperimentPreprocessRepository experimentPreprocessRepository;
         private readonly IDataSetRepository dataSetRepository;
         private readonly IDataTypeRepository dataTypeRepository;
+        private readonly IDataSetLogic dataSetLogic;
         private readonly IUnitOfWork unitOfWork;
 
         public AquariumDataSetController(
             IAquariumDataSetRepository aquariumDataSetRepository,
+            IAquariumDataSetVersionRepository aquariumDataSetVersionRepository,
+            IExperimentRepository experimentRepository,
+            IExperimentPreprocessRepository experimentPreprocessRepository,
             IDataSetRepository dataSetRepository,
             IDataTypeRepository dataTypeRepository,
+            IDataSetLogic dataSetLogic,
             IUnitOfWork unitOfWork,
             IHttpContextAccessor accessor) : base(accessor)
         {
             this.aquariumDataSetRepository = aquariumDataSetRepository;
+            this.aquariumDataSetVersionRepository = aquariumDataSetVersionRepository;
+            this.experimentRepository = experimentRepository;
+            this.experimentPreprocessRepository = experimentPreprocessRepository;
             this.dataSetRepository = dataSetRepository;
             this.dataTypeRepository = dataTypeRepository;
+            this.dataSetLogic = dataSetLogic;
             this.unitOfWork = unitOfWork;
         }
 
         /// <summary>
         /// アクアリウムデータセットを作成する
         /// </summary>
-        /// <param name="model">作成するアクアリウムデータセット</param>
+        /// <param name="model">アクアリウムデータセット</param>
         [HttpPost]
         [Filters.PermissionFilter(MenuCode.AquariumDataSet)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.Created)]
@@ -66,8 +80,8 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// アクアリウムデータセットバージョンを作成する
         /// </summary>
-        /// <param name="id">作成先のアクアリウムデータセットID</param>
-        /// <param name="model">作成するアクアリウムデータセットバージョン</param>
+        /// <param name="id">アクアリウムデータセットID</param>
+        /// <param name="model">アクアリウムデータセットバージョン</param>
         [HttpPost("{id}/versions")]
         [Filters.PermissionFilter(MenuCode.AquariumDataSet)]
         [ProducesResponseType(typeof(VersionIndexOutputModel), (int)HttpStatusCode.Created)]
@@ -99,30 +113,13 @@ namespace Nssol.Platypus.Controllers.spa
                 Version = aquariumDataSet.LatestVersion,
                 DataSetId = model.DataSetId,
             };
-            aquariumDataSetRepository.Add(dataSetVersion);
+            aquariumDataSetVersionRepository.Add(dataSetVersion);
+
+            dataSet.IsLocked = true;
+            dataSetRepository.Update(dataSet);
 
             unitOfWork.Commit();
             return JsonCreated(new VersionIndexOutputModel(dataSetVersion));
-        }
-
-        /// <summary>
-        /// アクアリウムデータセットを削除する
-        /// </summary>
-        /// <param name="id">削除するアクアリウムデータセットID</param>
-        [HttpDelete("{id}")]
-        [Filters.PermissionFilter(MenuCode.AquariumDataSet)]
-        [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        public async Task<IActionResult> DeleteDataSet(long id)
-        {
-            var aquariumDataSet = await aquariumDataSetRepository.GetByIdAsync(id);
-            if (aquariumDataSet == null)
-            {
-                return JsonNotFound($"AquariumDataSet ID {id} is not found.");
-            }
-            aquariumDataSetRepository.Delete(aquariumDataSet);
-
-            unitOfWork.Commit();
-            return JsonNoContent();
         }
 
         /// <summary>
@@ -162,13 +159,16 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// アクアリウムデータセットバージョン一覧を取得する
         /// </summary>
-        /// <param name="id">取得するアクアリウムデータセットのID</param>
+        /// <param name="id">アクアリウムデータセットID</param>
         [HttpGet("{id}/versions")]
         [Filters.PermissionFilter(MenuCode.AquariumDataSet, MenuCode.Experiment)]
         [ProducesResponseType(typeof(IEnumerable<VersionIndexOutputModel>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetDataSetVersionList(long id)
         {
-            var aquariumDataSet = await aquariumDataSetRepository.GetDataSetWithVersionsAsync(id);
+            var aquariumDataSet = await aquariumDataSetRepository
+                .GetAll()
+                .Include(x => x.DataSetVersions)
+                .SingleOrDefaultAsync(x => x.Id == id);
             if (aquariumDataSet == null)
             {
                 return JsonNotFound($"AquariumDataSet Id {id} is not found.");
@@ -181,14 +181,20 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// アクアリウムデータセットバージョンを取得する
         /// </summary>
-        /// <param name="id">取得するアクアリウムデータセットID</param>
-        /// <param name="versionId">取得するアクアリウムデータセットバージョンID</param>
+        /// <param name="id">アクアリウムデータセットID</param>
+        /// <param name="versionId">アクアリウムデータセットバージョンID</param>
         [HttpGet("{id}/versions/{versionId}")]
         [Filters.PermissionFilter(MenuCode.AquariumDataSet, MenuCode.Experiment)]
         [ProducesResponseType(typeof(VersionDetailsOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetDataSetVersion(long id, long versionId)
         {
-            var dataSetVersion = await aquariumDataSetRepository.GetDataSetVersionWithDataAsync(id, versionId);
+            var dataSetVersion = await aquariumDataSetVersionRepository
+                .GetAll()
+                .Include(x => x.DataSet)
+                .ThenInclude(d => d.DataSetEntries)
+                .ThenInclude(d => d.Data)
+                .SingleOrDefaultAsync(x => x.Id == versionId && x.AquariumDataSetId == id);
+
             if (dataSetVersion == null)
             {
                 return JsonNotFound($"DataSetVersion (AquariumDataSetId {id} and VersionId {versionId}) is not found.");
@@ -223,6 +229,93 @@ namespace Nssol.Platypus.Controllers.spa
             }
             result.Memo = dataSet.Memo;
             return JsonOK(result);
+        }
+
+        /// <summary>
+        /// アクアリウムデータセットを削除する
+        /// </summary>
+        /// <param name="id">アクアリウムデータセットID</param>
+        [HttpDelete("{id}")]
+        [Filters.PermissionFilter(MenuCode.AquariumDataSet)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        public async Task<IActionResult> DeleteDataSet(long id)
+        {
+            var dataSet = await aquariumDataSetRepository.GetByIdAsync(id);
+            if (dataSet == null)
+            {
+                return JsonNotFound($"AquariumDataSet ID {id} is not found.");
+            }
+            if (await experimentRepository.ExistsAsync(x => x.DataSetId == id))
+            {
+                return JsonConflict($"AquariumDataSet ID {id} has been used by experiment.");
+            }
+            if (await experimentPreprocessRepository.ExistsAsync(x => x.DataSetId == id))
+            {
+                return JsonConflict($"AquariumDataSet ID {id} has been used by experiment preprocess.");
+            }
+
+            var dataSetIds = new HashSet<long>();
+            foreach (var dataSetVersion in aquariumDataSetVersionRepository.FindAll(x => x.AquariumDataSetId == id))
+            {
+                dataSetIds.Add(dataSetVersion.DataSetId);
+            }
+            aquariumDataSetRepository.Delete(dataSet);
+            unitOfWork.Commit();
+
+            foreach (var x in dataSetIds)
+            {
+                await dataSetLogic.ReleaseLockAsync(x);
+            }
+            unitOfWork.Commit();
+
+            return JsonNoContent();
+        }
+
+        /// <summary>
+        /// アクアリウムデータセットバージョンを削除する
+        /// </summary>
+        /// <param name="id">アクアリウムデータセットID</param>
+        /// <param name="versionId">アクアリウムデータセットバージョンID</param>
+        [HttpDelete("{id}/versions/{versionId}")]
+        [Filters.PermissionFilter(MenuCode.AquariumDataSet)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        public async Task<IActionResult> DeleteDataSetVersion(long id, long versionId)
+        {
+            var dataSet = await aquariumDataSetRepository.GetByIdAsync(id);
+            if (dataSet == null)
+            {
+                return JsonNotFound($"AquariumDataSet ID {id} is not found.");
+            }
+            var dataSetVersion = aquariumDataSetVersionRepository
+                .Find(x => x.Id == versionId && x.AquariumDataSetId == id);
+            if (dataSetVersion == null)
+            {
+                return JsonNotFound($"AquariumDataSetVersion (AquariumDataSetId {id} and VersionId {versionId}) is not found.");
+            }
+            if (await experimentRepository.ExistsAsync(x => x.DataSetId == id && x.DataSetVersionId == versionId))
+            {
+                return JsonConflict($"AquariumDataSetVersion (AquariumDataSetId {id} VersionId {versionId}) has been used by experiment.");
+            }
+            if (await experimentPreprocessRepository.ExistsAsync(x => x.DataSetId == id && x.DataSetVersionId == versionId))
+            {
+                return JsonConflict($"AquariumDataSetVersion (AquariumDataSetId {id} VersionId {versionId}) has been used by experiment preprocess.");
+            }
+
+            // 最新バージョンを削除する場合
+            if (dataSet.LatestVersion == dataSetVersion.Version)
+            {
+                var dataSetVersionsByDataSetId = aquariumDataSetVersionRepository
+                    .GetAll()
+                    .Where(x => x.AquariumDataSetId == id && x != dataSetVersion)
+                    .DefaultIfEmpty();
+                dataSet.LatestVersion = dataSetVersionsByDataSetId?.Max(x => x.Version) ?? 0;
+                aquariumDataSetRepository.Update(dataSet);
+            }
+
+            await dataSetLogic.ReleaseLockAsync(dataSetVersion.DataSetId);
+            aquariumDataSetVersionRepository.Delete(dataSetVersion);
+            unitOfWork.Commit();
+            return JsonNoContent();
         }
     }
 }
