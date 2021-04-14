@@ -3,28 +3,27 @@ export default class GitSelectorUtil {
   // form: form object
   // fetchRepositories: 'gitSelector/fetchRepositories'
   // gitId: 選択したサーバID
-  // store this.$store
-  static async selectGit(form, fetchRepositories, gitId, store) {
+  static async selectGit(form, getRepositories, gitId) {
     // 過去の選択状態をリセット
     form.gitModel.repository = null
     form.gitModel.branch = null
     form.gitModel.commit = null
 
     // clearの場合リセット、gitサーバが選択された場合はリポジトリ取得
+    let repositories = []
     if (gitId !== null) {
-      // 独自ローディング処理のため共通側は無効
-      store.commit('setLoading', false)
-      await fetchRepositories(gitId)
-      // 共通側ローディングを再度有効化
-      store.commit('setLoading', true)
+      repositories = await getRepositories(gitId)
     }
+
+    return repositories
   }
 
   // リポジトリを選択し、ブランチを取得する
   // form: form object
-  // fetchBranches: 'gitSelector/fetchBranches'
+  // fetchBranches: 'gitSelector/getBranches'
   // repository: 選択したリポジトリ: 手入力の場合はstring, 選択肢から選んだ場合はobject
-  static async selectRepository(form, fetchBranches, repository) {
+  // repositories: リポジトリ一覧
+  static async selectRepository(form, getBranches, repository, repositories) {
     // 過去の選択状態をリセット
     form.gitModel.branch = null
     form.gitModel.commit = null
@@ -42,6 +41,7 @@ export default class GitSelectorUtil {
           fullName: repositoryName,
         }
         form.gitModel.repository = argRepository
+        repositories.push(argRepository)
       } else {
         // 構文エラー
         form.gitModel.repository = null
@@ -51,9 +51,10 @@ export default class GitSelectorUtil {
       argRepository = repository
     }
     // clearの場合リセット、リポジトリが選択された場合はブランチ取得
+    let branches = []
     if (repository !== null) {
       try {
-        await fetchBranches({
+        branches = await getBranches({
           gitId: form.gitModel.git.id,
           repository: argRepository,
           manualInput: manualInput,
@@ -62,23 +63,29 @@ export default class GitSelectorUtil {
         form.gitModel.repository = null
       }
     }
+    return branches
   }
 
   // ブランチを選択し、コミットを取得する
   // form: form object
   // fetchCommits: 'gitSelector/fetchCommits'
   // branchName: 選択したブランチ名
-  static async selectBranch(form, fetchCommits, branchName) {
+  static async selectBranch(form, getCommits, branchName) {
     // 過去の選択状態をリセット
     form.gitModel.commit = null
 
     // clearの場合リセット、ブランチが選択された場合はコミット取得
+    let commits
     if (branchName !== null) {
-      await fetchCommits({
+      commits = await getCommits({
         gitId: form.gitModel.git.id,
         repository: form.gitModel.repository,
         branchName: branchName,
       })
+    } else {
+      commits = []
     }
+
+    return commits
   }
 }

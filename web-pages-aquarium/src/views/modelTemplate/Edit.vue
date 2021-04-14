@@ -58,8 +58,8 @@
                 <kqi-container-selector
                   v-model="form.preprocess.containerImage"
                   :registries="registries"
-                  :images="images"
-                  :tags="tags"
+                  :images="preprocessImages"
+                  :tags="preprocessTags"
                   heading="前処理実行コンテナイメージ"
                   @selectRegistry="selectPreprocessRegistry"
                   @selectImage="selectPreprocessImage"
@@ -122,8 +122,8 @@
                 <kqi-container-selector
                   v-model="form.training.containerImage"
                   :registries="registries"
-                  :images="images"
-                  :tags="tags"
+                  :images="trainingImages"
+                  :tags="trainingTags"
                   heading="学習・推論コンテナイメージ"
                   @selectRegistry="selectTrainingRegistry"
                   @selectImage="selectTrainingImage"
@@ -184,8 +184,8 @@
                 <kqi-container-selector
                   v-model="form.evaluation.containerImage"
                   :registries="registries"
-                  :images="images"
-                  :tags="tags"
+                  :images="evaluationImages"
+                  :tags="evaluationTags"
                   heading="評価コンテナイメージ"
                   @selectRegistry="selectEvaluationRegistry"
                   @selectImage="selectEvaluationImage"
@@ -575,9 +575,10 @@ export default {
                 repository: this.form.preprocess.gitModel.repository.name,
                 owner: this.form.preprocess.gitModel.repository.owner,
                 branch: this.form.preprocess.gitModel.branch.branchName,
-                commitId: this.form.preprocess.gitModel.commit
-                  ? this.form.preprocess.gitModel.commit.commitId
-                  : this.commits[0].commitId,
+                commitId:
+                  this.form.preprocess.gitModel.commit !== null
+                    ? this.form.preprocess.gitModel.commit.commitId
+                    : this.preprocessCommits[0].commitId,
               }
             }
             ////学習
@@ -593,9 +594,10 @@ export default {
                 repository: this.form.training.gitModel.repository.name,
                 owner: this.form.training.gitModel.repository.owner,
                 branch: this.form.training.gitModel.branch.branchName,
-                commitId: this.form.training.gitModel.commit
-                  ? this.form.training.gitModel.commit.commitId
-                  : this.commits[0].commitId,
+                commitId:
+                  this.form.training.gitModel.commit !== null
+                    ? this.form.training.gitModel.commit.commitId
+                    : this.trainingCommits[0].commitId,
               }
             }
             ////評価
@@ -611,9 +613,10 @@ export default {
                 repository: this.form.evaluation.gitModel.repository.name,
                 owner: this.form.evaluation.gitModel.repository.owner,
                 branch: this.form.evaluation.gitModel.branch.branchName,
-                commitId: this.form.evaluation.gitModel.commit
-                  ? this.form.evaluation.gitModel.commit.commitId
-                  : this.commits[0].commitId,
+                commitId:
+                  this.form.evaluation.gitModel.commit !== null
+                    ? this.form.evaluation.gitModel.commit.commitId
+                    : this.evaluationCommits[0].commitId,
               }
             }
 
@@ -677,47 +680,47 @@ export default {
     },
     // コンテナイメージ
     async selectPreprocessRegistry(registryId) {
-      await registrySelectorUtil.selectRegistry(
+      this.preprocessImages = await registrySelectorUtil.selectRegistry(
         this.form.preprocess,
-        this['registrySelector/fetchImages'],
+        this['registrySelector/getImages'],
         registryId,
       )
     },
     async selectTrainingRegistry(registryId) {
-      await registrySelectorUtil.selectRegistry(
+      this.trainingImages = await registrySelectorUtil.selectRegistry(
         this.form.training,
-        this['registrySelector/fetchImages'],
+        this['registrySelector/getImages'],
         registryId,
       )
     },
     async selectEvaluationRegistry(registryId) {
-      await registrySelectorUtil.selectRegistry(
+      this.evaluationImages = await registrySelectorUtil.selectRegistry(
         this.form.evaluation,
-        this['registrySelector/fetchImages'],
+        this['registrySelector/getImages'],
         registryId,
       )
     },
     async selectPreprocessImage(image) {
-      await registrySelectorUtil.selectImage(
+      this.preprocessTags = await registrySelectorUtil.selectImage(
         this.form.preprocess,
-        this['registrySelector/fetchTags'],
+        this['registrySelector/getTags'],
         this.form.preprocess.containerImage.registry.id,
         image,
       )
       this.form
     },
     async selectTrainingImage(image) {
-      await registrySelectorUtil.selectImage(
+      this.trainingTags = await registrySelectorUtil.selectImage(
         this.form.training,
-        this['registrySelector/fetchTags'],
+        this['registrySelector/getTags'],
         this.form.training.containerImage.registry.id,
         image,
       )
     },
     async selectEvaluationImage(image) {
-      await registrySelectorUtil.selectImage(
+      this.evaluationTags = await registrySelectorUtil.selectImage(
         this.form.evaluation,
-        this['registrySelector/fetchTags'],
+        this['registrySelector/getTags'],
         this.form.evaluation.containerImage.registry.id,
         image,
       )

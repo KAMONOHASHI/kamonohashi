@@ -259,9 +259,9 @@ export default {
           this.versionDetail.preprocessGitModel.gitId !=
             this.preprocForm.gitModel.git.id ||
           this.versionDetail.preprocessGitModel.repository !=
-            this.preprocForm.gitModel.repository.split('/')[1] ||
+            this.preprocForm.gitModel.repository.name ||
           this.versionDetail.preprocessGitModel.branch !=
-            this.preprocForm.gitModel.branch ||
+            this.preprocForm.gitModel.branch.branchName ||
           this.versionDetail.preprocessGitModel.commitId !=
             this.preprocForm.gitModel.commit.commitId ||
           this.versionDetail.preprocessGitModel.token !=
@@ -293,9 +293,9 @@ export default {
         this.versionDetail.trainingGitModel.gitId !=
           this.trainingForm.gitModel.git.id ||
         this.versionDetail.trainingGitModel.repository !=
-          this.trainingForm.gitModel.repository.split('/')[1] ||
+          this.trainingForm.gitModel.repository.name ||
         this.versionDetail.trainingGitModel.branch !=
-          this.trainingForm.gitModel.branch ||
+          this.trainingForm.gitModel.branch.branchName ||
         this.versionDetail.trainingGitModel.commitId !=
           this.trainingForm.gitModel.commit.commitId ||
         this.versionDetail.trainingGitModel.token !=
@@ -344,9 +344,9 @@ export default {
           this.versionDetail.evaluationGitModel.gitId !=
             this.evaluationForm.gitModel.git.id ||
           this.versionDetail.evaluationGitModel.repository !=
-            this.evaluationForm.gitModel.repository.split('/')[1] ||
+            this.evaluationForm.gitModel.repository.name ||
           this.versionDetail.evaluationGitModel.branch !=
-            this.evaluationForm.gitModel.branch ||
+            this.evaluationForm.gitModel.branch.branchName ||
           this.versionDetail.evaluationGitModel.commitId !=
             this.evaluationForm.gitModel.commit.commitId ||
           this.versionDetail.evaluationGitModel.token !=
@@ -419,12 +419,12 @@ export default {
         params['evaluationContainerImage'] = null
       }
 
-      if (this.preprocForm.gitModel.git != null) {
+      if (this.preprocForm.gitModel.repository != null) {
         params['preprocessGitModel'] = {
           gitId: this.preprocForm.gitModel.git.id,
-          repository: this.preprocForm.gitModel.repository.split('/')[1],
-          owner: this.preprocForm.gitModel.repository.split('/')[0],
-          branch: this.preprocForm.gitModel.branch,
+          repository: this.preprocForm.gitModel.repository.name,
+          owner: this.preprocForm.gitModel.repository.owner,
+          branch: this.preprocForm.gitModel.branch.branchName,
           commitId: this.preprocForm.gitModel.commit.commitId,
           token: this.preprocForm.gitModel.token,
         }
@@ -432,12 +432,12 @@ export default {
         params['preprocessGitModel'] = null
       }
 
-      if (this.trainingForm.gitModel.git != null) {
+      if (this.trainingForm.gitModel.repository != null) {
         params['trainingGitModel'] = {
           gitId: this.trainingForm.gitModel.git.id,
-          repository: this.trainingForm.gitModel.repository.split('/')[1],
-          owner: this.trainingForm.gitModel.repository.split('/')[0],
-          branch: this.trainingForm.gitModel.branch,
+          repository: this.trainingForm.gitModel.repository.name,
+          owner: this.trainingForm.gitModel.repository.owner,
+          branch: this.trainingForm.gitModel.branch.branchName,
           commitId: this.trainingForm.gitModel.commit.commitId,
           token: this.trainingForm.gitModel.token,
         }
@@ -448,8 +448,8 @@ export default {
       if (this.evaluationForm.gitModel.git != null) {
         params['evaluationGitModel'] = {
           gitId: this.evaluationForm.gitModel.git.id,
-          repository: this.evaluationForm.gitModel.repository.split('/')[1],
-          owner: this.evaluationForm.gitModel.repository.split('/')[0],
+          repository: this.evaluationForm.gitModel.repository.name,
+          owner: this.evaluationForm.gitModel.repository.owner,
           branch: this.evaluationForm.gitModel.branch,
           commitId: this.evaluationForm.gitModel.commit.commitId,
           token: this.evaluationForm.gitModel.token,
