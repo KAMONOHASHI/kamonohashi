@@ -266,7 +266,7 @@ namespace Nssol.Platypus.Controllers.spa
 
 
         /// <summary>
-        /// アクセス可能なメニュー一覧をリスト形式で取得する。
+        /// アクセス可能なKQIのメニュー一覧をリスト形式で取得する。
         /// </summary>
         [HttpGet("menus/list")]
         [Filters.PermissionFilter(MenuCode.Account)]
@@ -279,6 +279,22 @@ namespace Nssol.Platypus.Controllers.spa
 
             return JsonOK(result);
         }
+
+        /// <summary>
+        /// アクセス可能なAquariumのメニュー一覧をリスト形式で取得する。
+        /// </summary>
+        [HttpGet("aquarium/menus/list")]
+        [Filters.PermissionFilter(MenuCode.Account)]
+        [ProducesResponseType(typeof(IEnumerable<MenuListOutputModel>), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetAccessibleAquariumMenuList([FromQuery] string lang, [FromServices] IMenuLogic menuLogic)
+        {
+            var menus = await menuLogic.GetAquariumTopMenuListAsync();
+
+            var result = menus.Select(m => new MenuListOutputModel(m, lang));
+
+            return JsonOK(result);
+        }
+
 
         /// <summary>
         /// 選択中のテナントにおけるGit情報を取得する

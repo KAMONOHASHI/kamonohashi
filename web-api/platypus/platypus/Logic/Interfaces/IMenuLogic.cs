@@ -14,7 +14,7 @@ namespace Nssol.Platypus.Logic.Interfaces
     public interface IMenuLogic
     {
         /// <summary>
-        /// ログインユーザが表示可能なホーム画面用のメニューリストを取得する
+        /// ログインユーザが表示可能なKQIのホーム画面用のメニューリストを取得する
         /// </summary>
         /// <returns>トップメニュー用のメニューリスト</returns>
         Task<IEnumerable<MenuItemInfo>> GetTopMenuListAsync();
@@ -24,6 +24,11 @@ namespace Nssol.Platypus.Logic.Interfaces
         /// </summary>
         /// <returns>サイドメニュー用のメニューリスト</returns>
         Task<IEnumerable<MenuItemInfo>> GetSideMenuListAsync();
+
+        /// <summary>
+        /// ログインユーザが表示可能なAquariumのホーム画面用のメニューリストを取得する
+        /// </summary>
+        Task<IEnumerable<MenuItemInfo>> GetAquariumTopMenuListAsync();
 
         /// <summary>
         /// 指定されたメニューコードのいづれかにアクセス可能か判定する
