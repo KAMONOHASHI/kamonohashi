@@ -35,17 +35,23 @@ namespace Nssol.Platypus.Services
         public string GetDockerCfgAuthString(UserTenantRegistryMap userRegistryMap)
         {
             //GitLabではtokenはパスワードとして管理されている
-            string token = userRegistryMap.RegistryPassword;
-            if (string.IsNullOrEmpty(token))
+            string userName = userRegistryMap.RegistryUserName;
+            string password = userRegistryMap.RegistryPassword;
+            if (string.IsNullOrEmpty(password))
             {
                 LogWarning($"User {userRegistryMap.UserId}'s token is empty. UserTenantRegistryMapID = {userRegistryMap.Id}");
                 return null;
             }
 
+            return GetDockerCfgAuthString(userName, password);
+        }
+
+        public string GetDockerCfgAuthString(string userName, string password)
+        {
             //GitLabの場合、トークンを使うならuserNameは任意の文字列（空文字除く）を与えられる。
             //なのでダミー文字列としてkqiを入れる。
             //ユーザ名はシークレット名にも使われるので、ここでは扱わない
-            var auth = Convert.ToBase64String(Encoding.UTF8.GetBytes($"kqi:{token}"));
+            var auth = Convert.ToBase64String(Encoding.UTF8.GetBytes($"kqi:{password}"));
             return $"\"auth\":\"{auth}\"";
         }
 

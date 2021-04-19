@@ -1,5 +1,0 @@
-- name: create log dir
-  file: 
-    path: /var/log/kamonohashi/platypus-web-api
-    state: directory 
-    mode: 0770

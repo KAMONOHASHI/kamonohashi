@@ -26,6 +26,13 @@ namespace Nssol.Platypus.Logic.Interfaces
         string GetDockerCfgAuthString(UserTenantRegistryMap userRegistryMap);
 
         /// <summary>
+        /// クラスタ管理サービスに登録するdockercfgを作る。
+        /// エラーが発生したらnullが返る。
+        /// <see cref="ServiceModels.ClusterManagementModels.RegistRegistryTokenInputModel.DockerCfgAuthString"/>に格納される。
+        /// </summary>
+        string GetDockerCfgAuthString(Registry registry, string userName, string password);
+
+        /// <summary>
         /// 全てのイメージのリストを取得
         /// </summary>
         /// <returns>全イメージのリスト。エラーの場合はNULL。</returns>

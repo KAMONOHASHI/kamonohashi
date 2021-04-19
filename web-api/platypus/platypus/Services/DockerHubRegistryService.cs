@@ -46,6 +46,11 @@ namespace Nssol.Platypus.Services
                 LogWarning($"User {userRegistryMap.UserId}'s password is empty. UserTenantRegistryMapID = {userRegistryMap.Id}");
                 return null;
             }
+            return GetDockerCfgAuthString(userName, password);
+        }
+
+        public string GetDockerCfgAuthString(string userName, string password)
+        {
             var auth = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{userName}:{password}"));
             return $"\"username\":\"{userName}\",\"password\":\"{password}\",\"auth\":\"{auth}\"";
         }
