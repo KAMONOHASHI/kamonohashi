@@ -47,7 +47,7 @@
           >
             <div>
               <span
-                style="margin-left:0px;padding:5px;display:inline-block;width:400px"
+                style="margin-left:0px;margin-top:5px;padding:5px;display:inline-block;width:400px"
               >
                 <span class="data-name" style="" @click="dataClick(item)">
                   <i
@@ -68,22 +68,24 @@
             <div>
               <ul
                 v-show="item.show"
-                style="margin-left:20px;height:200px;overflow:auto;"
+                style="margin-left:20px;max-height:200px;overflow:auto;"
               >
                 <li
                   v-for="(file, subIndex) in item.list"
                   :key="subIndex"
-                  style="list-style-type: none;padding-left:10px"
+                  style="list-style-type: none;padding-left:10px;margin-top:5px"
                   :index="subIndex"
                   class="file-li "
                 >
                   <div
-                    style="float:left;width:90%"
+                    style="float:left;width:90%;padding-top:5px;padding-bottom:5px"
                     @click="fileClick(file, $event)"
                   >
                     {{ file.fileName }}
                   </div>
-                  <div style="float:left;width:10%">
+                  <div
+                    style="float:left;width:10%;padding-top:5px;padding-bottom:5px"
+                  >
                     <a :href="file.url"><i class="el-icon-download"></i></a>
                   </div>
                 </li>
