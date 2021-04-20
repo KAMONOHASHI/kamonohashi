@@ -86,15 +86,15 @@ export default {
     },
     async setSubMenues() {
       this.allMenues[0].menus = this.menuList.filter(menu => {
-        return menu.category === 'pl-aquariumdata'
+        return menu.category === 'aq-dataset'
       })
 
       this.allMenues[1].menus = this.menuList.filter(menu => {
-        return menu.category === 'pl-experiment'
+        return menu.category === 'aq-experiment'
       })
 
       this.allMenues[2].menus = this.menuList.filter(menu => {
-        return menu.category === 'pl-template'
+        return menu.category === 'aq-template'
       })
     },
   },

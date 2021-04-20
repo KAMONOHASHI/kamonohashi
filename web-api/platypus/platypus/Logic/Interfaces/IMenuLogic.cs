@@ -31,6 +31,12 @@ namespace Nssol.Platypus.Logic.Interfaces
         Task<IEnumerable<MenuItemInfo>> GetAquariumTopMenuListAsync();
 
         /// <summary>
+        /// ログインユーザが表示可能なAquariumのサイドメニューリストを取得する
+        /// </summary>
+        /// <returns>サイドメニュー用のメニューリスト</returns>
+        Task<IEnumerable<MenuItemInfo>> GetAquariumSideMenuListAsync();
+
+        /// <summary>
         /// 指定されたメニューコードのいづれかにアクセス可能か判定する
         /// </summary>
         /// <param name="menuCodes">メニューコードのリスト</param>

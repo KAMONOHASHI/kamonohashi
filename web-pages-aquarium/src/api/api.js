@@ -106,7 +106,7 @@ let api = {
     putPassword: gen.ApiV2AccountPasswordPut,
     postLogin: gen.ApiV2AccountLoginPost,
     postTokenTenants: gen.ApiV2AccountTenantsByTenantIdTokenPost,
-    getTreeMenus: gen.ApiV2AccountMenusTreeGet,
+    getTreeMenus: gen.ApiV2AccountAquariumMenusTreeGet,
     getListMenus: gen.ApiV2AccountAquariumMenusListGet,
     getRegistries: gen.ApiV2AccountRegistriesGet,
     putRegistries: gen.ApiV2AccountRegistriesPut,

@@ -157,6 +157,20 @@ namespace Nssol.Platypus.Logic
         }
 
         /// <summary>
+        /// ログインユーザが表示可能なAquariumのサイドメニューリストを取得する
+        /// </summary>
+        /// <returns>サイドメニュー用のメニューリスト</returns>
+        public async Task<IEnumerable<MenuItemInfo>> GetAquariumSideMenuListAsync()
+        {
+            if (CurrentUserInfo.SelectedTenantRoles.Count() == 0)
+            {
+                return new List<MenuItemInfo>();
+            }
+
+            return await GetAccessibleMenuTreeAsync(AquariumMenuTree);
+        }
+
+        /// <summary>
         /// アクセス可能なメニューのみをツリー形式で取得するための再帰メソッド
         /// </summary>
         private async Task<IEnumerable<MenuItemInfo>> GetAccessibleMenuTreeAsync(IEnumerable<MenuItemInfo> sourceList)
@@ -434,24 +448,24 @@ namespace Nssol.Platypus.Logic
         };
         internal static MenuItemInfo AquariumDataSetMenu = new MenuItemInfo()
         {
-            Name = "アクアリウムデータセット管理",
+            Name = "データセット",
             NameEn = "AquariumDataSet",
-            Description = "アクアリウムデータセットの各種管理",
+            Description = "アクアリウムデータセットを作成、更新、削除する",
             DescriptionEn = "Managing Aquarium DataSet",
-            Category = "pl-aquariumdata",
+            Category = "aq-dataset",
             Code = MenuCode.AquariumDataSet,
-            Url = "/aquarium/datasets",
+            Url = "/aquarium/dataset",
             ShowTopMenu = true,
             ShowSideMenu = true,
             MenuType = MenuType.Tenant
         };
         internal static MenuItemInfo ExperimentMenu = new MenuItemInfo()
         {
-            Name = "新規実験実行",
+            Name = "実験",
             NameEn = "Experiment",
             Description = "新規に実験を実行する",
             DescriptionEn = "Start New Experiment",
-            Category = "pl-experiment",
+            Category = "aq-experiment",
             Code = MenuCode.Experiment,
             Url = "/aquarium/experiment/create",
             ShowTopMenu = true,
@@ -462,9 +476,9 @@ namespace Nssol.Platypus.Logic
         {
             Name = "実験履歴",
             NameEn = "ExperimentHistory",
-            Description = "過去の実験のデータを閲覧する",
+            Description = "実行中の実験のステータスを確認、過去の実験のデータを閲覧する",
             DescriptionEn = "Managing Experiment Status and Histories",
-            Category = "pl-experiment",
+            Category = "aq-experiment",
             Code = MenuCode.ExperimentHistory,
             Url = "/aquarium/experiment",
             ShowTopMenu = true,
@@ -474,11 +488,11 @@ namespace Nssol.Platypus.Logic
 
         internal static MenuItemInfo TemplateMenu = new MenuItemInfo()
         {
-            Name = "モデルテンプレート管理",
+            Name = "テンプレート",
             NameEn = "ModelTemplate",
-            Description = "学習用テンプレートコンテナの共有",
+            Description = "モデルのテンプレートを作成、更新、削除する",
             DescriptionEn = "model template for sharing",
-            Category = "pl-template",
+            Category = "aq-template",
             Code = MenuCode.Template,
             Url = "/aquarium/model-template",
             ShowTopMenu = true,
@@ -653,6 +667,44 @@ namespace Nssol.Platypus.Logic
             TrainingMenu,
             InferenceMenu,
 
+            new MenuItemInfo()
+            {
+                Name = "テナント設定",
+                Category = "pl-tenant-setting",
+                Children = new List<MenuItemInfo>()
+                {
+                    TenantSettingMenu,
+                    //TenantRoleMenu,
+                    TenantUserMenu,
+                    //TenantMenuAccessMenu,
+                    TenantResourceMenu
+                }
+            },
+            new MenuItemInfo()
+            {
+                Name = "システム設定",
+                Category = "pl-system-setting",
+                Children = new List<MenuItemInfo>()
+                {
+                    TenantMenu,
+                    GitMenu,
+                    RegistryMenu,
+                    StorageMenu,
+                    RoleMenu,
+                    QuotaMenu,
+                    NodeMenu,
+                    UserMenu,
+                    MenuAccessMenu,
+                    ResourceMenu
+                }
+            }
+        };
+
+        private static IEnumerable<MenuItemInfo> AquariumMenuTree = new List<MenuItemInfo>()
+        {
+            AquariumDataSetMenu,
+            ExperimentHistoryMenu,
+            TemplateMenu,
             new MenuItemInfo()
             {
                 Name = "テナント設定",

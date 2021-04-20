@@ -248,7 +248,7 @@ namespace Nssol.Platypus.Controllers.spa
 
 
         /// <summary>
-        /// アクセス可能なメニュー一覧をツリー形式で取得する。
+        /// アクセス可能なKQIのメニュー一覧をツリー形式で取得する。
         /// </summary>
         [HttpGet("menus/tree")]
         [ProducesResponseType(typeof(IEnumerable<MenuTreeOutputModel.MenuGroup>), (int)HttpStatusCode.OK)]
@@ -279,6 +279,24 @@ namespace Nssol.Platypus.Controllers.spa
 
             return JsonOK(result);
         }
+
+        /// <summary>
+        /// アクセス可能なAquariumのメニュー一覧をツリー形式で取得する。
+        /// </summary>
+        [HttpGet("aquarium/menus/tree")]
+        [ProducesResponseType(typeof(IEnumerable<MenuTreeOutputModel.MenuGroup>), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetAccessibleAquariumMenuTree([FromQuery] string lang, [FromServices] IMenuLogic menuLogic)
+        {
+            var result = new List<MenuTreeOutputModel>();
+
+            var menus = await menuLogic.GetAquariumSideMenuListAsync();
+            foreach (var menu in menus)
+            {
+                result.Add(MenuTreeOutputModel.GenerateMenu(menu, lang));
+            }
+            return JsonOK(result);
+        }
+
 
         /// <summary>
         /// アクセス可能なAquariumのメニュー一覧をリスト形式で取得する。
