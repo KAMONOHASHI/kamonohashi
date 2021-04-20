@@ -729,7 +729,7 @@ export const ApiV2AquariumDatasetsGetURL = function(parameters = {}) {
  * url: ApiV2AquariumDatasetsPostURL
  * method: ApiV2AquariumDatasetsPost_TYPE
  * raw_url: ApiV2AquariumDatasetsPost_RAW_URL
- * @param model - 作成するアクアリウムデータセット
+ * @param model - アクアリウムデータセット
  */
 export const ApiV2AquariumDatasetsPost = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -772,7 +772,7 @@ export const ApiV2AquariumDatasetsPostURL = function(parameters = {}) {
  * url: ApiV2AquariumDatasetsByIdVersionsGetURL
  * method: ApiV2AquariumDatasetsByIdVersionsGet_TYPE
  * raw_url: ApiV2AquariumDatasetsByIdVersionsGet_RAW_URL
- * @param id - 取得するアクアリウムデータセットのID
+ * @param id - アクアリウムデータセットID
  */
 export const ApiV2AquariumDatasetsByIdVersionsGet = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -817,8 +817,8 @@ export const ApiV2AquariumDatasetsByIdVersionsGetURL = function(parameters = {})
  * url: ApiV2AquariumDatasetsByIdVersionsPostURL
  * method: ApiV2AquariumDatasetsByIdVersionsPost_TYPE
  * raw_url: ApiV2AquariumDatasetsByIdVersionsPost_RAW_URL
- * @param id - 作成先のアクアリウムデータセットID
- * @param model - 作成するアクアリウムデータセットバージョン
+ * @param id - アクアリウムデータセットID
+ * @param model - アクアリウムデータセットバージョン
  */
 export const ApiV2AquariumDatasetsByIdVersionsPost = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -861,58 +861,13 @@ export const ApiV2AquariumDatasetsByIdVersionsPostURL = function(parameters = {}
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
- * アクアリウムデータセットを削除する
- * request: ApiV2AquariumDatasetsByIdDelete
- * url: ApiV2AquariumDatasetsByIdDeleteURL
- * method: ApiV2AquariumDatasetsByIdDelete_TYPE
- * raw_url: ApiV2AquariumDatasetsByIdDelete_RAW_URL
- * @param id - 削除するアクアリウムデータセットID
- */
-export const ApiV2AquariumDatasetsByIdDelete = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/api/v2/aquarium/datasets/{id}'
-  let body
-  let queryParameters = {}
-  let form = {}
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters['id'] === undefined) {
-    return Promise.reject(new Error('Missing required  parameter: id'))
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('delete', domain + path, body, queryParameters, form, config)
-}
-export const ApiV2AquariumDatasetsByIdDelete_RAW_URL = function() {
-  return '/api/v2/aquarium/datasets/{id}'
-}
-export const ApiV2AquariumDatasetsByIdDelete_TYPE = function() {
-  return 'delete'
-}
-export const ApiV2AquariumDatasetsByIdDeleteURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/api/v2/aquarium/datasets/{id}'
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
  * アクアリウムデータセットバージョンを取得する
  * request: ApiV2AquariumDatasetsByIdVersionsByVersionIdGet
  * url: ApiV2AquariumDatasetsByIdVersionsByVersionIdGetURL
  * method: ApiV2AquariumDatasetsByIdVersionsByVersionIdGet_TYPE
  * raw_url: ApiV2AquariumDatasetsByIdVersionsByVersionIdGet_RAW_URL
- * @param id - 取得するアクアリウムデータセットID
- * @param versionId - 取得するアクアリウムデータセットバージョンID
+ * @param id - アクアリウムデータセットID
+ * @param versionId - アクアリウムデータセットバージョンID
  */
 export const ApiV2AquariumDatasetsByIdVersionsByVersionIdGet = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -948,6 +903,102 @@ export const ApiV2AquariumDatasetsByIdVersionsByVersionIdGetURL = function(param
   let path = '/api/v2/aquarium/datasets/{id}/versions/{versionId}'
   path = path.replace('{id}', `${parameters['id']}`)
   path = path.replace('{versionId}', `${parameters['versionId']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * アクアリウムデータセットバージョンを削除する
+ * request: ApiV2AquariumDatasetsByIdVersionsByVersionIdDelete
+ * url: ApiV2AquariumDatasetsByIdVersionsByVersionIdDeleteURL
+ * method: ApiV2AquariumDatasetsByIdVersionsByVersionIdDelete_TYPE
+ * raw_url: ApiV2AquariumDatasetsByIdVersionsByVersionIdDelete_RAW_URL
+ * @param id - アクアリウムデータセットID
+ * @param versionId - アクアリウムデータセットバージョンID
+ */
+export const ApiV2AquariumDatasetsByIdVersionsByVersionIdDelete = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/aquarium/datasets/{id}/versions/{versionId}'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  path = path.replace('{versionId}', `${parameters['versionId']}`)
+  if (parameters['versionId'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: versionId'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('delete', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2AquariumDatasetsByIdVersionsByVersionIdDelete_RAW_URL = function() {
+  return '/api/v2/aquarium/datasets/{id}/versions/{versionId}'
+}
+export const ApiV2AquariumDatasetsByIdVersionsByVersionIdDelete_TYPE = function() {
+  return 'delete'
+}
+export const ApiV2AquariumDatasetsByIdVersionsByVersionIdDeleteURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/aquarium/datasets/{id}/versions/{versionId}'
+  path = path.replace('{id}', `${parameters['id']}`)
+  path = path.replace('{versionId}', `${parameters['versionId']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * アクアリウムデータセットを削除する
+ * request: ApiV2AquariumDatasetsByIdDelete
+ * url: ApiV2AquariumDatasetsByIdDeleteURL
+ * method: ApiV2AquariumDatasetsByIdDelete_TYPE
+ * raw_url: ApiV2AquariumDatasetsByIdDelete_RAW_URL
+ * @param id - アクアリウムデータセットID
+ */
+export const ApiV2AquariumDatasetsByIdDelete = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/aquarium/datasets/{id}'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('delete', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2AquariumDatasetsByIdDelete_RAW_URL = function() {
+  return '/api/v2/aquarium/datasets/{id}'
+}
+export const ApiV2AquariumDatasetsByIdDelete_TYPE = function() {
+  return 'delete'
+}
+export const ApiV2AquariumDatasetsByIdDeleteURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/aquarium/datasets/{id}'
+  path = path.replace('{id}', `${parameters['id']}`)
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]
@@ -2553,6 +2604,51 @@ export const ApiV2ExperimentByIdGet_TYPE = function() {
   return 'get'
 }
 export const ApiV2ExperimentByIdGetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/experiment/{id}'
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 実験を削除する
+ * request: ApiV2ExperimentByIdDelete
+ * url: ApiV2ExperimentByIdDeleteURL
+ * method: ApiV2ExperimentByIdDelete_TYPE
+ * raw_url: ApiV2ExperimentByIdDelete_RAW_URL
+ * @param id - 実験ID
+ */
+export const ApiV2ExperimentByIdDelete = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/experiment/{id}'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('delete', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2ExperimentByIdDelete_RAW_URL = function() {
+  return '/api/v2/experiment/{id}'
+}
+export const ApiV2ExperimentByIdDelete_TYPE = function() {
+  return 'delete'
+}
+export const ApiV2ExperimentByIdDeleteURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/experiment/{id}'
@@ -8143,7 +8239,7 @@ export const ApiV2AdminTemplatesByIdGetURL = function(parameters = {}) {
  * url: ApiV2AdminTemplatesByIdPutURL
  * method: ApiV2AdminTemplatesByIdPut_TYPE
  * raw_url: ApiV2AdminTemplatesByIdPut_RAW_URL
- * @param id - 
+ * @param id - テンプレートID
  * @param model - 
  */
 export const ApiV2AdminTemplatesByIdPut = function(parameters = {}) {
@@ -8187,12 +8283,57 @@ export const ApiV2AdminTemplatesByIdPutURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * テンプレートを削除する
+ * request: ApiV2AdminTemplatesByIdDelete
+ * url: ApiV2AdminTemplatesByIdDeleteURL
+ * method: ApiV2AdminTemplatesByIdDelete_TYPE
+ * raw_url: ApiV2AdminTemplatesByIdDelete_RAW_URL
+ * @param id - テンプレートID
+ */
+export const ApiV2AdminTemplatesByIdDelete = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/admin/templates/{id}'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('delete', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2AdminTemplatesByIdDelete_RAW_URL = function() {
+  return '/api/v2/admin/templates/{id}'
+}
+export const ApiV2AdminTemplatesByIdDelete_TYPE = function() {
+  return 'delete'
+}
+export const ApiV2AdminTemplatesByIdDeleteURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/admin/templates/{id}'
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * テンプレートバージョン一覧を取得する
  * request: ApiV2AdminTemplatesByIdVersionsGet
  * url: ApiV2AdminTemplatesByIdVersionsGetURL
  * method: ApiV2AdminTemplatesByIdVersionsGet_TYPE
  * raw_url: ApiV2AdminTemplatesByIdVersionsGet_RAW_URL
- * @param id - 取得するテンプレートのID
+ * @param id - テンプレートID
  */
 export const ApiV2AdminTemplatesByIdVersionsGet = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -8237,7 +8378,7 @@ export const ApiV2AdminTemplatesByIdVersionsGetURL = function(parameters = {}) {
  * url: ApiV2AdminTemplatesByIdVersionsPostURL
  * method: ApiV2AdminTemplatesByIdVersionsPost_TYPE
  * raw_url: ApiV2AdminTemplatesByIdVersionsPost_RAW_URL
- * @param id - 
+ * @param id - テンプレートID
  * @param model - 
  */
 export const ApiV2AdminTemplatesByIdVersionsPost = function(parameters = {}) {
@@ -8318,6 +8459,57 @@ export const ApiV2AdminTemplatesByIdVersionsByVersionIdGet_TYPE = function() {
   return 'get'
 }
 export const ApiV2AdminTemplatesByIdVersionsByVersionIdGetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/admin/templates/{id}/versions/{versionId}'
+  path = path.replace('{id}', `${parameters['id']}`)
+  path = path.replace('{versionId}', `${parameters['versionId']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * テンプレートバージョンを削除する
+ * request: ApiV2AdminTemplatesByIdVersionsByVersionIdDelete
+ * url: ApiV2AdminTemplatesByIdVersionsByVersionIdDeleteURL
+ * method: ApiV2AdminTemplatesByIdVersionsByVersionIdDelete_TYPE
+ * raw_url: ApiV2AdminTemplatesByIdVersionsByVersionIdDelete_RAW_URL
+ * @param id - テンプレートID
+ * @param versionId - テンプレートバージョンID
+ */
+export const ApiV2AdminTemplatesByIdVersionsByVersionIdDelete = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/admin/templates/{id}/versions/{versionId}'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  path = path.replace('{versionId}', `${parameters['versionId']}`)
+  if (parameters['versionId'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: versionId'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('delete', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2AdminTemplatesByIdVersionsByVersionIdDelete_RAW_URL = function() {
+  return '/api/v2/admin/templates/{id}/versions/{versionId}'
+}
+export const ApiV2AdminTemplatesByIdVersionsByVersionIdDelete_TYPE = function() {
+  return 'delete'
+}
+export const ApiV2AdminTemplatesByIdVersionsByVersionIdDeleteURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/templates/{id}/versions/{versionId}'
