@@ -146,32 +146,6 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
         }
 
         /// <summary>
-        /// 学習履歴を削除
-        /// </summary>
-        /// <param name="entity">学習履歴</param>
-        public override void Delete(TrainingHistory entity)
-        {
-            DeleteAsync(entity).Wait();
-        }
-
-        /// <summary>
-        /// 学習履歴を削除
-        /// </summary>
-        /// <param name="entity">学習履歴</param>
-        public async Task DeleteAsync(TrainingHistory entity)
-        {
-            base.Delete(entity);
-
-            //自分以外に同じデータセットを使っている履歴がなければ、データセットのロック状態を解除する
-            var other = await ExistsAsync(th => th.DataSetId == entity.DataSetId && th.Id != entity.Id);
-            if (other == false)
-            {
-                var dataSet = await GetModelByIdAsync<DataSet>(entity.DataSetId);
-                dataSet.IsLocked = false;
-            }
-        }
-
-        /// <summary>
         /// 派生した学習履歴を取得する
         /// </summary>
         /// <param name="id">親学習ID</param>

@@ -55,6 +55,25 @@ namespace Nssol.Platypus.Logic
         }
 
         /// <summary>
+        /// クラスタ管理サービスに登録するdockercfgを作る。
+        /// エラーが発生したらnullが返る。
+        /// <see cref="ServiceModels.ClusterManagementModels.RegistRegistryTokenInputModel.DockerCfgAuthString"/>に格納される。
+        /// </summary>
+        public string GetDockerCfgAuthString(Registry registry, string userName, string password)
+        {
+            IRegistryService registryService = GetRegistryService(registry);
+            if (registryService != null)
+            {
+                return registryService.GetDockerCfgAuthString(userName, password);
+            }
+            else
+            {
+                LogError($"Undefined registry: {registry.Name}({registry.ServiceType})");
+                return null;
+            }
+        }
+
+        /// <summary>
         /// 全てのイメージのリストを取得
         /// </summary>
         /// <returns>全イメージのリスト。エラーの場合はNULL。</returns>

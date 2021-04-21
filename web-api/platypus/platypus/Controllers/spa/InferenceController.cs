@@ -35,6 +35,7 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly IDataSetRepository dataSetRepository;
         private readonly ITenantRepository tenantRepository;
         private readonly INodeRepository nodeRepository;
+        private readonly IDataSetLogic dataSetLogic;
         private readonly IInferenceLogic inferenceLogic;
         private readonly IStorageLogic storageLogic;
         private readonly IGitLogic gitLogic;
@@ -50,6 +51,7 @@ namespace Nssol.Platypus.Controllers.spa
             IDataSetRepository dataSetRepository,
             ITenantRepository tenantRepository,
             INodeRepository nodeRepository,
+            IDataSetLogic dataSetLogic,
             IInferenceLogic inferenceLogic,
             IStorageLogic storageLogic,
             IGitLogic gitLogic,
@@ -62,6 +64,7 @@ namespace Nssol.Platypus.Controllers.spa
             this.dataSetRepository = dataSetRepository;
             this.tenantRepository = tenantRepository;
             this.nodeRepository = nodeRepository;
+            this.dataSetLogic = dataSetLogic;
             this.inferenceLogic = inferenceLogic;
             this.storageLogic = storageLogic;
             this.gitLogic = gitLogic;
@@ -569,6 +572,7 @@ namespace Nssol.Platypus.Controllers.spa
             if (result.IsSuccess == false)
             {
                 //コンテナの起動に失敗した状態。エラーを出力して、保存した推論履歴も削除する。
+                await dataSetLogic.ReleaseLockAsync(inferenceHistory.DataSetId);
                 inferenceHistoryRepository.Delete(inferenceHistory);
                 unitOfWork.Commit();
 
@@ -904,6 +908,7 @@ namespace Nssol.Platypus.Controllers.spa
                 await storageLogic.DeleteFileAsync(ResourceType.InferenceHistoryAttachedFiles, file.StoredPath);
             }
 
+            await dataSetLogic.ReleaseLockAsync(inferenceHistory.DataSetId);
             inferenceHistoryRepository.Delete(inferenceHistory);
             unitOfWork.Commit();
 

@@ -38,6 +38,7 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly ITagRepository tagRepository;
         private readonly ITenantRepository tenantRepository;
         private readonly INodeRepository nodeRepository;
+        private readonly IDataSetLogic dataSetLogic;
         private readonly ITagLogic tagLogic;
         private readonly ITrainingLogic trainingLogic;
         private readonly IStorageLogic storageLogic;
@@ -57,6 +58,7 @@ namespace Nssol.Platypus.Controllers.spa
             ITagRepository tagRepository,
             ITenantRepository tenantRepository,
             INodeRepository nodeRepository,
+            IDataSetLogic dataSetLogic,
             ITagLogic tagLogic,
             ITrainingLogic trainingLogic,
             IStorageLogic storageLogic,
@@ -73,6 +75,7 @@ namespace Nssol.Platypus.Controllers.spa
             this.tagRepository = tagRepository;
             this.tenantRepository = tenantRepository;
             this.nodeRepository = nodeRepository;
+            this.dataSetLogic = dataSetLogic;
             this.tagLogic = tagLogic;
             this.trainingLogic = trainingLogic;
             this.storageLogic = storageLogic;
@@ -403,13 +406,16 @@ namespace Nssol.Platypus.Controllers.spa
             ITenantRepository tenantRepository,
             ITrainingHistoryRepository trainingHistoryRepository,
             IClusterManagementLogic clusterManagementLogic,
+            IDataSetLogic dataSetLogic,
             IGitLogic gitLogic,
             ITagLogic tagLogic,
             IUnitOfWork unitOfWork,
             UserInfo currentUserInfo,
             ModelStateDictionary modelState,
             string requestUrl,
-            string scriptType
+            string scriptType,
+            string regisryTokenName,
+            string gitToken
             )
         {
             //データの入力チェック
@@ -543,10 +549,11 @@ namespace Nssol.Platypus.Controllers.spa
             }
             unitOfWork.Commit();
 
-            var result = await clusterManagementLogic.RunTrainContainerAsync(trainingHistory, scriptType);
+            var result = await clusterManagementLogic.RunTrainContainerAsync(trainingHistory, scriptType, regisryTokenName, gitToken);
             if (result.IsSuccess == false)
             {
                 //コンテナの起動に失敗した状態。エラーを出力して、保存した学習履歴も削除する。
+                await dataSetLogic.ReleaseLockAsync(trainingHistory.DataSetId);
                 trainingHistoryRepository.Delete(trainingHistory);
                 unitOfWork.Commit();
 
@@ -585,8 +592,8 @@ namespace Nssol.Platypus.Controllers.spa
         {
             (var _, var result) = await DoCreate(model,
                 dataSetRepository, nodeRepository, tenantRepository, trainingHistoryRepository,
-                clusterManagementLogic, gitLogic, tagLogic,
-                unitOfWork, CurrentUserInfo, ModelState, RequestUrl, "training");
+                clusterManagementLogic, dataSetLogic, gitLogic, tagLogic,
+                unitOfWork, CurrentUserInfo, ModelState, RequestUrl, "training", null, null);
             return result;
         }
 
@@ -1011,11 +1018,45 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonBadRequest("Invalid inputs.");
             }
+
+            var (_, result) = await DoDelete(id.Value,
+                trainingHistoryRepository,
+                clusterManagementLogic,
+                dataSetLogic,
+                tagLogic,
+                unitOfWork,
+                CurrentUserInfo,
+                ModelState,
+                storageLogic,
+                inferenceHistoryRepository,
+                tensorBoardContainerRepository,
+                tagRepository,
+                RequestUrl);
+            return result;
+        }
+
+        public static async Task<(bool, IActionResult)> DoDelete(
+            long id,
+            ITrainingHistoryRepository trainingHistoryRepository,
+            IClusterManagementLogic clusterManagementLogic,
+            IDataSetLogic dataSetLogic,
+            ITagLogic tagLogic,
+            IUnitOfWork unitOfWork,
+            UserInfo currentUserInfo,
+            ModelStateDictionary modelState,
+            IStorageLogic storageLogic,
+            IInferenceHistoryRepository inferenceHistoryRepository,
+            ITensorBoardContainerRepository tensorBoardContainerRepository,
+            ITagRepository tagRepository,
+            string requestUrl
+            )
+        {
             //データの存在チェック
-            var trainingHistory = await trainingHistoryRepository.GetByIdAsync(id.Value);
+            var trainingHistory = await trainingHistoryRepository.GetByIdAsync(id);
             if (trainingHistory == null)
             {
-                return JsonNotFound($"Training ID {id} is not found.");
+                return (false, DoJsonNotFound(typeof(TrainingController), requestUrl, modelState,
+                    $"Training ID {id} is not found."));
             }
 
             //ステータスを確認
@@ -1024,42 +1065,44 @@ namespace Nssol.Platypus.Controllers.spa
             if (status.Exist())
             {
                 //学習がまだ進行中の場合、情報を更新する
-                status = await clusterManagementLogic.GetContainerStatusAsync(trainingHistory.Key, CurrentUserInfo.SelectedTenant.Name, false);
+                status = await clusterManagementLogic.GetContainerStatusAsync(trainingHistory.Key, currentUserInfo.SelectedTenant.Name, false);
             }
 
             //派生した学習履歴があったら消せない
             var child = (await trainingHistoryRepository.GetChildrenAsync(trainingHistory.Id)).FirstOrDefault();
             if (child != null)
             {
-                return JsonConflict($"There is another training which is derived from training {trainingHistory.Id}.");
+                return (false, DoJsonConflict(typeof(TrainingController), requestUrl, modelState,
+                    $"There is another training which is derived from training {trainingHistory.Id}."));
             }
 
             //学習結果を利用した推論ジョブがあったら消せない
             var inferenceHistory = (await inferenceHistoryRepository.GetMountedTrainingAsync(trainingHistory.Id)).FirstOrDefault();
             if (inferenceHistory != null)
             {
-                return JsonConflict($"Training {trainingHistory.Id} has been used by inference.");
+                return (false, DoJsonConflict(typeof(TrainingController), requestUrl, modelState, 
+                    $"Training {trainingHistory.Id} has been used by inference."));
             }
 
             if (status.Exist())
             {
                 //実行中であれば、コンテナを削除
                 await clusterManagementLogic.DeleteContainerAsync(
-                    ContainerType.Training, trainingHistory.Key, CurrentUserInfo.SelectedTenant.Name, false);
+                    ContainerType.Training, trainingHistory.Key, currentUserInfo.SelectedTenant.Name, false);
             }
-            
+
             //TensorBoardを起動中だった場合は、そっちも消す
             TensorBoardContainer container = tensorBoardContainerRepository.GetAvailableContainer(trainingHistory.Id);
             if (container != null)
             {
                 await clusterManagementLogic.DeleteContainerAsync(
-                    ContainerType.TensorBoard, container.Name, CurrentUserInfo.SelectedTenant.Name, false);
+                    ContainerType.TensorBoard, container.Name, currentUserInfo.SelectedTenant.Name, false);
                 tensorBoardContainerRepository.Delete(container, true);
             }
 
             //添付ファイルがあったらまとめて消す
             var files = await trainingHistoryRepository.GetAllAttachedFilesAsync(trainingHistory.Id);
-            foreach(var file in files)
+            foreach (var file in files)
             {
                 trainingHistoryRepository.DeleteAttachedFile(file);
                 await storageLogic.DeleteFileAsync(ResourceType.TrainingHistoryAttachedFiles, file.StoredPath);
@@ -1068,6 +1111,7 @@ namespace Nssol.Platypus.Controllers.spa
             // タグマップを削除
             tagLogic.DeleteTrainingHistoryTags(trainingHistory.Id);
 
+            await dataSetLogic.ReleaseLockAsync(trainingHistory.DataSetId);
             trainingHistoryRepository.Delete(trainingHistory);
             unitOfWork.Commit();
 
@@ -1081,7 +1125,7 @@ namespace Nssol.Platypus.Controllers.spa
             await storageLogic.DeleteResultsAsync(ResourceType.TrainingContainerAttachedFiles, trainingHistory.Id);
             await storageLogic.DeleteResultsAsync(ResourceType.TrainingContainerOutputFiles, trainingHistory.Id);
 
-            return JsonNoContent();
+            return (true, JsonNoContent());
         }
 
         /// <summary>

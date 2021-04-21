@@ -5,6 +5,7 @@ using Nssol.Platypus.ApiModels.TemplateApiModels;
 using Nssol.Platypus.Controllers.Util;
 using Nssol.Platypus.DataAccess.Core;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces;
+using Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories;
 using Nssol.Platypus.Filters;
 using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Logic.Interfaces;
@@ -23,6 +24,8 @@ namespace Nssol.Platypus.Controllers.spa
     [Route("api/v{api-version:apiVersion}")]
     public class TemplateController : PlatypusApiControllerBase
     {
+        private readonly IExperimentRepository experimentRepository;
+        private readonly IExperimentPreprocessRepository experimentPreprocessRepository;
         private readonly ITemplateRepository templateRepository;
         private readonly ITemplateVersionRepository templateVersionRepository;
         private readonly ITemplateLogic templateLogic;
@@ -33,6 +36,8 @@ namespace Nssol.Platypus.Controllers.spa
         /// コンストラクタ
         /// </summary>
         public TemplateController(
+            IExperimentRepository experimentRepository,
+            IExperimentPreprocessRepository experimentPreprocessRepository,
             ITemplateRepository templateRepository,
             ITemplateVersionRepository templateVersionRepository,
             ITemplateLogic templateLogic,
@@ -40,6 +45,8 @@ namespace Nssol.Platypus.Controllers.spa
             IUnitOfWork unitOfWork,
             IHttpContextAccessor accessor) : base(accessor)
         {
+            this.experimentRepository = experimentRepository;
+            this.experimentPreprocessRepository = experimentPreprocessRepository;
             this.templateRepository = templateRepository;
             this.templateVersionRepository = templateVersionRepository;
             this.templateLogic = templateLogic;
@@ -309,6 +316,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// テンプレートバージョンを作成する
         /// </summary>
+        /// <param name="id">テンプレートID</param>
         [HttpPost("admin/templates/{id}/versions")]
         [PermissionFilter(MenuCode.Template)]
         [ProducesResponseType(typeof(VersionIndexOutputModel), (int)HttpStatusCode.Created)]
@@ -354,7 +362,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// テンプレートバージョン一覧を取得する
         /// </summary>
-        /// <param name="id">取得するテンプレートのID</param>
+        /// <param name="id">テンプレートID</param>
         [HttpGet("admin/templates/{id}/versions")]
         [PermissionFilter(MenuCode.Template, MenuCode.Experiment)]
         [ProducesResponseType(typeof(IEnumerable<VersionIndexOutputModel>), (int)HttpStatusCode.OK)]
@@ -411,6 +419,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// テンプレートを編集する
         /// </summary>
+        /// <param name="id">テンプレートID</param>
         [HttpPut("admin/templates/{id}")]
         [PermissionFilter(MenuCode.Template)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.OK)]
@@ -440,6 +449,83 @@ namespace Nssol.Platypus.Controllers.spa
             unitOfWork.Commit();
 
             return JsonOK(new IndexOutputModel(template));
+        }
+
+        /// <summary>
+        /// テンプレートを削除する
+        /// </summary>
+        /// <param name="id">テンプレートID</param>
+        [HttpDelete("admin/templates/{id}")]
+        [Filters.PermissionFilter(MenuCode.Template)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        public async Task<IActionResult> Delete(long id)
+        {
+            var template = await templateRepository.GetByIdAsync(id);
+            if (template == null)
+            {
+                return JsonNotFound($"Template ID {id} is not found.");
+            }
+
+            if (await experimentRepository.ExistsAsync(x => x.TemplateId == id, true))
+            {
+                return JsonConflict($"Template {id} has been used by experiment.");
+            }
+            if (await experimentPreprocessRepository.ExistsAsync(x => x.TemplateId == id, true))
+            {
+                return JsonConflict($"Template {id} has been used by experiment preprocess.");
+            }
+
+            templateRepository.Delete(template);
+            unitOfWork.Commit();
+            return JsonNoContent();
+        }
+
+        /// <summary>
+        /// テンプレートバージョンを削除する
+        /// </summary>
+        /// <param name="id">テンプレートID</param>
+        /// <param name="versionId">テンプレートバージョンID</param>
+        [HttpDelete("admin/templates/{id}/versions/{versionId}")]
+        [Filters.PermissionFilter(MenuCode.Template)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        public async Task<IActionResult> DeleteTemplateVersion(long id, long versionId)
+        {
+            var template = await templateRepository.GetByIdAsync(id);
+            if (template == null)
+            {
+                return JsonNotFound($"Template ID {id} is not found.");
+            }
+            var templateVersion = await templateVersionRepository
+                .GetAll()
+                .SingleOrDefaultAsync(x => x.Id == versionId && x.TemplateId == id);
+            if (templateVersion == null)
+            {
+                return JsonNotFound($"TemplateVersion (Id {id} VersionId {versionId}) is not found.");
+            }
+
+            if (await experimentRepository.ExistsAsync(x => x.TemplateId == id && x.TemplateVersionId == versionId, true))
+            {
+                return JsonConflict($"TemplateVersion (Id {id} VersionId {versionId}) has been used by experiment.");
+            }
+            if (await experimentPreprocessRepository.ExistsAsync(x => x.TemplateId == id && x.TemplateVersionId == versionId, true))
+            {
+                return JsonConflict($"TemplateVersion (Id {id} VersionId {versionId}) has been used by experiment preprocess.");
+            }
+
+            // 最新バージョンを削除する場合
+            if (template.LatestVersion == templateVersion.Version)
+            {
+                var templateVersionsByTemplateId = templateVersionRepository
+                    .GetAll()
+                    .Where(x => x.TemplateId == id && x != templateVersion)
+                    .DefaultIfEmpty();
+                template.LatestVersion = templateVersionsByTemplateId?.Max(x => x.Version) ?? 0;
+                templateRepository.Update(template);
+            }
+
+            templateVersionRepository.Delete(templateVersion);
+            unitOfWork.Commit();
+            return JsonNoContent();
         }
     }
 }

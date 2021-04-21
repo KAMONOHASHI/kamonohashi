@@ -1,7 +1,6 @@
 import Index from '@/views/dataSet/Index'
 import Edit from '@/views/dataSet/Edit'
-import Detail from '@/views/dataSet/Detail/Index'
-
+import Detail from '@/views/dataSet/Detail'
 export default [
   {
     path: '/aquarium/dataset',

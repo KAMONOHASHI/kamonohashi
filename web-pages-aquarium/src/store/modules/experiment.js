@@ -128,7 +128,7 @@ const actions = {
   },
 
   // eslint-disable-next-line no-unused-vars
-  async delete({ commit }, id) {
+  async delete({ state }, id) {
     await api.experiment.deleteById({ id: id })
   },
 

@@ -145,32 +145,6 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
         }
 
         /// <summary>
-        /// 推論履歴を削除
-        /// </summary>
-        /// <param name="entity">推論履歴</param>
-        public override void Delete(InferenceHistory entity)
-        {
-            DeleteAsync(entity).Wait();
-        }
-
-        /// <summary>
-        /// 推論履歴を削除
-        /// </summary>
-        /// <param name="entity">推論履歴</param>
-        public async Task DeleteAsync(InferenceHistory entity)
-        {
-            base.Delete(entity);
-
-            //自分以外に同じデータセットを使っている履歴がなければ、データセットのロック状態を解除する
-            var other = await ExistsAsync(th => th.DataSetId == entity.DataSetId && th.Id != entity.Id);
-            if (other == false)
-            {
-                var dataSet = await GetModelByIdAsync<DataSet>(entity.DataSetId);
-                dataSet.IsLocked = false;
-            }
-        }
-
-        /// <summary>
         /// 指定したIDの学習履歴を利用した推論履歴を取得する
         /// </summary>
         /// <param name="id">マウントされた学習ID</param>

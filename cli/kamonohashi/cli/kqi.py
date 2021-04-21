@@ -15,7 +15,6 @@ from kamonohashi.op.rest.rest import ApiException
 from kamonohashi.cli import account
 from kamonohashi.cli import data
 from kamonohashi.cli import data_set
-from kamonohashi.cli import experiment
 from kamonohashi.cli import inference
 from kamonohashi.cli import notebook
 from kamonohashi.cli import preprocessing
@@ -55,7 +54,6 @@ def kqi():
 kqi.add_command(account.account)
 kqi.add_command(data_set.data_set, 'dataset')
 kqi.add_command(data.data)
-kqi.add_command(experiment.experiment)
 kqi.add_command(inference.inference)
 kqi.add_command(notebook.notebook)
 kqi.add_command(preprocessing.preprocessing)

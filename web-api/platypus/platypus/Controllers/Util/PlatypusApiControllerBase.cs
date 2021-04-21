@@ -220,6 +220,13 @@ namespace Nssol.Platypus.Controllers.Util
             return JsonError(HttpStatusCode.Conflict, message);
         }
 
+        protected static JsonResult DoJsonConflict(System.Type type, string requestUrl, ModelStateDictionary modelState, 
+            string message = null)
+        {
+            return DoJsonError(HttpStatusCode.Conflict, message,
+                type, requestUrl, modelState);
+        }
+
         /// <summary>
         /// 既定されたJSON形式のエラーメッセージを返す
         /// </summary>
