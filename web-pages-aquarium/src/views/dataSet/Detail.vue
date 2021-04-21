@@ -25,8 +25,34 @@
         </el-select>
       </el-col>
       <el-col :span="14" style="padding:15px">
-        <el-button @click="uploadData()">アップロード</el-button>
-        <el-button @click="deleteVersion()">削除</el-button>
+        <el-button type="primary" plain @click="uploadData()"
+          >アップロード</el-button
+        >
+
+        <el-button plain @click="deleteVersionDialog = true"
+          >データセットバージョン削除</el-button
+        >
+        <el-button plain @click="deleteDataSetDialog = true"
+          >データセット削除</el-button
+        >
+        <el-dialog title="" :visible.sync="deleteVersionDialog" width="30%">
+          <span>バージョン"{{ viewVersion.version }}"を削除しますか？</span>
+          <span slot="footer" class="dialog-footer">
+            <el-button @click="deleteVersionDialog = false">Cancel</el-button>
+            <el-button type="primary" @click="deleteVersion()">
+              削除する
+            </el-button>
+          </span>
+        </el-dialog>
+        <el-dialog title="" :visible.sync="deleteDataSetDialog" width="30%">
+          <span>データセットを削除しますか？</span>
+          <span slot="footer" class="dialog-footer">
+            <el-button @click="deleteDataSetDialog = false">Cancel</el-button>
+            <el-button type="primary" @click="deleteDataSet()">
+              削除する
+            </el-button>
+          </span>
+        </el-dialog>
       </el-col>
     </el-row>
     <el-row style="margin:15px">
@@ -274,21 +300,18 @@ export default {
       type: String,
       default: null,
     },
-
-    latestVersionId: {
-      type: Number,
-      default: null,
-    },
   },
 
   data() {
     return {
       deleteDialog: false,
       uploadDialog: false,
+      deleteVersionDialog: false,
+
+      deleteDataSetDialog: false,
       selectDeleteData: { name: null },
       selectImageList: [],
       versionValue: null,
-
       type: 'Data',
       loading: false,
       drawer: false,
@@ -327,12 +350,6 @@ export default {
     }),
   },
 
-  watch: {
-    async latestVersionId() {
-      this.versionValue = this.latestVersionId
-    },
-  },
-
   async created() {
     await this.retrieveData()
   },
@@ -345,7 +362,8 @@ export default {
       'aquariumDataSet/fetchDataSets',
       'aquariumDataSet/fetchTest',
       'aquariumDataSet/fetchDetailVersion',
-
+      'aquariumDataSet/deleteVersion',
+      'aquariumDataSet/delete',
       'data/post',
       'data/put',
       'data/fetchData',
@@ -356,6 +374,24 @@ export default {
       'dataSet/fetchDetail',
       'dataSet/post',
     ]),
+    async deleteVersion() {
+      let param = { id: this.id, versionId: this.versionValue }
+      this['aquariumDataSet/deleteVersion'](param)
+      this.deleteVersionDialog = false
+      this.retrieveData()
+
+      //再描画
+      this.$forceUpdate()
+      await this.$notify.success({
+        type: 'Success',
+        message: `バージョンを削除しました。`,
+      })
+    },
+    async deleteDataSet() {
+      this['aquariumDataSet/delete'](this.id)
+      this.deleteDataSetDialog = false
+      this.$router.push('/aquarium/dataset')
+    },
     uploadData() {
       this.uploadDialog = true
     },

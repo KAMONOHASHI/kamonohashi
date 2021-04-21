@@ -82,6 +82,8 @@ let api = {
       get: gen.ApiV2AdminTemplatesGet,
       post: gen.ApiV2AdminTemplatesPost,
       put: gen.ApiV2AdminTemplatesByIdPut,
+      delete: gen.ApiV2AdminTemplatesByIdDelete,
+      deleteVersion: gen.ApiV2AdminTemplatesByIdVersionsByVersionIdDelete,
       getByIdVersions: gen.ApiV2AdminTemplatesByIdVersionsGet,
       postByIdVersions: gen.ApiV2AdminTemplatesByIdVersionsPost,
       getByIdVersionsByVersionId:
@@ -158,6 +160,7 @@ let api = {
     getByIdVersionsByVersionId:
       gen.ApiV2AquariumDatasetsByIdVersionsByVersionIdGet,
     delete: gen.ApiV2AquariumDatasetsByIdDelete,
+    deleteVersion: gen.ApiV2AquariumDatasetsByIdVersionsByVersionIdDelete,
   },
 
   datasets: {
@@ -290,6 +293,7 @@ let api = {
     getById: gen.ApiV2ExperimentByIdGet,
     postPreprocessingCompleteById:
       gen.ApiV2ExperimentByIdPreprocessingCompletePost,
+    deleteById: gen.ApiV2ExperimentByIdDelete,
   },
 
   storage: {

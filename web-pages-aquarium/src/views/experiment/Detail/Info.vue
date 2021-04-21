@@ -1,9 +1,24 @@
 <template>
   <div>
     <h2>実験情報</h2>
-    <div style="width:600px;padding-top:20px;padding-bottom:40px">
-      学習の情報を確認できます。
-    </div>
+    <el-row style="padding-top:20px;padding-bottom:40px">
+      <el-col :span="8">学習の情報を確認できます。</el-col
+      ><el-col :span="6"
+        ><el-button plain @click="deleteExperimentDialog = true"
+          >実験削除</el-button
+        ></el-col
+      >
+      <el-dialog title="" :visible.sync="deleteExperimentDialog" width="30%">
+        <span>この実験を削除しますか？</span>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="deleteExperimentDialog = false">Cancel</el-button>
+          <el-button type="primary" @click="deleteExperiment()">
+            削除する
+          </el-button>
+        </span>
+      </el-dialog>
+    </el-row>
+
     <el-card
       v-if="value != null"
       style="margin: 10px;border: solid 1px #ebeef5;  width: 550px; height: 300px;"
@@ -154,7 +169,11 @@ export default {
       }),
     },
   },
-
+  data() {
+    return {
+      deleteExperimentDialog: false,
+    }
+  },
   computed: {
     ...mapGetters(['detail']),
   },
@@ -168,6 +187,9 @@ export default {
       'delete',
       'deleteFile',
     ]),
+    deleteExperiment() {
+      this.delete(this.detail.id)
+    },
     tagType(val) {
       let tag = null
       if (val == 'Running' || val == 'Opened') {

@@ -38,9 +38,24 @@
     <el-button type="primary" plain @click="submit()">
       更新
     </el-button>
-    <el-button type="primary" plain @click="deleteDialog = true">
-      テンプレートの削除
+    <el-button plain @click="deleteVersionDialog = true">
+      テンプレートバージョン削除
     </el-button>
+    <el-button plain @click="deleteDialog = true">
+      テンプレート削除
+    </el-button>
+    <el-dialog title="" :visible.sync="deleteVersionDialog" width="30%">
+      <span>
+        テンプレートバージョン"{{ versionDetail.version }}"を削除しますか？
+      </span>
+
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="deleteVersionDialog = false">Cancel</el-button>
+        <el-button type="primary" @click="deleteTemplateVersion()">
+          削除
+        </el-button>
+      </span>
+    </el-dialog>
     <el-dialog title="" :visible.sync="deleteDialog" width="30%">
       <span>
         テンプレートを削除すると全てのテンプレートバージョンが失われます。<br />
@@ -81,6 +96,7 @@ export default {
   data() {
     return {
       deleteDialog: false,
+      deleteVersionDialog: false,
       iconname: 'pl-plus',
       pageStatus: {
         currentPage: 1,
@@ -124,11 +140,28 @@ export default {
       'postByIdVersions',
       'post',
       'put',
+      'delete',
+      'deleteVersion',
     ]),
-    deleteTemplate() {
+    async deleteTemplate() {
+      //モデルテンプレート削除
       this.deleteDialog = false
+      await this.delete(this.id)
+      this.$router.push('/aquarium/model-template')
+    },
+    async deleteTemplateVersion() {
+      //モデルテンプレートバージョン削除
 
-      console.log('削除APIを実装する')
+      await this.deleteVersion({ id: this.id, versionId: this.versionValue })
+      this.deleteVersionDialog = false
+      this.versionValue = null
+      this.retrieveData()
+      //再描画
+      this.$forceUpdate()
+      await this.$notify.success({
+        type: 'Success',
+        message: `バージョンを削除しました。`,
+      })
     },
     async retrieveData() {
       await this.fetchModelTemplate(this.id)

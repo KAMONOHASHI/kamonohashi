@@ -77,6 +77,15 @@ const actions = {
   async postByIdVersions({ commit }, params) {
     return await api.templates.admin.postByIdVersions(params)
   },
+
+  // eslint-disable-next-line no-unused-vars
+  async delete({ state }, id) {
+    await api.templates.admin.delete({ id: id })
+  },
+  // eslint-disable-next-line no-unused-vars
+  async deleteVersion({ state }, { id: id, versionId: versionId }) {
+    await api.templates.admin.deleteVersion({ id: id, versionId: versionId })
+  },
 }
 
 // mutations

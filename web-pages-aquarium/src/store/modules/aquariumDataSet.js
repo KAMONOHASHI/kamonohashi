@@ -81,8 +81,16 @@ const actions = {
   },
 
   // eslint-disable-next-line no-unused-vars
-  async delete({ commit }, id) {
+  async delete({ state }, id) {
     await api.aquariumDatasets.delete({ id: id })
+  },
+
+  // eslint-disable-next-line no-unused-vars
+  async deleteVersion({ state }, params) {
+    await api.aquariumDatasets.deleteVersion({
+      id: params.id,
+      versionId: params.versionId,
+    })
   },
 }
 
