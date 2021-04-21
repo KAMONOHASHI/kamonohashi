@@ -56,6 +56,11 @@
         <el-form-item label="API URL" prop="apiUrl">
           <el-input v-model="form.apiUrl" :disabled="isNotEditable" />
         </el-form-item>
+        <div v-if="form.serviceType === 1">
+          <el-form-item label="Registry URL" prop="registryUrl">
+            <el-input v-model="form.registryUrl" :disabled="isNotEditable" />
+          </el-form-item>
+        </div>
         <div v-if="form.serviceType === 2">
           <el-form-item label="プロジェクト名" prop="projectName">
             <el-input v-model="form.projectName" :disabled="isNotEditable" />
@@ -166,9 +171,12 @@ export default {
               serviceType: this.form.serviceType,
               projectName: this.form.projectName,
               apiUrl: this.form.apiUrl,
-              registryUrl: this.form.apiUrl.endsWith('/')
-                ? this.form.apiUrl.slice(0, -1) + ':' + this.form.portNo
-                : this.form.apiUrl + ':' + this.form.portNo,
+              registryUrl:
+                this.form.serviceType === 1
+                  ? this.form.registryUrl
+                  : this.form.apiUrl.endsWith('/')
+                  ? this.form.apiUrl.slice(0, -1) + ':' + this.form.portNo
+                  : this.form.apiUrl + ':' + this.form.portNo,
             }
             if (this.id === null) {
               await this.post(params)
