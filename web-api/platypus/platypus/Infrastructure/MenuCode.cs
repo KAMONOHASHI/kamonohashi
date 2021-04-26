@@ -116,14 +116,19 @@ namespace Nssol.Platypus.Infrastructure
         /// リソース管理
         /// </summary>
         Resource,
+
         /// <summary>
         /// モデルテンプレート
         /// </summary>
         Template,
         /// <summary>
-        /// 実験管理
+        /// 実験実行
         /// </summary>
         Experiment,
+        /// <summary>
+        /// 実験履歴
+        /// </summary>
+        ExperimentHistory,
         /// <summary>
         /// アクアリウムデータセット
         /// </summary>
