@@ -256,6 +256,10 @@ export default {
 
       //バージョン情報が変更されていれば更新するフラグ
       let update = false
+
+      // gitModelのbranchに値が入っていて、commit Idには値が入っていない場合
+      // Headの値を子コンポーネントで投入する。
+
       if (this.versionDetail.preprocessContainerImage == null) {
         if (
           this.preprocForm.containerImage != null &&

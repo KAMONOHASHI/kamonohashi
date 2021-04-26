@@ -516,6 +516,53 @@ export default {
       await form.validate(async valid => {
         if (valid) {
           try {
+            // 必須項目の入力チェック
+            if (
+              // テンプレート名
+              this.form.name === null ||
+              // 公開設定
+              this.form.accessLevel === null ||
+              // 学習コンテナイメージ設定
+              this.form.trainingContainerImage === null ||
+              this.form.trainingContainerImage.registry === null ||
+              this.form.trainingContainerImage.image === null ||
+              this.form.trainingContainerImage.tag === null ||
+              // 学習Git設定
+              this.form.trainingGitModel === null ||
+              this.form.trainingGitModel.git === null ||
+              this.form.trainingGitModel.repository === null ||
+              this.form.trainingGitModel.branch === null ||
+              // 実行コマンド
+              this.form.training.entryPoint === null ||
+              this.form.training.entryPoint === ''
+            ) {
+              throw '必須項目が入力されていません : テンプレート名、公開設定、学習の設定は必須項目です。'
+            }
+
+            // 前処理の項目について入力チェック
+            // dockerイメージ、リポジトリ、入力コマンドのいずれかが入力済みなら他の項目も入力必須
+            if (
+              (this.form.preprocessImages.image !== null ||
+                this.form.preprocessGitModel.repository !== null ||
+                this.form.preprocess.entryPoint !== null ||
+                this.form.preprocess.entryPoint !== '') &&
+              // コンテナイメージ設定
+              (this.form.preprocessImages === null ||
+                this.form.preprocessImages.registry === null ||
+                this.form.preprocessImages.image === null ||
+                this.form.preprocessImages.tag === null ||
+                // Git設定
+                this.form.preprocessGitModel === null ||
+                this.form.preprocessGitModel.git === null ||
+                this.form.preprocessGitModel.repository === null ||
+                this.form.preprocessGitModel.branch === null ||
+                // 実行コマンド
+                this.form.preprocessGitModel.entryPoint === null ||
+                this.form.preprocess.entryPoint === '')
+            ) {
+              throw '前処理コンテナの設定を確認してください : dockerイメージ、リポジトリ、入力コマンドのいずれかが入力済みなら他の項目も入力必須です。'
+            }
+
             // コンテナイメージの指定
             // イメージとタグが指定されている場合、コンテナイメージを指定して登録
             // イメージとタグが指定されていない場合、コンテナイメージは未指定(null)として登録
@@ -663,8 +710,6 @@ export default {
             this.dialogVisible = false
           } catch (e) {
             this.error = e
-            //dialogを閉じる
-            this.dialogVisible = false
           }
         }
       })
