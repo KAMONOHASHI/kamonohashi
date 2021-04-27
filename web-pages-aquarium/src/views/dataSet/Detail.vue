@@ -25,10 +25,9 @@
         </el-select>
       </el-col>
       <el-col :span="14" style="padding:15px">
-        <el-button type="primary" plain @click="uploadData()"
+        <el-button type="primary" plain @click="uploadDialog = true"
           >アップロード</el-button
         >
-
         <el-button plain @click="deleteVersionDialog = true"
           >データセットバージョン削除</el-button
         >
@@ -376,8 +375,11 @@ export default {
     ]),
     async deleteVersion() {
       let param = { id: this.id, versionId: this.versionValue }
-      this['aquariumDataSet/deleteVersion'](param)
+      await this['aquariumDataSet/deleteVersion'](param)
+
       this.deleteVersionDialog = false
+      //storeのversionをクリア
+      await this['aquariumDataSet/fetchVersions'](null)
       this.retrieveData()
 
       //再描画
@@ -392,9 +394,7 @@ export default {
       this.deleteDataSetDialog = false
       this.$router.push('/aquarium/dataset')
     },
-    uploadData() {
-      this.uploadDialog = true
-    },
+
     openDeleteDialog(item) {
       this.selectDeleteData = item
       this.deleteDialog = true
@@ -583,6 +583,11 @@ export default {
         if (this.$refs.uploadForm != null) {
           this.$refs.uploadForm.showProgress = false
         }
+        if (this.importfile == 1) {
+          // 選択したファイルを削除する
+          this.$refs.uploadForm.selectedFiles = undefined
+          this.$refs.uploadForm.filesArray = []
+        }
       }
       // エラーがない場合、詳細イメージタブ画面に遷移
 
@@ -609,6 +614,7 @@ export default {
     async uploadFile(name) {
       //データファイルのアップロード
       let dataFileInfos = await this.$refs.uploadForm.uploadFile()
+
       let dataId = null
       let date = new Date().toLocaleString()
       dataId = await this.updateData(`${name} ${date}`)
@@ -633,7 +639,6 @@ export default {
           this.error = new Error('ファイルを選択してください')
           return
         }
-
         //ローカルからのデータリストを登録する
         let dataId = await this.uploadFile(this.name)
         //新しく追加したデータをデータリストに追加
