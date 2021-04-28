@@ -263,7 +263,7 @@ export const ApiV2AccountTenantsByTenantIdTokenPostURL = function(parameters = {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
- * アクセス可能なメニュー一覧をツリー形式で取得する。
+ * アクセス可能なKQIのメニュー一覧をツリー形式で取得する。
  * request: ApiV2AccountMenusTreeGet
  * url: ApiV2AccountMenusTreeGetURL
  * method: ApiV2AccountMenusTreeGet_TYPE
@@ -309,7 +309,7 @@ export const ApiV2AccountMenusTreeGetURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
- * アクセス可能なメニュー一覧をリスト形式で取得する。
+ * アクセス可能なKQIのメニュー一覧をリスト形式で取得する。
  * request: ApiV2AccountMenusListGet
  * url: ApiV2AccountMenusListGetURL
  * method: ApiV2AccountMenusListGet_TYPE
@@ -343,6 +343,98 @@ export const ApiV2AccountMenusListGetURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/account/menus/list'
+  if (parameters['lang'] !== undefined) {
+    queryParameters['lang'] = parameters['lang']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * アクセス可能なAquariumのメニュー一覧をツリー形式で取得する。
+ * request: ApiV2AccountAquariumMenusTreeGet
+ * url: ApiV2AccountAquariumMenusTreeGetURL
+ * method: ApiV2AccountAquariumMenusTreeGet_TYPE
+ * raw_url: ApiV2AccountAquariumMenusTreeGet_RAW_URL
+ * @param lang - 
+ */
+export const ApiV2AccountAquariumMenusTreeGet = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/account/aquarium/menus/tree'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['lang'] !== undefined) {
+    queryParameters['lang'] = parameters['lang']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2AccountAquariumMenusTreeGet_RAW_URL = function() {
+  return '/api/v2/account/aquarium/menus/tree'
+}
+export const ApiV2AccountAquariumMenusTreeGet_TYPE = function() {
+  return 'get'
+}
+export const ApiV2AccountAquariumMenusTreeGetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/account/aquarium/menus/tree'
+  if (parameters['lang'] !== undefined) {
+    queryParameters['lang'] = parameters['lang']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * アクセス可能なAquariumのメニュー一覧をリスト形式で取得する。
+ * request: ApiV2AccountAquariumMenusListGet
+ * url: ApiV2AccountAquariumMenusListGetURL
+ * method: ApiV2AccountAquariumMenusListGet_TYPE
+ * raw_url: ApiV2AccountAquariumMenusListGet_RAW_URL
+ * @param lang - 
+ */
+export const ApiV2AccountAquariumMenusListGet = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/account/aquarium/menus/list'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['lang'] !== undefined) {
+    queryParameters['lang'] = parameters['lang']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2AccountAquariumMenusListGet_RAW_URL = function() {
+  return '/api/v2/account/aquarium/menus/list'
+}
+export const ApiV2AccountAquariumMenusListGet_TYPE = function() {
+  return 'get'
+}
+export const ApiV2AccountAquariumMenusListGetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/account/aquarium/menus/list'
   if (parameters['lang'] !== undefined) {
     queryParameters['lang'] = parameters['lang']
   }

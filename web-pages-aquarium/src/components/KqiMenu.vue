@@ -6,31 +6,12 @@
       :unique-opened="true"
       :default-active="activeIndex"
     >
-      <el-menu-item index="/" @click="handleClick('/')">
-        <icon class="icon" name="aq-dashboard" scale="1" />
-        <span>ダッシュボード</span>
-      </el-menu-item>
-      <el-menu-item
-        index="/aquarium/dataset"
-        @click="handleClick('/aquarium/dataset')"
-      >
-        <icon class="icon" name="aq-dataset" scale="1" />
-        <span>データセット</span>
-      </el-menu-item>
-      <el-menu-item
-        index="/aquarium/experiment"
-        @click="handleClick('/aquarium/experiment')"
-      >
-        <icon class="icon" name="aq-experiment" scale="1" />
-        <span>実験管理</span>
-      </el-menu-item>
-      <el-menu-item
-        index="/aquarium/model-template"
-        @click="handleClick('/aquarium/model-template')"
-      >
-        <icon class="icon" name="aq-template" scale="1" />
-        <span>テンプレート管理</span>
-      </el-menu-item>
+      <div>
+        <el-menu-item index="/" @click="handleClick('/')">
+          <icon class="icon" name="aq-dashboard" scale="1" />
+          <span>ダッシュボード</span>
+        </el-menu-item>
+      </div>
       <div v-for="(menu, index) in trees" :key="index">
         <el-submenu v-if="menu.children" :index="String(index)">
           <template slot="title">
@@ -38,7 +19,7 @@
               v-if="menu.category"
               class="icon"
               :name="menu.category"
-              scale="1"
+              scale="1.5"
             />
             <span slot="title">{{ menu.label }}</span>
           </template>
@@ -52,11 +33,20 @@
               v-if="item.category"
               class="icon"
               :name="item.category"
-              scale="1"
+              scale="1.5"
             />
             <span slot="title">{{ item.label }}</span>
           </el-menu-item>
         </el-submenu>
+        <el-menu-item v-else :index="menu.url" @click="handleClick(menu.url)">
+          <icon
+            v-if="menu.category"
+            class="icon"
+            :name="menu.category"
+            scale="1.5"
+          />
+          <span slot="title">{{ menu.label }}</span>
+        </el-menu-item>
       </div>
     </el-menu>
 

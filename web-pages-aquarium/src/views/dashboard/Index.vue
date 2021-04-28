@@ -1,118 +1,39 @@
 <template>
   <div>
     <h2>アクアリウムダッシュボード</h2>
-    <div>データの準備を行う</div>
-    <div class="aqarium-dashboard">
-      <div
-        v-for="(menu, index) in dataset"
-        :key="'m' + index"
-        class="card-container"
-      >
-        <router-link :to="menu.url">
-          <el-card
-            class="menu"
-            style="border: solid 1px #ebeef5; width: 400px; height: 200px;"
+    <div v-for="(subMenuList, subIndex) in allMenues" :key="'sub' + subIndex">
+      <div v-if="subMenuList.menus.length > 0">
+        <div>
+          {{ subMenuList.description }}
+        </div>
+        <div class="aqarium-dashboard">
+          <div
+            v-for="(menu, index) in subMenuList.menus"
+            :key="'m' + index"
+            class="card-container"
           >
-            <div class="menu-name">
-              {{ menu.name }}
-            </div>
-            <div
-              class="menu-description"
-              style="padding: 10px; font-size: 14px;"
-            >
-              {{ menu.description }}
-            </div>
-            <div class="menu-start" style="padding: 20px; font-size: 14px;">
-              <icon :name="iconname" scale="1.5" class="menu-icon" />
-              開始
-            </div>
-          </el-card>
-        </router-link>
-      </div>
-    </div>
-    <div>実験を行う</div>
-    <div class="aqarium-dashboard">
-      <div
-        v-for="(menu, index) in training"
-        :key="'i' + index"
-        class="card-container"
-      >
-        <router-link :to="menu.url">
-          <el-card
-            class="menu"
-            style="border: solid 1px #ebeef5; width: 400px; height: 200px;"
-          >
-            <div class="menu-name">
-              {{ menu.name }}
-            </div>
-            <div
-              class="menu-description"
-              style="padding: 10px; font-size: 14px;"
-            >
-              {{ menu.description }}
-            </div>
-            <div class="menu-start" style="padding: 20px; font-size: 14px;">
-              <icon :name="iconname" scale="1.5" class="menu-icon" />
-              開始
-            </div>
-          </el-card>
-        </router-link>
-      </div>
-      <div
-        v-for="(menu, index) in experiment"
-        :key="'e' + index"
-        class="card-container"
-      >
-        <router-link :to="menu.url">
-          <el-card
-            class="menu"
-            style="border: solid 1px #ebeef5; width: 400px; height: 200px;"
-          >
-            <div class="menu-name">
-              {{ menu.name }}
-            </div>
-            <div
-              class="menu-description"
-              style="padding: 10px; font-size: 14px;"
-            >
-              {{ menu.description }}
-            </div>
-            <div class="menu-start" style="padding: 20px; font-size: 14px;">
-              <icon :name="iconname" scale="1.5" class="menu-icon" />
-              開始
-            </div>
-          </el-card>
-        </router-link>
-      </div>
-    </div>
-
-    <div>テンプレートを管理する</div>
-    <div class="aqarium-dashboard">
-      <div
-        v-for="(menu, index) in template"
-        :key="'t' + index"
-        class="card-container"
-      >
-        <router-link :to="menu.url">
-          <el-card
-            class="menu"
-            style="border: solid 1px #ebeef5; width: 400px; height: 200px; "
-          >
-            <div class="menu-name">
-              {{ menu.name }}
-            </div>
-            <div
-              class="menu-description"
-              style="padding: 10px; font-size: 14px;"
-            >
-              {{ menu.description }}
-            </div>
-            <div class="menu-start" style="padding: 20px; font-size: 14px;">
-              <icon :name="iconname" scale="1.5" class="menu-icon" />
-              開始
-            </div>
-          </el-card>
-        </router-link>
+            <router-link :to="menu.url">
+              <el-card
+                class="menu"
+                style="border: solid 1px #ebeef5; width: 400px; height: 200px;"
+              >
+                <div class="menu-name">
+                  {{ menu.name }}
+                </div>
+                <div
+                  class="menu-description"
+                  style="padding: 10px; font-size: 14px;"
+                >
+                  {{ menu.description }}
+                </div>
+                <div class="menu-start" style="padding: 20px; font-size: 14px;">
+                  <icon :name="iconname" scale="1.5" class="menu-icon" />
+                  開始
+                </div>
+              </el-card>
+            </router-link>
+          </div>
+        </div>
       </div>
     </div>
     <div class="footer">
@@ -132,39 +53,12 @@ export default {
   data() {
     return {
       iconname: 'pl-arrow-right',
-      dataset: [
-        {
-          category: '',
-          name: 'データセット',
-          url: '/aquarium/dataset',
-          description: 'データアップロード、データセット作成を行います。',
-        },
-      ],
-      training: [
-        {
-          category: '',
-          name: '学習',
-          url: 'aquarium/experiment/create',
-          description: 'テンプレートを選択し目的に応じたAIを作成します。',
-        },
-      ],
-      experiment: [
-        {
-          category: '',
-          name: '実験履歴',
-          url: '/aquarium/experiment',
-          description: '作成したAIの精度を確認し評価します。',
-        },
-      ],
-      template: [
-        {
-          category: '',
-          name: 'テンプレート管理',
-          url: '/aquarium/model-template',
-          description: 'テンプレートの閲覧、編集、新規登録をします。',
-        },
-      ],
       unwatchLogin: undefined,
+      allMenues: [
+        { description: 'データの準備を行う', menus: [] },
+        { description: '実験を行う', menus: [] },
+        { description: 'テンプレートを管理する', menus: [] },
+      ],
     }
   },
   computed: {
@@ -176,6 +70,7 @@ export default {
       this.watchLogin,
     )
     await this.fetchMenuList()
+    await this.setSubMenues()
   },
 
   async beforeDestroy() {
@@ -188,6 +83,19 @@ export default {
       if (tenant) {
         await this.fetchMenuList()
       }
+    },
+    async setSubMenues() {
+      this.allMenues[0].menus = this.menuList.filter(menu => {
+        return menu.category === 'aq-dataset'
+      })
+
+      this.allMenues[1].menus = this.menuList.filter(menu => {
+        return menu.category === 'aq-experiment'
+      })
+
+      this.allMenues[2].menus = this.menuList.filter(menu => {
+        return menu.category === 'aq-template'
+      })
     },
   },
 }

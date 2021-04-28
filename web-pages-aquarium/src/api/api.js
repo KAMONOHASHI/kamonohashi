@@ -57,7 +57,7 @@ let api = {
   },
 
   menuList: {
-    getMenuList: gen.ApiV2AccountMenusListGet,
+    getMenuList: gen.ApiV2AccountAquariumMenusListGet,
   },
 
   quotas: {
@@ -113,8 +113,8 @@ let api = {
     putPassword: gen.ApiV2AccountPasswordPut,
     postLogin: gen.ApiV2AccountLoginPost,
     postTokenTenants: gen.ApiV2AccountTenantsByTenantIdTokenPost,
-    getTreeMenus: gen.ApiV2AccountMenusTreeGet,
-    getListMenus: gen.ApiV2AccountMenusListGet,
+    getTreeMenus: gen.ApiV2AccountAquariumMenusTreeGet,
+    getListMenus: gen.ApiV2AccountAquariumMenusListGet,
     getRegistries: gen.ApiV2AccountRegistriesGet,
     putRegistries: gen.ApiV2AccountRegistriesPut,
     getGits: gen.ApiV2AccountGitsGet,
