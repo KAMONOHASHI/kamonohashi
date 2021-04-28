@@ -513,7 +513,7 @@ namespace Nssol.Platypus.Controllers.spa
                 //コンテナイメージの設定がない場合デフォルトのイメージを設定
                 notebookHistory.ContainerRegistryId = null;
                 notebookHistory.ContainerImage = "tensorflow/tensorflow";
-                notebookHistory.ContainerTag = "1.13.1-gpu-py3";
+                notebookHistory.ContainerTag = "1.15.2-gpu";
             }
 
             //gitが指定されているかチェック
@@ -779,7 +779,7 @@ namespace Nssol.Platypus.Controllers.spa
                 // コンテナイメージの設定がない場合デフォルトのイメージを設定
                 notebookHistory.ContainerRegistryId = null;
                 notebookHistory.ContainerImage = "tensorflow/tensorflow";
-                notebookHistory.ContainerTag = "1.13.1-gpu-py3";
+                notebookHistory.ContainerTag = "1.15.2-gpu";
             }
             // gitが指定されているかチェック
             if (model.GitModel != null)
