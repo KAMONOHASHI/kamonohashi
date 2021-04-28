@@ -59,11 +59,9 @@
           </el-form-item>
         </el-col>
 
-        <el-form-item>
-          <el-col :span="6">
-            <kqi-resource-selector v-model="form.resource" :quota="quota" />
-          </el-col>
-        </el-form-item>
+        <el-col :span="6">
+          <kqi-resource-selector v-model="form.resource" :quota="quota" />
+        </el-col>
       </el-row>
     </el-form>
   </div>
