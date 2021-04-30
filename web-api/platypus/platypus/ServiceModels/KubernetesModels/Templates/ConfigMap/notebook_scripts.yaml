@@ -65,6 +65,19 @@ data:
         if [ $? -ne 0 ]; then
             echo "You need to change the name of '/kqi/output/inference' or delete it. After that, please run again."
         fi
+    fi 
+    if which python3 > /dev/null 2>&1; then
+        PYTHON_MINOR_VER=$(python3 -c "import sys; print(sys.version_info[1])")
+    else
+        PYTHON_MINOR_VER=$(python -c "import sys; print(sys.version_info[1])")
+    fi
+    # workaround for jupyter bug(https://github.com/KAMONOHASHI/kamonohashi/issues/468)
+    if [ $PYTHON_MINOR_VER -le 5 ]; then
+       if which pip3 > /dev/null 2>&1; then
+          pip3 install jupyter-client==6.1.12
+       else
+          pip install jupyter-client==6.1.12
+       fi  
     fi
     cd /kqi/git
     @Raw(Model.EntryPoint)
