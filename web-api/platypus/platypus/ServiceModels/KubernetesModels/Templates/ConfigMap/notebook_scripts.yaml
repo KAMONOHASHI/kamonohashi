@@ -37,10 +37,16 @@ data:
         done </kqi/tmp/datapairs.txt
     fi
   main: |
-    if which pip3 > /dev/null 2>&1; then
-        pip3 install jupyterlab==1.0.4
+    jupyter lab --version > /dev/null 2>&1
+    if [ $? -ne 0 ]; then
+        echo "install jupyterlab ${JUPYTERLAB_VERSION}"
+        if which pip3 > /dev/null 2>&1; then
+            pip3 install jupyterlab==${JUPYTERLAB_VERSION}
+        else
+            pip install jupyterlab==${JUPYTERLAB_VERSION}
+        fi
     else
-        pip install jupyterlab==1.0.4
+        echo "skip jupyterlab installation.(Jupyterlab $(jupyter lab --version) is already installed.)"
     fi
     if [ ! -L /kqi/output/input ]; then
         ln -s /kqi/input/ /kqi/output/input

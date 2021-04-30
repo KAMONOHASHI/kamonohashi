@@ -16,6 +16,15 @@
               <el-form-item label="ノートブック名" prop="name">
                 <el-input v-model="form.name" />
               </el-form-item>
+              <el-form-item label="インストールするJupyterLabのバージョン">
+                <el-input
+                  v-model="form.jupyterLabVersion"
+                  placeholder="デフォルト: xxx (インストール済みのコンテナイメージでは選択してもスキップされます)"
+                  clearable
+                >
+                </el-input>
+              </el-form-item>
+
               <kqi-training-history-selector
                 v-model="form.selectedParent"
                 :histories="trainingHistories"
@@ -114,6 +123,14 @@
         <div class="element">
           <el-form v-if="active === 0">
             <el-col :span="12">
+              <el-form-item label="インストールするJupyterLabのバージョン">
+                <el-input
+                  v-model="form.jupyterLabVersion"
+                  placeholder="デフォルト: xxx (インストール済みのコンテナイメージでは選択してもスキップされます)"
+                  clearable
+                >
+                </el-input>
+              </el-form-item>
               <kqi-training-history-selector
                 v-model="form.selectedParent"
                 :histories="trainingHistories"
@@ -275,6 +292,15 @@
               />
             </el-col>
             <el-col :span="18" :offset="3">
+              <el-form-item label="インストールするJupyterLabのバージョン">
+                <el-input
+                  v-model="form.jupyterLabVersion"
+                  placeholder="デフォルト: xxx (JupyterLabがインストール済みのコンテナイメージでは選択してもスキップされます)"
+                  clearable
+                >
+                </el-input>
+              </el-form-item>
+
               <kqi-training-history-selector
                 v-model="form.selectedParent"
                 :histories="trainingHistories"
@@ -416,6 +442,7 @@ export default {
           branch: null,
           commit: null,
         },
+        jupyterLabVersion: null,
         resource: {
           cpu: 1,
           memory: 1,
@@ -518,6 +545,7 @@ export default {
         this.form.partition = this.detail.partition
       }
 
+      this.form.jupyterLabVersion = this.detail.jupyterLabVersion
       this.form.resource.cpu = this.detail.cpu
       this.form.resource.memory = this.detail.memory
       this.form.resource.gpu = this.detail.gpu
@@ -648,6 +676,7 @@ export default {
             expiresIn: this.form.expiresIn * 60 * 60,
             localDataSet: this.form.localDataSet,
             entryPoint: this.form.entryPoint,
+            jupyterLabVersion: this.form.jupyterLabVersion,
           }
           await this['notebook/postRerun']({
             id: this.originId,
@@ -702,6 +731,7 @@ export default {
                 partition: this.form.partition,
                 memo: this.form.memo,
                 entryPoint: this.form.entryPoint,
+                jupyterLabVersion: this.detail.jupyterLabVersion,
               }
               await this['notebook/post'](params)
               this.emitDone()
