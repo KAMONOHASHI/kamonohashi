@@ -34,6 +34,8 @@ namespace Nssol.Platypus.ApiModels.NotebookApiModels
         /// </summary>
         public GitCommitInputModel GitModel { get; set; }
 
+        public string JupyterLabVersion { get; set; }
+
         /// <summary>
         /// CPUコア数
         /// </summary>

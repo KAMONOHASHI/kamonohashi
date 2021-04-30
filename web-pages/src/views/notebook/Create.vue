@@ -19,7 +19,7 @@
               <el-form-item label="インストールするJupyterLabのバージョン">
                 <el-input
                   v-model="form.jupyterLabVersion"
-                  placeholder="デフォルト: xxx (インストール済みのコンテナイメージでは選択してもスキップされます)"
+                  :placeholder="jupyterLabMessage"
                   clearable
                 >
                 </el-input>
@@ -126,7 +126,7 @@
               <el-form-item label="インストールするJupyterLabのバージョン">
                 <el-input
                   v-model="form.jupyterLabVersion"
-                  placeholder="デフォルト: xxx (インストール済みのコンテナイメージでは選択してもスキップされます)"
+                  :placeholder="jupyterLabMessage"
                   clearable
                 >
                 </el-input>
@@ -295,7 +295,7 @@
               <el-form-item label="インストールするJupyterLabのバージョン">
                 <el-input
                   v-model="form.jupyterLabVersion"
-                  placeholder="デフォルト: xxx (JupyterLabがインストール済みのコンテナイメージでは選択してもスキップされます)"
+                  :placeholder="jupyterLabMessage"
                   clearable
                 >
                 </el-input>
@@ -470,6 +470,8 @@ export default {
       active: 0,
       isCopyCreation: false,
       isReRunCreation: false,
+      jupyterLabMessage:
+        'デフォルト: 2.3.1 (JupyterLabがインストール済みのコンテナイメージでは選択してもスキップされます)',
     }
   },
   computed: {
@@ -731,7 +733,7 @@ export default {
                 partition: this.form.partition,
                 memo: this.form.memo,
                 entryPoint: this.form.entryPoint,
-                jupyterLabVersion: this.detail.jupyterLabVersion,
+                jupyterLabVersion: this.form.jupyterLabVersion,
               }
               await this['notebook/post'](params)
               this.emitDone()

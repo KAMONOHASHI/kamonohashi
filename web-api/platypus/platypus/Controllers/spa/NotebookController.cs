@@ -551,7 +551,7 @@ namespace Nssol.Platypus.Controllers.spa
             if (notebookHistory.JupyterLabVersion == null || "".Equals(notebookHistory.JupyterLabVersion))
             {
                 // null または 空文字 の場合はデフォルトのバージョンを指定
-                notebookHistory.JupyterLabVersion = "3.0.14";
+                notebookHistory.JupyterLabVersion = "2.3.1";
             }
 
             if (notebookHistory.OptionDic.ContainsKey("")) //空文字は除外する
@@ -829,10 +829,14 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             // JupyterLabのバージョンが指定されているかチェック
-            if (notebookHistory.JupyterLabVersion == null || "".Equals(notebookHistory.JupyterLabVersion))
+            if (model.JupyterLabVersion == null || "".Equals(model.JupyterLabVersion))
             {
                 // null または 空文字 の場合はデフォルトのバージョンを指定
-                notebookHistory.JupyterLabVersion = "3.0.14";
+                notebookHistory.JupyterLabVersion = "2.3.1";
+            }
+            else
+            {
+                notebookHistory.JupyterLabVersion = model.JupyterLabVersion;
             }
 
             // 各リソースの超過チェック
