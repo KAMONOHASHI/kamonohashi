@@ -548,7 +548,7 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             // JupyterLabのバージョンが指定されているかチェック
-            if (notebookHistory.JupyterLabVersion == null || "".Equals(notebookHistory.JupyterLabVersion))
+            if (notebookHistory.JupyterLabVersion == null)
             {
                 // null または 空文字 の場合はデフォルトのバージョンを指定
                 notebookHistory.JupyterLabVersion = "2.3.1";
@@ -829,7 +829,7 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             // JupyterLabのバージョンが指定されているかチェック
-            if (model.JupyterLabVersion == null || "".Equals(model.JupyterLabVersion))
+            if (model.JupyterLabVersion == null)
             {
                 // null または 空文字 の場合はデフォルトのバージョンを指定
                 notebookHistory.JupyterLabVersion = "2.3.1";
