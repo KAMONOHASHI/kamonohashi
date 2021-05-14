@@ -19,7 +19,6 @@
                   style="display:block"
                   >現在のテナント
                 </el-radio>
-
                 <el-radio
                   v-model.number="form.accessLevel"
                   :label="2"

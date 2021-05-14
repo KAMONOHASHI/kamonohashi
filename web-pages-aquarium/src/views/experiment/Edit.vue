@@ -19,36 +19,49 @@
         登録したテンプレートをカード形式で表示 -->
       <div class="dashboard">
         <div
-          v-for="(template, index) in templates"
+          v-for="(template, index) in templateList"
           :key="index"
           class="card-container"
         >
-          <router-link :to="`/aquarium/experiment/createStep/${template.id}`">
-            <el-card
-              class="template"
-              style="border: solid 1px #ebeef5; width: 360px; height: 300px;"
-            >
+          <el-card
+            class="template"
+            style="border: solid 1px #ebeef5; width: 360px; height: 300px;"
+          >
+            <router-link :to="`/aquarium/experiment/createStep/${template.id}`">
               <div class="template-name">
                 {{ template.name }}
               </div>
+            </router-link>
 
-              <div
-                class="template-description"
-                style="padding: 10px; font-size: 14px;"
-              >
-                {{ template.memo }}
-              </div>
-              <!-- タグを想定 -->
-              <div
-                class="template-description"
-                style="padding: 20px; font-size: 18px;text-align:center;"
-              >
-                <!-- <div>
+            <div
+              class="template-description"
+              style="padding: 10px; font-size: 14px;"
+            >
+              <span v-for="(s, i) in template.memoList" :key="i">
+                <span
+                  v-if="s.type == 'url'"
+                  style=" z-index :20;font-size:15px"
+                >
+                  <a
+                    :href="s.value"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    >{{ s.value }}</a
+                  ></span
+                >
+                <span v-else-if="s.type == 'string'">{{ s.value }}</span>
+              </span>
+            </div>
+            <!-- タグを想定 -->
+            <div
+              class="template-description"
+              style="padding: 20px; font-size: 18px;text-align:center;"
+            >
+              <!-- <div>
                       <el-tag class="tag"> {{ template.tag }}</el-tag>
                     </div> -->
-              </div>
-            </el-card>
-          </router-link>
+            </div>
+          </el-card>
         </div>
       </div>
       <router-view />
@@ -74,6 +87,7 @@ export default {
       },
       unwatchLogin: undefined,
       searchCondition: {},
+      templateList: null,
       searchConfigs: [
         { prop: 'id', name: 'ID', type: 'number' },
         { prop: 'name', name: 'テンプレート名', type: 'text' },
@@ -97,6 +111,67 @@ export default {
       params.perPage = this.pageStatus.currentPageSize
       params.withTotal = true
       await this.fetchTenantModelTemplates(params)
+      this.templateList = []
+      for (let i in this.templates) {
+        let memo_org = this.templates[i].memo
+        let memoList = this.urlSplitter(memo_org, this)
+        this.templates[i].memoList = memoList
+        this.templateList.push(this.templates[i])
+      }
+    },
+
+    urlSplitter(memo, that) {
+      if (
+        memo != null &&
+        memo.length > 0 &&
+        (memo.indexOf('https://') > -1 || memo.indexOf('http://') > -1)
+      ) {
+        let h_num = 0
+        let st = null
+        let num = memo.indexOf('http://')
+        let nums = memo.indexOf('https://')
+        if (nums == -1 || num < nums) {
+          st = num
+          h_num = 7
+        } else if (num == -1 || num > nums) {
+          st = nums
+          h_num = 8
+        } else {
+          return
+        }
+        let end = 0
+        for (let j = st + h_num; j < memo.length; j++) {
+          if (
+            !memo[j].match(/^[A-Za-z0-9]*$/) &&
+            memo[j] != '-' &&
+            memo[j] != '_' &&
+            memo[j] != '/' &&
+            memo[j] != '.' &&
+            memo[j] != '#'
+          ) {
+            end = j
+            break
+          }
+        }
+        if (end == 0) {
+          end = memo.length
+        }
+
+        let before = memo.substring(0, st)
+        let url = memo.substring(st, end)
+        let after = memo.substring(end, memo.length)
+
+        let memoList = [
+          { type: 'string', value: before },
+          { type: 'url', value: url },
+        ]
+
+        memoList = memoList.concat(that.urlSplitter(after, that))
+
+        return memoList
+      } else {
+        return [{ type: 'string', value: memo }]
+      }
     },
     async search() {
       this.pageStatus.currentPage = 1

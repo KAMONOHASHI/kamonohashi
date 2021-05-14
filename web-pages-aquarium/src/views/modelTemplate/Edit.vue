@@ -617,7 +617,7 @@ export default {
             ) {
               // HEAD指定の時はcommitsの先頭要素をcommitIDに指定する。コピー実行時の再現性を担保するため
               preprocessGitModel = {
-                token: this.form.preprocess.gitModel.git.token,
+                token: this.form.preprocess.gitModel.token,
                 gitId: this.form.preprocess.gitModel.git.id,
                 repository: this.form.preprocess.gitModel.repository.name,
                 owner: this.form.preprocess.gitModel.repository.owner,
@@ -636,7 +636,7 @@ export default {
             ) {
               // HEAD指定の時はcommitsの先頭要素をcommitIDに指定する。コピー実行時の再現性を担保するため
               trainingGitModel = {
-                token: this.form.training.gitModel.git.token,
+                token: this.form.training.gitModel.token,
                 gitId: this.form.training.gitModel.git.id,
                 repository: this.form.training.gitModel.repository.name,
                 owner: this.form.training.gitModel.repository.owner,
@@ -655,7 +655,7 @@ export default {
             ) {
               // HEAD指定の時はcommitsの先頭要素をcommitIDに指定する。コピー実行時の再現性を担保するため
               evaluationGitModel = {
-                token: this.form.evaluation.gitModel.git.token,
+                token: this.form.evaluation.gitModel.token,
                 gitId: this.form.evaluation.gitModel.git.id,
                 repository: this.form.evaluation.gitModel.repository.name,
                 owner: this.form.evaluation.gitModel.repository.owner,
