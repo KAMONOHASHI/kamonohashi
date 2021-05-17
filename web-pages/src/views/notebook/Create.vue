@@ -17,9 +17,17 @@
                 <el-input v-model="form.name" />
               </el-form-item>
               <el-form-item label="インストールするJupyterLabのバージョン">
+                <el-popover
+                  placement="top-start"
+                  width="500"
+                  trigger="hover"
+                  :content="jupyterLabInfo['description']"
+                >
+                  <i slot="reference" class="el-icon-info" />
+                </el-popover>
                 <el-input
                   v-model="form.jupyterLabVersion"
-                  :placeholder="jupyterLabMessage"
+                  :placeholder="jupyterLabInfo['defaultVersion']"
                   clearable
                 >
                 </el-input>
@@ -124,9 +132,17 @@
           <el-form v-if="active === 0">
             <el-col :span="12">
               <el-form-item label="インストールするJupyterLabのバージョン">
+                <el-popover
+                  placement="top-start"
+                  width="500"
+                  trigger="hover"
+                  :content="jupyterLabInfo['description']"
+                >
+                  <i slot="reference" class="el-icon-info" />
+                </el-popover>
                 <el-input
                   v-model="form.jupyterLabVersion"
-                  :placeholder="jupyterLabMessage"
+                  :placeholder="jupyterLabInfo['defaultVersion']"
                   clearable
                 >
                 </el-input>
@@ -293,9 +309,17 @@
             </el-col>
             <el-col :span="18" :offset="3">
               <el-form-item label="インストールするJupyterLabのバージョン">
+                <el-popover
+                  placement="top-start"
+                  width="500"
+                  trigger="hover"
+                  :content="jupyterLabInfo['description']"
+                >
+                  <i slot="reference" class="el-icon-info" />
+                </el-popover>
                 <el-input
                   v-model="form.jupyterLabVersion"
-                  :placeholder="jupyterLabMessage"
+                  :placeholder="jupyterLabInfo['defaultVersion']"
                   clearable
                 >
                 </el-input>
@@ -470,8 +494,11 @@ export default {
       active: 0,
       isCopyCreation: false,
       isReRunCreation: false,
-      jupyterLabMessage:
-        'デフォルト: 2.3.1 (JupyterLabがインストール済みのコンテナイメージでは選択してもスキップされます)',
+      jupyterLabInfo: {
+        description:
+          'デフォルト: 2.3.1 (JupyterLabがインストール済みのコンテナイメージでは選択してもスキップされます)',
+        defaultVersion: 'デフォルト: 2.3.1',
+      },
     }
   },
   computed: {
