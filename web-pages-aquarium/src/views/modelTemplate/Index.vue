@@ -182,7 +182,7 @@ export default {
           { type: 'string', value: before },
           { type: 'url', value: url },
         ]
-        console.log(after)
+
         memoList = memoList.concat(that.urlSplitter(after, that))
 
         return memoList
