@@ -130,10 +130,10 @@ export default {
         let st = null
         let num = memo.indexOf('http://')
         let nums = memo.indexOf('https://')
-        if (nums == -1 || num < nums) {
+        if (num != -1 && (nums == -1 || num < nums)) {
           st = num
           h_num = 7
-        } else if (num == -1 || num > nums) {
+        } else if (nums != -1 && (num == -1 || num > nums)) {
           st = nums
           h_num = 8
         } else {

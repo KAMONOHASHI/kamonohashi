@@ -2,8 +2,14 @@
   <div>
     <h2>実験情報</h2>
     <el-row style="padding-top:20px;padding-bottom:40px">
-      <el-col :span="8">学習の情報を確認できます。</el-col
-      ><el-col :span="6"
+      <el-col :span="8">学習の情報を確認できます。</el-col>
+      <el-col :span="6">
+        <aqualium-tensorboard-handler
+          :id="String(id)"
+          :visible="tesorboardVisible"
+        />
+      </el-col>
+      <el-col :span="6"
         ><el-button plain @click="deleteExperimentDialog = true"
           >実験削除</el-button
         ></el-col
@@ -148,13 +154,19 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex'
+import AqualiumTensorboardHandler from './AqualiumTensorboardHandler.vue'
 const { mapGetters, mapActions } = createNamespacedHelpers('experiment')
-
 export default {
   title: '実験情報',
-  components: {},
+  components: { AqualiumTensorboardHandler },
   props: {
     // 選択した実験情報
+
+    id: {
+      type: String,
+      default: null,
+    },
+
     value: {
       type: Object,
       default: () => ({
@@ -171,6 +183,7 @@ export default {
   },
   data() {
     return {
+      tesorboardVisible: true,
       deleteExperimentDialog: false,
     }
   },
