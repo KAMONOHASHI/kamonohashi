@@ -222,8 +222,9 @@ export default {
         }
       }
     },
-    deleteExperiment() {
-      this['experiment/delete'](this.detail.id)
+    async deleteExperiment() {
+      await this['experiment/delete'](this.detail.id)
+      this.$router.push('/aquarium/experiment')
     },
     tagType(val) {
       let tag = null
