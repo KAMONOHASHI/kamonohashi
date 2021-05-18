@@ -523,15 +523,15 @@ export default {
               // 公開設定
               this.form.accessLevel === null ||
               // 学習コンテナイメージ設定
-              this.form.trainingContainerImage === null ||
-              this.form.trainingContainerImage.registry === null ||
-              this.form.trainingContainerImage.image === null ||
-              this.form.trainingContainerImage.tag === null ||
+              this.form.training.containerImage === null ||
+              this.form.training.containerImage.registry === null ||
+              this.form.training.containerImage.image === null ||
+              this.form.training.containerImage.tag === null ||
               // 学習Git設定
-              this.form.trainingGitModel === null ||
-              this.form.trainingGitModel.git === null ||
-              this.form.trainingGitModel.repository === null ||
-              this.form.trainingGitModel.branch === null ||
+              this.form.training.gitModel === null ||
+              this.form.training.gitModel.git === null ||
+              this.form.training.gitModel.repository === null ||
+              this.form.training.gitModel.branch === null ||
               // 実行コマンド
               this.form.training.entryPoint === null ||
               this.form.training.entryPoint === ''
@@ -542,25 +542,25 @@ export default {
             // 前処理の項目について入力チェック
             // dockerイメージ、リポジトリ、入力コマンドのいずれかが入力済みなら他の項目も入力必須
             if (
-              (this.form.preprocessImages.image !== null ||
-                this.form.preprocessGitModel.repository !== null ||
-                this.form.preprocess.entryPoint !== null ||
-                this.form.preprocess.entryPoint !== '') &&
+              (this.form.preprocess.containerImage.image !== null ||
+                this.form.preprocess.gitModel.repository !== null ||
+                (this.form.preprocess.entryPoint !== null &&
+                  this.form.preprocess.entryPoint !== '')) &&
               // コンテナイメージ設定
-              (this.form.preprocessImages === null ||
-                this.form.preprocessImages.registry === null ||
-                this.form.preprocessImages.image === null ||
-                this.form.preprocessImages.tag === null ||
+              (this.form.preprocess.containerImage === null ||
+                this.form.preprocess.containerImage.registry === null ||
+                this.form.preprocess.containerImage.image === null ||
+                this.form.preprocess.containerImage.tag === null ||
                 // Git設定
-                this.form.preprocessGitModel === null ||
-                this.form.preprocessGitModel.git === null ||
-                this.form.preprocessGitModel.repository === null ||
-                this.form.preprocessGitModel.branch === null ||
+                this.form.preprocess.gitModel === null ||
+                this.form.preprocess.gitModel.git === null ||
+                this.form.preprocess.gitModel.repository === null ||
+                this.form.preprocess.gitModel.branch === null ||
                 // 実行コマンド
-                this.form.preprocessGitModel.entryPoint === null ||
+                this.form.preprocess.entryPoint === null ||
                 this.form.preprocess.entryPoint === '')
             ) {
-              throw '前処理コンテナの設定を確認してください : dockerイメージ、リポジトリ、入力コマンドのいずれかが入力済みなら他の項目も入力必須です。'
+              throw '前処理コンテナの設定を確認してください : イメージ、リポジトリ、入力コマンドのいずれかが入力済みなら他の項目も入力必須です。'
             }
 
             // コンテナイメージの指定
@@ -708,8 +708,10 @@ export default {
             this.error = null
             //dialogを閉じる
             this.dialogVisible = false
-          } catch (e) {
-            this.error = e
+          } catch (message) {
+            this.$notify.error({
+              message: message,
+            })
           }
         }
       })
