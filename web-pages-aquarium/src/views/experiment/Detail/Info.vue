@@ -5,7 +5,7 @@
       <el-col :span="8">学習の情報を確認できます。</el-col>
       <el-col :span="6">
         <aqualium-tensorboard-handler
-          v-if="value.trainingId"
+          v-if="value !== null && value.trainingId"
           :id="String(value.trainingId)"
           :visible="tesorboardVisible"
         />
