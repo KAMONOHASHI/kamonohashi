@@ -14,7 +14,7 @@
             <el-step title="Step 1" description="基本設定"></el-step>
             <el-step title="Step 2" description="前処理"></el-step>
             <el-step title="Step 3" description="学習"></el-step>
-            <el-step title="Step 4" description="評価"></el-step>
+            <!-- <el-step title="Step 4" description="評価"></el-step> -->
           </el-steps>
         </div>
       </el-col>
@@ -177,7 +177,8 @@
               </el-col>
             </el-row>
           </el-form>
-          <!-- step 4 -->
+          <!-- step 4 : 評価 -->
+          <!-- 
           <el-form v-if="active === 3" ref="form3" :model="form" :rules="rules">
             <el-row :gutter="20">
               <el-col :span="12">
@@ -239,6 +240,7 @@
               </el-col>
             </el-row>
           </el-form>
+          -->
         </el-form>
       </el-col>
     </el-row>
@@ -254,7 +256,7 @@
           Previous step
         </span>
         <span
-          v-if="active <= 2"
+          v-if="active <= 1"
           class="right-step-group"
           style="margin-top: 12px;"
           @click="next"
@@ -263,7 +265,7 @@
           <i class="el-icon-arrow-right" />
         </span>
         <span class="right-step-group">
-          <el-button v-if="active === 3" type="primary" @click="submit">
+          <el-button v-if="active === 2" type="primary" @click="submit">
             新規登録
           </el-button>
         </span>
@@ -496,9 +498,9 @@ export default {
         case 1:
           form = this.$refs.form1
           break
-        case 2:
-          form = this.$refs.form2
-          break
+        // case 2:
+        // form = this.$refs.form2
+        // break
       }
       await form.validate(async valid => {
         if (valid) {
@@ -594,18 +596,18 @@ export default {
             }
 
             ////評価
-            let evaluationContainerImage = null
-            if (
-              this.form.evaluation.containerImage.image !== null &&
-              this.form.evaluation.containerImage.tag !== null
-            ) {
-              evaluationContainerImage = {
-                registryId: this.form.evaluation.containerImage.registry.id,
-                image: this.form.evaluation.containerImage.image,
-                tag: this.form.evaluation.containerImage.tag,
-                token: this.form.evaluation.containerImage.token,
-              }
-            }
+            //let evaluationContainerImage = null
+            //if (
+            //  this.form.evaluation.containerImage.image !== null &&
+            //  this.form.evaluation.containerImage.tag !== null
+            //) {
+            //  evaluationContainerImage = {
+            //    registryId: this.form.evaluation.containerImage.registry.id,
+            //    image: this.form.evaluation.containerImage.image,
+            //    tag: this.form.evaluation.containerImage.tag,
+            //    token: this.form.evaluation.containerImage.token,
+            //  }
+            //}
             // gitモデルの指定
             // リポジトリとブランチが指定されている場合、gitモデルを指定して登録
             // リポジトリとブランチが指定されていない場合、gitモデルは未指定(null)として登録
@@ -648,24 +650,24 @@ export default {
               }
             }
             ////評価
-            let evaluationGitModel = null
-            if (
-              this.form.evaluation.gitModel.repository !== null &&
-              this.form.evaluation.gitModel.branch !== null
-            ) {
-              // HEAD指定の時はcommitsの先頭要素をcommitIDに指定する。コピー実行時の再現性を担保するため
-              evaluationGitModel = {
-                token: this.form.evaluation.gitModel.token,
-                gitId: this.form.evaluation.gitModel.git.id,
-                repository: this.form.evaluation.gitModel.repository.name,
-                owner: this.form.evaluation.gitModel.repository.owner,
-                branch: this.form.evaluation.gitModel.branch.branchName,
-                commitId:
-                  this.form.evaluation.gitModel.commit !== null
-                    ? this.form.evaluation.gitModel.commit.commitId
-                    : this.evaluationCommits[0].commitId,
-              }
-            }
+            //let evaluationGitModel = null
+            //if (
+            //  this.form.evaluation.gitModel.repository !== null &&
+            //  this.form.evaluation.gitModel.branch !== null
+            //) {
+            //  // HEAD指定の時はcommitsの先頭要素をcommitIDに指定する。コピー実行時の再現性を担保するため
+            //  evaluationGitModel = {
+            //    token: this.form.evaluation.gitModel.token,
+            //    gitId: this.form.evaluation.gitModel.git.id,
+            //    repository: this.form.evaluation.gitModel.repository.name,
+            //    owner: this.form.evaluation.gitModel.repository.owner,
+            //    branch: this.form.evaluation.gitModel.branch.branchName,
+            //    commitId:
+            //      this.form.evaluation.gitModel.commit !== null
+            //        ? this.form.evaluation.gitModel.commit.commitId
+            //        : this.evaluationCommits[0].commitId,
+            //  }
+            //}
 
             //基本設定情報
             let templateParams = {
@@ -690,12 +692,18 @@ export default {
               trainingMemory: this.form.training.resource.memory,
               trainingGpu: this.form.training.resource.gpu,
 
-              evaluationEntryPoint: this.form.evaluation.entryPoint,
-              evaluationContainerImage: evaluationContainerImage,
-              evaluationGitModel: evaluationGitModel,
-              evaluationCpu: this.form.evaluation.resource.cpu,
-              evaluationMemory: this.form.evaluation.resource.memory,
-              evaluationGpu: this.form.evaluation.resource.gpu,
+              // evaluationEntryPoint: this.form.evaluation.entryPoint,
+              // evaluationContainerImage: evaluationContainerImage,
+              // evaluationGitModel: evaluationGitModel,
+              // evaluationCpu: this.form.evaluation.resource.cpu,
+              // evaluationMemory: this.form.evaluation.resource.memory,
+              // evaluationGpu: this.form.evaluation.resource.gpu,
+              evaluationEntryPoint: null,
+              evaluationContainerImage: null,
+              evaluationGitModel: null,
+              evaluationCpu: 1,
+              evaluationMemory: 1,
+              evaluationGpu: 0,
             }
             //
 
