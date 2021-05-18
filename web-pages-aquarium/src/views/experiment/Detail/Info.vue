@@ -55,9 +55,7 @@
             </div>
           </el-col>
           <el-col
-            v-if="
-              value.status == 'None' && value.experimentPreprocessHistoryId > 0
-            "
+            v-if="value.status == 'None' && value.preprocessId > 0"
             :span="16"
           >
             <el-tag :type="tagType(value.preprocessStatus)" class="tag">
