@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-form ref="form1" :model="form" :rules="rules">
+    <el-form :model="form" :rules="rules">
       <el-row :gutter="20">
         <el-col :span="12">
           <kqi-container-selector
@@ -12,7 +12,19 @@
             @selectRegistry="selectRegistry"
             @selectImage="selectImage"
           />
-
+          <el-form-item>
+            <el-row>
+              <el-col :span="6" :offset="1">token</el-col>
+              <el-col :span="12">
+                <el-input
+                  v-model="form.containerImage.token"
+                  size="small"
+                  type="password"
+                  style="width:215px"
+                />
+              </el-col>
+            </el-row>
+          </el-form-item>
           <kqi-git-selector
             v-model="form.gitModel"
             :gits="gits"
@@ -25,6 +37,18 @@
             @selectRepository="selectRepository"
             @selectBranch="selectBranch"
           />
+
+          <el-row>
+            <el-col :span="6" :offset="1">token</el-col>
+            <el-col :span="12">
+              <el-input
+                v-model="form.gitModel.token"
+                size="small"
+                type="password"
+                style="width:215px"
+              />
+            </el-col>
+          </el-row>
           <el-form-item label="実行コマンド" prop="entryPoint">
             <el-input
               v-model="form.entryPoint"
@@ -66,6 +90,7 @@ export default {
             registryId: 0,
             image: 'string',
             tag: 'string',
+            token: 'string',
           },
           gitModel: {
             gitId: 0,
@@ -73,6 +98,7 @@ export default {
             owner: 'string',
             branch: 'string',
             commitId: 'string',
+            token: 'string',
           },
           entryPoint: '',
           resource: {
@@ -108,6 +134,7 @@ export default {
 
       loadingRepositories: ['gitSelector/loadingRepositories'],
       commits: ['gitSelector/commits'],
+      commitDetail: ['gitSelector/commitDetail'],
     }),
     form: {
       get() {
@@ -130,6 +157,7 @@ export default {
       containerImage,
     )
     const formGitModel = await this.setupFormGitModel(gitModel)
+
     this.form = {
       entryPoint: this.value.entryPoint,
       gitModel: formGitModel,
@@ -142,6 +170,7 @@ export default {
       await this['registrySelector/fetchRegistries']()
       await this['registrySelector/fetchImages'](containerImage.registryId)
       await this['registrySelector/fetchTags']({ ...containerImage })
+
       const registry = this.registries.find(registry => {
         return registry.id === containerImage.registryId
       })
@@ -151,6 +180,7 @@ export default {
       const formGitModel = {}
       const repositoryName = gitModel.repository
       await this['gitSelector/fetchGits']()
+
       formGitModel.git = this.gits.find(git => {
         return git.id === gitModel.gitId
       })
@@ -158,7 +188,7 @@ export default {
       formGitModel.repository = `${gitModel.owner}/${repositoryName}`
 
       formGitModel.branch = gitModel.branch
-
+      formGitModel.token = gitModel.token
       const fetchCommitArg = {
         gitId: gitModel.gitId,
         commitId: gitModel.commitId,
@@ -171,13 +201,19 @@ export default {
 
       await this['gitSelector/fetchCommits'](fetchCommitArg)
 
-      let commit = this.commits.find(commit => {
-        return commit.commitId === gitModel.commitId
-      })
+      let commit = null
+      if (this.commits != null) {
+        commit = this.commits.find(commit => {
+          return commit.commitId === gitModel.commitId
+        })
+      }
+      if (fetchCommitArg.gitId != null) {
+        await this['gitSelector/fetchCommitDetail'](fetchCommitArg)
+      }
 
-      await this['gitSelector/fetchCommitDetail'](fetchCommitArg)
-
-      if (commit) {
+      if (commit == null) {
+        formGitModel.commit = null
+      } else if (commit) {
         formGitModel.commit = commit
       } else {
         formGitModel.commit = this.commitDetail

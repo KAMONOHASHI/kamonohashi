@@ -78,9 +78,16 @@ let api = {
   },
   templates: {
     admin: {
+      getById: gen.ApiV2AdminTemplatesByIdGet,
       get: gen.ApiV2AdminTemplatesGet,
       post: gen.ApiV2AdminTemplatesPost,
-      getById: gen.ApiV2AdminTemplatesByIdGet,
+      put: gen.ApiV2AdminTemplatesByIdPut,
+      delete: gen.ApiV2AdminTemplatesByIdDelete,
+      deleteVersion: gen.ApiV2AdminTemplatesByIdVersionsByVersionIdDelete,
+      getByIdVersions: gen.ApiV2AdminTemplatesByIdVersionsGet,
+      postByIdVersions: gen.ApiV2AdminTemplatesByIdVersionsPost,
+      getByIdVersionsByVersionId:
+        gen.ApiV2AdminTemplatesByIdVersionsByVersionIdGet,
     },
     getTenantTemplate: gen.ApiV2TenantTemplatesGet,
   },
@@ -153,6 +160,7 @@ let api = {
     getByIdVersionsByVersionId:
       gen.ApiV2AquariumDatasetsByIdVersionsByVersionIdGet,
     delete: gen.ApiV2AquariumDatasetsByIdDelete,
+    deleteVersion: gen.ApiV2AquariumDatasetsByIdVersionsByVersionIdDelete,
   },
 
   datasets: {
@@ -280,22 +288,12 @@ let api = {
   },
 
   experiment: {
-    getSimple: gen.ApiV2ExperimentSimpleGet,
     get: gen.ApiV2ExperimentGet,
     post: gen.ApiV2ExperimentRunPost,
     getById: gen.ApiV2ExperimentByIdGet,
+    postPreprocessingCompleteById:
+      gen.ApiV2ExperimentByIdPreprocessingCompletePost,
     deleteById: gen.ApiV2ExperimentByIdDelete,
-    getPreprocessById: gen.ApiV2ExperimentByIdPreprocessGet,
-    getFilesById: gen.ApiV2ExperimentByIdFilesGet,
-    getPreprocessFilesById: gen.ApiV2ExperimentByIdPreprocessFilesGet,
-    getContainerFilesById: gen.ApiV2ExperimentByIdContainer_filesGet,
-    deleteByIdFilesByFileId: gen.ApiV2ExperimentByIdFilesByFileIdDelete,
-    getTensorboardById: gen.ApiV2ExperimentByIdTensorboardGet,
-    putTensorboardById: gen.ApiV2ExperimentByIdTensorboardPut,
-    deleteTensorboardById: gen.ApiV2ExperimentByIdTensorboardDelete,
-    postHaltById: gen.ApiV2ExperimentByIdHaltPost,
-    postUserCancelById: gen.ApiV2ExperimentByIdUser_cancelPost,
-    getEventsById: gen.ApiV2ExperimentByIdEventsGet,
   },
 
   storage: {

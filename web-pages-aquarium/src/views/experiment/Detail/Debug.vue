@@ -1,22 +1,22 @@
 <template>
   <div>
     <h2>DEBUG</h2>
-    <div class="confusion-matrix">
-      <el-row style="margin-bottom:10px">
-        <el-col :span="6">実験ID</el-col>
-        <el-col :span="18"> {{ id }}</el-col>
+    <div v-if="value != null" class="debug-list">
+      <el-row>
+        <el-col :span="8">実験ID</el-col>
+        <el-col :span="16"> {{ id }}</el-col>
       </el-row>
-      <el-row style="margin-bottom:10px">
-        <el-col :span="6">実験前処理ID</el-col>
-        <el-col :span="18"> {{ experimentPreprocessHistoryId }}</el-col>
+      <el-row>
+        <el-col :span="8">実験前処理ID</el-col>
+        <el-col :span="16"> {{ value.preprocessId }}</el-col>
       </el-row>
-      <el-row style="margin-bottom:10px">
-        <el-col :span="6">前処理ログ</el-col>
-        <el-col :span="18">
+      <el-row>
+        <el-col :span="8">前処理ログ</el-col>
+        <el-col :span="16">
           <div class="el-input">
-            <div v-if="preprocessLogFiles && preprocessLogFiles.length > 0">
+            <div v-if="preprocessLogFileData">
               <div
-                v-for="(preprocessLog, index) in preprocessLogFiles"
+                v-for="(preprocessLog, index) in preprocessLogFileData"
                 :key="index"
               >
                 <kqi-download-button
@@ -29,12 +29,12 @@
           </div>
         </el-col>
       </el-row>
-      <el-row style="margin-bottom:10px">
-        <el-col :span="6">学習ログ</el-col>
-        <el-col :span="18">
+      <el-row>
+        <el-col :span="8">学習ログ</el-col>
+        <el-col :span="16">
           <div class="el-input">
-            <div v-if="logFiles && logFiles.length > 0">
-              <div v-for="(logFile, index) in logFiles" :key="index">
+            <div v-if="trainingLogFileData">
+              <div v-for="(logFile, index) in trainingLogFileData" :key="index">
                 <kqi-download-button
                   :download-url="logFile.url"
                   :file-name="logFile.fileName"
@@ -45,17 +45,13 @@
           </div>
         </el-col>
       </el-row>
-      <el-row style="margin-bottom:10px">
-        <el-col :span="6">前処理ステータス</el-col>
-        <el-col :span="18">{{ value.preprocessStatus }}</el-col>
+      <el-row>
+        <el-col :span="8">前処理ステータス</el-col>
+        <el-col :span="16">{{ value.preprocessStatus }}</el-col>
       </el-row>
-      <el-row style="margin-bottom:10px">
-        <el-col :span="6">学習ステータス</el-col>
-        <el-col :span="18">{{ value.status }}</el-col>
-      </el-row>
-      <el-row style="margin-bottom:10px">
-        <el-col :span="6"></el-col>
-        <el-col :span="18"></el-col>
+      <el-row>
+        <el-col :span="8">学習ステータス</el-col>
+        <el-col :span="16">{{ value.trainingStatus }}</el-col>
       </el-row>
     </div>
   </div>
@@ -65,7 +61,7 @@
 import { createNamespacedHelpers } from 'vuex'
 
 import KqiDownloadButton from '../../../components/KqiDownloadButton.vue'
-const { mapGetters, mapActions } = createNamespacedHelpers('experiment')
+const { mapGetters, mapActions } = createNamespacedHelpers('training')
 
 export default {
   title: '実験結果',
@@ -75,66 +71,41 @@ export default {
       type: String,
       default: null,
     },
-    experimentPreprocessHistoryId: {
-      type: Number,
-      default: null,
-    },
+
     value: {
       type: Object,
-      default: () => ({
-        id: null,
-        name: '',
-        createdAt: '',
-        createdBy: '',
-        dataSetId: null,
-        dataSetVersion: null,
-        dataSetURL: '',
-        templateURL: '',
-      }),
+      default: null,
     },
   },
   data() {
     return {
       importfile: null,
       logFileData: [],
-      preprocessLogFileData: [],
+      preprocessLogFileData: null,
+      trainingLogFileData: null,
     }
   },
   computed: {
-    ...mapGetters(['detail', 'logFiles', 'preprocessLogFiles']),
+    ...mapGetters(['detail', 'uploadedFiles']),
+  },
+  watch: {
+    async value() {
+      await this.retrieveData()
+    },
   },
   async created() {
     await this.retrieveData()
   },
   methods: {
-    ...mapActions(['fetchLogFiles', 'fetchPreprocessLogFiles', 'fetchDetail']),
+    ...mapActions(['fetchDetail', 'fetchUploadedFiles']),
     async retrieveData() {
-      await this.fetchLogFiles(String(this.id))
-      if (this.experimentPreprocessHistoryId !== null) {
-        await this.fetchPreprocessLogFiles(String(this.id))
+      if (this.value != null && this.value.preprocessId != null) {
+        await this.fetchUploadedFiles(String(this.value.preprocessId))
+        this.preprocessLogFileData = Object.assign({}, this.uploadedFiles)
       }
-      for (let i in this.logFiles) {
-        var req = new XMLHttpRequest()
-        req.open('GET', this.logFiles[i].url, true)
-        req.responseType = 'blob'
-
-        var that = this
-        //読込終了後の処理
-        req.onload = function(e) {
-          //テキストエリアに表示する
-          var blob = e.target.response
-
-          var reader = new FileReader()
-          //テキスト形式で読み込む
-          reader.readAsText(blob)
-
-          //読込終了後の処理
-          reader.onload = function() {
-            //テキストエリアに表示する
-            that.logFileData.push(reader.result)
-          }
-        }
-        req.send()
+      if (this.value != null && this.value.trainingId != null) {
+        await this.fetchUploadedFiles(String(this.value.trainingId))
+        this.trainingLogFileData = Object.assign({}, this.uploadedFiles)
       }
     },
   },
@@ -164,8 +135,13 @@ export default {
   text-align: left;
   width: 120px;
 }
-.confusion-matrix {
+.debug-list {
   margin: 40px 0;
+  width: 60%;
+}
+.debug-list .el-row {
+  padding: 15px;
+  border-bottom: 1px solid rgb(235, 238, 245);
 }
 h3 {
   font-size: 20px;

@@ -14,6 +14,7 @@
             <el-step title="Step 1" description="基本設定"></el-step>
             <el-step title="Step 2" description="前処理"></el-step>
             <el-step title="Step 3" description="学習"></el-step>
+            <el-step title="Step 4" description="評価"></el-step>
           </el-steps>
         </div>
       </el-col>
@@ -56,7 +57,6 @@
               <el-col :span="12">
                 <kqi-container-selector
                   v-model="form.preprocess.containerImage"
-                  :disabled="isPatch"
                   :registries="registries"
                   :images="images"
                   :tags="tags"
@@ -64,10 +64,19 @@
                   @selectRegistry="selectPreprocessRegistry"
                   @selectImage="selectPreprocessImage"
                 />
+                <el-row>
+                  <el-col :span="6" :offset="1">token</el-col>
+                  <el-col :span="12">
+                    <el-input
+                      v-model="form.preprocess.containerImage.token"
+                      size="small"
+                      type="password"
+                    />
+                  </el-col>
+                </el-row>
 
                 <kqi-git-selector
                   v-model="form.preprocess.gitModel"
-                  :disabled="isPatch"
                   :gits="gits"
                   :repositories="repositories"
                   :branches="branches"
@@ -78,12 +87,22 @@
                   @selectRepository="selectPreprocessRepository"
                   @selectBranch="selectPreprocessBranch"
                 />
+
+                <el-row>
+                  <el-col :span="6" :offset="1">token</el-col>
+                  <el-col :span="12">
+                    <el-input
+                      v-model="form.preprocess.gitModel.token"
+                      size="small"
+                      type="password"
+                    />
+                  </el-col>
+                </el-row>
                 <el-form-item label="実行コマンド" prop="entryPoint">
                   <el-input
                     v-model="form.preprocess.entryPoint"
                     type="textarea"
                     :autosize="{ minRows: 2 }"
-                    :disabled="isPatch"
                   />
                 </el-form-item>
               </el-col>
@@ -102,7 +121,6 @@
               <el-col :span="12">
                 <kqi-container-selector
                   v-model="form.training.containerImage"
-                  :disabled="isPatch"
                   :registries="registries"
                   :images="images"
                   :tags="tags"
@@ -110,9 +128,18 @@
                   @selectRegistry="selectTrainingRegistry"
                   @selectImage="selectTrainingImage"
                 />
+                <el-row>
+                  <el-col :span="6" :offset="1">token</el-col>
+                  <el-col :span="12">
+                    <el-input
+                      v-model="form.training.containerImage.token"
+                      size="small"
+                      type="password"
+                    />
+                  </el-col>
+                </el-row>
                 <kqi-git-selector
                   v-model="form.training.gitModel"
-                  :disabled="isPatch"
                   :gits="gits"
                   :repositories="repositories"
                   :branches="branches"
@@ -123,12 +150,21 @@
                   @selectRepository="selectTrainingRepository"
                   @selectBranch="selectTrainingBranch"
                 />
+                <el-row>
+                  <el-col :span="6" :offset="1">token</el-col>
+                  <el-col :span="12">
+                    <el-input
+                      v-model="form.training.gitModel.token"
+                      size="small"
+                      type="password"
+                    />
+                  </el-col>
+                </el-row>
                 <el-form-item label="実行コマンド" prop="entryPoint">
                   <el-input
                     v-model="form.training.entryPoint"
                     type="textarea"
                     :autosize="{ minRows: 2 }"
-                    :disabled="isPatch"
                   />
                 </el-form-item>
               </el-col>
@@ -136,6 +172,68 @@
               <el-col :span="12">
                 <kqi-resource-selector
                   v-model="form.training.resource"
+                  :quota="quota"
+                />
+              </el-col>
+            </el-row>
+          </el-form>
+          <!-- step 4 -->
+          <el-form v-if="active === 3" ref="form3" :model="form" :rules="rules">
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <kqi-container-selector
+                  v-model="form.evaluation.containerImage"
+                  :registries="registries"
+                  :images="images"
+                  :tags="tags"
+                  heading="評価コンテナイメージ"
+                  @selectRegistry="selectEvaluationRegistry"
+                  @selectImage="selectEvaluationImage"
+                />
+                <el-row>
+                  <el-col :span="6" :offset="1">token</el-col>
+                  <el-col :span="12">
+                    <el-input
+                      v-model="form.evaluation.containerImage.token"
+                      size="small"
+                      type="password"
+                    />
+                  </el-col>
+                </el-row>
+                <kqi-git-selector
+                  v-model="form.evaluation.gitModel"
+                  :gits="gits"
+                  :repositories="repositories"
+                  :branches="branches"
+                  :commits="commits"
+                  :loading-repositories="loadingRepositories"
+                  heading="スクリプト"
+                  @selectGit="selectEvaluationGit"
+                  @selectRepository="selectEvaluationRepository"
+                  @selectBranch="selectEvaluationBranch"
+                />
+                <el-row>
+                  <el-col :span="6" :offset="1">token</el-col>
+                  <el-col :span="12">
+                    <el-input
+                      v-model="form.evaluation.gitModel.token"
+                      size="small"
+                      type="password"
+                    />
+                  </el-col>
+                </el-row>
+                <el-form-item label="実行コマンド" prop="entryPoint">
+                  <el-input
+                    v-model="form.evaluation.entryPoint"
+                    type="textarea"
+                    :autosize="{ minRows: 2 }"
+                  />
+                </el-form-item>
+              </el-col>
+
+              <el-col :span="12">
+                <kqi-resource-selector
+                  v-model="form.evaluation.resource"
                   :quota="quota"
                 />
               </el-col>
@@ -156,7 +254,7 @@
           Previous step
         </span>
         <span
-          v-if="active <= 1"
+          v-if="active <= 2"
           class="right-step-group"
           style="margin-top: 12px;"
           @click="next"
@@ -165,7 +263,7 @@
           <i class="el-icon-arrow-right" />
         </span>
         <span class="right-step-group">
-          <el-button v-if="active === 2" type="primary" @click="submit">
+          <el-button v-if="active === 3" type="primary" @click="submit">
             新規登録
           </el-button>
         </span>
@@ -211,12 +309,14 @@ export default {
             registry: null,
             image: null,
             tag: null,
+            token: null,
           },
           gitModel: {
             git: null,
             repository: null,
             branch: null,
             commit: null,
+            token: null,
           },
           resource: {
             cpu: 1,
@@ -230,12 +330,35 @@ export default {
             registry: null,
             image: null,
             tag: null,
+            token: null,
           },
           gitModel: {
             git: null,
             repository: null,
             branch: null,
             commit: null,
+            token: null,
+          },
+          resource: {
+            cpu: 1,
+            memory: 1,
+            gpu: 0,
+          },
+          entryPoint: null,
+        },
+        evaluation: {
+          containerImage: {
+            registry: null,
+            image: null,
+            tag: null,
+            token: null,
+          },
+          gitModel: {
+            git: null,
+            repository: null,
+            branch: null,
+            commit: null,
+            token: null,
           },
           resource: {
             cpu: 1,
@@ -248,10 +371,7 @@ export default {
       title: '',
       dialogVisible: true,
       error: null,
-      isCreateDialog: false,
       isEditDialog: false,
-      isPatch: false, // 利用済み前処理の場合name, memo, resourceのみ更新可能
-
       rules: {
         name: [{ required: true, trigger: 'blur', message: '必須項目です' }],
       },
@@ -285,10 +405,12 @@ export default {
   },
   methods: {
     ...mapActions([
-      'template/fetchDetail',
+      'template/getByIdVersionsByVersionId',
+      'template/getByIdVersions',
+      'template/postByIdVersions',
       'template/post',
       'template/put',
-      'template/delete',
+
       'registrySelector/fetchRegistries',
       'registrySelector/fetchImages',
       'registrySelector/fetchTags',
@@ -305,15 +427,8 @@ export default {
       switch (type) {
         case 'create':
           this.title = '新しいテンプレートの登録'
-          this.isCreateDialog = true
           this.isCopyCreation = this.id !== null
           this.isEditDialog = false
-          break
-        case 'edit':
-          this.title = 'テンプレートの詳細'
-          this.isCreateDialog = false
-          this.isCopyCreation = false
-          this.isEditDialog = true
           break
       }
 
@@ -376,106 +491,143 @@ export default {
       await form.validate(async valid => {
         if (valid) {
           try {
-            if (this.isPatch) {
-              // 名称・メモ・リソースのみ更新
-              await this.patchTemplates()
-            } else {
-              // コンテナイメージの指定
-              // イメージとタグが指定されている場合、コンテナイメージを指定して登録
-              // イメージとタグが指定されていない場合、コンテナイメージは未指定(null)として登録
-              ////前処理
-              let preprocessContainerImage = null
-              if (
-                this.form.preprocess.containerImage.image !== null &&
-                this.form.preprocess.containerImage.tag !== null
-              ) {
-                preprocessContainerImage = {
-                  registryId: this.form.preprocess.containerImage.registry.id,
-                  image: this.form.preprocess.containerImage.image,
-                  tag: this.form.preprocess.containerImage.tag,
-                }
-              }
-              ////学習
-              let trainingContainerImage = null
-              if (
-                this.form.training.containerImage.image !== null &&
-                this.form.training.containerImage.tag !== null
-              ) {
-                trainingContainerImage = {
-                  registryId: this.form.training.containerImage.registry.id,
-                  image: this.form.training.containerImage.image,
-                  tag: this.form.training.containerImage.tag,
-                }
-              }
-              // gitモデルの指定
-              // リポジトリとブランチが指定されている場合、gitモデルを指定して登録
-              // リポジトリとブランチが指定されていない場合、gitモデルは未指定(null)として登録
-              ////前処理
-              let preprocessGitModel = null
-              if (
-                this.form.preprocess.gitModel.repository !== null &&
-                this.form.preprocess.gitModel.branch !== null
-              ) {
-                // HEAD指定の時はcommitsの先頭要素をcommitIDに指定する。コピー実行時の再現性を担保するため
-                preprocessGitModel = {
-                  gitId: this.form.preprocess.gitModel.git.id,
-                  repository: this.form.preprocess.gitModel.repository.name,
-                  owner: this.form.preprocess.gitModel.repository.owner,
-                  branch: this.form.preprocess.gitModel.branch.branchName,
-                  commitId: this.form.preprocess.gitModel.commit
-                    ? this.form.preprocess.gitModel.commit.commitId
-                    : this.commits[0].commitId,
-                }
-              }
-              ////学習
-              let trainingGitModel = null
-              if (
-                this.form.training.gitModel.repository !== null &&
-                this.form.training.gitModel.branch !== null
-              ) {
-                // HEAD指定の時はcommitsの先頭要素をcommitIDに指定する。コピー実行時の再現性を担保するため
-                trainingGitModel = {
-                  gitId: this.form.training.gitModel.git.id,
-                  repository: this.form.training.gitModel.repository.name,
-                  owner: this.form.training.gitModel.repository.owner,
-                  branch: this.form.training.gitModel.branch.branchName,
-                  commitId: this.form.training.gitModel.commit
-                    ? this.form.training.gitModel.commit.commitId
-                    : this.commits[0].commitId,
-                }
-              }
-              let params = {
-                name: this.form.name,
-                memo: this.form.memo,
-                accessLevel: this.form.accessLevel,
-                version: 0, //TODO
-                groupId: 0, //TODO
-                assignedTenantIds: [], //TODO
-                preprocessEntryPoint: this.form.preprocess.entryPoint,
-                preprocessContainerImage: preprocessContainerImage,
-                preprocessGitModel: preprocessGitModel,
-                preprocessCpu: this.form.preprocess.resource.cpu,
-                preprocessMemory: this.form.preprocess.resource.memory,
-                preprocessGpu: this.form.preprocess.resource.gpu,
-
-                trainingEntryPoint: this.form.training.entryPoint,
-                trainingContainerImage: trainingContainerImage,
-                trainingGitModel: trainingGitModel,
-                trainingCpu: this.form.training.resource.cpu,
-                trainingMemory: this.form.training.resource.memory,
-                trainingGpu: this.form.training.resource.gpu,
-              }
-              if (this.isCreateDialog) {
-                // 新規作成
-                await this['template/post'](params)
-              } else {
-                // 編集
-                await this['template/put']({
-                  id: this.id,
-                  params: params,
-                })
+            // コンテナイメージの指定
+            // イメージとタグが指定されている場合、コンテナイメージを指定して登録
+            // イメージとタグが指定されていない場合、コンテナイメージは未指定(null)として登録
+            ////前処理
+            let preprocessContainerImage = null
+            if (
+              this.form.preprocess.containerImage.image !== null &&
+              this.form.preprocess.containerImage.tag !== null
+            ) {
+              preprocessContainerImage = {
+                registryId: this.form.preprocess.containerImage.registry.id,
+                image: this.form.preprocess.containerImage.image,
+                tag: this.form.preprocess.containerImage.tag,
+                token: this.form.preprocess.containerImage.token,
               }
             }
+            ////学習
+            let trainingContainerImage = null
+            if (
+              this.form.training.containerImage.image !== null &&
+              this.form.training.containerImage.tag !== null
+            ) {
+              trainingContainerImage = {
+                registryId: this.form.training.containerImage.registry.id,
+                image: this.form.training.containerImage.image,
+                tag: this.form.training.containerImage.tag,
+                token: this.form.training.containerImage.token,
+              }
+            }
+
+            ////評価
+            let evaluationContainerImage = null
+            if (
+              this.form.evaluation.containerImage.image !== null &&
+              this.form.evaluation.containerImage.tag !== null
+            ) {
+              evaluationContainerImage = {
+                registryId: this.form.evaluation.containerImage.registry.id,
+                image: this.form.evaluation.containerImage.image,
+                tag: this.form.evaluation.containerImage.tag,
+                token: this.form.evaluation.containerImage.token,
+              }
+            }
+            // gitモデルの指定
+            // リポジトリとブランチが指定されている場合、gitモデルを指定して登録
+            // リポジトリとブランチが指定されていない場合、gitモデルは未指定(null)として登録
+            ////前処理
+            let preprocessGitModel = null
+            if (
+              this.form.preprocess.gitModel.repository !== null &&
+              this.form.preprocess.gitModel.branch !== null
+            ) {
+              // HEAD指定の時はcommitsの先頭要素をcommitIDに指定する。コピー実行時の再現性を担保するため
+              preprocessGitModel = {
+                token: this.form.preprocess.gitModel.token,
+                gitId: this.form.preprocess.gitModel.git.id,
+                repository: this.form.preprocess.gitModel.repository.name,
+                owner: this.form.preprocess.gitModel.repository.owner,
+                branch: this.form.preprocess.gitModel.branch.branchName,
+                commitId: this.form.preprocess.gitModel.commit
+                  ? this.form.preprocess.gitModel.commit.commitId
+                  : this.commits[0].commitId,
+              }
+            }
+            ////学習
+            let trainingGitModel = null
+            if (
+              this.form.training.gitModel.repository !== null &&
+              this.form.training.gitModel.branch !== null
+            ) {
+              // HEAD指定の時はcommitsの先頭要素をcommitIDに指定する。コピー実行時の再現性を担保するため
+              trainingGitModel = {
+                token: this.form.training.gitModel.token,
+                gitId: this.form.training.gitModel.git.id,
+                repository: this.form.training.gitModel.repository.name,
+                owner: this.form.training.gitModel.repository.owner,
+                branch: this.form.training.gitModel.branch.branchName,
+                commitId: this.form.training.gitModel.commit
+                  ? this.form.training.gitModel.commit.commitId
+                  : this.commits[0].commitId,
+              }
+            }
+            ////評価
+            let evaluationGitModel = null
+            if (
+              this.form.evaluation.gitModel.repository !== null &&
+              this.form.evaluation.gitModel.branch !== null
+            ) {
+              // HEAD指定の時はcommitsの先頭要素をcommitIDに指定する。コピー実行時の再現性を担保するため
+              evaluationGitModel = {
+                token: this.form.evaluation.gitModel.token,
+                gitId: this.form.evaluation.gitModel.git.id,
+                repository: this.form.evaluation.gitModel.repository.name,
+                owner: this.form.evaluation.gitModel.repository.owner,
+                branch: this.form.evaluation.gitModel.branch.branchName,
+                commitId: this.form.evaluation.gitModel.commit
+                  ? this.form.evaluation.gitModel.commit.commitId
+                  : this.commits[0].commitId,
+              }
+            }
+
+            //基本設定情報
+            let templateParams = {
+              name: this.form.name,
+              memo: this.form.memo,
+              accessLevel: this.form.accessLevel,
+            }
+
+            //バージョン管理情報
+            let versionParams = {
+              preprocessEntryPoint: this.form.preprocess.entryPoint,
+              preprocessContainerImage: preprocessContainerImage,
+              preprocessGitModel: preprocessGitModel,
+              preprocessCpu: this.form.preprocess.resource.cpu,
+              preprocessMemory: this.form.preprocess.resource.memory,
+              preprocessGpu: this.form.preprocess.resource.gpu,
+
+              trainingEntryPoint: this.form.training.entryPoint,
+              trainingContainerImage: trainingContainerImage,
+              trainingGitModel: trainingGitModel,
+              trainingCpu: this.form.training.resource.cpu,
+              trainingMemory: this.form.training.resource.memory,
+              trainingGpu: this.form.training.resource.gpu,
+
+              evaluationEntryPoint: this.form.evaluation.entryPoint,
+              evaluationContainerImage: evaluationContainerImage,
+              evaluationGitModel: evaluationGitModel,
+              evaluationCpu: this.form.evaluation.resource.cpu,
+              evaluationMemory: this.form.evaluation.resource.memory,
+              evaluationGpu: this.form.evaluation.resource.gpu,
+            }
+            //
+
+            //新規テンプレート登録後、テンプレートバージョンの登録をする
+            let ret = await this['template/post'](templateParams)
+            let params = { id: ret.data.id, model: versionParams }
+            await this['template/postByIdVersions'](params)
 
             this.$emit('done')
             this.error = null
@@ -490,19 +642,6 @@ export default {
       })
     },
 
-    async patchTemplates() {
-      let params = {
-        name: this.form.name,
-        memo: this.form.memo,
-        cpu: this.form.resource.cpu,
-        memory: this.form.resource.memory,
-        gpu: this.form.resource.gpu,
-      }
-      await this['modelTemplate/patch']({
-        id: this.id,
-        params: params,
-      })
-    },
     async deleteTemplate() {
       try {
         await this['modelTemplate/delete'](this.id)
@@ -526,9 +665,16 @@ export default {
         registryId,
       )
     },
+    async selectEvaluationRegistry(registryId) {
+      await registrySelectorUtil.selectRegistry(
+        this.form.evaluation,
+        this['registrySelector/fetchImages'],
+        registryId,
+      )
+    },
     async selectPreprocessImage(image) {
       await registrySelectorUtil.selectImage(
-        this.form.form.preprocess,
+        this.form.preprocess,
         this['registrySelector/fetchTags'],
         this.form.preprocess.containerImage.registry.id,
         image,
@@ -540,6 +686,14 @@ export default {
         this.form.training,
         this['registrySelector/fetchTags'],
         this.form.training.containerImage.registry.id,
+        image,
+      )
+    },
+    async selectEvaluationImage(image) {
+      await registrySelectorUtil.selectImage(
+        this.form.evaluation,
+        this['registrySelector/fetchTags'],
+        this.form.evaluation.containerImage.registry.id,
         image,
       )
     },
@@ -560,7 +714,14 @@ export default {
         this.$store,
       )
     },
-
+    async selectEvaluationGit(gitId) {
+      await gitSelectorUtil.selectGit(
+        this.form.evaluation,
+        this['gitSelector/fetchRepositories'],
+        gitId,
+        this.$store,
+      )
+    },
     // repositoryの型がstring：手入力, object: 選択
     async selectPreprocessRepository(repository) {
       try {
@@ -588,6 +749,19 @@ export default {
         })
       }
     },
+    async selectEvaluationRepository(repository) {
+      try {
+        await gitSelectorUtil.selectRepository(
+          this.form.evaluation,
+          this['gitSelector/fetchBranches'],
+          repository,
+        )
+      } catch (message) {
+        this.$notify.error({
+          message: message,
+        })
+      }
+    },
     async selectPreprocessBranch(branchName) {
       await gitSelectorUtil.selectBranch(
         this.form.preprocess,
@@ -598,6 +772,13 @@ export default {
     async selectTrainingBranch(branchName) {
       await gitSelectorUtil.selectBranch(
         this.form.training,
+        this['gitSelector/fetchCommits'],
+        branchName,
+      )
+    },
+    async selectEvaluationBranch(branchName) {
+      await gitSelectorUtil.selectBranch(
+        this.form.evaluation,
         this['gitSelector/fetchCommits'],
         branchName,
       )

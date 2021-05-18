@@ -4,7 +4,9 @@ import api from '@/api/api'
 const state = {
   templates: [],
   total: 0,
+  versions: [],
   detail: {},
+  versionDetail: {},
 }
 
 // getters
@@ -15,14 +17,25 @@ const getters = {
   total(state) {
     return state.total
   },
-
+  versions(state) {
+    return state.versions
+  },
   detail(state) {
     return state.detail
+  },
+
+  versionDetail(state) {
+    return state.versionDetail
   },
 }
 
 // actions
 const actions = {
+  async fetchModelTemplate({ commit }, id) {
+    let detail = (await api.templates.admin.getById({ id: id })).data
+    commit('setDetail', { detail })
+  },
+
   async fetchModelTemplates({ commit }, params) {
     let response = await api.templates.admin.get(params)
     let templates = response.data
@@ -43,25 +56,35 @@ const actions = {
       commit('setTotal', parseInt(total))
     }
   },
-
-  async fetchDetail({ commit }, id) {
-    let detail = (await api.templates.admin.getById({ id: id })).data
-    commit('setDetail', { detail })
+  // eslint-disable-next-line no-unused-vars
+  async put({ commit }, params) {
+    return await api.templates.admin.put(params)
   },
-
   // eslint-disable-next-line no-unused-vars
   async post({ commit }, params) {
     return await api.templates.admin.post({ model: params })
   },
-
+  async fetchVersions({ commit }, id) {
+    let versions = (await api.templates.admin.getByIdVersions({ id: id })).data
+    commit('setVersions', { versions })
+  },
+  async fetchDetail({ commit }, params) {
+    let detail = (await api.templates.admin.getByIdVersionsByVersionId(params))
+      .data
+    commit('setVersionDetail', { detail })
+  },
   // eslint-disable-next-line no-unused-vars
-  async put({ commit }, { id, params }) {
-    return await api.templates.admin.put({ id: id, model: params })
+  async postByIdVersions({ commit }, params) {
+    return await api.templates.admin.postByIdVersions(params)
   },
 
   // eslint-disable-next-line no-unused-vars
-  async delete({ commit }, id) {
+  async delete({ state }, id) {
     await api.templates.admin.delete({ id: id })
+  },
+  // eslint-disable-next-line no-unused-vars
+  async deleteVersion({ state }, { id: id, versionId: versionId }) {
+    await api.templates.admin.deleteVersion({ id: id, versionId: versionId })
   },
 }
 
@@ -73,6 +96,12 @@ const mutations = {
 
   setDetail(state, { detail }) {
     state.detail = detail
+  },
+  setVersionDetail(state, { detail }) {
+    state.versionDetail = detail
+  },
+  setVersions(state, { versions }) {
+    state.versions = versions
   },
 
   setTotal(state, { total }) {

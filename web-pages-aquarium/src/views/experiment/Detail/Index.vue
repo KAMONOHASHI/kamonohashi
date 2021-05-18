@@ -12,26 +12,12 @@
     </el-row>
     <el-tabs v-model="activeName">
       <el-tab-pane label="実行情報" name="info">
-        <info v-model="infoForm" />
-      </el-tab-pane>
-      <el-tab-pane label="実行結果" name="result">
-        <result
-          :id="id"
-          :experiment-preprocess-history-id="
-            detail.experimentPreprocessHistoryId
-          "
-        />
+        <info :id="id" v-model="infoForm" />
       </el-tab-pane>
       <el-tab-pane label="推論" name="inference"><inference /> </el-tab-pane>
 
       <el-tab-pane label="デバッグ" name="debug"
-        ><debug
-          :id="id"
-          v-model="infoForm"
-          :experiment-preprocess-history-id="
-            detail.experimentPreprocessHistoryId
-          "
-        />
+        ><debug :id="id" v-model="infoForm" />
       </el-tab-pane>
     </el-tabs>
     <router-view @done="done" />
@@ -40,13 +26,12 @@
 
 <script>
 import Info from './Info'
-import Result from './Result'
 import Inference from './Inference'
 import Debug from './Debug'
 import { mapActions, mapGetters } from 'vuex'
 export default {
   title: '実験詳細',
-  components: { Info, Result, Inference, Debug },
+  components: { Info, Inference, Debug },
   props: {
     id: {
       type: String,
@@ -57,33 +42,13 @@ export default {
     return {
       iconname: 'pl-plus',
       name: null,
-      infoForm: {
-        id: null,
-        name: '',
-        status: '',
-        preprocessStatus: '',
-        experimentPreprocessHistoryId: null,
-        createdAt: '',
-        createdBy: '',
-        completedAt: '',
-        dataSetId: null,
-        dataSetName: '',
-        dataSetVersion: null,
-        templateId: null,
-        templateName: '',
-        templateVersion: null,
-        dataSetURL: '',
-        templateURL: '',
-      },
+      infoForm: null,
       activeName: 'info',
     }
   },
   computed: {
     ...mapGetters({
       detail: ['experiment/detail'],
-      events: ['experiment/events'],
-      dataSets: ['aquariumDataSet/dataSets'],
-      preprocessHistory: ['experiment/preprocessHistories'],
     }),
   },
 
@@ -91,56 +56,47 @@ export default {
     await this.initialize()
   },
   methods: {
-    ...mapActions([
-      'experiment/fetchDetail',
-      'experiment/fetchPreprocessHistories',
-      'experiment/fetchEvents',
-      'experiment/postUserCancel',
-      'experiment/postFiles',
-      'experiment/put',
-      'experiment/delete',
-      'experiment/deleteFile',
-      'aquariumDataSet/fetchDataSets',
-    ]),
+    ...mapActions(['experiment/fetchDetail']),
     async initialize() {
       this.title = '実験履歴'
       await this.retrieveData()
       this.name = this.detail.name
+      this.infoForm = {}
       this.infoForm.createdAt = this.detail.createdAt
       this.infoForm.createdBy = this.detail.createdBy
       this.infoForm.completedAt = this.detail.completedAt
       this.infoForm.id = this.detail.id
       this.infoForm.name = this.detail.name
       this.infoForm.status = this.detail.status
-      this.infoForm.dataSetId = this.detail.dataSet.aquariumDataSetId
-      this.infoForm.dataSetName = this.dataSets[0].name
-      this.infoForm.dataSetVersion = this.detail.dataSet.version
+
+      this.infoForm.dataSetId = this.detail.dataSet.id
+      this.infoForm.dataSetName = this.detail.dataSet.name
+      this.infoForm.dataSetVersion = this.detail.dataSetVersion.version
       this.infoForm.templateId = this.detail.template.id
       this.infoForm.templateName = this.detail.template.name
-      this.infoForm.templateVersion = this.detail.template.version
+      this.infoForm.templateVersion = this.detail.templateVersion.version
       this.infoForm.dataSetURL =
-        '/aquarium/dataset/detail/' + this.detail.dataSet.aquariumDataSetId
+        '/aquarium/dataset/detail/' + this.detail.dataSet.id
       this.infoForm.templateURL =
         '/aquarium/model-template/' + this.detail.template.id
-      this.infoForm.experimentPreprocessHistoryId = this.detail.experimentPreprocessHistoryId
-      this.infoForm.preprocessStatus = this.preprocessHistory.status
+
+      if (this.detail.preprocess != null) {
+        this.infoForm.preprocessId = this.detail.preprocess.id
+        this.infoForm.preprocessStatus = this.detail.preprocess.status
+      } else {
+        this.infoForm.preprocessId = null
+        this.infoForm.preprocessStatus = null
+      }
+      if (this.detail.training != null) {
+        this.infoForm.trainingId = this.detail.training.id
+        this.infoForm.trainingStatus = this.detail.training.status
+      } else {
+        this.infoForm.trainingId = null
+        this.infoForm.trainingStatus = null
+      }
     },
     async retrieveData() {
       await this['experiment/fetchDetail'](this.id)
-      if (
-        this.detail.statusType === 'Running' ||
-        this.detail.statusType === 'Error'
-      ) {
-        await this['experiment/fetchEvents'](this.detail.id)
-      }
-      await this['aquariumDataSet/fetchDataSets']({
-        id: this.detail.dataSet.aquariumDataSetId,
-      })
-      if (this.detail.experimentPreprocessHistoryId !== null) {
-        await this['experiment/fetchPreprocessHistories']({
-          id: this.detail.id,
-        })
-      }
     },
     async deleteJob() {
       try {

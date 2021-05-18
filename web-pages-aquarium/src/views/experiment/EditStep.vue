@@ -1,7 +1,9 @@
 <template>
   <div>
     <el-row :gutter="20" style="border-bottom:1px solid #CCC">
-      <h2>{{ templateName }}</h2>
+      <el-col :span="24">
+        <h2>{{ templateName }}</h2>
+      </el-col>
     </el-row>
     <el-row :gutter="20"><h2>新しい実験の開始</h2></el-row>
     <el-row :gutter="20">
@@ -12,140 +14,106 @@
           :rules="rules"
           element-loading-background="rgba(255, 255, 255, 0.7)"
         >
-          <!-- step 1 -->
-          <div class="step-title">
-            <div class="el-step__icon is-text ">
-              <div class="el-step__icon-inner">1</div>
-            </div>
-            実験名
-          </div>
-          <el-form
-            ref="form0"
-            :model="form"
-            :rules="rules"
-            style="margin:10px;padding: 0px 10px 10px 30px;border-left:2px solid #CCC"
-          >
+          <el-form-item label="実験名" prop="name">
             <kqi-display-error :error="error" />
-            <kqi-display-text-form v-if="isEditDialog" label="ID" :value="id" />
+            <el-input v-model="form.name" />
+          </el-form-item>
 
-            <el-form-item label="名前" prop="name">
-              <el-input v-model="form.name" />
-            </el-form-item>
-          </el-form>
-          <!-- step 2 -->
-          <div class="step-title">
-            <div class="el-step__icon is-text">
-              <div class="el-step__icon-inner">2</div>
-            </div>
-            データセットの選択
-          </div>
-          <el-form
-            ref="form1"
-            :model="form"
-            :rules="rules"
-            style="margin:10px;padding: 0px 10px 10px 30px;border-left:2px solid #CCC"
-          >
-            <el-button @click="drawer = true">データセットを選択</el-button>
-            <el-form-item label="" prop="dataset">
-              <el-input v-model="selectedDataSetVersionName" :disabled="true" />
-            </el-form-item>
-            <el-drawer
-              title="データセットの選択"
-              :visible.sync="drawer"
-              :direction="direction"
-              :before-close="closeDrawer"
-            >
-              <div style="overflow:auto;padding:20px;height:100%">
-                <h3 v-show="listType == 'dataSet'">データセット一覧</h3>
-                <h3 v-show="listType == 'version'">
-                  <i
-                    class="el-icon-arrow-left"
-                    style="margin-right:10px;cursor: pointer;"
-                    @click="backSelect"
-                  ></i
-                  >{{ selectedDataSetName }}
-                </h3>
-                <div
-                  style="overflow:auto;width:80%;height:60%;padding:20px;border:1px solid #CCC;border-radius:5px;margin-top:5px"
-                >
-                  <ul v-show="listType == 'dataSet'">
-                    <li
-                      v-for="itemD in dataSets"
-                      :key="itemD.id"
-                      class="li"
-                      style="list-style-type: none;padding-left:10px;cursor: pointer;"
-                      @click="selectDataSet(itemD, $event)"
-                    >
-                      id:{{ itemD.id }}, name:{{ itemD.name }}
-                    </li>
-                  </ul>
-                  <ul v-show="listType == 'version'">
-                    <li
-                      v-for="itemV in versions"
-                      :key="itemV.id"
-                      class="li"
-                      style="list-style-type: none;padding-left:10px;cursor: pointer;"
-                      @click="selectVersion(itemV, $event)"
-                    >
-                      V{{ itemV.version }}
-                    </li>
-                  </ul>
-                </div>
-                <el-row>
-                  <kqi-pagination
-                    v-show="listType == 'dataSet'"
-                    v-model="pageStatus"
-                    :total="total"
-                    @change="initialize"
-                /></el-row>
-                <el-row>
-                  <el-button
-                    type="plain"
-                    plain
-                    style="margin-top:10px"
-                    @click="select"
-                  >
-                    選択
-                  </el-button>
-                  <el-button
-                    type="plain"
-                    plain
-                    style="margin-top:10px"
-                    @click="closeDrawer"
-                  >
-                    キャンセル
-                  </el-button></el-row
-                >
-              </div>
-            </el-drawer>
-          </el-form>
-          <!-- step 3 -->
-          <!-- 
-          <div class="step-title">
-            <div class="el-step__icon is-text">
-              <div class="el-step__icon-inner">3</div>
-            </div>
-            リソースの選択
-          </div>
-          <el-form
-            ref="form2"
-            :model="form"
-            :rules="rules"
-            style="margin:10px;padding: 10px 10px 10px 30px;border-left:2px solid #CCC"
-          >
-            <el-radio v-model="selectResource" label="1"
-              >デフォルトのリソースを使用</el-radio
+          <el-form-item
+            label="データセットの選択"
+            prop="selectedDataSetVersionName"
+            ><kqi-display-error :error="error" />
+            <el-input
+              v-model="form.selectedDataSetVersionName"
+              :disabled="true"
+            /><el-button @click="drawer = true">データセットを選択</el-button>
+          </el-form-item>
+
+          <el-form-item
+            label=" テンプレートバージョン"
+            prop="templateVersionValue"
             ><br />
-            <el-radio v-model="selectResource" label="2"
-              >手動でリソース量を設定</el-radio
-            >
+            <kqi-display-error :error="error" />
+            <el-select v-model="form.templateVersionValue" placeholder="Select">
+              <el-option
+                v-for="item in templateVersions"
+                :key="item.value"
+                :label="item.version"
+                :value="item.id"
+              >
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-drawer
+            title="データセットの選択"
+            :visible.sync="drawer"
+            :direction="direction"
+            :before-close="closeDrawer"
+          >
+            <div style="overflow:auto;padding:20px;height:100%">
+              <h3 v-show="listType == 'dataSet'">データセット一覧</h3>
+              <h3 v-show="listType == 'version'">
+                <i
+                  class="el-icon-arrow-left"
+                  style="margin-right:10px;cursor: pointer;"
+                  @click="backSelect"
+                ></i
+                >{{ selectedDataSetName }}
+              </h3>
+              <div
+                style="overflow:auto;width:80%;height:60%;padding:20px;border:1px solid #CCC;border-radius:5px;margin-top:5px"
+              >
+                <ul v-show="listType == 'dataSet'">
+                  <li
+                    v-for="itemD in dataSets"
+                    :key="itemD.id"
+                    class="li"
+                    style="list-style-type: none;padding-left:10px;cursor: pointer;"
+                    @click="selectDataSet(itemD, $event)"
+                  >
+                    id:{{ itemD.id }}, name:{{ itemD.name }}
+                  </li>
+                </ul>
+                <ul v-show="listType == 'version'">
+                  <li
+                    v-for="itemV in versions"
+                    :key="itemV.id"
+                    class="li"
+                    style="list-style-type: none;padding-left:10px;cursor: pointer;"
+                    @click="selectVersion(itemV, $event)"
+                  >
+                    V{{ itemV.version }}
+                  </li>
+                </ul>
+              </div>
+              <el-row>
+                <kqi-pagination
+                  v-show="listType == 'dataSet'"
+                  v-model="pageStatus"
+                  :total="total"
+                  @change="initialize"
+              /></el-row>
+              <el-row>
+                <el-button
+                  type="plain"
+                  plain
+                  style="margin-top:10px"
+                  @click="select"
+                >
+                  選択
+                </el-button>
+                <el-button
+                  type="plain"
+                  plain
+                  style="margin-top:10px"
+                  @click="closeDrawer"
+                >
+                  キャンセル
+                </el-button></el-row
+              >
+            </div>
+          </el-drawer>
 
-            <el-row v-if="selectResource == 2" style="padding-left:30px">
-              <el-col :span="12">
-                <kqi-resource-selector v-model="form.resource" :quota="quota" />
-              </el-col>
-            </el-row>
-          </el-form>-->
           <span>
             <el-button type="primary" @click="submit">
               実験を開始する
@@ -160,13 +128,11 @@
 
 <script>
 import KqiDisplayError from '@/components/KqiDisplayError'
-import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
 import KqiPagination from '@/components/KqiPagination'
 import { mapActions, mapGetters } from 'vuex'
 export default {
   components: {
     KqiDisplayError,
-    KqiDisplayTextForm,
     KqiPagination,
   },
   props: {
@@ -185,7 +151,6 @@ export default {
       selectedDataSetName: null,
       selectedVersion: null,
       selectedVersionName: null,
-      selectedDataSetVersionName: null,
       searchCondition: {},
       pageStatus: {
         currentPage: 1,
@@ -196,21 +161,21 @@ export default {
       selectResource: 0,
       form: {
         name: null,
-
-        resource: {
-          cpu: 1,
-          memory: 1,
-          gpu: 0,
-        },
+        selectedDataSetVersionName: null,
+        templateVersionValue: null,
       },
       title: '',
       dialogVisible: true,
       error: null,
       isCreateDialog: false,
-      isEditDialog: false,
-
       rules: {
         name: [{ required: true, trigger: 'blur', message: '必須項目です' }],
+        selectedDataSetVersionName: [
+          { required: true, trigger: 'blur', message: '必須項目です' },
+        ],
+        templateVersionValue: [
+          { required: true, trigger: 'blur', message: '必須項目です' },
+        ],
       },
     }
   },
@@ -220,6 +185,8 @@ export default {
       dataSets: ['aquariumDataSet/dataSets'],
       total: ['aquariumDataSet/total'],
       templateDetail: ['template/detail'],
+
+      templateVersions: ['template/versions'],
     }),
   },
   watch: {
@@ -234,6 +201,8 @@ export default {
   methods: {
     ...mapActions([
       'template/fetchDetail',
+      'template/fetchModelTemplate',
+      'template/fetchVersions',
       'template/post',
       'template/put',
       'template/delete',
@@ -242,8 +211,17 @@ export default {
       'aquariumDataSet/fetchVersions',
     ]),
     async initialize() {
-      await this['template/fetchDetail'](this.templateId)
-
+      //テンプレートのバージョンリストを取得
+      await this['template/fetchVersions'](this.templateId)
+      await this['template/fetchModelTemplate'](this.templateId)
+      //最新テンプレートバージョンをセットしておく
+      for (let i in this.templateVersions) {
+        if (
+          this.templateVersions[i].version == this.templateDetail.latestVersion
+        ) {
+          this.form.templateVersionValue = this.templateVersions[i].id
+        }
+      }
       this.templateName = this.templateDetail.name
       //アクアリウムデータセットリストを取得
       let params = this.searchCondition
@@ -251,31 +229,6 @@ export default {
       params.perPage = this.pageStatus.currentPageSize
       params.withTotal = true
       await this['aquariumDataSet/fetchDataSets'](params)
-    },
-    async next() {
-      let form = null
-      switch (this.active) {
-        case 0:
-          form = this.$refs.form0
-          break
-        case 1:
-          form = this.$refs.form1
-          break
-        case 2:
-          form = this.$refs.form2
-          break
-      }
-      await form.validate(async valid => {
-        if (valid) {
-          this.active++
-        }
-      })
-    },
-
-    previous() {
-      if (this.active-- < 0) {
-        this.active = 0
-      }
     },
 
     closeDrawer() {
@@ -285,7 +238,7 @@ export default {
       this.selectedDataSet = null
       this.selectedDataSetName = null
       this.drawer = false
-      this.selectedDataSetVersionName = null
+      this.form.selectedDataSetVersionName = null
     },
     //バージョン一覧から戻るをクリック
     backSelect() {
@@ -333,7 +286,7 @@ export default {
         }
       } else if (this.listType == 'version') {
         if (this.selectedVersionName != null) {
-          this.selectedDataSetVersionName =
+          this.form.selectedDataSetVersionName =
             'dataset id:' +
             this.selectedDataSet.id +
             ' dataset name:' +
@@ -357,6 +310,7 @@ export default {
               dataSetId: this.selectedVersion.aquariumDataSetId,
               dataSetVersionId: this.selectedVersion.id,
               templateId: this.templateId,
+              templateVersionId: this.form.templateVersionValue,
               options: null,
             }
             await this['experiment/post'](params)

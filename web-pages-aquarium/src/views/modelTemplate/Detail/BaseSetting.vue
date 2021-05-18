@@ -15,14 +15,13 @@
               <div style="display:block">
                 <el-radio
                   v-model.number="form.accessLevel"
-                  v-bind:label="1"
+                  :label="1"
                   style="display:block"
                   >現在のテナント
                 </el-radio>
-
                 <el-radio
                   v-model.number="form.accessLevel"
-                  v-bind:label="2"
+                  :label="2"
                   style="display:block"
                   >全テナントに公開</el-radio
                 >
