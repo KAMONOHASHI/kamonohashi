@@ -461,7 +461,7 @@ namespace Nssol.Platypus.Logic
         };
         internal static MenuItemInfo ExperimentMenu = new MenuItemInfo()
         {
-            Name = "実験",
+            Name = "新規実験",
             NameEn = "Experiment",
             Description = "新規に実験を実行する",
             DescriptionEn = "Start New Experiment",
@@ -478,7 +478,7 @@ namespace Nssol.Platypus.Logic
             NameEn = "ExperimentHistory",
             Description = "実行中の実験のステータスを確認、過去の実験のデータを閲覧する",
             DescriptionEn = "Managing Experiment Status and Histories",
-            Category = "aq-experiment",
+            Category = "aq-experiment-history",
             Code = MenuCode.ExperimentHistory,
             Url = "/aquarium/experiment",
             ShowTopMenu = true,
@@ -703,6 +703,7 @@ namespace Nssol.Platypus.Logic
         private static IEnumerable<MenuItemInfo> AquariumMenuTree = new List<MenuItemInfo>()
         {
             AquariumDataSetMenu,
+            ExperimentMenu,
             ExperimentHistoryMenu,
             TemplateMenu,
             new MenuItemInfo()

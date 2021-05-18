@@ -77,6 +77,12 @@ namespace Nssol.Platypus.Models.TenantModels
         public string ContainerTag { get; set; }
 
         /// <summary>
+        /// JupyterLabのバージョン
+        /// </summary>
+        [Required]
+        public string JupyterLabVersion { get; set; }
+
+        /// <summary>
         /// ユーザが定義可能なKeyValue値のJson。
         /// Keyが環境変数名、Valueがその値になる。
         /// </summary>
