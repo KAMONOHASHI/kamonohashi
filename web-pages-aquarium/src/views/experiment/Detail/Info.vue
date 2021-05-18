@@ -2,8 +2,14 @@
   <div>
     <h2>実験情報</h2>
     <el-row style="padding-top:20px;padding-bottom:40px">
-      <el-col :span="8">学習の情報を確認できます。</el-col
-      ><el-col :span="6"
+      <el-col :span="8">学習の情報を確認できます。</el-col>
+      <el-col :span="6">
+        <aqualium-tensorboard-handler
+          :id="String(id)"
+          :visible="tesorboardVisible"
+        />
+      </el-col>
+      <el-col :span="6"
         ><el-button plain @click="deleteExperimentDialog = true"
           >実験削除</el-button
         ></el-col
@@ -113,7 +119,7 @@
         </router-link>
       </el-col>
       <el-col :span="12">
-        <router-link :to="value.templateURL">
+        <div style="cursor: pointer;" @click="templateClick()">
           <el-card
             class="info"
             style="border: solid 1px #ebeef5;  width: 550px; height: 280px;"
@@ -140,21 +146,26 @@
               詳細
             </div>
           </el-card>
-        </router-link>
+        </div>
       </el-col>
     </el-row>
   </div>
 </template>
 
 <script>
-import { createNamespacedHelpers } from 'vuex'
-const { mapGetters, mapActions } = createNamespacedHelpers('experiment')
-
+import AqualiumTensorboardHandler from './AqualiumTensorboardHandler.vue'
+import { mapActions, mapGetters } from 'vuex'
 export default {
   title: '実験情報',
-  components: {},
+  components: { AqualiumTensorboardHandler },
   props: {
     // 選択した実験情報
+
+    id: {
+      type: String,
+      default: null,
+    },
+
     value: {
       type: Object,
       default: () => ({
@@ -171,24 +182,48 @@ export default {
   },
   data() {
     return {
+      tesorboardVisible: true,
       deleteExperimentDialog: false,
     }
   },
   computed: {
-    ...mapGetters(['detail']),
+    ...mapGetters({ detail: ['experiment/detail'] }),
   },
 
   methods: {
     ...mapActions([
-      'fetchDetail',
-      'postUserCancel',
-      'postFiles',
-      'put',
-      'delete',
-      'deleteFile',
+      'experiment/fetchDetail',
+      'experiment/postUserCancel',
+      'experiment/postFiles',
+      'experiment/put',
+      'experiment/delete',
+      'experiment/deleteFile',
+      'cluster/fetchQuota',
     ]),
+    async templateClick() {
+      let err = false
+      try {
+        await this['cluster/fetchQuota']()
+      } catch (e) {
+        err = true
+      } finally {
+        if (err == false) {
+          //エラーが無い場合はテンプレート詳細に遷移する
+          this.$router.push(this.value.templateURL)
+        } else {
+          //エラーがある場合は元の画面に遷移してエラーメッセージを出す
+          this.$router.push('/aquarium/experiment/detail/' + this.value.id)
+          this.$notify.error({
+            title: '権限がありません',
+            message:
+              'この実験に使用されたテンプレートの詳細にアクセスする権限がありません',
+            duration: 0,
+          })
+        }
+      }
+    },
     deleteExperiment() {
-      this.delete(this.detail.id)
+      this['experiment/delete'](this.detail.id)
     },
     tagType(val) {
       let tag = null

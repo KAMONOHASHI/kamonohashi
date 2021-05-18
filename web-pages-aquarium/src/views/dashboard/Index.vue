@@ -90,7 +90,7 @@ export default {
       })
 
       this.allMenues[1].menus = this.menuList.filter(menu => {
-        return menu.category === 'aq-experiment'
+        return menu.category.startsWith('aq-experiment')
       })
 
       this.allMenues[2].menus = this.menuList.filter(menu => {

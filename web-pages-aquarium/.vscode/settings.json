@@ -1,8 +1,4 @@
-{"recommendations": [
-        "octref.vetur",
-        "dbaeumer.vscode-eslint"
-    ],
-  "editor.codeActionsOnSave": {
+{"editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
   },
   "editor.codeActionsOnSaveTimeout": 7500,

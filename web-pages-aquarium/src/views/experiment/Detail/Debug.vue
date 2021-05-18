@@ -1,18 +1,18 @@
 <template>
   <div>
     <h2>DEBUG</h2>
-    <div v-if="value != null" class="confusion-matrix">
-      <el-row style="margin-bottom:10px">
-        <el-col :span="6">実験ID</el-col>
-        <el-col :span="18"> {{ id }}</el-col>
+    <div v-if="value != null" class="debug-list">
+      <el-row>
+        <el-col :span="8">実験ID</el-col>
+        <el-col :span="16"> {{ id }}</el-col>
       </el-row>
-      <el-row style="margin-bottom:10px">
-        <el-col :span="6">実験前処理ID</el-col>
-        <el-col :span="18"> {{ value.preprocessId }}</el-col>
+      <el-row>
+        <el-col :span="8">実験前処理ID</el-col>
+        <el-col :span="16"> {{ value.preprocessId }}</el-col>
       </el-row>
-      <el-row style="margin-bottom:10px">
-        <el-col :span="6">前処理ログ</el-col>
-        <el-col :span="18">
+      <el-row>
+        <el-col :span="8">前処理ログ</el-col>
+        <el-col :span="16">
           <div class="el-input">
             <div v-if="preprocessLogFileData">
               <div
@@ -29,9 +29,9 @@
           </div>
         </el-col>
       </el-row>
-      <el-row style="margin-bottom:10px">
-        <el-col :span="6">学習ログ</el-col>
-        <el-col :span="18">
+      <el-row>
+        <el-col :span="8">学習ログ</el-col>
+        <el-col :span="16">
           <div class="el-input">
             <div v-if="trainingLogFileData">
               <div v-for="(logFile, index) in trainingLogFileData" :key="index">
@@ -45,17 +45,13 @@
           </div>
         </el-col>
       </el-row>
-      <el-row style="margin-bottom:10px">
-        <el-col :span="6">前処理ステータス</el-col>
-        <el-col :span="18">{{ value.preprocessStatus }}</el-col>
+      <el-row>
+        <el-col :span="8">前処理ステータス</el-col>
+        <el-col :span="16">{{ value.preprocessStatus }}</el-col>
       </el-row>
-      <el-row style="margin-bottom:10px">
-        <el-col :span="6">学習ステータス</el-col>
-        <el-col :span="18">{{ value.trainingStatus }}</el-col>
-      </el-row>
-      <el-row style="margin-bottom:10px">
-        <el-col :span="6"></el-col>
-        <el-col :span="18"></el-col>
+      <el-row>
+        <el-col :span="8">学習ステータス</el-col>
+        <el-col :span="16">{{ value.trainingStatus }}</el-col>
       </el-row>
     </div>
   </div>
@@ -139,8 +135,13 @@ export default {
   text-align: left;
   width: 120px;
 }
-.confusion-matrix {
+.debug-list {
   margin: 40px 0;
+  width: 60%;
+}
+.debug-list .el-row {
+  padding: 15px;
+  border-bottom: 1px solid rgb(235, 238, 245);
 }
 h3 {
   font-size: 20px;

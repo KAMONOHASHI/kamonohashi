@@ -498,7 +498,8 @@ namespace Nssol.Platypus.Controllers.spa
                 StartedAt = DateTime.Now,
                 ExpiresIn = model.ExpiresIn,
                 LocalDataSet = model.LocalDataSet,
-                EntryPoint = model.EntryPoint
+                EntryPoint = model.EntryPoint,
+                JupyterLabVersion = model.JupyterLabVersion
             };
 
             //コンテナが指定されているかチェック
@@ -512,8 +513,8 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 //コンテナイメージの設定がない場合デフォルトのイメージを設定
                 notebookHistory.ContainerRegistryId = null;
-                notebookHistory.ContainerImage = "tensorflow/tensorflow";
-                notebookHistory.ContainerTag = "1.13.1-gpu-py3";
+                notebookHistory.ContainerImage = "kamonohashi/jupyterlab";
+                notebookHistory.ContainerTag = "tensorflow-2.2.0";
             }
 
             //gitが指定されているかチェック
@@ -544,6 +545,13 @@ namespace Nssol.Platypus.Controllers.spa
                 notebookHistory.ModelRepositoryOwner = model.GitModel.Owner;
                 notebookHistory.ModelBranch = branch;
                 notebookHistory.ModelCommitId = commitId;
+            }
+
+            // JupyterLabのバージョンが指定されているかチェック
+            if (notebookHistory.JupyterLabVersion == null)
+            {
+                // null または 空文字 の場合はデフォルトのバージョンを指定
+                notebookHistory.JupyterLabVersion = "2.3.1";
             }
 
             if (notebookHistory.OptionDic.ContainsKey("")) //空文字は除外する
@@ -778,8 +786,8 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 // コンテナイメージの設定がない場合デフォルトのイメージを設定
                 notebookHistory.ContainerRegistryId = null;
-                notebookHistory.ContainerImage = "tensorflow/tensorflow";
-                notebookHistory.ContainerTag = "1.13.1-gpu-py3";
+                notebookHistory.ContainerImage = "kamonohashi/jupyterlab";
+                notebookHistory.ContainerTag = "tensorflow-2.2.0";
             }
             // gitが指定されているかチェック
             if (model.GitModel != null)
@@ -818,6 +826,17 @@ namespace Nssol.Platypus.Controllers.spa
                 notebookHistory.ModelRepositoryOwner = null;
                 notebookHistory.ModelBranch = null;
                 notebookHistory.ModelCommitId = null;
+            }
+
+            // JupyterLabのバージョンが指定されているかチェック
+            if (model.JupyterLabVersion == null)
+            {
+                // null または 空文字 の場合はデフォルトのバージョンを指定
+                notebookHistory.JupyterLabVersion = "2.3.1";
+            }
+            else
+            {
+                notebookHistory.JupyterLabVersion = model.JupyterLabVersion;
             }
 
             // 各リソースの超過チェック

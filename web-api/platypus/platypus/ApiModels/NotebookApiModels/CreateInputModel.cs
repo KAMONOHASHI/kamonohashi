@@ -27,6 +27,11 @@ namespace Nssol.Platypus.ApiModels.NotebookApiModels
         public long? DataSetId { get; set; }
 
         /// <summary>
+        /// jupyterLabバージョン情報
+        /// </summary>
+        public string JupyterLabVersion { get; set; }
+
+        /// <summary>
         /// 親学習履歴ID
         /// </summary>
         public IEnumerable<long> ParentIds { get; set; }
