@@ -10,8 +10,8 @@ using Nssol.Platypus.DataAccess;
 namespace Nssol.Platypus.Migrations
 {
     [DbContext(typeof(CommonDbContext))]
-    [Migration("20210318002851_v2.3.0g")]
-    partial class v230g
+    [Migration("20210520082634_v3.0.0")]
+    partial class v300
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -347,6 +347,8 @@ namespace Nssol.Platypus.Migrations
 
                     b.Property<string>("EvaluationContainerTag");
 
+                    b.Property<string>("EvaluationContainerToken");
+
                     b.Property<int>("EvaluationCpu");
 
                     b.Property<string>("EvaluationEntryPoint");
@@ -365,6 +367,8 @@ namespace Nssol.Platypus.Migrations
 
                     b.Property<string>("EvaluationRepositoryOwner");
 
+                    b.Property<string>("EvaluationRepositoryToken");
+
                     b.Property<DateTime>("ModifiedAt");
 
                     b.Property<string>("ModifiedBy")
@@ -375,6 +379,8 @@ namespace Nssol.Platypus.Migrations
                     b.Property<long?>("PreprocessContainerRegistryId");
 
                     b.Property<string>("PreprocessContainerTag");
+
+                    b.Property<string>("PreprocessContainerToken");
 
                     b.Property<int>("PreprocessCpu");
 
@@ -394,6 +400,8 @@ namespace Nssol.Platypus.Migrations
 
                     b.Property<string>("PreprocessRepositoryOwner");
 
+                    b.Property<string>("PreprocessRepositoryToken");
+
                     b.Property<long>("TemplateId");
 
                     b.Property<string>("TrainingContainerImage")
@@ -403,6 +411,8 @@ namespace Nssol.Platypus.Migrations
 
                     b.Property<string>("TrainingContainerTag")
                         .IsRequired();
+
+                    b.Property<string>("TrainingContainerToken");
 
                     b.Property<int>("TrainingCpu");
 
@@ -426,6 +436,8 @@ namespace Nssol.Platypus.Migrations
 
                     b.Property<string>("TrainingRepositoryOwner")
                         .IsRequired();
+
+                    b.Property<string>("TrainingRepositoryToken");
 
                     b.Property<long>("Version");
 
@@ -1155,6 +1167,9 @@ namespace Nssol.Platypus.Migrations
                     b.Property<bool>("Favorite");
 
                     b.Property<int>("Gpu");
+
+                    b.Property<string>("JupyterLabVersion")
+                        .IsRequired();
 
                     b.Property<bool>("LocalDataSet");
 
