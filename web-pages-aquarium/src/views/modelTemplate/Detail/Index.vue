@@ -170,7 +170,11 @@ export default {
       await this.deleteVersion({ id: this.id, versionId: this.versionValue })
       this.deleteVersionDialog = false
       this.versionValue = null
+      this.preprocForm = null
+      this.trainingForm = null
+      this.evaluationForm = null
       this.retrieveData()
+
       //再描画
       this.$forceUpdate()
       await this.$notify.success({
@@ -213,6 +217,7 @@ export default {
           gpu: this.versionDetail.preprocessGpu,
         },
       }
+
       this.trainingForm = {
         name: 'trainingForm',
         containerImage: { ...this.versionDetail.trainingContainerImage },
