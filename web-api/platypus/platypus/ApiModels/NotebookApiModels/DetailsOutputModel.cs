@@ -80,6 +80,8 @@ namespace Nssol.Platypus.ApiModels.NotebookApiModels
             Gpu = history.Gpu;
             Partition = history.Partition;
 
+            JupyterLabVersion = history.JupyterLabVersion;
+
             ExpiresIn = history.ExpiresIn;
             LocalDataSet = history.LocalDataSet;
 
@@ -164,6 +166,11 @@ namespace Nssol.Platypus.ApiModels.NotebookApiModels
         /// パーティション
         /// </summary>
         public string Partition { get; set; }
+
+        /// <summary>
+        /// JupyterLabのバージョン
+        /// </summary>
+        public string JupyterLabVersion { get; set; }
 
         /// <summary>
         /// ステータスの種類。

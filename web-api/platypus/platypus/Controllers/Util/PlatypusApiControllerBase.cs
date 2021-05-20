@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Logging;
 using Nssol.Platypus.ApiModels;
 using Nssol.Platypus.Filters;
@@ -173,6 +174,13 @@ namespace Nssol.Platypus.Controllers.Util
             //return new CustomJsonResult(400, new JsonErrorResponse() { Errors = new List<JsonErrorMessage>() { new JsonErrorMessage() { Message = message, Code = 1 } } });
             return JsonError(HttpStatusCode.BadRequest, message);
         }
+        protected static JsonResult DoJsonBadRequest(System.Type type, string requestUrl, ModelStateDictionary modelState,
+            string message = null)
+        {
+            //return new CustomJsonResult(400, new JsonErrorResponse() { Errors = new List<JsonErrorMessage>() { new JsonErrorMessage() { Message = message, Code = 1 } } });
+            return DoJsonError(HttpStatusCode.BadRequest, message,
+                type, requestUrl, modelState);
+        }
 
         /// <summary>
         /// ModelStateから入力値検査エラーを取得し、既定されたJSON形式の BadRequest として返す
@@ -196,6 +204,13 @@ namespace Nssol.Platypus.Controllers.Util
             return JsonError(HttpStatusCode.NotFound, message);
         }
 
+        protected static JsonResult DoJsonNotFound(System.Type type, string requestUrl, ModelStateDictionary modelState,
+            string message = null)
+        {
+            return DoJsonError(HttpStatusCode.NotFound, message,
+                type, requestUrl, modelState);
+        }
+
         /// <summary>
         /// 既定されたJSON形式の Conflict を返す
         /// </summary>
@@ -205,6 +220,13 @@ namespace Nssol.Platypus.Controllers.Util
             return JsonError(HttpStatusCode.Conflict, message);
         }
 
+        protected static JsonResult DoJsonConflict(System.Type type, string requestUrl, ModelStateDictionary modelState, 
+            string message = null)
+        {
+            return DoJsonError(HttpStatusCode.Conflict, message,
+                type, requestUrl, modelState);
+        }
+
         /// <summary>
         /// 既定されたJSON形式のエラーメッセージを返す
         /// </summary>
@@ -212,14 +234,20 @@ namespace Nssol.Platypus.Controllers.Util
         /// <param name="message">送信するエラーメッセージ</param>
         protected JsonResult JsonError(HttpStatusCode status, string message)
         {
+            return DoJsonError(status, message, this.GetType(), RequestUrl, ModelState);
+        }
+
+        protected static JsonResult DoJsonError(HttpStatusCode status, string message,
+            System.Type type, string requestUrl, ModelStateDictionary modelState)
+        {
             var response = new JsonErrorResponse()
             {
-                Type = this.GetType().FullName,
+                Type = type.FullName,
                 Title = message,
-                Instance = RequestUrl
+                Instance = requestUrl
             };
 
-            var errors = ModelState?.Values.SelectMany(x => x.Errors);
+            var errors = modelState?.Values.SelectMany(x => x.Errors);
             if (errors != null && errors.Count() > 0)
             {
                 //エラーメッセージがあればそれを出力。なければExceptionのエラーメッセージを出力。
@@ -233,7 +261,7 @@ namespace Nssol.Platypus.Controllers.Util
         /// 既定されたJSON形式の OK を返す
         /// </summary>
         /// <param name="data">送信するJSONデータ</param>
-        protected JsonResult JsonOK(object data)
+        protected static JsonResult JsonOK(object data)
         {
             return new CustomJsonResult((int)HttpStatusCode.OK, data);
         }
@@ -242,7 +270,7 @@ namespace Nssol.Platypus.Controllers.Util
         /// 既定されたJSON形式の NotFound を返す
         /// </summary>
         /// <param name="data">送信するJSONデータ</param>
-        protected JsonResult JsonCreated(object data)
+        protected static JsonResult JsonCreated(object data)
         {
             return new CustomJsonResult((int)HttpStatusCode.Created, data);
         }
@@ -250,7 +278,7 @@ namespace Nssol.Platypus.Controllers.Util
         /// <summary>
         /// 既定されたJSON形式の NoContent を返す
         /// </summary>
-        protected JsonResult JsonNoContent()
+        protected static JsonResult JsonNoContent()
         {
             return new CustomJsonResult((int)HttpStatusCode.NoContent, null);
         }

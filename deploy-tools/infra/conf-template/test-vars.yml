@@ -1,8 +1,0 @@
-# 空の場合にエラーが出るのを回避する
-dummy_data_test: ''
-
-# insecure registryのテストを行う場合はコメントアウトをはずす
-# registry_server: "<server>:<port>" # docker loginで指定するサーバー
-# registry_user: "" # docker loginで使用するユーザー
-# registry_password: "" # docker loginで使用するユーザーのパスワード
-# test_image: "" # docker pullで指定するイメージ

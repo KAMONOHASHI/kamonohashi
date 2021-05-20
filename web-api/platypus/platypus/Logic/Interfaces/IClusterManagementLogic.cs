@@ -36,9 +36,8 @@ namespace Nssol.Platypus.Logic.Interfaces
         /// <summary>
         /// 新規に画像認識の訓練用コンテナを作成する。
         /// </summary>
-        /// <param name="trainHistory">対象の学習履歴</param>
         /// <returns>作成したコンテナのステータス</returns>
-        Task<Result<ContainerInfo, string>> RunTrainContainerAsync(TrainingHistory trainHistory);
+        Task<Result<ContainerInfo, string>> RunTrainContainerAsync(TrainingHistory trainHistory, string scriptType, string registryTokenName, string gitToken);
 
         /// <summary>
         /// 新規に画像認識の推論用コンテナを作成する。
@@ -195,6 +194,8 @@ namespace Nssol.Platypus.Logic.Interfaces
         /// idempotentを担保。
         /// </summary>
         Task<bool> RegistRegistryToTenantAsync(string selectedTenantName, UserTenantRegistryMap userRegistryMap);
+
+        Task<bool> RegistRegistryToTenantAsync(string tokenKey, string url, Registry registry, string selectedTenantName, string userName, string password);
 
         /// <summary>
         /// 指定したテナントを作成する。

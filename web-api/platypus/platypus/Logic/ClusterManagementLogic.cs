@@ -34,7 +34,6 @@ namespace Nssol.Platypus.Logic
         private readonly IVersionLogic versionLogic;
         private readonly IClusterManagementService clusterManagementService;
         private readonly ContainerManageOptions containerOptions;
-        private readonly ActiveDirectoryOptions adOptions;
 
         /// <summary>
         /// コンストラクタ
@@ -50,8 +49,7 @@ namespace Nssol.Platypus.Logic
             IGitLogic gitLogic,
             IRegistryLogic registryLogic,
             IVersionLogic versionLogic,
-            IOptions<ContainerManageOptions> containerOptions,
-            IOptions<ActiveDirectoryOptions> adOptions
+            IOptions<ContainerManageOptions> containerOptions
             ) : base(commonDiLogic)
         {
             this.tensorBoardContainerRepository = tensorBoardContainerRepository;
@@ -64,7 +62,6 @@ namespace Nssol.Platypus.Logic
             this.versionLogic = versionLogic;
             this.unitOfWork = unitOfWork;
             this.containerOptions = containerOptions.Value;
-            this.adOptions = adOptions.Value;
         }
 
         #region コンテナ管理
@@ -404,7 +401,8 @@ namespace Nssol.Platypus.Logic
         /// </summary>
         /// <param name="trainHistory">対象の学習履歴</param>
         /// <returns>作成したコンテナのステータス</returns>
-        public async Task<Result<ContainerInfo, string>> RunTrainContainerAsync(TrainingHistory trainHistory)
+        public async Task<Result<ContainerInfo, string>> RunTrainContainerAsync(TrainingHistory trainHistory, string scriptType,
+            string regisryTokenName, string gitToken)
         {
             string token = await GetUserAccessTokenAsync();
             if (token == null)
@@ -417,7 +415,7 @@ namespace Nssol.Platypus.Logic
                 CurrentUserInfo.SelectedTenant.DefaultGitId.Value : trainHistory.ModelGitId;
 
             var registryMap = registryLogic.GetCurrentRegistryMap(trainHistory.ContainerRegistryId.Value);
-            var gitEndpointResult = await gitLogic.GetPullUrlAsync(gitId, trainHistory.ModelRepository, trainHistory.ModelRepositoryOwner);
+            var gitEndpointResult = await gitLogic.GetPullUrlAsync(gitId, trainHistory.ModelRepository, trainHistory.ModelRepositoryOwner, gitToken);
 
             if (! gitEndpointResult.IsSuccess) {
                 return Result<ContainerInfo, string>.CreateErrorResult(gitEndpointResult.Error);
@@ -477,7 +475,7 @@ namespace Nssol.Platypus.Logic
                 LoginUser = CurrentUserInfo.Alias, //アカウントはエイリアスから指定
                 Name = trainHistory.Key,
                 ContainerImage = registryMap.Registry.GetImagePath(trainHistory.ContainerImage, trainHistory.ContainerTag),
-                ScriptType = "training",
+                ScriptType = scriptType,
                 Cpu = trainHistory.Cpu,
                 Memory = trainHistory.Memory,
                 Gpu = trainHistory.Gpu,
@@ -532,7 +530,7 @@ namespace Nssol.Platypus.Logic
                 EntryPoint = trainHistory.EntryPoint,
 
                 ClusterManagerToken = token,
-                RegistryTokenName = registryMap.RegistryTokenKey,
+                RegistryTokenName = regisryTokenName ?? registryMap.RegistryTokenKey,
                 IsNodePort = true
             };
             // 親を指定した場合は親の出力結果を/kqi/parentにマウント
@@ -982,7 +980,7 @@ namespace Nssol.Platypus.Logic
                 Configuration = outModel.Value.Configuration
             };
         }
-
+        
         /// <summary>
         /// 指定したTensorBoardコンテナのステータスをクラスタ管理サービスに問い合わせ、結果でDBを更新する。
         /// </summary>
@@ -1095,7 +1093,8 @@ namespace Nssol.Platypus.Logic
                 { "LC_ALL", "C.UTF-8"},  // python実行時のエラー回避
                 { "LANG", "C.UTF-8"},  // python実行時のエラー回避
                 { "EXPIRES_IN", notebookHistory.ExpiresIn != 0 ? notebookHistory.ExpiresIn.ToString() : "infinity"},  // コンテナ生存期間
-                { "LOCAL_DATASET", notebookHistory.LocalDataSet.ToString() }  // ローカルにデータをコピーするか否か
+                { "LOCAL_DATASET", notebookHistory.LocalDataSet.ToString() },  // ローカルにデータをコピーするか否か
+                { "JUPYTERLAB_VERSION", notebookHistory.JupyterLabVersion }
             };
 
             //コンテナを起動するために必要な設定値をインスタンス化
@@ -1550,6 +1549,28 @@ namespace Nssol.Platypus.Logic
             };
             return await clusterManagementService.RegistRegistryTokenyAsync(inModel);
         }
+
+        /// <summary>
+        /// クラスタ管理サービス上で、指定したユーザ＆テナントにコンテナレジストリを登録する。
+        /// idempotentを担保。
+        /// </summary>
+        public async Task<bool> RegistRegistryToTenantAsync(string tokenKey, string url, Registry registry, string selectedTenantName, string userName, string password)
+        {
+            string dockerCfg = registryLogic.GetDockerCfgAuthString(registry, userName, password);
+            if (dockerCfg == null)
+            {
+                return false;
+            }
+            var inModel = new RegistRegistryTokenInputModel()
+            {
+                TenantName = selectedTenantName,
+                RegistryTokenKey = tokenKey,
+                DockerCfgAuthString = dockerCfg,
+                Url = url,
+            };
+            return await clusterManagementService.RegistRegistryTokenyAsync(inModel);
+        }
+
 
         /// <summary>
         /// 指定したテナントを作成する。

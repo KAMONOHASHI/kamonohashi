@@ -37,10 +37,33 @@ data:
         done </kqi/tmp/datapairs.txt
     fi
   main: |
-    if which pip3 > /dev/null 2>&1; then
-        pip3 install jupyterlab==1.0.4
+    jupyter lab --version > /dev/null 2>&1
+    if [ $? -ne 0 ]; then
+        echo "install jupyterlab ${JUPYTERLAB_VERSION}"
+        if which pip3 > /dev/null 2>&1; then
+            pip3 install --upgrade pip
+            pip3 install jupyterlab==${JUPYTERLAB_VERSION}
+        else
+            pip install --upgrade pip
+            pip install jupyterlab==${JUPYTERLAB_VERSION}
+        fi
+        
+        # workaround for jupyter bug(https://github.com/KAMONOHASHI/kamonohashi/issues/468)
+        if which python3 > /dev/null 2>&1; then
+            PYTHON_MINOR_VER=$(python3 -c "import sys; print(sys.version_info[1])")
+        else
+            PYTHON_MINOR_VER=$(python -c "import sys; print(sys.version_info[1])")
+        fi
+        if [ $PYTHON_MINOR_VER -le 5 ]; then
+            echo "install jupyter-client 6.1.12."
+            if which pip3 > /dev/null 2>&1; then
+                pip3 install jupyter-client==6.1.12
+            else
+                pip install jupyter-client==6.1.12
+            fi
+        fi
     else
-        pip install jupyterlab==1.0.4
+        echo "skip jupyterlab installation.(Jupyterlab $(jupyter lab --version) is already installed.)"
     fi
     if [ ! -L /kqi/output/input ]; then
         ln -s /kqi/input/ /kqi/output/input

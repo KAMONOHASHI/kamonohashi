@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "@(Model.Name)"
+  namespace: "@(Model.NameSpace)"
+data:
+  prepare: |
+    bash /kqi/scripts/common/show-logo
+    bash /kqi/scripts/common/prepare-kqi-conf
+    bash /kqi/scripts/common/prepare-git
+
+    echo "------------------------- [KAMONOHASHI Prepare] deploy dataset $DATASET_ID into /kqi/input . -------------------------"
+    kqi dataset get -d /kqi/input/meta.json $DATASET_ID && kqi dataset list-path-pairs $DATASET_ID > /kqi/tmp/datapairs.txt
+    if [ $? -ne 0 ]; then
+        echo "dataset get failed"
+        kqi training halt $TRAINING_ID
+    fi
+
+    # default: create symlink to raw-data, $LOCAL_DATASET = True : copy raw-data to local
+    prepare_cmd='ln -s "/kqi/raw/${stored_path}" "/kqi/input/${file_path_c_quote}"'
+    if [ $LOCAL_DATASET = "True" ]; then
+        prepare_cmd='cp "/kqi/raw/${stored_path}" "/kqi/input/${file_path_c_quote}"'
+    fi
+    while true
+    do
+        read -r file_path
+        read -r stored_path
+        if [ -z "$stored_path" ] ; then break; fi
+        printf -v file_path_c_quote %b "$file_path"
+        mkdir -p /kqi/input/$(dirname "${file_path}") && eval ${prepare_cmd}
+        if [ $? -ne 0 ]; then
+            echo "create dataset failed"
+            kqi training halt $TRAINING_ID
+            exit 0
+        fi
+    done </kqi/tmp/datapairs.txt
+  main: |
+    bash /kqi/scripts/common/wait-ready
+    cd /kqi/git
+    echo "------------------------- [KAMONOHASHI Main] start main command -------------------------"
+    @Raw(Model.EntryPoint)
+    bash /kqi/scripts/common/notify-finish $?
+  finish: |
+    bash /kqi/scripts/common/prepare-kqi-conf
+    bash /kqi/scripts/common/wait-finish
+
+    if [ $ZIP_FILE_CREATED = "True" ] && [ $(cat /kqi/tmp/result_exit_code) -eq 0 ]
+    then
+        echo "------------------------- [KAMONOHASHI Finish] zip /kqi/output  -------------------------"
+        zip -r /kqi/tmp/@Raw(Model.ScriptType)_output_${TRAINING_ID}.zip /kqi/output && mv /kqi/tmp/@Raw(Model.ScriptType)_output_${TRAINING_ID}.zip /kqi/attach
+        echo $? > /kqi/tmp/result_exit_code
+    fi
+  
+    if [ $(cat /kqi/tmp/result_exit_code) -eq 0 ]
+    then
+      echo "------------------------- [KAMONOHASHI Finish] retrun code is 0. complete  -------------------------"
+      kqi training complete $TRAINING_ID
+      curl "${KQI_SERVER}/api/v2/experiment/${EXPERIMENT_ID}/preprocessing/complete" --data "" --output /dev/null -H "accept: application/json" -H "Authorization: Bearer ${KQI_TOKEN}" --fail --speed-time 30 --silent --show-error --connect-timeout 30
+    else
+      echo "------------------------- [KAMONOHASHI Finish] retrun code is $RESULT. kill  -------------------------"
+      kqi training halt $TRAINING_ID
+    fi
+   

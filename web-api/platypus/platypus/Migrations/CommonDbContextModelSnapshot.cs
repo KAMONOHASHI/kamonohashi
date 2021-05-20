@@ -292,6 +292,172 @@ namespace Nssol.Platypus.Migrations
                     b.ToTable("Storages");
                 });
 
+            modelBuilder.Entity("Nssol.Platypus.Models.Template", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("AccessLevel");
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired();
+
+                    b.Property<long>("CreaterTenantId");
+
+                    b.Property<long>("CreaterUserId");
+
+                    b.Property<long>("LatestVersion");
+
+                    b.Property<string>("Memo");
+
+                    b.Property<DateTime>("ModifiedAt");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired();
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreaterTenantId");
+
+                    b.HasIndex("CreaterUserId");
+
+                    b.ToTable("Templates");
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.TemplateVersion", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired();
+
+                    b.Property<string>("EvaluationContainerImage");
+
+                    b.Property<long?>("EvaluationContainerRegistryId");
+
+                    b.Property<string>("EvaluationContainerTag");
+
+                    b.Property<string>("EvaluationContainerToken");
+
+                    b.Property<int>("EvaluationCpu");
+
+                    b.Property<string>("EvaluationEntryPoint");
+
+                    b.Property<int>("EvaluationGpu");
+
+                    b.Property<int>("EvaluationMemory");
+
+                    b.Property<string>("EvaluationRepositoryBranch");
+
+                    b.Property<string>("EvaluationRepositoryCommitId");
+
+                    b.Property<long?>("EvaluationRepositoryGitId");
+
+                    b.Property<string>("EvaluationRepositoryName");
+
+                    b.Property<string>("EvaluationRepositoryOwner");
+
+                    b.Property<string>("EvaluationRepositoryToken");
+
+                    b.Property<DateTime>("ModifiedAt");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired();
+
+                    b.Property<string>("PreprocessContainerImage");
+
+                    b.Property<long?>("PreprocessContainerRegistryId");
+
+                    b.Property<string>("PreprocessContainerTag");
+
+                    b.Property<string>("PreprocessContainerToken");
+
+                    b.Property<int>("PreprocessCpu");
+
+                    b.Property<string>("PreprocessEntryPoint");
+
+                    b.Property<int>("PreprocessGpu");
+
+                    b.Property<int>("PreprocessMemory");
+
+                    b.Property<string>("PreprocessRepositoryBranch");
+
+                    b.Property<string>("PreprocessRepositoryCommitId");
+
+                    b.Property<long?>("PreprocessRepositoryGitId");
+
+                    b.Property<string>("PreprocessRepositoryName");
+
+                    b.Property<string>("PreprocessRepositoryOwner");
+
+                    b.Property<string>("PreprocessRepositoryToken");
+
+                    b.Property<long>("TemplateId");
+
+                    b.Property<string>("TrainingContainerImage")
+                        .IsRequired();
+
+                    b.Property<long>("TrainingContainerRegistryId");
+
+                    b.Property<string>("TrainingContainerTag")
+                        .IsRequired();
+
+                    b.Property<string>("TrainingContainerToken");
+
+                    b.Property<int>("TrainingCpu");
+
+                    b.Property<string>("TrainingEntryPoint")
+                        .IsRequired();
+
+                    b.Property<int>("TrainingGpu");
+
+                    b.Property<int>("TrainingMemory");
+
+                    b.Property<string>("TrainingRepositoryBranch")
+                        .IsRequired();
+
+                    b.Property<string>("TrainingRepositoryCommitId")
+                        .IsRequired();
+
+                    b.Property<long>("TrainingRepositoryGitId");
+
+                    b.Property<string>("TrainingRepositoryName")
+                        .IsRequired();
+
+                    b.Property<string>("TrainingRepositoryOwner")
+                        .IsRequired();
+
+                    b.Property<string>("TrainingRepositoryToken");
+
+                    b.Property<long>("Version");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EvaluationContainerRegistryId");
+
+                    b.HasIndex("EvaluationRepositoryGitId");
+
+                    b.HasIndex("PreprocessContainerRegistryId");
+
+                    b.HasIndex("PreprocessRepositoryGitId");
+
+                    b.HasIndex("TemplateId");
+
+                    b.HasIndex("TrainingContainerRegistryId");
+
+                    b.HasIndex("TrainingRepositoryGitId");
+
+                    b.ToTable("TemplateVersions");
+                });
+
             modelBuilder.Entity("Nssol.Platypus.Models.Tenant", b =>
                 {
                     b.Property<long>("Id")
@@ -375,6 +541,69 @@ namespace Nssol.Platypus.Migrations
                         .IsUnique();
 
                     b.ToTable("TenantGitMaps");
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.Aquarium.DataSet", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired();
+
+                    b.Property<long>("LatestVersion");
+
+                    b.Property<DateTime>("ModifiedAt");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired();
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.Property<long>("TenantId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("AquariumDatasets");
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.Aquarium.DataSetVersion", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<long>("AquariumDataSetId");
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired();
+
+                    b.Property<long>("DataSetId");
+
+                    b.Property<DateTime>("ModifiedAt");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired();
+
+                    b.Property<long>("TenantId");
+
+                    b.Property<long>("Version");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AquariumDataSetId");
+
+                    b.HasIndex("DataSetId");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("AquariumDatasetVersions");
                 });
 
             modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.Data", b =>
@@ -611,6 +840,101 @@ namespace Nssol.Platypus.Migrations
                     b.ToTable("DataTypes");
                 });
 
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.Experiment", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired();
+
+                    b.Property<long>("DataSetId");
+
+                    b.Property<long>("DataSetVersionId");
+
+                    b.Property<long?>("ExperimentPreprocessId");
+
+                    b.Property<DateTime>("ModifiedAt");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired();
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.Property<long>("TemplateId");
+
+                    b.Property<long>("TemplateVersionId");
+
+                    b.Property<long>("TenantId");
+
+                    b.Property<long?>("TrainingHistoryId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DataSetId");
+
+                    b.HasIndex("DataSetVersionId");
+
+                    b.HasIndex("ExperimentPreprocessId");
+
+                    b.HasIndex("TemplateId");
+
+                    b.HasIndex("TemplateVersionId");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("TrainingHistoryId");
+
+                    b.ToTable("Experiments");
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.ExperimentPreprocess", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired();
+
+                    b.Property<long>("DataSetId");
+
+                    b.Property<long>("DataSetVersionId");
+
+                    b.Property<DateTime>("ModifiedAt");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired();
+
+                    b.Property<long>("TemplateId");
+
+                    b.Property<long>("TemplateVersionId");
+
+                    b.Property<long>("TenantId");
+
+                    b.Property<long>("TrainingHistoryId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DataSetId");
+
+                    b.HasIndex("DataSetVersionId");
+
+                    b.HasIndex("TemplateId");
+
+                    b.HasIndex("TemplateVersionId");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("TrainingHistoryId");
+
+                    b.ToTable("ExperimentPreprocesses");
+                });
+
             modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.InferenceHistory", b =>
                 {
                     b.Property<long>("Id")
@@ -841,6 +1165,9 @@ namespace Nssol.Platypus.Migrations
                     b.Property<bool>("Favorite");
 
                     b.Property<int>("Gpu");
+
+                    b.Property<string>("JupyterLabVersion")
+                        .IsRequired();
 
                     b.Property<bool>("LocalDataSet");
 
@@ -1586,6 +1913,53 @@ namespace Nssol.Platypus.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("Nssol.Platypus.Models.Template", b =>
+                {
+                    b.HasOne("Nssol.Platypus.Models.Tenant", "CreaterTenant")
+                        .WithMany()
+                        .HasForeignKey("CreaterTenantId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Nssol.Platypus.Models.User", "CreaterUser")
+                        .WithMany()
+                        .HasForeignKey("CreaterUserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.TemplateVersion", b =>
+                {
+                    b.HasOne("Nssol.Platypus.Models.Registry", "EvaluationContainerRegistry")
+                        .WithMany()
+                        .HasForeignKey("EvaluationContainerRegistryId");
+
+                    b.HasOne("Nssol.Platypus.Models.Git", "EvaluationRepositoryGit")
+                        .WithMany()
+                        .HasForeignKey("EvaluationRepositoryGitId");
+
+                    b.HasOne("Nssol.Platypus.Models.Registry", "PreprocessContainerRegistry")
+                        .WithMany()
+                        .HasForeignKey("PreprocessContainerRegistryId");
+
+                    b.HasOne("Nssol.Platypus.Models.Git", "PreprocessRepositoryGit")
+                        .WithMany()
+                        .HasForeignKey("PreprocessRepositoryGitId");
+
+                    b.HasOne("Nssol.Platypus.Models.Template", "Template")
+                        .WithMany("TemplateVersions")
+                        .HasForeignKey("TemplateId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Nssol.Platypus.Models.Registry", "TrainingContainerRegistry")
+                        .WithMany()
+                        .HasForeignKey("TrainingContainerRegistryId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Nssol.Platypus.Models.Git", "TrainingRepositoryGit")
+                        .WithMany()
+                        .HasForeignKey("TrainingRepositoryGitId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("Nssol.Platypus.Models.Tenant", b =>
                 {
                     b.HasOne("Nssol.Platypus.Models.Git", "DefaultGit")
@@ -1612,6 +1986,32 @@ namespace Nssol.Platypus.Migrations
 
                     b.HasOne("Nssol.Platypus.Models.Tenant", "Tenant")
                         .WithMany("GitMaps")
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.Aquarium.DataSet", b =>
+                {
+                    b.HasOne("Nssol.Platypus.Models.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.Aquarium.DataSetVersion", b =>
+                {
+                    b.HasOne("Nssol.Platypus.Models.TenantModels.Aquarium.DataSet", "AquariumDataSet")
+                        .WithMany("DataSetVersions")
+                        .HasForeignKey("AquariumDataSetId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Nssol.Platypus.Models.TenantModels.DataSet", "DataSet")
+                        .WithMany()
+                        .HasForeignKey("DataSetId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Nssol.Platypus.Models.Tenant", "Tenant")
+                        .WithMany()
                         .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
@@ -1707,6 +2107,75 @@ namespace Nssol.Platypus.Migrations
                     b.HasOne("Nssol.Platypus.Models.Tenant", "Tenant")
                         .WithMany()
                         .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.Experiment", b =>
+                {
+                    b.HasOne("Nssol.Platypus.Models.TenantModels.Aquarium.DataSet", "DataSet")
+                        .WithMany()
+                        .HasForeignKey("DataSetId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Nssol.Platypus.Models.TenantModels.Aquarium.DataSetVersion", "DataSetVersion")
+                        .WithMany()
+                        .HasForeignKey("DataSetVersionId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Nssol.Platypus.Models.TenantModels.ExperimentPreprocess", "ExperimentPreprocess")
+                        .WithMany()
+                        .HasForeignKey("ExperimentPreprocessId");
+
+                    b.HasOne("Nssol.Platypus.Models.Template", "Template")
+                        .WithMany()
+                        .HasForeignKey("TemplateId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Nssol.Platypus.Models.TemplateVersion", "TemplateVersion")
+                        .WithMany()
+                        .HasForeignKey("TemplateVersionId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Nssol.Platypus.Models.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Nssol.Platypus.Models.TenantModels.TrainingHistory", "TrainingHistory")
+                        .WithMany()
+                        .HasForeignKey("TrainingHistoryId");
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.ExperimentPreprocess", b =>
+                {
+                    b.HasOne("Nssol.Platypus.Models.TenantModels.Aquarium.DataSet", "DataSet")
+                        .WithMany()
+                        .HasForeignKey("DataSetId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Nssol.Platypus.Models.TenantModels.Aquarium.DataSetVersion", "DataSetVersion")
+                        .WithMany()
+                        .HasForeignKey("DataSetVersionId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Nssol.Platypus.Models.Template", "Template")
+                        .WithMany()
+                        .HasForeignKey("TemplateId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Nssol.Platypus.Models.TemplateVersion", "TemplateVersion")
+                        .WithMany()
+                        .HasForeignKey("TemplateVersionId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Nssol.Platypus.Models.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Nssol.Platypus.Models.TenantModels.TrainingHistory", "TrainingHistory")
+                        .WithMany()
+                        .HasForeignKey("TrainingHistoryId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

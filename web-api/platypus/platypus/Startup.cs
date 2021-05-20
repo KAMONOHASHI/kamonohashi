@@ -97,6 +97,7 @@ namespace Nssol.Platypus
             services.AddTransient<IClusterManagementLogic, ClusterManagementLogic>();
             services.AddTransient<ILoginLogic, LoginLogic>();
             services.AddTransient<IDataLogic, DataLogic>();
+            services.AddTransient<IDataSetLogic, DataSetLogic>();
             services.AddTransient<ITrainingLogic, TrainingLogic>();
             services.AddTransient<IInferenceLogic, InferenceLogic>();
             services.AddTransient<IPreprocessLogic, PreprocessLogic>();
@@ -107,6 +108,7 @@ namespace Nssol.Platypus
             services.AddTransient<IRegistryLogic, RegistryLogic>();
             services.AddTransient<IMenuLogic, MenuLogic>();
             services.AddTransient<IVersionLogic, VersionLogic>();
+            services.AddTransient<ITemplateLogic, TemplateLogic>();
 
             // ServiceのDI設定
             services.AddTransient<IClusterManagementService, KubernetesService>();
@@ -142,6 +144,12 @@ namespace Nssol.Platypus
             services.AddTransient<INodeRepository, NodeRepository>();
             services.AddTransient<ISettingRepository, SettingRepository>();
             services.AddTransient<INodeTenantMapRepository, NodeTenantMapRepository>();
+            services.AddTransient<ITemplateRepository, TemplateRepository>();
+            services.AddTransient<ITemplateVersionRepository, TemplateVersionRepository>();
+            services.AddTransient<IExperimentRepository, ExperimentRepository>();
+            services.AddTransient<IExperimentPreprocessRepository, ExperimentPreprocessRepository>();
+            services.AddTransient<IAquariumDataSetRepository, AquariumDataSetRepository>();
+            services.AddTransient<IAquariumDataSetVersionRepository, AquariumDataSetVersionRepository>();
 
             // その他のDI設定
             services.AddTransient<IUnitOfWork, UnitOfWork>();

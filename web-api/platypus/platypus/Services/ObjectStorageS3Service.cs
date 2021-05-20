@@ -370,6 +370,9 @@ namespace Nssol.Platypus.Services
             await CreateDirAsync(storageConfig.Bucket, createClient, ResourceType.InferenceContainerOutputFiles.ToString());
             await CreateDirAsync(storageConfig.Bucket, createClient, ResourceType.NotebookContainerAttachedFiles.ToString());
             await CreateDirAsync(storageConfig.Bucket, createClient, ResourceType.NotebookContainerOutputFiles.ToString());
+            await CreateDirAsync(storageConfig.Bucket, createClient, ResourceType.ExperimentContainerAttachedFiles.ToString());
+            await CreateDirAsync(storageConfig.Bucket, createClient, ResourceType.ExperimentContainerOutputFiles.ToString());
+            await CreateDirAsync(storageConfig.Bucket, createClient, ResourceType.ExperimentPreprocContainerAttachedFiles.ToString());
             return true;
         }
 
@@ -551,6 +554,10 @@ namespace Nssol.Platypus.Services
                 await CheckAndCreateDir(bucketName, client, response.CommonPrefixes, ResourceType.InferenceContainerOutputFiles.ToString());
                 await CheckAndCreateDir(bucketName, client, response.CommonPrefixes, ResourceType.NotebookContainerAttachedFiles.ToString());
                 await CheckAndCreateDir(bucketName, client, response.CommonPrefixes, ResourceType.NotebookContainerOutputFiles.ToString());
+                await CheckAndCreateDir(bucketName, client, response.CommonPrefixes, ResourceType.ExperimentContainerAttachedFiles.ToString());
+                await CheckAndCreateDir(bucketName, client, response.CommonPrefixes, ResourceType.ExperimentContainerOutputFiles.ToString());
+                await CheckAndCreateDir(bucketName, client, response.CommonPrefixes, ResourceType.ExperimentPreprocContainerAttachedFiles.ToString());
+
             }
             catch (Exception e)
             {

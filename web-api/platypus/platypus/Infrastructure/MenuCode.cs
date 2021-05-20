@@ -115,6 +115,23 @@ namespace Nssol.Platypus.Infrastructure
         /// <summary>
         /// リソース管理
         /// </summary>
-        Resource
+        Resource,
+
+        /// <summary>
+        /// モデルテンプレート
+        /// </summary>
+        Template,
+        /// <summary>
+        /// 実験実行
+        /// </summary>
+        Experiment,
+        /// <summary>
+        /// 実験履歴
+        /// </summary>
+        ExperimentHistory,
+        /// <summary>
+        /// アクアリウムデータセット
+        /// </summary>
+        AquariumDataSet,
     }
 }

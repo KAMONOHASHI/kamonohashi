@@ -167,6 +167,10 @@ namespace Nssol.Platypus.Services
                     hasService = false;
                     hasConfigMap = true;
                     break;
+                case ContainerType.Experiment:
+                    hasService = false;
+                    hasConfigMap = true;
+                    break;
                 default:
                     hasConfigMap = await ExistConfigMapAsync(containerName + "-scripts", tenantName, token);
                     hasService = (await GetServiceAsync(tenantName, containerName, token)).IsSuccess;

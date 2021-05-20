@@ -27,7 +27,7 @@ namespace Nssol.Platypus.DataAccess
         public virtual DbSet<Tenant> Tenants { get; set; }
 
         /// <summary>
-        /// コンテナ
+        /// 学習用のtensorboardコンテナ
         /// </summary>
         public virtual DbSet<TensorBoardContainer> TensorBoardContainers { get; set; }
 
@@ -80,6 +80,16 @@ namespace Nssol.Platypus.DataAccess
         /// クラスタノードとテナントの中間テーブル
         /// </summary>
         public virtual DbSet<NodeTenantMap> NodeTenantMaps { get; set; }
+
+        /// <summary>
+        /// テンプレート
+        /// </summary>
+        public virtual DbSet<Template> Templates { get; set; }
+
+        /// <summary>
+        /// テンプレートバージョン
+        /// </summary>
+        public virtual DbSet<TemplateVersion> TemplateVersions { get; set; }
 
         /// <summary>
         /// ユーザとロールの中間テーブル
@@ -194,6 +204,25 @@ namespace Nssol.Platypus.DataAccess
         /// ノートブック履歴と親推論履歴の中間テーブル
         /// </summary>
         public virtual DbSet<NotebookHistoryParentInferenceMap> NotebookHistoryParentInferenceMaps { get; set; }
+        
+        /// <summary>
+        /// 実験
+        /// </summary>
+        public virtual DbSet<Experiment> Experiments { get; set; }
+
+        /// <summary>
+        /// 実験前処理
+        /// </summary>
+        public virtual DbSet<ExperimentPreprocess> ExperimentPreprocesses { get; set; }
+
+        /// <summary>
+        /// アクアリウムデータセット
+        /// </summary>
+        public virtual DbSet<Models.TenantModels.Aquarium.DataSet> AquariumDatasets { get; set; }
+        /// <summary>
+        /// アクアリウムデータセットバージョン
+        /// </summary>
+        public virtual DbSet<Models.TenantModels.Aquarium.DataSetVersion> AquariumDatasetVersions { get; set; }
 
         #endregion
 

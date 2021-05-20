@@ -49,7 +49,30 @@ namespace Nssol.Platypus.Logic
                 UserMenu,
                 NodeMenu,
                 MenuAccessMenu,
-                ResourceMenu
+                ResourceMenu,
+
+                AquariumDataSetMenu,
+                TemplateMenu,
+                ExperimentMenu,
+                ExperimentHistoryMenu
+            };
+
+            DashboardMenuList = new List<MenuItemInfo>()
+            {
+                DataMenu,
+                DataSetMenu,
+                PreprocessMenu,
+                NotebookMenu,
+                TrainingMenu,
+                InferenceMenu,
+            };
+
+            AquariumDashboardMenuList = new List<MenuItemInfo>()
+            {
+                AquariumDataSetMenu,
+                TemplateMenu,
+                ExperimentMenu,
+                ExperimentHistoryMenu
             };
 
             MenuMap = new Dictionary<MenuCode, MenuItemInfo>();
@@ -74,7 +97,7 @@ namespace Nssol.Platypus.Logic
         }
 
         /// <summary>
-        /// ログインユーザが表示可能なホーム画面用のメニューリストを取得する
+        /// ログインユーザが表示可能なKQIのホーム画面用のメニューリストを取得する
         /// </summary>
         /// <returns>トップメニュー用のメニューリスト</returns>
         public async Task<IEnumerable<MenuItemInfo>> GetTopMenuListAsync()
@@ -86,7 +109,7 @@ namespace Nssol.Platypus.Logic
 
             //本来はLinqで取りたいが、Where句でawaitが使えないので仕方なく手で詰めなおす
             var result = new List<MenuItemInfo>();
-            foreach(var menu in MenuList)
+            foreach(var menu in DashboardMenuList)
             {
                 if(menu.ShowTopMenu && await IsAccessibleMenuAsync(menu))
                 {
@@ -108,6 +131,43 @@ namespace Nssol.Platypus.Logic
             }
 
             return await GetAccessibleMenuTreeAsync(MenuTree);
+        }
+
+        /// <summary>
+        /// ログインユーザが表示可能なAquariumのホーム画面用のメニューリストを取得する
+        /// </summary>
+        /// <returns>トップメニュー用のメニューリスト</returns>
+        public async Task<IEnumerable<MenuItemInfo>> GetAquariumTopMenuListAsync()
+        {
+            if (CurrentUserInfo.SelectedTenantRoles.Count() == 0)
+            {
+                return new List<MenuItemInfo>();
+            }
+
+            //本来はLinqで取りたいが、Where句でawaitが使えないので仕方なく手で詰めなおす
+            var result = new List<MenuItemInfo>();
+            foreach (var menu in AquariumDashboardMenuList)
+            {
+                if (menu.ShowTopMenu && await IsAccessibleMenuAsync(menu))
+                {
+                    result.Add(menu);
+                }
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// ログインユーザが表示可能なAquariumのサイドメニューリストを取得する
+        /// </summary>
+        /// <returns>サイドメニュー用のメニューリスト</returns>
+        public async Task<IEnumerable<MenuItemInfo>> GetAquariumSideMenuListAsync()
+        {
+            if (CurrentUserInfo.SelectedTenantRoles.Count() == 0)
+            {
+                return new List<MenuItemInfo>();
+            }
+
+            return await GetAccessibleMenuTreeAsync(AquariumMenuTree);
         }
 
         /// <summary>
@@ -267,6 +327,16 @@ namespace Nssol.Platypus.Logic
         /// </summary>
         public static Dictionary<MenuCode, MenuItemInfo> MenuMap;
 
+        /// <summary>
+        /// KQIのダッシュボードに表示するメニュー一覧。
+        /// </summary>
+        public static List<MenuItemInfo> DashboardMenuList { get; private set; }
+
+        /// <summary>
+        /// Aquariumのダッシュボードに表示するメニュー一覧。
+        /// </summary>
+        public static List<MenuItemInfo> AquariumDashboardMenuList { get; private set; }
+
         #region メニュー単体
         internal static MenuItemInfo LoginMenu = new MenuItemInfo()
         {
@@ -376,7 +446,59 @@ namespace Nssol.Platypus.Logic
             ShowSideMenu = true,
             MenuType = MenuType.Tenant
         };
+        internal static MenuItemInfo AquariumDataSetMenu = new MenuItemInfo()
+        {
+            Name = "データセット",
+            NameEn = "AquariumDataSet",
+            Description = "アクアリウムデータセットを作成、更新、削除する",
+            DescriptionEn = "Managing Aquarium DataSet",
+            Category = "aq-dataset",
+            Code = MenuCode.AquariumDataSet,
+            Url = "/aquarium/dataset",
+            ShowTopMenu = true,
+            ShowSideMenu = true,
+            MenuType = MenuType.Tenant
+        };
+        internal static MenuItemInfo ExperimentMenu = new MenuItemInfo()
+        {
+            Name = "新規実験",
+            NameEn = "Experiment",
+            Description = "新規に実験を実行する",
+            DescriptionEn = "Start New Experiment",
+            Category = "aq-experiment",
+            Code = MenuCode.Experiment,
+            Url = "/aquarium/experiment/create",
+            ShowTopMenu = true,
+            ShowSideMenu = true,
+            MenuType = MenuType.Tenant
+        };
+        internal static MenuItemInfo ExperimentHistoryMenu = new MenuItemInfo()
+        {
+            Name = "実験履歴",
+            NameEn = "ExperimentHistory",
+            Description = "実行中の実験のステータスを確認、過去の実験のデータを閲覧する",
+            DescriptionEn = "Managing Experiment Status and Histories",
+            Category = "aq-experiment-history",
+            Code = MenuCode.ExperimentHistory,
+            Url = "/aquarium/experiment",
+            ShowTopMenu = true,
+            ShowSideMenu = true,
+            MenuType = MenuType.Tenant
+        };
 
+        internal static MenuItemInfo TemplateMenu = new MenuItemInfo()
+        {
+            Name = "テンプレート",
+            NameEn = "ModelTemplate",
+            Description = "モデルのテンプレートを作成、更新、削除する",
+            DescriptionEn = "model template for sharing",
+            Category = "aq-template",
+            Code = MenuCode.Template,
+            Url = "/aquarium/model-template",
+            ShowTopMenu = true,
+            ShowSideMenu = true,
+            MenuType = MenuType.Tenant
+        };
         internal static MenuItemInfo TenantSettingMenu = new MenuItemInfo()
         {
             Name = "接続テナント設定",
@@ -530,6 +652,8 @@ namespace Nssol.Platypus.Logic
             MenuType = MenuType.System
         };
 
+
+
         #endregion
 
         #region メニューツリー
@@ -543,6 +667,45 @@ namespace Nssol.Platypus.Logic
             TrainingMenu,
             InferenceMenu,
 
+            new MenuItemInfo()
+            {
+                Name = "テナント設定",
+                Category = "pl-tenant-setting",
+                Children = new List<MenuItemInfo>()
+                {
+                    TenantSettingMenu,
+                    //TenantRoleMenu,
+                    TenantUserMenu,
+                    //TenantMenuAccessMenu,
+                    TenantResourceMenu
+                }
+            },
+            new MenuItemInfo()
+            {
+                Name = "システム設定",
+                Category = "pl-system-setting",
+                Children = new List<MenuItemInfo>()
+                {
+                    TenantMenu,
+                    GitMenu,
+                    RegistryMenu,
+                    StorageMenu,
+                    RoleMenu,
+                    QuotaMenu,
+                    NodeMenu,
+                    UserMenu,
+                    MenuAccessMenu,
+                    ResourceMenu
+                }
+            }
+        };
+
+        private static IEnumerable<MenuItemInfo> AquariumMenuTree = new List<MenuItemInfo>()
+        {
+            AquariumDataSetMenu,
+            ExperimentMenu,
+            ExperimentHistoryMenu,
+            TemplateMenu,
             new MenuItemInfo()
             {
                 Name = "テナント設定",

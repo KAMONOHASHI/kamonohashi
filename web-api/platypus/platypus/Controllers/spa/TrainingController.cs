@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;
 using Nssol.Platypus.ApiModels.Components;
 using Nssol.Platypus.ApiModels.TrainingApiModels;
@@ -37,6 +38,7 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly ITagRepository tagRepository;
         private readonly ITenantRepository tenantRepository;
         private readonly INodeRepository nodeRepository;
+        private readonly IDataSetLogic dataSetLogic;
         private readonly ITagLogic tagLogic;
         private readonly ITrainingLogic trainingLogic;
         private readonly IStorageLogic storageLogic;
@@ -56,6 +58,7 @@ namespace Nssol.Platypus.Controllers.spa
             ITagRepository tagRepository,
             ITenantRepository tenantRepository,
             INodeRepository nodeRepository,
+            IDataSetLogic dataSetLogic,
             ITagLogic tagLogic,
             ITrainingLogic trainingLogic,
             IStorageLogic storageLogic,
@@ -72,6 +75,7 @@ namespace Nssol.Platypus.Controllers.spa
             this.tagRepository = tagRepository;
             this.tenantRepository = tenantRepository;
             this.nodeRepository = nodeRepository;
+            this.dataSetLogic = dataSetLogic;
             this.tagLogic = tagLogic;
             this.trainingLogic = trainingLogic;
             this.storageLogic = storageLogic;
@@ -103,7 +107,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpGet]
         [Filters.PermissionFilter(MenuCode.Training)]
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
-        public IActionResult GetAll([FromQuery]SearchInputModel filter, [FromQuery]int? perPage, [FromQuery] int page = 1, bool withTotal = false)
+        public IActionResult GetAll([FromQuery] SearchInputModel filter, [FromQuery] int? perPage, [FromQuery] int page = 1, bool withTotal = false)
         {
             var data = trainingHistoryRepository.GetAllIncludeDataSetAndParentWithOrdering();
             data = Search(data, filter);
@@ -128,25 +132,33 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="history">学習履歴</param>
         private async Task<IndexOutputModel> GetUpdatedIndexOutputModelAsync(TrainingHistory history)
         {
+            var status = await DoGetUpdatedIndexOutputModelAsync(history, clusterManagementLogic, CurrentUserInfo, trainingHistoryRepository, unitOfWork);
             var model = new IndexOutputModel(history);
+            model.Status = status.Name;
+            return model;
+        }
 
+        public static async Task<ContainerStatus> DoGetUpdatedIndexOutputModelAsync(TrainingHistory history,
+            IClusterManagementLogic clusterManagementLogic, UserInfo currentUserInfo, ITrainingHistoryRepository trainingHistoryRepository,
+            IUnitOfWork unitOfWork)
+        {
             var status = history.GetStatus();
             if (status.Exist())
             {
                 //学習がまだ進行中の場合、情報を更新する
-                var newStatus = await clusterManagementLogic.GetContainerStatusAsync(history.Key, CurrentUserInfo.SelectedTenant.Name, false);
+                var newStatus = await clusterManagementLogic.GetContainerStatusAsync(history.Key, currentUserInfo.SelectedTenant.Name, false);
 
-                if(status.Key != newStatus.Key)
+                if (status.Key != newStatus.Key)
                 {
                     //更新があったので、変更処理
                     await trainingHistoryRepository.UpdateStatusAsync(history.Id, newStatus, false);
                     unitOfWork.Commit();
-
-                    model.Status = newStatus.Name;
+                    return newStatus;
                 }
             }
-            return model;
+            return status;
         }
+
 
         /// <summary>
         /// データ件数を取得する
@@ -166,7 +178,7 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             histories = Search(histories, filter);
-            return  histories.Count();
+            return histories.Count();
         }
 
         /// <summary>
@@ -268,7 +280,7 @@ namespace Nssol.Platypus.Controllers.spa
                     {
                         if (tag.StartsWith("!", StringComparison.CurrentCulture))
                         {
-                            data = data.Where(d => d.TagMaps == null || d.TagMaps.Count == 0 || d.TagMaps.All(m => m.Tag.Name.Contains(tag.Substring(1), StringComparison.CurrentCulture) == false));    
+                            data = data.Where(d => d.TagMaps == null || d.TagMaps.Count == 0 || d.TagMaps.All(m => m.Tag.Name.Contains(tag.Substring(1), StringComparison.CurrentCulture) == false));
                         }
                         else
                         {
@@ -309,12 +321,12 @@ namespace Nssol.Platypus.Controllers.spa
         [ProducesResponseType(typeof(DetailsOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetDetail(long? id)
         {
-            if(id == null)
+            if (id == null)
             {
                 return JsonBadRequest("Training ID is required.");
             }
             var history = await trainingHistoryRepository.GetIncludeAllAsync(id.Value);
-            if(history == null)
+            if (history == null)
             {
                 return JsonNotFound($"Training ID {id.Value} is not found.");
             }
@@ -388,32 +400,46 @@ namespace Nssol.Platypus.Controllers.spa
             }
         }
 
-        /// <summary>
-        /// 新規に学習を開始する
-        /// </summary>
-        /// <param name="model">新規学習実行内容</param>
-        [HttpPost("run")]
-        [Filters.PermissionFilter(MenuCode.Training)]
-        [ProducesResponseType(typeof(SimpleOutputModel), (int)HttpStatusCode.Created)]
-        public async Task<IActionResult> Create([FromBody]CreateInputModel model)
+        public static async Task<(TrainingHistory, IActionResult)> DoCreate(CreateInputModel model,
+            IDataSetRepository dataSetRepository,
+            INodeRepository nodeRepository,
+            ITenantRepository tenantRepository,
+            ITrainingHistoryRepository trainingHistoryRepository,
+            IClusterManagementLogic clusterManagementLogic,
+            IDataSetLogic dataSetLogic,
+            IGitLogic gitLogic,
+            ITagLogic tagLogic,
+            IUnitOfWork unitOfWork,
+            UserInfo currentUserInfo,
+            ModelStateDictionary modelState,
+            string requestUrl,
+            string scriptType,
+            string regisryTokenName,
+            string gitToken
+            )
         {
             //データの入力チェック
-            if (!ModelState.IsValid)
+            if (!modelState.IsValid)
             {
-                return JsonBadRequest("Invalid inputs.");
+                return (null,
+                    DoJsonBadRequest(typeof(TrainingController), requestUrl, modelState, "Invalid inputs."));
             }
             //データの存在チェック
             var dataSet = await dataSetRepository.GetByIdAsync(model.DataSetId.Value);
             if (dataSet == null)
             {
-                return JsonNotFound($"DataSet ID {model.DataSetId} is not found.");
+                return (null,
+                    DoJsonNotFound(typeof(TrainingController), requestUrl, modelState,
+                    $"DataSet ID {model.DataSetId} is not found."));
             }
             if (string.IsNullOrEmpty(model.Partition) == false)
             {
                 bool existPartition = await nodeRepository.IsEnablePartitionAsync(model.Partition, true);
                 if (existPartition == false)
                 {
-                    return JsonNotFound($"There are no enable nodes with Partition {model.Partition}.");
+                    return (null,
+                        DoJsonNotFound(typeof(TrainingController), requestUrl, modelState,
+                        $"There are no enable nodes with Partition {model.Partition}."));
                 }
             }
 
@@ -427,13 +453,14 @@ namespace Nssol.Platypus.Controllers.spa
                         // フォーマットチェック
                         if (!Regex.IsMatch(env.Key, "^[-._a-zA-Z][-._a-zA-Z0-9]*$"))
                         {
-                            return JsonNotFound($"Invalid envName. Please match the format of '^[-._a-zA-Z][-._a-zA-Z0-9]*$'.");
+                            return (null,
+                                DoJsonNotFound(typeof(TrainingController), requestUrl, modelState, $"Invalid envName. Please match the format of '^[-._a-zA-Z][-._a-zA-Z0-9]*$'."));
                         }
                     }
                 }
             }
 
-            long? gitId = model.GitModel.GitId ?? CurrentUserInfo.SelectedTenant.DefaultGit?.Id;
+            long? gitId = model.GitModel.GitId ?? currentUserInfo.SelectedTenant.DefaultGit?.Id;
             string branch = model.GitModel.Branch ?? "master";
             string commitId = model.GitModel.CommitId;
             //コミットIDが指定されていなければ、ブランチのHEADからコミットIDを取得する
@@ -443,16 +470,18 @@ namespace Nssol.Platypus.Controllers.spa
                 if (string.IsNullOrEmpty(commitId))
                 {
                     //コミットIDが特定できなかったらエラー
-                    return JsonNotFound($"The branch {branch} for {gitId.Value}/{model.GitModel.Owner}/{model.GitModel.Repository} is not found.");
+                    return (null,
+                        DoJsonNotFound(typeof(TrainingController), requestUrl, modelState,
+                        $"The branch {branch} for {gitId.Value}/{model.GitModel.Owner}/{model.GitModel.Repository} is not found."));
                 }
             }
 
             // 各リソースの超過チェック
-            Tenant tenant = tenantRepository.Get(CurrentUserInfo.SelectedTenant.Id);
+            Tenant tenant = tenantRepository.Get(currentUserInfo.SelectedTenant.Id);
             string errorMessage = clusterManagementLogic.CheckQuota(tenant, model.Cpu.Value, model.Memory.Value, model.Gpu.Value);
             if (errorMessage != null)
             {
-                return JsonBadRequest(errorMessage);
+                return (null, DoJsonBadRequest(typeof(TrainingController), requestUrl, modelState, errorMessage));
             }
 
             //コンテナの実行前に、学習履歴を作成する（コンテナの実行に失敗した場合、そのステータスをユーザに表示するため）
@@ -460,7 +489,7 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 Name = model.Name,
                 DisplayId = -1,
-                ContainerRegistryId = model.ContainerImage.RegistryId ?? CurrentUserInfo.SelectedTenant.DefaultRegistry?.Id,
+                ContainerRegistryId = model.ContainerImage.RegistryId ?? currentUserInfo.SelectedTenant.DefaultRegistry?.Id,
                 ContainerImage = model.ContainerImage.Image,
                 ContainerTag = model.ContainerImage.Tag, //latestは運用上使用されていないハズなので、そのまま直接代入
                 DataSetId = model.DataSetId.Value,
@@ -490,12 +519,12 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 var maps = new List<TrainingHistoryParentMap>();
 
-                foreach(var parentId in model.ParentIds)
+                foreach (var parentId in model.ParentIds)
                 {
                     var parent = await trainingHistoryRepository.GetByIdAsync(parentId);
                     if (parent == null)
                     {
-                        return JsonNotFound($"Training ID {parentId} is not found.");
+                        return (null, DoJsonNotFound(typeof(TrainingController), requestUrl, modelState, $"Training ID {parentId} is not found."));
                     }
                     // 学習履歴に親学習を紐づける
                     var map = trainingHistoryRepository.AttachParentAsync(trainingHistory, parent);
@@ -503,7 +532,7 @@ namespace Nssol.Platypus.Controllers.spa
                     {
                         maps.Add(map);
                     }
-                }                
+                }
 
                 trainingHistory.ParentMaps = maps;
             }
@@ -519,15 +548,17 @@ namespace Nssol.Platypus.Controllers.spa
                 dataSet.IsLocked = true;
             }
             unitOfWork.Commit();
-            
-            var result = await clusterManagementLogic.RunTrainContainerAsync(trainingHistory);
+
+            var result = await clusterManagementLogic.RunTrainContainerAsync(trainingHistory, scriptType, regisryTokenName, gitToken);
             if (result.IsSuccess == false)
             {
                 //コンテナの起動に失敗した状態。エラーを出力して、保存した学習履歴も削除する。
+                await dataSetLogic.ReleaseLockAsync(trainingHistory.DataSetId);
                 trainingHistoryRepository.Delete(trainingHistory);
                 unitOfWork.Commit();
 
-                return JsonError(HttpStatusCode.ServiceUnavailable, "Failed to run training. The message bellow may be help to resolve: " + result.Error);
+                return (null, DoJsonError(HttpStatusCode.ServiceUnavailable, "Failed to run training. The message bellow may be help to resolve: " + result.Error,
+                    typeof(TrainingController), requestUrl, modelState));
             }
 
             //結果に従い、学習結果を更新する。
@@ -539,12 +570,31 @@ namespace Nssol.Platypus.Controllers.spa
 
             if (result.Value.Status.Succeed())
             {
-                return JsonCreated(new SimpleOutputModel(trainingHistory));
+                return (trainingHistory,
+                    JsonCreated(new SimpleOutputModel(trainingHistory)));
             }
             else
             {
-                return JsonError(HttpStatusCode.ServiceUnavailable, $"Failed to run training. Status={result.Value.Status.Name}. Please contact your server administrator.");
+                return (trainingHistory,
+                    DoJsonError(HttpStatusCode.ServiceUnavailable, $"Failed to run training. Status={result.Value.Status.Name}. Please contact your server administrator.",
+                    typeof(TrainingController), requestUrl, modelState));
             }
+        }
+
+        /// <summary>
+        /// 新規に学習を開始する
+        /// </summary>
+        /// <param name="model">新規学習実行内容</param>
+        [HttpPost("run")]
+        [Filters.PermissionFilter(MenuCode.Training)]
+        [ProducesResponseType(typeof(SimpleOutputModel), (int)HttpStatusCode.Created)]
+        public async Task<IActionResult> Create([FromBody] CreateInputModel model)
+        {
+            (var _, var result) = await DoCreate(model,
+                dataSetRepository, nodeRepository, tenantRepository, trainingHistoryRepository,
+                clusterManagementLogic, dataSetLogic, gitLogic, tagLogic,
+                unitOfWork, CurrentUserInfo, ModelState, RequestUrl, "training", null, null);
+            return result;
         }
 
         /// <summary>
@@ -693,7 +743,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="id">対象の学習履歴ID</param>
         /// <param name="withUrl">結果にダウンロード用のURLを含めるか</param>
         [HttpGet("{id}/files")]
-        [Filters.PermissionFilter(MenuCode.Training)]
+        [Filters.PermissionFilter(MenuCode.Training, MenuCode.Experiment)]
         [ProducesResponseType(typeof(IEnumerable<AttachedFileOutputModel>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetAttachedFiles(long id, [FromQuery] bool withUrl = false)
         {
@@ -771,7 +821,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="id">対象の学習履歴ID</param>
         [HttpGet("{id}/tensorboard")]
-        [Filters.PermissionFilter(MenuCode.Training)]
+        [Filters.PermissionFilter(MenuCode.Training, MenuCode.Experiment)]
         [ProducesResponseType(typeof(TensorBoardOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetTensorBoardStatus(long id)
         {
@@ -806,7 +856,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="id">対象の学習履歴ID</param>
         /// <param name="model">起動モデル</param>
         [HttpPut("{id}/tensorboard")] //TensorBoardはIDをユーザに通知するわけではないので、POSTではなくPUTで扱う
-        [Filters.PermissionFilter(MenuCode.Training)]
+        [Filters.PermissionFilter(MenuCode.Training, MenuCode.Experiment)]
         [ProducesResponseType(typeof(TensorBoardOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> RunTensorBoard(long id, [FromBody]TensorBoardInputModel model)
         {
@@ -868,7 +918,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="id">対象の学習履歴ID</param>
         [HttpDelete("{id}/tensorboard")]
-        [Filters.PermissionFilter(MenuCode.Training)]
+        [Filters.PermissionFilter(MenuCode.Training, MenuCode.Experiment)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         public async Task<IActionResult> DeleteTensorBoard(long id)
         {
@@ -968,11 +1018,45 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonBadRequest("Invalid inputs.");
             }
+
+            var (_, result) = await DoDelete(id.Value,
+                trainingHistoryRepository,
+                clusterManagementLogic,
+                dataSetLogic,
+                tagLogic,
+                unitOfWork,
+                CurrentUserInfo,
+                ModelState,
+                storageLogic,
+                inferenceHistoryRepository,
+                tensorBoardContainerRepository,
+                tagRepository,
+                RequestUrl);
+            return result;
+        }
+
+        public static async Task<(bool, IActionResult)> DoDelete(
+            long id,
+            ITrainingHistoryRepository trainingHistoryRepository,
+            IClusterManagementLogic clusterManagementLogic,
+            IDataSetLogic dataSetLogic,
+            ITagLogic tagLogic,
+            IUnitOfWork unitOfWork,
+            UserInfo currentUserInfo,
+            ModelStateDictionary modelState,
+            IStorageLogic storageLogic,
+            IInferenceHistoryRepository inferenceHistoryRepository,
+            ITensorBoardContainerRepository tensorBoardContainerRepository,
+            ITagRepository tagRepository,
+            string requestUrl
+            )
+        {
             //データの存在チェック
-            var trainingHistory = await trainingHistoryRepository.GetByIdAsync(id.Value);
+            var trainingHistory = await trainingHistoryRepository.GetByIdAsync(id);
             if (trainingHistory == null)
             {
-                return JsonNotFound($"Training ID {id} is not found.");
+                return (false, DoJsonNotFound(typeof(TrainingController), requestUrl, modelState,
+                    $"Training ID {id} is not found."));
             }
 
             //ステータスを確認
@@ -981,42 +1065,44 @@ namespace Nssol.Platypus.Controllers.spa
             if (status.Exist())
             {
                 //学習がまだ進行中の場合、情報を更新する
-                status = await clusterManagementLogic.GetContainerStatusAsync(trainingHistory.Key, CurrentUserInfo.SelectedTenant.Name, false);
+                status = await clusterManagementLogic.GetContainerStatusAsync(trainingHistory.Key, currentUserInfo.SelectedTenant.Name, false);
             }
 
             //派生した学習履歴があったら消せない
             var child = (await trainingHistoryRepository.GetChildrenAsync(trainingHistory.Id)).FirstOrDefault();
             if (child != null)
             {
-                return JsonConflict($"There is another training which is derived from training {trainingHistory.Id}.");
+                return (false, DoJsonConflict(typeof(TrainingController), requestUrl, modelState,
+                    $"There is another training which is derived from training {trainingHistory.Id}."));
             }
 
             //学習結果を利用した推論ジョブがあったら消せない
             var inferenceHistory = (await inferenceHistoryRepository.GetMountedTrainingAsync(trainingHistory.Id)).FirstOrDefault();
             if (inferenceHistory != null)
             {
-                return JsonConflict($"Training {trainingHistory.Id} has been used by inference.");
+                return (false, DoJsonConflict(typeof(TrainingController), requestUrl, modelState, 
+                    $"Training {trainingHistory.Id} has been used by inference."));
             }
 
             if (status.Exist())
             {
                 //実行中であれば、コンテナを削除
                 await clusterManagementLogic.DeleteContainerAsync(
-                    ContainerType.Training, trainingHistory.Key, CurrentUserInfo.SelectedTenant.Name, false);
+                    ContainerType.Training, trainingHistory.Key, currentUserInfo.SelectedTenant.Name, false);
             }
-            
+
             //TensorBoardを起動中だった場合は、そっちも消す
             TensorBoardContainer container = tensorBoardContainerRepository.GetAvailableContainer(trainingHistory.Id);
             if (container != null)
             {
                 await clusterManagementLogic.DeleteContainerAsync(
-                    ContainerType.TensorBoard, container.Name, CurrentUserInfo.SelectedTenant.Name, false);
+                    ContainerType.TensorBoard, container.Name, currentUserInfo.SelectedTenant.Name, false);
                 tensorBoardContainerRepository.Delete(container, true);
             }
 
             //添付ファイルがあったらまとめて消す
             var files = await trainingHistoryRepository.GetAllAttachedFilesAsync(trainingHistory.Id);
-            foreach(var file in files)
+            foreach (var file in files)
             {
                 trainingHistoryRepository.DeleteAttachedFile(file);
                 await storageLogic.DeleteFileAsync(ResourceType.TrainingHistoryAttachedFiles, file.StoredPath);
@@ -1025,6 +1111,7 @@ namespace Nssol.Platypus.Controllers.spa
             // タグマップを削除
             tagLogic.DeleteTrainingHistoryTags(trainingHistory.Id);
 
+            await dataSetLogic.ReleaseLockAsync(trainingHistory.DataSetId);
             trainingHistoryRepository.Delete(trainingHistory);
             unitOfWork.Commit();
 
@@ -1038,7 +1125,7 @@ namespace Nssol.Platypus.Controllers.spa
             await storageLogic.DeleteResultsAsync(ResourceType.TrainingContainerAttachedFiles, trainingHistory.Id);
             await storageLogic.DeleteResultsAsync(ResourceType.TrainingContainerOutputFiles, trainingHistory.Id);
 
-            return JsonNoContent();
+            return (true, JsonNoContent());
         }
 
         /// <summary>
