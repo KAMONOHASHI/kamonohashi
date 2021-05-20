@@ -4870,11 +4870,11 @@
         "security": [ { "api_key": [] } ]
       }
     },
-    "/api/v2/admin/templates": {
+    "/api/v2/templates": {
       "get": {
         "tags": [ "Template" ],
         "summary": "接続中のテナントで作成されたテンプレート一覧を取得する",
-        "operationId": "ApiV2AdminTemplatesGet",
+        "operationId": "ApiV2TemplatesGet",
         "consumes": [],
         "produces": [ "application/json" ],
         "parameters": [
@@ -4897,7 +4897,9 @@
           }
         },
         "security": [ { "api_key": [] } ]
-      },
+      }
+    },
+    "/api/v2/admin/templates": {
       "post": {
         "tags": [ "Template" ],
         "summary": "テンプレートを作成する",

@@ -240,7 +240,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 接続中のテナントで作成されたテンプレート一覧を取得する
         /// </summary>
-        [HttpGet("admin/templates")]
+        [HttpGet("templates")]
         [PermissionFilter(MenuCode.Template, MenuCode.Experiment)]
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetAllCreatedByTenant(bool withTotal = false)

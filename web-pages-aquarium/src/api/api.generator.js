@@ -8087,16 +8087,16 @@ export const ApiV2TenantTemplatesGetURL = function(parameters = {}) {
 }
 /**
  * 接続中のテナントで作成されたテンプレート一覧を取得する
- * request: ApiV2AdminTemplatesGet
- * url: ApiV2AdminTemplatesGetURL
- * method: ApiV2AdminTemplatesGet_TYPE
- * raw_url: ApiV2AdminTemplatesGet_RAW_URL
+ * request: ApiV2TemplatesGet
+ * url: ApiV2TemplatesGetURL
+ * method: ApiV2TemplatesGet_TYPE
+ * raw_url: ApiV2TemplatesGet_RAW_URL
  * @param withTotal - 
  */
-export const ApiV2AdminTemplatesGet = function(parameters = {}) {
+export const ApiV2TemplatesGet = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
-  let path = '/api/v2/admin/templates'
+  let path = '/api/v2/templates'
   let body
   let queryParameters = {}
   let form = {}
@@ -8110,16 +8110,16 @@ export const ApiV2AdminTemplatesGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminTemplatesGet_RAW_URL = function() {
-  return '/api/v2/admin/templates'
+export const ApiV2TemplatesGet_RAW_URL = function() {
+  return '/api/v2/templates'
 }
-export const ApiV2AdminTemplatesGet_TYPE = function() {
+export const ApiV2TemplatesGet_TYPE = function() {
   return 'get'
 }
-export const ApiV2AdminTemplatesGetURL = function(parameters = {}) {
+export const ApiV2TemplatesGetURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/api/v2/admin/templates'
+  let path = '/api/v2/templates'
   if (parameters['withTotal'] !== undefined) {
     queryParameters['withTotal'] = parameters['withTotal']
   }
