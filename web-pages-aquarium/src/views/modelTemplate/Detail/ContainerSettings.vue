@@ -12,19 +12,17 @@
             @selectRegistry="selectRegistry"
             @selectImage="selectImage"
           />
-          <el-form-item>
-            <el-row>
-              <el-col :span="6" :offset="1">token</el-col>
-              <el-col :span="12">
-                <el-input
-                  v-model="form.containerImage.token"
-                  size="small"
-                  type="password"
-                  style="width:215px"
-                />
-              </el-col>
-            </el-row>
-          </el-form-item>
+          <el-row>
+            <el-col :span="6" :offset="1">token</el-col>
+            <el-col :span="12">
+              <el-input
+                v-model="form.containerImage.token"
+                size="small"
+                type="password"
+                style="width:215px"
+              />
+            </el-col>
+          </el-row>
           <kqi-git-selector
             v-model="form.gitModel"
             :gits="gits"
@@ -87,18 +85,17 @@ export default {
       default: () => {
         return {
           containerImage: {
-            registryId: 0,
-            image: 'string',
-            tag: 'string',
-            token: 'string',
+            registry: null,
+            image: null,
+            tag: null,
+            token: null,
           },
           gitModel: {
-            gitId: 0,
-            repository: 'string',
-            owner: 'string',
-            branch: 'string',
-            commitId: 'string',
-            token: 'string',
+            git: null,
+            repository: null,
+            branch: null,
+            commit: null,
+            token: null,
           },
           entryPoint: '',
           resource: {
@@ -119,22 +116,22 @@ export default {
       },
       error: null,
       isPatch: false,
+      images: [],
+      tags: [],
+      repositories: [],
+      branches: [],
+      commits: [],
+      commitDetail: null,
     }
   },
   computed: {
     ...mapGetters({
       registries: ['registrySelector/registries'],
-      images: ['registrySelector/images'],
-      tags: ['registrySelector/tags'],
       gits: ['gitSelector/gits'],
       defaultGitId: ['gitSelector/defaultGitId'],
-      repositories: ['gitSelector/repositories'],
-      branches: ['gitSelector/branches'],
       quota: ['cluster/quota'],
 
       loadingRepositories: ['gitSelector/loadingRepositories'],
-      commits: ['gitSelector/commits'],
-      commitDetail: ['gitSelector/commitDetail'],
     }),
     form: {
       get() {
@@ -167,78 +164,123 @@ export default {
   },
   methods: {
     async setupFromContainerImage(containerImage) {
-      await this['registrySelector/fetchRegistries']()
-      await this['registrySelector/fetchImages'](containerImage.registryId)
-      await this['registrySelector/fetchTags']({ ...containerImage })
+      const formContainerImage = {
+        registry: null,
+        image: null,
+        tag: null,
+        token: containerImage.token,
+      }
 
-      const registry = this.registries.find(registry => {
-        return registry.id === containerImage.registryId
+      if (
+        containerImage === null ||
+        Object.keys(containerImage).length == 0 ||
+        containerImage.image === null
+      ) {
+        return formContainerImage
+      }
+
+      await this['registrySelector/fetchRegistries']()
+
+      formContainerImage.registry = this.registries.find(registry => {
+        return registry.id == containerImage.registryId
       })
-      return { ...containerImage, registry }
+
+      formContainerImage.image = containerImage.image
+      formContainerImage.tag = containerImage.tag
+
+      this.images.push(formContainerImage.image)
+      this.tags.push(formContainerImage.tag)
+
+      return formContainerImage
     },
     async setupFormGitModel(gitModel) {
-      const formGitModel = {}
-      const repositoryName = gitModel.repository
       await this['gitSelector/fetchGits']()
+
+      const formGitModel = {
+        git: null,
+        repository: null,
+        branch: null,
+        commit: null,
+        token: gitModel.token,
+      }
+
+      // gitModelが空 もしくは リポジトリが設定されていない場合はそのまま返却
+      if (
+        gitModel === null ||
+        Object.keys(gitModel).length == 0 ||
+        gitModel.repository === null
+      ) {
+        return formGitModel
+      }
 
       formGitModel.git = this.gits.find(git => {
         return git.id === gitModel.gitId
       })
 
-      formGitModel.repository = `${gitModel.owner}/${repositoryName}`
-
-      formGitModel.branch = gitModel.branch
-      formGitModel.token = gitModel.token
-      const fetchCommitArg = {
-        gitId: gitModel.gitId,
-        commitId: gitModel.commitId,
-        repository: {
-          owner: gitModel.owner,
-          name: repositoryName,
-        },
-        branchName: gitModel.branch,
+      let repository = {
+        name: gitModel.repository,
+        owner: gitModel.owner,
+        fullName: `${gitModel.owner}/${gitModel.repository}`,
       }
+      this.repositories.push(repository)
+      formGitModel.repository = repository
 
-      await this['gitSelector/fetchCommits'](fetchCommitArg)
+      // ブランチ一覧の取得
+      this.branches = await this['gitSelector/getBranches']({
+        gitId: formGitModel.git.id,
+        repository: formGitModel.repository,
+      })
+      formGitModel.branch = this.branches.find(branch => {
+        return branch.branchName === gitModel.branch
+      })
 
+      // commit一覧の取得
+      this.commits = await this['gitSelector/getCommits']({
+        gitId: formGitModel.git.id,
+        repository: formGitModel.repository,
+        branchName: formGitModel.branch.branchName,
+      })
+
+      // commitを抽出
       let commit = null
       if (this.commits != null) {
         commit = this.commits.find(commit => {
           return commit.commitId === gitModel.commitId
         })
       }
-      if (fetchCommitArg.gitId != null) {
-        await this['gitSelector/fetchCommitDetail'](fetchCommitArg)
-      }
 
-      if (commit == null) {
-        formGitModel.commit = null
-      } else if (commit) {
+      if (commit !== null) {
         formGitModel.commit = commit
-      } else {
-        formGitModel.commit = this.commitDetail
+      } else if (commit === null) {
+        let commitDetail = await this['gitSelector/getCommitDetail']({
+          gitId: formGitModel.git.id,
+          repository: formGitModel.repository,
+          commitId: gitModel.commitId,
+        })
+        formGitModel.commit = commitDetail
+        this.commits.push(this.commitDetail)
       }
       return formGitModel
     },
     async selectRegistry(registryId) {
-      await registrySelectorUtil.selectRegistry(
+      this.images = await registrySelectorUtil.selectRegistry(
         this.form,
-        this['registrySelector/fetchImages'],
+        this['registrySelector/getImages'],
         registryId,
       )
     },
     async selectImage(image) {
-      await registrySelectorUtil.selectImage(
+      this.tags = await registrySelectorUtil.selectImage(
         this.form,
-        this['registrySelector/fetchTags'],
+        this['registrySelector/getTags'],
         this.form.containerImage.registry.id,
         image,
       )
     },
     async selectGit(gitId) {
-      await gitSelectorUtil.selectGit(
+      this.repositories = this.repositories = await gitSelectorUtil.selectGit(
         this.form,
-        this['gitSelector/fetchRepositories'],
+        this['gitSelector/getRepositories'],
         gitId,
         this.$store,
       )
@@ -246,10 +288,11 @@ export default {
     // repositoryの型がstring：手入力, object: 選択
     async selectRepository(repository) {
       try {
-        await gitSelectorUtil.selectRepository(
+        this.branches = await gitSelectorUtil.selectRepository(
           this.form,
-          this['gitSelector/fetchBranches'],
+          this['gitSelector/getBranches'],
           repository,
+          this.repositories,
         )
       } catch (message) {
         this.$notify.error({
@@ -258,11 +301,12 @@ export default {
       }
     },
     async selectBranch(branchName) {
-      await gitSelectorUtil.selectBranch(
+      this.commits = await gitSelectorUtil.selectBranch(
         this.form,
-        this['gitSelector/fetchCommits'],
+        this['gitSelector/getCommits'],
         branchName,
       )
+      this.form.gitModel.commit = this.commits[0]
     },
     ...mapActions([
       'modelTemplate/fetchDetail',
@@ -270,13 +314,13 @@ export default {
       'modelTemplate/put',
       'modelTemplate/delete',
       'registrySelector/fetchRegistries',
-      'registrySelector/fetchImages',
-      'registrySelector/fetchTags',
+      'registrySelector/getImages',
+      'registrySelector/getTags',
       'gitSelector/fetchGits',
-      'gitSelector/fetchRepositories',
-      'gitSelector/fetchBranches',
-      'gitSelector/fetchCommits',
-      'gitSelector/fetchCommitDetail',
+      'gitSelector/getRepositories',
+      'gitSelector/getBranches',
+      'gitSelector/getCommits',
+      'gitSelector/getCommitDetail',
       'cluster/fetchQuota',
     ]),
   },

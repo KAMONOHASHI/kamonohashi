@@ -61,6 +61,18 @@ const actions = {
     commit('setLoadingRepositories', false)
   },
 
+  async getRepositories({ commit }, gitId) {
+    commit('setLoadingRepositories', true)
+    let repositories = []
+    try {
+      repositories = (await api.git.getRepos({ gitId: gitId })).data
+    } catch {
+      repositories = []
+    }
+    commit('setLoadingRepositories', false)
+    return repositories
+  },
+
   async fetchBranches(context, { gitId, repository, manualInput }) {
     // 手入力された場合
     if (manualInput) {
@@ -91,6 +103,21 @@ const actions = {
     }
   },
 
+  // eslint-disable-next-line no-unused-vars
+  async getBranches({ state }, { gitId, repository }) {
+    let params = {
+      gitId: gitId,
+      owner: repository.owner,
+      repositoryName: repository.name,
+    }
+    try {
+      let branches = (await api.git.getBranches(params)).data
+      return branches
+    } catch {
+      return []
+    }
+  },
+
   async fetchCommits({ commit }, { gitId, repository, branchName }) {
     let params = {
       gitId: gitId,
@@ -106,6 +133,22 @@ const actions = {
     }
   },
 
+  // eslint-disable-next-line no-unused-vars
+  async getCommits({ state }, { gitId, repository, branchName }) {
+    let params = {
+      gitId: gitId,
+      owner: repository.owner,
+      repositoryName: repository.name,
+      branch: branchName,
+    }
+    try {
+      let commits = (await api.git.getCommits(params)).data
+      return commits
+    } catch {
+      return []
+    }
+  },
+
   async fetchCommitDetail({ commit }, { gitId, repository, commitId }) {
     let params = {
       gitId: gitId,
@@ -118,6 +161,22 @@ const actions = {
       commit('setCommitDetail', { commitDetail })
     } catch {
       commit('setCommitDetail', null)
+    }
+  },
+
+  // eslint-disable-next-line no-unused-vars
+  async getCommitDetail({ state }, { gitId, repository, commitId }) {
+    let params = {
+      gitId: gitId,
+      owner: repository.owner,
+      repositoryName: repository.name,
+      commitId: commitId,
+    }
+    try {
+      let commitDetail = (await api.git.getCommit(params)).data
+      return commitDetail
+    } catch {
+      return null
     }
   },
 }

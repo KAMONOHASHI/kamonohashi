@@ -14,7 +14,7 @@
             <el-step title="Step 1" description="基本設定"></el-step>
             <el-step title="Step 2" description="前処理"></el-step>
             <el-step title="Step 3" description="学習"></el-step>
-            <el-step title="Step 4" description="評価"></el-step>
+            <!-- <el-step title="Step 4" description="評価"></el-step> -->
           </el-steps>
         </div>
       </el-col>
@@ -58,8 +58,8 @@
                 <kqi-container-selector
                   v-model="form.preprocess.containerImage"
                   :registries="registries"
-                  :images="images"
-                  :tags="tags"
+                  :images="preprocessImages"
+                  :tags="preprocessTags"
                   heading="前処理実行コンテナイメージ"
                   @selectRegistry="selectPreprocessRegistry"
                   @selectImage="selectPreprocessImage"
@@ -78,9 +78,9 @@
                 <kqi-git-selector
                   v-model="form.preprocess.gitModel"
                   :gits="gits"
-                  :repositories="repositories"
-                  :branches="branches"
-                  :commits="commits"
+                  :repositories="preprocessRepositories"
+                  :branches="preprocessBranches"
+                  :commits="preprocessCommits"
                   :loading-repositories="loadingRepositories"
                   heading="スクリプト"
                   @selectGit="selectPreprocessGit"
@@ -122,8 +122,8 @@
                 <kqi-container-selector
                   v-model="form.training.containerImage"
                   :registries="registries"
-                  :images="images"
-                  :tags="tags"
+                  :images="trainingImages"
+                  :tags="trainingTags"
                   heading="学習・推論コンテナイメージ"
                   @selectRegistry="selectTrainingRegistry"
                   @selectImage="selectTrainingImage"
@@ -141,9 +141,9 @@
                 <kqi-git-selector
                   v-model="form.training.gitModel"
                   :gits="gits"
-                  :repositories="repositories"
-                  :branches="branches"
-                  :commits="commits"
+                  :repositories="trainingRepositories"
+                  :branches="trainingBranches"
+                  :commits="trainingCommits"
                   :loading-repositories="loadingRepositories"
                   heading="スクリプト"
                   @selectGit="selectTrainingGit"
@@ -177,15 +177,16 @@
               </el-col>
             </el-row>
           </el-form>
-          <!-- step 4 -->
+          <!-- step 4 : 評価 -->
+          <!-- 
           <el-form v-if="active === 3" ref="form3" :model="form" :rules="rules">
             <el-row :gutter="20">
               <el-col :span="12">
                 <kqi-container-selector
                   v-model="form.evaluation.containerImage"
                   :registries="registries"
-                  :images="images"
-                  :tags="tags"
+                  :images="evaluationImages"
+                  :tags="evaluationTags"
                   heading="評価コンテナイメージ"
                   @selectRegistry="selectEvaluationRegistry"
                   @selectImage="selectEvaluationImage"
@@ -203,9 +204,9 @@
                 <kqi-git-selector
                   v-model="form.evaluation.gitModel"
                   :gits="gits"
-                  :repositories="repositories"
-                  :branches="branches"
-                  :commits="commits"
+                  :repositories="evaluationRepositories"
+                  :branches="evaluationBranches"
+                  :commits="evaluationCommits"
                   :loading-repositories="loadingRepositories"
                   heading="スクリプト"
                   @selectGit="selectEvaluationGit"
@@ -239,6 +240,7 @@
               </el-col>
             </el-row>
           </el-form>
+          -->
         </el-form>
       </el-col>
     </el-row>
@@ -254,7 +256,7 @@
           Previous step
         </span>
         <span
-          v-if="active <= 2"
+          v-if="active <= 1"
           class="right-step-group"
           style="margin-top: 12px;"
           @click="next"
@@ -263,7 +265,7 @@
           <i class="el-icon-arrow-right" />
         </span>
         <span class="right-step-group">
-          <el-button v-if="active === 3" type="primary" @click="submit">
+          <el-button v-if="active === 2" type="primary" @click="submit">
             新規登録
           </el-button>
         </span>
@@ -375,6 +377,21 @@ export default {
       rules: {
         name: [{ required: true, trigger: 'blur', message: '必須項目です' }],
       },
+      preprocessImages: [],
+      trainingImages: [],
+      evaluationImages: [],
+      preprocessTags: [],
+      trainingTags: [],
+      evaluationTags: [],
+      preprocessRepositories: [],
+      trainingRepositories: [],
+      evaluationRepositories: [],
+      preprocessBranches: [],
+      trainingBranches: [],
+      evaluationBranches: [],
+      preprocessCommits: [],
+      trainingCommits: [],
+      evaluationCommits: [],
     }
   },
   computed: {
@@ -385,9 +402,6 @@ export default {
       tags: ['registrySelector/tags'],
       gits: ['gitSelector/gits'],
       defaultGitId: ['gitSelector/defaultGitId'],
-      repositories: ['gitSelector/repositories'],
-      branches: ['gitSelector/branches'],
-      commits: ['gitSelector/commits'],
       commitDetail: ['gitSelector/commitDetail'],
       loadingRepositories: ['gitSelector/loadingRepositories'],
       detail: ['template/detail'],
@@ -413,11 +427,16 @@ export default {
 
       'registrySelector/fetchRegistries',
       'registrySelector/fetchImages',
+      'registrySelector/getImages',
       'registrySelector/fetchTags',
+      'registrySelector/getTags',
+
       'gitSelector/fetchGits',
-      'gitSelector/fetchRepositories',
+      'gitSelector/getRepositories',
       'gitSelector/fetchBranches',
+      'gitSelector/getBranches',
       'gitSelector/fetchCommits',
+      'gitSelector/getCommits',
       'gitSelector/fetchCommitDetail',
       'cluster/fetchQuota',
     ]),
@@ -460,7 +479,15 @@ export default {
       this.form.training.gitModel.git = this.gits.find(git => {
         return git.id === this.defaultGitId
       })
-      await this['gitSelector/fetchRepositories'](this.defaultGitId)
+      this.preprocessRepositories = await this['gitSelector/getRepositories'](
+        this.defaultGitId,
+      )
+      this.trainingRepositories = await this['gitSelector/getRepositories'](
+        this.defaultGitId,
+      )
+      this.evaluationRepositories = await this['gitSelector/getRepositories'](
+        this.defaultGitId,
+      )
     },
     async next() {
       let form = null
@@ -471,9 +498,9 @@ export default {
         case 1:
           form = this.$refs.form1
           break
-        case 2:
-          form = this.$refs.form2
-          break
+        // case 2:
+        // form = this.$refs.form2
+        // break
       }
       await form.validate(async valid => {
         if (valid) {
@@ -491,6 +518,53 @@ export default {
       await form.validate(async valid => {
         if (valid) {
           try {
+            // 必須項目の入力チェック
+            if (
+              // テンプレート名
+              this.form.name === null ||
+              // 公開設定
+              this.form.accessLevel === null ||
+              // 学習コンテナイメージ設定
+              this.form.training.containerImage === null ||
+              this.form.training.containerImage.registry === null ||
+              this.form.training.containerImage.image === null ||
+              this.form.training.containerImage.tag === null ||
+              // 学習Git設定
+              this.form.training.gitModel === null ||
+              this.form.training.gitModel.git === null ||
+              this.form.training.gitModel.repository === null ||
+              this.form.training.gitModel.branch === null ||
+              // 実行コマンド
+              this.form.training.entryPoint === null ||
+              this.form.training.entryPoint === ''
+            ) {
+              throw '必須項目が入力されていません : テンプレート名、公開設定、学習の設定は必須項目です。'
+            }
+
+            // 前処理の項目について入力チェック
+            // dockerイメージ、リポジトリ、入力コマンドのいずれかが入力済みなら他の項目も入力必須
+            if (
+              (this.form.preprocess.containerImage.image !== null ||
+                this.form.preprocess.gitModel.repository !== null ||
+                (this.form.preprocess.entryPoint !== null &&
+                  this.form.preprocess.entryPoint !== '')) &&
+              // コンテナイメージ設定
+              (this.form.preprocess.containerImage === null ||
+                this.form.preprocess.containerImage.registry === null ||
+                this.form.preprocess.containerImage.image === null ||
+                this.form.preprocess.containerImage.tag === null ||
+                // Git設定
+                this.form.preprocess.gitModel === null ||
+                this.form.preprocess.gitModel.git === null ||
+                this.form.preprocess.gitModel.repository === null ||
+                this.form.preprocess.gitModel.branch === null ||
+                // 実行コマンド
+                this.form.preprocess.entryPoint === null ||
+                this.form.preprocess.entryPoint === '')
+            ) {
+              throw '前処理コンテナの設定を確認してください : イメージ、リポジトリ、入力コマンドのいずれかが入力済みなら他の項目も入力必須です。'
+            }
+
             // コンテナイメージの指定
             // イメージとタグが指定されている場合、コンテナイメージを指定して登録
             // イメージとタグが指定されていない場合、コンテナイメージは未指定(null)として登録
@@ -522,18 +596,18 @@ export default {
             }
 
             ////評価
-            let evaluationContainerImage = null
-            if (
-              this.form.evaluation.containerImage.image !== null &&
-              this.form.evaluation.containerImage.tag !== null
-            ) {
-              evaluationContainerImage = {
-                registryId: this.form.evaluation.containerImage.registry.id,
-                image: this.form.evaluation.containerImage.image,
-                tag: this.form.evaluation.containerImage.tag,
-                token: this.form.evaluation.containerImage.token,
-              }
-            }
+            //let evaluationContainerImage = null
+            //if (
+            //  this.form.evaluation.containerImage.image !== null &&
+            //  this.form.evaluation.containerImage.tag !== null
+            //) {
+            //  evaluationContainerImage = {
+            //    registryId: this.form.evaluation.containerImage.registry.id,
+            //    image: this.form.evaluation.containerImage.image,
+            //    tag: this.form.evaluation.containerImage.tag,
+            //    token: this.form.evaluation.containerImage.token,
+            //  }
+            //}
             // gitモデルの指定
             // リポジトリとブランチが指定されている場合、gitモデルを指定して登録
             // リポジトリとブランチが指定されていない場合、gitモデルは未指定(null)として登録
@@ -550,9 +624,10 @@ export default {
                 repository: this.form.preprocess.gitModel.repository.name,
                 owner: this.form.preprocess.gitModel.repository.owner,
                 branch: this.form.preprocess.gitModel.branch.branchName,
-                commitId: this.form.preprocess.gitModel.commit
-                  ? this.form.preprocess.gitModel.commit.commitId
-                  : this.commits[0].commitId,
+                commitId:
+                  this.form.preprocess.gitModel.commit !== null
+                    ? this.form.preprocess.gitModel.commit.commitId
+                    : this.preprocessCommits[0].commitId,
               }
             }
             ////学習
@@ -568,29 +643,31 @@ export default {
                 repository: this.form.training.gitModel.repository.name,
                 owner: this.form.training.gitModel.repository.owner,
                 branch: this.form.training.gitModel.branch.branchName,
-                commitId: this.form.training.gitModel.commit
-                  ? this.form.training.gitModel.commit.commitId
-                  : this.commits[0].commitId,
+                commitId:
+                  this.form.training.gitModel.commit !== null
+                    ? this.form.training.gitModel.commit.commitId
+                    : this.trainingCommits[0].commitId,
               }
             }
             ////評価
-            let evaluationGitModel = null
-            if (
-              this.form.evaluation.gitModel.repository !== null &&
-              this.form.evaluation.gitModel.branch !== null
-            ) {
-              // HEAD指定の時はcommitsの先頭要素をcommitIDに指定する。コピー実行時の再現性を担保するため
-              evaluationGitModel = {
-                token: this.form.evaluation.gitModel.token,
-                gitId: this.form.evaluation.gitModel.git.id,
-                repository: this.form.evaluation.gitModel.repository.name,
-                owner: this.form.evaluation.gitModel.repository.owner,
-                branch: this.form.evaluation.gitModel.branch.branchName,
-                commitId: this.form.evaluation.gitModel.commit
-                  ? this.form.evaluation.gitModel.commit.commitId
-                  : this.commits[0].commitId,
-              }
-            }
+            //let evaluationGitModel = null
+            //if (
+            //  this.form.evaluation.gitModel.repository !== null &&
+            //  this.form.evaluation.gitModel.branch !== null
+            //) {
+            //  // HEAD指定の時はcommitsの先頭要素をcommitIDに指定する。コピー実行時の再現性を担保するため
+            //  evaluationGitModel = {
+            //    token: this.form.evaluation.gitModel.token,
+            //    gitId: this.form.evaluation.gitModel.git.id,
+            //    repository: this.form.evaluation.gitModel.repository.name,
+            //    owner: this.form.evaluation.gitModel.repository.owner,
+            //    branch: this.form.evaluation.gitModel.branch.branchName,
+            //    commitId:
+            //      this.form.evaluation.gitModel.commit !== null
+            //        ? this.form.evaluation.gitModel.commit.commitId
+            //        : this.evaluationCommits[0].commitId,
+            //  }
+            //}
 
             //基本設定情報
             let templateParams = {
@@ -615,12 +692,18 @@ export default {
               trainingMemory: this.form.training.resource.memory,
               trainingGpu: this.form.training.resource.gpu,
 
-              evaluationEntryPoint: this.form.evaluation.entryPoint,
-              evaluationContainerImage: evaluationContainerImage,
-              evaluationGitModel: evaluationGitModel,
-              evaluationCpu: this.form.evaluation.resource.cpu,
-              evaluationMemory: this.form.evaluation.resource.memory,
-              evaluationGpu: this.form.evaluation.resource.gpu,
+              // evaluationEntryPoint: this.form.evaluation.entryPoint,
+              // evaluationContainerImage: evaluationContainerImage,
+              // evaluationGitModel: evaluationGitModel,
+              // evaluationCpu: this.form.evaluation.resource.cpu,
+              // evaluationMemory: this.form.evaluation.resource.memory,
+              // evaluationGpu: this.form.evaluation.resource.gpu,
+              evaluationEntryPoint: null,
+              evaluationContainerImage: null,
+              evaluationGitModel: null,
+              evaluationCpu: 1,
+              evaluationMemory: 1,
+              evaluationGpu: 0,
             }
             //
 
@@ -633,10 +716,10 @@ export default {
             this.error = null
             //dialogを閉じる
             this.dialogVisible = false
-          } catch (e) {
-            this.error = e
-            //dialogを閉じる
-            this.dialogVisible = false
+          } catch (message) {
+            this.$notify.error({
+              message: message,
+            })
           }
         }
       })
@@ -652,83 +735,81 @@ export default {
     },
     // コンテナイメージ
     async selectPreprocessRegistry(registryId) {
-      await registrySelectorUtil.selectRegistry(
+      this.preprocessImages = await registrySelectorUtil.selectRegistry(
         this.form.preprocess,
-        this['registrySelector/fetchImages'],
+        this['registrySelector/getImages'],
         registryId,
       )
     },
     async selectTrainingRegistry(registryId) {
-      await registrySelectorUtil.selectRegistry(
+      this.trainingImages = await registrySelectorUtil.selectRegistry(
         this.form.training,
-        this['registrySelector/fetchImages'],
+        this['registrySelector/getImages'],
         registryId,
       )
     },
     async selectEvaluationRegistry(registryId) {
-      await registrySelectorUtil.selectRegistry(
+      this.evaluationImages = await registrySelectorUtil.selectRegistry(
         this.form.evaluation,
-        this['registrySelector/fetchImages'],
+        this['registrySelector/getImages'],
         registryId,
       )
     },
     async selectPreprocessImage(image) {
-      await registrySelectorUtil.selectImage(
+      this.preprocessTags = await registrySelectorUtil.selectImage(
         this.form.preprocess,
-        this['registrySelector/fetchTags'],
+        this['registrySelector/getTags'],
         this.form.preprocess.containerImage.registry.id,
         image,
       )
       this.form
     },
     async selectTrainingImage(image) {
-      await registrySelectorUtil.selectImage(
+      this.trainingTags = await registrySelectorUtil.selectImage(
         this.form.training,
-        this['registrySelector/fetchTags'],
+        this['registrySelector/getTags'],
         this.form.training.containerImage.registry.id,
         image,
       )
     },
     async selectEvaluationImage(image) {
-      await registrySelectorUtil.selectImage(
+      this.evaluationTags = await registrySelectorUtil.selectImage(
         this.form.evaluation,
-        this['registrySelector/fetchTags'],
+        this['registrySelector/getTags'],
         this.form.evaluation.containerImage.registry.id,
         image,
       )
     },
     // モデル
     async selectPreprocessGit(gitId) {
-      await gitSelectorUtil.selectGit(
+      this.preprocessRepositories = await gitSelectorUtil.selectGit(
         this.form.preprocess,
-        this['gitSelector/fetchRepositories'],
+        this['gitSelector/getRepositories'],
         gitId,
-        this.$store,
       )
     },
     async selectTrainingGit(gitId) {
-      await gitSelectorUtil.selectGit(
+      this.trainingRepositories = await gitSelectorUtil.selectGit(
         this.form.training,
-        this['gitSelector/fetchRepositories'],
+        this['gitSelector/getRepositories'],
         gitId,
-        this.$store,
       )
     },
     async selectEvaluationGit(gitId) {
-      await gitSelectorUtil.selectGit(
+      this.evaluationRepositories = await gitSelectorUtil.selectGit(
         this.form.evaluation,
-        this['gitSelector/fetchRepositories'],
+        this['gitSelector/getRepositories'],
         gitId,
-        this.$store,
       )
     },
     // repositoryの型がstring：手入力, object: 選択
     async selectPreprocessRepository(repository) {
       try {
-        await gitSelectorUtil.selectRepository(
+        this.preprocessBranches = await gitSelectorUtil.selectRepository(
           this.form.preprocess,
-          this['gitSelector/fetchBranches'],
+          this['gitSelector/getBranches'],
           repository,
+          this.preprocessRepositories,
         )
       } catch (message) {
         this.$notify.error({
@@ -738,10 +819,11 @@ export default {
     },
     async selectTrainingRepository(repository) {
       try {
-        await gitSelectorUtil.selectRepository(
+        this.trainingBranches = await gitSelectorUtil.selectRepository(
           this.form.training,
-          this['gitSelector/fetchBranches'],
+          this['gitSelector/getBranches'],
           repository,
+          this.trainingRepositories,
         )
       } catch (message) {
         this.$notify.error({
@@ -751,10 +833,11 @@ export default {
     },
     async selectEvaluationRepository(repository) {
       try {
-        await gitSelectorUtil.selectRepository(
+        this.evaluationBranches = await gitSelectorUtil.selectRepository(
           this.form.evaluation,
-          this['gitSelector/fetchBranches'],
+          this['gitSelector/getBranches'],
           repository,
+          this.evaluationRepositories,
         )
       } catch (message) {
         this.$notify.error({
@@ -763,23 +846,23 @@ export default {
       }
     },
     async selectPreprocessBranch(branchName) {
-      await gitSelectorUtil.selectBranch(
+      this.preprocessCommits = await gitSelectorUtil.selectBranch(
         this.form.preprocess,
-        this['gitSelector/fetchCommits'],
+        this['gitSelector/getCommits'],
         branchName,
       )
     },
     async selectTrainingBranch(branchName) {
-      await gitSelectorUtil.selectBranch(
+      this.trainingCommits = await gitSelectorUtil.selectBranch(
         this.form.training,
-        this['gitSelector/fetchCommits'],
+        this['gitSelector/getCommits'],
         branchName,
       )
     },
     async selectEvaluationBranch(branchName) {
-      await gitSelectorUtil.selectBranch(
+      this.evaluationCommits = await gitSelectorUtil.selectBranch(
         this.form.evaluation,
-        this['gitSelector/fetchCommits'],
+        this['gitSelector/getCommits'],
         branchName,
       )
     },
