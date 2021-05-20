@@ -15,5 +15,9 @@ namespace Nssol.Platypus.Logic
         public bool Accessible(Template template, Tenant tenant)
             => template.AccessLevel == TemplateAccessLevel.Private && template.CreaterTenantId == tenant.Id
             || (template.AccessLevel == TemplateAccessLevel.Public);
+
+        public bool IsCreatedTenant(Template template, Tenant tenant)
+            => template.CreaterTenantId == tenant.Id;
+
     }
 }

@@ -8040,28 +8040,20 @@ export const ApiV2DownloadUrlGetURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
- * 全テンプレート一覧を取得する
- * request: ApiV2AdminTemplatesGet
- * url: ApiV2AdminTemplatesGetURL
- * method: ApiV2AdminTemplatesGet_TYPE
- * raw_url: ApiV2AdminTemplatesGet_RAW_URL
- * @param perPage - 
- * @param page - 
+ * 接続中のテナントに有効なテンプレート一覧を取得する
+ * request: ApiV2TenantTemplatesGet
+ * url: ApiV2TenantTemplatesGetURL
+ * method: ApiV2TenantTemplatesGet_TYPE
+ * raw_url: ApiV2TenantTemplatesGet_RAW_URL
  * @param withTotal - 
  */
-export const ApiV2AdminTemplatesGet = function(parameters = {}) {
+export const ApiV2TenantTemplatesGet = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
-  let path = '/api/v2/admin/templates'
+  let path = '/api/v2/tenant/templates'
   let body
   let queryParameters = {}
   let form = {}
-  if (parameters['perPage'] !== undefined) {
-    queryParameters['perPage'] = parameters['perPage']
-  }
-  if (parameters['page'] !== undefined) {
-    queryParameters['page'] = parameters['page']
-  }
   if (parameters['withTotal'] !== undefined) {
     queryParameters['withTotal'] = parameters['withTotal']
   }
@@ -8072,22 +8064,62 @@ export const ApiV2AdminTemplatesGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminTemplatesGet_RAW_URL = function() {
-  return '/api/v2/admin/templates'
+export const ApiV2TenantTemplatesGet_RAW_URL = function() {
+  return '/api/v2/tenant/templates'
 }
-export const ApiV2AdminTemplatesGet_TYPE = function() {
+export const ApiV2TenantTemplatesGet_TYPE = function() {
   return 'get'
 }
-export const ApiV2AdminTemplatesGetURL = function(parameters = {}) {
+export const ApiV2TenantTemplatesGetURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/api/v2/admin/templates'
-  if (parameters['perPage'] !== undefined) {
-    queryParameters['perPage'] = parameters['perPage']
+  let path = '/api/v2/tenant/templates'
+  if (parameters['withTotal'] !== undefined) {
+    queryParameters['withTotal'] = parameters['withTotal']
   }
-  if (parameters['page'] !== undefined) {
-    queryParameters['page'] = parameters['page']
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
   }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 接続中のテナントで作成されたテンプレート一覧を取得する
+ * request: ApiV2TemplatesGet
+ * url: ApiV2TemplatesGetURL
+ * method: ApiV2TemplatesGet_TYPE
+ * raw_url: ApiV2TemplatesGet_RAW_URL
+ * @param withTotal - 
+ */
+export const ApiV2TemplatesGet = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/templates'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['withTotal'] !== undefined) {
+    queryParameters['withTotal'] = parameters['withTotal']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2TemplatesGet_RAW_URL = function() {
+  return '/api/v2/templates'
+}
+export const ApiV2TemplatesGet_TYPE = function() {
+  return 'get'
+}
+export const ApiV2TemplatesGetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/templates'
   if (parameters['withTotal'] !== undefined) {
     queryParameters['withTotal'] = parameters['withTotal']
   }
@@ -8134,52 +8166,6 @@ export const ApiV2AdminTemplatesPostURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/templates'
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
- * 接続中のテナントに有効なテンプレート一覧を取得する
- * request: ApiV2TenantTemplatesGet
- * url: ApiV2TenantTemplatesGetURL
- * method: ApiV2TenantTemplatesGet_TYPE
- * raw_url: ApiV2TenantTemplatesGet_RAW_URL
- * @param withTotal - 
- */
-export const ApiV2TenantTemplatesGet = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/api/v2/tenant/templates'
-  let body
-  let queryParameters = {}
-  let form = {}
-  if (parameters['withTotal'] !== undefined) {
-    queryParameters['withTotal'] = parameters['withTotal']
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('get', domain + path, body, queryParameters, form, config)
-}
-export const ApiV2TenantTemplatesGet_RAW_URL = function() {
-  return '/api/v2/tenant/templates'
-}
-export const ApiV2TenantTemplatesGet_TYPE = function() {
-  return 'get'
-}
-export const ApiV2TenantTemplatesGetURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/api/v2/tenant/templates'
-  if (parameters['withTotal'] !== undefined) {
-    queryParameters['withTotal'] = parameters['withTotal']
-  }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]

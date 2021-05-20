@@ -79,7 +79,7 @@ let api = {
   templates: {
     admin: {
       getById: gen.ApiV2AdminTemplatesByIdGet,
-      get: gen.ApiV2AdminTemplatesGet,
+      get: gen.ApiV2TemplatesGet,
       post: gen.ApiV2AdminTemplatesPost,
       put: gen.ApiV2AdminTemplatesByIdPut,
       delete: gen.ApiV2AdminTemplatesByIdDelete,
