@@ -11,5 +11,11 @@ namespace Nssol.Platypus.Logic.Interfaces
         /// テンプレートが指定されたテナントからアクセス可能かどうかを返す
         /// </summary>
         bool Accessible(Template template, Tenant tenant);
+
+        /// <summary>
+        /// テンプレートが指定されたテナントで作成されたかを返す
+        /// </summary>
+        bool IsCreatedTenant(Template template, Tenant tenant);
+
     }
 }

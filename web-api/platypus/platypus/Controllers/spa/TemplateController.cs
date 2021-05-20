@@ -219,30 +219,6 @@ namespace Nssol.Platypus.Controllers.spa
         }
 
         /// <summary>
-        /// 全テンプレート一覧を取得する
-        /// </summary>
-        [HttpGet("admin/templates")]
-        [PermissionFilter(MenuCode.Template, MenuCode.Experiment)]
-        [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
-        public IActionResult GetAll([FromQuery] int? perPage, [FromQuery] int page = 1, bool withTotal = false)
-        {
-            var templates = templateRepository.GetAll();
-            templates = templates.OrderByDescending(t => t.Id);
-            if (withTotal)
-            {
-                //テンプレートの場合は件数が少ない想定なので、別のSQLを投げずにカウントしてしまう
-                SetTotalCountToHeader(templates.Count());
-            }
-
-            if (perPage.HasValue)
-            {
-                templates = templates.Paging(page, perPage.Value);
-            }
-
-            return JsonOK(templates.Select(t => new IndexOutputModel(t)));
-        }
-
-        /// <summary>
         /// 接続中のテナントに有効なテンプレート一覧を取得する
         /// </summary>
         [HttpGet("tenant/templates")]
@@ -260,6 +236,26 @@ namespace Nssol.Platypus.Controllers.spa
             }
             return JsonOK(templates.Select(t => new IndexOutputModel(t)));
         }
+
+        /// <summary>
+        /// 接続中のテナントで作成されたテンプレート一覧を取得する
+        /// </summary>
+        [HttpGet("templates")]
+        [PermissionFilter(MenuCode.Template, MenuCode.Experiment)]
+        [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
+        public IActionResult GetAllCreatedByTenant(bool withTotal = false)
+        {
+            var templates = templateRepository
+                .GetAll()
+                .OrderByDescending(x => x.Id)
+                .Where(x => templateLogic.IsCreatedTenant(x, CurrentUserInfo.SelectedTenant));
+            if (withTotal)
+            {
+                SetTotalCountToHeader(templates.Count());
+            }
+            return JsonOK(templates.Select(t => new IndexOutputModel(t)));
+        }
+
 
         /// <summary>
         /// テンプレートを作成する
