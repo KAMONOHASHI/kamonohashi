@@ -46,11 +46,23 @@
       テンプレート削除
     </el-button>
     <el-dialog title="" :visible.sync="deleteVersionDialog" width="30%">
-      <span>
-        テンプレートバージョン"{{ versionDetail.version }}"を削除しますか？
+      <span v-if="versions.length == 1">
+        このテンプレートにはバージョン"{{
+          versionDetail.version
+        }}"しか存在しないため<br />
+        テンプレートバージョン削除することができません。<br />
+        <br />
+        削除をしたい場合はテンプレート削除を選択してください。
       </span>
-
-      <span slot="footer" class="dialog-footer">
+      <span v-else>
+        <span>
+          テンプレートバージョン"{{ versionDetail.version }}"を削除しますか？
+        </span>
+      </span>
+      <span v-if="versions.length == 1" slot="footer" class="dialog-footer">
+        <el-button @click="deleteVersionDialog = false">OK</el-button>
+      </span>
+      <span v-else slot="footer" class="dialog-footer">
         <el-button @click="deleteVersionDialog = false">Cancel</el-button>
         <el-button type="primary" @click="deleteTemplateVersion()">
           削除
@@ -144,12 +156,14 @@ export default {
       'delete',
       'deleteVersion',
     ]),
+
     async deleteTemplate() {
       //モデルテンプレート削除
       this.deleteDialog = false
       await this.delete(this.id)
       this.$router.push('/aquarium/model-template')
     },
+
     async deleteTemplateVersion() {
       //モデルテンプレートバージョン削除
 
@@ -314,7 +328,6 @@ export default {
 
       //バージョン情報が変更されていれば更新するフラグ
       let update = false
-
       if (this.versionDetail.preprocessContainerImage == null) {
         if (
           this.preprocForm.containerImage != null &&
