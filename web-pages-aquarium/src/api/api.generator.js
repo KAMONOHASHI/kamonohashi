@@ -8040,109 +8040,6 @@ export const ApiV2DownloadUrlGetURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
- * 全テンプレート一覧を取得する
- * request: ApiV2AdminTemplatesGet
- * url: ApiV2AdminTemplatesGetURL
- * method: ApiV2AdminTemplatesGet_TYPE
- * raw_url: ApiV2AdminTemplatesGet_RAW_URL
- * @param perPage - 
- * @param page - 
- * @param withTotal - 
- */
-export const ApiV2AdminTemplatesGet = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/api/v2/admin/templates'
-  let body
-  let queryParameters = {}
-  let form = {}
-  if (parameters['perPage'] !== undefined) {
-    queryParameters['perPage'] = parameters['perPage']
-  }
-  if (parameters['page'] !== undefined) {
-    queryParameters['page'] = parameters['page']
-  }
-  if (parameters['withTotal'] !== undefined) {
-    queryParameters['withTotal'] = parameters['withTotal']
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('get', domain + path, body, queryParameters, form, config)
-}
-export const ApiV2AdminTemplatesGet_RAW_URL = function() {
-  return '/api/v2/admin/templates'
-}
-export const ApiV2AdminTemplatesGet_TYPE = function() {
-  return 'get'
-}
-export const ApiV2AdminTemplatesGetURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/api/v2/admin/templates'
-  if (parameters['perPage'] !== undefined) {
-    queryParameters['perPage'] = parameters['perPage']
-  }
-  if (parameters['page'] !== undefined) {
-    queryParameters['page'] = parameters['page']
-  }
-  if (parameters['withTotal'] !== undefined) {
-    queryParameters['withTotal'] = parameters['withTotal']
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
- * テンプレートを作成する
- * request: ApiV2AdminTemplatesPost
- * url: ApiV2AdminTemplatesPostURL
- * method: ApiV2AdminTemplatesPost_TYPE
- * raw_url: ApiV2AdminTemplatesPost_RAW_URL
- * @param model - 
- */
-export const ApiV2AdminTemplatesPost = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/api/v2/admin/templates'
-  let body
-  let queryParameters = {}
-  let form = {}
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('post', domain + path, body, queryParameters, form, config)
-}
-export const ApiV2AdminTemplatesPost_RAW_URL = function() {
-  return '/api/v2/admin/templates'
-}
-export const ApiV2AdminTemplatesPost_TYPE = function() {
-  return 'post'
-}
-export const ApiV2AdminTemplatesPostURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/api/v2/admin/templates'
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
  * 接続中のテナントに有効なテンプレート一覧を取得する
  * request: ApiV2TenantTemplatesGet
  * url: ApiV2TenantTemplatesGetURL
@@ -8190,16 +8087,16 @@ export const ApiV2TenantTemplatesGetURL = function(parameters = {}) {
 }
 /**
  * 接続中のテナントで作成されたテンプレート一覧を取得する
- * request: ApiV2TenantTemplatesCreatedGet
- * url: ApiV2TenantTemplatesCreatedGetURL
- * method: ApiV2TenantTemplatesCreatedGet_TYPE
- * raw_url: ApiV2TenantTemplatesCreatedGet_RAW_URL
+ * request: ApiV2AdminTemplatesGet
+ * url: ApiV2AdminTemplatesGetURL
+ * method: ApiV2AdminTemplatesGet_TYPE
+ * raw_url: ApiV2AdminTemplatesGet_RAW_URL
  * @param withTotal - 
  */
-export const ApiV2TenantTemplatesCreatedGet = function(parameters = {}) {
+export const ApiV2AdminTemplatesGet = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
-  let path = '/api/v2/tenant/templates/created'
+  let path = '/api/v2/admin/templates'
   let body
   let queryParameters = {}
   let form = {}
@@ -8213,19 +8110,62 @@ export const ApiV2TenantTemplatesCreatedGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2TenantTemplatesCreatedGet_RAW_URL = function() {
-  return '/api/v2/tenant/templates/created'
+export const ApiV2AdminTemplatesGet_RAW_URL = function() {
+  return '/api/v2/admin/templates'
 }
-export const ApiV2TenantTemplatesCreatedGet_TYPE = function() {
+export const ApiV2AdminTemplatesGet_TYPE = function() {
   return 'get'
 }
-export const ApiV2TenantTemplatesCreatedGetURL = function(parameters = {}) {
+export const ApiV2AdminTemplatesGetURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/api/v2/tenant/templates/created'
+  let path = '/api/v2/admin/templates'
   if (parameters['withTotal'] !== undefined) {
     queryParameters['withTotal'] = parameters['withTotal']
   }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * テンプレートを作成する
+ * request: ApiV2AdminTemplatesPost
+ * url: ApiV2AdminTemplatesPostURL
+ * method: ApiV2AdminTemplatesPost_TYPE
+ * raw_url: ApiV2AdminTemplatesPost_RAW_URL
+ * @param model - 
+ */
+export const ApiV2AdminTemplatesPost = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/admin/templates'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['model'] !== undefined) {
+    body = parameters['model']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('post', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2AdminTemplatesPost_RAW_URL = function() {
+  return '/api/v2/admin/templates'
+}
+export const ApiV2AdminTemplatesPost_TYPE = function() {
+  return 'post'
+}
+export const ApiV2AdminTemplatesPostURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/admin/templates'
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]

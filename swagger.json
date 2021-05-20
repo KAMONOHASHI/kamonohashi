@@ -4841,29 +4841,43 @@
         "security": [ { "api_key": [] } ]
       }
     },
-    "/api/v2/admin/templates": {
+    "/api/v2/tenant/templates": {
       "get": {
         "tags": [ "Template" ],
-        "summary": "全テンプレート一覧を取得する",
-        "operationId": "ApiV2AdminTemplatesGet",
+        "summary": "接続中のテナントに有効なテンプレート一覧を取得する",
+        "operationId": "ApiV2TenantTemplatesGet",
         "consumes": [],
         "produces": [ "application/json" ],
         "parameters": [
           {
-            "name": "perPage",
+            "name": "withTotal",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "required": false,
-            "type": "integer",
-            "format": "int32",
-            "default": 1
-          },
+            "type": "boolean",
+            "default": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "uniqueItems": false,
+              "type": "array",
+              "items": { "$ref": "#/definitions/Nssol.Platypus.ApiModels.TemplateApiModels.IndexOutputModel" }
+            }
+          }
+        },
+        "security": [ { "api_key": [] } ]
+      }
+    },
+    "/api/v2/admin/templates": {
+      "get": {
+        "tags": [ "Template" ],
+        "summary": "接続中のテナントで作成されたテンプレート一覧を取得する",
+        "operationId": "ApiV2AdminTemplatesGet",
+        "consumes": [],
+        "produces": [ "application/json" ],
+        "parameters": [
           {
             "name": "withTotal",
             "in": "query",
@@ -4902,64 +4916,6 @@
           "201": {
             "description": "Success",
             "schema": { "$ref": "#/definitions/Nssol.Platypus.ApiModels.TemplateApiModels.IndexOutputModel" }
-          }
-        },
-        "security": [ { "api_key": [] } ]
-      }
-    },
-    "/api/v2/tenant/templates": {
-      "get": {
-        "tags": [ "Template" ],
-        "summary": "接続中のテナントに有効なテンプレート一覧を取得する",
-        "operationId": "ApiV2TenantTemplatesGet",
-        "consumes": [],
-        "produces": [ "application/json" ],
-        "parameters": [
-          {
-            "name": "withTotal",
-            "in": "query",
-            "required": false,
-            "type": "boolean",
-            "default": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "schema": {
-              "uniqueItems": false,
-              "type": "array",
-              "items": { "$ref": "#/definitions/Nssol.Platypus.ApiModels.TemplateApiModels.IndexOutputModel" }
-            }
-          }
-        },
-        "security": [ { "api_key": [] } ]
-      }
-    },
-    "/api/v2/tenant/templates/created": {
-      "get": {
-        "tags": [ "Template" ],
-        "summary": "接続中のテナントで作成されたテンプレート一覧を取得する",
-        "operationId": "ApiV2TenantTemplatesCreatedGet",
-        "consumes": [],
-        "produces": [ "application/json" ],
-        "parameters": [
-          {
-            "name": "withTotal",
-            "in": "query",
-            "required": false,
-            "type": "boolean",
-            "default": false
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "schema": {
-              "uniqueItems": false,
-              "type": "array",
-              "items": { "$ref": "#/definitions/Nssol.Platypus.ApiModels.TemplateApiModels.IndexOutputModel" }
-            }
           }
         },
         "security": [ { "api_key": [] } ]
