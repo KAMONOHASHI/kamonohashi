@@ -30,10 +30,11 @@
       <el-tab-pane label="学習と推論" name="train">
         <training v-if="trainingForm" v-model="trainingForm" />
       </el-tab-pane>
-
+      <!--
       <el-tab-pane label="評価" name="evaluation">
         <evaluation v-if="evaluationForm" v-model="evaluationForm" />
       </el-tab-pane>
+      -->
     </el-tabs>
     <el-button type="primary" plain @click="submit()">
       更新
@@ -85,7 +86,7 @@ export default {
     BaseSetting,
     Preprocessing: ContainerSettings,
     Training: ContainerSettings,
-    Evaluation: ContainerSettings,
+    // Evaluation: ContainerSettings,
   },
   props: {
     id: {
@@ -247,18 +248,72 @@ export default {
       ) {
         //基本情報更新
         await this['put']({ id: this.id, model: baseParam })
+        return true
+      } else {
+        return false
       }
     },
 
     async submit() {
+      // 入力値チェック
+      try {
+        // 必須項目の入力チェック
+        if (
+          // テンプレート名
+          this.baseForm.name === null ||
+          // 公開設定
+          this.baseForm.accessLevel === null ||
+          // 学習コンテナイメージ設定
+          this.trainingForm.containerImage === null ||
+          this.trainingForm.containerImage.registry === null ||
+          this.trainingForm.containerImage.image === null ||
+          this.trainingForm.containerImage.tag === null ||
+          // 学習Git設定
+          this.trainingForm.gitModel === null ||
+          this.trainingForm.gitModel.git === null ||
+          this.trainingForm.gitModel.repository === null ||
+          this.trainingForm.gitModel.branch === null ||
+          // 実行コマンド
+          this.trainingForm.entryPoint.entryPoint === null ||
+          this.trainingForm.entryPoint.entryPoint === ''
+        ) {
+          throw '必須項目が入力されていません : テンプレート名、公開設定、学習の設定は必須項目です。'
+        }
+        // 前処理の項目について入力チェック
+        // dockerイメージ、リポジトリ、入力コマンドのいずれかが入力済みなら他の項目も入力必須
+        if (
+          (this.preprocForm.containerImage.image !== null ||
+            this.preprocForm.gitModel.repository !== null ||
+            (this.preprocForm.entryPoint !== null &&
+              this.preprocForm.entryPoint !== '')) &&
+          // コンテナイメージ設定
+          (this.preprocForm.containerImage === null ||
+            this.preprocForm.containerImage.registry === null ||
+            this.preprocForm.containerImage.image === null ||
+            this.preprocForm.containerImage.tag === null ||
+            // Git設定
+            this.preprocForm.gitModel === null ||
+            this.preprocForm.gitModel.git === null ||
+            this.preprocForm.gitModel.repository === null ||
+            this.preprocForm.gitModel.branch === null ||
+            // 実行コマンド
+            this.preprocForm.entryPoint === null ||
+            this.preprocForm.entryPoint === '')
+        ) {
+          throw '前処理コンテナの設定を確認してください : イメージ、リポジトリ、入力コマンドのいずれかが入力済みなら他の項目も入力必須です。'
+        }
+      } catch (message) {
+        this.$notify.error({
+          message: message,
+        })
+        return
+      }
+
       //基本情報更新
-      this.updateBase()
+      let updatedBase = await this.updateBase()
 
       //バージョン情報が変更されていれば更新するフラグ
       let update = false
-
-      // gitModelのbranchに値が入っていて、commit Idには値が入っていない場合
-      // Headの値を子コンポーネントで投入する。
 
       if (this.versionDetail.preprocessContainerImage == null) {
         if (
@@ -346,6 +401,7 @@ export default {
         update = true
       }
 
+      /*
       if (this.versionDetail.evaluationContainerImage == null) {
         if (
           this.evaluationForm.containerImage != null &&
@@ -402,7 +458,15 @@ export default {
       ) {
         update = true
       }
+      */
+
       if (update == false) {
+        if (updatedBase) {
+          await this.$notify.success({
+            type: 'Success',
+            message: `更新しました`,
+          })
+        }
         return
       }
 
@@ -419,11 +483,16 @@ export default {
         trainingMemory: this.trainingForm.resource.memory,
         trainingGpu: this.trainingForm.resource.gpu,
 
-        evaluationEntryPoint: this.evaluationForm.entryPoint,
+        //evaluationEntryPoint: this.evaluationForm.entryPoint,
 
-        evaluationCpu: this.evaluationForm.resource.cpu,
-        evaluationMemory: this.evaluationForm.resource.memory,
-        evaluationGpu: this.evaluationForm.resource.gpu,
+        //evaluationCpu: this.evaluationForm.resource.cpu,
+        //evaluationMemory: this.evaluationForm.resource.memory,
+        //evaluationGpu: this.evaluationForm.resource.gpu,
+        evaluationEntryPoint: null,
+
+        evaluationCpu: 1,
+        evaluationMemory: 1,
+        evaluationGpu: 0,
       }
       if (
         this.preprocForm.containerImage.image != null &&
@@ -445,6 +514,7 @@ export default {
       } else {
         params['trainingContainerImage'] = null
       }
+      /*
       if (
         this.evaluationForm.containerImage.image != null &&
         this.evaluationForm.containerImage.tag != null
@@ -455,6 +525,8 @@ export default {
       } else {
         params['evaluationContainerImage'] = null
       }
+      */
+      params['evaluationContainerImage'] = null
 
       if (this.preprocForm.gitModel.repository != null) {
         params['preprocessGitModel'] = {
@@ -482,6 +554,7 @@ export default {
         params['trainingGitModel'] = null
       }
 
+      /*
       if (this.evaluationForm.gitModel.git != null) {
         params['evaluationGitModel'] = {
           gitId: this.evaluationForm.gitModel.git.id,
@@ -494,12 +567,16 @@ export default {
       } else {
         params['evaluationGitModel'] = null
       }
+      */
+      params['evaluationGitModel'] = null
 
       //新規バージョン作成
       await this['postByIdVersions']({ id: this.id, model: params })
-      /*this.$alert('編集は製品版で使用可能予定です', 'お知らせ', {
-        confirmButtonText: 'OK',
-      })*/
+
+      await this.$notify.success({
+        type: 'Success',
+        message: `更新しました`,
+      })
 
       this.changeFlg = false
       this.versionValue = null

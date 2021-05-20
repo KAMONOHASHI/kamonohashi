@@ -292,6 +292,7 @@ export default {
           this.form,
           this['gitSelector/getBranches'],
           repository,
+          this.repositories,
         )
       } catch (message) {
         this.$notify.error({
@@ -305,6 +306,7 @@ export default {
         this['gitSelector/getCommits'],
         branchName,
       )
+      this.form.gitModel.commit = this.commits[0]
     },
     ...mapActions([
       'modelTemplate/fetchDetail',
