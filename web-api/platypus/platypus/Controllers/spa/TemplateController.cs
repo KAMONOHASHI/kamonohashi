@@ -262,6 +262,26 @@ namespace Nssol.Platypus.Controllers.spa
         }
 
         /// <summary>
+        /// 接続中のテナントで作成されたテンプレート一覧を取得する
+        /// </summary>
+        [HttpGet("tenant/templates/created")]
+        [PermissionFilter(MenuCode.Template, MenuCode.Experiment)]
+        [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
+        public IActionResult GetAllCreatedByTenant(bool withTotal = false)
+        {
+            var templates = templateRepository
+                .GetAll()
+                .OrderByDescending(x => x.Id)
+                .Where(x => templateLogic.IsCreatedTenant(x, CurrentUserInfo.SelectedTenant));
+            if (withTotal)
+            {
+                SetTotalCountToHeader(templates.Count());
+            }
+            return JsonOK(templates.Select(t => new IndexOutputModel(t)));
+        }
+
+
+        /// <summary>
         /// テンプレートを作成する
         /// </summary>
         [HttpPost("admin/templates")]

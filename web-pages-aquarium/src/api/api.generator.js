@@ -8189,6 +8189,52 @@ export const ApiV2TenantTemplatesGetURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * 接続中のテナントで作成されたテンプレート一覧を取得する
+ * request: ApiV2TenantTemplatesCreatedGet
+ * url: ApiV2TenantTemplatesCreatedGetURL
+ * method: ApiV2TenantTemplatesCreatedGet_TYPE
+ * raw_url: ApiV2TenantTemplatesCreatedGet_RAW_URL
+ * @param withTotal - 
+ */
+export const ApiV2TenantTemplatesCreatedGet = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/tenant/templates/created'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['withTotal'] !== undefined) {
+    queryParameters['withTotal'] = parameters['withTotal']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2TenantTemplatesCreatedGet_RAW_URL = function() {
+  return '/api/v2/tenant/templates/created'
+}
+export const ApiV2TenantTemplatesCreatedGet_TYPE = function() {
+  return 'get'
+}
+export const ApiV2TenantTemplatesCreatedGetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/tenant/templates/created'
+  if (parameters['withTotal'] !== undefined) {
+    queryParameters['withTotal'] = parameters['withTotal']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * テンプレートを取得する
  * request: ApiV2AdminTemplatesByIdGet
  * url: ApiV2AdminTemplatesByIdGetURL
