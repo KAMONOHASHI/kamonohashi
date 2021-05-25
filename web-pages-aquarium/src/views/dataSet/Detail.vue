@@ -552,6 +552,7 @@ export default {
           this.datas.push(this.allDatas[i])
         }
       }
+      this.selectImageList = []
     },
     async initialize() {
       //ページを変えてデータリストを取得
