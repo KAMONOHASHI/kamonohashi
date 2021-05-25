@@ -35,8 +35,21 @@
           >データセット削除</el-button
         >
         <el-dialog title="" :visible.sync="deleteVersionDialog" width="30%">
-          <span>バージョン"{{ viewVersion.version }}"を削除しますか？</span>
-          <span slot="footer" class="dialog-footer">
+          <span v-if="versions.length == 1">
+            このデータセットにはバージョン"{{
+              viewVersion.version
+            }}"しか存在しないため<br />
+            データセットバージョン削除することができません。<br />
+            <br />
+            削除をしたい場合はデータセット削除を選択してください。</span
+          >
+          <span v-else
+            >バージョン"{{ viewVersion.version }}"を削除しますか？</span
+          >
+          <span v-if="versions.length == 1" slot="footer" class="dialog-footer">
+            <el-button @click="deleteVersionDialog = false">OK</el-button>
+          </span>
+          <span v-else slot="footer" class="dialog-footer">
             <el-button @click="deleteVersionDialog = false">Cancel</el-button>
             <el-button type="primary" @click="deleteVersion()">
               削除する
