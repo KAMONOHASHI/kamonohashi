@@ -649,8 +649,7 @@ export default {
           this.$refs.uploadForm._data.selectedFiles == null ||
           this.$refs.uploadForm._data.selectedFiles.length == 0
         ) {
-          this.error = new Error('ファイルを選択してください')
-          return
+          throw new Error('ファイルを選択してください')
         }
         //ローカルからのデータリストを登録する
         let dataId = await this.uploadFile(this.name)
