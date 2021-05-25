@@ -202,6 +202,7 @@
 
             <div style="padding:20px">
               KAMONOHASHIに登録してあるデータを複数選択できます。<br />
+              <kqi-display-error :error="error" />
               <el-row>
                 <div
                   style="width:80%;height:250px;padding:20px;border:1px solid #CCC;border-radius:5px;margin-top:5px"
@@ -657,6 +658,9 @@ export default {
         flatEntry.push({ id: dataId })
       } else if (this.importfile == 2) {
         //カモノハシのデータを登録する
+        if (this.checkList.length == 0) {
+          throw new Error('データを選択してください')
+        }
         for (let i in this.checkList) {
           flatEntry.push({ id: this.checkList[i] })
         }
