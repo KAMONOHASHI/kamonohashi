@@ -182,22 +182,27 @@
               >
                 参考：選択したデータセット【{{
                   dataSetDetail.name
-                }}】のデータ一覧
+                }}】のデータパス一覧
               </el-row>
               <el-row class="data-list">
-                <el-col :span="24">
+                <el-col v-if="dataSetDetail.flatEntries.length == 0" :span="24">
                   <ul
                     v-for="(datalist, index) in dataSetDetail.entries"
                     :key="index"
                   >
+                    <li style="padding-top:5px;list-style-type: none">
+                      {{ index }}:
+                    </li>
                     <li
                       v-for="data in datalist"
                       :key="data.id"
-                      style="padding-top:5px; list-style-type: none"
+                      style="padding-top:5px;padding-left:15px;  list-style-type: none"
                     >
                       /kqi/input/{{ index }}/{{ data.id }}
                     </li>
                   </ul>
+                </el-col>
+                <el-col v-else :span="24">
                   <ul>
                     <li
                       v-for="data in dataSetDetail.flatEntries"
