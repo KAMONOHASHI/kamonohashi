@@ -35,8 +35,21 @@
           >データセット削除</el-button
         >
         <el-dialog title="" :visible.sync="deleteVersionDialog" width="30%">
-          <span>バージョン"{{ viewVersion.version }}"を削除しますか？</span>
-          <span slot="footer" class="dialog-footer">
+          <span v-if="versions.length == 1">
+            このデータセットにはバージョン"{{
+              viewVersion.version
+            }}"しか存在しないため<br />
+            データセットバージョン削除することができません。<br />
+            <br />
+            削除をしたい場合はデータセット削除を選択してください。</span
+          >
+          <span v-else
+            >バージョン"{{ viewVersion.version }}"を削除しますか？</span
+          >
+          <span v-if="versions.length == 1" slot="footer" class="dialog-footer">
+            <el-button @click="deleteVersionDialog = false">OK</el-button>
+          </span>
+          <span v-else slot="footer" class="dialog-footer">
             <el-button @click="deleteVersionDialog = false">Cancel</el-button>
             <el-button type="primary" @click="deleteVersion()">
               削除する
@@ -189,6 +202,7 @@
 
             <div style="padding:20px">
               KAMONOHASHIに登録してあるデータを複数選択できます。<br />
+              <kqi-display-error :error="error" />
               <el-row>
                 <div
                   style="width:80%;height:250px;padding:20px;border:1px solid #CCC;border-radius:5px;margin-top:5px"
@@ -538,6 +552,7 @@ export default {
           this.datas.push(this.allDatas[i])
         }
       }
+      this.selectImageList = []
     },
     async initialize() {
       //ページを変えてデータリストを取得
@@ -636,8 +651,7 @@ export default {
           this.$refs.uploadForm._data.selectedFiles == null ||
           this.$refs.uploadForm._data.selectedFiles.length == 0
         ) {
-          this.error = new Error('ファイルを選択してください')
-          return
+          throw new Error('ファイルを選択してください')
         }
         //ローカルからのデータリストを登録する
         let dataId = await this.uploadFile(this.name)
@@ -645,6 +659,9 @@ export default {
         flatEntry.push({ id: dataId })
       } else if (this.importfile == 2) {
         //カモノハシのデータを登録する
+        if (this.checkList.length == 0) {
+          throw new Error('データを選択してください')
+        }
         for (let i in this.checkList) {
           flatEntry.push({ id: this.checkList[i] })
         }

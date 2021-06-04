@@ -140,6 +140,8 @@ export default {
             this.$refs.uploadForm._data.selectedFiles.length == 0
           ) {
             this.error = new Error('ファイルを選択してください')
+            this.loading = false
+            this.$store.commit('setLoading', true)
             return
           }
           try {
