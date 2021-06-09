@@ -262,6 +262,9 @@ namespace Nssol.Platypus.Controllers.spa
                 unitOfWork.Commit();
 
                 ((JsonResult)result).Value = new SimpleOutputModel(experiment);
+                //再度trainをUPDATE
+                trainingHistoryRepository.UpdateMemoAsync(trainingHistory.Id, "アクアリウム実験ID:" + experiment.Id + " の学習", false);
+                unitOfWork.Commit();
             }
 
             return result;
@@ -323,12 +326,12 @@ namespace Nssol.Platypus.Controllers.spa
                 Gpu = templateVersion.PreprocessGpu,
                 Partition = null,
                 Ports = null,
-                Memo = null,
+                Memo = "アクアリウム実験 TemplateId:"+ experiment.TemplateId +",TemplateVersion:"+ experiment.TemplateVersion.Version + ",DataSetId:"+ experiment.DataSetId + ",DataSetVersion:"+ experiment.DataSetVersion.Version + " の前処理学習",
                 Tags = null,
                 Zip = false,
                 LocalDataSet = false,
             };
-
+           
             // kamonohashi学習を開始
             (var trainingHistory, var result) = await TrainingController.DoCreate(trainingCreateInputModel,
                 dataSetRepository, nodeRepository, tenantRepository, trainingHistoryRepository,
@@ -434,6 +437,10 @@ namespace Nssol.Platypus.Controllers.spa
                 unitOfWork.Commit();
 
                 ((JsonResult)result).Value = new SimpleOutputModel(experiment);
+
+                //再度trainをUPDATE
+                trainingHistoryRepository.UpdateMemoAsync(trainingHistory.Id, "アクアリウム実験ID:" + experiment.Id + " の学習", false);
+                unitOfWork.Commit();
             }
 
             return result;
@@ -617,7 +624,7 @@ namespace Nssol.Platypus.Controllers.spa
                 Gpu = templateVersion.TrainingGpu,
                 Partition = null,
                 Ports = null,
-                Memo = null,
+                Memo = "アクアリウム実験ID:" + experiment.Id + " の学習",
                 Tags = null,
                 Zip = false,
                 LocalDataSet = false,
