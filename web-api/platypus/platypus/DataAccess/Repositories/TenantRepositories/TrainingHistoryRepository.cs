@@ -125,20 +125,6 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
         }
 
         /// <summary>
-        /// 学習履歴のメモを変更する。
-        /// 存在チェックは行わない。
-        /// </summary>
-        /// <param name="id">学習履歴ID</param>
-        /// <param name="memo">memo</param>
-        /// <param name="force">他テナントに対する変更を許可するか</param>
-        public async Task UpdateMemoAsync(long id, string memo, bool force)
-        {
-            var history = await this.GetByIdAsync(id, force);
-            history.Memo = memo;
-            UpdateModel<TrainingHistory>(history, force);
-        }
-
-        /// <summary>
         /// 学習履歴のステータスを変更する。
         /// 存在チェックは行わない。
         /// </summary>

@@ -59,15 +59,6 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories
         Task UpdateStatusAsync(long id, ContainerStatus status, bool force);
 
         /// <summary>
-        /// 学習履歴のメモを変更する。
-        /// 存在チェックは行わない。
-        /// </summary>
-        /// <param name="id">学習履歴ID</param>
-        /// <param name="memo">memo</param>
-        /// <param name="force">他テナントに対する変更を許可するか</param>
-        Task UpdateMemoAsync(long id, string memo, bool force);
-
-        /// <summary>
         /// 学習履歴のステータスを変更する。
         /// 存在チェックは行わない。
         /// </summary>
