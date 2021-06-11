@@ -942,7 +942,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="id">学習履歴ID</param>
         [HttpPost("{id}/halt")]
-        [Filters.PermissionFilter(MenuCode.Training)]
+        [Filters.PermissionFilter(MenuCode.Training, MenuCode.Experiment)]
         [ProducesResponseType(typeof(SimpleOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> Halt(long? id)
         {
@@ -955,7 +955,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="id">学習履歴ID</param>
         [HttpPost("{id}/user-cancel")]
-        [Filters.PermissionFilter(MenuCode.Training)]
+        [Filters.PermissionFilter(MenuCode.Training, MenuCode.Experiment)]
         [ProducesResponseType(typeof(SimpleOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> UserCancel(long? id)
         {
@@ -967,7 +967,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="id">学習履歴ID</param>
         [HttpPost("{id}/complete")]
-        [Filters.PermissionFilter(MenuCode.Training)]
+        [Filters.PermissionFilter(MenuCode.Training, MenuCode.Experiment)]
         [ProducesResponseType(typeof(SimpleOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> Complete(long? id)
         {
