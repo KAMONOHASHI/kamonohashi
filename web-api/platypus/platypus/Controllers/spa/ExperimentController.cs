@@ -442,6 +442,7 @@ namespace Nssol.Platypus.Controllers.spa
             if (trainingHistory != null)
             {
                 experiment.ExperimentPreprocessId = experimentPreprocess.Id;
+                experiment.TrainingHistoryId = trainingHistory.Id;
                 experimentRepository.Update(experiment);
                 unitOfWork.Commit();
 
