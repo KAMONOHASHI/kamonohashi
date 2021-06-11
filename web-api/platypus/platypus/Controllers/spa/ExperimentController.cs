@@ -28,6 +28,7 @@ namespace Nssol.Platypus.Controllers.spa
     {
         private readonly IExperimentRepository experimentRepository;
         private readonly IExperimentPreprocessRepository experimentPreprocessRepository;
+        private readonly IAquariumEvaluationRepository evaluationRepository;
         private readonly IAquariumDataSetRepository aquariumDataSetRepository;
         private readonly IDataSetRepository dataSetRepository;
         private readonly IGitRepository gitRepository;
@@ -52,6 +53,7 @@ namespace Nssol.Platypus.Controllers.spa
         public ExperimentController(
             IExperimentRepository experimentRepository,
             IExperimentPreprocessRepository experimentPreprocessRepository,
+            IAquariumEvaluationRepository evaluationRepository,
             IAquariumDataSetRepository aquariumDataSetRepository,
             IDataSetRepository dataSetRepository,
             IGitRepository gitRepository,
@@ -77,6 +79,7 @@ namespace Nssol.Platypus.Controllers.spa
             this.trainingHistoryRepository = trainingHistoryRepository;
             this.experimentRepository = experimentRepository;
             this.experimentPreprocessRepository = experimentPreprocessRepository;
+            this.evaluationRepository = evaluationRepository;
             this.aquariumDataSetRepository = aquariumDataSetRepository;
             this.dataSetRepository = dataSetRepository;
             this.gitRepository = gitRepository;
@@ -701,6 +704,36 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonNotFound($"Experiment ID {id} is not found.");
             }
 
+            var evaluations = evaluationRepository
+                .GetAll()
+                .Include(x => x.TrainingHistory)
+                .Where(x => x.ExperimentId == id);
+            foreach (var x in evaluations)
+            {
+                evaluationRepository.Delete(x);
+                if (x.TrainingHistoryId != null)
+                {
+                    (var status, var result) = await TrainingController.DoDelete(
+                        x.TrainingHistoryId.Value,
+                        trainingHistoryRepository,
+                        clusterManagementLogic,
+                        dataSetLogic,
+                        tagLogic,
+                        unitOfWork,
+                        CurrentUserInfo,
+                        ModelState,
+                        storageLogic,
+                        inferenceHistoryRepository,
+                        tensorBoardContainerRepository,
+                        tagRepository,
+                        RequestUrl);
+                    if (!status)
+                    {
+                        return result;
+                    }
+                }
+            }
+
             experimentRepository.Delete(experiment);
             if (experiment.TrainingHistoryId != null)
             {
@@ -749,6 +782,230 @@ namespace Nssol.Platypus.Controllers.spa
                     {
                         return result;
                     }
+                }
+            }
+
+            unitOfWork.Commit();
+            return JsonNoContent();
+        }
+
+        /// <summary>
+        /// アクアリウム推論を作成する
+        /// </summary>
+        /// <param name="id">実験ID</param>
+        /// <param name="model">アクアリウム推論</param>
+        [HttpPost("{id}/evaluations")]
+        [Filters.PermissionFilter(MenuCode.Experiment)]
+        [ProducesResponseType(typeof(EvaluationSimpleOutputModel), (int)HttpStatusCode.Created)]
+        public async Task<IActionResult> CreateEvaluation(long id, [FromBody] EvaluationCreateInputModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return JsonBadRequest("Invalid inputs.");
+            }
+
+            var dataSet = await aquariumDataSetRepository
+                .GetAll()
+                .Include(x => x.DataSetVersions)
+                .SingleOrDefaultAsync(x => x.Id == model.DataSetId);
+            if (dataSet == null)
+            {
+                return JsonNotFound($"DataSet ID {model.DataSetId} is not found.");
+            }
+
+            var dataSetVersion = dataSet.DataSetVersions.SingleOrDefault(x => x.Id == model.DataSetVersionId);
+            if (dataSetVersion == null)
+            {
+                return JsonNotFound($"DataSetVersion (DataSetId {model.DataSetId} and VersionId {model.DataSetVersionId}) is not found.");
+            }
+
+            var experiment = await experimentRepository
+                .GetAll()
+                .Include(x => x.TemplateVersion)
+                .ThenInclude(x => x.EvaluationContainerRegistry)
+                .Include(x => x.TrainingHistory)
+                .SingleOrDefaultAsync(x => x.Id == id);
+            if (experiment == null)
+            {
+                return JsonNotFound($"Experiment ID {id} is not found.");
+            }
+            var experimentStatus = await UpdateStatus(experiment.TrainingHistory);
+            if (experimentStatus != ContainerStatus.Completed)
+            {
+                return JsonBadRequest($"Experiment ID {id} is not completed.");
+            }
+
+            var templateVersion = experiment.TemplateVersion;
+            if (templateVersion.EvaluationContainerRegistryId == null
+                || templateVersion.EvaluationContainerImage == null
+                || templateVersion.EvaluationContainerTag == null
+                || templateVersion.EvaluationRepositoryGitId == null
+                || templateVersion.EvaluationRepositoryName == null
+                || templateVersion.EvaluationRepositoryOwner == null
+                || templateVersion.EvaluationRepositoryBranch == null
+                || templateVersion.EvaluationRepositoryCommitId == null)
+            {
+                return JsonBadRequest($"Template of experiment {id} has no evaluation definition.");
+            }
+
+            var registryMaps = registryRepository.GetUserTenantRegistryMapAll(CurrentUserInfo.SelectedTenant.Id, CurrentUserInfo.Id);
+            if (!registryMaps.Any(x => x.TenantRegistryMap.RegistryId == templateVersion.EvaluationContainerRegistryId.Value))
+            {
+                return JsonBadRequest($"Evaluation Container Registry ID {templateVersion.EvaluationContainerRegistryId.Value} is not accesible.");
+            }
+
+            var gitMaps = gitRepository.GetUserTenantGitMapAll(CurrentUserInfo.SelectedTenant.Id, CurrentUserInfo.Id);
+            if (!gitMaps.Any(x => x.TenantGitMap.GitId == templateVersion.EvaluationRepositoryGitId.Value))
+            {
+                return JsonBadRequest($"Evaluation Repository Git ID {templateVersion.EvaluationRepositoryGitId.Value} is not accesible.");
+            }
+
+            var registryTokenKey = await RegistRegistryToTenantAsync(templateVersion.TrainingContainerRegistry, templateVersion.TrainingContainerToken);
+            if (registryTokenKey == null)
+            {
+                return JsonBadRequest("Cannot register registry token");
+            }
+
+            var gitToken = templateVersion.TrainingRepositoryToken ?? UserGitToken(templateVersion.TrainingRepositoryGitId);
+
+            var evaluation = new Evaluation
+            {
+                Name = model.Name,
+                DataSetId = model.DataSetId,
+                DataSetVersionId = model.DataSetVersionId,
+                ExperimentId = id,
+            };
+            evaluationRepository.Add(evaluation);
+            unitOfWork.Commit();
+
+            // kamonohashi学習に必要な情報を設定
+            var trainingCreateInputModel = new ApiModels.TrainingApiModels.CreateInputModel
+            {
+                Name = model.Name,
+                ContainerImage = new ContainerImageInputModel
+                {
+                    RegistryId = templateVersion.EvaluationContainerRegistryId,
+                    Image = templateVersion.EvaluationContainerImage,
+                    Tag = templateVersion.EvaluationContainerTag,
+                },
+                DataSetId = dataSetVersion.DataSetId,
+                ParentIds = new List<long> { experiment.TrainingHistoryId.Value, },
+                GitModel = new GitCommitInputModel
+                {
+                    GitId = templateVersion.EvaluationRepositoryGitId,
+                    Repository = templateVersion.EvaluationRepositoryName,
+                    Owner = templateVersion.EvaluationRepositoryOwner,
+                    Branch = templateVersion.EvaluationRepositoryBranch,
+                    CommitId = templateVersion.EvaluationRepositoryCommitId,
+                },
+                EntryPoint = templateVersion.EvaluationEntryPoint,
+                Options = null,
+                Cpu = templateVersion.EvaluationCpu,
+                Memory = templateVersion.EvaluationMemory,
+                Gpu = templateVersion.EvaluationGpu,
+                Partition = null,
+                Ports = null,
+                Memo = $"Evaluation of aquarium. experimentId:{experiment.Id}, evaluationId:{evaluation.Id}",
+                Tags = null,
+                Zip = false,
+                LocalDataSet = false,
+            };
+
+            // kamonohashi学習を開始
+            (var trainingHistory, var result) = await TrainingController.DoCreate(trainingCreateInputModel,
+                dataSetRepository, nodeRepository, tenantRepository, trainingHistoryRepository,
+                clusterManagementLogic, dataSetLogic, gitLogic, tagLogic, unitOfWork,
+                CurrentUserInfo, ModelState, RequestUrl, "training", registryTokenKey, gitToken);
+
+            // アクアリウム推論の学習とkamonohashi学習を結び付ける
+            if (trainingHistory != null)
+            {
+                evaluation.TrainingHistoryId = trainingHistory.Id;
+                evaluationRepository.Update(evaluation);
+                ((JsonResult)result).Value = new EvaluationSimpleOutputModel(evaluation);
+            } 
+            else
+            {
+                evaluationRepository.Delete(evaluation);
+            }
+
+            unitOfWork.Commit();
+            return result;
+        }
+
+        /// <summary>
+        /// アクアリウム推論一覧を取得する
+        /// </summary>
+        /// <param name="id">実験ID</param>
+        [HttpGet("{id}/evaluations")]
+        [Filters.PermissionFilter(MenuCode.Experiment)]
+        [ProducesResponseType(typeof(IEnumerable<EvaluationIndexOutputModel>), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetEvaluationList(long id)
+        {
+            var experiment = await experimentRepository.GetByIdAsync(id);
+            if (experiment == null)
+            {
+                return JsonNotFound($"Experiment ID {id} is not found.");
+            }
+
+            var evaluations = evaluationRepository
+                .FindAll(x => x.ExperimentId == id)
+                .Include(x => x.TrainingHistory)
+                .Include(x => x.DataSet)
+                .Include(x => x.DataSetVersion);
+            var result = new List<EvaluationIndexOutputModel>();
+            foreach (var x in evaluations.OrderByDescending(x => x.Id))
+            {
+                var status = await UpdateStatus(x.TrainingHistory);
+                result.Add(new EvaluationIndexOutputModel(x, status.ToString()));
+            }
+            return JsonOK(result);
+        }
+
+        /// <summary>
+        /// アクアリウム推論を削除する
+        /// </summary>
+        /// <param name="id">実験ID</param>
+        /// <param name="evaluationId">アクアリウム推論ID</param>
+        [HttpDelete("{id}/evaluations/{evaluationId}")]
+        [Filters.PermissionFilter(MenuCode.Experiment)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        public async Task<IActionResult> DeleteEvaluation(long id, long evaluationId)
+        {
+            var experiment = await experimentRepository.GetByIdAsync(id);
+            if (experiment == null)
+            {
+                return JsonNotFound($"Experiment ID {id} is not found.");
+            }
+
+            var evaluation = await evaluationRepository
+                .GetAll()
+                .SingleOrDefaultAsync(x => x.Id == evaluationId && x.ExperimentId == id);
+            if (evaluation == null)
+            {
+                return JsonNotFound($"AquariumEvaluation (ExperimentId {id} and AquariumEvaluationId {evaluationId}) is not found.");
+            }
+
+            evaluationRepository.Delete(evaluation);
+            if (evaluation.TrainingHistoryId != null)
+            {
+                (var status, var result) = await TrainingController.DoDelete(
+                    evaluation.TrainingHistoryId.Value,
+                    trainingHistoryRepository,
+                    clusterManagementLogic,
+                    dataSetLogic,
+                    tagLogic,
+                    unitOfWork,
+                    CurrentUserInfo,
+                    ModelState,
+                    storageLogic,
+                    inferenceHistoryRepository,
+                    tensorBoardContainerRepository,
+                    tagRepository,
+                    RequestUrl);
+                if (!status)
+                {
+                    return result;
                 }
             }
 
