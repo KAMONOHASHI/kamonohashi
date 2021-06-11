@@ -207,6 +207,18 @@ namespace Nssol.Platypus.Controllers.spa
 
             var gitToken = templateVersion.TrainingRepositoryToken ?? UserGitToken(templateVersion.TrainingRepositoryGitId);
 
+            // 実験IDを発行するため、Experimentをここで作成
+            var experiment = new Experiment
+            {
+                Name = model.Name,
+                DataSetId = model.DataSetId,
+                DataSetVersionId = model.DataSetVersionId,
+                TemplateId = model.TemplateId,
+                TemplateVersionId = model.TemplateVersionId,
+            };
+            experimentRepository.Add(experiment);
+            unitOfWork.Commit();
+         
             // kamonohashi学習に必要な情報を設定
             var trainingCreateInputModel = new ApiModels.TrainingApiModels.CreateInputModel
             {
@@ -234,7 +246,7 @@ namespace Nssol.Platypus.Controllers.spa
                 Gpu = templateVersion.TrainingGpu,
                 Partition = null,
                 Ports = null,
-                Memo = null,
+                Memo = $"Training of aquarium. experimentId:{ experiment.Id}",
                 Tags = null,
                 Zip = false,
                 LocalDataSet = false,
@@ -249,19 +261,16 @@ namespace Nssol.Platypus.Controllers.spa
             // 実験の学習とkamonohashi学習を結び付ける
             if (trainingHistory != null)
             {
-                var experiment = new Experiment
-                {
-                    Name = model.Name,
-                    DataSetId = model.DataSetId,
-                    DataSetVersionId = model.DataSetVersionId,
-                    TemplateId = model.TemplateId,
-                    TemplateVersionId = model.TemplateVersionId,
-                    TrainingHistoryId = trainingHistory.Id,
-                };
-                experimentRepository.Add(experiment);
+                experiment.TrainingHistoryId = trainingHistory.Id;
+                experimentRepository.Update(experiment);
                 unitOfWork.Commit();
 
                 ((JsonResult)result).Value = new SimpleOutputModel(experiment);
+            }
+            else
+            {
+                experimentRepository.Delete(experiment);
+                unitOfWork.Commit();
             }
 
             return result;
@@ -323,12 +332,12 @@ namespace Nssol.Platypus.Controllers.spa
                 Gpu = templateVersion.PreprocessGpu,
                 Partition = null,
                 Ports = null,
-                Memo = null,
+                Memo = $"Preprocess of aquarium. TemplateId:{experiment.TemplateId} ,TemplateVersion:{experiment.TemplateVersion.Version}, DataSetId:{experiment.DataSetId},DataSetVersion:{experiment.DataSetVersion.Version} ",
                 Tags = null,
                 Zip = false,
                 LocalDataSet = false,
             };
-
+           
             // kamonohashi学習を開始
             (var trainingHistory, var result) = await TrainingController.DoCreate(trainingCreateInputModel,
                 dataSetRepository, nodeRepository, tenantRepository, trainingHistoryRepository,
@@ -376,6 +385,18 @@ namespace Nssol.Platypus.Controllers.spa
 
             var gitToken = templateVersion.TrainingRepositoryToken ?? UserGitToken(templateVersion.TrainingRepositoryGitId);
 
+            // 実験IDを発行するため、Experimentをここで作成
+            var experiment = new Experiment
+            {
+                Name = model.Name,
+                DataSetId = model.DataSetId,
+                DataSetVersionId = model.DataSetVersionId,
+                TemplateId = model.TemplateId,
+                TemplateVersionId = model.TemplateVersionId,
+            };
+            experimentRepository.Add(experiment);
+            unitOfWork.Commit();
+
             // kamonohashi学習に必要な情報を設定
             var trainingCreateInputModel = new ApiModels.TrainingApiModels.CreateInputModel
             {
@@ -405,7 +426,7 @@ namespace Nssol.Platypus.Controllers.spa
                 Gpu = templateVersion.TrainingGpu,
                 Partition = null,
                 Ports = null,
-                Memo = null,
+                Memo = $"Training of aquarium. experimentId:{ experiment.Id}",
                 Tags = null,
                 Zip = false,
                 LocalDataSet = false,
@@ -420,20 +441,17 @@ namespace Nssol.Platypus.Controllers.spa
             // 実験の学習とkamonohashi学習を結び付ける
             if (trainingHistory != null)
             {
-                var experiment = new Experiment
-                {
-                    Name = model.Name,
-                    DataSetId = model.DataSetId,
-                    DataSetVersionId = model.DataSetVersionId,
-                    TemplateId = model.TemplateId,
-                    TemplateVersionId = model.TemplateVersionId,
-                    TrainingHistoryId = trainingHistory.Id,
-                    ExperimentPreprocessId = experimentPreprocess.Id,
-                };
-                experimentRepository.Add(experiment);
+                experiment.ExperimentPreprocessId = experimentPreprocess.Id;
+                experiment.TrainingHistoryId = trainingHistory.Id;
+                experimentRepository.Update(experiment);
                 unitOfWork.Commit();
 
                 ((JsonResult)result).Value = new SimpleOutputModel(experiment);
+            }
+            else
+            {
+                experimentRepository.Delete(experiment);
+                unitOfWork.Commit();
             }
 
             return result;
@@ -617,7 +635,7 @@ namespace Nssol.Platypus.Controllers.spa
                 Gpu = templateVersion.TrainingGpu,
                 Partition = null,
                 Ports = null,
-                Memo = null,
+                Memo = $"Training of aquarium. experimentId:{ experiment.Id}",
                 Tags = null,
                 Zip = false,
                 LocalDataSet = false,
