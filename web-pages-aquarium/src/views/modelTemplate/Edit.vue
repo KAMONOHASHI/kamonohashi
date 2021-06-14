@@ -14,7 +14,7 @@
             <el-step title="Step 1" description="基本設定"></el-step>
             <el-step title="Step 2" description="前処理"></el-step>
             <el-step title="Step 3" description="学習"></el-step>
-            <!-- <el-step title="Step 4" description="評価"></el-step> -->
+            <el-step title="Step 4" description="推論"></el-step>
           </el-steps>
         </div>
       </el-col>
@@ -74,70 +74,15 @@
             :required-form="true"
             :form-type="'学習'"
           />
-          <!-- step 4 : 評価 -->
-          <!-- 
-          <el-form v-if="active === 3" ref="form3" :model="form" :rules="rules">
-            <el-row :gutter="20">
-              <el-col :span="12">
-                <kqi-container-selector
-                  v-model="form.evaluation.containerImage"
-                  :registries="registries"
-                  :images="evaluationImages"
-                  :tags="evaluationTags"
-                  heading="評価コンテナイメージ"
-                  @selectRegistry="selectEvaluationRegistry"
-                  @selectImage="selectEvaluationImage"
-                />
-                <el-row>
-                  <el-col :span="6" :offset="1">token</el-col>
-                  <el-col :span="12">
-                    <el-input
-                      v-model="form.evaluation.containerImage.token"
-                      size="small"
-                      type="password"
-                    />
-                  </el-col>
-                </el-row>
-                <kqi-git-selector
-                  v-model="form.evaluation.gitModel"
-                  :gits="gits"
-                  :repositories="evaluationRepositories"
-                  :branches="evaluationBranches"
-                  :commits="evaluationCommits"
-                  :loading-repositories="loadingRepositories"
-                  heading="スクリプト"
-                  @selectGit="selectEvaluationGit"
-                  @selectRepository="selectEvaluationRepository"
-                  @selectBranch="selectEvaluationBranch"
-                />
-                <el-row>
-                  <el-col :span="6" :offset="1">token</el-col>
-                  <el-col :span="12">
-                    <el-input
-                      v-model="form.evaluation.gitModel.token"
-                      size="small"
-                      type="password"
-                    />
-                  </el-col>
-                </el-row>
-                <el-form-item label="実行コマンド" prop="entryPoint">
-                  <el-input
-                    v-model="form.evaluation.entryPoint"
-                    type="textarea"
-                    :autosize="{ minRows: 2 }"
-                  />
-                </el-form-item>
-              </el-col>
-
-              <el-col :span="12">
-                <kqi-resource-selector
-                  v-model="form.evaluation.resource"
-                  :quota="quota"
-                />
-              </el-col>
-            </el-row>
-          </el-form>
-          -->
+          <!-- step 4 : 推論 -->
+          <evaluation
+            v-show="active === 3"
+            ref="evaluation"
+            v-model="form.preprocForm"
+            :create-template="true"
+            :required-form="false"
+            :form-type="'推論'"
+          />
         </el-form>
       </el-col>
     </el-row>
@@ -153,7 +98,7 @@
           Previous step
         </span>
         <span
-          v-if="active <= 1"
+          v-if="active <= 2"
           class="right-step-group"
           style="margin-top: 12px;"
           @click="next"
@@ -162,7 +107,7 @@
           <i class="el-icon-arrow-right" />
         </span>
         <span class="right-step-group">
-          <el-button v-if="active === 2" type="primary" @click="submit">
+          <el-button v-if="active === 3" type="primary" @click="submit">
             新規登録
           </el-button>
         </span>
@@ -183,6 +128,7 @@ export default {
     KqiDisplayTextForm,
     Preprocessing: AqContainerSettings,
     Training: AqContainerSettings,
+    Evaluation: AqContainerSettings,
   },
   props: {
     id: {
@@ -315,7 +261,7 @@ export default {
       }
     },
     async next() {
-      if (this.active < 2) {
+      if (this.active < 3) {
         this.active += 1
       }
     },
@@ -327,6 +273,7 @@ export default {
     async submit() {
       let submitTrainingForm = null
       let submitPreprocForm = null
+      let submitEvalutionForm = null
       try {
         // 必須項目の入力チェック
         if (
@@ -341,6 +288,7 @@ export default {
         // 前処理、学習、評価のフォームの値を取得
         submitPreprocForm = await this.$refs.preprocessing.prepareSubmit()
         submitTrainingForm = await this.$refs.training.prepareSubmit()
+        submitEvalutionForm = await this.$refs.evaluation.prepareSubmit()
 
         //基本設定情報
         let templateParams = {
@@ -364,18 +312,13 @@ export default {
           trainingCpu: submitTrainingForm.cpu,
           trainingMemory: submitTrainingForm.memory,
           trainingGpu: submitTrainingForm.gpu,
-
-          //evaluationEntryPoint: this.evaluationForm.entryPoint,
-
-          //evaluationCpu: this.evaluationForm.resource.cpu,
-          //evaluationMemory: this.evaluationForm.resource.memory,
-          //evaluationGpu: this.evaluationForm.resource.gpu,
-          evaluationContainerImage: null,
-          evaluationGitModel: null,
-          evaluationEntryPoint: null,
-          evaluationCpu: 1,
-          evaluationMemory: 1,
-          evaluationGpu: 0,
+          // 推論
+          evaluationContainerImage: submitEvalutionForm.containerImage,
+          evaluationGitModel: submitEvalutionForm.gitModel,
+          evaluationEntryPoint: submitEvalutionForm.entryPoint,
+          evaluationCpu: submitEvalutionForm.cpu,
+          evaluationMemory: submitEvalutionForm.memory,
+          evaluationGpu: submitEvalutionForm.gpu,
         }
 
         //新規テンプレート登録後、テンプレートバージョンの登録をする
