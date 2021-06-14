@@ -128,9 +128,9 @@ export default {
     ...mapGetters({
       registries: ['registrySelector/registries'],
       gits: ['gitSelector/gits'],
+      defaultRegistryId: ['registrySelector/defaultRegistryId'],
       defaultGitId: ['gitSelector/defaultGitId'],
       quota: ['cluster/quota'],
-
       loadingRepositories: ['gitSelector/loadingRepositories'],
     }),
     form: {
@@ -314,13 +314,7 @@ export default {
       'modelTemplate/put',
       'modelTemplate/delete',
       'registrySelector/fetchRegistries',
-      'registrySelector/getImages',
-      'registrySelector/getTags',
       'gitSelector/fetchGits',
-      'gitSelector/getRepositories',
-      'gitSelector/getBranches',
-      'gitSelector/getCommits',
-      'gitSelector/getCommitDetail',
       'cluster/fetchQuota',
     ]),
   },

@@ -34,7 +34,7 @@
           :form-type="'前処理'"
         />
       </el-tab-pane>
-      <el-tab-pane label="学習と推論" name="train">
+      <el-tab-pane label="学習" name="train">
         <training
           v-if="trainingForm"
           ref="training"
@@ -44,11 +44,16 @@
           :form-type="'学習'"
         />
       </el-tab-pane>
-      <!--
-      <el-tab-pane label="評価" name="evaluation">
-        <evaluation v-if="evaluationForm" v-model="evaluationForm" />
+      <el-tab-pane label="推論" name="evaluation">
+        <evaluation
+          v-if="evaluationForm"
+          ref="evaluation"
+          v-model="evaluationForm"
+          :create-teplate="false"
+          :required-form="false"
+          :form-type="'推論'"
+        />
       </el-tab-pane>
-      -->
     </el-tabs>
     <el-button type="primary" plain @click="submit()">
       更新
@@ -112,7 +117,7 @@ export default {
     BaseSetting,
     Preprocessing: AqContainerSettings,
     Training: AqContainerSettings,
-    // Evaluation: ContainerSettings,
+    Evaluation: AqContainerSettings,
   },
   props: {
     id: {
@@ -291,6 +296,7 @@ export default {
       // 入力値チェック
       let submitTrainingForm = null
       let submitPreprocForm = null
+      let submitEvaluationForm = null
       try {
         // 必須項目の入力チェック
         if (
@@ -304,6 +310,7 @@ export default {
         // 前処理、学習、評価のフォームの値を取得
         submitTrainingForm = await this.$refs.training.prepareSubmit()
         submitPreprocForm = await this.$refs.preprocessing.prepareSubmit()
+        submitEvaluationForm = await this.$refs.evaluation.prepareSubmit()
       } catch (message) {
         this.$notify.error({
           message: message,
@@ -328,7 +335,7 @@ export default {
       if (this.versionDetail.preprocessContainerImage !== null) {
         // 前処理あり -> 前処理なしへの変更 または 前処理情報の変更
         if (
-          submitPreprocForm === null ||
+          submitPreprocForm.containerImage === null ||
           this.versionDetail.preprocessContainerImage.registryId !=
             submitPreprocForm.containerImage.registryId ||
           this.versionDetail.preprocessContainerImage.image !=
@@ -368,7 +375,7 @@ export default {
       if (this.versionDetail.trainingContainerImage !== null) {
         // 前処理あり -> 前処理なしへの変更 または 前処理情報の変更
         if (
-          submitTrainingForm === null ||
+          submitTrainingForm.containerImage === null ||
           this.versionDetail.trainingContainerImage.registryId !=
             submitTrainingForm.containerImage.registryId ||
           this.versionDetail.trainingContainerImage.image !=
@@ -397,64 +404,45 @@ export default {
         }
       }
 
-      /*
-      if (this.versionDetail.evaluationContainerImage == null) {
-        if (
-          this.evaluationForm.containerImage != null &&
-          this.evaluationForm.containerImage.registryId != null
-        ) {
-          update = true
-        }
-      } else {
-        if (
-          this.evaluationForm.containerImage == null ||
-          this.versionDetail.evaluationContainerImage.registryId !=
-            this.evaluationForm.containerImage.registry.id ||
-          this.versionDetail.evaluationContainerImage.image !=
-            this.evaluationForm.containerImage.image ||
-          this.versionDetail.evaluationContainerImage.tag !=
-            this.evaluationForm.containerImage.tag ||
-          this.versionDetail.evaluationContainerImage.token !=
-            this.evaluationForm.containerImage.token
-        ) {
-          update = true
-        }
-      }
-      if (this.versionDetail.evaluationGitModel == null) {
-        if (
-          this.evaluationForm.gitModel != null &&
-          this.evaluationForm.gitModel.git != null
-        ) {
-          update = true
-        }
-      } else {
-        if (
-          this.evaluationForm.gitModel == null ||
-          this.versionDetail.evaluationGitModel.gitId !=
-            this.evaluationForm.gitModel.git.id ||
-          this.versionDetail.evaluationGitModel.repository !=
-            this.evaluationForm.gitModel.repository.name ||
-          this.versionDetail.evaluationGitModel.branch !=
-            this.evaluationForm.gitModel.branch.branchName ||
-          this.versionDetail.evaluationGitModel.commitId !=
-            this.evaluationForm.gitModel.commit.commitId ||
-          this.versionDetail.evaluationGitModel.token !=
-            this.evaluationForm.gitModel.token
-        ) {
-          update = true
-        }
-      }
+      // 推論の比較
       if (
-        this.versionDetail.evaluationEntryPoint !=
-          this.evaluationForm.entryPoint ||
-        this.versionDetail.evaluationCpu != this.evaluationForm.resource.cpu ||
-        this.versionDetail.evaluationMemory !=
-          this.evaluationForm.resource.memory ||
-        this.versionDetail.evaluationGpu != this.evaluationForm.resource.gpu
+        this.versionDetail.evaluationContainerImage === null &&
+        submitEvaluationForm.containerImage !== null
       ) {
+        // 前処理なし -> 前処理ありへの変更
         update = true
       }
-      */
+      if (this.versionDetail.evaluationContainerImage !== null) {
+        // 前処理あり -> 前処理なしへの変更 または 前処理情報の変更
+        if (
+          submitEvaluationForm.containerImage === null ||
+          this.versionDetail.evaluationContainerImage.registryId !=
+            submitEvaluationForm.containerImage.registryId ||
+          this.versionDetail.evaluationContainerImage.image !=
+            submitEvaluationForm.containerImage.image ||
+          this.versionDetail.evaluationContainerImage.tag !=
+            submitEvaluationForm.containerImage.tag ||
+          this.versionDetail.evaluationContainerImage.token !=
+            submitEvaluationForm.containerImage.token ||
+          this.versionDetail.evaluationGitModel.gitId !=
+            submitEvaluationForm.gitModel.gitId ||
+          this.versionDetail.evaluationGitModel.repository !=
+            submitEvaluationForm.gitModel.repository ||
+          this.versionDetail.evaluationGitModel.branch !=
+            submitEvaluationForm.gitModel.branch ||
+          this.versionDetail.evaluationGitModel.commitId !=
+            submitEvaluationForm.gitModel.commitId ||
+          this.versionDetail.evaluationGitModel.token !=
+            submitEvaluationForm.gitModel.token ||
+          this.versionDetail.evaluationEntryPoint !=
+            submitEvaluationForm.entryPoint ||
+          this.versionDetail.evaluationCpu != submitEvaluationForm.cpu ||
+          this.versionDetail.evaluationMemory != submitEvaluationForm.memory ||
+          this.versionDetail.evaluationGpu != submitEvaluationForm.gpu
+        ) {
+          update = true
+        }
+      }
 
       if (update == false) {
         if (updatedBase) {
@@ -485,18 +473,13 @@ export default {
         trainingCpu: submitTrainingForm.cpu,
         trainingMemory: submitTrainingForm.memory,
         trainingGpu: submitTrainingForm.gpu,
-
-        //evaluationEntryPoint: this.evaluationForm.entryPoint,
-
-        //evaluationCpu: this.evaluationForm.resource.cpu,
-        //evaluationMemory: this.evaluationForm.resource.memory,
-        //evaluationGpu: this.evaluationForm.resource.gpu,
-        evaluationContainerImage: null,
-        evaluationGitModel: null,
-        evaluationEntryPoint: null,
-        evaluationCpu: 1,
-        evaluationMemory: 1,
-        evaluationGpu: 0,
+        // 推論
+        evaluationContainerImage: submitEvaluationForm.containerImage,
+        evaluationGitModel: submitEvaluationForm.gitModel,
+        evaluationEntryPoint: submitEvaluationForm.entryPoint,
+        evaluationCpu: submitEvaluationForm.cpu,
+        evaluationMemory: submitEvaluationForm.memory,
+        evaluationGpu: submitEvaluationForm.gpu,
       }
 
       //新規バージョン作成

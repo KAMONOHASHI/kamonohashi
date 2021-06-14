@@ -245,7 +245,6 @@ export default {
         this.form.gitModel.git = this.gits.find(git => {
           return git.id == this.defaultGitId
         })
-
         return
       }
 
@@ -346,6 +345,10 @@ export default {
       this.form.gitModel.commit = null
       this.branches = []
       this.commits = []
+
+      if (repository === null || repository === '') {
+        return
+      }
 
       // repositoryの設定
       // repositoryの型がstring：手入力, object: 選択でstringの場合はobjectに変換する

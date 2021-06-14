@@ -78,7 +78,7 @@
           <evaluation
             v-show="active === 3"
             ref="evaluation"
-            v-model="form.preprocForm"
+            v-model="form.evaluationForm"
             :create-template="true"
             :required-form="false"
             :form-type="'推論'"
@@ -233,21 +233,6 @@ export default {
       'template/postByIdVersions',
       'template/post',
       'template/put',
-
-      'registrySelector/fetchRegistries',
-      'registrySelector/fetchImages',
-      'registrySelector/getImages',
-      'registrySelector/fetchTags',
-      'registrySelector/getTags',
-
-      'gitSelector/fetchGits',
-      'gitSelector/getRepositories',
-      'gitSelector/fetchBranches',
-      'gitSelector/getBranches',
-      'gitSelector/fetchCommits',
-      'gitSelector/getCommits',
-      'gitSelector/fetchCommitDetail',
-      'cluster/fetchQuota',
     ]),
     async initialize() {
       let url = this.$route.path
