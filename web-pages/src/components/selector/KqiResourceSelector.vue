@@ -52,8 +52,8 @@ export default {
     return {
       // デフォルトの最大値
       defaultMax: {
-        cpu: 200,
-        memory: 200,
+        cpu: 250,
+        memory: 500,
         gpu: 16,
       },
     }
