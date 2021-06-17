@@ -302,6 +302,7 @@ export default {
         if (
           // テンプレート名
           this.baseForm.name === null ||
+          this.baseForm.name === '' ||
           // 公開設定
           this.baseForm.accessLevel === null
         ) {
