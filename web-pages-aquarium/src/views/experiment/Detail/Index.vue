@@ -14,7 +14,9 @@
       <el-tab-pane label="実行情報" name="info">
         <info :id="id" v-model="infoForm" />
       </el-tab-pane>
-      <!-- <el-tab-pane label="推論" name="inference"><inference /> </el-tab-pane> -->
+      <el-tab-pane label="推論" name="inference"
+        ><inference :id="id" v-model="infoForm" />
+      </el-tab-pane>
 
       <el-tab-pane label="デバッグ" name="debug"
         ><debug :id="id" v-model="infoForm" />
@@ -26,13 +28,13 @@
 
 <script>
 import Info from './Info'
-// import Inference from './Inference'
+import Inference from './Inference'
 import Debug from './Debug'
 import { mapActions, mapGetters } from 'vuex'
 export default {
   title: '実験詳細',
   // components: { Info, Inference, Debug },
-  components: { Info, Debug },
+  components: { Info, Inference, Debug },
   props: {
     id: {
       type: String,

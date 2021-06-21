@@ -294,6 +294,10 @@ let api = {
     postPreprocessingCompleteById:
       gen.ApiV2ExperimentByIdPreprocessingCompletePost,
     deleteById: gen.ApiV2ExperimentByIdDelete,
+    getEvoluationsById: gen.ApiV2ExperimentByIdEvaluationsGet,
+    postEvoluationsById: gen.ApiV2ExperimentByIdEvaluationsPost,
+    deleteByIdEvoluationsByEvaluationId:
+      gen.ApiV2ExperimentByIdEvaluationsByEvaluationIdDelete,
   },
 
   storage: {
