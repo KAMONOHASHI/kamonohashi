@@ -58,7 +58,16 @@
     <div>
       <el-table :data="evaluationLogFileDatas" style="width: 100%">
         <el-table-column prop="name" label="名前"> </el-table-column>
-        <el-table-column prop="log" label="ログ"> </el-table-column>
+        <el-table-column label="ログ">
+          <template slot-scope="scope">
+            <div v-for="(item, idx) in scope.row.log" :key="idx">
+              <kqi-download-button
+                :download-url="item.url"
+                :file-name="item.fileName"
+              />
+            </div>
+          </template>
+        </el-table-column>
       </el-table>
     </div>
   </div>
@@ -124,9 +133,11 @@ export default {
       }
       await this['experiment/fetchEvaluations'](this.id)
       for (let i in this.evaluations) {
+        console.log(this.evaluations[i].training.id)
         await this['training/fetchUploadedFiles'](
           String(this.evaluations[i].training.id),
         )
+        console.log(this.uploadedFiles)
         let logdata = Object.assign({}, this.uploadedFiles)
         this.evaluationLogFileDatas.push({
           name: this.evaluations[i].name,

@@ -1,18 +1,13 @@
 <template>
   <div>
     <h2>推論一覧</h2>
-    作成したAIの評価の履歴一覧例です。<br />
-    ※表示データは体験版用ダミーデータです。
+
     <el-row>
-      <el-col :span="18">
+      <el-col :span="24">
         <el-table :data="evaluations" style="width: 100%">
           <el-table-column prop="id" label="ID" width="180"> </el-table-column>
 
-          <el-table-column
-            prop="name"
-            label="推論名"
-            width="180"
-          ></el-table-column>
+          <el-table-column prop="name" label="推論名"></el-table-column>
           <el-table-column
             prop="dataSet.name"
             label="データセット名"
@@ -25,9 +20,8 @@
             width="180"
           >
           </el-table-column>
-          <el-table-column prop="status" label="結果" width="180">
-          </el-table-column>
-          <el-table-column prop="tensorboards" label="tensorboards" width="180">
+          <el-table-column prop="status" label="結果"> </el-table-column>
+          <el-table-column prop="tensorboards" label="tensorboards">
             <template slot-scope="scope">
               <aqualium-tensorboard-handler
                 :id="String(scope.row.training.id)"
@@ -65,7 +59,7 @@
         style="margin-top:20px"
         @click="createDialog = true"
       >
-        別のデータで推論を実行
+        推論を実行
       </el-button>
       <el-dialog title="新規推論実行" :visible.sync="createDialog" width="30%">
         <el-form
@@ -262,6 +256,7 @@ export default {
     ]),
     async createInference() {
       //推論を新規作成
+      this.createDialog = false
       let form = this.$refs.createForm
       await form.validate(async valid => {
         if (valid) {
@@ -277,6 +272,7 @@ export default {
             })
             //this.$router.push('/aquarium/experiment')
             //this.$emit('done')
+            this.retrieveData()
             this.error = null
           } catch (e) {
             this.error = e
@@ -290,6 +286,8 @@ export default {
         id: this.id,
         evaluationId: row.id,
       })
+      this.deleteDialog = false
+      this.retrieveData()
     },
     async retrieveData() {
       //アクアリウムデータセットリストを取得
