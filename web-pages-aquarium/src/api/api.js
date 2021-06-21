@@ -294,9 +294,9 @@ let api = {
     postPreprocessingCompleteById:
       gen.ApiV2ExperimentByIdPreprocessingCompletePost,
     deleteById: gen.ApiV2ExperimentByIdDelete,
-    getEvoluationsById: gen.ApiV2ExperimentByIdEvaluationsGet,
-    postEvoluationsById: gen.ApiV2ExperimentByIdEvaluationsPost,
-    deleteByIdEvoluationsByEvaluationId:
+    getEvaluationsById: gen.ApiV2ExperimentByIdEvaluationsGet,
+    postEvaluationsById: gen.ApiV2ExperimentByIdEvaluationsPost,
+    deleteByIdEvaluationsByEvaluationId:
       gen.ApiV2ExperimentByIdEvaluationsByEvaluationIdDelete,
   },
 

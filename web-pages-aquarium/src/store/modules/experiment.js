@@ -146,22 +146,22 @@ const actions = {
   },
 
   async fetchEvaluations({ commit }, id) {
-    let response = await api.experiment.getEvoluationsById({ id: id })
+    let response = await api.experiment.getEvaluationsById({ id: id })
     let evaluations = response.data
     commit('setEvaluations', { evaluations })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async postEvoluations({ commit }, { id, params }) {
-    return await api.experiment.postEvoluationsById({
+  async postEvaluations({ commit }, { id, params }) {
+    return await api.experiment.postEvaluationsById({
       id: id,
       model: params,
     })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async deleteEvoluations({ commit }, { id, evaluationId }) {
-    await api.experiment.deleteByIdEvoluationsByEvaluationId({
+  async deleteEvaluations({ commit }, { id, evaluationId }) {
+    await api.experiment.deleteByIdEvaluationsByEvaluationId({
       id: id,
       evaluationId: evaluationId,
     })

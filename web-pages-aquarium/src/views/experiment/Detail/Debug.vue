@@ -131,18 +131,21 @@ export default {
         await this['training/fetchUploadedFiles'](String(this.value.trainingId))
         this.trainingLogFileData = Object.assign({}, this.uploadedFiles)
       }
-      await this['experiment/fetchEvaluations'](this.id)
-      for (let i in this.evaluations) {
-        console.log(this.evaluations[i].training.id)
-        await this['training/fetchUploadedFiles'](
-          String(this.evaluations[i].training.id),
-        )
-        console.log(this.uploadedFiles)
-        let logdata = Object.assign({}, this.uploadedFiles)
-        this.evaluationLogFileDatas.push({
-          name: this.evaluations[i].name,
-          log: logdata,
-        })
+      if (this.value != null) {
+        await this['experiment/fetchEvaluations'](this.id)
+
+        let evaluationList = this.evaluations.slice()
+        this.evaluationLogFileDatas = []
+        for (let i in evaluationList) {
+          await this['training/fetchUploadedFiles'](
+            String(evaluationList[i].training.id),
+          )
+          let logdata = Object.assign({}, this.uploadedFiles)
+          this.evaluationLogFileDatas.push({
+            name: evaluationList[i].name,
+            log: logdata,
+          })
+        }
       }
     },
   },

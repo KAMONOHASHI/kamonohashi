@@ -32,24 +32,21 @@
 
           <el-table-column prop="delete" label="削除">
             <template slot-scope="scope">
-              <el-button size="mini" @click="deleteDialog = true"
+              <el-button size="mini" @click="openDeleteDialog(scope.row)"
                 >削除する</el-button
               >
-              <el-dialog title="" :visible.sync="deleteDialog" width="30%">
-                <span>ID:{{ scope.row.id }}の推論を削除しますか？</span>
-                <span slot="footer" class="dialog-footer">
-                  <el-button @click="deleteDialog = false">Cancel</el-button>
-                  <el-button
-                    type="primary"
-                    @click="deleteInference(scope.$index, scope.row)"
-                  >
-                    削除
-                  </el-button>
-                </span>
-              </el-dialog>
             </template>
           </el-table-column>
         </el-table>
+        <el-dialog title="" :visible.sync="deleteDialog" width="30%">
+          <span>ID:{{ deleteId }}の推論を削除しますか？</span>
+          <span slot="footer" class="dialog-footer">
+            <el-button @click="deleteDialog = false">Cancel</el-button>
+            <el-button type="primary" @click="deleteInference()">
+              削除
+            </el-button>
+          </span>
+        </el-dialog>
       </el-col>
     </el-row>
     <el-row>
@@ -177,6 +174,7 @@ export default {
   },
   data() {
     return {
+      deleteId: null,
       tesorboardVisible: true,
       loading: false,
       oldDataSetE: null,
@@ -251,8 +249,8 @@ export default {
       'aquariumDataSet/fetchDataSets',
       'aquariumDataSet/fetchVersions',
       'experiment/fetchEvaluations',
-      'experiment/postEvoluations',
-      'experiment/deleteEvoluations',
+      'experiment/postEvaluations',
+      'experiment/deleteEvaluations',
     ]),
     async createInference() {
       //推論を新規作成
@@ -266,12 +264,18 @@ export default {
               dataSetId: this.selectedDataSet.id,
               dataSetVersionId: this.selectedVersion.id,
             }
-            await this['experiment/postEvoluations']({
+            await this['experiment/postEvaluations']({
               id: this.id,
               params: params,
             })
             //this.$router.push('/aquarium/experiment')
             //this.$emit('done')
+            this.form = {
+              name: null,
+              selectedDataSetVersionName: null,
+            }
+            this.selectedDataSet = null
+            this.selectedVersion = null
             this.retrieveData()
             this.error = null
           } catch (e) {
@@ -280,14 +284,19 @@ export default {
         }
       })
     },
-    async deleteInference(idx, row) {
+    openDeleteDialog(row) {
+      this.deleteDialog = true
+      this.deleteId = row.id
+    },
+    async deleteInference() {
       //推論を削除
-      await this['experiment/deleteEvoluations']({
+      await this['experiment/deleteEvaluations']({
         id: this.id,
-        evaluationId: row.id,
+        evaluationId: this.deleteId,
       })
       this.deleteDialog = false
       this.retrieveData()
+      this.deleteId = null
     },
     async retrieveData() {
       //アクアリウムデータセットリストを取得
