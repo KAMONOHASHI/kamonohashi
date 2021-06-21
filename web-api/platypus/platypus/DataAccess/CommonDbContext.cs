@@ -216,6 +216,11 @@ namespace Nssol.Platypus.DataAccess
         public virtual DbSet<ExperimentPreprocess> ExperimentPreprocesses { get; set; }
 
         /// <summary>
+        /// アクアリウム推論
+        /// </summary>
+        public virtual DbSet<Models.TenantModels.Aquarium.Evaluation> AquariumEvaluations { get; set; }
+
+        /// <summary>
         /// アクアリウムデータセット
         /// </summary>
         public virtual DbSet<Models.TenantModels.Aquarium.DataSet> AquariumDatasets { get; set; }

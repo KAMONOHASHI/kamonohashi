@@ -128,6 +128,7 @@
               <kqi-data-set-selector
                 v-model="form.dataSetId"
                 :data-sets="dataSets"
+                @input="selectDataset"
               />
               <el-form-item label="データセット作成方式">
                 <el-switch
@@ -176,6 +177,43 @@
                   :autosize="{ minRows: 10 }"
                 />
               </el-form-item>
+              <el-row
+                style="margin-bottom:5px;padding-left:15px;font-size:0.8em;"
+              >
+                参考：選択したデータセット【{{
+                  dataSetDetail.name
+                }}】のデータパス一覧
+              </el-row>
+              <el-row class="data-list">
+                <el-col v-if="dataSetDetail.flatEntries.length == 0" :span="24">
+                  <ul
+                    v-for="(datalist, index) in dataSetDetail.entries"
+                    :key="index"
+                  >
+                    <li style="padding-top:5px;list-style-type: none">
+                      {{ index }}:
+                    </li>
+                    <li
+                      v-for="data in datalist"
+                      :key="data.id"
+                      style="padding-top:5px;padding-left:15px;  list-style-type: none"
+                    >
+                      /kqi/input/{{ index }}/{{ data.id }}
+                    </li>
+                  </ul>
+                </el-col>
+                <el-col v-else :span="24">
+                  <ul>
+                    <li
+                      v-for="data in dataSetDetail.flatEntries"
+                      :key="data.id"
+                      style="padding-top:5px; list-style-type: none"
+                    >
+                      /kqi/input/{{ data.id }}
+                    </li>
+                  </ul>
+                </el-col>
+              </el-row>
             </el-col>
           </el-form>
 
@@ -234,7 +272,7 @@
         <span
           v-if="active >= 1"
           class="left-step-group"
-          style="margin-top: 12px;"
+          style="margin-top: 12px;cursor: pointer;"
           @click="previous"
         >
           <i class="el-icon-arrow-left" />
@@ -243,7 +281,7 @@
         <span
           v-if="active <= 2"
           class="right-step-group"
-          style="margin-top: 12px;"
+          style="margin-top: 12px;cursor: pointer;"
           @click="next"
         >
           Next step
@@ -358,6 +396,7 @@ export default {
     ...mapGetters({
       trainingHistories: ['training/historiesToMount'],
       dataSets: ['dataSet/dataSets'],
+      dataSetDetail: ['dataSet/detail'],
       registries: ['registrySelector/registries'],
       defaultRegistryId: ['registrySelector/defaultRegistryId'],
       images: ['registrySelector/images'],
@@ -485,6 +524,7 @@ export default {
       'cluster/fetchPartitions',
       'cluster/fetchQuota',
       'dataSet/fetchDataSets',
+      'dataSet/fetchDetail',
       'registrySelector/fetchRegistries',
       'registrySelector/fetchImages',
       'registrySelector/fetchTags',
@@ -494,6 +534,10 @@ export default {
       'gitSelector/fetchCommits',
       'gitSelector/fetchCommitDetail',
     ]),
+    async selectDataset() {
+      //データセットを選択後、データセット詳細を取得する
+      await this['dataSet/fetchDetail'](this.form.dataSetId)
+    },
     async runTrain() {
       let form = this.$refs.runForm
       if (this.active !== 0) {
@@ -688,7 +732,7 @@ export default {
 
 .step {
   padding-top: 20px;
-  cursor: pointer;
+
   :hover {
     color: #409eff;
   }
@@ -696,5 +740,15 @@ export default {
 
 .element {
   padding-top: 40px;
+}
+.data-list {
+  overflow: auto;
+  height: 120px;
+  padding: 3px 15px 8px 15px;
+  border: 1px solid #e4e7ed;
+  border-radius: 5px;
+  background-color: #f5f7fa;
+  color: #999;
+  margin-left: 10px;
 }
 </style>

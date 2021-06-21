@@ -305,6 +305,14 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonNotFound($"Template ID {id} is not found.");
             }
 
+            // テンプレートが公開テンプレートでない かつ
+            // 作成したテナント以外のテナントからのリクエストの場合はBadrequestを返却
+            if (template.AccessLevel != TemplateAccessLevel.Public 
+                && template.CreaterTenantId != CurrentUserInfo.SelectedTenant.Id)
+            {
+                return JsonBadRequest("Invalid access level");
+            }
+
             var result = new IndexOutputModel(template);
             return JsonOK(result);
         }
@@ -340,6 +348,13 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonNotFound($"Template ID {id} is not found.");
             }
+
+            // 作成したテナント以外のテナントからのリクエストの場合はBadrequestを返却
+            if (template.CreaterTenantId != CurrentUserInfo.SelectedTenant.Id)
+            {
+                return JsonBadRequest("Invalid access level");
+            }
+
             template.LatestVersion += 1;
             templateRepository.Update(template);
 
@@ -369,6 +384,15 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonNotFound($"Template Id {id} is not found.");
             }
+
+            // テンプレートが公開テンプレートでない かつ
+            // 作成したテナント以外のテナントからのリクエストの場合はBadrequestを返却
+            if (template.AccessLevel != TemplateAccessLevel.Public
+                && template.CreaterTenantId != CurrentUserInfo.SelectedTenant.Id)
+            {
+                return JsonBadRequest("Invalid access level");
+            }
+
             return JsonOK(template.TemplateVersions
                 .OrderByDescending(x => x.Version)
                 .Select(x => new VersionIndexOutputModel(x)));
@@ -384,6 +408,19 @@ namespace Nssol.Platypus.Controllers.spa
         [ProducesResponseType(typeof(VersionDetailsOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetDetailTemplateVersion(long id, long versionId)
         {
+            var template = await templateRepository.GetByIdAsync(id);
+            if (template == null)
+            {
+                return JsonNotFound($"Template ID {id} is not found.");
+            }
+            // テンプレートが公開テンプレートでない かつ
+            // 作成したテナント以外のテナントからのリクエストの場合はBadrequestを返却
+            if (template.AccessLevel != TemplateAccessLevel.Public
+                && template.CreaterTenantId != CurrentUserInfo.SelectedTenant.Id)
+            {
+                return JsonBadRequest("Invalid access level");
+            }
+
             var templateVersion = await templateVersionRepository
                 .GetAll()
                 .Include(x => x.PreprocessContainerRegistry)
@@ -430,6 +467,13 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonNotFound($"Template ID {id} is not found.");
             }
+            
+            // 作成したテナント以外のテナントからのリクエストの場合はBadrequestを返却
+            if (template.CreaterTenantId != CurrentUserInfo.SelectedTenant.Id)
+            {
+                return JsonBadRequest("Invalid access level");
+            }
+
             if (model.AccessLevel != null)
             {
                 if (model.AccessLevel != TemplateAccessLevel.Disabled
@@ -461,6 +505,12 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonNotFound($"Template ID {id} is not found.");
             }
+            
+            // 作成したテナント以外のテナントからのリクエストの場合はBadrequestを返却
+            if (template.CreaterTenantId != CurrentUserInfo.SelectedTenant.Id)
+            {
+                return JsonBadRequest("Invalid access level");
+            }
 
             if (await experimentRepository.ExistsAsync(x => x.TemplateId == id, true))
             {
@@ -491,6 +541,12 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonNotFound($"Template ID {id} is not found.");
             }
+            // 作成したテナント以外のテナントからのリクエストの場合はBadrequestを返却
+            if (template.CreaterTenantId != CurrentUserInfo.SelectedTenant.Id)
+            {
+                return JsonBadRequest("Invalid access level");
+            }
+
             var templateVersion = await templateVersionRepository
                 .GetAll()
                 .SingleOrDefaultAsync(x => x.Id == versionId && x.TemplateId == id);

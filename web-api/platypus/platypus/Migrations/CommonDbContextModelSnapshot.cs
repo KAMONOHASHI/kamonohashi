@@ -606,6 +606,49 @@ namespace Nssol.Platypus.Migrations
                     b.ToTable("AquariumDatasetVersions");
                 });
 
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.Aquarium.Evaluation", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired();
+
+                    b.Property<long>("DataSetId");
+
+                    b.Property<long>("DataSetVersionId");
+
+                    b.Property<long>("ExperimentId");
+
+                    b.Property<DateTime>("ModifiedAt");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired();
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.Property<long>("TenantId");
+
+                    b.Property<long?>("TrainingHistoryId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DataSetId");
+
+                    b.HasIndex("DataSetVersionId");
+
+                    b.HasIndex("ExperimentId");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("TrainingHistoryId");
+
+                    b.ToTable("AquariumEvaluations");
+                });
+
             modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.Data", b =>
                 {
                     b.Property<long>("Id")
@@ -2014,6 +2057,33 @@ namespace Nssol.Platypus.Migrations
                         .WithMany()
                         .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.Aquarium.Evaluation", b =>
+                {
+                    b.HasOne("Nssol.Platypus.Models.TenantModels.Aquarium.DataSet", "DataSet")
+                        .WithMany()
+                        .HasForeignKey("DataSetId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Nssol.Platypus.Models.TenantModels.Aquarium.DataSetVersion", "DataSetVersion")
+                        .WithMany()
+                        .HasForeignKey("DataSetVersionId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Nssol.Platypus.Models.TenantModels.Experiment", "Experiment")
+                        .WithMany()
+                        .HasForeignKey("ExperimentId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Nssol.Platypus.Models.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Nssol.Platypus.Models.TenantModels.TrainingHistory", "TrainingHistory")
+                        .WithMany()
+                        .HasForeignKey("TrainingHistoryId");
                 });
 
             modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.Data", b =>
