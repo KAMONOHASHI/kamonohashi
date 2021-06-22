@@ -56,8 +56,9 @@
     </div>
     <h2>推論DEBUG</h2>
     <div>
-      <el-table :data="evaluationLogFileDatas" style="width: 100%">
+      <el-table :data="evaluationLogFileDatas" style="width: 60%">
         <el-table-column prop="name" label="名前"> </el-table-column>
+        <el-table-column prop="status" label="ステータス"> </el-table-column>
         <el-table-column label="ログ">
           <template slot-scope="scope">
             <div v-for="(item, idx) in scope.row.log" :key="idx">
@@ -143,6 +144,7 @@ export default {
           let logdata = Object.assign({}, this.uploadedFiles)
           this.evaluationLogFileDatas.push({
             name: evaluationList[i].name,
+            status: evaluationList[i].status,
             log: logdata,
           })
         }

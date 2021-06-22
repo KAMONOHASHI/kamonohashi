@@ -6,7 +6,6 @@
       <el-col :span="24">
         <el-table :data="evaluations" style="width: 100%">
           <el-table-column prop="id" label="ID" width="180"> </el-table-column>
-
           <el-table-column prop="name" label="推論名"></el-table-column>
           <el-table-column
             prop="dataSet.name"
@@ -20,11 +19,36 @@
             width="180"
           >
           </el-table-column>
-          <el-table-column prop="status" label="結果"> </el-table-column>
+          <el-table-column label="ステータス">
+            <div slot-scope="scope">
+              <div
+                v-if="
+                  (scope.row.status === 'None') |
+                    (scope.row.status === 'Pending')
+                "
+              >
+                <i class="el-icon-time" style="color: #889683;" />
+                実行準備中
+              </div>
+              <div v-else-if="scope.row.status === 'Running'">
+                <i class="el-icon-success" style="color: #67C23A;" />
+                実行中
+              </div>
+              <div v-else-if="scope.row.status === 'Completed'">
+                <i class="el-icon-success" style="color: #67C23A;" />
+                完了
+              </div>
+              <div v-else>
+                <i class="el-icon-warning" style="color: #E6A23C;" />
+                異常終了
+              </div>
+            </div>
+          </el-table-column>
           <el-table-column prop="tensorboards" label="tensorboards">
             <template slot-scope="scope">
               <aqualium-tensorboard-handler
                 :id="String(scope.row.training.id)"
+                style="margin-top:5px"
                 :visible="tesorboardVisible"
               />
             </template>
@@ -32,7 +56,7 @@
 
           <el-table-column prop="delete" label="削除">
             <template slot-scope="scope">
-              <el-button size="mini" @click="openDeleteDialog(scope.row)"
+              <el-button @click="openDeleteDialog(scope.row)"
                 >削除する</el-button
               >
             </template>
