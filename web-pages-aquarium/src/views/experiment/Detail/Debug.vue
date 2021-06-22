@@ -54,14 +54,29 @@
         <el-col :span="16">{{ value.trainingStatus }}</el-col>
       </el-row>
     </div>
+    <h2>推論DEBUG</h2>
+    <div>
+      <el-table :data="evaluationLogFileDatas" style="width: 60%">
+        <el-table-column prop="name" label="名前"> </el-table-column>
+        <el-table-column prop="status" label="ステータス"> </el-table-column>
+        <el-table-column label="ログ">
+          <template slot-scope="scope">
+            <div v-for="(item, idx) in scope.row.log" :key="idx">
+              <kqi-download-button
+                :download-url="item.url"
+                :file-name="item.fileName"
+              />
+            </div>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
   </div>
 </template>
 
 <script>
-import { createNamespacedHelpers } from 'vuex'
-
 import KqiDownloadButton from '../../../components/KqiDownloadButton.vue'
-const { mapGetters, mapActions } = createNamespacedHelpers('training')
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   title: '実験結果',
@@ -83,10 +98,14 @@ export default {
       logFileData: [],
       preprocessLogFileData: null,
       trainingLogFileData: null,
+      evaluationLogFileDatas: [],
     }
   },
   computed: {
-    ...mapGetters(['detail', 'uploadedFiles']),
+    ...mapGetters({
+      uploadedFiles: ['training/uploadedFiles'],
+      evaluations: ['experiment/evaluations'],
+    }),
   },
   watch: {
     async value() {
@@ -97,15 +116,38 @@ export default {
     await this.retrieveData()
   },
   methods: {
-    ...mapActions(['fetchDetail', 'fetchUploadedFiles']),
+    ...mapActions([
+      'experiment/fetchEvaluations',
+      'training/fetchUploadedFiles',
+    ]),
+
     async retrieveData() {
       if (this.value != null && this.value.preprocessId != null) {
-        await this.fetchUploadedFiles(String(this.value.preprocessId))
+        await this['training/fetchUploadedFiles'](
+          String(this.value.preprocessId),
+        )
         this.preprocessLogFileData = Object.assign({}, this.uploadedFiles)
       }
       if (this.value != null && this.value.trainingId != null) {
-        await this.fetchUploadedFiles(String(this.value.trainingId))
+        await this['training/fetchUploadedFiles'](String(this.value.trainingId))
         this.trainingLogFileData = Object.assign({}, this.uploadedFiles)
+      }
+      if (this.value != null) {
+        await this['experiment/fetchEvaluations'](this.id)
+
+        let evaluationList = this.evaluations.slice()
+        this.evaluationLogFileDatas = []
+        for (let i in evaluationList) {
+          await this['training/fetchUploadedFiles'](
+            String(evaluationList[i].training.id),
+          )
+          let logdata = Object.assign({}, this.uploadedFiles)
+          this.evaluationLogFileDatas.push({
+            name: evaluationList[i].name,
+            status: evaluationList[i].status,
+            log: logdata,
+          })
+        }
       }
     },
   },

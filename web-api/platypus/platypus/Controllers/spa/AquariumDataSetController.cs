@@ -26,6 +26,7 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly IAquariumDataSetVersionRepository aquariumDataSetVersionRepository;
         private readonly IExperimentRepository experimentRepository;
         private readonly IExperimentPreprocessRepository experimentPreprocessRepository;
+        private readonly IAquariumEvaluationRepository evaluationRepository;
         private readonly IDataSetRepository dataSetRepository;
         private readonly IDataTypeRepository dataTypeRepository;
         private readonly IDataSetLogic dataSetLogic;
@@ -36,6 +37,7 @@ namespace Nssol.Platypus.Controllers.spa
             IAquariumDataSetVersionRepository aquariumDataSetVersionRepository,
             IExperimentRepository experimentRepository,
             IExperimentPreprocessRepository experimentPreprocessRepository,
+            IAquariumEvaluationRepository evaluationRepository,
             IDataSetRepository dataSetRepository,
             IDataTypeRepository dataTypeRepository,
             IDataSetLogic dataSetLogic,
@@ -46,6 +48,7 @@ namespace Nssol.Platypus.Controllers.spa
             this.aquariumDataSetVersionRepository = aquariumDataSetVersionRepository;
             this.experimentRepository = experimentRepository;
             this.experimentPreprocessRepository = experimentPreprocessRepository;
+            this.evaluationRepository = evaluationRepository;
             this.dataSetRepository = dataSetRepository;
             this.dataTypeRepository = dataTypeRepository;
             this.dataSetLogic = dataSetLogic;
@@ -253,6 +256,10 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonConflict($"AquariumDataSet ID {id} has been used by experiment preprocess.");
             }
+            if (await evaluationRepository.ExistsAsync(x => x.DataSetId == id))
+            {
+                return JsonConflict($"AquariumDataSet ID {id} has been used by aquarium evaluation.");
+            }
 
             var dataSetIds = new HashSet<long>();
             foreach (var dataSetVersion in aquariumDataSetVersionRepository.FindAll(x => x.AquariumDataSetId == id))
@@ -299,6 +306,10 @@ namespace Nssol.Platypus.Controllers.spa
             if (await experimentPreprocessRepository.ExistsAsync(x => x.DataSetId == id && x.DataSetVersionId == versionId))
             {
                 return JsonConflict($"AquariumDataSetVersion (AquariumDataSetId {id} VersionId {versionId}) has been used by experiment preprocess.");
+            }
+            if (await evaluationRepository.ExistsAsync(x => x.DataSetId == id && x.DataSetVersionId == versionId))
+            {
+                return JsonConflict($"AquariumDataSetVersion (AquariumDataSetId {id} VersionId {versionId}) has been used by aquarium evaluation.");
             }
 
             // 最新バージョンを削除する場合

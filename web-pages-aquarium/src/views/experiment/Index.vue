@@ -20,7 +20,7 @@
       </el-col>
     </el-row>
 
-    <el-row class="test">
+    <el-row>
       <el-table
         class="data-table pl-index-table"
         :data="experiments"
