@@ -2750,6 +2750,151 @@ export const ApiV2ExperimentByIdPreprocessingCompletePostURL = function(paramete
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * アクアリウム推論一覧を取得する
+ * request: ApiV2ExperimentByIdEvaluationsGet
+ * url: ApiV2ExperimentByIdEvaluationsGetURL
+ * method: ApiV2ExperimentByIdEvaluationsGet_TYPE
+ * raw_url: ApiV2ExperimentByIdEvaluationsGet_RAW_URL
+ * @param id - 実験ID
+ */
+export const ApiV2ExperimentByIdEvaluationsGet = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/experiment/{id}/evaluations'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2ExperimentByIdEvaluationsGet_RAW_URL = function() {
+  return '/api/v2/experiment/{id}/evaluations'
+}
+export const ApiV2ExperimentByIdEvaluationsGet_TYPE = function() {
+  return 'get'
+}
+export const ApiV2ExperimentByIdEvaluationsGetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/experiment/{id}/evaluations'
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * アクアリウム推論を作成する
+ * request: ApiV2ExperimentByIdEvaluationsPost
+ * url: ApiV2ExperimentByIdEvaluationsPostURL
+ * method: ApiV2ExperimentByIdEvaluationsPost_TYPE
+ * raw_url: ApiV2ExperimentByIdEvaluationsPost_RAW_URL
+ * @param id - 実験ID
+ * @param model - アクアリウム推論
+ */
+export const ApiV2ExperimentByIdEvaluationsPost = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/experiment/{id}/evaluations'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  if (parameters['model'] !== undefined) {
+    body = parameters['model']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('post', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2ExperimentByIdEvaluationsPost_RAW_URL = function() {
+  return '/api/v2/experiment/{id}/evaluations'
+}
+export const ApiV2ExperimentByIdEvaluationsPost_TYPE = function() {
+  return 'post'
+}
+export const ApiV2ExperimentByIdEvaluationsPostURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/experiment/{id}/evaluations'
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * アクアリウム推論を削除する
+ * request: ApiV2ExperimentByIdEvaluationsByEvaluationIdDelete
+ * url: ApiV2ExperimentByIdEvaluationsByEvaluationIdDeleteURL
+ * method: ApiV2ExperimentByIdEvaluationsByEvaluationIdDelete_TYPE
+ * raw_url: ApiV2ExperimentByIdEvaluationsByEvaluationIdDelete_RAW_URL
+ * @param id - 実験ID
+ * @param evaluationId - アクアリウム推論ID
+ */
+export const ApiV2ExperimentByIdEvaluationsByEvaluationIdDelete = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/experiment/{id}/evaluations/{evaluationId}'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  path = path.replace('{evaluationId}', `${parameters['evaluationId']}`)
+  if (parameters['evaluationId'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: evaluationId'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('delete', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2ExperimentByIdEvaluationsByEvaluationIdDelete_RAW_URL = function() {
+  return '/api/v2/experiment/{id}/evaluations/{evaluationId}'
+}
+export const ApiV2ExperimentByIdEvaluationsByEvaluationIdDelete_TYPE = function() {
+  return 'delete'
+}
+export const ApiV2ExperimentByIdEvaluationsByEvaluationIdDeleteURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/experiment/{id}/evaluations/{evaluationId}'
+  path = path.replace('{id}', `${parameters['id']}`)
+  path = path.replace('{evaluationId}', `${parameters['evaluationId']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * 登録済みのGitエンドポイント一覧を取得
  * request: ApiV2AdminGitEndpointsGet
  * url: ApiV2AdminGitEndpointsGetURL

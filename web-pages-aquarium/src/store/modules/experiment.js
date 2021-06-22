@@ -10,6 +10,7 @@ const state = {
   preprocessHistories: {},
   logFiles: {},
   preprocessLogFiles: {},
+  evaluations: [],
 }
 
 // getters
@@ -39,6 +40,10 @@ const getters = {
   },
   tensorboard(state) {
     return state.tensorboard
+  },
+
+  evaluations(state) {
+    return state.evaluations
   },
 }
 
@@ -139,6 +144,28 @@ const actions = {
       fileId: fileId,
     })
   },
+
+  async fetchEvaluations({ commit }, id) {
+    let response = await api.experiment.getEvaluationsById({ id: id })
+    let evaluations = response.data
+    commit('setEvaluations', { evaluations })
+  },
+
+  // eslint-disable-next-line no-unused-vars
+  async postEvaluations({ commit }, { id, params }) {
+    return await api.experiment.postEvaluationsById({
+      id: id,
+      model: params,
+    })
+  },
+
+  // eslint-disable-next-line no-unused-vars
+  async deleteEvaluations({ commit }, { id, evaluationId }) {
+    await api.experiment.deleteByIdEvaluationsByEvaluationId({
+      id: id,
+      evaluationId: evaluationId,
+    })
+  },
 }
 
 // mutations
@@ -180,6 +207,9 @@ const mutations = {
 
   setTensorboard(state, { tensorboard }) {
     state.tensorboard = tensorboard
+  },
+  setEvaluations(state, { evaluations }) {
+    state.evaluations = evaluations
   },
 }
 
