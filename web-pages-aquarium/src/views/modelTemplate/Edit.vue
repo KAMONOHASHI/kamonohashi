@@ -264,6 +264,7 @@ export default {
         if (
           // テンプレート名
           this.form.name === null ||
+          this.form.name === '' ||
           // 公開設定
           this.form.accessLevel === null
         ) {
