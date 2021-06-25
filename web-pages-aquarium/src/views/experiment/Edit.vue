@@ -42,7 +42,7 @@
                     style=" z-index :20;font-size:15px"
                   >
                     <a
-                      :href="s.value"
+                      href="javascript:void(0)"
                       target="_blank"
                       rel="noopener noreferrer"
                       @click.stop="openDiscriptionURL(s.value)"

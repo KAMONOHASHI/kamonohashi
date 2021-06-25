@@ -52,7 +52,7 @@
                     <span v-for="(s, i) in template.memoList" :key="i">
                       <span v-if="s.type == 'url'" style="font-size:15px">
                         <a
-                          :href="s.value"
+                          href="javascript:void(0)"
                           rel="noopener noreferrer"
                           @click.stop="openDiscriptionURL(s.value)"
                           >{{ s.value }}</a
