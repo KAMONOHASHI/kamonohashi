@@ -23,45 +23,46 @@
           :key="index"
           class="card-container"
         >
-          <el-card
-            class="template"
-            style="border: solid 1px #ebeef5; width: 360px; height: 300px;"
-          >
-            <router-link :to="`/aquarium/experiment/createStep/${template.id}`">
+          <router-link :to="`/aquarium/experiment/createStep/${template.id}`">
+            <el-card
+              class="template"
+              style="border: solid 1px #ebeef5; width: 360px; height: 300px;"
+            >
               <div class="template-name">
                 {{ template.name }}
               </div>
-            </router-link>
 
-            <div
-              class="template-description"
-              style="padding: 10px; font-size: 14px;"
-            >
-              <span v-for="(s, i) in template.memoList" :key="i">
-                <span
-                  v-if="s.type == 'url'"
-                  style=" z-index :20;font-size:15px"
-                >
-                  <a
-                    :href="s.value"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    >{{ s.value }}</a
-                  ></span
-                >
-                <span v-else-if="s.type == 'string'">{{ s.value }}</span>
-              </span>
-            </div>
-            <!-- タグを想定 -->
-            <div
-              class="template-description"
-              style="padding: 20px; font-size: 18px;text-align:center;"
-            >
-              <!-- <div>
+              <div
+                class="template-description"
+                style="padding: 10px; font-size: 14px;"
+              >
+                <span v-for="(s, i) in template.memoList" :key="i">
+                  <span
+                    v-if="s.type == 'url'"
+                    style=" z-index :20;font-size:15px"
+                  >
+                    <a
+                      :href="s.value"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      @click.stop="openDiscriptionURL(s.value)"
+                      >{{ s.value }}</a
+                    ></span
+                  >
+                  <span v-else-if="s.type == 'string'">{{ s.value }}</span>
+                </span>
+              </div>
+              <!-- タグを想定 -->
+              <div
+                class="template-description"
+                style="padding: 20px; font-size: 18px;text-align:center;"
+              >
+                <!-- <div>
                       <el-tag class="tag"> {{ template.tag }}</el-tag>
                     </div> -->
-            </div>
-          </el-card>
+              </div>
+            </el-card>
+          </router-link>
         </div>
       </div>
       <router-view />
@@ -104,7 +105,9 @@ export default {
 
   methods: {
     ...mapActions(['fetchTenantModelTemplates']),
-
+    openDiscriptionURL(url) {
+      window.open(url, '_blank')
+    },
     async retrieveData() {
       let params = this.searchCondition
       params.page = this.pageStatus.currentPage
