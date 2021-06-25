@@ -294,6 +294,18 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonBadRequest("Invalid inputs.");
             }
+            //データの重複チェック　
+            if (model.IsFlat)
+            {
+                var hashset = new HashSet<long>();
+                foreach (CreateInputModel.Entry e in model.FlatEntries)
+                {
+                    if (hashset.Add(e.Id) == false)
+                    {
+                        return JsonBadRequest("Duplicate inputs.");
+                    }
+                }
+            }
 
             DataSet dataSet = new DataSet()
             {
