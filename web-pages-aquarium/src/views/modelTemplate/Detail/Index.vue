@@ -20,7 +20,7 @@
         </el-select>
       </el-col>
     </el-row>
-    <el-tabs v-model="activeName">
+    <el-tabs v-model="activeName" @tab-click="tabChange">
       <el-tab-pane label="基本設定" name="baseSetting">
         <base-setting v-if="baseForm" v-model="baseForm" />
       </el-tab-pane>
@@ -162,6 +162,15 @@ export default {
     ...mapGetters(['detail', 'versionDetail', 'total', 'versions']),
   },
   async created() {
+    let versionId = this.$route.query.versionId
+    if (versionId != null) {
+      this.versionValue = Number(versionId)
+    }
+    let tab = this.$route.query.tab
+    if (tab != null) {
+      this.activeName = tab
+    }
+
     await this.retrieveData()
   },
   methods: {
@@ -176,6 +185,12 @@ export default {
       'deleteVersion',
     ]),
 
+    tabChange() {
+      let versionId = this.$route.query.versionId
+      this.$router.replace({
+        query: { tab: this.activeName, versionId: versionId },
+      })
+    },
     async deleteTemplate() {
       //モデルテンプレート削除
       this.deleteDialog = false
@@ -204,13 +219,36 @@ export default {
     async retrieveData() {
       await this.fetchModelTemplate(this.id)
       await this.fetchVersions(this.id)
+
+      let urlversion = this.versionValue
+      let latestVersion = null
+      let URLVerExistFlg = false
       if (this.versionValue == null) {
-        for (let i in this.versions) {
-          // 最新版を保持させる
-          if (this.versions[i].version == this.detail.latestVersion) {
-            this.versionValue = this.versions[i].id
+        URLVerExistFlg = true
+      }
+      for (let i in this.versions) {
+        if (this.versions[i].id == urlversion) {
+          //URLのversionが存在する場合
+          this.versionValue = this.versions[i].id
+          URLVerExistFlg = true
+        } else if (this.versions[i].version == this.detail.latestVersion) {
+          // 最新版を取得する
+          latestVersion = this.versions[i].id
+          if (this.versionValue == null) {
+            this.versionValue = latestVersion
           }
         }
+      }
+      if (!URLVerExistFlg) {
+        //URLのversionが存在しなかった場合
+        await this.$notify.error({
+          type: 'Error',
+          message:
+            'versionID:' +
+            urlversion +
+            'のテンプレートバージョンは見つかりませんでした。最新のテンプレートバージョンを表示します。',
+        })
+        this.versionValue = latestVersion
       }
 
       this.baseForm = {
@@ -270,6 +308,10 @@ export default {
       this.preprocForm = null
       this.trainingForm = null
       this.evaluationForm = null
+      let tab = this.$route.query.tab
+      this.$router.replace({
+        query: { tab: tab, versionId: this.versionValue },
+      })
       await this.retrieveData()
     },
 

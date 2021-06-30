@@ -364,6 +364,10 @@ export default {
   },
 
   async created() {
+    let versionId = this.$route.query.versionId
+    if (versionId != null) {
+      this.versionValue = Number(versionId)
+    }
     await this.retrieveData()
   },
 
@@ -492,6 +496,9 @@ export default {
       params.versionId = version
       params.id = this.id
       await this['aquariumDataSet/fetchDetailVersion'](params)
+      this.$router.replace({
+        query: { versionId: version },
+      })
       this.viewVersion = Object.assign({}, this.detailVersion)
     },
     async retrieveData() {
@@ -504,14 +511,15 @@ export default {
 
       await this['aquariumDataSet/fetchDataSets'](params)
       await this['aquariumDataSet/fetchVersions'](this.id)
-      let latestVersionId
+      let latestVersionId = null
+      let URLVerExistFlg = false
       for (let i in this.versions) {
-        if (this.versions[i].version == this.dataSets[0].latestVersion) {
-          this.versionValue = this.versions[i].id
-          this.currentChange(this.versions[i].id)
+        if (this.versions[i].id == this.versionValue) {
+          URLVerExistFlg = true
+        } else if (this.versions[i].version == this.dataSets[0].latestVersion) {
           latestVersionId = this.versions[i].id
         }
-        //メモを取得する
+        //バージョンごとのメモを取得する
         let param = {}
         param.versionId = this.versions[i].id
         param.id = this.id
@@ -522,13 +530,27 @@ export default {
           this.versions[i].memo = this.detailVersion.memo
         }
       }
+      if (!URLVerExistFlg && this.versionValue != null) {
+        //URLのversionが存在しなかった場合
+        await this.$notify.error({
+          type: 'Error',
+          message:
+            'versionID:' +
+            this.versionValue +
+            'のデータセットバージョンは見つかりませんでした。最新のデータセットバージョンを表示します。',
+        })
+        this.versionValue = latestVersionId
+      } else if (!URLVerExistFlg && this.versionValue == null) {
+        //URLにversionパラメタが存在しなかった場合
+        this.versionValue = latestVersionId
+      }
 
       this.name = this.dataSets[0].name
 
       //データセットバージョンを取得
       await this['aquariumDataSet/fetchDetailVersion']({
         id: this.id,
-        versionId: latestVersionId,
+        versionId: this.versionValue,
       })
       this.viewVersion = Object.assign({}, this.detailVersion)
       //アクアリウムデータセットに追加するためのデータリスト取得
