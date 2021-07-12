@@ -12,7 +12,7 @@
         >
           <el-option
             v-for="item in versions"
-            :key="item.value"
+            :key="item.id"
             :label="item.version"
             :value="item.id"
           >
@@ -155,16 +155,18 @@ export default {
       evaluationForm: null,
       baseForm: null,
       versionValue: null,
+      version: null,
       changeFlg: false,
+      errVersion: null,
     }
   },
   computed: {
     ...mapGetters(['detail', 'versionDetail', 'total', 'versions']),
   },
   async created() {
-    let versionId = this.$route.query.versionId
-    if (versionId != null) {
-      this.versionValue = Number(versionId)
+    let version = this.$route.query.version
+    if (version != null) {
+      this.version = Number(version)
     }
     let tab = this.$route.query.tab
     if (tab != null) {
@@ -186,9 +188,9 @@ export default {
     ]),
 
     tabChange() {
-      let versionId = this.$route.query.versionId
+      let version = this.$route.query.version
       this.$router.replace({
-        query: { tab: this.activeName, versionId: versionId },
+        query: { tab: this.activeName, version: version },
       })
     },
     async deleteTemplate() {
@@ -204,9 +206,11 @@ export default {
       await this.deleteVersion({ id: this.id, versionId: this.versionValue })
       this.deleteVersionDialog = false
       this.versionValue = null
+      this.version = null
       this.preprocForm = null
       this.trainingForm = null
       this.evaluationForm = null
+
       this.retrieveData()
 
       //再描画
@@ -220,35 +224,38 @@ export default {
       await this.fetchModelTemplate(this.id)
       await this.fetchVersions(this.id)
 
-      let urlversion = this.versionValue
       let latestVersion = null
       let URLVerExistFlg = false
-      if (this.versionValue == null) {
+      if (this.version == null) {
         URLVerExistFlg = true
       }
+      this.errVersion = this.version
       for (let i in this.versions) {
-        if (this.versions[i].id == urlversion) {
-          //URLのversionが存在する場合
+        if (this.versions[i].version == this.version) {
+          //URLのversionが存在するか確認する
           this.versionValue = this.versions[i].id
           URLVerExistFlg = true
-        } else if (this.versions[i].version == this.detail.latestVersion) {
+          this.errVersion = null
+        } else if (this.versions[i].id == this.versionValue) {
+          //version変更した場合
+          this.version = this.versions[i].version
+          URLVerExistFlg = true
+          this.errVersion = null
+        }
+        if (this.versions[i].version == this.detail.latestVersion) {
           // 最新版を取得する
-          latestVersion = this.versions[i].id
+          latestVersion = this.versions[i]
           if (this.versionValue == null) {
-            this.versionValue = latestVersion
+            this.versionValue = latestVersion.id
+            this.version = latestVersion.version
           }
         }
       }
-      if (!URLVerExistFlg) {
+
+      if (!URLVerExistFlg && this.version != null) {
         //URLのversionが存在しなかった場合
-        await this.$notify.error({
-          type: 'Error',
-          message:
-            'versionID:' +
-            urlversion +
-            'のテンプレートバージョンは見つかりませんでした。最新のテンプレートバージョンを表示します。',
-        })
-        this.versionValue = latestVersion
+        this.versionValue = latestVersion.id
+        this.version = latestVersion.version
       }
 
       this.baseForm = {
@@ -299,19 +306,33 @@ export default {
         },
       }
       this.changeFlg = true
+      this.$router
+        .replace({
+          query: { tab: this.activeName, version: this.version },
+        })
+        .catch(function() {})
+
+      if (this.errVersion != null) {
+        await this.$notify.error({
+          type: 'Error',
+          message:
+            'version:' +
+            this.errVersion +
+            'のテンプレートバージョンは見つかりませんでした。最新のテンプレートバージョンを表示します。',
+        })
+        this.errVersion = null
+      }
     },
 
     async currentChange() {
       if (this.changeFlg == false) {
         return
       }
+      this.version = null
+
       this.preprocForm = null
       this.trainingForm = null
       this.evaluationForm = null
-      let tab = this.$route.query.tab
-      this.$router.replace({
-        query: { tab: tab, versionId: this.versionValue },
-      })
       await this.retrieveData()
     },
 
@@ -538,6 +559,8 @@ export default {
       this.preprocForm = null
       this.trainingForm = null
       this.evaluationForm = null
+      this.version = null
+
       await this.retrieveData()
     },
   },

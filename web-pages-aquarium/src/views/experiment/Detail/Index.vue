@@ -90,13 +90,13 @@ export default {
       this.infoForm.dataSetURL =
         '/aquarium/dataset/detail/' +
         this.detail.dataSet.id +
-        '?versionId=' +
-        this.detail.dataSetVersion.id
+        '?version=' +
+        this.detail.dataSetVersion.version
       this.infoForm.templateURL =
         '/aquarium/model-template/' +
         this.detail.template.id +
-        '?versionId=' +
-        this.detail.templateVersion.id
+        '?version=' +
+        this.detail.templateVersion.version
 
       if (this.detail.preprocess != null) {
         this.infoForm.preprocessId = this.detail.preprocess.id
