@@ -1,12 +1,13 @@
 <template>
   <span class="box" :class="mini ? 'box-mini' : 'box-small'">
-    <span v-if="dynamicTags.length">
+    <span v-if="dynamicTags.length" @click="openDropDown()">
       <el-tag
         v-for="(tag, index) in dynamicTags"
         :key="index"
         closable
         :disable-transitions="false"
         :size="mini ? 'mini' : 'default'"
+        @click.stop=""
         @close="handleClose(tag)"
       >
         <el-button
@@ -35,7 +36,12 @@
       :size="mini ? 'mini' : 'default'"
       @command="handlePlus"
     >
-      <el-input class="space" :size="mini ? 'mini' : 'small'" readonly />
+      <el-input
+        ref="inputSpace"
+        class="space"
+        :size="mini ? 'mini' : 'small'"
+        readonly
+      />
       <el-dropdown-menu slot="dropdown">
         <el-dropdown-item
           v-for="c in configs"
@@ -161,6 +167,11 @@ export default {
       this.emitSearch()
     },
 
+    //検索条件のリストを開く
+    openDropDown() {
+      this.$refs.inputSpace.$el.click()
+    },
+
     // 下位コンポーネントから'done'を受け取った場合、追加した検索条件を使用して再検索
     handleInputDone(tag, event) {
       tag.input = false
@@ -252,6 +263,29 @@ export default {
 .tag-suffix {
   color: gray;
   opacity: 0.7;
+}
+
+.box {
+  display: table;
+  padding: 5px;
+  float: right;
+  height: 100%;
+}
+
+.box > span {
+  display: table-cell;
+}
+.el-dropdown {
+  max-width: 20%;
+  display: table-cell;
+}
+
+.el-tag {
+  margin-top: 3px;
+  margin-bottom: 3px;
+}
+.search.el-button {
+  display: table-cell;
 }
 </style>
 
