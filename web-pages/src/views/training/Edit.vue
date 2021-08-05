@@ -324,8 +324,11 @@ import KqiDataSetDetails from '@/components/selector/KqiDataSetDetails'
 import KqiTrainingHistoryDetails from '@/components/selector/KqiTrainingHistoryDetails'
 import KqiTagEditor from '@/components/KqiTagEditor'
 import KqiTensorboardHandler from './KqiTensorboardHandler'
-import { createNamespacedHelpers } from 'vuex'
-const { mapGetters, mapActions } = createNamespacedHelpers('training')
+//import { createNamespacedHelpers } from 'vuex'
+
+//const { mapGetters, mapActions } = createNamespacedHelpers('training')
+import Util from '@/util/util'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   components: {
@@ -370,7 +373,14 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['detail', 'events', 'uploadedFiles', 'tenantTags']),
+    ...mapGetters({
+      detail: ['training/detail'],
+      events: ['training/events'],
+      uploadedFiles: ['training/uploadedFiles'],
+      tenantTags: ['training/tenantTags'],
+      tenantDetail: ['tenant/detail'],
+      account: ['account/account'],
+    }),
   },
   watch: {
     async $route() {
@@ -380,20 +390,34 @@ export default {
   },
 
   async created() {
+    let tenantName = this.$route.query.tenantName
+    await this['account/fetchAccount']()
+    //テナント名からテナントIDを取得し、セットする
+    for (let i in this.account.tenants) {
+      if (this.account.tenants[i].name == tenantName) {
+        await Util.setCookie('.Platypus.Tenant', this.account.tenants[i].id)
+      }
+    }
+    await this['tenant/fetchCurrentTenant']()
     await this.initialize()
   },
   methods: {
     ...mapActions([
-      'fetchDetail',
-      'fetchEvents',
-      'fetchUploadedFiles',
-      'fetchTenantTags',
-      'postHalt',
-      'postUserCancel',
-      'postFiles',
-      'put',
-      'delete',
-      'deleteFile',
+      'training/fetchDetail',
+      'training/fetchEvents',
+      'training/fetchUploadedFiles',
+      'training/fetchTenantTags',
+      'training/postHalt',
+      'training/postUserCancel',
+      'training/postFiles',
+      'training/put',
+      'training/delete',
+      'training/deleteFile',
+
+      'tenant/fetchCurrentTenant',
+      'account/put',
+      'account/fetchAccount',
+      'account/postTokenTenants',
     ]),
     async initialize() {
       this.title = '学習履歴'
@@ -403,11 +427,11 @@ export default {
       this.form.memo = this.detail.memo
       this.form.tags = this.detail.tags
       // ここでいいのか要確認
-      await this.fetchTenantTags()
+      await this['training/fetchTenantTags']()
     },
     async retrieveData() {
-      await this.fetchDetail(this.id)
-      await this.fetchUploadedFiles(this.detail.id)
+      await this['training/fetchDetail'](this.id)
+      await this['training/fetchUploadedFiles'](this.detail.id)
 
       if (
         this.detail.statusType === 'Running' ||
@@ -426,7 +450,7 @@ export default {
           tags: this.form.tags,
         },
       }
-      await this.put(params)
+      await this['training/put'](params)
     },
     async onSubmit() {
       let form = this.$refs.updateForm
@@ -446,7 +470,7 @@ export default {
     },
     async handleHalt() {
       try {
-        await this.postHalt(this.detail.id) // 異常停止（Status=Killed）
+        await this['training/postHalt'](this.detail.id) // 異常停止（Status=Killed）
         await this.retrieveData()
         this.error = null
       } catch (e) {
@@ -455,7 +479,7 @@ export default {
     },
     async handleUserCancel() {
       try {
-        await this.postUserCancel(this.detail.id) // 正常停止（Status=UserCanceled）
+        await this['training/postUserCancel'](this.detail.id) // 正常停止（Status=UserCanceled）
         await this.retrieveData()
         this.error = null
       } catch (e) {
@@ -464,7 +488,7 @@ export default {
     },
     async deleteJob() {
       try {
-        await this.delete(this.detail.id)
+        await this['training/delete'](this.detail.id)
         this.$emit('done', 'delete')
         this.error = null
       } catch (e) {
@@ -480,7 +504,7 @@ export default {
       let fileInfo = await uploader.uploadFile()
 
       if (fileInfo !== undefined) {
-        await this.postFiles({
+        await this['training/postFiles']({
           id: this.detail.id,
           fileInfo: fileInfo,
         })
@@ -493,7 +517,7 @@ export default {
 
     async deleteAttachedFile(fileId) {
       try {
-        await this.deleteFile({
+        await this['training/deleteFile']({
           id: this.detail.id,
           fileId: fileId,
         })

@@ -130,9 +130,10 @@
 <script>
 import KqiPagination from '@/components/KqiPagination'
 import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index'
-import { createNamespacedHelpers } from 'vuex'
-const { mapGetters, mapActions } = createNamespacedHelpers('training')
-
+//import { createNamespacedHelpers } from 'vuex'
+//const { mapGetters, mapActions } = createNamespacedHelpers('training')
+import Util from '@/util/util'
+import { mapActions, mapGetters } from 'vuex'
 export default {
   title: '学習管理',
   components: {
@@ -184,19 +185,40 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['histories', 'total']),
+    ...mapGetters({
+      histories: ['training/histories'],
+      total: ['training/total'],
+      tenantDetail: ['tenant/detail'],
+      account: ['account/account'],
+    }),
   },
+
   async created() {
+    let tenantName = this.$route.query.tenantName
+    await this['account/fetchAccount']()
+    //テナント名からテナントIDを取得し、セットする
+    for (let i in this.account.tenants) {
+      if (this.account.tenants[i].name == tenantName) {
+        await Util.setCookie('.Platypus.Tenant', this.account.tenants[i].id)
+      }
+    }
     await this.retrieveData()
   },
   methods: {
-    ...mapActions(['fetchHistories', 'delete']),
+    ...mapActions([
+      'training/fetchHistories',
+      'training/delete',
+      'tenant/fetchCurrentTenant',
+      'account/put',
+      'account/fetchAccount',
+      'account/postTokenTenants',
+    ]),
     async retrieveData() {
       let params = this.searchCondition
       params.page = this.pageStatus.currentPage
       params.perPage = this.pageStatus.currentPageSize
       params.withTotal = true
-      await this.fetchHistories(params)
+      await this['training/fetchHistories'](params)
     },
     async search() {
       this.pageStatus.currentPage = 1
@@ -218,7 +240,7 @@ export default {
         .then(async () => {
           let successCount = 0
           for (let selection of this.selections) {
-            await this.delete(selection.id)
+            await this['training/delete'](selection.id)
               .then(() => successCount++)
               .catch(() => {})
           }
@@ -254,8 +276,11 @@ export default {
     back() {
       this.$router.go(-1)
     },
-    openEditDialog(selectedRow) {
-      this.$router.push('/training/' + selectedRow.id)
+    async openEditDialog(selectedRow) {
+      await this['tenant/fetchCurrentTenant']()
+      this.$router.push(
+        '/training/' + selectedRow.id + '?tenantName=' + this.tenantDetail.name,
+      )
     },
     openCreateDialog() {
       this.$router.push('/training/run/')
