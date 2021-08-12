@@ -30,6 +30,11 @@ namespace Nssol.Platypus.ApiModels.AccountApiModels
         public string Name { get; set; }
 
         /// <summary>
+        /// プロジェクト名
+        /// </summary>
+        public string ProjectName { get; set; }
+
+        /// <summary>
         /// レジストリサービス種別
         /// </summary>
         public RegistryServiceType ServiceType { get; set; }
@@ -41,6 +46,7 @@ namespace Nssol.Platypus.ApiModels.AccountApiModels
             ServiceType = map.Registry.ServiceType;
             UserName = map.RegistryUserName;
             Password = map.RegistryPassword;
+            ProjectName = map.Registry.ProjectName;
         }
 
         public RegistryCredentialOutputModel(Registry registry)
