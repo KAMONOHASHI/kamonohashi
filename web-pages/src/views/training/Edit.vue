@@ -324,9 +324,6 @@ import KqiDataSetDetails from '@/components/selector/KqiDataSetDetails'
 import KqiTrainingHistoryDetails from '@/components/selector/KqiTrainingHistoryDetails'
 import KqiTagEditor from '@/components/KqiTagEditor'
 import KqiTensorboardHandler from './KqiTensorboardHandler'
-//import { createNamespacedHelpers } from 'vuex'
-
-//const { mapGetters, mapActions } = createNamespacedHelpers('training')
 import Util from '@/util/util'
 import { mapActions, mapGetters } from 'vuex'
 
@@ -378,7 +375,6 @@ export default {
       events: ['training/events'],
       uploadedFiles: ['training/uploadedFiles'],
       tenantTags: ['training/tenantTags'],
-      tenantDetail: ['tenant/detail'],
       account: ['account/account'],
     }),
   },
@@ -398,7 +394,6 @@ export default {
         await Util.setCookie('.Platypus.Tenant', this.account.tenants[i].id)
       }
     }
-    await this['tenant/fetchCurrentTenant']()
     await this.initialize()
   },
   methods: {
@@ -414,10 +409,7 @@ export default {
       'training/delete',
       'training/deleteFile',
 
-      'tenant/fetchCurrentTenant',
-      'account/put',
       'account/fetchAccount',
-      'account/postTokenTenants',
     ]),
     async initialize() {
       this.title = '学習履歴'

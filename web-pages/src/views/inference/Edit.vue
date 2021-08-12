@@ -296,8 +296,8 @@ import KqiFileManager from '@/components/KqiFileManager'
 import KqiDataSetDetails from '@/components/selector/KqiDataSetDetails'
 import KqiTrainingHistoryDetails from '@/components/selector/KqiTrainingHistoryDetails'
 import KqiInferenceHistoryDetails from '@/components/selector/KqiInferenceHistoryDetails'
-import { createNamespacedHelpers } from 'vuex'
-const { mapGetters, mapActions } = createNamespacedHelpers('inference')
+import Util from '@/util/util'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   components: {
@@ -339,7 +339,12 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['detail', 'events', 'uploadedFiles']),
+    ...mapGetters({
+      detail: ['inference/detail'],
+      events: ['inference/events'],
+      uploadedFiles: ['inference/uploadedFiles'],
+      account: ['account/account'],
+    }),
   },
   watch: {
     async $route() {
@@ -352,17 +357,27 @@ export default {
   },
   methods: {
     ...mapActions([
-      'fetchDetail',
-      'fetchEvents',
-      'fetchUploadedFiles',
-      'postHalt',
-      'postUserCancel',
-      'postFiles',
-      'put',
-      'delete',
-      'deleteFile',
+      'inference/fetchDetail',
+      'inference/fetchEvents',
+      'inference/fetchUploadedFiles',
+      'inference/postHalt',
+      'inference/postUserCancel',
+      'inference/postFiles',
+      'inference/put',
+      'inference/delete',
+      'inference/deleteFile',
+
+      'account/fetchAccount',
     ]),
     async initialize() {
+      let tenantName = this.$route.query.tenantName
+      await this['account/fetchAccount']()
+      //テナント名からテナントIDを取得し、セットする
+      for (let i in this.account.tenants) {
+        if (this.account.tenants[i].name == tenantName) {
+          await Util.setCookie('.Platypus.Tenant', this.account.tenants[i].id)
+        }
+      }
       this.title = '推論履歴'
       await this.retrieveData()
       this.form.name = this.detail.name
@@ -370,13 +385,13 @@ export default {
       this.form.memo = this.detail.memo
     },
     async retrieveData() {
-      await this.fetchDetail(this.id)
-      await this.fetchUploadedFiles(this.detail.id)
+      await this['inference/fetchDetail'](this.id)
+      await this['inference/fetchUploadedFiles'](this.detail.id)
       if (
         this.detail.statusType === 'Running' ||
         this.detail.statusType === 'Error'
       ) {
-        await this.fetchEvents(this.detail.id)
+        await this['inference/fetchEvents'](this.detail.id)
       }
     },
     async updateHistory() {
@@ -388,7 +403,7 @@ export default {
           favorite: this.form.favorite,
         },
       }
-      await this.put(params)
+      await this['inference/put'](params)
     },
     async onSubmit() {
       let form = this.$refs.updateForm
@@ -408,7 +423,7 @@ export default {
     },
     async handleHalt() {
       try {
-        await this.postHalt(this.detail.id) // 異常停止（Status=Killed）
+        await this['inference/postHalt'](this.detail.id) // 異常停止（Status=Killed）
         await this.retrieveData()
         this.error = null
       } catch (e) {
@@ -417,7 +432,7 @@ export default {
     },
     async handleUserCancel() {
       try {
-        await this.postUserCancel(this.detail.id) // 正常停止（Status=UserCanceled）
+        await this['inference/postUserCancel'](this.detail.id) // 正常停止（Status=UserCanceled）
         await this.retrieveData()
         this.error = null
       } catch (e) {
@@ -426,7 +441,7 @@ export default {
     },
     async deleteInferenceJob() {
       try {
-        await this.delete(this.detail.id)
+        await this['inference/delete'](this.detail.id)
         this.$emit('done', 'delete')
         this.error = null
       } catch (e) {
@@ -442,7 +457,7 @@ export default {
       let fileInfo = await uploader.uploadFile()
 
       if (fileInfo !== undefined) {
-        await this.postFiles({
+        await this['inference/postFiles']({
           id: this.detail.id,
           fileInfo: fileInfo,
         })
@@ -455,7 +470,7 @@ export default {
 
     async deleteAttachedFile(fileId) {
       try {
-        await this.deleteFile({
+        await this['inference/deleteFile']({
           id: this.detail.id,
           fileId: fileId,
         })

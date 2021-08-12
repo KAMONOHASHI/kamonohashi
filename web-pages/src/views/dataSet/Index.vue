@@ -59,9 +59,9 @@
 <script>
 import KqiPagination from '@/components/KqiPagination'
 import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index'
-import { createNamespacedHelpers } from 'vuex'
-const { mapGetters, mapActions } = createNamespacedHelpers('dataSet')
 
+import { mapActions, mapGetters } from 'vuex'
+import Util from '@/util/util'
 export default {
   title: 'データセット管理',
   components: {
@@ -85,14 +85,31 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['dataSets', 'total']),
+    ...mapGetters({
+      dataSets: ['dataSet/dataSets'],
+      total: ['dataSet/total'],
+      tenantDetail: ['tenant/detail'],
+      account: ['account/account'],
+    }),
   },
 
   async created() {
+    let tenantName = this.$route.query.tenantName
+    await this['account/fetchAccount']()
+    //テナント名からテナントIDを取得し、セットする
+    for (let i in this.account.tenants) {
+      if (this.account.tenants[i].name == tenantName) {
+        await Util.setCookie('.Platypus.Tenant', this.account.tenants[i].id)
+      }
+    }
     await this.retrieveData()
   },
   methods: {
-    ...mapActions(['fetchDataSets']),
+    ...mapActions([
+      'dataSet/fetchDataSets',
+      'tenant/fetchCurrentTenant',
+      'account/fetchAccount',
+    ]),
 
     async currentChange(page) {
       this.pageStatus.currentPage = page
@@ -103,7 +120,7 @@ export default {
       params.page = this.pageStatus.currentPage
       params.perPage = this.pageStatus.currentPageSize
       params.withTotal = true
-      await this.fetchDataSets(params)
+      await this['dataSet/fetchDataSets'](params)
     },
     closeDialog() {
       this.$router.push('/dataset')
@@ -125,8 +142,15 @@ export default {
     openCreateDialog() {
       this.$router.push('/dataset/create')
     },
-    openEditDialog(selectedRow) {
-      this.$router.push('/dataset/edit/' + selectedRow.id)
+    async openEditDialog(selectedRow) {
+      await this['tenant/fetchCurrentTenant']()
+
+      this.$router.push(
+        '/dataset/edit/' +
+          selectedRow.id +
+          '?tenantName=' +
+          this.tenantDetail.name,
+      )
     },
     handleCopy(id) {
       this.$router.push('/dataset/create/' + id)

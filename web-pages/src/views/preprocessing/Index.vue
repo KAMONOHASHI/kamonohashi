@@ -82,9 +82,8 @@
 <script>
 import KqiPagination from '@/components/KqiPagination'
 import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index'
-import { createNamespacedHelpers } from 'vuex'
-const { mapGetters, mapActions } = createNamespacedHelpers('preprocessing')
-
+import Util from '@/util/util'
+import { mapActions, mapGetters } from 'vuex'
 export default {
   title: '前処理管理',
   components: {
@@ -108,19 +107,36 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['preprocessings', 'total']),
+    ...mapGetters({
+      preprocessings: ['preprocessing/preprocessings'],
+      total: ['preprocessing/total'],
+      tenantDetail: ['tenant/detail'],
+      account: ['account/account'],
+    }),
   },
   async created() {
+    let tenantName = this.$route.query.tenantName
+    await this['account/fetchAccount']()
+    //テナント名からテナントIDを取得し、セットする
+    for (let i in this.account.tenants) {
+      if (this.account.tenants[i].name == tenantName) {
+        await Util.setCookie('.Platypus.Tenant', this.account.tenants[i].id)
+      }
+    }
     await this.retrieveData()
   },
   methods: {
-    ...mapActions(['fetchPreprocessings']),
+    ...mapActions([
+      'preprocessing/fetchPreprocessings',
+      'tenant/fetchCurrentTenant',
+      'account/fetchAccount',
+    ]),
     async retrieveData() {
       let params = this.searchCondition
       params.page = this.pageStatus.currentPage
       params.perPage = this.pageStatus.currentPageSize
       params.withTotal = true
-      await this.fetchPreprocessings(params)
+      await this['preprocessing/fetchPreprocessings'](params)
     },
     async search() {
       this.pageStatus.currentPage = 1
@@ -158,8 +174,17 @@ export default {
     },
 
     async openEditDialog(selectedRow) {
+      await this['tenant/fetchCurrentTenant']()
+      this.$router.push(
+        '/training/' + selectedRow.id + '?tenantName=' + this.tenantDetail.name,
+      )
       this.selectedRowId = selectedRow.id
-      this.$router.push('/preprocessing/edit/' + selectedRow.id)
+      this.$router.push(
+        '/preprocessing/edit/' +
+          selectedRow.id +
+          '?tenantName=' +
+          this.tenantDetail.name,
+      )
     },
     openPreprocessingDialog() {
       this.$router.push('preprocessing/run')

@@ -130,8 +130,6 @@
 <script>
 import KqiPagination from '@/components/KqiPagination'
 import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index'
-//import { createNamespacedHelpers } from 'vuex'
-//const { mapGetters, mapActions } = createNamespacedHelpers('training')
 import Util from '@/util/util'
 import { mapActions, mapGetters } from 'vuex'
 export default {
@@ -209,9 +207,7 @@ export default {
       'training/fetchHistories',
       'training/delete',
       'tenant/fetchCurrentTenant',
-      'account/put',
       'account/fetchAccount',
-      'account/postTokenTenants',
     ]),
     async retrieveData() {
       let params = this.searchCondition

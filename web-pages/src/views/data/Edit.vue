@@ -76,9 +76,10 @@ import KqiDisplayError from '@/components/KqiDisplayError'
 import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
 import KqiFileManager from '@/components/KqiFileManager'
 import KqiTagEditor from '@/components/KqiTagEditor'
-import { createNamespacedHelpers } from 'vuex'
-const { mapGetters, mapMutations, mapActions } = createNamespacedHelpers('data')
-
+//import { createNamespacedHelpers } from 'vuex'
+//const { mapGetters, mapMutations, mapActions } = createNamespacedHelpers('data')
+import Util from '@/util/util'
+import { mapActions, mapMutations, mapGetters } from 'vuex'
 export default {
   components: {
     KqiDialog,
@@ -140,9 +141,25 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['tenantTags', 'detail', 'uploadedFiles']),
+    ...mapGetters({
+      tenantTags: ['data/tenantTags'],
+      detail: ['data/detail'],
+      uploadedFiles: ['data/uploadedFiles'],
+      tenantDetail: ['tenant/detail'],
+      account: ['account/account'],
+    }),
   },
   async created() {
+    let tenantName = this.$route.query.tenantName
+    await this['account/fetchAccount']()
+    //テナント名からテナントIDを取得し、セットする
+    for (let i in this.account.tenants) {
+      if (this.account.tenants[i].name == tenantName) {
+        await Util.setCookie('.Platypus.Tenant', this.account.tenants[i].id)
+      }
+    }
+    await this['tenant/fetchCurrentTenant']()
+
     if (this.id === null) {
       this.title = 'データ登録'
       this.clearUploadedFiles()
@@ -151,24 +168,27 @@ export default {
       this.isEditDialog = true
       await this.retrieveData()
     }
-    await this.fetchTenantTags()
+    await this['data/fetchTenantTags']()
   },
   methods: {
     ...mapMutations(['clearUploadedFiles']),
     ...mapActions([
-      'fetchDetail',
-      'fetchTenantTags',
-      'fetchUploadedFiles',
-      'put',
-      'post',
-      'putFile',
-      'delete',
-      'deleteFile',
+      'data/fetchDetail',
+      'data/fetchTenantTags',
+      'data/fetchUploadedFiles',
+      'data/put',
+      'data/post',
+      'data/putFile',
+      'data/delete',
+      'data/deleteFile',
+      'tenant/fetchCurrentTenant',
+      'account/put',
+      'account/fetchAccount',
     ]),
     async retrieveData() {
       try {
-        await this.fetchDetail(this.id)
-        await this.fetchUploadedFiles(this.id)
+        await this['data/fetchDetail'](this.id)
+        await this['data/fetchUploadedFiles'](this.id)
         this.form.name = this.detail.name
         this.form.tags = this.detail.tags
         this.form.memo = this.detail.memo
@@ -196,7 +216,7 @@ export default {
             try {
               // 新規データ作成の場合、該当のデータを削除する
               if (this.id === null && dataId !== null) {
-                await this.delete(dataId)
+                await this['data/delete'](dataId)
               }
             } finally {
               this.$notify.error({
@@ -228,10 +248,10 @@ export default {
 
       let result = null
       if (this.id === null) {
-        result = (await this.post(model)).data
+        result = (await this['data/post'](model)).data
       } else {
         result = (
-          await this.put({
+          await this['data/put']({
             id: this.id,
             model: model,
           })
@@ -243,7 +263,7 @@ export default {
     async uploadFile(dataId) {
       let dataFileInfo = await this.$refs.dataFile.uploadFile()
       if (dataFileInfo !== undefined) {
-        await this.putFile({ id: dataId, fileInfo: dataFileInfo })
+        await this['data/putFile']({ id: dataId, fileInfo: dataFileInfo })
       }
     },
 
@@ -259,7 +279,7 @@ export default {
 
     async deleteAttachedFile(fileId) {
       try {
-        await this.deleteFile({
+        await this['data/deleteFile']({
           id: this.id,
           fileId: fileId,
         })

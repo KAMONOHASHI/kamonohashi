@@ -77,6 +77,7 @@ import KqiResourceSelector from '@/components/selector/KqiResourceSelector'
 import registrySelectorUtil from '@/util/registrySelectorUtil'
 import gitSelectorUtil from '@/util/gitSelectorUtil'
 import { mapActions, mapGetters } from 'vuex'
+import Util from '@/util/util'
 
 export default {
   components: {
@@ -145,6 +146,7 @@ export default {
       detail: ['preprocessing/detail'],
       histories: ['preprocessing/histories'],
       quota: ['cluster/quota'],
+      account: ['account/account'],
     }),
   },
   watch: {
@@ -154,6 +156,14 @@ export default {
     },
   },
   async created() {
+    let tenantName = this.$route.query.tenantName
+    await this['account/fetchAccount']()
+    //テナント名からテナントIDを取得し、セットする
+    for (let i in this.account.tenants) {
+      if (this.account.tenants[i].name == tenantName) {
+        await Util.setCookie('.Platypus.Tenant', this.account.tenants[i].id)
+      }
+    }
     await this.initialize()
   },
   methods: {
@@ -173,6 +183,7 @@ export default {
       'gitSelector/fetchCommits',
       'gitSelector/fetchCommitDetail',
       'cluster/fetchQuota',
+      'account/fetchAccount',
     ]),
     async initialize() {
       let url = this.$route.path

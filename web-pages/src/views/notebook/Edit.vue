@@ -286,8 +286,8 @@ import KqiDeleteButton from '@/components/KqiDeleteButton'
 import KqiDataSetDetails from '@/components/selector/KqiDataSetDetails'
 import KqiTrainingHistoryDetails from '@/components/selector/KqiTrainingHistoryDetails'
 import KqiInferenceHistoryDetails from '@/components/selector/KqiInferenceHistoryDetails'
-import { createNamespacedHelpers } from 'vuex'
-const { mapGetters, mapActions } = createNamespacedHelpers('notebook')
+import Util from '@/util/util'
+import { mapActions, mapGetters } from 'vuex'
 const kqiHost = process.env.VUE_APP_KAMONOHASHI_HOST || window.location.hostname
 
 export default {
@@ -321,9 +321,23 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['detail', 'events', 'endpoint']),
+    ...mapGetters({
+      detail: ['notebook/detail'],
+      events: ['notebook/events'],
+      endpoint: ['notebook/sendpoint'],
+      account: ['account/account'],
+    }),
   },
   async created() {
+    let tenantName = this.$route.query.tenantName
+    await this['account/fetchAccount']()
+    //テナント名からテナントIDを取得し、セットする
+    for (let i in this.account.tenants) {
+      if (this.account.tenants[i].name == tenantName) {
+        await Util.setCookie('.Platypus.Tenant', this.account.tenants[i].id)
+      }
+    }
+
     this.title = 'ノートブック履歴'
     await this.retrieveData()
     this.form.name = this.detail.name
@@ -332,20 +346,22 @@ export default {
   },
   methods: {
     ...mapActions([
-      'fetchDetail',
-      'fetchEvents',
-      'fetchEndpoint',
-      'postHalt',
-      'put',
-      'delete',
+      'notebook/fetchDetail',
+      'notebook/fetchEvents',
+      'notebook/fetchEndpoint',
+      'notebook/postHalt',
+      'notebook/put',
+      'notebook/delete',
+
+      'account/fetchAccount',
     ]),
     async retrieveData() {
-      await this.fetchDetail(this.id)
+      await this['notebook/fetchDetail'](this.id)
       if (
         this.detail.statusType === 'Running' ||
         this.detail.statusType === 'Error'
       ) {
-        await this.fetchEvents(this.detail.id)
+        await this['notebook/fetchEvents'](this.detail.id)
       }
     },
     async updateHistory() {
@@ -357,7 +373,7 @@ export default {
           favorite: this.form.favorite,
         },
       }
-      await this.put(params)
+      await this['notebook/put'](params)
     },
     async onSubmit() {
       let form = this.$refs.updateForm
@@ -375,7 +391,7 @@ export default {
     },
     async haltNotebook() {
       try {
-        await this.postHalt(this.detail.id)
+        await this['notebook/postHalt'](this.detail.id)
         await this.retrieveData()
         this.error = null
       } catch (e) {
@@ -384,7 +400,7 @@ export default {
     },
     async deleteJob() {
       try {
-        await this.delete(this.detail.id)
+        await this['notebook/delete'](this.detail.id)
         this.$emit('done', 'delete')
         this.error = null
       } catch (e) {
@@ -392,7 +408,7 @@ export default {
       }
     },
     async openNotebook() {
-      await this.fetchEndpoint(this.detail.id)
+      await this['notebook/fetchEndpoint'](this.detail.id)
       window.open(
         `http://${kqiHost}:${this.endpoint.nodePort}${this.endpoint.token}`,
       )

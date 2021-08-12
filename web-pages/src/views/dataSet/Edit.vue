@@ -89,10 +89,12 @@ import KqiDialog from '@/components/KqiDialog'
 import KqiDisplayError from '@/components/KqiDisplayError'
 import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
 import DataSetTransfer from './DatasetTransfer/Index'
-import { createNamespacedHelpers } from 'vuex'
-const { mapGetters, mapMutations, mapActions } = createNamespacedHelpers(
-  'dataSet',
-)
+import Util from '@/util/util'
+//import { createNamespacedHelpers } from 'vuex'
+//const { mapGetters, mapMutations, mapActions } = createNamespacedHelpers(
+//  'dataSet',
+//)
+import { mapActions, mapMutations, mapGetters } from 'vuex'
 
 export default {
   components: {
@@ -168,7 +170,13 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['data', 'detail', 'dataTypes', 'dataTotal']),
+    ...mapGetters({
+      data: ['dataSet/data'],
+      detail: ['dataSet/detail'],
+      dataTypes: ['dataSet/dataTypes'],
+      dataTotal: ['dataSet/dataTotal'],
+      account: ['account/account'],
+    }),
   },
   watch: {
     async $route() {
@@ -178,20 +186,30 @@ export default {
   },
 
   async created() {
+    let tenantName = this.$route.query.tenantName
+    await this['account/fetchAccount']()
+    //テナント名からテナントIDを取得し、セットする
+    for (let i in this.account.tenants) {
+      if (this.account.tenants[i].name == tenantName) {
+        await Util.setCookie('.Platypus.Tenant', this.account.tenants[i].id)
+      }
+    }
+
     await this.initialize()
   },
 
   methods: {
     ...mapActions([
-      'fetchData',
-      'fetchDetail',
-      'fetchDataTypes',
-      'post',
-      'put',
-      'patch',
-      'delete',
+      'dataSet/fetchData',
+      'dataSet/fetchDetail',
+      'dataSet/fetchDataTypes',
+      'dataSet/post',
+      'dataSet/put',
+      'dataSet/patch',
+      'dataSet/delete',
+      'account/fetchAccount',
     ]),
-    ...mapMutations(['setDataTypes']),
+    ...mapMutations(['dataSet/setDataTypes']),
     async initialize() {
       let url = this.$route.path
       let type = url.split('/')[2] // ["", "dataset", "{type}", "{id}"]
@@ -215,7 +233,7 @@ export default {
       // 新規作成時はデータタイプを設定
       if (this.isCreateDialog && !this.isCopyCreation) {
         try {
-          await this.fetchDataTypes()
+          await this['dataSet/fetchDataTypes']()
           this.form.entries = {}
           this.form.flatEntries = {}
           this.dataTypes.forEach(type => {
@@ -242,7 +260,7 @@ export default {
     async retrieveData() {
       this.form.entries = null
       try {
-        await this.fetchDetail(this.id)
+        await this['dataSet/fetchDetail'](this.id)
         this.form.name = this.detail.name
         this.form.memo = this.detail.memo
         this.form.isFlat = this.detail.isFlat
@@ -263,7 +281,7 @@ export default {
           this.isLocked = this.detail.isLocked
         }
 
-        this.setDataTypes(types)
+        this['dataSet/setDataTypes'](types)
         this.error = null
       } catch (e) {
         this.error = e
@@ -306,22 +324,22 @@ export default {
       }
       if (this.isCreateDialog) {
         // 新規作成
-        await this.post(params)
+        await this['dataSet/post'](params)
       } else {
         // 編集
         if (this.isLocked) {
           // 編集不可の時は、名前とメモのみ編集可
-          await this.patch({ id: this.id, params: params })
+          await this['dataSet/patch']({ id: this.id, params: params })
         } else {
           // 編集可の時は、データも編集可
-          await this.put({ id: this.id, params: params })
+          await this['dataSet/put']({ id: this.id, params: params })
         }
       }
     },
 
     async deleteDataSet() {
       try {
-        await this.delete(this.id)
+        await this['dataSet/delete'](this.id)
         this.$emit('done', 'delete')
       } catch (e) {
         this.error = e

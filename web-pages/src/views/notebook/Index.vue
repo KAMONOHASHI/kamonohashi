@@ -112,8 +112,8 @@
 <script>
 import KqiPagination from '@/components/KqiPagination'
 import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index'
-import { createNamespacedHelpers } from 'vuex'
-const { mapGetters, mapActions } = createNamespacedHelpers('notebook')
+import Util from '@/util/util'
+import { mapActions, mapGetters } from 'vuex'
 const kqiHost = process.env.VUE_APP_KAMONOHASHI_HOST || window.location.hostname
 
 export default {
@@ -162,20 +162,40 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['histories', 'total', 'endpoint']),
+    ...mapGetters({
+      histories: ['notebook/histories'],
+      total: ['notebook/total'],
+      endpoint: ['notebook/endpoint'],
+      tenantDetail: ['tenant/detail'],
+      account: ['account/account'],
+    }),
   },
 
   async created() {
+    let tenantName = this.$route.query.tenantName
+    await this['account/fetchAccount']()
+    //テナント名からテナントIDを取得し、セットする
+    for (let i in this.account.tenants) {
+      if (this.account.tenants[i].name == tenantName) {
+        await Util.setCookie('.Platypus.Tenant', this.account.tenants[i].id)
+      }
+    }
+
     await this.retrieveData()
   },
   methods: {
-    ...mapActions(['fetchHistories', 'fetchEndpoint']),
+    ...mapActions([
+      'notebook/fetchHistories',
+      'notebook/fetchEndpoint',
+      'tenant/fetchCurrentTenant',
+      'account/fetchAccount',
+    ]),
     async retrieveData() {
       let params = this.searchCondition
       params.page = this.pageStatus.currentPage
       params.perPage = this.pageStatus.currentPageSize
       params.withTotal = true
-      await this.fetchHistories(params)
+      await this['notebook/fetchHistories'](params)
     },
     async done(type) {
       if (type === 'delete') {
@@ -197,16 +217,22 @@ export default {
     back() {
       this.$router.go(-1)
     },
-    openEditDialog(selectedRow) {
+    async openEditDialog(selectedRow) {
       if (this.$route.path === '/notebook') {
-        this.$router.push('/notebook/' + selectedRow.id)
+        await this['tenant/fetchCurrentTenant']()
+        this.$router.push(
+          '/notebook/' +
+            selectedRow.id +
+            '?tenantName=' +
+            this.tenantDetail.name,
+        )
       }
     },
     openCreateDialog() {
       this.$router.push('/notebook/run/')
     },
     async openNotebook(selectedRow) {
-      await this.fetchEndpoint(selectedRow.id)
+      await this['notebook/fetchEndpoint'](selectedRow.id)
       window.open(
         `http://${kqiHost}:${this.endpoint.nodePort}${this.endpoint.token}`,
       )
