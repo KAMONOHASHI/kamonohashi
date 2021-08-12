@@ -12,7 +12,7 @@
         >
           <el-option
             v-for="item in versions"
-            :key="item.value"
+            :key="item.id"
             :label="item.version"
             :value="item.id"
           >
@@ -20,7 +20,7 @@
         </el-select>
       </el-col>
     </el-row>
-    <el-tabs v-model="activeName">
+    <el-tabs v-model="activeName" @tab-click="tabChange">
       <el-tab-pane label="基本設定" name="baseSetting">
         <base-setting v-if="baseForm" v-model="baseForm" />
       </el-tab-pane>
@@ -105,12 +105,10 @@
 </template>
 
 <script>
-import { createNamespacedHelpers } from 'vuex'
 import BaseSetting from './BaseSetting'
 import AqContainerSettings from '@/components/AqContainerSettings'
-
-const { mapGetters, mapActions } = createNamespacedHelpers('template')
-
+import { mapActions, mapGetters } from 'vuex'
+import Util from '@/util/util'
 export default {
   title: 'モデルテンプレート',
   components: {
@@ -155,31 +153,73 @@ export default {
       evaluationForm: null,
       baseForm: null,
       versionValue: null,
+      version: null,
       changeFlg: false,
+      errVersion: null,
     }
   },
   computed: {
-    ...mapGetters(['detail', 'versionDetail', 'total', 'versions']),
+    ...mapGetters({
+      detail: ['template/detail'],
+      versionDetail: ['template/versionDetail'],
+      total: ['template/total'],
+      versions: ['template/versions'],
+      tenantDetail: ['tenant/detail'],
+      account: ['account/account'],
+    }),
   },
   async created() {
+    let tenantName = this.$route.query.tenantName
+    await this['account/fetchAccount']()
+    //テナント名からテナントIDを取得し、セットする
+    for (let i in this.account.tenants) {
+      if (this.account.tenants[i].name == tenantName) {
+        await Util.setCookie('.Platypus.Tenant', this.account.tenants[i].id)
+      }
+    }
+    await this['tenant/fetchCurrentTenant']()
+
+    let version = this.$route.query.version
+    if (version != null) {
+      this.version = Number(version)
+    }
+    let tab = this.$route.query.tab
+    if (tab != null) {
+      this.activeName = tab
+    }
+
     await this.retrieveData()
   },
   methods: {
     ...mapActions([
-      'fetchModelTemplate',
-      'fetchVersions',
-      'fetchDetail',
-      'postByIdVersions',
-      'post',
-      'put',
-      'delete',
-      'deleteVersion',
+      'template/fetchModelTemplate',
+      'template/fetchVersions',
+      'template/fetchDetail',
+      'template/postByIdVersions',
+      'template/post',
+      'template/put',
+      'template/delete',
+      'template/deleteVersion',
+      'tenant/fetchCurrentTenant',
+      'account/fetchAccount',
     ]),
 
+    tabChange() {
+      let version = this.$route.query.version
+      let tenantName = this.$route.query.tenantName
+
+      this.$router.replace({
+        query: {
+          tab: this.activeName,
+          version: version,
+          tenantName: tenantName,
+        },
+      })
+    },
     async deleteTemplate() {
       //モデルテンプレート削除
       this.deleteDialog = false
-      await this.delete(this.id)
+      await this['template/delete'](this.id)
       this.$router.push('/aquarium/model-template')
     },
 
@@ -189,9 +229,11 @@ export default {
       await this.deleteVersion({ id: this.id, versionId: this.versionValue })
       this.deleteVersionDialog = false
       this.versionValue = null
+      this.version = null
       this.preprocForm = null
       this.trainingForm = null
       this.evaluationForm = null
+
       this.retrieveData()
 
       //再描画
@@ -202,15 +244,41 @@ export default {
       })
     },
     async retrieveData() {
-      await this.fetchModelTemplate(this.id)
-      await this.fetchVersions(this.id)
-      if (this.versionValue == null) {
-        for (let i in this.versions) {
-          // 最新版を保持させる
-          if (this.versions[i].version == this.detail.latestVersion) {
-            this.versionValue = this.versions[i].id
+      await this['template/fetchModelTemplate'](this.id)
+      await this['template/fetchVersions'](this.id)
+
+      let latestVersion = null
+      let URLVerExistFlg = false
+      if (this.version == null) {
+        URLVerExistFlg = true
+      }
+      this.errVersion = this.version
+      for (let i in this.versions) {
+        if (this.versions[i].version == this.version) {
+          //URLのversionが存在するか確認する
+          this.versionValue = this.versions[i].id
+          URLVerExistFlg = true
+          this.errVersion = null
+        } else if (this.versions[i].id == this.versionValue) {
+          //version変更した場合
+          this.version = this.versions[i].version
+          URLVerExistFlg = true
+          this.errVersion = null
+        }
+        if (this.versions[i].version == this.detail.latestVersion) {
+          // 最新版を取得する
+          latestVersion = this.versions[i]
+          if (this.versionValue == null) {
+            this.versionValue = latestVersion.id
+            this.version = latestVersion.version
           }
         }
+      }
+
+      if (!URLVerExistFlg && this.version != null) {
+        //URLのversionが存在しなかった場合
+        this.versionValue = latestVersion.id
+        this.version = latestVersion.version
       }
 
       this.baseForm = {
@@ -220,7 +288,7 @@ export default {
         assignedTenants: this.detail.assignedTenants,
       }
       //最新バージョンを取得する
-      await this.fetchDetail({
+      await this['template/fetchDetail']({
         id: this.id,
         versionId: this.versionValue,
       })
@@ -261,12 +329,36 @@ export default {
         },
       }
       this.changeFlg = true
+
+      let tenantName = this.$route.query.tenantName
+      this.$router
+        .replace({
+          query: {
+            tab: this.activeName,
+            version: this.version,
+            tenantName: tenantName,
+          },
+        })
+        .catch(function() {})
+
+      if (this.errVersion != null) {
+        await this.$notify.error({
+          type: 'Error',
+          message:
+            'version:' +
+            this.errVersion +
+            'のテンプレートバージョンは見つかりませんでした。最新のテンプレートバージョンを表示します。',
+        })
+        this.errVersion = null
+      }
     },
 
     async currentChange() {
       if (this.changeFlg == false) {
         return
       }
+      this.version = null
+
       this.preprocForm = null
       this.trainingForm = null
       this.evaluationForm = null
@@ -285,7 +377,7 @@ export default {
         this.detail.accessLevel != baseParam.accessLevel
       ) {
         //基本情報更新
-        await this['put']({ id: this.id, model: baseParam })
+        await this['template/put']({ id: this.id, model: baseParam })
         return true
       } else {
         return false
@@ -484,7 +576,7 @@ export default {
       }
 
       //新規バージョン作成
-      await this['postByIdVersions']({ id: this.id, model: params })
+      await this['template/postByIdVersions']({ id: this.id, model: params })
 
       await this.$notify.success({
         type: 'Success',
@@ -496,6 +588,8 @@ export default {
       this.preprocForm = null
       this.trainingForm = null
       this.evaluationForm = null
+      this.version = null
+
       await this.retrieveData()
     },
   },

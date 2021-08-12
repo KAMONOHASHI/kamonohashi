@@ -36,7 +36,11 @@
               :key="index"
               class="card-container"
             >
-              <router-link :to="`/aquarium/model-template/${template.id}`">
+              <router-link
+                :to="
+                  `/aquarium/model-template/${template.id}?tenantName=${tenantDetail.name}`
+                "
+              >
                 <el-card
                   class="template"
                   style="border: solid 1px #ebeef5; width: 360px; height: 300px;"
@@ -82,11 +86,8 @@
 </template>
 
 <script>
-import { createNamespacedHelpers } from 'vuex'
 // import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index'
-// TODO template API に変更
-const { mapGetters, mapActions } = createNamespacedHelpers('template')
-
+import { mapActions, mapGetters } from 'vuex'
 export default {
   title: 'モデルテンプレート',
   components: {
@@ -109,14 +110,21 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['templates']),
+    ...mapGetters({
+      templates: ['template/templates'],
+      tenantDetail: ['tenant/detail'],
+    }),
   },
   async created() {
+    await this['tenant/fetchCurrentTenant']()
     await this.retrieveData()
   },
 
   methods: {
-    ...mapActions(['fetchModelTemplates']),
+    ...mapActions([
+      'template/fetchModelTemplates',
+      'tenant/fetchCurrentTenant',
+    ]),
     openDiscriptionURL(url) {
       window.open(url, '_blank')
     },
@@ -126,7 +134,7 @@ export default {
       params.page = this.pageStatus.currentPage
       params.perPage = this.pageStatus.currentPageSize
       params.withTotal = true
-      await this.fetchModelTemplates(params)
+      await this['template/fetchModelTemplates'](params)
       for (let i in this.templates) {
         let memo_org = this.templates[i].memo
         let memoList = this.urlSplitter(memo_org, this)

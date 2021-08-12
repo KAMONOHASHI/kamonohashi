@@ -10,16 +10,16 @@
         <span>{{ id }}:{{ name }}</span>
       </el-col>
     </el-row>
-    <el-tabs v-model="activeName">
+    <el-tabs v-model="activeName" @tab-click="tabChange">
       <el-tab-pane label="実行情報" name="info">
-        <info :id="id" v-model="infoForm" />
+        <info v-if="childrenShow" :id="id" v-model="infoForm" />
       </el-tab-pane>
       <el-tab-pane label="推論" name="inference"
-        ><inference :id="id" v-model="infoForm" />
+        ><inference v-if="childrenShow" :id="id" v-model="infoForm" />
       </el-tab-pane>
 
       <el-tab-pane label="デバッグ" name="debug"
-        ><debug :id="id" v-model="infoForm" />
+        ><debug v-if="childrenShow" :id="id" v-model="infoForm" />
       </el-tab-pane>
     </el-tabs>
     <router-view @done="done" />
@@ -31,6 +31,8 @@ import Info from './Info'
 import Inference from './Inference'
 import Debug from './Debug'
 import { mapActions, mapGetters } from 'vuex'
+import Util from '@/util/util'
+
 export default {
   title: '実験詳細',
   // components: { Info, Inference, Debug },
@@ -47,19 +49,47 @@ export default {
       name: null,
       infoForm: null,
       activeName: 'info',
+      childrenShow: false,
     }
   },
   computed: {
     ...mapGetters({
       detail: ['experiment/detail'],
+      tenantDetail: ['tenant/detail'],
+      account: ['account/account'],
     }),
   },
 
   async created() {
+    let tenantName = this.$route.query.tenantName
+    await this['account/fetchAccount']()
+    //テナント名からテナントIDを取得し、セットする
+    for (let i in this.account.tenants) {
+      if (this.account.tenants[i].name == tenantName) {
+        await Util.setCookie('.Platypus.Tenant', this.account.tenants[i].id)
+      }
+    }
+    await this['tenant/fetchCurrentTenant']()
+
+    let tab = this.$route.query.tab
+    if (tab != null) {
+      this.activeName = tab
+    }
+    this.childrenShow = true
+
     await this.initialize()
   },
   methods: {
-    ...mapActions(['experiment/fetchDetail']),
+    ...mapActions([
+      'experiment/fetchDetail',
+      'tenant/fetchCurrentTenant',
+      'account/fetchAccount',
+    ]),
+    tabChange() {
+      this.$router.replace({
+        query: { tab: this.activeName },
+      })
+    },
     async initialize() {
       this.title = '実験履歴'
       await this.retrieveData()
@@ -79,9 +109,19 @@ export default {
       this.infoForm.templateName = this.detail.template.name
       this.infoForm.templateVersion = this.detail.templateVersion.version
       this.infoForm.dataSetURL =
-        '/aquarium/dataset/detail/' + this.detail.dataSet.id
+        '/aquarium/dataset/detail/' +
+        this.detail.dataSet.id +
+        '?version=' +
+        this.detail.dataSetVersion.version +
+        '&tenantName=' +
+        this.tenantDetail.name
       this.infoForm.templateURL =
-        '/aquarium/model-template/' + this.detail.template.id
+        '/aquarium/model-template/' +
+        this.detail.template.id +
+        '?version=' +
+        this.detail.templateVersion.version +
+        '&tenantName=' +
+        this.tenantDetail.name
 
       if (this.detail.preprocess != null) {
         this.infoForm.preprocessId = this.detail.preprocess.id

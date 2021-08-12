@@ -20,7 +20,8 @@ export function axiosLoggerInterceptors($axios) {
 export function axiosAuthInterceptors($axios) {
   $axios.interceptors.request.use(
     function(config) {
-      let token = Util.getCookie('.Platypus.Auth')
+      let tenant = Util.getCookie('.Platypus.Tenant')
+      let token = Util.getCookie('.Platypus.Auth.' + tenant)
       if (token) {
         config.headers.Authorization = `Bearer ${token}`
       }

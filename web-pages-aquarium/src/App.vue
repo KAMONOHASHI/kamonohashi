@@ -42,7 +42,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['account']),
+    ...mapGetters(['account', 'loginData']),
   },
   watch: {
     menu() {
@@ -61,12 +61,25 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['fetchAccount']),
+    ...mapActions(['fetchAccount', 'postTokenTenants']),
     async handleLogin(name, tenant, token, url) {
       this.login = true
       this.menu = true
-      this.setToken(token)
+      Util.setCookie('.Platypus.Auth.' + tenant, token)
+      this.setTenant(tenant)
       this.$store.commit('setLogin', { name: name, tenant: tenant })
+
+      //ログイン後すべてのテナントのログインをしてtokenを取得しクッキーに保持する
+      await this.fetchAccount()
+      for (let i in this.account.tenants) {
+        if (tenant != this.account.tenants[i].id) {
+          let params = {
+            tenantId: this.account.tenants[i].id,
+          }
+          await this.postTokenTenants(params)
+          this.setTenentToken(this.loginData.token, this.account.tenants[i].id)
+        }
+      }
       this.$router.push(url)
     },
     async handleMenu() {
@@ -79,14 +92,21 @@ export default {
       this.$store.commit('setLogin', { name: '', tenant: '' })
       this.$router.push('/login')
     },
-    setToken(token) {
-      Util.setCookie('.Platypus.Auth', token)
+    setTenentToken(token, tenantId) {
+      Util.setCookie('.Platypus.Auth.' + tenantId, token)
+    },
+    setTenant(tenant) {
+      Util.setCookie('.Platypus.Tenant', tenant)
     },
     deleteToken() {
-      Util.deleteCookie('.Platypus.Auth')
+      for (let i in this.account.tenants) {
+        Util.deleteCookie('.Platypus.Auth.' + this.account.tenants[i].id)
+      }
+      Util.deleteCookie('.Platypus.Tenant')
     },
     getToken() {
-      return Util.getCookie('.Platypus.Auth')
+      let tenant = Util.getCookie('.Platypus.Tenant')
+      return Util.getCookie('.Platypus.Auth.' + tenant)
     },
     setMenu(showFlg) {
       Util.setCookie('.Platypus.ShowMenu', showFlg)

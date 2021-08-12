@@ -49,9 +49,7 @@
 
 <script>
 import KqiPagination from '@/components/KqiPagination'
-import { createNamespacedHelpers } from 'vuex'
-const { mapGetters, mapActions } = createNamespacedHelpers('aquariumDataSet')
-
+import { mapActions, mapGetters } from 'vuex'
 export default {
   title: 'データセット',
   components: {
@@ -76,14 +74,21 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['dataSets', 'total']),
+    ...mapGetters({
+      dataSets: ['aquariumDataSet/dataSets'],
+      total: ['aquariumDataSet/total'],
+      tenantDetail: ['tenant/detail'],
+    }),
   },
 
   async created() {
     await this.retrieveData()
   },
   methods: {
-    ...mapActions(['fetchDataSets']),
+    ...mapActions([
+      'aquariumDataSet/fetchDataSets',
+      'tenant/fetchCurrentTenant',
+    ]),
 
     async currentChange(page) {
       this.pageStatus.currentPage = page
@@ -94,7 +99,7 @@ export default {
       params.page = this.pageStatus.currentPage
       params.perPage = this.pageStatus.currentPageSize
       params.withTotal = true
-      await this.fetchDataSets(params)
+      await this['aquariumDataSet/fetchDataSets'](params)
     },
     closeDialog() {
       this.$router.push('/aquarium/dataset')
@@ -112,7 +117,12 @@ export default {
       this.$router.push('/aquarium/dataset/create')
     },
     openEditDataset(selectedRow) {
-      this.$router.push('/aquarium/dataset/detail/' + selectedRow.id)
+      this.$router.push(
+        '/aquarium/dataset/detail/' +
+          selectedRow.id +
+          '?tenantName=' +
+          this.tenantDetail.name,
+      )
     },
     handleCopy(id) {
       this.$router.push('/aquarium/dataset/create/' + id)

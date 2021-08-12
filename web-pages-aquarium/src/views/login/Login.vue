@@ -79,10 +79,10 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['loginData']),
+    ...mapGetters(['loginData', 'account']),
   },
   methods: {
-    ...mapActions(['postLogin']),
+    ...mapActions(['postLogin', 'fetchAccount']),
     async handleLogin() {
       this.$refs['loginForm'].validate(async valid => {
         if (valid) {
@@ -115,8 +115,12 @@ export default {
       this.$store.commit('setLogin', { name: '', tenant: '' })
       this.$router.push('/login')
     },
-    deleteToken() {
-      Util.deleteCookie('.Platypus.Auth')
+    async deleteToken() {
+      await this.fetchAccount()
+      for (let i in this.account.tenants) {
+        Util.deleteCookie('.Platypus.Auth.' + this.account.tenants[i].id)
+      }
+      Util.deleteCookie('.Platypus.Tenant')
     },
   },
 }

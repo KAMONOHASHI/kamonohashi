@@ -96,9 +96,8 @@
 
 <script>
 import KqiPagination from '@/components/KqiPagination'
-//import { createNamespacedHelpers } from 'vuex'
-//const { mapGetters, mapActions } = createNamespacedHelpers('experiment')
 import { mapActions, mapGetters } from 'vuex'
+
 export default {
   title: '実験',
   components: {
@@ -156,6 +155,7 @@ export default {
       dataSets: ['aquariumDataSet/dataSets'],
       detail: ['experiment/detail'],
       preprocessHistory: ['experiment/preprocessHistories'],
+      tenantDetail: ['tenant/detail'],
     }),
   },
 
@@ -163,7 +163,11 @@ export default {
     await this.retrieveData()
   },
   methods: {
-    ...mapActions(['experiment/fetchExperiments', 'experiment/fetchDetail']),
+    ...mapActions([
+      'experiment/fetchExperiments',
+      'experiment/fetchDetail',
+      'tenant/fetchCurrentTenant',
+    ]),
 
     async currentChange(page) {
       this.pageStatus.currentPage = page
@@ -202,8 +206,14 @@ export default {
     openCreateDialog() {
       this.$router.push('/aquarium/experiment/create')
     },
-    openEditExperiment(selectedRow) {
-      this.$router.push('/aquarium/experiment/detail/' + selectedRow.id)
+    async openEditExperiment(selectedRow) {
+      await this['tenant/fetchCurrentTenant']()
+      this.$router.push(
+        '/aquarium/experiment/detail/' +
+          selectedRow.id +
+          '?tenantName=' +
+          this.tenantDetail.name,
+      )
     },
     handleCopy(id) {
       this.$router.push('/aquarium/experiment/create/' + id)
