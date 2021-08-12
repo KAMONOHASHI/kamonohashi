@@ -67,9 +67,8 @@
 <script>
 import KqiDisplayError from '@/components/KqiDisplayError'
 import KqiPagination from '@/components/KqiPagination'
-import { createNamespacedHelpers } from 'vuex'
-const { mapGetters, mapActions } = createNamespacedHelpers('preprocessing')
-
+import Util from '@/util/util'
+import { mapActions, mapGetters } from 'vuex'
 export default {
   title: '前処理履歴',
   components: {
@@ -93,18 +92,34 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['histories']),
+    ...mapGetters({
+      histories: ['preprocessing/histories'],
+      tenantDetail: ['tenant/detail'],
+      account: ['account/account'],
+    }),
   },
   async created() {
+    let tenantName = this.$route.query.tenantName
+    await this['account/fetchAccount']()
+    //テナント名からテナントIDを取得し、セットする
+    for (let i in this.account.tenants) {
+      if (this.account.tenants[i].name == tenantName) {
+        await Util.setCookie('.Platypus.Tenant', this.account.tenants[i].id)
+      }
+    }
     await this.retrieveData()
   },
   methods: {
-    ...mapActions(['fetchHistories']),
+    ...mapActions([
+      'preprocessing/fetchHistories',
+      'tenant/fetchCurrentTenant',
+      'account/fetchAccount',
+    ]),
 
     async retrieveData() {
       if (this.id) {
         try {
-          await this.fetchHistories(this.id)
+          await this['preprocessing/fetchHistories'](this.id)
           this.error = null
         } catch (e) {
           this.error = e
@@ -120,11 +135,25 @@ export default {
 
     async openEditDialog(row) {
       if (row) {
-        this.$router.push('/preprocessingHistory/' + this.id + '/' + row.dataId)
+        await this['tenant/fetchCurrentTenant']()
+        this.$router.push(
+          '/preprocessingHistory/' +
+            this.id +
+            '/' +
+            row.dataId +
+            '?tenantName=' +
+            this.tenantDetail.name,
+        )
       }
     },
     async closeEditDialog() {
-      this.$router.push('/preprocessingHistory/' + this.id)
+      await this['tenant/fetchCurrentTenant']()
+      this.$router.push(
+        '/preprocessingHistory/' +
+          this.id +
+          '?tenantName=' +
+          this.tenantDetail.name,
+      )
     },
     async done(type) {
       if (type === 'delete') {

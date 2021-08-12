@@ -121,7 +121,6 @@ export default {
         Util.deleteCookie('.Platypus.Auth.' + this.account.tenants[i].id)
       }
       Util.deleteCookie('.Platypus.Tenant')
-      //Util.deleteCookie('.Platypus.Auth')
     },
   },
 }

@@ -99,9 +99,9 @@ import KqiDisplayError from '@/components/KqiDisplayError'
 import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
 import KqiDeleteButton from '@/components/KqiDeleteButton'
 import KqiDownloadButton from '@/components/KqiDownloadButton'
-import { createNamespacedHelpers } from 'vuex'
-const { mapGetters, mapActions } = createNamespacedHelpers('preprocessing')
 
+import Util from '@/util/util'
+import { mapActions, mapGetters } from 'vuex'
 export default {
   components: {
     KqiDisplayError,
@@ -129,7 +129,12 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['historyDetail', 'historyEvents', 'logFile']),
+    ...mapGetters({
+      historyDetail: ['preprocessing/historyDetail'],
+      historyEvents: ['preprocessing/historyEvents'],
+      logFile: ['preprocessing/logFile'],
+      account: ['account/account'],
+    }),
   },
 
   watch: {
@@ -142,15 +147,25 @@ export default {
   },
 
   async created() {
+    let tenantName = this.$route.query.tenantName
+    await this['account/fetchAccount']()
+    //テナント名からテナントIDを取得し、セットする
+    for (let i in this.account.tenants) {
+      if (this.account.tenants[i].name == tenantName) {
+        await Util.setCookie('.Platypus.Tenant', this.account.tenants[i].id)
+      }
+    }
+
     await this.changeValue()
   },
 
   methods: {
     ...mapActions([
-      'fetchHistoryDetail',
-      'fetchHistoryEvents',
-      'fetchLogFile',
-      'deleteHistory',
+      'preprocessing/fetchHistoryDetail',
+      'preprocessing/fetchHistoryEvents',
+      'preprocessing/fetchLogFile',
+      'preprocessing/deleteHistory',
+      'account/fetchAccount',
     ]),
 
     async changeValue() {
@@ -161,16 +176,25 @@ export default {
 
       if (this.id && this.dataId) {
         try {
-          await this.fetchHistoryDetail({ id: this.id, dataId: this.dataId })
+          await this['preprocessing/fetchHistoryDetail']({
+            id: this.id,
+            dataId: this.dataId,
+          })
           this.preprocessingId = this.historyDetail.key.split('-')[1]
           this.error = null
           if (
             this.historyDetail.statusType === 'Running' ||
             this.historyDetail.statusType === 'Error'
           ) {
-            await this.fetchHistoryEvents({ id: this.id, dataId: this.dataId })
+            await this['preprocessing/fetchHistoryEvents']({
+              id: this.id,
+              dataId: this.dataId,
+            })
           }
-          await this.fetchLogFile({ id: this.id, dataId: this.dataId })
+          await this['preprocessing/fetchLogFile']({
+            id: this.id,
+            dataId: this.dataId,
+          })
           if (this.historyDetail.outputDataIds.length !== 0) {
             this.outputDataIds = this.historyDetail.outputDataIds
           }
@@ -182,7 +206,10 @@ export default {
 
     async handleRemove() {
       try {
-        await this.deleteHistory({ id: this.id, dataId: this.dataId })
+        await this['preprocessing/deleteHistory']({
+          id: this.id,
+          dataId: this.dataId,
+        })
         this.$emit('done', 'delete')
         this.error = null
       } catch (e) {

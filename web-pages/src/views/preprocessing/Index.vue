@@ -170,7 +170,13 @@ export default {
       this.$router.push('/preprocessing/create/' + id)
     },
     async openHistoryIndex(row) {
-      this.$router.push('/preprocessingHistory/' + row.id)
+      await this['tenant/fetchCurrentTenant']()
+      this.$router.push(
+        '/preprocessingHistory/' +
+          row.id +
+          '?tenantName=' +
+          this.tenantDetail.name,
+      )
     },
 
     async openEditDialog(selectedRow) {
