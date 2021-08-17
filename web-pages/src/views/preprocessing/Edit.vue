@@ -77,7 +77,6 @@ import KqiResourceSelector from '@/components/selector/KqiResourceSelector'
 import registrySelectorUtil from '@/util/registrySelectorUtil'
 import gitSelectorUtil from '@/util/gitSelectorUtil'
 import { mapActions, mapGetters } from 'vuex'
-import Util from '@/util/util'
 
 export default {
   components: {
@@ -161,7 +160,10 @@ export default {
     //テナント名からテナントIDを取得し、セットする
     for (let i in this.account.tenants) {
       if (this.account.tenants[i].name == tenantName) {
-        await Util.setCookie('.Platypus.Tenant', this.account.tenants[i].id)
+        await sessionStorage.setItem(
+          '.Platypus.Tenant',
+          this.account.tenants[i].id,
+        )
       }
     }
     await this.initialize()

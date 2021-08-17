@@ -304,7 +304,6 @@ import KqiDisplayError from '@/components/KqiDisplayError'
 import KqiUploadForm from '@/components/KqiUploadForm'
 
 import KqiPagination from '@/components/KqiPagination'
-import Util from '@/util/util'
 export default {
   title: 'データセット',
 
@@ -374,7 +373,10 @@ export default {
     //テナント名からテナントIDを取得し、セットする
     for (let i in this.account.tenants) {
       if (this.account.tenants[i].name == tenantName) {
-        await Util.setCookie('.Platypus.Tenant', this.account.tenants[i].id)
+        await sessionStorage.setItem(
+          '.Platypus.Tenant',
+          this.account.tenants[i].id,
+        )
       }
     }
     await this['tenant/fetchCurrentTenant']()

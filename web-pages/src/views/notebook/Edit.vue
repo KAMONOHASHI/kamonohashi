@@ -286,7 +286,6 @@ import KqiDeleteButton from '@/components/KqiDeleteButton'
 import KqiDataSetDetails from '@/components/selector/KqiDataSetDetails'
 import KqiTrainingHistoryDetails from '@/components/selector/KqiTrainingHistoryDetails'
 import KqiInferenceHistoryDetails from '@/components/selector/KqiInferenceHistoryDetails'
-import Util from '@/util/util'
 import { mapActions, mapGetters } from 'vuex'
 const kqiHost = process.env.VUE_APP_KAMONOHASHI_HOST || window.location.hostname
 
@@ -334,7 +333,10 @@ export default {
     //テナント名からテナントIDを取得し、セットする
     for (let i in this.account.tenants) {
       if (this.account.tenants[i].name == tenantName) {
-        await Util.setCookie('.Platypus.Tenant', this.account.tenants[i].id)
+        await sessionStorage.setItem(
+          '.Platypus.Tenant',
+          this.account.tenants[i].id,
+        )
       }
     }
 

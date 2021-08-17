@@ -78,7 +78,6 @@ import KqiFileManager from '@/components/KqiFileManager'
 import KqiTagEditor from '@/components/KqiTagEditor'
 //import { createNamespacedHelpers } from 'vuex'
 //const { mapGetters, mapMutations, mapActions } = createNamespacedHelpers('data')
-import Util from '@/util/util'
 import { mapActions, mapMutations, mapGetters } from 'vuex'
 export default {
   components: {
@@ -155,7 +154,10 @@ export default {
     //テナント名からテナントIDを取得し、セットする
     for (let i in this.account.tenants) {
       if (this.account.tenants[i].name == tenantName) {
-        await Util.setCookie('.Platypus.Tenant', this.account.tenants[i].id)
+        await sessionStorage.setItem(
+          '.Platypus.Tenant',
+          this.account.tenants[i].id,
+        )
       }
     }
     await this['tenant/fetchCurrentTenant']()

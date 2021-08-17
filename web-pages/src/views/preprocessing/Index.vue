@@ -82,7 +82,6 @@
 <script>
 import KqiPagination from '@/components/KqiPagination'
 import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index'
-import Util from '@/util/util'
 import { mapActions, mapGetters } from 'vuex'
 export default {
   title: '前処理管理',
@@ -120,7 +119,10 @@ export default {
     //テナント名からテナントIDを取得し、セットする
     for (let i in this.account.tenants) {
       if (this.account.tenants[i].name == tenantName) {
-        await Util.setCookie('.Platypus.Tenant', this.account.tenants[i].id)
+        await sessionStorage.setItem(
+          '.Platypus.Tenant',
+          this.account.tenants[i].id,
+        )
       }
     }
     await this.retrieveData()

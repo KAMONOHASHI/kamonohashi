@@ -120,7 +120,7 @@ export default {
       for (let i in this.account.tenants) {
         Util.deleteCookie('.Platypus.Auth.' + this.account.tenants[i].id)
       }
-      Util.deleteCookie('.Platypus.Tenant')
+      sessionStorage.removeItem('.Platypus.Tenant')
     },
   },
 }

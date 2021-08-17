@@ -99,6 +99,7 @@ export default {
       Util.setCookie('.Platypus.Auth.' + tenantId, token)
     },
     setTenant(tenant) {
+      sessionStorage.setItem('.Platypus.Tenant', tenant)
       Util.setCookie('.Platypus.Tenant', tenant)
     },
 
@@ -106,10 +107,14 @@ export default {
       for (let i in this.account.tenants) {
         Util.deleteCookie('.Platypus.Auth.' + this.account.tenants[i].id)
       }
+      sessionStorage.removeItem('.Platypus.Tenant')
       Util.deleteCookie('.Platypus.Tenant')
     },
     getToken() {
-      let tenant = Util.getCookie('.Platypus.Tenant')
+      let tenant = sessionStorage.getItem('.Platypus.Tenant')
+      if (tenant == null) {
+        tenant = Util.getCookie('.Platypus.Tenant')
+      }
       return Util.getCookie('.Platypus.Auth.' + tenant)
     },
     setMenu(showFlg) {

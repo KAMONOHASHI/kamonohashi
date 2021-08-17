@@ -324,7 +324,6 @@ import KqiDataSetDetails from '@/components/selector/KqiDataSetDetails'
 import KqiTrainingHistoryDetails from '@/components/selector/KqiTrainingHistoryDetails'
 import KqiTagEditor from '@/components/KqiTagEditor'
 import KqiTensorboardHandler from './KqiTensorboardHandler'
-import Util from '@/util/util'
 import { mapActions, mapGetters } from 'vuex'
 
 export default {
@@ -391,7 +390,10 @@ export default {
     //テナント名からテナントIDを取得し、セットする
     for (let i in this.account.tenants) {
       if (this.account.tenants[i].name == tenantName) {
-        await Util.setCookie('.Platypus.Tenant', this.account.tenants[i].id)
+        await sessionStorage.setItem(
+          '.Platypus.Tenant',
+          this.account.tenants[i].id,
+        )
       }
     }
     await this.initialize()

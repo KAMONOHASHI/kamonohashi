@@ -296,7 +296,6 @@ import KqiFileManager from '@/components/KqiFileManager'
 import KqiDataSetDetails from '@/components/selector/KqiDataSetDetails'
 import KqiTrainingHistoryDetails from '@/components/selector/KqiTrainingHistoryDetails'
 import KqiInferenceHistoryDetails from '@/components/selector/KqiInferenceHistoryDetails'
-import Util from '@/util/util'
 import { mapActions, mapGetters } from 'vuex'
 
 export default {
@@ -375,7 +374,10 @@ export default {
       //テナント名からテナントIDを取得し、セットする
       for (let i in this.account.tenants) {
         if (this.account.tenants[i].name == tenantName) {
-          await Util.setCookie('.Platypus.Tenant', this.account.tenants[i].id)
+          await sessionStorage.setItem(
+            '.Platypus.Tenant',
+            this.account.tenants[i].id,
+          )
         }
       }
       this.title = '推論履歴'
