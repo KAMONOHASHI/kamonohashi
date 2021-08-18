@@ -23,6 +23,13 @@ namespace Nssol.Platypus.Infrastructure
             return hashValue;
         }
 
+        /// <summary>
+        /// 日付を共通フォーマットで文字列化する。
+        /// </summary>
+        public static string ToFormattedDateString(this DateTime dateTime)
+        {
+            return dateTime.ToString("yyyy-MM-dd");
+        }
 
         /// <summary>
         /// 日時を共通フォーマットで文字列化する。

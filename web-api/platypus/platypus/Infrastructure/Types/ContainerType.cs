@@ -33,9 +33,5 @@
         /// テナント削除実行用
         /// </summary>
         DeleteTenant = 6,
-        /// <summary>
-        /// 実験実行用
-        /// </summary>
-        Experiment = 7
     }
 }

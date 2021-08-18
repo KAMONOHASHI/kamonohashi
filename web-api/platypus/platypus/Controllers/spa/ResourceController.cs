@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Nssol.Platypus.ApiModels.ResourceApiModels;
 using Nssol.Platypus.Controllers.Util;
+using Nssol.Platypus.DataAccess.Core;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories;
 using Nssol.Platypus.Filters;
@@ -15,8 +17,10 @@ using Nssol.Platypus.Models;
 using Nssol.Platypus.Models.TenantModels;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Controllers.spa
@@ -31,22 +35,34 @@ namespace Nssol.Platypus.Controllers.spa
         // for DI
         private readonly ITenantRepository tenantRepository;
         private readonly IUserRepository userRepository;
+        private readonly IRepository<ResourceSample> resourceSampleRepository;
+        private readonly IRepository<ResourceContainer> resourceContainerRepository;
+        private readonly IRepository<ResourceJob> resourceJobRepository;
         private readonly ICommonDiLogic commonDiLogic;
         private readonly IClusterManagementLogic clusterManagementLogic;
+        private readonly IUnitOfWork unitOfWork;
         private readonly ContainerManageOptions containerManageOptions;
 
         public ResourceController(
             ITenantRepository tenantRepository,
             IUserRepository userRepository,
+            IRepository<ResourceSample> resourceSampleRepository,
+            IRepository<ResourceContainer> resourceContainerRepository,
+            IRepository<ResourceJob> resourceJobRepository,
             ICommonDiLogic commonDiLogic,
             IClusterManagementLogic clusterManagementLogic,
+            IUnitOfWork unitOfWork,
             IOptions<ContainerManageOptions> containerManageOptions,
             IHttpContextAccessor accessor) : base(accessor)
         {
             this.tenantRepository = tenantRepository;
             this.userRepository = userRepository;
+            this.resourceSampleRepository = resourceSampleRepository;
+            this.resourceContainerRepository = resourceContainerRepository;
+            this.resourceJobRepository = resourceJobRepository;
             this.commonDiLogic = commonDiLogic;
             this.clusterManagementLogic = clusterManagementLogic;
+            this.unitOfWork = unitOfWork;
             this.containerManageOptions = containerManageOptions.Value;
         }
 
@@ -795,5 +811,201 @@ namespace Nssol.Platypus.Controllers.spa
 
             return await DeleteContainerAsync(tenant, name, false);
         }
+
+        #region history
+        /// <summary>
+        /// コンテナリソース履歴のメタデータを取得する
+        /// </summary>
+        [HttpGet("histories/containers/metadata")]
+        [PermissionFilter(MenuCode.Resource)]
+        [ProducesResponseType(typeof(HistoryMetadataOutputModel), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetHistoriesContainersMetadata()
+        {
+            var result = new HistoryMetadataOutputModel
+            {
+                Count = await resourceContainerRepository.Count(),
+            };
+            if (0 < result.Count)
+            {
+                var resourceSamples = resourceSampleRepository.GetAll();
+                result.StartDate = resourceSamples.Min(x => x.SampledAt).ToFormattedDateString();
+                result.EndDate = resourceSamples.Max(x => x.SampledAt).ToFormattedDateString();
+            }
+            return JsonOK(result);
+        }
+
+        /// <summary>
+        /// コンテナリソース履歴のデータを取得する
+        /// </summary>
+        [HttpGet("histories/containers/data")]
+        [PermissionFilter(MenuCode.Resource)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetHistoriesContainersData(string startDate, string endDate, bool withHeader)
+        {
+            // excelで直接オープン可能なcsvを作成するため、encodingはasciiとする
+            // bufferSizeはbufferSizeを省略できるコンストラクタのデフォルト値と同じにする
+            // streamはasp.net側でdisposeするのでleaveOpenはtrueにする
+            using (var sw = new StreamWriter(new MemoryStream(), Encoding.ASCII, 1024, true))
+            {
+                var resourceSamples = resourceSampleRepository.GetAll();
+                if (!string.IsNullOrEmpty(startDate))
+                {
+                    if (!DateTime.TryParse(startDate, out DateTime lower))
+                    {
+                        return JsonBadRequest("Invalid start date.");
+                    }
+                    resourceSamples = resourceSamples.Where(x => lower.Date <= x.SampledAt);
+                }
+                if (!string.IsNullOrEmpty(endDate))
+                {
+                    if (!DateTime.TryParse(endDate, out DateTime upper))
+                    {
+                        return JsonBadRequest("Invalid end date.");
+                    }
+                    resourceSamples = resourceSamples.Where(x => x.SampledAt < upper.Date + new TimeSpan(1, 0, 0, 0));
+                }
+
+                if (withHeader)
+                {
+                    await sw.WriteLineAsync("SampledAt,NodeName,NodeCpu,NodeMemory,NodeGpu,TenantId,TenantName"
+                        + ",ContainerName,Cpu,Memory,Gpu,Status");
+                }
+                resourceSamples = resourceSamples.Include(x => x.ResourceNodes).ThenInclude(y => y.ResourceContainers);
+                foreach (var x in resourceSamples.OrderBy(x => x.SampledAt))
+                {
+                    foreach (var y in x.ResourceNodes.OrderBy(y => y.Name))
+                    {
+                        foreach (var z in y.ResourceContainers.OrderBy(z => z.TenantId).ThenBy(z => z.Name))
+                        {
+                            await sw.WriteLineAsync($"{x.SampledAt},{y.Name},{y.Cpu},{y.Memory},{y.Gpu}"
+                                + $",{z.TenantId},{z.TenantName},{z.Name},{z.Cpu},{z.Memory},{z.Gpu},{z.Status}");
+                        }
+                    }
+                }
+
+                await sw.FlushAsync();
+                sw.BaseStream.Seek(0, SeekOrigin.Begin);
+                return File(sw.BaseStream, "text/csv", $"{DateTime.Now:yyyyMMddHHmmss}_container.csv", false);
+            }
+        }
+        
+        /// <summary>
+        /// コンテナリソース履歴を削除する
+        /// </summary>
+        [HttpPatch("histories/containers")]
+        [PermissionFilter(MenuCode.Resource)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        public IActionResult PatchHistoriesContainers([FromBody] HistoryDeleteInputModel model)
+        {
+            if (string.IsNullOrEmpty(model.EndDate))
+            {
+                resourceSampleRepository.DeleteAll(x => true);
+            }
+            else
+            {
+                if (!DateTime.TryParse(model.EndDate, out DateTime upper))
+                {
+                    return JsonBadRequest("Invalid end date.");
+                }
+                resourceSampleRepository.DeleteAll(x => x.SampledAt < upper.Date + new TimeSpan(1, 0, 0, 0));
+            }
+            unitOfWork.Commit();
+            return JsonOK(null);
+        }
+
+        /// <summary>
+        /// ジョブ実行履歴のメタデータを取得する
+        /// </summary>
+        [HttpGet("histories/jobs/metadata")]
+        [PermissionFilter(MenuCode.Resource)]
+        [ProducesResponseType(typeof(HistoryMetadataOutputModel), (int)HttpStatusCode.OK)]
+        public IActionResult GetHistoriesJobsMetadata()
+        {
+            var resourceJobs = resourceJobRepository.GetAll();
+            var result = new HistoryMetadataOutputModel
+            {
+                Count = resourceJobs.Count(),
+            };
+            if (0 < result.Count)
+            {
+                result.StartDate = resourceJobs.Min(x => x.JobCreatedAt).ToFormattedDateString();
+                result.EndDate = resourceJobs.Max(x => x.JobCreatedAt).ToFormattedDateString();
+            }
+            return JsonOK(result);
+        }
+
+        /// <summary>
+        /// ジョブ実行履歴のデータを取得する
+        /// </summary>
+        [HttpGet("histories/jobs/data")]
+        [PermissionFilter(MenuCode.Resource)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetHistoriesJobsData(string startDate, string endDate, bool withHeader)
+        {
+            // excelで直接オープン可能なcsvを作成するため、encodingはasciiとする
+            // bufferSizeはbufferSizeを省略できるコンストラクタのデフォルト値と同じにする
+            // streamはasp.net側でdisposeするのでleaveOpenはtrueにする
+            using (var sw = new StreamWriter(new MemoryStream(), Encoding.ASCII, 1024, true))
+            {
+                var resourceJobs = resourceJobRepository.GetAll();
+                if (!string.IsNullOrEmpty(startDate))
+                {
+                    if (!DateTime.TryParse(startDate, out DateTime lower))
+                    {
+                        return JsonBadRequest("Invalid start date.");
+                    }
+                    resourceJobs = resourceJobs.Where(x => lower.Date <= x.JobCreatedAt);
+                }
+                if (!string.IsNullOrEmpty(endDate))
+                {
+                    if (!DateTime.TryParse(endDate, out DateTime upper))
+                    {
+                        return JsonBadRequest("Invalid end date.");
+                    }
+                    resourceJobs = resourceJobs.Where(x => x.JobCreatedAt < upper.Date + new TimeSpan(1, 0, 0, 0));
+                }
+
+                if (withHeader)
+                {
+                    await sw.WriteLineAsync("NodeName,NodeCpu,NodeMemory,NodeGpu,TenantId,TenantName"
+                        + ",JobCreatedAt,JobStartedAt,JobCompletedAt,ContainerName,Cpu,Memory,Gpu,Status");
+                }
+                foreach (var x in resourceJobs.OrderBy(x => x.JobCreatedAt))
+                {
+                    await sw.WriteLineAsync($"{x.NodeName},{x.NodeCpu},{x.NodeMemory},{x.NodeGpu},{x.TenantId},{x.TenantName}"
+                        + $",{x.JobCreatedAt.ToFormatedString()},{x.JobStartedAt?.ToFormatedString() ?? ""},{x.JobCompletedAt.ToFormatedString()}"
+                        + $",{x.ContainerName},{x.Cpu},{x.Memory},{x.Gpu},{x.Status}");
+                }
+
+                await sw.FlushAsync();
+                sw.BaseStream.Seek(0, SeekOrigin.Begin);
+                return File(sw.BaseStream, "text/csv", $"{DateTime.Now:yyyyMMddHHmmss}_job.csv", false);
+            }
+        }
+
+        /// <summary>
+        /// ジョブ実行履歴を削除する
+        /// </summary>
+        [HttpPatch("histories/jobs")]
+        [PermissionFilter(MenuCode.Resource)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        public IActionResult PatchHistoriesJobs([FromBody] HistoryDeleteInputModel model)
+        {
+            if (string.IsNullOrEmpty(model.EndDate))
+            {
+                resourceJobRepository.DeleteAll(x => true);
+            }
+            else
+            {
+                if (!DateTime.TryParse(model.EndDate, out DateTime upper))
+                {
+                    return JsonBadRequest("Invalid end date.");
+                }
+                resourceJobRepository.DeleteAll(x => x.JobCreatedAt < upper.Date + new TimeSpan(1, 0, 0, 0));
+            }
+            unitOfWork.Commit();
+            return JsonOK(null);
+        }
+        #endregion
     }
 }

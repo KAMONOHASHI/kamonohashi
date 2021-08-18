@@ -12,10 +12,15 @@
           <el-radio-button label="">ノード別</el-radio-button>
           <el-radio-button label="tenant">テナント別</el-radio-button>
           <el-radio-button label="container-list">コンテナ一覧</el-radio-button>
+          <el-radio-button label="data-download"
+            >データダウンロード</el-radio-button
+          >
         </el-radio-group>
       </el-col>
+
       <el-col :span="12" align="right">
         <el-button
+          v-if="mode != 'data-download'"
           icon="el-icon-refresh"
           type="primary"
           plain
@@ -35,6 +40,7 @@ export default {
   data: function() {
     return {
       mode: '',
+      dialogVisible: false,
     }
   },
   watch: {
@@ -57,6 +63,9 @@ export default {
         this.mode = lastElement
       }
     },
+    handleDataDL() {
+      this.$router.push('/cluster-resource/data-download')
+    },
     handleModeChange() {
       switch (this.mode) {
         case '':
@@ -67,6 +76,9 @@ export default {
           break
         case 'container-list':
           this.$router.push('/cluster-resource/container-list')
+          break
+        case 'data-download':
+          this.$router.push('/cluster-resource/data-download')
           break
       }
     },

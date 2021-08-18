@@ -1,10 +1,13 @@
 ﻿using Nssol.Platypus.DataAccess.Core;
+using Nssol.Platypus.DataAccess.Repositories.Interfaces;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories;
 using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Infrastructure.Types;
 using Nssol.Platypus.Logic.Interfaces;
+using Nssol.Platypus.Models;
 using Nssol.Platypus.Models.TenantModels;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Logic
@@ -13,16 +16,23 @@ namespace Nssol.Platypus.Logic
     {
         private readonly IInferenceHistoryRepository inferenceHistoryRepository;
         private readonly IClusterManagementLogic clusterManagementLogic;
+        private readonly IResourceMonitorLogic resourceMonitorLogic;
+
+        private readonly ITenantRepository tenantRepository;
         private readonly IUnitOfWork unitOfWork;
 
         public InferenceLogic(
             IInferenceHistoryRepository inferenceHistoryRepository,
             IClusterManagementLogic clusterManagementLogic,
+            IResourceMonitorLogic resourceMonitorLogic,
+            ITenantRepository tenantRepository,
             IUnitOfWork unitOfWork,
             ICommonDiLogic commonDiLogic) : base(commonDiLogic)
         {
             this.inferenceHistoryRepository = inferenceHistoryRepository;
             this.clusterManagementLogic = clusterManagementLogic;
+            this.resourceMonitorLogic = resourceMonitorLogic;
+            this.tenantRepository = tenantRepository;
             this.unitOfWork = unitOfWork;
         }
 
@@ -37,10 +47,34 @@ namespace Nssol.Platypus.Logic
             // コンテナの生存確認
             if (inferenceHistory.GetStatus().Exist())
             {
-                var info = await clusterManagementLogic.GetContainerDetailsInfoAsync(inferenceHistory.Key, CurrentUserInfo.SelectedTenant.Name, force);
+                var tenant = tenantRepository.Get(inferenceHistory.TenantId);
+                var info = await clusterManagementLogic.GetContainerDetailsInfoAsync(inferenceHistory.Key, tenant.Name, force);
 
                 // コンテナ削除の前に、DBの更新を先に実行
                 await inferenceHistoryRepository.UpdateStatusAsync(inferenceHistory.Id, status, info.CreatedAt, DateTime.Now, force);
+
+                // ジョブ実行履歴追加
+                var node = info.NodeName != null
+                    ? (await clusterManagementLogic.GetAllNodesAsync()).FirstOrDefault(x => x.Name == info.NodeName)
+                    : null;
+                var resourceJob = new ResourceJob
+                {
+                    TenantId = tenant.Id,
+                    TenantName = tenant.Name,
+                    NodeName = node?.Name ?? "",
+                    NodeCpu = (int)(node?.Cpu ?? 0),
+                    NodeMemory = (int)(node?.Memory ?? 0),
+                    NodeGpu = node?.Gpu ?? 0,
+                    ContainerName = inferenceHistory.Key,
+                    Cpu = inferenceHistory.Cpu,
+                    Memory = inferenceHistory.Memory,
+                    Gpu = inferenceHistory.Gpu,
+                    JobCreatedAt = inferenceHistory.CreatedAt,
+                    JobStartedAt = inferenceHistory.StartedAt ?? info?.CreatedAt,
+                    JobCompletedAt = inferenceHistory.CompletedAt ?? DateTime.Now,
+                    Status = status.Key,
+                };
+                resourceMonitorLogic.AddJobHistory(resourceJob);
 
                 // 実コンテナ削除の結果は確認せず、DBの更新を先に確定する（コンテナがいないなら、そのまま消しても問題ない想定）
                 unitOfWork.Commit();
@@ -49,7 +83,7 @@ namespace Nssol.Platypus.Logic
                 {
                     // 再確認してもまだ存在していたら、コンテナ削除
                     await clusterManagementLogic.DeleteContainerAsync(
-                        ContainerType.Training, inferenceHistory.Key, CurrentUserInfo.SelectedTenant.Name, force);
+                        ContainerType.Inferencing, inferenceHistory.Key, tenant.Name, force);
                 }
             }
             else

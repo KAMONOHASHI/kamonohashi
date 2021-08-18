@@ -33,6 +33,7 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly IDataSetRepository dataSetRepository;
         private readonly ITenantRepository tenantRepository;
         private readonly INodeRepository nodeRepository;
+        private readonly IResourceMonitorLogic resourceMonitorLogic;
         private readonly INotebookLogic notebookLogic;
         private readonly IStorageLogic storageLogic;
         private readonly IGitLogic gitLogic;
@@ -49,6 +50,7 @@ namespace Nssol.Platypus.Controllers.spa
             IDataSetRepository dataSetRepository,
             ITenantRepository tenantRepository,
             INodeRepository nodeRepository,
+            IResourceMonitorLogic resourceMonitorLogic,
             INotebookLogic notebookLogic,
             IStorageLogic storageLogic,
             IGitLogic gitLogic,
@@ -62,6 +64,7 @@ namespace Nssol.Platypus.Controllers.spa
             this.dataSetRepository = dataSetRepository;
             this.tenantRepository = tenantRepository;
             this.nodeRepository = nodeRepository;
+            this.resourceMonitorLogic = resourceMonitorLogic;
             this.notebookLogic = notebookLogic;
             this.storageLogic = storageLogic;
             this.gitLogic = gitLogic;
@@ -203,6 +206,10 @@ namespace Nssol.Platypus.Controllers.spa
                     notebookHistory.StartedAt = details.StartedAt;
                     notebookHistory.Node = details.Node; //設計上ノードが切り替わることはない
                 }
+                if (notebookHistory.JobStartedAt == null)
+                {
+                    notebookHistory.JobStartedAt = details.StartedAt;
+                }
                 unitOfWork.Commit();
 
                 model.ConditionNote = details.ConditionNote;
@@ -313,18 +320,43 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             //ステータスを確認
+            var tenant = CurrentUserInfo.SelectedTenant;
             var status = notebookHistory.GetStatus();
             if (status.Exist())
             {
                 //Notebookコンテナが起動中の場合、情報を更新する
-                status = await clusterManagementLogic.GetContainerStatusAsync(notebookHistory.Key, CurrentUserInfo.SelectedTenant.Name, false);
+                status = await clusterManagementLogic.GetContainerStatusAsync(notebookHistory.Key, tenant.Name, false);
             }
 
             if (status.Exist())
             {
+                // ジョブ実行履歴追加
+                var info = await clusterManagementLogic.GetContainerDetailsInfoAsync(notebookHistory.Key, tenant.Name, false);
+                var node = info.NodeName != null
+                    ? (await clusterManagementLogic.GetAllNodesAsync()).FirstOrDefault(x => x.Name == info.NodeName)
+                    : null;
+                var resourceJob = new ResourceJob
+                {
+                    TenantId = tenant.Id,
+                    TenantName = tenant.Name,
+                    NodeName = node?.Name ?? "",
+                    NodeCpu = (int)(node?.Cpu ?? 0),
+                    NodeMemory = (int)(node?.Memory ?? 0),
+                    NodeGpu = node?.Gpu ?? 0,
+                    ContainerName = notebookHistory.Key,
+                    Cpu = notebookHistory.Cpu,
+                    Memory = notebookHistory.Memory,
+                    Gpu = notebookHistory.Gpu,
+                    JobCreatedAt = notebookHistory.StartedAt ?? notebookHistory.CreatedAt,
+                    JobStartedAt = notebookHistory.JobStartedAt ?? info?.CreatedAt,
+                    JobCompletedAt = notebookHistory.CompletedAt ?? DateTime.Now,
+                    Status = status.Key,
+                };
+                resourceMonitorLogic.AddJobHistory(resourceJob);
+
                 //実行中であれば、コンテナを削除
                 await clusterManagementLogic.DeleteContainerAsync(
-                    ContainerType.Notebook, notebookHistory.Key, CurrentUserInfo.SelectedTenant.Name, false);
+                    ContainerType.Notebook, notebookHistory.Key, tenant.Name, false);
             }
 
             notebookHistoryRepository.Delete(notebookHistory);
@@ -401,6 +433,10 @@ namespace Nssol.Platypus.Controllers.spa
                 {
                     notebookHistory.StartedAt = details.StartedAt;
                     notebookHistory.Node = details.Node; //設計上ノードが切り替わることはない
+                }
+                if (notebookHistory.JobStartedAt == null)
+                {
+                    notebookHistory.JobStartedAt = details.StartedAt;
                 }
                 unitOfWork.Commit();
 
@@ -496,6 +532,8 @@ namespace Nssol.Platypus.Controllers.spa
                 Memo = model.Memo,
                 Status = ContainerStatus.Running.Key,
                 StartedAt = DateTime.Now,
+                CompletedAt = null,
+                JobStartedAt = null,
                 ExpiresIn = model.ExpiresIn,
                 LocalDataSet = model.LocalDataSet,
                 EntryPoint = model.EntryPoint,
@@ -904,6 +942,7 @@ namespace Nssol.Platypus.Controllers.spa
             notebookHistory.Status = ContainerStatus.Running.Key;
             notebookHistory.StartedAt = DateTime.Now;
             notebookHistory.CompletedAt = null;
+            notebookHistory.JobStartedAt = null;
             notebookHistory.ExpiresIn = model.ExpiresIn;
             notebookHistory.LocalDataSet = model.LocalDataSet;
             notebookHistory.EntryPoint = model.EntryPoint;
@@ -917,6 +956,7 @@ namespace Nssol.Platypus.Controllers.spa
                 // コンテナの起動に失敗した状態。エラーを出力して、保存したノートブック履歴も削除する。
                 notebookHistory.Status = ContainerStatus.Killed.Key;
                 notebookHistory.CompletedAt = DateTime.Now;
+                notebookHistory.JobStartedAt = null;
                 notebookHistoryRepository.Update(notebookHistory);
                 unitOfWork.Commit();
 

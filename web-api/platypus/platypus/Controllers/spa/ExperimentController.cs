@@ -39,6 +39,7 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly ITemplateLogic templateLogic;
         private readonly ITagLogic tagLogic;
         private readonly INodeRepository nodeRepository;
+        private readonly IResourceMonitorLogic resourceMonitorLogic;
         private readonly IGitLogic gitLogic;
         private readonly IClusterManagementLogic clusterManagementLogic;
         private readonly IDataSetLogic dataSetLogic;
@@ -63,6 +64,7 @@ namespace Nssol.Platypus.Controllers.spa
             ITemplateVersionRepository templateVersionRepository,
             ITenantRepository tenantRepository,
             INodeRepository nodeRepository,
+            IResourceMonitorLogic resourceMonitorLogic,
             ITemplateLogic templateLogic,
             ITagLogic tagLogic,
             IGitLogic gitLogic,
@@ -88,6 +90,7 @@ namespace Nssol.Platypus.Controllers.spa
             this.templateVersionRepository = templateVersionRepository;
             this.tenantRepository = tenantRepository;
             this.nodeRepository = nodeRepository;
+            this.resourceMonitorLogic = resourceMonitorLogic;
             this.templateLogic = templateLogic;
             this.tagLogic = tagLogic;
             this.gitLogic = gitLogic;
@@ -726,6 +729,7 @@ namespace Nssol.Platypus.Controllers.spa
                         inferenceHistoryRepository,
                         tensorBoardContainerRepository,
                         tagRepository,
+                        resourceMonitorLogic,
                         RequestUrl);
                     if (!status)
                     {
@@ -750,6 +754,7 @@ namespace Nssol.Platypus.Controllers.spa
                     inferenceHistoryRepository,
                     tensorBoardContainerRepository,
                     tagRepository,
+                    resourceMonitorLogic,
                     RequestUrl);
                 if (!status)
                 {
@@ -777,6 +782,7 @@ namespace Nssol.Platypus.Controllers.spa
                         inferenceHistoryRepository,
                         tensorBoardContainerRepository,
                         tagRepository,
+                        resourceMonitorLogic,
                         RequestUrl);
                     if (!status)
                     {
@@ -1002,6 +1008,7 @@ namespace Nssol.Platypus.Controllers.spa
                     inferenceHistoryRepository,
                     tensorBoardContainerRepository,
                     tagRepository,
+                    resourceMonitorLogic,
                     RequestUrl);
                 if (!status)
                 {

@@ -31,6 +31,7 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly IPreprocessHistoryRepository preprocessHistoryRepository;
         private readonly ITenantRepository tenantRepository;
         private readonly IDataRepository dataRepository;
+        private readonly IResourceMonitorLogic resourceMonitorLogic;
         private readonly IPreprocessLogic preprocessLogic;
         private readonly ITagLogic tagLogic;
         private readonly IGitLogic gitLogic;
@@ -46,6 +47,7 @@ namespace Nssol.Platypus.Controllers.spa
             IPreprocessHistoryRepository preprocessHistoryRepository,
             ITenantRepository tenantRepository,
             IDataRepository dataRepository,
+            IResourceMonitorLogic resourceMonitorLogic, 
             IPreprocessLogic preprocessLogic,
             ITagLogic tagLogic,
             IGitLogic gitLogic,
@@ -58,6 +60,7 @@ namespace Nssol.Platypus.Controllers.spa
             this.preprocessHistoryRepository = preprocessHistoryRepository;
             this.tenantRepository = tenantRepository;
             this.dataRepository = dataRepository;
+            this.resourceMonitorLogic = resourceMonitorLogic;
             this.preprocessLogic = preprocessLogic;
             this.tagLogic = tagLogic;
             this.gitLogic = gitLogic;
@@ -810,9 +813,34 @@ namespace Nssol.Platypus.Controllers.spa
             }
             if (status.Exist())
             {
+                // ジョブ実行履歴追加
+                var tenant = CurrentUserInfo.SelectedTenant;
+                var info = await clusterManagementLogic.GetContainerDetailsInfoAsync(preprocessHistory.Name, tenant.Name, false);
+                var node = info.NodeName != null
+                    ? (await clusterManagementLogic.GetAllNodesAsync()).FirstOrDefault(x => x.Name == info.NodeName)
+                    : null;
+                var resourceJob = new ResourceJob
+                {
+                    TenantId = tenant.Id,
+                    TenantName = tenant.Name,
+                    NodeName = node?.Name ?? "",
+                    NodeCpu = (int)(node?.Cpu ?? 0),
+                    NodeMemory = (int)(node?.Memory ?? 0),
+                    NodeGpu = node?.Gpu ?? 0,
+                    ContainerName = preprocessHistory.Name,
+                    Cpu = preprocessHistory.Cpu ?? 0,
+                    Memory = preprocessHistory.Memory ?? 0,
+                    Gpu = preprocessHistory.Gpu ?? 0,
+                    JobCreatedAt = preprocessHistory.CreatedAt,
+                    JobStartedAt = preprocessHistory.StartedAt ?? info?.CreatedAt,
+                    JobCompletedAt = preprocessHistory.CompletedAt ?? DateTime.Now,
+                    Status = newStatus.Key,
+                };
+                resourceMonitorLogic.AddJobHistory(resourceJob);
+
                 // コンテナが動いていれば、停止する
                 await clusterManagementLogic.DeleteContainerAsync(
-                    ContainerType.Preprocessing, preprocessHistory.Name, CurrentUserInfo.SelectedTenant.Name, false);
+                    ContainerType.Preprocessing, preprocessHistory.Name, tenant.Name, false);
             }
 
             preprocessHistory.CompletedAt = DateTime.Now;

@@ -35,6 +35,7 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly IDataSetRepository dataSetRepository;
         private readonly ITenantRepository tenantRepository;
         private readonly INodeRepository nodeRepository;
+        private readonly IResourceMonitorLogic resourceMonitorLogic;
         private readonly IDataSetLogic dataSetLogic;
         private readonly IInferenceLogic inferenceLogic;
         private readonly IStorageLogic storageLogic;
@@ -51,6 +52,7 @@ namespace Nssol.Platypus.Controllers.spa
             IDataSetRepository dataSetRepository,
             ITenantRepository tenantRepository,
             INodeRepository nodeRepository,
+            IResourceMonitorLogic resourceMonitorLogic,
             IDataSetLogic dataSetLogic,
             IInferenceLogic inferenceLogic,
             IStorageLogic storageLogic,
@@ -64,6 +66,7 @@ namespace Nssol.Platypus.Controllers.spa
             this.dataSetRepository = dataSetRepository;
             this.tenantRepository = tenantRepository;
             this.nodeRepository = nodeRepository;
+            this.resourceMonitorLogic = resourceMonitorLogic;
             this.dataSetLogic = dataSetLogic;
             this.inferenceLogic = inferenceLogic;
             this.storageLogic = storageLogic;
@@ -886,18 +889,44 @@ namespace Nssol.Platypus.Controllers.spa
 
             //ステータスを確認
 
+            var tenant = CurrentUserInfo.SelectedTenant;
             var status = inferenceHistory.GetStatus();
             if (status.Exist())
             {
                 //推論がまだ進行中の場合、情報を更新する
-                status = await clusterManagementLogic.GetContainerStatusAsync(inferenceHistory.Key, CurrentUserInfo.SelectedTenant.Name, false);
+                status = await clusterManagementLogic.GetContainerStatusAsync(inferenceHistory.Key, tenant.Name, false);
             }
 
             if (status.Exist())
             {
+                // ジョブ実行履歴追加
+                var info = await clusterManagementLogic.GetContainerDetailsInfoAsync(inferenceHistory.Key, tenant.Name, false);
+                var node = info.NodeName != null
+                    ? (await clusterManagementLogic.GetAllNodesAsync()).FirstOrDefault(x => x.Name == info.NodeName)
+                    : null;
+                var resourceJob = new ResourceJob
+                {
+                    TenantId = tenant.Id,
+                    TenantName = tenant.Name,
+                    NodeName = node?.Name ?? "",
+                    NodeCpu = (int)(node?.Cpu ?? 0),
+                    NodeMemory = (int)(node?.Memory ?? 0),
+                    NodeGpu = node?.Gpu ?? 0,
+                    ContainerName = inferenceHistory.Key,
+                    Cpu = inferenceHistory.Cpu,
+                    Memory = inferenceHistory.Memory,
+                    Gpu = inferenceHistory.Gpu,
+                    JobCreatedAt = inferenceHistory.CreatedAt,
+                    JobStartedAt = inferenceHistory.StartedAt ?? info?.CreatedAt,
+                    JobCompletedAt = inferenceHistory.CompletedAt ?? DateTime.Now,
+                    Status = status.Key,
+                };
+                resourceMonitorLogic.AddJobHistory(resourceJob);
+
+
                 //実行中であれば、コンテナを削除
                 await clusterManagementLogic.DeleteContainerAsync(
-                    ContainerType.Training, inferenceHistory.Key, CurrentUserInfo.SelectedTenant.Name, false);
+                    ContainerType.Training, inferenceHistory.Key, tenant.Name, false);
             }
 
             //添付ファイルがあったらまとめて消す
