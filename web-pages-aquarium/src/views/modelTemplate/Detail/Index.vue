@@ -247,7 +247,6 @@ export default {
           latestVersion = this.versions[i]
           if (this.versionValue == null) {
             this.versionValue = latestVersion.id
-            this.version = latestVersion.version
           }
         }
       }
