@@ -228,7 +228,10 @@ export default {
     async deleteTemplateVersion() {
       //モデルテンプレートバージョン削除
 
-      await this.deleteVersion({ id: this.id, versionId: this.versionValue })
+      await this['template/deleteVersion']({
+        id: this.id,
+        versionId: this.versionValue,
+      })
       this.deleteVersionDialog = false
       this.versionValue = null
       this.version = null
