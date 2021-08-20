@@ -74,6 +74,11 @@ namespace Nssol.Platypus.Infrastructure.Options
         public string KubernetesNamespacePrefix { get; set; }
 
         /// <summary>
+        /// KQI管理外で無視すべきnamespaceの,区切りリスト
+        /// </summary>
+        public string IgnoreNamespaces { get; set; }
+
+        /// <summary>
         /// Kqiシステム用のNamespaceプレフィックス
         /// </summary>
         public string KqiNamespacePrefix { get; set; }

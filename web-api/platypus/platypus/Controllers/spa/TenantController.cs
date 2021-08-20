@@ -115,10 +115,16 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonBadRequest("Invalid inputs.");
             }
 
-            if (model.TenantName.StartsWith(containerManageOptions.KqiNamespacePrefix) || model.TenantName.StartsWith(containerManageOptions.KubernetesNamespacePrefix))
+            var ignoreNamespaces = containerManageOptions.IgnoreNamespaces.Split(",");
+
+            if 
+                (model.TenantName.StartsWith(containerManageOptions.KqiNamespacePrefix) 
+                || model.TenantName.StartsWith(containerManageOptions.KubernetesNamespacePrefix)
+                || ignoreNamespaces.Contains(model.TenantName)
+                )
             {
-                // KqiNamespacePrefix または KubernetesNamespacePrefix で始まるテナント名は許可しないためエラー
-                return JsonBadRequest($"Invalid inputs. 'TenantName' cannot start with '{ containerManageOptions.KqiNamespacePrefix }' or '{ containerManageOptions.KubernetesNamespacePrefix }'.");
+                // KqiNamespacePrefix または KubernetesNamespacePrefix で始まるテナント名、IgnoreNamespacesに含まれるテナント名は許可しないためエラー
+                return JsonBadRequest($"Invalid inputs. 'TenantName' cannot be in ' { containerManageOptions.IgnoreNamespaces } ' or start with '{ containerManageOptions.KqiNamespacePrefix }' or '{ containerManageOptions.KubernetesNamespacePrefix }'.");
             }
 
             Tenant tenant = tenantRepository.GetFromTenantName(model.TenantName);
