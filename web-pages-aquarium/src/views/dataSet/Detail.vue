@@ -325,7 +325,6 @@ export default {
       selectDeleteData: { name: null },
       selectImageList: [],
       versionValue: null,
-      version: null,
       type: 'Data',
       loading: false,
       drawer: false,
@@ -348,7 +347,6 @@ export default {
       uploadMemo: '',
       deleteMemo: '',
       viewVersion: { memo: null, flatEntries: null },
-      errVersion: null,
     }
   },
 
@@ -366,10 +364,6 @@ export default {
   },
 
   async created() {
-    let version = this.$route.query.version
-    if (version != null) {
-      this.version = Number(version)
-    }
     await this.retrieveData()
   },
 
@@ -388,6 +382,7 @@ export default {
       'data/fetchData',
       'data/fetchUploadedFiles',
       'data/clearUploadedFiles',
+
       'data/putFile',
       'dataSet/fetchDetail',
       'dataSet/post',
@@ -399,7 +394,6 @@ export default {
       this.deleteVersionDialog = false
       //storeのversionをクリア
       await this['aquariumDataSet/fetchVersions'](null)
-      this.version = null
       this.retrieveData()
 
       //再描画
@@ -481,7 +475,6 @@ export default {
         id: this.id,
         model: { datasetId: dataset.data.id },
       })
-      this.version = null
       this.retrieveData()
       this.versionValue = version.id
 
@@ -499,11 +492,7 @@ export default {
       params.versionId = version
       params.id = this.id
       await this['aquariumDataSet/fetchDetailVersion'](params)
-
       this.viewVersion = Object.assign({}, this.detailVersion)
-      this.$router.replace({
-        query: { version: this.viewVersion.version },
-      })
     },
     async retrieveData() {
       //アクアリウムデータセットバージョン情報を取得
@@ -512,22 +501,20 @@ export default {
       params.perPage = 10
       params.withTotal = true
       params.id = this.id
+
       await this['aquariumDataSet/fetchDataSets'](params)
       await this['aquariumDataSet/fetchVersions'](this.id)
-      let latestVersionId = null
-      let URLVerExistFlg = false
+      let latestVersionId
       for (let i in this.versions) {
-        if (this.versions[i].version == this.version) {
-          URLVerExistFlg = true
+        if (this.versions[i].version == this.dataSets[0].latestVersion) {
           this.versionValue = this.versions[i].id
-        } else if (this.versions[i].version == this.dataSets[0].latestVersion) {
+          this.currentChange(this.versions[i].id)
           latestVersionId = this.versions[i].id
         }
-        //バージョンごとのメモを取得する
+        //メモを取得する
         let param = {}
         param.versionId = this.versions[i].id
         param.id = this.id
-
         await this['aquariumDataSet/fetchDetailVersion'](param)
         if (this.detailVersion.memo.length > 30) {
           this.versions[i].memo = this.detailVersion.memo.substr(0, 30) + '...'
@@ -535,24 +522,14 @@ export default {
           this.versions[i].memo = this.detailVersion.memo
         }
       }
-      if (!URLVerExistFlg && this.version != null) {
-        //URLのversionが存在しなかった場合
-        this.errVersion = this.version
-
-        this.versionValue = latestVersionId
-      } else if (!URLVerExistFlg && this.version == null) {
-        //URLにversionパラメタが存在しなかった場合
-        this.versionValue = latestVersionId
-      }
 
       this.name = this.dataSets[0].name
 
       //データセットバージョンを取得
       await this['aquariumDataSet/fetchDetailVersion']({
         id: this.id,
-        versionId: this.versionValue,
+        versionId: latestVersionId,
       })
-
       this.viewVersion = Object.assign({}, this.detailVersion)
       //アクアリウムデータセットに追加するためのデータリスト取得
       let params2 = this.searchCondition
@@ -576,22 +553,6 @@ export default {
         }
       }
       this.selectImageList = []
-      this.$router
-        .replace({
-          query: { version: this.viewVersion.version },
-        })
-        .catch(function() {})
-
-      if (this.errVersion != null) {
-        await this.$notify.error({
-          type: 'Error',
-          message:
-            'version:' +
-            this.errVersion +
-            'のデータセットバージョンは見つかりませんでした。最新のデータセットバージョンを表示します。',
-        })
-        this.errVersion = null
-      }
     },
     async initialize() {
       //ページを変えてデータリストを取得
@@ -622,7 +583,6 @@ export default {
         await this.postDataSet()
         this.error = null
         this.closeDialog()
-        this.version = null
         this.retrieveData()
         await this.$notify.success({
           type: 'Success',
