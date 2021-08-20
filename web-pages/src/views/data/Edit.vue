@@ -160,7 +160,6 @@ export default {
         )
       }
     }
-    await this['tenant/fetchCurrentTenant']()
 
     if (this.id === null) {
       this.title = 'データ登録'
@@ -183,7 +182,6 @@ export default {
       'data/putFile',
       'data/delete',
       'data/deleteFile',
-      'tenant/fetchCurrentTenant',
       'account/put',
       'account/fetchAccount',
     ]),
