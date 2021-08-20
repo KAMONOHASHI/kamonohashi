@@ -10,7 +10,7 @@
         <span>{{ id }}:{{ name }}</span>
       </el-col>
     </el-row>
-    <el-tabs v-model="activeName" @tab-click="tabChange">
+    <el-tabs v-model="activeName">
       <el-tab-pane label="実行情報" name="info">
         <info :id="id" v-model="infoForm" />
       </el-tab-pane>
@@ -56,19 +56,10 @@ export default {
   },
 
   async created() {
-    let tab = this.$route.query.tab
-    if (tab != null) {
-      this.activeName = tab
-    }
     await this.initialize()
   },
   methods: {
     ...mapActions(['experiment/fetchDetail']),
-    tabChange() {
-      this.$router.replace({
-        query: { tab: this.activeName },
-      })
-    },
     async initialize() {
       this.title = '実験履歴'
       await this.retrieveData()
@@ -88,15 +79,9 @@ export default {
       this.infoForm.templateName = this.detail.template.name
       this.infoForm.templateVersion = this.detail.templateVersion.version
       this.infoForm.dataSetURL =
-        '/aquarium/dataset/detail/' +
-        this.detail.dataSet.id +
-        '?version=' +
-        this.detail.dataSetVersion.version
+        '/aquarium/dataset/detail/' + this.detail.dataSet.id
       this.infoForm.templateURL =
-        '/aquarium/model-template/' +
-        this.detail.template.id +
-        '?version=' +
-        this.detail.templateVersion.version
+        '/aquarium/model-template/' + this.detail.template.id
 
       if (this.detail.preprocess != null) {
         this.infoForm.preprocessId = this.detail.preprocess.id
