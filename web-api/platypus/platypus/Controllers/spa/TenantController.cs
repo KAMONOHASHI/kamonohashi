@@ -115,12 +115,10 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonBadRequest("Invalid inputs.");
             }
 
-            var ignoreNamespaces = containerManageOptions.IgnoreNamespaces.Split(",");
-
             if 
                 (model.TenantName.StartsWith(containerManageOptions.KqiNamespacePrefix) 
                 || model.TenantName.StartsWith(containerManageOptions.KubernetesNamespacePrefix)
-                || ignoreNamespaces.Contains(model.TenantName)
+                || containerManageOptions.IgnoreNamespacesList.Contains(model.TenantName)
                 )
             {
                 // KqiNamespacePrefix または KubernetesNamespacePrefix で始まるテナント名、IgnoreNamespacesに含まれるテナント名は許可しないためエラー

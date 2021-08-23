@@ -477,8 +477,8 @@ namespace Nssol.Platypus.Services
             {
                 return true;
             }
-            var ignoreNamespaces = containerOptions.IgnoreNamespaces.Split(",");
-            return ignoreNamespaces.Contains(namespaceName);
+
+            return containerOptions.IgnoreNamespacesList.Contains(namespaceName);
 
         }
 
