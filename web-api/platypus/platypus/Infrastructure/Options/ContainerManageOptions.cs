@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Nssol.Platypus.Infrastructure.Options
 {
@@ -72,6 +74,22 @@ namespace Nssol.Platypus.Infrastructure.Options
         /// Kubernetesシステム用のNamespaceプレフィックス
         /// </summary>
         public string KubernetesNamespacePrefix { get; set; }
+
+        /// <summary>
+        /// KQI管理外で無視すべきnamespaceのリスト
+        /// ユーザーが指定した,区切りの値
+        /// </summary>
+        public string IgnoreNamespaces { get; set; }
+
+        /// <summary>
+        /// KQI管理外で無視すべきnamespaceのリスト
+        /// </summary>
+        public List<string> IgnoreNamespacesList { 
+           get
+            {
+                return IgnoreNamespaces.Split(",").ToList();
+            }
+        }
 
         /// <summary>
         /// Kqiシステム用のNamespaceプレフィックス
