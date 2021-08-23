@@ -152,6 +152,7 @@ export default {
         userName: '',
         password: '',
         serviceType: 0,
+        projectName: '',
       },
       passwordChangeEnabled: true,
       passForm: {

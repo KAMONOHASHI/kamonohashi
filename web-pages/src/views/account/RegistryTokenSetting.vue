@@ -27,6 +27,10 @@
             <div class="content-color">ユーザ名</div>
             <el-input :value="value.userName" type="text" @input="userChange" />
           </template>
+          <template v-else-if="value.serviceType === 2">
+            <div class="content-color">プロジェクト名</div>
+            {{ value.projectName ? value.projectName : '--' }}
+          </template>
           <template v-else>
             <div class="content-color">ユーザ名/リポジトリ</div>
             {{ value.userName ? value.userName : '--' }}
