@@ -452,9 +452,11 @@ namespace Nssol.Platypus.Services
             {
                 var result = ConvertResult<GetPodsOutputModel>(response);
 
-                // KubernetesNamespacePrefix から始まるテナントはシステム管理のため、除外する
+
+
+                // IsIgnoreNamespaceでtrueのものは除外する
                 return Result<IEnumerable<ContainerDetailsInfo>, ContainerStatus>.CreateResult(
-                    result.Items.Where(item => item.Metadata.Namespace.StartsWith(containerOptions.KubernetesNamespacePrefix) == false)
+                    result.Items.Where(item => this.IsIgnoreNamespace(item.Metadata.Namespace) == false)
                     .Select(i => ConvertModel(i)));
             }
             else
@@ -462,6 +464,22 @@ namespace Nssol.Platypus.Services
                 LogError("Jobのステータス確認に失敗: " + response.Error);
                 return Result<IEnumerable<ContainerDetailsInfo>, ContainerStatus>.CreateErrorResult(ContainerStatus.Failed);
             }
+        }
+        /// <summary>
+        /// KQI管理から除外すべきnamespaceかどうかの判定。
+        /// k8sのシステム管理や、除外指定されているnamespaceか調べる
+        /// </summary>
+        /// <param name="namespaceName"></param>
+        /// <returns></returns>
+        private bool IsIgnoreNamespace(string namespaceName)
+        {
+            if (namespaceName.StartsWith(containerOptions.KubernetesNamespacePrefix))
+            {
+                return true;
+            }
+
+            return containerOptions.IgnoreNamespacesList.Contains(namespaceName);
+
         }
 
         /// <summary>

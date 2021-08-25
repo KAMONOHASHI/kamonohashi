@@ -92,6 +92,11 @@ export default {
         query: { tab: this.activeName },
       })
     },
+    tabChange() {
+      this.$router.replace({
+        query: { tab: this.activeName },
+      })
+    },
     async initialize() {
       let tenantName = await sessionStorage.getItem('.Platypus.TenantName')
       this.title = '実験履歴'
