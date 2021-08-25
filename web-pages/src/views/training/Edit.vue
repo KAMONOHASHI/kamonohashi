@@ -267,6 +267,7 @@
           </div>
           <el-form-item label="TensorBoard">
             <kqi-tensorboard-handler
+              v-if="kqiTH"
               :id="String(id)"
               :visible="dialogVisible"
             />
@@ -347,6 +348,7 @@ export default {
 
   data() {
     return {
+      kqiTH: false,
       rules: {
         name: [
           {
@@ -394,8 +396,15 @@ export default {
           '.Platypus.Tenant',
           this.account.tenants[i].id,
         )
+        await sessionStorage.setItem('.Platypus.TenantName', tenantName)
+        this.$store.commit('setLogin', {
+          name: this.account.userName,
+          tenant: this.account.tenants[i].id,
+        })
+        break
       }
     }
+    this.kqiTH = true
     await this.initialize()
   },
   methods: {

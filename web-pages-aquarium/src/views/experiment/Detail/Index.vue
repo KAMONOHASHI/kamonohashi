@@ -54,7 +54,6 @@ export default {
   computed: {
     ...mapGetters({
       detail: ['experiment/detail'],
-      tenantDetail: ['tenant/detail'],
       account: ['account/account'],
     }),
   },
@@ -69,9 +68,14 @@ export default {
           '.Platypus.Tenant',
           this.account.tenants[i].id,
         )
+        await sessionStorage.setItem('.Platypus.TenantName', tenantName)
+        this.$store.commit('setLogin', {
+          name: this.account.userName,
+          tenant: this.account.tenants[i].id,
+        })
+        break
       }
     }
-    await this['tenant/fetchCurrentTenant']()
 
     let tab = this.$route.query.tab
     if (tab != null) {
@@ -82,17 +86,14 @@ export default {
     await this.initialize()
   },
   methods: {
-    ...mapActions([
-      'experiment/fetchDetail',
-      'tenant/fetchCurrentTenant',
-      'account/fetchAccount',
-    ]),
+    ...mapActions(['experiment/fetchDetail', 'account/fetchAccount']),
     tabChange() {
       this.$router.replace({
         query: { tab: this.activeName },
       })
     },
     async initialize() {
+      let tenantName = await sessionStorage.getItem('.Platypus.TenantName')
       this.title = '実験履歴'
       await this.retrieveData()
       this.name = this.detail.name
@@ -116,14 +117,14 @@ export default {
         '?version=' +
         this.detail.dataSetVersion.version +
         '&tenantName=' +
-        this.tenantDetail.name
+        tenantName
       this.infoForm.templateURL =
         '/aquarium/model-template/' +
         this.detail.template.id +
         '?version=' +
         this.detail.templateVersion.version +
         '&tenantName=' +
-        this.tenantDetail.name
+        tenantName
 
       if (this.detail.preprocess != null) {
         this.infoForm.preprocessId = this.detail.preprocess.id

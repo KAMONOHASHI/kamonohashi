@@ -58,6 +58,7 @@ title
 <script>
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('account')
+import Util from '@/util/util'
 export default {
   name: 'Header',
   props: {
@@ -77,10 +78,12 @@ export default {
   },
 
   mounted() {
-    //別タブでテナントを切り替えられたときにヘッダーを切り替えられるようにポーリング
     let that = this
     setInterval(function() {
       let tenant = sessionStorage.getItem('.Platypus.Tenant')
+      if (tenant == null) {
+        tenant = Util.getCookie('.Platypus.Tenant')
+      }
       if (tenant != that.tenant) {
         that.tenant = tenant
         for (let i in that.account.tenants) {
@@ -113,7 +116,18 @@ export default {
       }
     },
     async handleSwitchTenant(tenant) {
-      sessionStorage.setItem('.Platypus.Tenant', tenant)
+      let tenantName = null
+      for (let i in this.account.tenants) {
+        if (this.account.tenants[i].id == tenant) {
+          tenantName = this.account.tenants[i].name
+          break
+        }
+      }
+      await sessionStorage.setItem('.Platypus.Tenant', tenant)
+      await Util.setCookie('.Platypus.Tenant', tenant)
+      await sessionStorage.setItem('.Platypus.TenantName', tenantName)
+      await Util.setCookie('.Platypus.TenantName', tenantName)
+
       if (tenant === '@setting') {
         this.$router.push('/setting')
       } else {

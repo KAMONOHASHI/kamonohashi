@@ -109,7 +109,6 @@ export default {
     ...mapGetters({
       preprocessings: ['preprocessing/preprocessings'],
       total: ['preprocessing/total'],
-      tenantDetail: ['tenant/detail'],
       account: ['account/account'],
     }),
   },
@@ -123,6 +122,12 @@ export default {
           '.Platypus.Tenant',
           this.account.tenants[i].id,
         )
+        await sessionStorage.setItem('.Platypus.TenantName', tenantName)
+        this.$store.commit('setLogin', {
+          name: this.account.userName,
+          tenant: this.account.tenants[i].id,
+        })
+        break
       }
     }
     await this.retrieveData()
@@ -130,7 +135,6 @@ export default {
   methods: {
     ...mapActions([
       'preprocessing/fetchPreprocessings',
-      'tenant/fetchCurrentTenant',
       'account/fetchAccount',
     ]),
     async retrieveData() {
@@ -172,26 +176,20 @@ export default {
       this.$router.push('/preprocessing/create/' + id)
     },
     async openHistoryIndex(row) {
-      await this['tenant/fetchCurrentTenant']()
+      let tenantName = await sessionStorage.getItem('.Platypus.TenantName')
       this.$router.push(
-        '/preprocessingHistory/' +
-          row.id +
-          '?tenantName=' +
-          this.tenantDetail.name,
+        '/preprocessingHistory/' + row.id + '?tenantName=' + tenantName,
       )
     },
 
     async openEditDialog(selectedRow) {
-      await this['tenant/fetchCurrentTenant']()
+      let tenantName = await sessionStorage.getItem('.Platypus.TenantName')
       this.$router.push(
-        '/training/' + selectedRow.id + '?tenantName=' + this.tenantDetail.name,
+        '/training/' + selectedRow.id + '?tenantName=' + tenantName,
       )
       this.selectedRowId = selectedRow.id
       this.$router.push(
-        '/preprocessing/edit/' +
-          selectedRow.id +
-          '?tenantName=' +
-          this.tenantDetail.name,
+        '/preprocessing/edit/' + selectedRow.id + '?tenantName=' + tenantName,
       )
     },
     openPreprocessingDialog() {

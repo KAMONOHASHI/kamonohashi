@@ -87,7 +87,6 @@ export default {
     ...mapGetters({
       dataSets: ['dataSet/dataSets'],
       total: ['dataSet/total'],
-      tenantDetail: ['tenant/detail'],
       account: ['account/account'],
     }),
   },
@@ -102,16 +101,18 @@ export default {
           '.Platypus.Tenant',
           this.account.tenants[i].id,
         )
+        await sessionStorage.setItem('.Platypus.TenantName', tenantName)
+        this.$store.commit('setLogin', {
+          name: this.account.userName,
+          tenant: this.account.tenants[i].id,
+        })
+        break
       }
     }
     await this.retrieveData()
   },
   methods: {
-    ...mapActions([
-      'dataSet/fetchDataSets',
-      'tenant/fetchCurrentTenant',
-      'account/fetchAccount',
-    ]),
+    ...mapActions(['dataSet/fetchDataSets', 'account/fetchAccount']),
 
     async currentChange(page) {
       this.pageStatus.currentPage = page
@@ -145,13 +146,9 @@ export default {
       this.$router.push('/dataset/create')
     },
     async openEditDialog(selectedRow) {
-      await this['tenant/fetchCurrentTenant']()
-
+      let tenantName = await sessionStorage.getItem('.Platypus.TenantName')
       this.$router.push(
-        '/dataset/edit/' +
-          selectedRow.id +
-          '?tenantName=' +
-          this.tenantDetail.name,
+        '/dataset/edit/' + selectedRow.id + '?tenantName=' + tenantName,
       )
     },
     handleCopy(id) {

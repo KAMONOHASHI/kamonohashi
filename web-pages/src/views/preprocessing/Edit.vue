@@ -164,6 +164,12 @@ export default {
           '.Platypus.Tenant',
           this.account.tenants[i].id,
         )
+        await sessionStorage.setItem('.Platypus.TenantName', tenantName)
+        this.$store.commit('setLogin', {
+          name: this.account.userName,
+          tenant: this.account.tenants[i].id,
+        })
+        break
       }
     }
     await this.initialize()

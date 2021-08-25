@@ -155,7 +155,6 @@ export default {
       dataSets: ['aquariumDataSet/dataSets'],
       detail: ['experiment/detail'],
       preprocessHistory: ['experiment/preprocessHistories'],
-      tenantDetail: ['tenant/detail'],
     }),
   },
 
@@ -163,11 +162,7 @@ export default {
     await this.retrieveData()
   },
   methods: {
-    ...mapActions([
-      'experiment/fetchExperiments',
-      'experiment/fetchDetail',
-      'tenant/fetchCurrentTenant',
-    ]),
+    ...mapActions(['experiment/fetchExperiments', 'experiment/fetchDetail']),
 
     async currentChange(page) {
       this.pageStatus.currentPage = page
@@ -207,12 +202,12 @@ export default {
       this.$router.push('/aquarium/experiment/create')
     },
     async openEditExperiment(selectedRow) {
-      await this['tenant/fetchCurrentTenant']()
+      let tenantName = await sessionStorage.getItem('.Platypus.TenantName')
       this.$router.push(
         '/aquarium/experiment/detail/' +
           selectedRow.id +
           '?tenantName=' +
-          this.tenantDetail.name,
+          tenantName,
       )
     },
     handleCopy(id) {

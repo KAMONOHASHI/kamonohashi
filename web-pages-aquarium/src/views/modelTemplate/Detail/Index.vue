@@ -163,7 +163,6 @@ export default {
       versionDetail: ['template/versionDetail'],
       total: ['template/total'],
       versions: ['template/versions'],
-      tenantDetail: ['tenant/detail'],
       account: ['account/account'],
     }),
   },
@@ -177,9 +176,14 @@ export default {
           '.Platypus.Tenant',
           this.account.tenants[i].id,
         )
+        await sessionStorage.setItem('.Platypus.TenantName', tenantName)
+        this.$store.commit('setLogin', {
+          name: this.account.userName,
+          tenant: this.account.tenants[i].id,
+        })
+        break
       }
     }
-    await this['tenant/fetchCurrentTenant']()
 
     let version = this.$route.query.version
     if (version != null) {
@@ -202,7 +206,6 @@ export default {
       'template/put',
       'template/delete',
       'template/deleteVersion',
-      'tenant/fetchCurrentTenant',
       'account/fetchAccount',
     ]),
 

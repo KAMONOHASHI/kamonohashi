@@ -77,7 +77,6 @@ export default {
     ...mapGetters({
       dataSets: ['aquariumDataSet/dataSets'],
       total: ['aquariumDataSet/total'],
-      tenantDetail: ['tenant/detail'],
     }),
   },
 
@@ -85,10 +84,7 @@ export default {
     await this.retrieveData()
   },
   methods: {
-    ...mapActions([
-      'aquariumDataSet/fetchDataSets',
-      'tenant/fetchCurrentTenant',
-    ]),
+    ...mapActions(['aquariumDataSet/fetchDataSets']),
 
     async currentChange(page) {
       this.pageStatus.currentPage = page
@@ -116,12 +112,13 @@ export default {
     openCreateDialog() {
       this.$router.push('/aquarium/dataset/create')
     },
-    openEditDataset(selectedRow) {
+    async openEditDataset(selectedRow) {
+      let tenantName = await sessionStorage.getItem('.Platypus.TenantName')
       this.$router.push(
         '/aquarium/dataset/detail/' +
           selectedRow.id +
           '?tenantName=' +
-          this.tenantDetail.name,
+          tenantName,
       )
     },
     handleCopy(id) {

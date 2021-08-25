@@ -93,7 +93,6 @@ export default {
   computed: {
     ...mapGetters({
       histories: ['preprocessing/histories'],
-      tenantDetail: ['tenant/detail'],
       account: ['account/account'],
     }),
   },
@@ -107,16 +106,18 @@ export default {
           '.Platypus.Tenant',
           this.account.tenants[i].id,
         )
+        await sessionStorage.setItem('.Platypus.TenantName', tenantName)
+        this.$store.commit('setLogin', {
+          name: this.account.userName,
+          tenant: this.account.tenants[i].id,
+        })
+        break
       }
     }
     await this.retrieveData()
   },
   methods: {
-    ...mapActions([
-      'preprocessing/fetchHistories',
-      'tenant/fetchCurrentTenant',
-      'account/fetchAccount',
-    ]),
+    ...mapActions(['preprocessing/fetchHistories', 'account/fetchAccount']),
 
     async retrieveData() {
       if (this.id) {
@@ -137,24 +138,21 @@ export default {
 
     async openEditDialog(row) {
       if (row) {
-        await this['tenant/fetchCurrentTenant']()
+        let tenantName = await sessionStorage.getItem('.Platypus.TenantName')
         this.$router.push(
           '/preprocessingHistory/' +
             this.id +
             '/' +
             row.dataId +
             '?tenantName=' +
-            this.tenantDetail.name,
+            tenantName,
         )
       }
     },
     async closeEditDialog() {
-      await this['tenant/fetchCurrentTenant']()
+      let tenantName = await sessionStorage.getItem('.Platypus.TenantName')
       this.$router.push(
-        '/preprocessingHistory/' +
-          this.id +
-          '?tenantName=' +
-          this.tenantDetail.name,
+        '/preprocessingHistory/' + this.id + '?tenantName=' + tenantName,
       )
     },
     async done(type) {

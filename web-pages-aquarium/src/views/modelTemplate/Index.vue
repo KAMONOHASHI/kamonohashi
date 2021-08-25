@@ -38,7 +38,7 @@
             >
               <router-link
                 :to="
-                  `/aquarium/model-template/${template.id}?tenantName=${tenantDetail.name}`
+                  `/aquarium/model-template/${template.id}?tenantName=${tenantName}`
                 "
               >
                 <el-card
@@ -95,6 +95,7 @@ export default {
   },
   data() {
     return {
+      tenantName: null,
       templateList: null,
       pageStatus: {
         currentPage: 1,
@@ -112,19 +113,15 @@ export default {
   computed: {
     ...mapGetters({
       templates: ['template/templates'],
-      tenantDetail: ['tenant/detail'],
     }),
   },
   async created() {
-    await this['tenant/fetchCurrentTenant']()
+    this.tenantName = await sessionStorage.getItem('.Platypus.TenantName')
     await this.retrieveData()
   },
 
   methods: {
-    ...mapActions([
-      'template/fetchModelTemplates',
-      'tenant/fetchCurrentTenant',
-    ]),
+    ...mapActions(['template/fetchModelTemplates']),
     openDiscriptionURL(url) {
       window.open(url, '_blank')
     },

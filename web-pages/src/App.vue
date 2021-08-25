@@ -51,7 +51,6 @@ export default {
   },
   async mounted() {
     let token = this.getToken()
-
     if (token) {
       await this.fetchAccount()
       this.login = true
@@ -67,7 +66,14 @@ export default {
       this.login = true
       this.menu = true
       Util.setCookie('.Platypus.Auth.' + tenant, token)
-      this.setTenant(tenant)
+      let tenantName = null
+      for (let i in this.account.tenants) {
+        if (this.account.tenants[i].id == tenant) {
+          tenantName = this.account.tenants[i].name
+          break
+        }
+      }
+      this.setTenant(tenant, tenantName)
       this.$store.commit('setLogin', { name: name, tenant: tenant })
 
       //ログイン後すべてのテナントのログインをしてtokenを取得しクッキーに保持する
@@ -81,7 +87,6 @@ export default {
           this.setTenentToken(this.loginData.token, this.account.tenants[i].id)
         }
       }
-
       this.$router.push(url)
     },
     async handleMenu() {
@@ -98,9 +103,11 @@ export default {
     setTenentToken(token, tenantId) {
       Util.setCookie('.Platypus.Auth.' + tenantId, token)
     },
-    setTenant(tenant) {
+    setTenant(tenant, tenantName) {
       sessionStorage.setItem('.Platypus.Tenant', tenant)
+      sessionStorage.setItem('.Platypus.TenantName', tenantName)
       Util.setCookie('.Platypus.Tenant', tenant)
+      Util.setCookie('.Platypus.TenantName', tenantName)
     },
 
     deleteToken() {

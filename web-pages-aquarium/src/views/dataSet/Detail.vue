@@ -362,7 +362,6 @@ export default {
       dataTotal: ['data/total'],
       allDatas: ['data/data'],
       dataList: ['data/uploadedFiles'],
-      tenantDetail: ['tenant/detail'],
       account: ['account/account'],
     }),
   },
@@ -377,9 +376,14 @@ export default {
           '.Platypus.Tenant',
           this.account.tenants[i].id,
         )
+        await sessionStorage.setItem('.Platypus.TenantName', tenantName)
+        this.$store.commit('setLogin', {
+          name: this.account.userName,
+          tenant: this.account.tenants[i].id,
+        })
+        break
       }
     }
-    await this['tenant/fetchCurrentTenant']()
 
     let tab = this.$route.query.tab
     if (tab != null) {
@@ -411,7 +415,6 @@ export default {
       'data/putFile',
       'dataSet/fetchDetail',
       'dataSet/post',
-      'tenant/fetchCurrentTenant',
       'account/fetchAccount',
     ]),
     async deleteVersion() {

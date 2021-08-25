@@ -165,7 +165,6 @@ export default {
       histories: ['notebook/histories'],
       total: ['notebook/total'],
       endpoint: ['notebook/endpoint'],
-      tenantDetail: ['tenant/detail'],
       account: ['account/account'],
     }),
   },
@@ -180,6 +179,12 @@ export default {
           '.Platypus.Tenant',
           this.account.tenants[i].id,
         )
+        await sessionStorage.setItem('.Platypus.TenantName', tenantName)
+        this.$store.commit('setLogin', {
+          name: this.account.userName,
+          tenant: this.account.tenants[i].id,
+        })
+        break
       }
     }
 
@@ -189,7 +194,6 @@ export default {
     ...mapActions([
       'notebook/fetchHistories',
       'notebook/fetchEndpoint',
-      'tenant/fetchCurrentTenant',
       'account/fetchAccount',
     ]),
     async retrieveData() {
@@ -221,12 +225,9 @@ export default {
     },
     async openEditDialog(selectedRow) {
       if (this.$route.path === '/notebook') {
-        await this['tenant/fetchCurrentTenant']()
+        let tenantName = await sessionStorage.getItem('.Platypus.TenantName')
         this.$router.push(
-          '/notebook/' +
-            selectedRow.id +
-            '?tenantName=' +
-            this.tenantDetail.name,
+          '/notebook/' + selectedRow.id + '?tenantName=' + tenantName,
         )
       }
     },
