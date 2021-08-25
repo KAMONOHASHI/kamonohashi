@@ -75,6 +75,7 @@ export default {
         userName: '',
         password: '',
         serviceType: 0,
+        projectName: '',
       }),
     },
   },
@@ -89,6 +90,7 @@ export default {
           form.password = data.password
           form.userName = data.userName
           form.serviceType = data.serviceType
+          form.projectName = data.projectName
         }
       }
       this.$emit('input', form)
