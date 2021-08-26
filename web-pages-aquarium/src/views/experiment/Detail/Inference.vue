@@ -94,7 +94,7 @@
           <el-form-item label="名前" prop="name">
             <el-input v-model="form.name" />
           </el-form-item>
-          <el-form-item label="データセット" prop="name">
+          <el-form-item label="データセット" prop="selectedDataSetVersionName">
             <el-input
               v-model="form.selectedDataSetVersionName"
               :disabled="true"
@@ -230,9 +230,6 @@ export default {
         selectedDataSetVersionName: [
           { required: true, trigger: 'blur', message: '必須項目です' },
         ],
-        templateVersionValue: [
-          { required: true, trigger: 'blur', message: '必須項目です' },
-        ],
       },
       deleteDialog: false,
       createDialog: false,
@@ -278,7 +275,7 @@ export default {
     ]),
     async createInference() {
       //推論を新規作成
-      this.createDialog = false
+
       let form = this.$refs.createForm
       await form.validate(async valid => {
         if (valid) {
@@ -302,6 +299,7 @@ export default {
             this.selectedVersion = null
             this.retrieveData()
             this.error = null
+            this.createDialog = false
           } catch (e) {
             this.error = e
           }
