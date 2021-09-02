@@ -11,7 +11,11 @@ title
         </router-link>
       </el-col>
       <el-col :span="12" class="user">
-        <el-dropdown v-if="user" trigger="click" @command="handleSwitchTenant">
+        <el-dropdown
+          v-if="isLogined"
+          trigger="click"
+          @command="handleSwitchTenant"
+        >
           <span class="el-dropdown-link user-label">
             <icon
               name="user"
@@ -19,19 +23,20 @@ title
               class="user-label"
               style="position: relative; top: 7px; left: -8px;"
             />
-            {{ user.userName }} / {{ user.selectedTenant.displayName }}
+            {{ this.omitIfLong(account.userName) }} /
+            {{ this.omitIfLong(account.selectedTenant.displayName) }}
             <i class="el-icon-caret-bottom" />
           </span>
           <el-dropdown-menu
             slot="dropdown"
-            :class="{ scroll: user.tenants.length > 10 }"
+            :class="{ scroll: account.tenants.length > 10 }"
           >
             <el-dropdown-item
-              v-for="(tenant, index) in user.tenants"
+              v-for="(tenant, index) in account.tenants"
               :key="index"
               :command="tenant.id"
               :class="{
-                activeTenant: user.selectedTenant.id === tenant.id,
+                activeTenant: account.selectedTenant.id === tenant.id,
               }"
             >
               {{ tenant.displayName }}
@@ -46,7 +51,7 @@ title
           style="padding-left: 15px;"
           type="text"
           class="user-label"
-          @click="handleLogin"
+          @click="handleLogout"
         >
           ログアウト
         </el-button>
@@ -73,50 +78,32 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['account', 'loginData']),
-  },
-  async created() {
-    this.$store.watch(this.$store.getters.getLoginTenant, this.watchLogin)
+    ...mapGetters(['account', 'loginData', 'isLogined']),
   },
   methods: {
-    ...mapActions(['fetchAccount', 'postTokenTenants']),
-    async watchLogin(tenant) {
-      if (tenant) {
-        await this.fetchAccount()
-        this.user = this.account
-        if (this.user.userName.length > 25) {
-          this.user.userName = this.user.userName.substr(0, 25) + '...'
-        }
-        if (this.user.selectedTenant.displayName.length > 25) {
-          this.user.selectedTenant.displayName =
-            this.user.selectedTenant.displayName.substr(0, 25) + '...'
-        }
-      } else {
-        this.user = null
-      }
+    ...mapActions([
+      'fetchAccount',
+      'postTokenTenants',
+      'switchTenant',
+      'logout',
+    ]),
+    omitIfLong(str) {
+      return str.length <= 25 ? str : str.substr(0, 25) + '...'
     },
     async handleSwitchTenant(tenant) {
       if (tenant === '@setting') {
         this.$router.push('/setting')
       } else {
-        let params = {
-          tenantId: tenant,
-        }
-        await this.postTokenTenants(params)
-        this.$emit(
-          'login',
-          this.loginData.userName,
-          this.loginData.tenantId,
-          this.loginData.token,
-          '/',
-        )
+        await this.switchTenant({ tenantId: tenant })
+        this.$router.push('/')
       }
-    },
-    async handleLogin() {
-      this.$emit('logout')
     },
     async handleMenu() {
       this.$emit('menu')
+    },
+    async handleLogout() {
+      await this.logout()
+      this.$router.push('/login')
     },
   },
 }

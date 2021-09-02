@@ -46,32 +46,15 @@ const { mapGetters, mapActions } = createNamespacedHelpers('account')
 export default {
   title: 'ダッシュボード',
   data() {
-    return {
-      unwatchLogin: undefined,
-    }
+    return {}
   },
   computed: {
     ...mapGetters(['menuList']),
   },
-  async created() {
-    this.unwatchLogin = this.$store.watch(
-      this.$store.getters.getLoginTenant,
-      this.watchLogin,
-    )
-    await this.fetchMenuList()
-  },
-
-  async beforeDestroy() {
-    this.unwatchLogin()
-  },
+  async created() {},
 
   methods: {
     ...mapActions(['fetchMenuList']),
-    async watchLogin(tenant) {
-      if (tenant) {
-        await this.fetchMenuList()
-      }
-    },
   },
 }
 </script>
