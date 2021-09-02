@@ -1,6 +1,6 @@
 import api from '@/api/api'
 import Util from '@/util/util'
-
+import router from '@/router'
 // initial state
 const state = {
   loginData: {},
@@ -121,6 +121,7 @@ const actions = {
     await dispatch('fetchAccount')
     await dispatch('fetchMenu')
     commit('setLogined')
+    router.push({ query: { tenantId: loginData.tenantId } })
   },
 
   logout({ commit }) {
@@ -134,6 +135,7 @@ const actions = {
     commit('setLoginData', { loginData })
     await dispatch('fetchAccount')
     await dispatch('fetchMenu')
+    router.push({ query: { tenantId } })
   },
 
   async postLogin({ commit, dispatch }, params) {

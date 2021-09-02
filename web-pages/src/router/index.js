@@ -56,7 +56,14 @@ router.beforeEach((to, from, next) => {
   if (!to.matched.length) {
     next('/error?url=' + to.path)
   } else {
-    next()
+    if (to.query.tenantId === undefined && from.query.tenantId !== undefined) {
+      next({
+        ...to,
+        query: { ...to.query, tenantId: from.query.tenantId },
+      })
+    } else {
+      next()
+    }
   }
 })
 
