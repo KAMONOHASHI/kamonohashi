@@ -1,7 +1,6 @@
 import store from '@/store'
 import { Loading } from 'element-ui'
 import Vue from 'vue'
-import Util from '@/util/util'
 import router from '@/router'
 
 // output logs
@@ -20,7 +19,7 @@ export function axiosLoggerInterceptors($axios) {
 export function axiosAuthInterceptors($axios) {
   $axios.interceptors.request.use(
     function(config) {
-      let token = Util.getCookie('.Platypus.Auth')
+      let token = store.getters['account/token']
       if (token) {
         config.headers.Authorization = `Bearer ${token}`
       }
@@ -126,7 +125,7 @@ export function axiosErrorHandlingInterceptors($axios, errorCallback) {
 
         // auth check
         if (status === 401) {
-          Util.deleteCookie('.Platypus.Auth')
+          store.dispatch('account/logout')
           router.push(url)
           vue.$notify.info({
             title: 'ログインしてください',

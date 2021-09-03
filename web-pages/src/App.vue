@@ -40,9 +40,6 @@ export default {
       this.setMenu(this.menu)
     },
   },
-  async mounted() {
-    await this.fetchAccount()
-  },
   methods: {
     ...mapActions(['fetchAccount', 'switchTenant']),
     async handleMenu() {

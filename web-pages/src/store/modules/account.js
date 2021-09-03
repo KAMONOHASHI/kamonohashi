@@ -1,6 +1,8 @@
 import api from '@/api/api'
 import Util from '@/util/util'
-import router from '@/router'
+
+const tokenCookieKey = '.Platypus.Auth'
+
 // initial state
 const state = {
   loginData: {},
@@ -17,7 +19,8 @@ const getters = {
     return state.loginData
   },
   token() {
-    return state.loginData.token
+    // 変更検知によるレンダリングは効かないはずなのでコンポーネントからの利用は要注意
+    return state.loginData.token ?? Util.getCookie(tokenCookieKey)
   },
   account(state) {
     return state.account
@@ -120,12 +123,13 @@ const actions = {
     commit('setLoginData', { loginData })
     await dispatch('fetchAccount')
     await dispatch('fetchMenu')
+    Util.setCookie(tokenCookieKey, loginData.token)
     commit('setLogined')
-    router.push({ query: { tenantId: loginData.tenantId } })
   },
 
   logout({ commit }) {
     commit('setLogout')
+    Util.deleteCookie(tokenCookieKey)
   },
 
   async switchTenant({ commit, dispatch }, { tenantId }) {
@@ -167,11 +171,9 @@ const actions = {
 const mutations = {
   setLoginData(state, { loginData }) {
     state.loginData = loginData
-    Util.setCookie('.Platypus.Auth', loginData.token)
   },
   setToken(state, { token }) {
     state.token = token
-    Util.setCookie('.Platypus.Auth', token)
   },
   setAccount(state, { account }) {
     state.logined = true
@@ -191,7 +193,7 @@ const mutations = {
     state.menuList = []
     state.menuTree = []
     state.token = {}
-    Util.deleteCookie('.Platypus.Auth')
+
     state.logined = false
   },
 }
