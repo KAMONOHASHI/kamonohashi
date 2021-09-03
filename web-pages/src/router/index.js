@@ -78,7 +78,15 @@ router.beforeEach(async (to, from, next) => {
         query: { ...to.query, tenantId },
       })
     } else {
-      next()
+      await router.app.$store.dispatch('account/fetchAccount')
+      next({
+        ...to,
+        query: {
+          ...to.query,
+          tenantId:
+            router.app.$store.getters['account/account'].selectedTenant.id,
+        },
+      })
     }
     return
   }

@@ -23,8 +23,8 @@ title
               class="user-label"
               style="position: relative; top: 7px; left: -8px;"
             />
-            {{ this.omitIfLong(account.userName) }} /
-            {{ this.omitIfLong(account.selectedTenant.displayName) }}
+            {{ omitIfLong(account.userName) }} /
+            {{ omitIfLong(account.selectedTenant.displayName) }}
             <i class="el-icon-caret-bottom" />
           </span>
           <el-dropdown-menu
