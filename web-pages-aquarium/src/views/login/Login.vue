@@ -44,7 +44,6 @@
 
 <script>
 import KqiDisplayError from '@/components/KqiDisplayError'
-import Util from '@/util/util'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('account')
 const formRule = {
@@ -82,27 +81,17 @@ export default {
     ...mapGetters(['loginData']),
   },
   methods: {
-    ...mapActions(['postLogin']),
+    ...mapActions(['postLogin', 'login', 'logout']),
     async handleLogin() {
       this.$refs['loginForm'].validate(async valid => {
         if (valid) {
           try {
-            let params = {
-              $config: { apiDisabledError: true },
-              model: {
-                userName: this.form.user,
-                password: this.form.password,
-              },
-            }
-            await this.postLogin(params)
+            await this.login({
+              userName: this.form.user,
+              password: this.form.password,
+            })
             this.error = null
-            this.$emit(
-              'login',
-              this.loginData.userName,
-              this.loginData.tenantId,
-              this.loginData.token,
-              this.returnUrl || '/',
-            )
+            this.$router.push('/')
           } catch (error) {
             this.handleLogout()
             this.error = error
@@ -111,12 +100,8 @@ export default {
       })
     },
     async handleLogout() {
-      this.deleteToken()
-      this.$store.commit('setLogin', { name: '', tenant: '' })
+      this.logout()
       this.$router.push('/login')
-    },
-    deleteToken() {
-      Util.deleteCookie('.Platypus.Auth')
     },
   },
 }

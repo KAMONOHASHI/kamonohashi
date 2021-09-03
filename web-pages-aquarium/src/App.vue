@@ -2,21 +2,12 @@
   <div id="app">
     <el-container>
       <el-header>
-        <kqi-header
-          :login="login"
-          @logout="handleLogout"
-          @login="handleLogin"
-          @menu="handleMenu"
-        />
+        <kqi-header @menu="handleMenu" />
       </el-header>
       <el-container class="main-container">
         <kqi-menu v-show="menu" class="sidenav" />
         <el-main>
-          <router-view
-            class="content"
-            :class="{ 'content-hidden': !menu }"
-            @login="handleLogin"
-          />
+          <router-view class="content" :class="{ 'content-hidden': !menu }" />
         </el-main>
       </el-container>
     </el-container>
@@ -42,51 +33,17 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['account']),
+    ...mapGetters(['account', 'token']),
   },
   watch: {
     menu() {
       this.setMenu(this.menu)
     },
   },
-  async mounted() {
-    let token = this.getToken()
-    if (token) {
-      await this.fetchAccount()
-      this.login = true
-      this.$store.commit('setLogin', {
-        name: this.account.userName,
-        tenant: this.account.selectedTenant,
-      })
-    }
-  },
   methods: {
-    ...mapActions(['fetchAccount']),
-    async handleLogin(name, tenant, token, url) {
-      this.login = true
-      this.menu = true
-      this.setToken(token)
-      this.$store.commit('setLogin', { name: name, tenant: tenant })
-      this.$router.push(url)
-    },
+    ...mapActions(['fetchAccount', 'switchTenant']),
     async handleMenu() {
       this.menu = !this.menu
-    },
-    async handleLogout() {
-      this.login = false
-      this.menu = false
-      this.deleteToken()
-      this.$store.commit('setLogin', { name: '', tenant: '' })
-      this.$router.push('/login')
-    },
-    setToken(token) {
-      Util.setCookie('.Platypus.Auth', token)
-    },
-    deleteToken() {
-      Util.deleteCookie('.Platypus.Auth')
-    },
-    getToken() {
-      return Util.getCookie('.Platypus.Auth')
     },
     setMenu(showFlg) {
       Util.setCookie('.Platypus.ShowMenu', showFlg)

@@ -56,12 +56,43 @@ let router = new Router({
     ...experiment,
   ],
 })
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
+  let storeTenantId = router.app.$store.getters['account/getTenantId']
+  let token = router.app.$store.getters['account/token']
+
   if (!to.matched.length) {
     next('/error?url=' + to.path)
-  } else {
-    next()
+    return
   }
+  // 未ログイン
+  if (!token) {
+    if (to.path !== '/login') {
+      next('/login')
+    } else {
+      next()
+    }
+    return
+  }
+  // URLのテナントが未指定
+  if (to.query.tenantId === undefined) {
+    let tenantId = storeTenantId ?? from.query.tenantId
+    if (tenantId !== undefined) {
+      next({
+        ...to,
+        query: { ...to.query, tenantId },
+      })
+    } else {
+      next()
+    }
+    return
+  }
+  // URLの指定とstoreのテナントが異なる => store側をURLに合わせる
+  if (storeTenantId !== to.query.tenantId) {
+    await router.app.$store.dispatch('account/switchTenant', {
+      tenantId: to.query.tenantId,
+    })
+  }
+  next()
 })
 
 // clear notification
