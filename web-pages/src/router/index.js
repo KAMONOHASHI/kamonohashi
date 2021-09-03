@@ -52,18 +52,28 @@ let router = new Router({
     ...version,
   ],
 })
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   if (!to.matched.length) {
     next('/error?url=' + to.path)
+    return
+  }
+
+  if (to.query.tenantId === undefined) {
+    let tenantId =
+      router.app.$store.getters['account/getTenantId'] ?? from.query.tenantId
+    next({
+      ...to,
+      query: { ...to.query, tenantId },
+    })
+  } else if (
+    router.app.$store.getters['account/getTenantId'] !== to.query.tenantId
+  ) {
+    await router.app.$store.dispatch('account/switchTenant', {
+      tenantId: to.query.tenantId,
+    })
+    next()
   } else {
-    if (to.query.tenantId === undefined && from.query.tenantId !== undefined) {
-      next({
-        ...to,
-        query: { ...to.query, tenantId: from.query.tenantId },
-      })
-    } else {
-      next()
-    }
+    next()
   }
 })
 

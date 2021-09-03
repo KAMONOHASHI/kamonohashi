@@ -42,7 +42,6 @@ export default {
   },
   async mounted() {
     await this.fetchAccount()
-    await this.switchTenant({ tenantId: this.account.selectedTenant.id })
   },
   methods: {
     ...mapActions(['fetchAccount', 'switchTenant']),

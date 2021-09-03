@@ -135,7 +135,6 @@ const actions = {
     commit('setLoginData', { loginData })
     await dispatch('fetchAccount')
     await dispatch('fetchMenu')
-    router.push({ query: { tenantId } })
   },
 
   async postLogin({ commit, dispatch }, params) {
