@@ -157,12 +157,17 @@ import { Container, Draggable } from 'vue-smooth-dnd'
 import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
 import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index'
 
+import { createNamespacedHelpers } from 'vuex'
+const { mapGetters, mapActions } = createNamespacedHelpers('data')
 export default {
   components: {
     Container,
     Draggable,
     KqiDisplayTextForm,
     KqiSmartSearchInput,
+  },
+  computed: {
+    ...mapGetters(['data', 'total']),
   },
   props: {
     // dataのpaging情報やentry自体の表示情報
@@ -250,6 +255,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['fetchData']),
     // レスポンシブ対応
     bind() {
       if (this.width > 1000) {
@@ -322,8 +328,32 @@ export default {
       })
       this.$forceUpdate()
     },
-    handleSelectedCommand(command) {
-      let moveDataList = this.dataList.filter(x => x.checked)
+    async handleSelectedCommand(command) {
+      let moveDataList = []
+      if (this.isAllChecked) {
+        if (this.viewInfo.entryName == 'all　data') {
+          let params = {}
+          //alldataの場合だけ全データとってくるようにする
+          let maxpage = Math.ceil(this.total / 100)
+          for (let i = 1; i <= maxpage; i++) {
+            params.page = i
+            params.perPage = 100
+            params.withTotal = true
+            await this.fetchData(params)
+            moveDataList = moveDataList.concat(this.data)
+          }
+        } else {
+          moveDataList = []
+          this.$emit('addAll', { from: this.viewInfo.entryName, to: command })
+          this.$forceUpdate()
+        }
+        let dataList = this.dataList.filter(x => x.checked)
+        dataList.forEach(originalData => {
+          originalData.checked = false
+        })
+      } else {
+        moveDataList = this.dataList.filter(x => x.checked)
+      }
       moveDataList.forEach(originalData => {
         originalData.checked = false
         if (command !== originalData.assign) {

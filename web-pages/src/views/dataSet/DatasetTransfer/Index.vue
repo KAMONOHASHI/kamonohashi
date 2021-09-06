@@ -50,6 +50,7 @@
             :width="viewInfo.width"
             @showData="handleShowData"
             @add="handleAdd"
+            @addAll="handleAddAll"
             @remove="handleRemove"
             @paging="handlePaging"
             @filter="handleFilter"
@@ -267,7 +268,16 @@ export default {
         let neighborOriginalIndex = this.entryList[entryName].indexOf(
           neighborData,
         )
-        this.entryList[entryName].splice(neighborOriginalIndex, 0, data)
+        //重複チェック
+        let duplicate = false
+        for (let i in this.entryList[entryName]) {
+          if (this.entryList[entryName][i]['id'] == data.id) {
+            duplicate = true
+          }
+        }
+        if (!duplicate) {
+          this.entryList[entryName].splice(neighborOriginalIndex, 0, data)
+        }
       } else {
         // 末尾への追加のため、下隣りが存在しない。現在の末尾要素を上隣りに挿入する
         let neighborData = this.filteredEntryList[entryName][
@@ -276,12 +286,32 @@ export default {
         let neighborOriginalIndex = this.entryList[entryName].indexOf(
           neighborData,
         )
-        this.entryList[entryName].splice(neighborOriginalIndex + 1, 0, data)
+        //重複チェック
+        let duplicate = false
+        for (let i in this.entryList[entryName]) {
+          if (this.entryList[entryName][i]['id'] == data.id) {
+            duplicate = true
+          }
+        }
+        if (!duplicate) {
+          this.entryList[entryName].splice(neighborOriginalIndex + 1, 0, data)
+        }
       }
     },
 
     handleShowData(id) {
       this.$emit('showData', id)
+    },
+
+    // 'addAll'がemitされた際の処理
+    handleAddAll({ from, to }) {
+      let fromList = Object.assign({}, this.entryList[from])
+      for (let i in fromList) {
+        let data = Object.assign({}, fromList[i])
+        data.checked = false
+        this.handleAdd({ data, addedIndex: 0, entryName: to })
+        this.handleRemove({ data, entryName: from })
+      }
     },
 
     // 'add'がemitされた際の処理
