@@ -166,9 +166,7 @@ export default {
     KqiDisplayTextForm,
     KqiSmartSearchInput,
   },
-  computed: {
-    ...mapGetters(['data', 'total']),
-  },
+
   props: {
     // dataのpaging情報やentry自体の表示情報
     viewInfo: {
@@ -208,6 +206,7 @@ export default {
       default: 330,
     },
   },
+
   data() {
     return {
       emptyspace: ' ',
@@ -229,6 +228,9 @@ export default {
       infoSpanSize: 3,
       isAllChecked: false, // 全選択ボタンを押されているかどうか
     }
+  },
+  computed: {
+    ...mapGetters(['data', 'total']),
   },
   watch: {
     async width() {
@@ -365,6 +367,10 @@ export default {
           this.emitAdd(addedInfo)
           let removedInfo = { data, entryName: this.viewInfo.entryName } // このリストから削除
           this.emitRemove(removedInfo)
+          if (this.isAllChecked) {
+            removedInfo = { data, entryName: command } //このリスト以外から削除
+            this.$emit('removeAll', removedInfo)
+          }
         } else {
           this.$forceUpdate() // そのままだとチェックボックスの変更が反映されないので、強制更新
         }

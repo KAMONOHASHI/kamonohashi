@@ -30,6 +30,7 @@
           :move-list="moveList"
           :disabled="disabled"
           :width="dataViewInfo.width"
+          @removeAll="handleRemoveAll"
           @showData="handleShowData"
           @add="handleAdd"
           @remove="handleRemove"
@@ -329,6 +330,25 @@ export default {
       }
       this.refreshAssign()
       this.emitInput()
+    },
+
+    //'removeAll'がemitされた際の処理
+    handleRemoveAll({ data, entryName }) {
+      //
+      for (let name in this.entryList) {
+        if (name != entryName) {
+          let viewInfo = this.getViewInfo(name)
+          this.entryList[name] = this.entryList[name].filter(
+            x => x.id !== data.id,
+          )
+          this.handleFilter({
+            filter: viewInfo.filter,
+            entryName: name,
+          })
+          this.refreshAssign()
+          this.emitInput()
+        }
+      }
     },
 
     // 'remove'がemitされた際の処理
