@@ -817,6 +817,27 @@ namespace Nssol.Platypus.Controllers.spa
         }
 
         /// <summary>
+        /// ファイルのサイズ(Byte)を取得する
+        /// </summary>
+        /// <param name="id">対象データID</param>
+        /// <param name="name">対象ファイル名</param>
+        [HttpGet("{id}/files/{name}/size")]
+        [Filters.PermissionFilter(MenuCode.Training)]
+        [ProducesResponseType(typeof(ApiModels.DataApiModels.DataFileOutputModel), (int)HttpStatusCode.OK)]
+        public IActionResult GetFileSize(long id, string name)
+        {
+            //データの存在チェック
+            var property = trainingHistoryRepository.GetAttachedFile(id, name);
+            if (property == null)
+            {
+                return JsonNotFound($"TrainingHistoryID {id} or file name {name} is not found.");
+            }
+
+            var fileSize = storageLogic.GetFileSize(ResourceType.TrainingHistoryAttachedFiles, property.StoredPath);
+            return JsonOK(new ApiModels.DataApiModels.DataFileOutputModel { Id = id, Key = name, FileId = property.Id, FileName = property.FileName, FileSize = fileSize });
+        }
+
+        /// <summary>
         /// 指定したTensorBoardコンテナ情報を取得する
         /// </summary>
         /// <param name="id">対象の学習履歴ID</param>
