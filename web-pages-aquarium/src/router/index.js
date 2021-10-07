@@ -59,7 +59,9 @@ let router = new Router({
 router.beforeEach(async (to, from, next) => {
   let storeTenantId = router.app.$store.getters['account/getTenantId']
   let token = router.app.$store.getters['account/token']
-
+  // note: nextを使うと無視して良い次のエラーが出る
+  // Redirected when going from ... to ... via a navigation guard.
+  // https://github.com/vuejs/vue-router/issues/2881#issuecomment-520554378
   if (!to.matched.length) {
     next('/error?url=' + to.path)
     return
