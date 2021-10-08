@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Nssol.Platypus.ApiModels.TrainingApiModels
+﻿namespace Nssol.Platypus.ApiModels.TrainingApiModels
 {
-    public class DataFileOutputModel
+    public class FileOutputModel
     {
         /// <summary>
         /// 学習履歴ID
         /// </summary>
         public long Id { get; set; }
         /// <summary>
-        /// データファイルID
+        /// 添付ファイルID
         /// </summary>
         public long FileId { get; set; }
         /// <summary>

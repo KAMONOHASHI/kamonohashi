@@ -817,16 +817,16 @@ namespace Nssol.Platypus.Controllers.spa
         }
 
         /// <summary>
-        /// ファイルのサイズ(Byte)を取得する
+        ///学習履歴添付ファイルのサイズ(Byte)を取得する
         /// </summary>
         /// <param name="id">対象の学習履歴ID</param>
         /// <param name="name">対象ファイル名</param>
         [HttpGet("{id}/files/{name}/size")]
         [Filters.PermissionFilter(MenuCode.Training)]
-        [ProducesResponseType(typeof(DataFileOutputModel), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(FileOutputModel), (int)HttpStatusCode.OK)]
         public IActionResult GetFileSize(long id, string name)
         {
-            //データの存在チェック
+            // ファイルの存在チェック
             var file = trainingHistoryRepository.GetAttachedFile(id, name);
             if (file == null)
             {
@@ -834,7 +834,7 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             var fileSize = storageLogic.GetFileSize(ResourceType.TrainingHistoryAttachedFiles, file.StoredPath);
-            return JsonOK(new DataFileOutputModel { Id = id, Key = name, FileId = file.Id, FileName = file.FileName, FileSize = fileSize });
+            return JsonOK(new FileOutputModel { Id = id, Key = name, FileId = file.Id, FileName = file.FileName, FileSize = fileSize });
         }
 
         /// <summary>
