@@ -1,5 +1,8 @@
 ﻿namespace Nssol.Platypus.ApiModels.TrainingApiModels
 {
+    /// <summary>
+    /// 学習履歴の添付ファイル出力モデル
+    /// </summary>
     public class FileOutputModel
     {
         /// <summary>

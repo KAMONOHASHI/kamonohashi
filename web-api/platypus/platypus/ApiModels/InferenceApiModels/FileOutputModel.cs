@@ -1,5 +1,8 @@
 ﻿namespace Nssol.Platypus.ApiModels.InferenceApiModels
 {
+    /// <summary>
+    /// 推論履歴の添付ファイル出力モデル
+    /// </summary>
     public class FileOutputModel
     {
         /// <summary>

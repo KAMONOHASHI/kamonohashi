@@ -346,7 +346,7 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             var fileSize = storageLogic.GetFileSize(ResourceType.Data, property.DataFile.StoredPath);
-            return JsonOK(new DataFileOutputModel { Id = id, Key = name, FileId = property.Id, FileName = property.DataFile.FileName, FileSize = fileSize });
+            return JsonOK(new DataFileOutputModel { Id = id, Key = property.Key, FileId = property.Id, FileName = property.DataFile.FileName, FileSize = fileSize });
         }
 
         /// <summary>

@@ -814,7 +814,7 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             var fileSize = storageLogic.GetFileSize(ResourceType.InferenceHistoryAttachedFiles, file.StoredPath);
-            return JsonOK(new ApiModels.InferenceApiModels.FileOutputModel { Id = id, Key = name, FileId = file.Id, FileName = file.FileName, FileSize = fileSize });
+            return JsonOK(new ApiModels.InferenceApiModels.FileOutputModel { Id = id, Key = file.Key, FileId = file.Id, FileName = file.FileName, FileSize = fileSize });
         }
 
         /// <summary>
