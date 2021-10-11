@@ -29,6 +29,7 @@
           :id="uploadedFile.id"
           :download-url="uploadedFile.url"
           :file-name="uploadedFile.fileName"
+          :type="type"
         />
       </div>
       <!-- アップロード済みファイルがあるので、それを表示 -->

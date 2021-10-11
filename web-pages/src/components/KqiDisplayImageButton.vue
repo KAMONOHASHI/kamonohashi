@@ -19,8 +19,7 @@
 </template>
 
 <script>
-import { createNamespacedHelpers } from 'vuex'
-const { mapActions } = createNamespacedHelpers('data')
+import { mapActions } from 'vuex'
 
 export default {
   props: {
@@ -44,6 +43,10 @@ export default {
       type: Number,
       default: null,
     },
+    type: {
+      type: String,
+      default: '',
+    },
   },
   data() {
     return {
@@ -51,16 +54,34 @@ export default {
       size: this.fileSize,
     }
   },
+
   methods: {
-    ...mapActions(['fetchFileSize']),
+    ...mapActions([
+      'data/fetchFileSize',
+      'training/fetchFileSize',
+      'inference/fetchFileSize',
+    ]),
     async openImage() {
       // filesizeがnullの場合にだけshowの切り替えを行う
       // (同じファイルのサイズを複数回取得しようとしない)
       if (!this.show && this.size === null) {
         let params = { id: this.id, name: this.fileName }
-        this.size = await this.fetchFileSize(params)
+
+        // ファイルタイプによってAPIの呼び出し先を変える
+        switch (this.type) {
+          case 'Data':
+            this.size = await this['data/fetchFileSize'](params)
+            break
+          case 'TrainingHistoryAttachedFiles':
+            this.size = await this['training/fetchFileSize'](params)
+            break
+          case 'InferenceHistoryAttachedFiles':
+            this.size = await this['inference/fetchFileSize'](params)
+            break
+        }
+
         // 10485760 Byte = 10 MB
-        if (this.size < 10485760) this.show = true
+        if (this.size < 10485760 && this.size !== null) this.show = true
       }
     },
   },
