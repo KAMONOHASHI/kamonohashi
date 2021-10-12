@@ -112,6 +112,14 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories
         Task<InferenceHistoryAttachedFile> GetAttachedFileAsync(long id);
 
         /// <summary>
+        /// 指定したIDとファイル名の推論履歴添付ファイルを取得します。
+        /// </summary>
+        /// <param name="id">推論履歴ID</param>
+        /// <param name="fileName">ファイル名</param>
+        /// <returns>添付ファイル</returns>
+        InferenceHistoryAttachedFile GetAttachedFile(long id, string fileName);
+
+        /// <summary>
         /// 指定したIDの推論履歴に、指定した名前の添付ファイルが登録済みか。
         /// </summary>
         /// <param name="id">推論履歴ID</param>

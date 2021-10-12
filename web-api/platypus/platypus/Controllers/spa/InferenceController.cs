@@ -797,6 +797,27 @@ namespace Nssol.Platypus.Controllers.spa
         }
 
         /// <summary>
+        /// 推論履歴添付ファイルのサイズ(Byte)を取得する
+        /// </summary>
+        /// <param name="id">対象の推論履歴ID</param>
+        /// <param name="name">対象ファイル名</param>
+        [HttpGet("{id}/files/{name}/size")]
+        [Filters.PermissionFilter(MenuCode.Inference)]
+        [ProducesResponseType(typeof(ApiModels.InferenceApiModels.FileOutputModel), (int)HttpStatusCode.OK)]
+        public IActionResult GetFileSize(long id, string name)
+        {
+            // ファイルの存在チェック
+            var file = inferenceHistoryRepository.GetAttachedFile(id, name);
+            if (file == null)
+            {
+                return JsonNotFound($"Inference ID {id} or file name {name} is not found.");
+            }
+
+            var fileSize = storageLogic.GetFileSize(ResourceType.InferenceHistoryAttachedFiles, file.StoredPath);
+            return JsonOK(new ApiModels.InferenceApiModels.FileOutputModel { Id = id, Key = file.Key, FileId = file.Id, FileName = file.FileName, FileSize = fileSize });
+        }
+
+        /// <summary>
         /// 推論を途中で強制終了
         /// </summary>
         /// <param name="id">推論履歴ID</param>
