@@ -4156,6 +4156,57 @@ export const ApiV2InferencesByIdFilesByFileIdDeleteURL = function(parameters = {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * 推論履歴添付ファイルのサイズ(Byte)を取得する
+ * request: ApiV2InferencesByIdFilesByNameSizeGet
+ * url: ApiV2InferencesByIdFilesByNameSizeGetURL
+ * method: ApiV2InferencesByIdFilesByNameSizeGet_TYPE
+ * raw_url: ApiV2InferencesByIdFilesByNameSizeGet_RAW_URL
+ * @param id - 対象の推論履歴ID
+ * @param name - 対象ファイル名
+ */
+export const ApiV2InferencesByIdFilesByNameSizeGet = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/inferences/{id}/files/{name}/size'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  path = path.replace('{name}', `${parameters['name']}`)
+  if (parameters['name'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: name'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2InferencesByIdFilesByNameSizeGet_RAW_URL = function() {
+  return '/api/v2/inferences/{id}/files/{name}/size'
+}
+export const ApiV2InferencesByIdFilesByNameSizeGet_TYPE = function() {
+  return 'get'
+}
+export const ApiV2InferencesByIdFilesByNameSizeGetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/inferences/{id}/files/{name}/size'
+  path = path.replace('{id}', `${parameters['id']}`)
+  path = path.replace('{name}', `${parameters['name']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * 推論を途中で強制終了
  * request: ApiV2InferencesByIdHaltPost
  * url: ApiV2InferencesByIdHaltPostURL
@@ -9616,6 +9667,57 @@ export const ApiV2TrainingByIdFilesByFileIdDeleteURL = function(parameters = {})
   let path = '/api/v2/training/{id}/files/{fileId}'
   path = path.replace('{id}', `${parameters['id']}`)
   path = path.replace('{fileId}', `${parameters['fileId']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 学習履歴添付ファイルのサイズ(Byte)を取得する
+ * request: ApiV2TrainingByIdFilesByNameSizeGet
+ * url: ApiV2TrainingByIdFilesByNameSizeGetURL
+ * method: ApiV2TrainingByIdFilesByNameSizeGet_TYPE
+ * raw_url: ApiV2TrainingByIdFilesByNameSizeGet_RAW_URL
+ * @param id - 対象の学習履歴ID
+ * @param name - 対象ファイル名
+ */
+export const ApiV2TrainingByIdFilesByNameSizeGet = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/training/{id}/files/{name}/size'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  path = path.replace('{name}', `${parameters['name']}`)
+  if (parameters['name'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: name'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2TrainingByIdFilesByNameSizeGet_RAW_URL = function() {
+  return '/api/v2/training/{id}/files/{name}/size'
+}
+export const ApiV2TrainingByIdFilesByNameSizeGet_TYPE = function() {
+  return 'get'
+}
+export const ApiV2TrainingByIdFilesByNameSizeGetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/training/{id}/files/{name}/size'
+  path = path.replace('{id}', `${parameters['id']}`)
+  path = path.replace('{name}', `${parameters['name']}`)
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]
