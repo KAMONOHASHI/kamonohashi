@@ -243,6 +243,18 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
         }
 
         /// <summary>
+        /// 指定したIDとファイル名の推論履歴添付ファイルを取得します。
+        /// </summary>
+        /// <param name="id">推論履歴ID</param>
+        /// <param name="fileName">ファイル名</param>
+        /// <returns>添付ファイル</returns>
+        public InferenceHistoryAttachedFile GetAttachedFile(long id, string fileName)
+        {
+            return GetModelAll<InferenceHistoryAttachedFile>().FirstOrDefault(d => d.InferenceHistoryId == id && d.FileName == fileName);
+        }
+
+
+        /// <summary>
         /// 推論履歴添付ファイルを追加します。
         /// </summary>
         /// <param name="file">追加対象のファイル</param>

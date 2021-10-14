@@ -222,6 +222,7 @@ let api = {
     putById: gen.ApiV2TrainingByIdPut,
     // GET /spa/trains/{id}/log
     getFilesById: gen.ApiV2TrainingByIdFilesGet,
+    getFileSize: gen.ApiV2TrainingByIdFilesByNameSizeGet,
     postFilesById: gen.ApiV2TrainingByIdFilesPost,
     getContainerFilesById: gen.ApiV2TrainingByIdContainer_filesGet,
     deleteByIdFilesByFileId: gen.ApiV2TrainingByIdFilesByFileIdDelete,
@@ -261,6 +262,7 @@ let api = {
     putById: gen.ApiV2InferencesByIdPut,
     // GET /spa/trains/{id}/log
     getFilesById: gen.ApiV2InferencesByIdFilesGet,
+    getFileSize: gen.ApiV2InferencesByIdFilesByNameSizeGet,
     postFilesById: gen.ApiV2InferencesByIdFilesPost,
     getContainerFilesById: gen.ApiV2InferencesByIdContainer_filesGet,
     deleteByIdFilesByFileId: gen.ApiV2InferencesByIdFilesByFileIdDelete,
