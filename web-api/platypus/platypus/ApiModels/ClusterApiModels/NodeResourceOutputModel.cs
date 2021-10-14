@@ -4,6 +4,9 @@ using Nssol.Platypus.Models;
 
 namespace Nssol.Platypus.ApiModels.ClusterApiModels
 {
+    /// <summary>
+    /// ノードのリソース情報出力モデル
+    /// </summary>
     public class NodeResourceOutputModel
     {
         /// <summary>
