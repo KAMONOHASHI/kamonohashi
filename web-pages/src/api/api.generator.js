@@ -1207,6 +1207,45 @@ export const ApiV2TenantQuotaGetURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * 接続中のテナントが利用可能なノード一覧（リソース値を含む）を取得する。
+ * request: ApiV2TenantNodesGet
+ * url: ApiV2TenantNodesGetURL
+ * method: ApiV2TenantNodesGet_TYPE
+ * raw_url: ApiV2TenantNodesGet_RAW_URL
+ */
+export const ApiV2TenantNodesGet = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/tenant/nodes'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2TenantNodesGet_RAW_URL = function() {
+  return '/api/v2/tenant/nodes'
+}
+export const ApiV2TenantNodesGet_TYPE = function() {
+  return 'get'
+}
+export const ApiV2TenantNodesGetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/tenant/nodes'
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * REST APIとして定時バッチから実行される想定。
  * request: ApiV2AdminTensorboardsDelete
  * url: ApiV2AdminTensorboardsDeleteURL

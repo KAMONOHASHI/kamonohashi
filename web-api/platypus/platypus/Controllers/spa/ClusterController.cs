@@ -133,6 +133,40 @@ namespace Nssol.Platypus.Controllers.spa
             return JsonOK(new QuotaOutputModel(tenant));
         }
 
+
+        /// <summary>
+        /// 接続中のテナントが利用可能なノード一覧（リソース値を含む）を取得する。
+        /// </summary>
+        /// <param name="nodeRepository">DI用</param>
+        [HttpGet("tenant/nodes")]
+        [PermissionFilter(MenuCode.Training, MenuCode.Preprocess, MenuCode.Inference, MenuCode.Notebook, MenuCode.Template)]
+        [ProducesResponseType(typeof(IEnumerable<NodeResourceOutputModel>), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetNodesAsync([FromServices] INodeRepository nodeRepository)
+        {
+            //DBから利用可能なノード情報を取得する。
+            var nodes = nodeRepository.GetAccessibleNodes(CurrentUserInfo.SelectedTenant.Id).OrderBy(n => n.Name);
+
+            //クラスタ側から実ノードのリソース情報を取得する。
+            var nodeInfos = (await clusterManagementLogic.GetAllNodesAsync());
+            if (nodeInfos == null)
+            {
+                return JsonError(HttpStatusCode.ServiceUnavailable, string.Join("\n", "Fetching nodes is failed."));
+            }
+
+            var result = new List<NodeResourceOutputModel>();
+
+            //DBからとクラスタ側をマッチングさせノード一覧を作成する。
+            foreach (var node in nodes)
+            {
+                var info = nodeInfos.FirstOrDefault(i => i.Name == node.Name);
+                if (info != null)
+                {
+                    result.Add(new NodeResourceOutputModel(node, info));
+                }
+            }
+            return JsonOK(result);
+        }
+
         /// <summary>
         /// DB上の全てのTensorBoardコンテナ情報を対応する実コンテナごと削除する。
         /// </summary>

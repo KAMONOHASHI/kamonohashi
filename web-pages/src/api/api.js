@@ -34,6 +34,7 @@ let api = {
   cluster: {
     getPartitions: gen.ApiV2TenantPartitionsGet,
     getQuota: gen.ApiV2TenantQuotaGet,
+    getTenantNodes: gen.ApiV2TenantNodesGet,
 
     admin: {
       getQuotas: gen.ApiV2AdminQuotasGet,
