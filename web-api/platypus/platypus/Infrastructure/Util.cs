@@ -26,6 +26,7 @@ namespace Nssol.Platypus.Infrastructure
         /// <summary>
         /// 日付を共通フォーマットで文字列化する。
         /// </summary>
+        /// <param name="dateTime">日時</param>
         public static string ToFormattedDateString(this DateTime dateTime)
         {
             return dateTime.ToString("yyyy-MM-dd");
@@ -34,6 +35,7 @@ namespace Nssol.Platypus.Infrastructure
         /// <summary>
         /// 日時を共通フォーマットで文字列化する。
         /// </summary>
+        /// <param name="dateTime">日時</param>
         public static string ToFormatedString(this DateTime dateTime)
         {
             return dateTime.ToString("yyyy-MM-dd HH:mm:ss");
@@ -42,6 +44,7 @@ namespace Nssol.Platypus.Infrastructure
         /// <summary>
         /// UTC日時を、ローカル時刻の共通フォーマットで文字列化する。
         /// </summary>
+        /// <param name="dateTime">UTC日時</param>
         public static string ToLocalFormatedString(this DateTime dateTime)
         {
             return dateTime.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss");

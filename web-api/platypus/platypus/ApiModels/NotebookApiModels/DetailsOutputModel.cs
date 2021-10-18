@@ -229,30 +229,32 @@ namespace Nssol.Platypus.ApiModels.NotebookApiModels
         /// <remarks>
         /// Notebookの時刻・時間管理は、再実行機能が存在すること、及び歴史的事情により
         /// Trainingなどのものとは異なっている。
+        /// 
         /// CreatedAt: 初回実行時の時刻
         /// StartedAt: 初回実行時は初回実行時の時刻、再実行時は再実行された時刻
         /// JobStartedAt: 初回、再実行とも、Notebookのコンテナがノードにアサインされた時刻
-        /// unassigned状態のまま終了した場合は、この項目はnullになる
+        ///               unassigned状態のまま終了した場合は、この項目はnullになる
         /// CompletedAt: 初回、再実行とも、Notebookが終了した時刻
         /// 
         /// 待機時間・実行時間の計算は
-        /// TrainingのCreatedAtをNotebookのStartedAtに
-        /// TrainingのStartedAtをNotebookのJobStartedAtに
-        /// TrainingのCompletedAtをNotebookのCompletedAtに
+        ///   TrainingのCreatedAtをNotebookのStartedAtに
+        ///   TrainingのStartedAtをNotebookのJobStartedAtに
+        ///   TrainingのCompletedAtをNotebookのCompletedAtに
         /// それぞれ置き換えたものになる
         /// 
         /// その置き換えたルールが次のとおりである
         /// 
         /// 引数 NotebookHistory history の属性 StartedAt/JobStartedAt/CompletedAt の値に従い、
         ///   待機時間(WaitingTime)と実行時間(ExecutionTime)を設定する。
-        /// JobStartedAt == null 時におては、CompletedAt == null なら Pending 中、
+        /// JobStartedAt == null 時においては、
+        ///   CompletedAt == null なら Pending 中、
         ///   CompletedAt != null なら Pending 中にキャンセルしたと判定する。
         /// 
-        /// 状態                                         | 待機時間                  | 実行時間
-        /// JobStartedAt == null and CompletedAt == null | 現時刻      - StartedAt  | null
-        /// JobStartedAt == null and CompletedAt != null | CompletedAt - StartedAt  | null
+        /// 状態                                         | 待機時間                 | 実行時間
+        /// JobStartedAt == null and CompletedAt == null | 現時刻       - StartedAt | null
+        /// JobStartedAt == null and CompletedAt != null | CompletedAt  - StartedAt | null
         /// CompletedAt == null                          | JobStartedAt - StartedAt | 現時刻      - JobStartedAt
-        /// その他(両方とも値有り)                         | JobStartedAt - StartedAt | CompletedAt - JobStartedAt
+        /// その他(両方とも値有り)                       | JobStartedAt - StartedAt | CompletedAt - JobStartedAt
         /// 
         /// </remarks>
         /// <param name="history">ノートブック履歴</param>

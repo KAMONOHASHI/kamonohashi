@@ -15,17 +15,17 @@ namespace Nssol.Platypus.Models
         public string NodeName { get; set; }
 
         /// <summary>
-        /// CPUコア数
+        /// ノードのCPUコア数
         /// </summary>
         public int NodeCpu { get; set; }
 
         /// <summary>
-        /// メモリ容量（GB）
+        /// ノードのメモリ容量（GB）
         /// </summary>
         public int NodeMemory { get; set; }
 
         /// <summary>
-        /// GPU数
+        /// ノードのGPU数
         /// </summary>
         public int NodeGpu { get; set; }
 
