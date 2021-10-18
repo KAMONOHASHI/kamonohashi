@@ -25,6 +25,9 @@
     </el-row>
 
     <el-row style="padding-top:5px">
+      <div v-if="warnMessage" class="error-message">
+        {{ warnMessage }}
+      </div>
       <div v-if="errors" class="error-message">
         <div v-for="(error, index) in errors" :key="index">
           {{ error }}
@@ -35,7 +38,7 @@
           v-model="value.cpu"
           class="el-input"
           :min="1"
-          :max="quota.cpu === 0 ? defaultMax.cpu : quota.cpu"
+          :max="setMaxCpu()"
           show-input
           @input="resourceValidator()"
         />
@@ -45,7 +48,7 @@
           v-model="value.memory"
           class="el-input"
           :min="1"
-          :max="quota.memory === 0 ? defaultMax.memory : quota.memory"
+          :max="setMaxMemory()"
           show-input
           @input="resourceValidator()"
         />
@@ -55,7 +58,7 @@
           v-model="value.gpu"
           class="el-input"
           :min="0"
-          :max="quota.gpu === 0 ? defaultMax.gpu : quota.gpu"
+          :max="setMaxGpu()"
           show-input
           @input="resourceValidator()"
         />
@@ -103,10 +106,29 @@ export default {
       maxGpuNode: null,
       // エラーメッセージ
       errors: [],
+      // 元々の要求値から変更があった項目リスト
+      originChangedList: [],
+      // 要求リソースの最大値
+      maxResource: {
+        cpu: 250,
+        memory: 500,
+        gpu: 16,
+      },
     }
   },
   computed: {
     ...mapGetters(['nodes']),
+    // 警告メッセージ
+    warnMessage() {
+      if (this.originChangedList.length > 0) {
+        return (
+          '元々の要求リソースから' +
+          this.originChangedList.join(',') +
+          'の値が変更されています。'
+        )
+      }
+      return null
+    },
   },
   async created() {
     await this.getAllocatableNodes()
@@ -196,6 +218,45 @@ export default {
           this.errors.push('要求分のリソースで実行可能なノードがありません。')
         }
       }
+    },
+    // スライダーに設定するCPUの最大値
+    setMaxCpu() {
+      // 最大値として設定する値
+      this.maxResource.cpu =
+        this.quota.cpu === 0 ? this.defaultMax.cpu : this.quota.cpu
+      // 最大値より元々の要求値が超えている場合はリストに追加する
+      if (this.maxResource.cpu < this.value.cpu) {
+        if (!this.originChangedList.includes('CPU')) {
+          this.originChangedList.push('CPU')
+        }
+      }
+      return this.maxResource.cpu
+    },
+    // スライダーに設定するメモリの最大値
+    setMaxMemory() {
+      // 最大値として設定する値
+      this.maxResource.memory =
+        this.quota.memory === 0 ? this.defaultMax.memory : this.quota.memory
+      // 最大値より元々の要求値が超えている場合はリストに追加する
+      if (this.maxResource.memory < this.value.memory) {
+        if (!this.originChangedList.includes('メモリ')) {
+          this.originChangedList.push('メモリ')
+        }
+      }
+      return this.maxResource.memory
+    },
+    // スライダーに設定するGPUの最大値
+    setMaxGpu() {
+      // 最大値として設定する値
+      this.maxResource.gpu =
+        this.quota.gpu === 0 ? this.defaultMax.gpu : this.quota.gpu
+      // 最大値より元々の要求値が超えている場合はリストに追加する
+      if (this.maxResource.gpu < this.value.gpu) {
+        if (!this.originChangedList.includes('GPU')) {
+          this.originChangedList.push('GPU')
+        }
+      }
+      return this.maxResource.gpu
     },
   },
 }
