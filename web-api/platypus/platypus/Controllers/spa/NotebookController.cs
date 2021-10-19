@@ -33,7 +33,6 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly IDataSetRepository dataSetRepository;
         private readonly ITenantRepository tenantRepository;
         private readonly INodeRepository nodeRepository;
-        private readonly IResourceMonitorLogic resourceMonitorLogic;
         private readonly INotebookLogic notebookLogic;
         private readonly IStorageLogic storageLogic;
         private readonly IGitLogic gitLogic;
@@ -50,7 +49,6 @@ namespace Nssol.Platypus.Controllers.spa
             IDataSetRepository dataSetRepository,
             ITenantRepository tenantRepository,
             INodeRepository nodeRepository,
-            IResourceMonitorLogic resourceMonitorLogic,
             INotebookLogic notebookLogic,
             IStorageLogic storageLogic,
             IGitLogic gitLogic,
@@ -64,7 +62,6 @@ namespace Nssol.Platypus.Controllers.spa
             this.dataSetRepository = dataSetRepository;
             this.tenantRepository = tenantRepository;
             this.nodeRepository = nodeRepository;
-            this.resourceMonitorLogic = resourceMonitorLogic;
             this.notebookLogic = notebookLogic;
             this.storageLogic = storageLogic;
             this.gitLogic = gitLogic;
@@ -335,24 +332,7 @@ namespace Nssol.Platypus.Controllers.spa
                 var node = info.NodeName != null
                     ? (await clusterManagementLogic.GetAllNodesAsync()).FirstOrDefault(x => x.Name == info.NodeName)
                     : null;
-                var resourceJob = new ResourceJob
-                {
-                    TenantId = tenant.Id,
-                    TenantName = tenant.Name,
-                    NodeName = node?.Name ?? "",
-                    NodeCpu = (int)(node?.Cpu ?? 0),
-                    NodeMemory = (int)(node?.Memory ?? 0),
-                    NodeGpu = node?.Gpu ?? 0,
-                    ContainerName = notebookHistory.Key,
-                    Cpu = notebookHistory.Cpu,
-                    Memory = notebookHistory.Memory,
-                    Gpu = notebookHistory.Gpu,
-                    JobCreatedAt = notebookHistory.StartedAt ?? notebookHistory.CreatedAt,
-                    JobStartedAt = notebookHistory.JobStartedAt ?? info?.CreatedAt,
-                    JobCompletedAt = notebookHistory.CompletedAt ?? DateTime.Now,
-                    Status = status.Key,
-                };
-                resourceMonitorLogic.AddJobHistory(resourceJob);
+                notebookLogic.AddJobHistory(notebookHistory, node, tenant, info, status);
 
                 //実行中であれば、コンテナを削除
                 await clusterManagementLogic.DeleteContainerAsync(
