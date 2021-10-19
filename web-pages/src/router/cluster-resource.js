@@ -46,13 +46,6 @@ export default [
       {
         path: 'data-download',
         component: DataDL,
-        children: [
-          {
-            path: ':id/:name',
-            component: Edit,
-            props: true,
-          },
-        ],
       },
     ],
   },

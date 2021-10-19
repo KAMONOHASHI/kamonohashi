@@ -12,9 +12,9 @@
           <el-radio-button label="">ノード別</el-radio-button>
           <el-radio-button label="tenant">テナント別</el-radio-button>
           <el-radio-button label="container-list">コンテナ一覧</el-radio-button>
-          <el-radio-button label="data-download"
-            >データダウンロード</el-radio-button
-          >
+          <el-radio-button label="data-download">
+            データダウンロード
+          </el-radio-button>
         </el-radio-group>
       </el-col>
 
@@ -62,9 +62,6 @@ export default {
       } else {
         this.mode = lastElement
       }
-    },
-    handleDataDL() {
-      this.$router.push('/cluster-resource/data-download')
     },
     handleModeChange() {
       switch (this.mode) {

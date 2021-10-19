@@ -11,27 +11,28 @@
       <el-col :span="5" class="grid-content">
         {{ allContainersEndDate }}</el-col
       >
-      <el-col :span="2"> 件数</el-col>
-      <el-col :span="3"> {{ containersCount }}件</el-col>
+      <el-col :span="2">件数</el-col>
+      <el-col :span="3">{{ containersCount }}件</el-col>
       <el-col :span="4">
         <el-button
           type="primary"
           plain
           icon="el-icon-refresh"
           @click="handleUpdateContainersData"
-          >更新</el-button
-        ></el-col
-      >
+        >
+          更新
+        </el-button>
+      </el-col>
     </el-row>
     <el-row class="row">
       <el-col :span="3">履歴のダウンロード</el-col>
-      <el-col :span="1"> 開始日 </el-col>
+      <el-col :span="1">開始日</el-col>
       <el-col :span="5">
         <el-date-picker
           v-model="containersHistoryStartDate"
           type="date"
           placeholder="Pick a day"
-        ></el-date-picker>
+        />
       </el-col>
       <el-col :span="1">終了日</el-col>
       <el-col :span="5">
@@ -39,26 +40,24 @@
           v-model="containersHistoryEndDate"
           type="date"
           placeholder="Pick a day"
-        >
-        </el-date-picker>
+        />
       </el-col>
       <el-col :span="2">ヘッダー</el-col>
-      <el-col :span="3"
-        ><el-switch
+      <el-col :span="3">
+        <el-switch
           v-model="containersHeader"
           active-text="有り"
           inactive-text="無し"
-        >
-        </el-switch
-      ></el-col>
+        />
+      </el-col>
       <el-col :span="4">
         <el-button
           type="primary"
           plain
           icon="el-icon-download"
           @click="handleContainersDownload"
-        ></el-button
-      ></el-col>
+        />
+      </el-col>
     </el-row>
     <el-row class="row">
       <el-col :span="9">履歴の削除</el-col>
@@ -68,22 +67,21 @@
           v-model="containersDeleteEndDate"
           type="date"
           placeholder="Pick a day"
-        >
-        </el-date-picker>
+        />
       </el-col>
       <el-col :span="4">
         <el-button
           type="danger"
           icon="el-icon-delete"
           @click="handleContainersDelete"
-        ></el-button>
+        />
       </el-col>
     </el-row>
 
     <h3>ジョブ実行履歴</h3>
     <el-row class="row">
       <el-col :span="3">保存されている履歴</el-col>
-      <el-col :span="1"> 開始日 </el-col>
+      <el-col :span="1">開始日</el-col>
       <el-col :span="5" class="grid-content">
         {{ allJobsStartDate }}
       </el-col>
@@ -92,27 +90,28 @@
         {{ allJobsEndDate }}
       </el-col>
 
-      <el-col :span="2"> 件数</el-col>
-      <el-col :span="3"> {{ jobsCount }}件</el-col>
+      <el-col :span="2">件数</el-col>
+      <el-col :span="3">{{ jobsCount }}件</el-col>
       <el-col :span="4">
         <el-button
           type="primary"
           plain
           icon="el-icon-refresh"
           @click="handleUpdateJobsData"
-          >更新</el-button
-        ></el-col
-      >
+        >
+          更新
+        </el-button>
+      </el-col>
     </el-row>
     <el-row class="row">
       <el-col :span="3">履歴のダウンロード</el-col>
-      <el-col :span="1"> 開始日 </el-col>
+      <el-col :span="1">開始日</el-col>
       <el-col :span="5">
         <el-date-picker
           v-model="jobsHistoryStartDate"
           type="date"
           placeholder="Pick a day"
-        ></el-date-picker>
+        />
       </el-col>
       <el-col :span="1">終了日</el-col>
       <el-col :span="5">
@@ -120,26 +119,24 @@
           v-model="jobsHistoryEndDate"
           type="date"
           placeholder="Pick a day"
-        >
-        </el-date-picker>
+        />
       </el-col>
       <el-col :span="2">ヘッダー</el-col>
-      <el-col :span="3"
-        ><el-switch
+      <el-col :span="3">
+        <el-switch
           v-model="jobsHeader"
           active-text="有り"
           inactive-text="無し"
-        >
-        </el-switch
-      ></el-col>
+        />
+      </el-col>
       <el-col :span="4">
         <el-button
           type="primary"
           plain
           icon="el-icon-download"
           @click="handleJobsDownload"
-        ></el-button
-      ></el-col>
+        />
+      </el-col>
     </el-row>
     <el-row class="row">
       <el-col :span="9">履歴の削除</el-col>
@@ -149,15 +146,14 @@
           v-model="jobsDeleteEndDate"
           type="date"
           placeholder="Pick a day"
-        >
-        </el-date-picker>
+        />
       </el-col>
       <el-col :span="4">
         <el-button
           type="danger"
           icon="el-icon-delete"
           @click="handleJobsDelete"
-        ></el-button>
+        />
       </el-col>
     </el-row>
   </div>
@@ -170,6 +166,7 @@ const { mapGetters, mapActions } = createNamespacedHelpers('resource')
 export default {
   data: function() {
     return {
+      // コンテナリソース
       allContainersStartDate: '　',
       allContainersEndDate: '　',
       containersCount: '－',
@@ -178,13 +175,13 @@ export default {
       containersHeader: true,
       containersDeleteEndDate: null,
 
+      // ジョブ実行履歴
       allJobsStartDate: '　',
       allJobsEndDate: '　',
       jobsCount: '－',
       jobsHistoryStartDate: null,
       jobsHistoryEndDate: null,
       jobsHeader: true,
-
       jobsDeleteEndDate: null,
     }
   },
@@ -196,18 +193,9 @@ export default {
       'historiesJobsMetadata',
       'historiesJobsData',
     ]),
-
-    columnWidth: function() {
-      return '150px'
-    },
-  },
-
-  async created() {
-    await this.retrieveData()
   },
   methods: {
     ...mapActions([
-      'fetchNodes',
       'fetchHistoriesContainersMetadata',
       'fetchHistoriesContainersData',
       'deleteHistoriesContainers',
@@ -215,9 +203,6 @@ export default {
       'fetchHistoriesJobsData',
       'deleteHistoriesJobs',
     ]),
-    async retrieveData() {
-      await this.fetchNodes()
-    },
     async handleUpdateContainersData() {
       await this.fetchHistoriesContainersMetadata()
       this.allContainersStartDate = this.historiesContainersMetadata.startDate
@@ -234,7 +219,6 @@ export default {
       let blob = new Blob([this.historiesContainersData], {
         type: 'text/csv',
       })
-
       let link = document.createElement('a')
       link.href = window.URL.createObjectURL(blob)
       let date = new Date()
@@ -245,8 +229,8 @@ export default {
         ('0' + date.getHours()).slice(-2) +
         ('0' + date.getMinutes()).slice(-2) +
         ('0' + date.getSeconds()).slice(-2)
+      // ファイル名の指定
       link.download = date + '_container.csv'
-
       link.click()
     },
     async handleContainersDelete() {
@@ -262,6 +246,7 @@ export default {
             -2,
           )}までのコンテナリソース履歴を削除しますか`
       }
+      // 確認ダイアログ
       await this.$confirm(confirmMessage, 'Warning', {
         distinguishCancelAndClose: true,
         confirmButtonText: 'はい',
@@ -306,6 +291,7 @@ export default {
         ('0' + date.getHours()).slice(-2) +
         ('0' + date.getMinutes()).slice(-2) +
         ('0' + date.getSeconds()).slice(-2)
+      // ファイル名の指定
       link.download = date + '_job.csv'
       link.click()
     },
@@ -323,6 +309,7 @@ export default {
             -2,
           )}までのジョブ実行履歴を削除しますか`
       }
+      // 確認ダイアログ
       await this.$confirm(confirmMessage, 'Warning', {
         distinguishCancelAndClose: true,
         confirmButtonText: 'はい',
@@ -344,14 +331,6 @@ export default {
 </script>
 
 <style scoped>
-.table /deep/ .el-table__expanded-cell {
-  padding-top: 0px !important;
-  padding-right: 0px !important;
-}
-
-.table /deep/ .row-disabled {
-  background-color: #f0f0f0;
-}
 .row {
   font-size: 14px;
   line-height: 43px;
