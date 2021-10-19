@@ -35,6 +35,7 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly IDataSetRepository dataSetRepository;
         private readonly ITenantRepository tenantRepository;
         private readonly INodeRepository nodeRepository;
+        private readonly IResourceMonitorLogic resourceMonitorLogic;
         private readonly IDataSetLogic dataSetLogic;
         private readonly IInferenceLogic inferenceLogic;
         private readonly IStorageLogic storageLogic;
@@ -51,6 +52,7 @@ namespace Nssol.Platypus.Controllers.spa
             IDataSetRepository dataSetRepository,
             ITenantRepository tenantRepository,
             INodeRepository nodeRepository,
+            IResourceMonitorLogic resourceMonitorLogic,
             IDataSetLogic dataSetLogic,
             IInferenceLogic inferenceLogic,
             IStorageLogic storageLogic,
@@ -64,6 +66,7 @@ namespace Nssol.Platypus.Controllers.spa
             this.dataSetRepository = dataSetRepository;
             this.tenantRepository = tenantRepository;
             this.nodeRepository = nodeRepository;
+            this.resourceMonitorLogic = resourceMonitorLogic;
             this.dataSetLogic = dataSetLogic;
             this.inferenceLogic = inferenceLogic;
             this.storageLogic = storageLogic;
@@ -922,7 +925,25 @@ namespace Nssol.Platypus.Controllers.spa
                 var node = info.NodeName != null
                     ? (await clusterManagementLogic.GetAllNodesAsync()).FirstOrDefault(x => x.Name == info.NodeName)
                     : null;
-                inferenceLogic.AddJobHistory(inferenceHistory, node, tenant, info, status);
+                var resourceJob = new ResourceJob
+                {
+                    TenantId = tenant.Id,
+                    TenantName = tenant.Name,
+                    NodeName = node?.Name ?? "",
+                    NodeCpu = (int)(node?.Cpu ?? 0),
+                    NodeMemory = (int)(node?.Memory ?? 0),
+                    NodeGpu = node?.Gpu ?? 0,
+                    ContainerName = inferenceHistory.Key,
+                    Cpu = inferenceHistory.Cpu,
+                    Memory = inferenceHistory.Memory,
+                    Gpu = inferenceHistory.Gpu,
+                    JobCreatedAt = inferenceHistory.CreatedAt,
+                    JobStartedAt = inferenceHistory.StartedAt ?? info?.CreatedAt,
+                    JobCompletedAt = inferenceHistory.CompletedAt ?? DateTime.Now,
+                    Status = status.Key,
+                };
+                resourceMonitorLogic.AddJobHistory(resourceJob);
+
 
                 //実行中であれば、コンテナを削除
                 await clusterManagementLogic.DeleteContainerAsync(
