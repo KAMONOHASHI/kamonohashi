@@ -837,6 +837,9 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// コンテナリソース履歴のデータを取得する
         /// </summary>
+        /// <param name="startDate">開始日</param>
+        /// <param name="endDate">終了日</param>
+        /// <param name="withHeader">ヘッダ情報を付与するか</param>
         [HttpGet("histories/containers/data")]
         [PermissionFilter(MenuCode.Resource)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
@@ -888,10 +891,11 @@ namespace Nssol.Platypus.Controllers.spa
                 return File(sw.BaseStream, "text/csv", $"{DateTime.Now:yyyyMMddHHmmss}_container.csv", false);
             }
         }
-        
+
         /// <summary>
         /// コンテナリソース履歴を削除する
         /// </summary>
+        /// <param name="model">削除対象の入力モデル</param>
         [HttpPatch("histories/containers")]
         [PermissionFilter(MenuCode.Resource)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
@@ -937,6 +941,9 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// ジョブ実行履歴のデータを取得する
         /// </summary>
+        /// <param name="startDate">開始日</param>
+        /// <param name="endDate">終了日</param>
+        /// <param name="withHeader">ヘッダ情報を付与するか</param>
         [HttpGet("histories/jobs/data")]
         [PermissionFilter(MenuCode.Resource)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
@@ -986,6 +993,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// ジョブ実行履歴を削除する
         /// </summary>
+        /// <param name="model">削除対象の入力モデル</param>
         [HttpPatch("histories/jobs")]
         [PermissionFilter(MenuCode.Resource)]
         [ProducesResponseType((int)HttpStatusCode.OK)]

@@ -71,6 +71,10 @@ namespace Nssol.Platypus.Logic.HostedService
             return ret;
         }
 
+        /// <summary>
+        /// クラスタ上に登録されているノードおよびコンテナのリソース情報をDBに登録する。
+        /// </summary>
+        /// <param name="doWorkCount">実行回数</param>
         protected override async void DoWork(object state, int doWorkCount)
         {
             LogInfo($"Resource monitor {doWorkCount}");
@@ -135,7 +139,7 @@ namespace Nssol.Platypus.Logic.HostedService
             }
             catch (Exception e)
             {
-                // DB 系での削除操作などで例外をキャッチしたが ERROR ログを出力して処理を継続
+                // DB 系で例外をキャッチしたが ERROR ログを出力して処理を継続
                 LogError($"例外をキャッチしましたが処理を継続します。 例外メッセージ=\"{e.Message}\"");
             }
         }
