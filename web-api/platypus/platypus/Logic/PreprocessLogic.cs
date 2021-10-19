@@ -2,6 +2,7 @@
 using Nssol.Platypus.DataAccess.Repositories.Interfaces;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories;
 using Nssol.Platypus.Infrastructure;
+using Nssol.Platypus.Infrastructure.Infos;
 using Nssol.Platypus.Infrastructure.Types;
 using Nssol.Platypus.Logic.Interfaces;
 using Nssol.Platypus.Models;
@@ -79,24 +80,7 @@ namespace Nssol.Platypus.Logic
                 var node = info.NodeName != null
                     ? (await clusterManagementLogic.GetAllNodesAsync()).FirstOrDefault(x => x.Name == info.NodeName)
                     : null;
-                var resourceJob = new ResourceJob
-                {
-                    TenantId = tenant.Id,
-                    TenantName = tenant.Name,
-                    NodeName = node?.Name ?? "",
-                    NodeCpu = (int)(node?.Cpu ?? 0),
-                    NodeMemory = (int)(node?.Memory ?? 0),
-                    NodeGpu = node?.Gpu ?? 0,
-                    ContainerName = preprocessHistory.Name,
-                    Cpu = preprocessHistory.Cpu ?? 0,
-                    Memory = preprocessHistory.Memory ?? 0,
-                    Gpu = preprocessHistory.Gpu ?? 0,
-                    JobCreatedAt = preprocessHistory.CreatedAt,
-                    JobStartedAt = preprocessHistory.StartedAt ?? info?.CreatedAt,
-                    JobCompletedAt = preprocessHistory.CompletedAt ?? DateTime.Now,
-                    Status = status.Key,
-                };
-                resourceMonitorLogic.AddJobHistory(resourceJob);
+                AddJobHistory(preprocessHistory, node, tenant, info, status);
                 unitOfWork.Commit();
 
                 //コンテナが動いていれば、停止する
@@ -108,6 +92,36 @@ namespace Nssol.Platypus.Logic
             await storageLogic.DeleteResultsAsync(ResourceType.PreprocContainerAttachedFiles, preprocessHistory.Id);
 
             return result;
+        }
+
+        /// <summary>
+        /// ジョブ実行履歴を追加する
+        /// </summary>
+        /// <param name="preprocessHistory">対象前処理履歴</param>
+        /// <param name="node">実行ノード</param>
+        /// <param name="tenant">実行テナント</param>
+        /// <param name="info">対象コンテナ詳細情報</param>
+        /// <param name="status">ステータス</param>
+        public void AddJobHistory(PreprocessHistory preprocessHistory, NodeInfo node, Tenant tenant, ContainerDetailsInfo info, ContainerStatus status)
+        {
+            var resourceJob = new ResourceJob
+            {
+                TenantId = tenant.Id,
+                TenantName = tenant.Name,
+                NodeName = node?.Name ?? "",
+                NodeCpu = (int)(node?.Cpu ?? 0),
+                NodeMemory = (int)(node?.Memory ?? 0),
+                NodeGpu = node?.Gpu ?? 0,
+                ContainerName = preprocessHistory.Name,
+                Cpu = preprocessHistory.Cpu ?? 0,
+                Memory = preprocessHistory.Memory ?? 0,
+                Gpu = preprocessHistory.Gpu ?? 0,
+                JobCreatedAt = preprocessHistory.CreatedAt,
+                JobStartedAt = preprocessHistory.StartedAt ?? info?.CreatedAt,
+                JobCompletedAt = preprocessHistory.CompletedAt ?? DateTime.Now,
+                Status = status.Key,
+            };
+            resourceMonitorLogic.AddJobHistory(resourceJob);
         }
     }
 }
