@@ -3,6 +3,7 @@ using Nssol.Platypus.DataAccess.Repositories.Interfaces;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories;
 using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Infrastructure.Types;
+using Nssol.Platypus.Infrastructure.Infos;
 using Nssol.Platypus.Logic.Interfaces;
 using Nssol.Platypus.Models;
 using Nssol.Platypus.Models.TenantModels;
@@ -55,28 +56,8 @@ namespace Nssol.Platypus.Logic
                 // コンテナ削除の前に、DBの更新を先に実行
                 await trainingHistoryRepository.UpdateStatusAsync(trainingHistory.Id, status, info.CreatedAt, DateTime.Now, force);
 
-                // ジョブ実行履歴追加
-                var node = info.NodeName != null
-                    ? (await clusterManagementLogic.GetAllNodesAsync()).FirstOrDefault(x => x.Name == info.NodeName)
-                    : null;
-                var resourceJob = new ResourceJob
-                {
-                    TenantId = tenant.Id,
-                    TenantName = tenant.Name,
-                    NodeName = node?.Name ?? "",
-                    NodeCpu = (int)(node?.Cpu ?? 0),
-                    NodeMemory = (int)(node?.Memory ?? 0),
-                    NodeGpu = node?.Gpu ?? 0,
-                    ContainerName = trainingHistory.Key,
-                    Cpu = trainingHistory.Cpu,
-                    Memory = trainingHistory.Memory,
-                    Gpu = trainingHistory.Gpu,
-                    JobCreatedAt = trainingHistory.CreatedAt,
-                    JobStartedAt = trainingHistory.StartedAt ?? info?.CreatedAt,
-                    JobCompletedAt = trainingHistory.CompletedAt ?? DateTime.Now,
-                    Status = status.Key,
-                };
-                resourceMonitorLogic.AddJobHistory(resourceJob);
+                /// ジョブ実行履歴追加
+                await AddJobHistory(trainingHistory, tenant, info, status);
 
                 // 実コンテナ削除の結果は確認せず、DBの更新を先に確定する（コンテナがいないなら、そのまま消しても問題ない想定）
                 unitOfWork.Commit();
@@ -113,5 +94,39 @@ namespace Nssol.Platypus.Logic
 
             unitOfWork.Commit();
         }
+
+        /// <summary>
+        /// ジョブ実行履歴を追加する
+        /// </summary>
+        /// <param name="trainingHistory">対象学習履歴</param>
+        /// <param name="tenant">対象テナント</param>
+        /// <param name="info">対象コンテナの詳細情報</param>
+        /// <param name="status">変更後のステータス</param>
+        public async Task AddJobHistory(TrainingHistory trainingHistory, Tenant tenant, ContainerDetailsInfo info, ContainerStatus status)
+        {
+            // ノード情報の取得
+            var node = info.NodeName != null
+                ? (await clusterManagementLogic.GetAllNodesAsync()).FirstOrDefault(x => x.Name == info.NodeName)
+                : null;
+            var resourceJob = new ResourceJob
+            {
+                TenantId = tenant.Id,
+                TenantName = tenant.Name,
+                NodeName = node?.Name ?? "",
+                NodeCpu = (int)(node?.Cpu ?? 0),
+                NodeMemory = (int)(node?.Memory ?? 0),
+                NodeGpu = node?.Gpu ?? 0,
+                ContainerName = trainingHistory.Key,
+                Cpu = trainingHistory.Cpu,
+                Memory = trainingHistory.Memory,
+                Gpu = trainingHistory.Gpu,
+                JobCreatedAt = trainingHistory.CreatedAt,
+                JobStartedAt = trainingHistory.StartedAt ?? info?.CreatedAt,
+                JobCompletedAt = trainingHistory.CompletedAt ?? DateTime.Now,
+                Status = status.Key,
+            };
+            resourceMonitorLogic.AddJobHistory(resourceJob);
+        }
+
     }
 }

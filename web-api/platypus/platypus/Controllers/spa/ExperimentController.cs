@@ -50,6 +50,7 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly ITensorBoardContainerRepository tensorBoardContainerRepository;
         private readonly ITagRepository tagRepository;
         private readonly IStorageLogic storageLogic;
+        private readonly ITrainingLogic trainingLogic;
 
         public ExperimentController(
             IExperimentRepository experimentRepository,
@@ -76,6 +77,7 @@ namespace Nssol.Platypus.Controllers.spa
         ITensorBoardContainerRepository tensorBoardContainerRepository,
         ITagRepository tagRepository,
         IStorageLogic storageLogic,
+        ITrainingLogic trainingLogic,
         IHttpContextAccessor accessor) : base(accessor)
         {
             this.trainingHistoryRepository = trainingHistoryRepository;
@@ -101,6 +103,7 @@ namespace Nssol.Platypus.Controllers.spa
             this.tensorBoardContainerRepository = tensorBoardContainerRepository;
             this.tagRepository = tagRepository;
             this.storageLogic = storageLogic;
+            this.trainingLogic = trainingLogic;
             this.unitOfWork = unitOfWork;
         }
 
@@ -730,6 +733,7 @@ namespace Nssol.Platypus.Controllers.spa
                         tensorBoardContainerRepository,
                         tagRepository,
                         resourceMonitorLogic,
+                        trainingLogic,
                         RequestUrl);
                     if (!status)
                     {
@@ -755,6 +759,7 @@ namespace Nssol.Platypus.Controllers.spa
                     tensorBoardContainerRepository,
                     tagRepository,
                     resourceMonitorLogic,
+                    trainingLogic,
                     RequestUrl);
                 if (!status)
                 {
@@ -783,6 +788,7 @@ namespace Nssol.Platypus.Controllers.spa
                         tensorBoardContainerRepository,
                         tagRepository,
                         resourceMonitorLogic,
+                        trainingLogic,
                         RequestUrl);
                     if (!status)
                     {
@@ -1009,6 +1015,7 @@ namespace Nssol.Platypus.Controllers.spa
                     tensorBoardContainerRepository,
                     tagRepository,
                     resourceMonitorLogic,
+                    trainingLogic,
                     RequestUrl);
                 if (!status)
                 {

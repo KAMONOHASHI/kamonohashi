@@ -1056,6 +1056,7 @@ namespace Nssol.Platypus.Controllers.spa
                 tensorBoardContainerRepository,
                 tagRepository,
                 resourceMonitorLogic,
+                trainingLogic,
                 RequestUrl);
             return result;
         }
@@ -1074,6 +1075,7 @@ namespace Nssol.Platypus.Controllers.spa
             ITensorBoardContainerRepository tensorBoardContainerRepository,
             ITagRepository tagRepository,
             IResourceMonitorLogic resourceMonitorLogic,
+            ITrainingLogic trainingLogic,
             string requestUrl
             )
         {
@@ -1115,27 +1117,7 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 // ジョブ実行履歴追加
                 var info = await clusterManagementLogic.GetContainerDetailsInfoAsync(trainingHistory.Key, tenant.Name, false);
-                var node = info.NodeName != null
-                    ? (await clusterManagementLogic.GetAllNodesAsync()).FirstOrDefault(x => x.Name == info.NodeName)
-                    : null;
-                var resourceJob = new ResourceJob
-                {
-                    TenantId = tenant.Id,
-                    TenantName = tenant.Name,
-                    NodeName = node?.Name ?? "",
-                    NodeCpu = (int)(node?.Cpu ?? 0),
-                    NodeMemory = (int)(node?.Memory ?? 0),
-                    NodeGpu = node?.Gpu ?? 0,
-                    ContainerName = trainingHistory.Key,
-                    Cpu = trainingHistory.Cpu,
-                    Memory = trainingHistory.Memory,
-                    Gpu = trainingHistory.Gpu,
-                    JobCreatedAt = trainingHistory.CreatedAt,
-                    JobStartedAt = trainingHistory.StartedAt ?? info?.CreatedAt,
-                    JobCompletedAt = trainingHistory.CompletedAt ?? DateTime.Now,
-                    Status = status.Key,
-                };
-                resourceMonitorLogic.AddJobHistory(resourceJob);
+                await trainingLogic.AddJobHistory(trainingHistory, tenant, info, status);
 
                 //実行中であれば、コンテナを削除
                 await clusterManagementLogic.DeleteContainerAsync(
