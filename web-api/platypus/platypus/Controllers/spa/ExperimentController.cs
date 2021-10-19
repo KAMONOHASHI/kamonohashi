@@ -26,6 +26,7 @@ namespace Nssol.Platypus.Controllers.spa
     [Route("api/v{api-version:apiVersion}/experiment")]
     public class ExperimentController : PlatypusApiControllerBase
     {
+        // for DI
         private readonly IExperimentRepository experimentRepository;
         private readonly IExperimentPreprocessRepository experimentPreprocessRepository;
         private readonly IAquariumEvaluationRepository evaluationRepository;
@@ -36,22 +37,24 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly ITemplateRepository templateRepository;
         private readonly ITemplateVersionRepository templateVersionRepository;
         private readonly ITenantRepository tenantRepository;
-        private readonly ITemplateLogic templateLogic;
-        private readonly ITagLogic tagLogic;
         private readonly INodeRepository nodeRepository;
-        private readonly IResourceMonitorLogic resourceMonitorLogic;
-        private readonly IGitLogic gitLogic;
-        private readonly IClusterManagementLogic clusterManagementLogic;
-        private readonly IDataSetLogic dataSetLogic;
-        private readonly IRegistryLogic registryLogic;
-        private readonly IUnitOfWork unitOfWork;
         private readonly ITrainingHistoryRepository trainingHistoryRepository;
         private readonly IInferenceHistoryRepository inferenceHistoryRepository;
         private readonly ITensorBoardContainerRepository tensorBoardContainerRepository;
+        private readonly ITemplateLogic templateLogic;
+        private readonly ITagLogic tagLogic;
+        private readonly IGitLogic gitLogic;
+        private readonly IDataSetLogic dataSetLogic;
+        private readonly IRegistryLogic registryLogic;
         private readonly ITagRepository tagRepository;
         private readonly IStorageLogic storageLogic;
         private readonly ITrainingLogic trainingLogic;
+        private readonly IClusterManagementLogic clusterManagementLogic;
+        private readonly IUnitOfWork unitOfWork;
 
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
         public ExperimentController(
             IExperimentRepository experimentRepository,
             IExperimentPreprocessRepository experimentPreprocessRepository,
@@ -60,27 +63,25 @@ namespace Nssol.Platypus.Controllers.spa
             IDataSetRepository dataSetRepository,
             IGitRepository gitRepository,
             IRegistryRepository registryRepository,
-            ITrainingHistoryRepository trainingHistoryRepository,
             ITemplateRepository templateRepository,
             ITemplateVersionRepository templateVersionRepository,
             ITenantRepository tenantRepository,
             INodeRepository nodeRepository,
-            IResourceMonitorLogic resourceMonitorLogic,
+            ITrainingHistoryRepository trainingHistoryRepository,
+            IInferenceHistoryRepository inferenceHistoryRepository,
+            ITensorBoardContainerRepository tensorBoardContainerRepository,
+            ITagRepository tagRepository,
             ITemplateLogic templateLogic,
             ITagLogic tagLogic,
             IGitLogic gitLogic,
-            IClusterManagementLogic clusterManagementLogic,
             IDataSetLogic dataSetLogic,
             IRegistryLogic registryLogic,
+            IStorageLogic storageLogic,
+            ITrainingLogic trainingLogic,
+            IClusterManagementLogic clusterManagementLogic,
             IUnitOfWork unitOfWork,
-        IInferenceHistoryRepository inferenceHistoryRepository,
-        ITensorBoardContainerRepository tensorBoardContainerRepository,
-        ITagRepository tagRepository,
-        IStorageLogic storageLogic,
-        ITrainingLogic trainingLogic,
-        IHttpContextAccessor accessor) : base(accessor)
+            IHttpContextAccessor accessor) : base(accessor)
         {
-            this.trainingHistoryRepository = trainingHistoryRepository;
             this.experimentRepository = experimentRepository;
             this.experimentPreprocessRepository = experimentPreprocessRepository;
             this.evaluationRepository = evaluationRepository;
@@ -92,18 +93,18 @@ namespace Nssol.Platypus.Controllers.spa
             this.templateVersionRepository = templateVersionRepository;
             this.tenantRepository = tenantRepository;
             this.nodeRepository = nodeRepository;
-            this.resourceMonitorLogic = resourceMonitorLogic;
-            this.templateLogic = templateLogic;
-            this.tagLogic = tagLogic;
-            this.gitLogic = gitLogic;
-            this.clusterManagementLogic = clusterManagementLogic;
-            this.dataSetLogic = dataSetLogic;
-            this.registryLogic = registryLogic;
+            this.trainingHistoryRepository = trainingHistoryRepository;
             this.inferenceHistoryRepository = inferenceHistoryRepository;
             this.tensorBoardContainerRepository = tensorBoardContainerRepository;
             this.tagRepository = tagRepository;
+            this.templateLogic = templateLogic;
+            this.tagLogic = tagLogic;
+            this.gitLogic = gitLogic;
+            this.dataSetLogic = dataSetLogic;
+            this.registryLogic = registryLogic;
             this.storageLogic = storageLogic;
             this.trainingLogic = trainingLogic;
+            this.clusterManagementLogic = clusterManagementLogic;
             this.unitOfWork = unitOfWork;
         }
 
@@ -732,7 +733,6 @@ namespace Nssol.Platypus.Controllers.spa
                         inferenceHistoryRepository,
                         tensorBoardContainerRepository,
                         tagRepository,
-                        resourceMonitorLogic,
                         trainingLogic,
                         RequestUrl);
                     if (!status)
@@ -758,7 +758,6 @@ namespace Nssol.Platypus.Controllers.spa
                     inferenceHistoryRepository,
                     tensorBoardContainerRepository,
                     tagRepository,
-                    resourceMonitorLogic,
                     trainingLogic,
                     RequestUrl);
                 if (!status)
@@ -787,7 +786,6 @@ namespace Nssol.Platypus.Controllers.spa
                         inferenceHistoryRepository,
                         tensorBoardContainerRepository,
                         tagRepository,
-                        resourceMonitorLogic,
                         trainingLogic,
                         RequestUrl);
                     if (!status)
@@ -1014,7 +1012,6 @@ namespace Nssol.Platypus.Controllers.spa
                     inferenceHistoryRepository,
                     tensorBoardContainerRepository,
                     tagRepository,
-                    resourceMonitorLogic,
                     trainingLogic,
                     RequestUrl);
                 if (!status)

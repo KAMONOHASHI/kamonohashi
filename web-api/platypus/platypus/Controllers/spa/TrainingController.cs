@@ -31,6 +31,7 @@ namespace Nssol.Platypus.Controllers.spa
     [Route("api/v{api-version:apiVersion}/training")]
     public class TrainingController : PlatypusApiControllerBase
     {
+        // for DI
         private readonly ITrainingHistoryRepository trainingHistoryRepository;
         private readonly IInferenceHistoryRepository inferenceHistoryRepository;
         private readonly ITensorBoardContainerRepository tensorBoardContainerRepository;
@@ -38,7 +39,6 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly ITagRepository tagRepository;
         private readonly ITenantRepository tenantRepository;
         private readonly INodeRepository nodeRepository;
-        private readonly IResourceMonitorLogic resourceMonitorLogic;
         private readonly IDataSetLogic dataSetLogic;
         private readonly ITagLogic tagLogic;
         private readonly ITrainingLogic trainingLogic;
@@ -59,7 +59,6 @@ namespace Nssol.Platypus.Controllers.spa
             ITagRepository tagRepository,
             ITenantRepository tenantRepository,
             INodeRepository nodeRepository,
-            IResourceMonitorLogic resourceMonitorLogic,
             IDataSetLogic dataSetLogic,
             ITagLogic tagLogic,
             ITrainingLogic trainingLogic,
@@ -77,7 +76,6 @@ namespace Nssol.Platypus.Controllers.spa
             this.tagRepository = tagRepository;
             this.tenantRepository = tenantRepository;
             this.nodeRepository = nodeRepository;
-            this.resourceMonitorLogic = resourceMonitorLogic;
             this.dataSetLogic = dataSetLogic;
             this.tagLogic = tagLogic;
             this.trainingLogic = trainingLogic;
@@ -1055,7 +1053,6 @@ namespace Nssol.Platypus.Controllers.spa
                 inferenceHistoryRepository,
                 tensorBoardContainerRepository,
                 tagRepository,
-                resourceMonitorLogic,
                 trainingLogic,
                 RequestUrl);
             return result;
@@ -1074,7 +1071,6 @@ namespace Nssol.Platypus.Controllers.spa
             IInferenceHistoryRepository inferenceHistoryRepository,
             ITensorBoardContainerRepository tensorBoardContainerRepository,
             ITagRepository tagRepository,
-            IResourceMonitorLogic resourceMonitorLogic,
             ITrainingLogic trainingLogic,
             string requestUrl
             )
@@ -1115,9 +1111,14 @@ namespace Nssol.Platypus.Controllers.spa
 
             if (status.Exist())
             {
-                // ジョブ実行履歴追加
                 var info = await clusterManagementLogic.GetContainerDetailsInfoAsync(trainingHistory.Key, tenant.Name, false);
-                await trainingLogic.AddJobHistory(trainingHistory, tenant, info, status);
+                // ノード情報の取得
+                var node = info.NodeName != null
+                    ? (await clusterManagementLogic.GetAllNodesAsync()).FirstOrDefault(x => x.Name == info.NodeName)
+                    : null;
+
+                // ジョブ実行履歴追加
+                trainingLogic.AddJobHistory(trainingHistory, node, tenant, info, status);
 
                 //実行中であれば、コンテナを削除
                 await clusterManagementLogic.DeleteContainerAsync(

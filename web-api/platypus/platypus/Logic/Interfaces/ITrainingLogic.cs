@@ -1,8 +1,8 @@
 ﻿using Nssol.Platypus.Infrastructure;
+using Nssol.Platypus.Infrastructure.Infos;
+using Nssol.Platypus.Models;
 using Nssol.Platypus.Models.TenantModels;
 using System.Threading.Tasks;
-using Nssol.Platypus.Models;
-using Nssol.Platypus.Infrastructure.Infos;
 
 namespace Nssol.Platypus.Logic.Interfaces
 {
@@ -30,9 +30,10 @@ namespace Nssol.Platypus.Logic.Interfaces
         /// ジョブ実行履歴を追加する
         /// </summary>
         /// <param name="trainingHistory">対象学習履歴</param>
-        /// <param name="tenant">対象テナント</param>
-        /// <param name="info">対象コンテナの詳細情報</param>
-        /// <param name="status">変更後のステータス</param>
-        Task AddJobHistory(TrainingHistory trainingHistory, Tenant tenant, ContainerDetailsInfo info, ContainerStatus status);
+        /// <param name="node">実行ノード</param>
+        /// <param name="tenant">実行テナント</param>
+        /// <param name="info">対象コンテナ詳細情報</param>
+        /// <param name="status">ステータス</param>
+        void AddJobHistory(TrainingHistory trainingHistory, NodeInfo node, Tenant tenant, ContainerDetailsInfo info, ContainerStatus status);
     }
 }
