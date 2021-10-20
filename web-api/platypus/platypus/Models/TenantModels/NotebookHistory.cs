@@ -156,6 +156,11 @@ namespace Nssol.Platypus.Models.TenantModels
         public DateTime? CompletedAt { get; set; }
 
         /// <summary>
+        /// アサイン日時
+        /// </summary>
+        public DateTime? JobStartedAt { get; set; }
+
+        /// <summary>
         /// メモ
         /// </summary>
         public string Memo { get; set; }

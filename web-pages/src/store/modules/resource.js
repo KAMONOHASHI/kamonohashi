@@ -12,6 +12,10 @@ const state = {
   tenantContainerLists: [],
   tenantDetail: {},
   tenantContainerLog: [],
+  historiesContainersMetadata: {},
+  historiesContainersData: [],
+  historiesJobsMetadata: {},
+  historiesJobsData: [],
 }
 
 // getters
@@ -45,6 +49,18 @@ const getters = {
   },
   tenantContainerLog(state) {
     return state.tenantContainerLog
+  },
+  historiesContainersMetadata(state) {
+    return state.historiesContainersMetadata
+  },
+  historiesContainersData(state) {
+    return state.historiesContainersData
+  },
+  historiesJobsMetadata(state) {
+    return state.historiesJobsMetadata
+  },
+  historiesJobsData(state) {
+    return state.historiesJobsData
   },
 }
 
@@ -116,6 +132,44 @@ const actions = {
   async deleteTenantContainer({ commit }, params) {
     return await api.resource.tenant.deleteContainerByName(params)
   },
+
+  async fetchHistoriesContainersMetadata({ commit }, params) {
+    let historiesContainersMetadata = (
+      await api.resource.admin.getHistoriesContainersMetadata(params)
+    ).data
+    commit('setHistoriesContainersMetadata', { historiesContainersMetadata })
+  },
+
+  async fetchHistoriesContainersData({ commit }, params) {
+    let historiesContainersData = await api.resource.admin.getHistoriesContainersData(
+      params,
+    )
+    commit('setHistoriesContainersData', historiesContainersData.data)
+  },
+
+  // eslint-disable-next-line no-unused-vars
+  async deleteHistoriesContainers({ commit }, params) {
+    return await api.resource.admin.deleteHistoriesContainers({ model: params })
+  },
+
+  async fetchHistoriesJobsMetadata({ commit }, params) {
+    let historiesJobsMetadata = (
+      await api.resource.admin.getHistoriesJobsMetadata(params)
+    ).data
+    commit('setHistoriesJobsMetadata', { historiesJobsMetadata })
+  },
+
+  async fetchHistoriesJobsData({ commit }, params) {
+    let historiesJobsData = (
+      await api.resource.admin.getHistoriesJobsData(params)
+    ).data
+    commit('setHistoriesJobsData', historiesJobsData)
+  },
+
+  // eslint-disable-next-line no-unused-vars
+  async deleteHistoriesJobs({ commit }, params) {
+    return await api.resource.admin.deleteHistoriesJobs({ model: params })
+  },
 }
 
 // mutations
@@ -149,6 +203,18 @@ const mutations = {
   },
   setTenantContainerLog(state, { tenantContainerLog }) {
     state.tenantContainerLog = tenantContainerLog
+  },
+  setHistoriesContainersMetadata(state, { historiesContainersMetadata }) {
+    state.historiesContainersMetadata = historiesContainersMetadata
+  },
+  setHistoriesContainersData(state, historiesContainersData) {
+    state.historiesContainersData = historiesContainersData
+  },
+  setHistoriesJobsMetadata(state, { historiesJobsMetadata }) {
+    state.historiesJobsMetadata = historiesJobsMetadata
+  },
+  setHistoriesJobsData(state, historiesJobsData) {
+    state.historiesJobsData = historiesJobsData
   },
 }
 

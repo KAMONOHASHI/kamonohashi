@@ -5,6 +5,7 @@ using Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories;
 using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Infrastructure.Options;
 using Nssol.Platypus.Infrastructure.Types;
+using Nssol.Platypus.Logic.Interfaces;
 using Nssol.Platypus.Models.TenantModels;
 using Nssol.Platypus.Services.Interfaces;
 using System;
@@ -20,6 +21,8 @@ namespace Nssol.Platypus.Logic.HostedService
         // DI で注入されるオブジェクト類
         private readonly INotebookHistoryRepository notebookHistoryRepository;
         private readonly IClusterManagementService clusterManagementService;
+        private readonly IClusterManagementLogic clusterManagementLogic;
+        private readonly INotebookLogic notebookLogic;
         private readonly IUnitOfWork unitOfWork;
 
         /// <summary>
@@ -33,6 +36,8 @@ namespace Nssol.Platypus.Logic.HostedService
         public DeleteNotebookContainerTimer(
             INotebookHistoryRepository notebookHistoryRepository,
             IClusterManagementService clusterManagementService,
+            IClusterManagementLogic clusterManagementLogic,
+            INotebookLogic notebookLogic,
             IUnitOfWork unitOfWork,
             IOptions<ContainerManageOptions> containerManageOptions,
             IOptions<DeleteNotebookContainerTimerOptions> deleteNotebookContainerTimerOptions,
@@ -42,6 +47,8 @@ namespace Nssol.Platypus.Logic.HostedService
             // 各 DI オブジェクトの設定
             this.notebookHistoryRepository = notebookHistoryRepository;
             this.clusterManagementService = clusterManagementService;
+            this.clusterManagementLogic = clusterManagementLogic;
+            this.notebookLogic = notebookLogic;
             this.unitOfWork = unitOfWork;
 
             // kubernetes の token
@@ -66,7 +73,7 @@ namespace Nssol.Platypus.Logic.HostedService
         /// <summary>
         /// テーブル NotebookHistories の生存期間を超えている実行中レコードと、対応する kubernetes 上の実コンテナを削除するメソッドです。
         /// </summary>
-        protected override void DoWork(object state, int doWorkCount)
+        protected override async void DoWork(object state, int doWorkCount)
         {
             LogInfo($"テーブル NotebookHistories の生存期間を超えている実行中レコードと、対応する kubernetes 上の実コンテナを削除します。(第 {doWorkCount} 回目)");
             try
@@ -90,7 +97,7 @@ namespace Nssol.Platypus.Logic.HostedService
                     if (notebookHistory.GetStatus().Key != newStatus.Key)
                     {
                         // ステータス更新があったので、変更処理
-                        notebookHistoryRepository.UpdateStatusAsync(notebookHistory.Id, newStatus, true);
+                        await notebookHistoryRepository.UpdateStatusAsync(notebookHistory.Id, newStatus, true);
                     }
 
                     // 実行中コンテナか、生存期間が設定されているかチェック（生存期間が0の場合はコンテナ削除の対象にしない）
@@ -103,12 +110,22 @@ namespace Nssol.Platypus.Logic.HostedService
                         if (elapsedSpan.TotalSeconds > notebookHistory.ExpiresIn)
                         {
                             // 生存期間を超えている場合、テーブル NotebookHistories のレコードのステータスをKilledに更新
-                            notebookHistoryRepository.UpdateStatusAsync(notebookHistory.Id, ContainerStatus.Killed, DateTime.Now, true);
+                            var tenant = notebookHistory.Tenant;
+                            var info = await clusterManagementLogic.GetContainerDetailsInfoAsync(notebookHistory.Key, tenant.Name, true);
+                            await notebookHistoryRepository.UpdateStatusAsync(notebookHistory.Id, ContainerStatus.Killed, DateTime.Now, info.CreatedAt, true);
                             dbUpdateCount++;
                             try
                             {
+                                // ノード情報取得
+                                var node = info.NodeName != null
+                                    ? (await clusterManagementLogic.GetAllNodesAsync()).FirstOrDefault(x => x.Name == info.NodeName)
+                                    : null;
+
+                                // ジョブ実行履歴追加
+                                notebookLogic.AddJobHistory(notebookHistory, node, tenant, info, ContainerStatus.Killed.Key);
+
                                 // kubernetes 上の実コンテナを削除する
-                                var destroyResult = clusterManagementService.DeleteContainerAsync(ContainerType.Notebook, notebookHistory.Key, notebookHistory.Tenant.Name, kubernetesToken).Result;
+                                var destroyResult = clusterManagementService.DeleteContainerAsync(ContainerType.Notebook, notebookHistory.Key, tenant.Name, kubernetesToken).Result;
                                 if (destroyResult)
                                 {
                                     // 実際に削除対応したならカウントアップ
