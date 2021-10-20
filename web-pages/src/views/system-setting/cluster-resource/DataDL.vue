@@ -46,8 +46,8 @@
       <el-col :span="3">
         <el-switch
           v-model="containersHeader"
-          active-text="有り"
-          inactive-text="無し"
+          active-text="あり"
+          inactive-text="なし"
         />
       </el-col>
       <el-col :span="4">
@@ -125,8 +125,8 @@
       <el-col :span="3">
         <el-switch
           v-model="jobsHeader"
-          active-text="有り"
-          inactive-text="無し"
+          active-text="あり"
+          inactive-text="なし"
         />
       </el-col>
       <el-col :span="4">
