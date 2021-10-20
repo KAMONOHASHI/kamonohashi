@@ -22,9 +22,8 @@ namespace Nssol.Platypus.Logic.HostedService
         private readonly INotebookHistoryRepository notebookHistoryRepository;
         private readonly IClusterManagementService clusterManagementService;
         private readonly IClusterManagementLogic clusterManagementLogic;
-        private readonly IResourceMonitorLogic resourceMonitorLogic;
-        private readonly IUnitOfWork unitOfWork;
         private readonly INotebookLogic notebookLogic;
+        private readonly IUnitOfWork unitOfWork;
 
         /// <summary>
         /// kubernetes の token (環境変数、または launchSettings.json で設定)
@@ -38,9 +37,8 @@ namespace Nssol.Platypus.Logic.HostedService
             INotebookHistoryRepository notebookHistoryRepository,
             IClusterManagementService clusterManagementService,
             IClusterManagementLogic clusterManagementLogic,
-            IResourceMonitorLogic resourceMonitorLogic,
-            IUnitOfWork unitOfWork,
             INotebookLogic notebookLogic,
+            IUnitOfWork unitOfWork,
             IOptions<ContainerManageOptions> containerManageOptions,
             IOptions<DeleteNotebookContainerTimerOptions> deleteNotebookContainerTimerOptions,
             ILogger<DeleteNotebookContainerTimer> logger
@@ -50,9 +48,8 @@ namespace Nssol.Platypus.Logic.HostedService
             this.notebookHistoryRepository = notebookHistoryRepository;
             this.clusterManagementService = clusterManagementService;
             this.clusterManagementLogic = clusterManagementLogic;
-            this.resourceMonitorLogic = resourceMonitorLogic;
-            this.unitOfWork = unitOfWork;
             this.notebookLogic = notebookLogic;
+            this.unitOfWork = unitOfWork;
 
             // kubernetes の token
             this.kubernetesToken = containerManageOptions.Value.ResourceManageKey;
@@ -119,10 +116,12 @@ namespace Nssol.Platypus.Logic.HostedService
                             dbUpdateCount++;
                             try
                             {
-                                // ジョブ実行履歴追加
+                                // ノード情報取得
                                 var node = info.NodeName != null
                                     ? (await clusterManagementLogic.GetAllNodesAsync()).FirstOrDefault(x => x.Name == info.NodeName)
                                     : null;
+
+                                // ジョブ実行履歴追加
                                 notebookLogic.AddJobHistory(notebookHistory, node, tenant, info, ContainerStatus.Killed.Key);
 
                                 // kubernetes 上の実コンテナを削除する
