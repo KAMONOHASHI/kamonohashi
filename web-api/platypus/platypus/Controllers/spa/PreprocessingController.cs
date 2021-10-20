@@ -816,7 +816,7 @@ namespace Nssol.Platypus.Controllers.spa
                 var node = info.NodeName != null
                     ? (await clusterManagementLogic.GetAllNodesAsync()).FirstOrDefault(x => x.Name == info.NodeName)
                     : null;
-                preprocessLogic.AddJobHistory(preprocessHistory, node, tenant, info, status);
+                preprocessLogic.AddJobHistory(preprocessHistory, node, tenant, info, newStatus.Key);
 
                 // コンテナが動いていれば、停止する
                 await clusterManagementLogic.DeleteContainerAsync(

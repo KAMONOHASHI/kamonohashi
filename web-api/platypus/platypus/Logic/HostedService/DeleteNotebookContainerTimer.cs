@@ -1,13 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Nssol.Platypus.DataAccess.Core;
-using Nssol.Platypus.DataAccess.Repositories.Interfaces;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories;
 using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Infrastructure.Options;
 using Nssol.Platypus.Infrastructure.Types;
 using Nssol.Platypus.Logic.Interfaces;
-using Nssol.Platypus.Models;
 using Nssol.Platypus.Models.TenantModels;
 using Nssol.Platypus.Services.Interfaces;
 using System;
@@ -26,6 +24,7 @@ namespace Nssol.Platypus.Logic.HostedService
         private readonly IClusterManagementLogic clusterManagementLogic;
         private readonly IResourceMonitorLogic resourceMonitorLogic;
         private readonly IUnitOfWork unitOfWork;
+        private readonly INotebookLogic notebookLogic;
 
         /// <summary>
         /// kubernetes の token (環境変数、または launchSettings.json で設定)
@@ -41,6 +40,7 @@ namespace Nssol.Platypus.Logic.HostedService
             IClusterManagementLogic clusterManagementLogic,
             IResourceMonitorLogic resourceMonitorLogic,
             IUnitOfWork unitOfWork,
+            INotebookLogic notebookLogic,
             IOptions<ContainerManageOptions> containerManageOptions,
             IOptions<DeleteNotebookContainerTimerOptions> deleteNotebookContainerTimerOptions,
             ILogger<DeleteNotebookContainerTimer> logger
@@ -52,6 +52,7 @@ namespace Nssol.Platypus.Logic.HostedService
             this.clusterManagementLogic = clusterManagementLogic;
             this.resourceMonitorLogic = resourceMonitorLogic;
             this.unitOfWork = unitOfWork;
+            this.notebookLogic = notebookLogic;
 
             // kubernetes の token
             this.kubernetesToken = containerManageOptions.Value.ResourceManageKey;
@@ -118,27 +119,11 @@ namespace Nssol.Platypus.Logic.HostedService
                             dbUpdateCount++;
                             try
                             {
+                                // ジョブ実行履歴追加
                                 var node = info.NodeName != null
                                     ? (await clusterManagementLogic.GetAllNodesAsync()).FirstOrDefault(x => x.Name == info.NodeName)
                                     : null;
-                                var resourceJob = new ResourceJob
-                                {
-                                    TenantId = tenant.Id,
-                                    TenantName = tenant.Name,
-                                    NodeName = node?.Name ?? "",
-                                    NodeCpu = (int)(node?.Cpu ?? 0),
-                                    NodeMemory = (int)(node?.Memory ?? 0),
-                                    NodeGpu = node?.Gpu ?? 0,
-                                    ContainerName = notebookHistory.Key,
-                                    Cpu = notebookHistory.Cpu,
-                                    Memory = notebookHistory.Memory,
-                                    Gpu = notebookHistory.Gpu,
-                                    JobCreatedAt = notebookHistory.StartedAt ?? notebookHistory.CreatedAt,
-                                    JobStartedAt = notebookHistory.JobStartedAt ?? info?.CreatedAt,
-                                    JobCompletedAt = notebookHistory.CompletedAt ?? DateTime.Now,
-                                    Status = ContainerStatus.Killed.Key,
-                                };
-                                resourceMonitorLogic.AddJobHistory(resourceJob);
+                                notebookLogic.AddJobHistory(notebookHistory, node, tenant, info, ContainerStatus.Killed.Key);
 
                                 // kubernetes 上の実コンテナを削除する
                                 var destroyResult = clusterManagementService.DeleteContainerAsync(ContainerType.Notebook, notebookHistory.Key, tenant.Name, kubernetesToken).Result;

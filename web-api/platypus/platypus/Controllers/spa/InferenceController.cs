@@ -922,7 +922,7 @@ namespace Nssol.Platypus.Controllers.spa
                 var node = info.NodeName != null
                     ? (await clusterManagementLogic.GetAllNodesAsync()).FirstOrDefault(x => x.Name == info.NodeName)
                     : null;
-                inferenceLogic.AddJobHistory(inferenceHistory, node, tenant, info, status);
+                inferenceLogic.AddJobHistory(inferenceHistory, node, tenant, info, status.Key);
 
                 //実行中であれば、コンテナを削除
                 await clusterManagementLogic.DeleteContainerAsync(

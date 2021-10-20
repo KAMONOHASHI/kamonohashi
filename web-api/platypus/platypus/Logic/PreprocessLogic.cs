@@ -80,7 +80,7 @@ namespace Nssol.Platypus.Logic
                 var node = info.NodeName != null
                     ? (await clusterManagementLogic.GetAllNodesAsync()).FirstOrDefault(x => x.Name == info.NodeName)
                     : null;
-                AddJobHistory(preprocessHistory, node, tenant, info, status);
+                AddJobHistory(preprocessHistory, node, tenant, info, status.Key);
                 unitOfWork.Commit();
 
                 //コンテナが動いていれば、停止する
@@ -102,7 +102,7 @@ namespace Nssol.Platypus.Logic
         /// <param name="tenant">実行テナント</param>
         /// <param name="info">対象コンテナ詳細情報</param>
         /// <param name="status">ステータス</param>
-        public void AddJobHistory(PreprocessHistory preprocessHistory, NodeInfo node, Tenant tenant, ContainerDetailsInfo info, ContainerStatus status)
+        public void AddJobHistory(PreprocessHistory preprocessHistory, NodeInfo node, Tenant tenant, ContainerDetailsInfo info, string status)
         {
             var resourceJob = new ResourceJob
             {
@@ -119,7 +119,7 @@ namespace Nssol.Platypus.Logic
                 JobCreatedAt = preprocessHistory.CreatedAt,
                 JobStartedAt = preprocessHistory.StartedAt ?? info?.CreatedAt,
                 JobCompletedAt = preprocessHistory.CompletedAt ?? DateTime.Now,
-                Status = status.Key,
+                Status = status,
             };
             resourceMonitorLogic.AddJobHistory(resourceJob);
         }

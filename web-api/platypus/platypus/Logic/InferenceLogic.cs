@@ -60,7 +60,7 @@ namespace Nssol.Platypus.Logic
                     : null;
 
                 // ジョブ実行履歴追加
-                AddJobHistory(inferenceHistory, node, tenant, info, status);
+                AddJobHistory(inferenceHistory, node, tenant, info, status.Key);
 
                 // 実コンテナ削除の結果は確認せず、DBの更新を先に確定する（コンテナがいないなら、そのまま消しても問題ない想定）
                 unitOfWork.Commit();
@@ -89,7 +89,7 @@ namespace Nssol.Platypus.Logic
         /// <param name="tenant">実行テナント</param>
         /// <param name="info">対象コンテナ詳細情報</param>
         /// <param name="status">ステータス</param>
-        public void AddJobHistory(InferenceHistory inferenceHistory, NodeInfo node, Tenant tenant, ContainerDetailsInfo info, ContainerStatus status)
+        public void AddJobHistory(InferenceHistory inferenceHistory, NodeInfo node, Tenant tenant, ContainerDetailsInfo info, string status)
         {
             var resourceJob = new ResourceJob
             {
@@ -106,7 +106,7 @@ namespace Nssol.Platypus.Logic
                 JobCreatedAt = inferenceHistory.CreatedAt,
                 JobStartedAt = inferenceHistory.StartedAt ?? info?.CreatedAt,
                 JobCompletedAt = inferenceHistory.CompletedAt ?? DateTime.Now,
-                Status = status.Key,
+                Status = status,
             };
             resourceMonitorLogic.AddJobHistory(resourceJob);
         }

@@ -1118,7 +1118,7 @@ namespace Nssol.Platypus.Controllers.spa
                     : null;
 
                 // ジョブ実行履歴追加
-                trainingLogic.AddJobHistory(trainingHistory, node, tenant, info, status);
+                trainingLogic.AddJobHistory(trainingHistory, node, tenant, info, status.Key);
 
                 //実行中であれば、コンテナを削除
                 await clusterManagementLogic.DeleteContainerAsync(

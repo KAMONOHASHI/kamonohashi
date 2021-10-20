@@ -34,6 +34,6 @@ namespace Nssol.Platypus.Logic.Interfaces
         /// <param name="tenant">実行テナント</param>
         /// <param name="info">対象コンテナ詳細情報</param>
         /// <param name="status">ステータス</param>
-        void AddJobHistory(TrainingHistory trainingHistory, NodeInfo node, Tenant tenant, ContainerDetailsInfo info, ContainerStatus status);
+        void AddJobHistory(TrainingHistory trainingHistory, NodeInfo node, Tenant tenant, ContainerDetailsInfo info, string status);
     }
 }
