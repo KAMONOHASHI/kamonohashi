@@ -62,6 +62,11 @@ router.beforeEach(async (to, from, next) => {
     next('/error?url=' + to.path)
     return
   }
+  // バージョン情報
+  if (to.path === '/version') {
+    next()
+    return
+  }
   // 未ログイン
   if (!token) {
     if (to.path !== '/login') {
