@@ -196,6 +196,14 @@ let api = {
         gen.ApiV2AdminResourceContainersByTenantIdByNameLogGet,
       getContainerEventsByName:
         gen.ApiV2AdminResourceContainersByTenantIdByNameEventsGet,
+      getHistoriesContainersMetadata:
+        gen.ApiV2AdminResourceHistoriesContainersMetadataGet,
+      getHistoriesContainersData:
+        gen.ApiV2AdminResourceHistoriesContainersDataGet,
+      deleteHistoriesContainers: gen.ApiV2AdminResourceHistoriesContainersPatch,
+      getHistoriesJobsMetadata: gen.ApiV2AdminResourceHistoriesJobsMetadataGet,
+      getHistoriesJobsData: gen.ApiV2AdminResourceHistoriesJobsDataGet,
+      deleteHistoriesJobs: gen.ApiV2AdminResourceHistoriesJobsPatch,
     },
     tenant: {
       getNodes: gen.ApiV2TenantResourceNodesGet,

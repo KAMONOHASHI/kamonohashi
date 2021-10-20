@@ -1,10 +1,14 @@
 ﻿using Nssol.Platypus.DataAccess.Core;
+using Nssol.Platypus.DataAccess.Repositories.Interfaces;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories;
 using Nssol.Platypus.Infrastructure;
+using Nssol.Platypus.Infrastructure.Infos;
 using Nssol.Platypus.Infrastructure.Types;
 using Nssol.Platypus.Logic.Interfaces;
+using Nssol.Platypus.Models;
 using Nssol.Platypus.Models.TenantModels;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Logic
@@ -14,18 +18,24 @@ namespace Nssol.Platypus.Logic
         private readonly ITrainingHistoryRepository trainingHistoryRepository;
         private readonly ITensorBoardContainerRepository tensorBoardContainerRepository;
         private readonly IClusterManagementLogic clusterManagementLogic;
+        private readonly IResourceMonitorLogic resourceMonitorLogic;
+        private readonly ITenantRepository tenantRepository;
         private readonly IUnitOfWork unitOfWork;
 
         public TrainingLogic(
             ITrainingHistoryRepository trainingHistoryRepository,
             ITensorBoardContainerRepository tensorBoardContainerRepository,
             IClusterManagementLogic clusterManagementLogic,
+            IResourceMonitorLogic resourceMonitorLogic,
+            ITenantRepository tenantRepository,
             IUnitOfWork unitOfWork,
             ICommonDiLogic commonDiLogic) : base(commonDiLogic)
         {
             this.trainingHistoryRepository = trainingHistoryRepository;
             this.tensorBoardContainerRepository = tensorBoardContainerRepository;
             this.clusterManagementLogic = clusterManagementLogic;
+            this.resourceMonitorLogic = resourceMonitorLogic;
+            this.tenantRepository = tenantRepository;
             this.unitOfWork = unitOfWork;
         }
 
@@ -40,10 +50,19 @@ namespace Nssol.Platypus.Logic
             // コンテナの生存確認
             if (trainingHistory.GetStatus().Exist())
             {
-                var info = await clusterManagementLogic.GetContainerDetailsInfoAsync(trainingHistory.Key, CurrentUserInfo.SelectedTenant.Name, force);
+                var tenant = tenantRepository.Get(trainingHistory.TenantId);
+                var info = await clusterManagementLogic.GetContainerDetailsInfoAsync(trainingHistory.Key, tenant.Name, force);
 
                 // コンテナ削除の前に、DBの更新を先に実行
                 await trainingHistoryRepository.UpdateStatusAsync(trainingHistory.Id, status, info.CreatedAt, DateTime.Now, force);
+
+                // ノード情報の取得
+                var node = info.NodeName != null
+                    ? (await clusterManagementLogic.GetAllNodesAsync()).FirstOrDefault(x => x.Name == info.NodeName)
+                    : null;
+
+                /// ジョブ実行履歴追加
+                AddJobHistory(trainingHistory, node, tenant, info, status.Key);
 
                 // 実コンテナ削除の結果は確認せず、DBの更新を先に確定する（コンテナがいないなら、そのまま消しても問題ない想定）
                 unitOfWork.Commit();
@@ -52,7 +71,7 @@ namespace Nssol.Platypus.Logic
                 {
                     // 再確認してもまだ存在していたら、コンテナ削除
                     await clusterManagementLogic.DeleteContainerAsync(
-                        ContainerType.Training, trainingHistory.Key, CurrentUserInfo.SelectedTenant.Name, force);
+                        ContainerType.Training, trainingHistory.Key, tenant.Name, force);
                 }
             }
             else
@@ -72,12 +91,44 @@ namespace Nssol.Platypus.Logic
         public async Task DeleteTensorBoardAsync(TensorBoardContainer container, bool force)
         {
             //TensorBoardコンテナを削除する。
-            await clusterManagementLogic.DeleteContainerAsync(ContainerType.TensorBoard, container.Name, CurrentUserInfo.SelectedTenant.Name, force);
+            var tenant = tenantRepository.Get(container.TenantId);
+            await clusterManagementLogic.DeleteContainerAsync(ContainerType.TensorBoard, container.Name, tenant.Name, force);
 
             //結果に関わらず、DBからコンテナ情報を消す
             tensorBoardContainerRepository.Delete(container, force);
 
             unitOfWork.Commit();
         }
+
+        /// <summary>
+        /// ジョブ実行履歴を追加する
+        /// </summary>
+        /// <param name="trainingHistory">対象学習履歴</param>
+        /// <param name="node">実行ノード</param>
+        /// <param name="tenant">実行テナント</param>
+        /// <param name="info">対象コンテナ詳細情報</param>
+        /// <param name="status">ステータス</param>
+        public void AddJobHistory(TrainingHistory trainingHistory, NodeInfo node, Tenant tenant, ContainerDetailsInfo info, string status)
+        {
+            var resourceJob = new ResourceJob
+            {
+                TenantId = tenant.Id,
+                TenantName = tenant.Name,
+                NodeName = node?.Name ?? "",
+                NodeCpu = (int)(node?.Cpu ?? 0),
+                NodeMemory = (int)(node?.Memory ?? 0),
+                NodeGpu = node?.Gpu ?? 0,
+                ContainerName = trainingHistory.Key,
+                Cpu = trainingHistory.Cpu,
+                Memory = trainingHistory.Memory,
+                Gpu = trainingHistory.Gpu,
+                JobCreatedAt = trainingHistory.CreatedAt,
+                JobStartedAt = trainingHistory.StartedAt ?? info?.CreatedAt,
+                JobCompletedAt = trainingHistory.CompletedAt ?? DateTime.Now,
+                Status = status,
+            };
+            resourceMonitorLogic.AddJobHistory(resourceJob);
+        }
+
     }
 }

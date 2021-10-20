@@ -810,9 +810,17 @@ namespace Nssol.Platypus.Controllers.spa
             }
             if (status.Exist())
             {
+                // ジョブ実行履歴追加
+                var tenant = CurrentUserInfo.SelectedTenant;
+                var info = await clusterManagementLogic.GetContainerDetailsInfoAsync(preprocessHistory.Name, tenant.Name, false);
+                var node = info.NodeName != null
+                    ? (await clusterManagementLogic.GetAllNodesAsync()).FirstOrDefault(x => x.Name == info.NodeName)
+                    : null;
+                preprocessLogic.AddJobHistory(preprocessHistory, node, tenant, info, newStatus.Key);
+
                 // コンテナが動いていれば、停止する
                 await clusterManagementLogic.DeleteContainerAsync(
-                    ContainerType.Preprocessing, preprocessHistory.Name, CurrentUserInfo.SelectedTenant.Name, false);
+                    ContainerType.Preprocessing, preprocessHistory.Name, tenant.Name, false);
             }
 
             preprocessHistory.CompletedAt = DateTime.Now;

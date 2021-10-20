@@ -31,6 +31,7 @@ namespace Nssol.Platypus.Controllers.spa
     [Route("api/v{api-version:apiVersion}/training")]
     public class TrainingController : PlatypusApiControllerBase
     {
+        // for DI
         private readonly ITrainingHistoryRepository trainingHistoryRepository;
         private readonly IInferenceHistoryRepository inferenceHistoryRepository;
         private readonly ITensorBoardContainerRepository tensorBoardContainerRepository;
@@ -1052,6 +1053,7 @@ namespace Nssol.Platypus.Controllers.spa
                 inferenceHistoryRepository,
                 tensorBoardContainerRepository,
                 tagRepository,
+                trainingLogic,
                 RequestUrl);
             return result;
         }
@@ -1069,6 +1071,7 @@ namespace Nssol.Platypus.Controllers.spa
             IInferenceHistoryRepository inferenceHistoryRepository,
             ITensorBoardContainerRepository tensorBoardContainerRepository,
             ITagRepository tagRepository,
+            ITrainingLogic trainingLogic,
             string requestUrl
             )
         {
@@ -1082,11 +1085,12 @@ namespace Nssol.Platypus.Controllers.spa
 
             //ステータスを確認
 
+            var tenant = currentUserInfo.SelectedTenant;
             var status = trainingHistory.GetStatus();
             if (status.Exist())
             {
                 //学習がまだ進行中の場合、情報を更新する
-                status = await clusterManagementLogic.GetContainerStatusAsync(trainingHistory.Key, currentUserInfo.SelectedTenant.Name, false);
+                status = await clusterManagementLogic.GetContainerStatusAsync(trainingHistory.Key, tenant.Name, false);
             }
 
             //派生した学習履歴があったら消せない
@@ -1107,9 +1111,18 @@ namespace Nssol.Platypus.Controllers.spa
 
             if (status.Exist())
             {
+                var info = await clusterManagementLogic.GetContainerDetailsInfoAsync(trainingHistory.Key, tenant.Name, false);
+                // ノード情報の取得
+                var node = info.NodeName != null
+                    ? (await clusterManagementLogic.GetAllNodesAsync()).FirstOrDefault(x => x.Name == info.NodeName)
+                    : null;
+
+                // ジョブ実行履歴追加
+                trainingLogic.AddJobHistory(trainingHistory, node, tenant, info, status.Key);
+
                 //実行中であれば、コンテナを削除
                 await clusterManagementLogic.DeleteContainerAsync(
-                    ContainerType.Training, trainingHistory.Key, currentUserInfo.SelectedTenant.Name, false);
+                    ContainerType.Training, trainingHistory.Key, tenant.Name, false);
             }
 
             //TensorBoardを起動中だった場合は、そっちも消す
@@ -1117,7 +1130,7 @@ namespace Nssol.Platypus.Controllers.spa
             if (container != null)
             {
                 await clusterManagementLogic.DeleteContainerAsync(
-                    ContainerType.TensorBoard, container.Name, currentUserInfo.SelectedTenant.Name, false);
+                    ContainerType.TensorBoard, container.Name, tenant.Name, false);
                 tensorBoardContainerRepository.Delete(container, true);
             }
 

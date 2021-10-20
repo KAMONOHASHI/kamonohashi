@@ -907,18 +907,26 @@ namespace Nssol.Platypus.Controllers.spa
 
             //ステータスを確認
 
+            var tenant = CurrentUserInfo.SelectedTenant;
             var status = inferenceHistory.GetStatus();
             if (status.Exist())
             {
                 //推論がまだ進行中の場合、情報を更新する
-                status = await clusterManagementLogic.GetContainerStatusAsync(inferenceHistory.Key, CurrentUserInfo.SelectedTenant.Name, false);
+                status = await clusterManagementLogic.GetContainerStatusAsync(inferenceHistory.Key, tenant.Name, false);
             }
 
             if (status.Exist())
             {
+                // ジョブ実行履歴追加
+                var info = await clusterManagementLogic.GetContainerDetailsInfoAsync(inferenceHistory.Key, tenant.Name, false);
+                var node = info.NodeName != null
+                    ? (await clusterManagementLogic.GetAllNodesAsync()).FirstOrDefault(x => x.Name == info.NodeName)
+                    : null;
+                inferenceLogic.AddJobHistory(inferenceHistory, node, tenant, info, status.Key);
+
                 //実行中であれば、コンテナを削除
                 await clusterManagementLogic.DeleteContainerAsync(
-                    ContainerType.Training, inferenceHistory.Key, CurrentUserInfo.SelectedTenant.Name, false);
+                    ContainerType.Training, inferenceHistory.Key, tenant.Name, false);
             }
 
             //添付ファイルがあったらまとめて消す
