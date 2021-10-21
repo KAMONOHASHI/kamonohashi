@@ -59,8 +59,9 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories
         /// <param name="id">ノートブック履歴ID</param>
         /// <param name="status">変更後のステータス</param>
         /// <param name="completedAt">停止日時</param>
+        /// <param name="jobStartedAt">アサイン日時</param>
         /// <param name="force">他テナントに対する変更を許可するか</param>
-        Task UpdateStatusAsync(long id, ContainerStatus status, DateTime completedAt, bool force);
+        Task UpdateStatusAsync(long id, ContainerStatus status, DateTime completedAt, DateTime? jobStartedAt, bool force);
 
         /// <summary>
         /// ノートブック履歴IDに親学習履歴IDを紐づける

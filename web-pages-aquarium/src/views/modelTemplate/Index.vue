@@ -47,10 +47,13 @@
 
                   <div
                     class="template-description"
-                    style="padding: 10px; font-size: 14px; z-index :100;"
+                    style="padding: 10px; font-size: 14px; z-index :100; white-space: break-spaces;"
                   >
                     <span v-for="(s, i) in template.memoList" :key="i">
-                      <span v-if="s.type == 'url'" style="font-size:15px">
+                      <span
+                        v-if="s.type == 'url'"
+                        style="font-size:15px; word-wrap:break-word"
+                      >
                         <a
                           href="javascript:void(0)"
                           rel="noopener noreferrer"

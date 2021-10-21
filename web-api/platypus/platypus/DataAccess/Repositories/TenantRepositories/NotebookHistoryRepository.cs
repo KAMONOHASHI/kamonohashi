@@ -103,11 +103,13 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
         /// <param name="id">ノートブック履歴ID</param>
         /// <param name="status">変更後のステータス</param>
         /// <param name="completedAt">停止日時</param>
+        /// <param name="jobStartedAt">アサイン日時</param>
         /// <param name="force">他テナントに対する変更を許可するか</param>
-        public async Task UpdateStatusAsync(long id, ContainerStatus status, DateTime completedAt, bool force)
+        public async Task UpdateStatusAsync(long id, ContainerStatus status, DateTime completedAt, DateTime? jobStartedAt, bool force)
         {
             var history = await this.GetByIdAsync(id, force);
             history.CompletedAt = completedAt;
+            history.JobStartedAt = jobStartedAt;
             history.Status = status.Key;
             UpdateModel<NotebookHistory>(history, force);
         }

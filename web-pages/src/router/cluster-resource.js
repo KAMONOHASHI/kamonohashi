@@ -3,6 +3,7 @@ import Edit from '@/views/system-setting/cluster-resource/Edit'
 import Node from '@/views/system-setting/cluster-resource/Node'
 import Tenant from '@/views/system-setting/cluster-resource/Tenant'
 import ContainerList from '@/views/system-setting/cluster-resource/ContainerList'
+import DataDL from '@/views/system-setting/cluster-resource/DataDL'
 
 export default [
   {
@@ -41,6 +42,10 @@ export default [
             props: true,
           },
         ],
+      },
+      {
+        path: 'data-download',
+        component: DataDL,
       },
     ],
   },

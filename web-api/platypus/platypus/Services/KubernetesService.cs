@@ -151,6 +151,10 @@ namespace Nssol.Platypus.Services
                     hasService = true;
                     hasConfigMap = true;
                     break;
+                case ContainerType.Inferencing:
+                    hasService = true;
+                    hasConfigMap = true;
+                    break;
                 case ContainerType.Preprocessing:
                     hasService = false;
                     hasConfigMap = true;
@@ -164,10 +168,6 @@ namespace Nssol.Platypus.Services
                     hasConfigMap = true;
                     break;
                 case ContainerType.DeleteTenant:
-                    hasService = false;
-                    hasConfigMap = true;
-                    break;
-                case ContainerType.Experiment:
                     hasService = false;
                     hasConfigMap = true;
                     break;
