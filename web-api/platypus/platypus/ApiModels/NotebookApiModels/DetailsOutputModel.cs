@@ -225,48 +225,67 @@ namespace Nssol.Platypus.ApiModels.NotebookApiModels
         /// </summary>
         public string EntryPoint { get; set; }
 
-        /// <summary>
-        /// 引数 NotebookHistory history の属性 CreatedAt/StartedA/CompletedAt の値に従い、
+        /// <summary>待機時間と実行時間の設定</summary>
+        /// <remarks>
+        /// Notebookの時刻・時間管理は、再実行機能が存在すること、及び歴史的事情により
+        /// Trainingなどのものとは異なっている。
+        /// 
+        /// CreatedAt: 初回実行時の時刻
+        /// StartedAt: 初回実行時は初回実行時の時刻、再実行時は再実行された時刻
+        /// JobStartedAt: 初回、再実行とも、Notebookのコンテナがノードにアサインされた時刻
+        ///               unassigned状態のまま終了した場合は、この項目はnullになる
+        /// CompletedAt: 初回、再実行とも、Notebookが終了した時刻
+        /// 
+        /// 待機時間・実行時間の計算は
+        ///   TrainingのCreatedAtをNotebookのStartedAtに
+        ///   TrainingのStartedAtをNotebookのJobStartedAtに
+        ///   TrainingのCompletedAtをNotebookのCompletedAtに
+        /// それぞれ置き換えたものになる
+        /// 
+        /// その置き換えたルールが次のとおりである
+        /// 
+        /// 引数 NotebookHistory history の属性 StartedAt/JobStartedAt/CompletedAt の値に従い、
         ///   待機時間(WaitingTime)と実行時間(ExecutionTime)を設定する。
-        /// StartedAt == null 時におては、CompletedAt == null なら Pending 中、
+        /// JobStartedAt == null 時においては、
+        ///   CompletedAt == null なら Pending 中、
         ///   CompletedAt != null なら Pending 中にキャンセルしたと判定する。
         /// 
-        /// 状態                                      | 待機時間                | 実行時間
-        /// StartedAt == null and CompletedAt == null | 現時刻      - CreatedAt | null
-        /// StartedAt == null and CompletedAt != null | CompletedAt - CreatedAt | null
-        /// CompletedAt == null                       | StartedAt   - CreatedAt | 現時刻      - StartedAt
-        /// その他(両方とも値有り)                    | StartedAt   - CreatedAt | CompletedAt - StartedAt
+        /// 状態                                         | 待機時間                 | 実行時間
+        /// JobStartedAt == null and CompletedAt == null | 現時刻       - StartedAt | null
+        /// JobStartedAt == null and CompletedAt != null | CompletedAt  - StartedAt | null
+        /// CompletedAt == null                          | JobStartedAt - StartedAt | 現時刻      - JobStartedAt
+        /// その他(両方とも値有り)                       | JobStartedAt - StartedAt | CompletedAt - JobStartedAt
         /// 
-        /// </summary>
+        /// </remarks>
         /// <param name="history">ノートブック履歴</param>
         private void SetWaitingAndExecutionTimes(NotebookHistory history)
         {
-            if (history.StartedAt == null)
+            if (history.JobStartedAt == null)
             {
                 if (history.CompletedAt == null)
                 {
                     // ノートブックコンテナの起動前 (すなわち Pending 中)
-                    WaitingTime = GetElapsedTime(DateTime.Now, history.CreatedAt);
+                    WaitingTime = GetElapsedTime(DateTime.Now, history.StartedAt);
                     ExecutionTime = null;
                 }
                 else
                 {
                     // ノートブックコンテナの起動前(Pending 中)にジョブをキャンセルした場合
-                    WaitingTime = GetElapsedTime(history.CompletedAt, history.CreatedAt);
+                    WaitingTime = GetElapsedTime(history.CompletedAt, history.StartedAt);
                     ExecutionTime = null;
                 }
             }
             else if (history.CompletedAt == null)
             {
                 // ノートブックコンテナの起動中
-                WaitingTime = GetElapsedTime(history.StartedAt, history.CreatedAt);
-                ExecutionTime = GetElapsedTime(DateTime.Now, history.StartedAt);
+                WaitingTime = GetElapsedTime(history.JobStartedAt, history.StartedAt);
+                ExecutionTime = GetElapsedTime(DateTime.Now, history.JobStartedAt);
             }
             else
             {
                 // ノートブックコンテナの起動完了
-                WaitingTime = GetElapsedTime(history.StartedAt, history.CreatedAt);
-                ExecutionTime = GetElapsedTime(history.CompletedAt, history.StartedAt);
+                WaitingTime = GetElapsedTime(history.JobStartedAt, history.StartedAt);
+                ExecutionTime = GetElapsedTime(history.CompletedAt, history.JobStartedAt);
             }
         }
 

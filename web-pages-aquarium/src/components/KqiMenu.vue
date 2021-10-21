@@ -48,6 +48,10 @@
           <span slot="title">{{ menu.label }}</span>
         </el-menu-item>
       </div>
+      <el-menu-item index="/version" @click="handleClick('/version')">
+        <i class="el-icon-info" />
+        <span>バージョン情報</span>
+      </el-menu-item>
     </el-menu>
 
     <!--スクロール調整-->

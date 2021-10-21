@@ -43,6 +43,12 @@ namespace Nssol.Platypus.Infrastructure.Options
         public int StartingDueTimeSpanSecond { get; set; }
 
         /// <summary>
+        /// 実行間隔を秒単位で指定する。
+        /// WeeklyTimeScheduleよりも優先される。
+        /// </summary>
+        public int? TimeIntervalInSeconds { get; set; }
+
+        /// <summary>
         /// 設定データを解析して実行時間の情報を格納します。
         /// 解析の成否はメソッド isValid() で判別します。
         /// </summary>
@@ -73,6 +79,20 @@ namespace Nssol.Platypus.Infrastructure.Options
                 }
             }
             LogDebug($"{classMethodName}: タイムゾーン \"{timeZoneInfo.Id}\" に従ってタイマーを起動します。なお、ローカルのタイムゾーンは \"{TimeZoneInfo.Local.Id}\" です。");
+
+            if (TimeIntervalInSeconds.HasValue)
+            {
+                if (TimeIntervalInSeconds.Value <= 0)
+                {
+                    LogDebug($"{classMethodName}: 不正な実行間隔です。{TimeIntervalInSeconds.Value}");
+                    valid = false;
+                    return;
+                }
+            } 
+            else
+            {
+                LogDebug($"{classMethodName}: 実行間隔は指定されていません。");
+            }
 
             // 週次設定データの設定有無の判別
             if (IsNoSchedule())
@@ -184,7 +204,21 @@ namespace Nssol.Platypus.Infrastructure.Options
             {
                 return TimeSpan.FromSeconds(StartingDueTimeSpanSecond);
             }
-            return GetDueTime();
+            return GetDueTimeFromInterval() ?? GetDueTime();
+        }
+
+        public TimeSpan? GetDueTimeFromInterval()
+        {
+            var classMethodName = "TimerScheduleOptionsBase#getDueTimeFromInterval()";
+            if (TimeIntervalInSeconds == null)
+            {
+                LogDebug($"{classMethodName}: 実行間隔が設定されていませんので null を返却します。");
+                return null;
+            }
+            var dueTime = new TimeSpan(0, 0, TimeIntervalInSeconds.Value);
+            var nextTime = DateTime.Now + dueTime;
+            LogDebug($"{classMethodName}: 次回実行のスケジュール: 曜日 {nextTime.ToString("dddd")}, 時間 {nextTime.ToString("T")}, それまでの待機時間 {dueTime}");
+            return dueTime;
         }
 
         /// <summary>

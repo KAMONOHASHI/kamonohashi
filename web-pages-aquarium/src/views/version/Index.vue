@@ -19,7 +19,7 @@
           <el-col :span="20">
             <br />
             <div class="title">
-              {{ 'KAMONOHASHI web-pages' }}
+              {{ 'KAMONOHASHI web-pages-aquarium' }}
             </div>
             <br />
             <div class="text">
