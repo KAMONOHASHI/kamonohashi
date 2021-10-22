@@ -18,8 +18,6 @@
 import KqiHeader from '@/components/KqiHeader'
 import KqiMenu from '@/components/KqiMenu'
 import Util from '@/util/util'
-import { createNamespacedHelpers } from 'vuex'
-const { mapGetters, mapActions } = createNamespacedHelpers('account')
 
 export default {
   components: {
@@ -28,12 +26,8 @@ export default {
   },
   data() {
     return {
-      login: false,
       menu: this.getMenu(),
     }
-  },
-  computed: {
-    ...mapGetters(['account', 'token']),
   },
   watch: {
     menu() {
@@ -41,7 +35,6 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['fetchAccount', 'switchTenant']),
     async handleMenu() {
       this.menu = !this.menu
     },

@@ -66,27 +66,11 @@ const { mapGetters, mapActions } = createNamespacedHelpers('account')
 
 export default {
   name: 'Header',
-  props: {
-    login: {
-      type: Boolean,
-      default: true,
-    },
-  },
-  data() {
-    return {
-      user: null,
-    }
-  },
   computed: {
-    ...mapGetters(['account', 'loginData', 'isLogined']),
+    ...mapGetters(['account', 'isLogined']),
   },
   methods: {
-    ...mapActions([
-      'fetchAccount',
-      'postTokenTenants',
-      'switchTenant',
-      'logout',
-    ]),
+    ...mapActions(['switchTenant', 'logout']),
     omitIfLong(str) {
       return str.length <= 25 ? str : str.substr(0, 25) + '...'
     },

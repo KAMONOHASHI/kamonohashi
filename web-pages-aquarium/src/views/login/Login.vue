@@ -45,7 +45,7 @@
 <script>
 import KqiDisplayError from '@/components/KqiDisplayError'
 import { createNamespacedHelpers } from 'vuex'
-const { mapGetters, mapActions } = createNamespacedHelpers('account')
+const { mapActions } = createNamespacedHelpers('account')
 const formRule = {
   required: true,
   trigger: 'blur',
@@ -77,11 +77,8 @@ export default {
       labelPosition: 'top',
     }
   },
-  computed: {
-    ...mapGetters(['loginData']),
-  },
   methods: {
-    ...mapActions(['postLogin', 'login', 'logout']),
+    ...mapActions(['login', 'logout']),
     async handleLogin() {
       this.$refs['loginForm'].validate(async valid => {
         if (valid) {
