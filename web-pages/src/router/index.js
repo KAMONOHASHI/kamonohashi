@@ -54,6 +54,8 @@ let router = new Router({
 })
 router.beforeEach(async (to, from, next) => {
   let storeTenantId = router.app.$store.getters['account/getTenantId']
+  // storeにテナントIDがあれば文字列に変換する（後ほどURLのテナントIDと比較する際に文字列である必要があるため）
+  storeTenantId = storeTenantId === undefined ? null : String(storeTenantId)
   let token = router.app.$store.getters['account/token']
   // note: nextを使うと無視して良い次のエラーが出る
   // Redirected when going from ... to ... via a navigation guard.
