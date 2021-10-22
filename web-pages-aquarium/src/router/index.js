@@ -109,6 +109,11 @@ router.beforeEach(async (to, from, next) => {
       tenantId: to.query.tenantId,
     })
   }
+  // ログイン済みのとき、URLのテナントIDを直接変更した場合に備え、リロード処理を行う
+  if (to.path === from.path && to.query.tenantId !== from.query.tenantId) {
+    // リロード処理
+    location.reload()
+  }
   next()
 })
 
