@@ -5,22 +5,9 @@ import cluster from './modules/cluster'
 import data from './modules/data'
 import dataSet from './modules/dataSet'
 import aquariumDataSet from './modules/aquariumDataSet'
-import git from './modules/git'
 import gitSelector from './modules/gitSelector'
-import inference from './modules/inference'
-import menu from './modules/menu'
-import node from './modules/node'
-import notebook from './modules/notebook'
-import preprocessing from './modules/preprocessing'
-import quota from './modules/quota'
-import registry from './modules/registry'
 import registrySelector from './modules/registrySelector'
-import resource from './modules/resource'
-import role from './modules/role'
-import storage from './modules/storage'
-import tenant from './modules/tenant'
 import training from './modules/training'
-import user from './modules/user'
 import version from './modules/version'
 import template from './modules/template'
 import experiment from './modules/experiment'
@@ -33,22 +20,9 @@ export default new Vuex.Store({
     data,
     dataSet,
     aquariumDataSet,
-    git,
     gitSelector,
-    inference,
-    menu,
-    node,
-    notebook,
-    preprocessing,
-    quota,
-    registry,
     registrySelector,
-    resource,
-    role,
-    storage,
-    tenant,
     training,
-    user,
     version,
     template,
     experiment,
