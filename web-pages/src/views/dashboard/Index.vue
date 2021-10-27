@@ -41,7 +41,7 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex'
-const { mapGetters, mapActions } = createNamespacedHelpers('account')
+const { mapGetters } = createNamespacedHelpers('account')
 
 export default {
   title: 'ダッシュボード',
@@ -50,11 +50,6 @@ export default {
   },
   computed: {
     ...mapGetters(['menuList']),
-  },
-  async created() {},
-
-  methods: {
-    ...mapActions(['fetchMenuList']),
   },
 }
 </script>
