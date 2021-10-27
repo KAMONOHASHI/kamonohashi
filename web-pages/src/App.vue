@@ -34,6 +34,12 @@ export default {
       this.setMenu(this.menu)
     },
   },
+  created() {
+    window.addEventListener('beforeunload', this.setTokenCookie)
+  },
+  destroyed() {
+    window.removeEventListener('beforeunload', this.setTokenCookie)
+  },
   methods: {
     async handleMenu() {
       this.menu = !this.menu
@@ -44,6 +50,11 @@ export default {
     getMenu() {
       let v = Util.getCookie('.Platypus.ShowMenu')
       return v === 'true'
+    },
+    setTokenCookie() {
+      let token = this.$store.getters['account/token']
+      let tokenCookieKey = '.Platypus.Auth'
+      Util.setCookie(tokenCookieKey, token)
     },
   },
 }

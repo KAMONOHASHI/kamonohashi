@@ -6,7 +6,7 @@ const tokenCookieKey = '.Platypus.Auth'
 // initial state
 const state = {
   loginData: {},
-  token: {},
+  token: Util.getCookie(tokenCookieKey),
   account: {},
   menuList: [],
   menuTree: [],
@@ -18,9 +18,8 @@ const getters = {
   loginData(state) {
     return state.loginData
   },
-  token() {
-    // 変更検知によるレンダリングは効かないはずなのでコンポーネントからの利用は要注意
-    return state.loginData.token ?? Util.getCookie(tokenCookieKey)
+  token(state) {
+    return state.token
   },
   account(state) {
     return state.account
@@ -120,6 +119,8 @@ const actions = {
     }
     let response = await api.account.postLogin(params)
     let loginData = response.data
+    let token = loginData.token
+    commit('setToken', { token })
     commit('setLoginData', { loginData })
     await dispatch('fetchAccount')
     await dispatch('fetchMenu')
@@ -139,13 +140,6 @@ const actions = {
     commit('setLoginData', { loginData })
     await dispatch('fetchAccount')
     await dispatch('fetchMenu')
-  },
-
-  async postLogin({ commit, dispatch }, params) {
-    let response = await api.account.postLogin(params)
-    let loginData = response.data
-    commit('setLoginData', { loginData })
-    dispatch('fetchMenu')
   },
 
   async postTokenTenants({ commit, dispatch }, params) {
@@ -192,7 +186,7 @@ const mutations = {
     state.loginData = {}
     state.menuList = []
     state.menuTree = []
-    state.token = {}
+    state.token = null
 
     state.logined = false
   },
