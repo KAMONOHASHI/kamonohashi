@@ -76,10 +76,6 @@ export default new Vuex.Store({
     decrementLoading(state) {
       state.loadingCnt--
     },
-    setLogin(state, { name, tenant }) {
-      state.loginName = name
-      state.loginTenant = tenant
-    },
   },
   actions: {
     incrementLoading(context) {

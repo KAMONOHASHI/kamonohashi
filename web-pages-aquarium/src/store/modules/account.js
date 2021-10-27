@@ -6,7 +6,7 @@ const tokenCookieKey = '.Platypus.Auth'
 // initial state
 const state = {
   loginData: {},
-  token: {},
+  token: Util.getCookie(tokenCookieKey),
   account: {},
   menuList: [],
   menuTree: [],
@@ -18,9 +18,8 @@ const getters = {
   loginData(state) {
     return state.loginData
   },
-  token() {
-    // 変更検知によるレンダリングは効かないはずなのでコンポーネントからの利用は要注意
-    return state.loginData.token ?? Util.getCookie(tokenCookieKey)
+  token(state) {
+    return state.token
   },
   account(state) {
     return state.account
@@ -120,16 +119,18 @@ const actions = {
     }
     let response = await api.account.postLogin(params)
     let loginData = response.data
+    let token = loginData.token
+    commit('setToken', { token })
     commit('setLoginData', { loginData })
+    Util.setCookie(tokenCookieKey, token)
     await dispatch('fetchAccount')
     await dispatch('fetchMenu')
-    Util.setCookie(tokenCookieKey, loginData.token)
     commit('setLogined')
   },
 
-  async logout({ commit }) {
-    Util.deleteCookie(tokenCookieKey)
+  logout({ commit }) {
     commit('setLogout')
+    Util.deleteCookie(tokenCookieKey)
   },
 
   async switchTenant({ commit, dispatch }, { tenantId }) {
@@ -137,15 +138,9 @@ const actions = {
     let token = loginData.token
     commit('setToken', { token })
     commit('setLoginData', { loginData })
+    Util.setCookie(tokenCookieKey, token)
     await dispatch('fetchAccount')
     await dispatch('fetchMenu')
-  },
-
-  async postLogin({ commit, dispatch }, params) {
-    let response = await api.account.postLogin(params)
-    let loginData = response.data
-    commit('setLoginData', { loginData })
-    dispatch('fetchMenu')
   },
 
   async postTokenTenants({ commit, dispatch }, params) {
@@ -153,6 +148,7 @@ const actions = {
     let token = loginData.token
     commit('setToken', { token })
     commit('setLoginData', { loginData })
+    Util.setCookie(tokenCookieKey, token)
     dispatch('fetchMenu')
   },
 
@@ -192,7 +188,7 @@ const mutations = {
     state.loginData = {}
     state.menuList = []
     state.menuTree = []
-    state.token = {}
+    state.token = null
 
     state.logined = false
   },
