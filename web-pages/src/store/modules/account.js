@@ -122,9 +122,9 @@ const actions = {
     let token = loginData.token
     commit('setToken', { token })
     commit('setLoginData', { loginData })
+    Util.setCookie(tokenCookieKey, token)
     await dispatch('fetchAccount')
     await dispatch('fetchMenu')
-    Util.setCookie(tokenCookieKey, loginData.token)
     commit('setLogined')
   },
 
@@ -138,6 +138,7 @@ const actions = {
     let token = loginData.token
     commit('setToken', { token })
     commit('setLoginData', { loginData })
+    Util.setCookie(tokenCookieKey, token)
     await dispatch('fetchAccount')
     await dispatch('fetchMenu')
   },
@@ -147,6 +148,7 @@ const actions = {
     let token = loginData.token
     commit('setToken', { token })
     commit('setLoginData', { loginData })
+    Util.setCookie(tokenCookieKey, token)
     dispatch('fetchMenu')
   },
 
