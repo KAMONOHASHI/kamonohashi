@@ -76,6 +76,7 @@
 </template>
 
 <script>
+import Util from '@/util/util'
 import KqiDisplayError from '@/components/KqiDisplayError'
 import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
 import KqiPreprocessingsSelector from '@/components/selector/KqiPreprocessingSelector'
@@ -224,7 +225,7 @@ export default {
               this.error = e
             }
           })
-          await this.sleep(1000)
+          await Util.wait(2000)
           // エラーがない場合、前処理履歴画面に遷移
           if (this.form.movePreprocessingPage && this.error === null) {
             this.emitHistoryPage(this.form.preprocessingId)
@@ -238,9 +239,6 @@ export default {
           }
         }
       })
-    },
-    sleep(ms) {
-      return new Promise(resolve => setTimeout(resolve, ms))
     },
 
     onPreprocessingChanged() {
