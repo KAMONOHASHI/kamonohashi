@@ -181,6 +181,7 @@ export default {
     async runPreprocessing() {
       let form = this.$refs.preprocessingForm
       await form.validate(async valid => {
+        this.error = null
         if (valid) {
           let selectedIdList = []
           if (this.idArray === null) {
@@ -219,7 +220,6 @@ export default {
                 title: 'Success',
                 message: `ID:${dataId}の前処理を実行しました`,
               })
-              this.error = null
             } catch (e) {
               this.error = e
             }
