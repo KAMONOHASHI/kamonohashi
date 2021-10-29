@@ -1,12 +1,12 @@
 import api from '@/api/api'
 import Util from '@/util/util'
 
-const tokenCookieKey = '.Platypus.Auth'
+const cookieTokenKey = '.Platypus.Auth'
 
 // initial state
 const state = {
   loginData: {},
-  token: Util.getCookie(tokenCookieKey),
+  token: Util.getCookie(cookieTokenKey),
   account: {},
   menuList: [],
   menuTree: [],
@@ -122,7 +122,7 @@ const actions = {
     let token = loginData.token
     commit('setToken', { token })
     commit('setLoginData', { loginData })
-    Util.setCookie(tokenCookieKey, token)
+    Util.setCookie(cookieTokenKey, token)
     await dispatch('fetchAccount')
     await dispatch('fetchMenu')
     commit('setLogined')
@@ -130,7 +130,7 @@ const actions = {
 
   logout({ commit }) {
     commit('setLogout')
-    Util.deleteCookie(tokenCookieKey)
+    Util.deleteCookie(cookieTokenKey)
   },
 
   async switchTenant({ commit, dispatch }, { tenantId }) {
@@ -138,7 +138,7 @@ const actions = {
     let token = loginData.token
     commit('setToken', { token })
     commit('setLoginData', { loginData })
-    Util.setCookie(tokenCookieKey, token)
+    Util.setCookie(cookieTokenKey, token)
     await dispatch('fetchAccount')
     await dispatch('fetchMenu')
   },
@@ -148,7 +148,7 @@ const actions = {
     let token = loginData.token
     commit('setToken', { token })
     commit('setLoginData', { loginData })
-    Util.setCookie(tokenCookieKey, token)
+    Util.setCookie(cookieTokenKey, token)
     dispatch('fetchMenu')
   },
 
