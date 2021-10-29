@@ -73,6 +73,10 @@ router.beforeEach(async (to, from, next) => {
   // 未ログイン(cookieの認証トークンがnullであれば別タブでログアウト処理が行われた)
   if (!token || !cookieToken) {
     await router.app.$store.dispatch('account/logout')
+    if (token && !cookieToken) {
+      // storeはあるがcookieがなければ認証情報がなくなったと判断
+      Util.setCookie('.Platypus.Auth.Error', true)
+    }
     if (to.path === '/version') {
       // バージョン情報へ遷移
       next()
@@ -80,6 +84,15 @@ router.beforeEach(async (to, from, next) => {
       next('/login')
     } else {
       next()
+      let authError = Util.getCookie('.Platypus.Auth.Error')
+      if (authError === 'true') {
+        let vue = new Vue()
+        vue.$notify.info({
+          title: 'ログインしてください',
+          message: '有効な認証情報がありません',
+        })
+        Util.setCookie('.Platypus.Auth.Error', false)
+      }
     }
     return
   } else if (token) {
