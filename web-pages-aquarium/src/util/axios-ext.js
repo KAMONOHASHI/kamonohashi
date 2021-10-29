@@ -21,9 +21,12 @@ export function axiosAuthInterceptors($axios) {
   $axios.interceptors.request.use(
     function(config) {
       let token = store.getters['account/token']
-      let tokenCookie = Util.getCookie('.Platypus.Auth')
-      if (token && tokenCookie) {
+      let cookieToken = Util.getCookie('.Platypus.Auth')
+      // ログインしているか確認
+      if (token && cookieToken) {
         config.headers.Authorization = `Bearer ${token}`
+        // 操作タブの認証トークンをcookieに設定
+        Util.setCookie('.Platypus.Auth', token)
       }
       return config
     },

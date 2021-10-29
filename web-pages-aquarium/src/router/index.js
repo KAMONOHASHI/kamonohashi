@@ -25,6 +25,7 @@ import clusterResource from '@/router/cluster-resource'
 import version from '@/router/version'
 import modelTemplate from '@/router/model-template'
 import experiment from '@/router/experiment'
+import Util from '../util/util'
 
 Vue.use(Router)
 
@@ -73,15 +74,22 @@ router.beforeEach(async (to, from, next) => {
     next()
     return
   }
+  // cookieの認証トークンがnullであれば別タブでログアウト処理が行われた。
+  let cookieToken = Util.getCookie('.Platypus.Auth')
   // 未ログイン
-  if (!token) {
+  if (!token || !cookieToken) {
     if (to.path !== '/login') {
+      await router.app.$store.dispatch('account/logout')
       next('/login')
     } else {
       next()
     }
     return
+  } else if (token) {
+    // 操作タブの認証トークンをcookieに設定
+    Util.setCookie('.Platypus.Auth', token)
   }
+
   // URLのテナントが未指定
   if (to.query.tenantId === undefined) {
     let tenantId = storeTenantId ?? from.query.tenantId

@@ -35,10 +35,10 @@ export default {
     },
   },
   created() {
-    window.addEventListener('beforeunload', this.setTokenCookie)
+    window.addEventListener('beforeunload', this.setCookieToken)
   },
   destroyed() {
-    window.removeEventListener('beforeunload', this.setTokenCookie)
+    window.removeEventListener('beforeunload', this.setCookieToken)
   },
   methods: {
     async handleMenu() {
@@ -51,17 +51,17 @@ export default {
       let v = Util.getCookie('.Platypus.ShowMenu')
       return v === 'true'
     },
-    setTokenCookie() {
+    setCookieToken() {
       let token = this.$store.getters['account/token']
-      let tokenCookieKey = '.Platypus.Auth'
-      let tokenCookie = Util.getCookie(tokenCookieKey, token)
+      let cookieTokenKey = '.Platypus.Auth'
+      let cookieToken = Util.getCookie(cookieTokenKey, token)
 
-      if (!tokenCookie) {
+      if (!cookieToken) {
         // Cookieにトークン情報がないときはログアウト
         this.$store.dispatch['account/logout']
       } else {
         // Cookieにトークン情報があるときはCookie情報を更新
-        Util.setCookie(tokenCookieKey, token)
+        Util.setCookie(cookieTokenKey, token)
       }
     },
   },
