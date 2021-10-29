@@ -1,5 +1,6 @@
 import store from '@/store'
 import { Loading } from 'element-ui'
+import Util from '@/util/util'
 import Vue from 'vue'
 import router from '@/router'
 
@@ -20,7 +21,8 @@ export function axiosAuthInterceptors($axios) {
   $axios.interceptors.request.use(
     function(config) {
       let token = store.getters['account/token']
-      if (token) {
+      let tokenCookie = Util.getCookie('.Platypus.Auth')
+      if (token && tokenCookie) {
         config.headers.Authorization = `Bearer ${token}`
       }
       return config

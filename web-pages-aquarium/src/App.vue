@@ -54,7 +54,15 @@ export default {
     setTokenCookie() {
       let token = this.$store.getters['account/token']
       let tokenCookieKey = '.Platypus.Auth'
-      Util.setCookie(tokenCookieKey, token)
+      let tokenCookie = Util.getCookie(tokenCookieKey, token)
+
+      if (!tokenCookie) {
+        // Cookieにトークン情報がないときはログアウト
+        this.$store.dispatch['account/logout']
+      } else {
+        // Cookieにトークン情報があるときはCookie情報を更新
+        Util.setCookie(tokenCookieKey, token)
+      }
     },
   },
 }
