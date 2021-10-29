@@ -65,17 +65,14 @@ router.beforeEach(async (to, from, next) => {
     next('/error?url=' + to.path)
     return
   }
-  // バージョン情報
-  if (to.path === '/version') {
-    next()
-    return
-  }
-  // cookieの認証トークンがnullであれば別タブでログアウト処理が行われた。
   let cookieToken = Util.getCookie('.Platypus.Auth')
-  // 未ログイン
+  // 未ログイン(cookieの認証トークンがnullであれば別タブでログアウト処理が行われた)
   if (!token || !cookieToken) {
-    if (to.path !== '/login') {
-      await router.app.$store.dispatch('account/logout')
+    await router.app.$store.dispatch('account/logout')
+    if (to.path === '/version') {
+      // バージョン情報へ遷移
+      next()
+    } else if (to.path !== '/login') {
       next('/login')
     } else {
       next()
@@ -85,7 +82,6 @@ router.beforeEach(async (to, from, next) => {
     // 操作タブの認証トークンをcookieに設定
     Util.setCookie('.Platypus.Auth', token)
   }
-
   // URLのテナントが未指定
   if (to.query.tenantId === undefined) {
     let tenantId = storeTenantId ?? from.query.tenantId
