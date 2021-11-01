@@ -1207,6 +1207,45 @@ export const ApiV2TenantQuotaGetURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * 接続中のテナントが利用可能なノード一覧（リソース値を含む）を取得する。
+ * request: ApiV2TenantNodesGet
+ * url: ApiV2TenantNodesGetURL
+ * method: ApiV2TenantNodesGet_TYPE
+ * raw_url: ApiV2TenantNodesGet_RAW_URL
+ */
+export const ApiV2TenantNodesGet = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/tenant/nodes'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2TenantNodesGet_RAW_URL = function() {
+  return '/api/v2/tenant/nodes'
+}
+export const ApiV2TenantNodesGet_TYPE = function() {
+  return 'get'
+}
+export const ApiV2TenantNodesGetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/tenant/nodes'
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * REST APIとして定時バッチから実行される想定。
  * request: ApiV2AdminTensorboardsDelete
  * url: ApiV2AdminTensorboardsDeleteURL
@@ -7438,9 +7477,9 @@ export const ApiV2AdminResourceHistoriesContainersMetadataGetURL = function(para
  * url: ApiV2AdminResourceHistoriesContainersDataGetURL
  * method: ApiV2AdminResourceHistoriesContainersDataGet_TYPE
  * raw_url: ApiV2AdminResourceHistoriesContainersDataGet_RAW_URL
- * @param startDate - 
- * @param endDate - 
- * @param withHeader - 
+ * @param startDate - 開始日
+ * @param endDate - 終了日
+ * @param withHeader - ヘッダ情報を付与するか
  */
 export const ApiV2AdminResourceHistoriesContainersDataGet = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -7498,7 +7537,7 @@ export const ApiV2AdminResourceHistoriesContainersDataGetURL = function(paramete
  * url: ApiV2AdminResourceHistoriesContainersPatchURL
  * method: ApiV2AdminResourceHistoriesContainersPatch_TYPE
  * raw_url: ApiV2AdminResourceHistoriesContainersPatch_RAW_URL
- * @param model - 
+ * @param model - 削除対象の入力モデル
  */
 export const ApiV2AdminResourceHistoriesContainersPatch = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -7580,9 +7619,9 @@ export const ApiV2AdminResourceHistoriesJobsMetadataGetURL = function(parameters
  * url: ApiV2AdminResourceHistoriesJobsDataGetURL
  * method: ApiV2AdminResourceHistoriesJobsDataGet_TYPE
  * raw_url: ApiV2AdminResourceHistoriesJobsDataGet_RAW_URL
- * @param startDate - 
- * @param endDate - 
- * @param withHeader - 
+ * @param startDate - 開始日
+ * @param endDate - 終了日
+ * @param withHeader - ヘッダ情報を付与するか
  */
 export const ApiV2AdminResourceHistoriesJobsDataGet = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -7640,7 +7679,7 @@ export const ApiV2AdminResourceHistoriesJobsDataGetURL = function(parameters = {
  * url: ApiV2AdminResourceHistoriesJobsPatchURL
  * method: ApiV2AdminResourceHistoriesJobsPatch_TYPE
  * raw_url: ApiV2AdminResourceHistoriesJobsPatch_RAW_URL
- * @param model - 
+ * @param model - 削除対象の入力モデル
  */
 export const ApiV2AdminResourceHistoriesJobsPatch = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
