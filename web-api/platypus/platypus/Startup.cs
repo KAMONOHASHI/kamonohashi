@@ -280,11 +280,14 @@ namespace Nssol.Platypus
             #endregion
 
             services.AddCors();
-            services.AddMvc(cfg =>
+            services.AddControllersWithViews(cfg =>
             {
                 // 集約エラー用フィルター
                 cfg.Filters.Add(typeof(GlobalExceptionHandlerAttribute));
             });
+            // Newtonsoft.Jsonを使用
+            services.AddRazorPages()
+                .AddNewtonsoftJson();
 
             // API Versioning
             services.AddVersionedApiExplorer(options =>
@@ -439,22 +442,25 @@ namespace Nssol.Platypus
 
                 AddMiddlewareForLogging(app, "Move to authentication", "Back from authentication");
 
+                app.UseRouting();
+
+                app.UseCors(builder => builder
+                    .AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader());
+
                 app.UseAuthentication();
+                app.UseAuthorization();
 
                 //ASP.NET Core MVCからのレスポンスは常にデバッグログを残す
                 AddMiddlewareForLogging(app, "Execute Request in ASP.NET Core MVC", null);
                 AddMiddlewareForLogging(app, null, "Return Response from ASP.NET Core MVC", true);
 
-                app.UseCors(builder => builder
-                    .AllowAnyOrigin()
-                    .AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .AllowCredentials());
-                app.UseMvc(routes =>
+                app.UseEndpoints(endpoints =>
                 {
-                    routes.MapRoute(
+                    endpoints.MapControllerRoute(
                         name: "default",
-                        template: "{controller=Account}/{action=Index}/{id?}");
+                        pattern: "{controller=Account}/{action=Index}/{id?}");
                 });
 
                 // /wsにアクセスされた際、kubernetes podのshell実行用のwebsocket通信を確立する
