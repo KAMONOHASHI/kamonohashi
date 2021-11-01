@@ -49,7 +49,7 @@ namespace Nssol.Platypus
         public static string DefaultConnectionString { get; set; }
 
         /// <summary>
-        /// <see cref="Configure(IApplicationBuilder, IHostingEnvironment, ILoggerFactory, IOptions{WebSecurityOptions}, ICommonDiLogic, IApiVersionDescriptionProvider)"/> 内処理用のロガー
+        /// <see cref="Configure(IApplicationBuilder, IWebHostEnvironment, ILoggerFactory, IOptions{WebSecurityOptions}, ICommonDiLogic, IApiVersionDescriptionProvider)"/> 内処理用のロガー
         /// </summary>
         private ILogger logger;
 
@@ -368,15 +368,10 @@ namespace Nssol.Platypus
         /// <param name="securityOptions">appsettings.jsonから読み込んだセキュリティ設定情報</param>
         /// <param name="commonDiLogic">DI用</param>
         /// <param name="provider">API Versioning</param>
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IOptions<WebSecurityOptions> securityOptions, ICommonDiLogic commonDiLogic, IApiVersionDescriptionProvider provider)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory, IOptions<WebSecurityOptions> securityOptions, ICommonDiLogic commonDiLogic, IApiVersionDescriptionProvider provider)
         {
             WebSecurityOptions options = securityOptions.Value;
             isDebug = options.EnableRequestPiplineDebugLog;
-
-            //ログ設定（ここで一回やれば、各クラスでの設定は不要）
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-            loggerFactory.AddDebug();
-            loggerFactory.AddProvider(new Log4NetProvider());
 
             logger = loggerFactory.CreateLogger<Startup>();
             LogUtil.WriteSystemLog(logger.LogDebug, "Start to configure Platypus WebUI application");
