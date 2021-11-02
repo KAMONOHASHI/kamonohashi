@@ -21,6 +21,7 @@ namespace Nssol.Platypus.Controllers.spa
     /// URLはアクションメソッド単位で割り当てる。
     /// 多数のメニューで使用される想定のため、権限制御は行わない。
     /// </summary>
+    [ApiController]
     [ApiVersion("1"), ApiVersion("2")]
     public class StorageController : PlatypusApiControllerBase
     {

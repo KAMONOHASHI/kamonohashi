@@ -20,6 +20,7 @@ namespace Nssol.Platypus.Controllers.spa
     /// <summary>
     /// テナント管理を扱うためのAPI集
     /// </summary>
+    [ApiController]
     [ApiVersion("1"), ApiVersion("2")]
     [Route("api/v{api-version:apiVersion}/admin/tenants")]
     public class TenantController : PlatypusApiControllerBase

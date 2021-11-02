@@ -18,6 +18,7 @@ namespace Nssol.Platypus.Controllers.spa
     /// <summary>
     /// データセット管理を扱うためのAPI集
     /// </summary>
+    [ApiController]
     [ApiVersion("1"), ApiVersion("2")]
     [Route("api/v{api-version:apiVersion}/datasets")]
     public class DataSetController : PlatypusApiControllerBase

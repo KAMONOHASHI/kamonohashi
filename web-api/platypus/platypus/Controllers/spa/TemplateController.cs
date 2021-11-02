@@ -20,6 +20,7 @@ namespace Nssol.Platypus.Controllers.spa
     /// <summary>
     /// テンプレートAPI
     /// </summary>
+    [ApiController]
     [ApiVersion("1"), ApiVersion("2")]
     [Route("api/v{api-version:apiVersion}")]
     public class TemplateController : PlatypusApiControllerBase

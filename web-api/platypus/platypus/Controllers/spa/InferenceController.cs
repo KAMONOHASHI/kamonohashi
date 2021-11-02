@@ -26,6 +26,7 @@ namespace Nssol.Platypus.Controllers.spa
     /// <summary>
     /// Inferenceを扱うためのAPI集
     /// </summary>
+    [ApiController]
     [ApiVersion("1"), ApiVersion("2")]
     [Route("api/v{api-version:apiVersion}/inferences")]
     public class InferenceController : PlatypusApiControllerBase

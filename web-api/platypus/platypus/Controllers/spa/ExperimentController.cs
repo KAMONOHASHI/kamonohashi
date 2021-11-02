@@ -22,6 +22,7 @@ namespace Nssol.Platypus.Controllers.spa
     /// <summary>
     /// 実験API
     /// </summary>
+    [ApiController]
     [ApiVersion("1"), ApiVersion("2")]
     [Route("api/v{api-version:apiVersion}/experiment")]
     public class ExperimentController : PlatypusApiControllerBase

@@ -18,6 +18,7 @@ namespace Nssol.Platypus.Controllers.spa
     /// <summary>
     /// アクアリウムデータセットAPI
     /// </summary>
+    [ApiController]
     [ApiVersion("2")]
     [Route("api/v{api-version:apiVersion}/aquarium/datasets")]
     public class AquariumDataSetController : PlatypusApiControllerBase

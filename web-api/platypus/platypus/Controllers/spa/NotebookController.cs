@@ -23,6 +23,7 @@ namespace Nssol.Platypus.Controllers.spa
     /// <summary>
     /// Notebookを扱うためのAPI集
     /// </summary>
+    [ApiController]
     [ApiVersion("1"), ApiVersion("2")]
     [Route("api/v{api-version:apiVersion}/notebook")]
     public class NotebookController : PlatypusApiControllerBase
