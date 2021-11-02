@@ -26,7 +26,7 @@ using Nssol.Platypus.Models;
 using Nssol.Platypus.Services;
 using Nssol.Platypus.Services.Interfaces;
 using Nssol.Platypus.Swagger;
-using Swashbuckle.AspNetCore.Swagger;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Threading.Tasks;
 
@@ -57,6 +57,20 @@ namespace Nssol.Platypus
         /// パイプラインのデバッグがあまりに辛いので、デバッグ用のログを出せるようにした。
         /// </summary>
         private bool isDebug;
+        
+        /// <summary>
+        /// XMLドキュメントのファイルパスを取得する
+        /// </summary>
+        static string XmlCommentsFilePath
+        {
+            get
+            {
+                // SwaggerにXMLコメントの内容を反映させるために、サーバ上での XML Document のパスを渡す
+                var location = System.Reflection.Assembly.GetEntryAssembly().Location;
+                var xmlPath = location.Replace("dll", "xml");
+                return xmlPath;
+            }
+        }
 
         /// <summary>
         /// コンストラクタ
@@ -290,60 +304,33 @@ namespace Nssol.Platypus
                 .AddNewtonsoftJson();
 
             // API Versioning
+            services.AddApiVersioning(options =>
+            {
+                options.ApiVersionReader = new UrlSegmentApiVersionReader();
+            });
             services.AddVersionedApiExplorer(options =>
             {
+                // add the versioned api explorer, which also adds IApiVersionDescriptionProvider service
+                // note: the specified format code will format the version as "'v'major[.minor][-status]"
                 options.GroupNameFormat = "'v'VVV";
+                // note: this option is only necessary when versioning by url segment. the SubstitutionFormat
+                // can also be used to control the format of the API version in route templates
                 options.SubstituteApiVersionInUrl = true;
             });
-            services.AddApiVersioning(options => 
-                options.ApiVersionReader = new UrlSegmentApiVersionReader());
 
+            // swaggerが有効か
             if (wsops.EnableSwagger)
             {
-                // SwaggerにXMLコメントの内容を反映させるために、サーバ上での XML Document のパスを渡す
-                var location = System.Reflection.Assembly.GetEntryAssembly().Location;
-                var xmlPath = location.Replace("dll", "xml");
-                //// SwaggerGen を追加
-                services.AddSwaggerGen(options =>
-                {
-                    // APIの署名を記載
-                    using (var serviceProvider = services.BuildServiceProvider())
+                services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
+                services.AddSwaggerGen(
+                    options =>
                     {
-                        var provider = serviceProvider.GetRequiredService<IApiVersionDescriptionProvider>();
-                        foreach (var description in provider.ApiVersionDescriptions)
-                        {
-                            options.SwaggerDoc(description.GroupName, new Info
-                            {
-                                Title = "KAMONOHASHI API",
-                                Version = description.GroupName,
-                                Description = "A platform for deep learning",
-                                Contact = new Contact()
-                                {
-                                    Email = "kamonohashi-support@jp.nssol.nipponsteel.com",
-                                    Name = "KAMONOHASHI Support"
-                                },
-                                TermsOfService = ApplicationConst.Copyright,
-                            });
-                        }
-                    }
+                        // add a custom operation filter which sets default values
+                        options.OperationFilter<SwaggerDefaultValues>();
 
-                    // デフォルトだと同じクラス名の入出力モデルを使えないので、識別に名前空間名も含める
-                    // https://stackoverflow.com/questions/46071513/swagger-error-conflicting-schemaids-duplicate-schemaids-detected-for-types-a-a
-                    options.CustomSchemaIds(x => x.FullName);
-
-                    // XML Document Comment を読込む
-                    options.IncludeXmlComments(xmlPath);
-                    //トークン認証用のUIを追加する
-                    options.AddSecurityDefinition("api_key", new ApiKeyScheme()
-                    {
-                        Name = "Authorization",
-                        In = "header",
-                        Type = "apiKey", //この指定が必須。https://github.com/domaindrivendev/Swashbuckle.AspNetCore/issues/124
-                        Description = "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\""
+                        // integrate xml comments
+                        options.IncludeXmlComments(XmlCommentsFilePath);
                     });
-
-                    options.OperationFilter<AssignJwtSecurityRequirements>();
-                });
             }
 
             services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
@@ -431,11 +418,13 @@ namespace Nssol.Platypus
                 {
                     // UseSwagger と UseSwaggerUi を追加
                     app.UseSwagger();
-                    app.UseSwaggerUI(c =>
+                    app.UseSwaggerUI(options =>
                     {
+                        // build a swagger endpoint for each discovered API version
                         foreach (var description in provider.ApiVersionDescriptions)
                         {
-                            c.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", description.GroupName);
+                            options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json",
+                                description.GroupName.ToUpperInvariant());
                         }
                     });
                 }
