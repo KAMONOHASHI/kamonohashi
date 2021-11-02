@@ -33,18 +33,17 @@ namespace Nssol.Platypus.Swagger
                 // デフォルトだと同じクラス名の入出力モデルを使えないので、識別に名前空間名も含める
                 // https://stackoverflow.com/questions/46071513/swagger-error-conflicting-schemaids-duplicate-schemaids-detected-for-types-a-a
                 options.CustomSchemaIds(x => x.FullName);
-
-                //トークン認証用のUIを追加する
-                options.AddSecurityDefinition("api_key", new OpenApiSecurityScheme()
-                {
-                    Name = "Authorization",
-                    In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.ApiKey,
-                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\""
-                });
-
-                options.OperationFilter<AssignJwtSecurityRequirements>();
             }
+
+            //トークン認証用のUIを追加する
+            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+            {
+                Name = "Authorization",
+                In = ParameterLocation.Header,
+                Type = SecuritySchemeType.ApiKey,
+                Description = "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\""
+            });
+            options.OperationFilter<AssignJwtSecurityRequirements>();            
         }
  
         /// <summary>
