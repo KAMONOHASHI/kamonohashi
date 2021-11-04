@@ -36,7 +36,7 @@ namespace Nssol.Platypus.Swagger
             }
 
             //トークン認証用のUIを追加する
-            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+            options.AddSecurityDefinition("api_key", new OpenApiSecurityScheme()
             {
                 Name = "Authorization",
                 In = ParameterLocation.Header,
