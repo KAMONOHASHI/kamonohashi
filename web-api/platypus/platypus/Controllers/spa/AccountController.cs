@@ -83,7 +83,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPut]
         [Filters.PermissionFilter(MenuCode.Account)]
         [ProducesResponseType(typeof(AccountOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> EditAccountInfo(AccountInputModel model)
+        public async Task<IActionResult> EditAccountInfo([FromQuery]AccountInputModel model)
         {
             //入力値チェック
             if (!ModelState.IsValid)

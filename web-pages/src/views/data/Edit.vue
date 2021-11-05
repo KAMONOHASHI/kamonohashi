@@ -219,7 +219,7 @@ export default {
     },
 
     async updateData() {
-      let model = {
+      let body = {
         name: this.form.name,
         memo: this.form.memo,
         tags: this.form.tags,
@@ -228,12 +228,12 @@ export default {
 
       let result = null
       if (this.id === null) {
-        result = (await this.post(model)).data
+        result = (await this.post(body)).data
       } else {
         result = (
           await this.put({
             id: this.id,
-            model: model,
+            body: body,
           })
         ).data
       }

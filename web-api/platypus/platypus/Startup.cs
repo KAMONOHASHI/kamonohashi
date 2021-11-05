@@ -417,7 +417,11 @@ namespace Nssol.Platypus
                 if (options.EnableSwagger)
                 {
                     // UseSwagger と UseSwaggerUi を追加
-                    app.UseSwagger();
+                    app.UseSwagger(options =>
+                    {
+                        options.SerializeAsV2 = true;
+                    });
+
                     app.UseSwaggerUI(options =>
                     {
                         // build a swagger endpoint for each discovered API version

@@ -41,7 +41,7 @@ const actions = {
 
   // eslint-disable-next-line no-unused-vars
   async post({ commit }, params) {
-    return await api.user.admin.post({ model: params })
+    return await api.user.admin.post({ body: params })
   },
 
   // eslint-disable-next-line no-unused-vars
@@ -51,7 +51,7 @@ const actions = {
         await api.user.admin.putPassword({ id: id, password: params.password })
       }
     }
-    return await api.user.admin.put({ id: id, model: params })
+    return await api.user.admin.put({ id: id, body: params })
   },
 
   // eslint-disable-next-line no-unused-vars

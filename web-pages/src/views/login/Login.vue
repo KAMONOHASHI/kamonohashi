@@ -89,7 +89,7 @@ export default {
           try {
             let params = {
               $config: { apiDisabledError: true },
-              model: {
+              body: {
                 userName: this.form.user,
                 password: this.form.password,
               },

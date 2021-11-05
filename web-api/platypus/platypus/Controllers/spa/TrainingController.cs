@@ -301,7 +301,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpGet("mount")]
         [Filters.PermissionFilter(MenuCode.Training, MenuCode.Inference, MenuCode.Notebook)]
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
-        public IActionResult GetTrainingToMount(MountInputModel filter)
+        public IActionResult GetTrainingToMount([FromQuery] MountInputModel filter)
         {
             var data = trainingHistoryRepository.GetAllIncludeDataSetAndParentWithOrdering();
 

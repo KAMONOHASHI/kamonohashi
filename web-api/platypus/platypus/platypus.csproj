@@ -19,6 +19,10 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <MvcRazorCompileOnPublish>false</MvcRazorCompileOnPublish>
   </PropertyGroup>
+  <PropertyGroup>
+	 <PreserveCompilationReferences>true</PreserveCompilationReferences>
+	 <PreserveCompilationContext>true</PreserveCompilationContext>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Migrations\20210314021855_v2.3.0e.cs" />
     <Compile Remove="Migrations\20210314021855_v2.3.0e.Designer.cs" />

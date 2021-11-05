@@ -310,7 +310,7 @@ export default {
           image: null,
           tag: null,
         },
-        gitModel: {
+        gitbody: {
           git: null,
           repository: null,
           branch: null,
