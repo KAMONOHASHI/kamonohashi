@@ -51,10 +51,10 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
             TensorBoardContainer container = FindAll(x =>
                 x.TrainingHistoryId == trainingHistoryId
             ).Include(t => t.Tenant)
+            // ここからはクライアント側で実行するためAsEnumerable()を実行する
             .AsEnumerable().Where(x =>
                 ContainerStatus.IsAvailable(x.Status))
-            .FirstOrDefault()
-            ;
+            .FirstOrDefault();
             return container;
         }
 
