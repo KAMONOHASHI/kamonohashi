@@ -256,7 +256,7 @@ namespace Nssol.Platypus.DataAccess
         /// <summary>
         /// データのIndex
         /// </summary>
-        public virtual DbQuery<DataIndex> DataIndex { get; set; }
+        public virtual DbSet<DataIndex> DataIndex { get; set; }
         #endregion
 
         /// <summary>
@@ -276,7 +276,7 @@ namespace Nssol.Platypus.DataAccess
             base.OnModelCreating(modelBuilder);
 
             // VIEWの紐づけ
-            modelBuilder.Query<DataIndex>().ToView("View_DataIndex");
+            modelBuilder.Entity<DataIndex>().HasNoKey().ToView("View_DataIndex");
 
             // unique制約の付与
             // EFCoreではまだアノテーションではできない
