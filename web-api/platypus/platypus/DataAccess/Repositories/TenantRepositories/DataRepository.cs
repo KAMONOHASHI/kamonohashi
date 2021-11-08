@@ -1,14 +1,11 @@
-﻿using Nssol.Platypus.DataAccess.Core;
+﻿using Microsoft.EntityFrameworkCore;
+using Nssol.Platypus.DataAccess.Core;
+using Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories;
+using Nssol.Platypus.Models.CustomModels;
 using Nssol.Platypus.Models.TenantModels;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Nssol.Platypus.DataAccess.Repositories.Interfaces;
-using Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories;
-using Nssol.Platypus.Infrastructure;
-using Nssol.Platypus.Models.CustomModels;
 
 namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
 {
@@ -18,7 +15,7 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
     /// <seealso cref="Interfaces.TenantRepositories.IDataRepository" />
     public class DataRepository : RepositoryForTenantBase<Data>, IDataRepository
     {
-        private readonly DbQuery<DataIndex> dbDataIndex;
+        private readonly DbSet<DataIndex> dbDataIndex;
 
         /// <summary>
         /// コンストラクタ
@@ -45,17 +42,17 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
         public IQueryable<DataIndex> GetDataIndex()
         {
             //普通に検索すると非常に重いので、生SQL文をそのまま発行させる
-            return dbDataIndex.FromSql(
+            return dbDataIndex.FromSqlRaw(
                 "select d.\"Id\", d.\"DisplayId\", d.\"Name\", d.\"CreatedAt\", d.\"CreatedBy\", d.\"ModifiedAt\", d.\"ModifiedBy\", d.\"Memo\", tag.\"Tag\", d.\"TenantId\", parent.\"Id\" as \"ParentDataId\" , parent.\"Name\" as \"ParentDataName\" " +
                 "from \"Data\" d " +
                 "left join \"Data\" parent on d.\"ParentDataId\" = parent.\"Id\" " +
                 "left join " +
-                "(select map.\"DataId\", array_to_string(array_agg(t.\"Name\"), ',') as \"Tag\" " +
-                "from \"DataTagMaps\" as map " +
-                "left join \"Tags\" t on t.\"Id\" = map.\"TagId\" " +
-                "where map.\"TenantId\" = {0} " + 
-                "group by map.\"DataId\" " +
-                "order by map.\"DataId\" " +
+                  "(select map.\"DataId\", array_to_string(array_agg(t.\"Name\"), ',') as \"Tag\" " +
+                   "from \"DataTagMaps\" as map " +
+                   "left join \"Tags\" t on t.\"Id\" = map.\"TagId\" " +
+                   "where map.\"TenantId\" = {0} " + 
+                   "group by map.\"DataId\" " +
+                   "order by map.\"DataId\" " +
                 ") tag on d.\"Id\" = tag.\"DataId\" " +
                 "where d.\"TenantId\" = {0} ", CurrentTenantId); // こう書くと文字列の結合ではなくSQLのパラメタにして渡してくれる
         }
