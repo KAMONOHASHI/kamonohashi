@@ -810,8 +810,12 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonNotFound($"File ID {fileId.Value} is not found.");
             }
 
+            // ストレージ上のファイルを削除するために保存先ファイルパスを保持しておく。
+            string storedPath = file.StoredPath;
+
+            // 削除処理
             trainingHistoryRepository.DeleteAttachedFile(file);
-            await storageLogic.DeleteFileAsync(ResourceType.TrainingHistoryAttachedFiles, file.StoredPath);
+            await storageLogic.DeleteFileAsync(ResourceType.TrainingHistoryAttachedFiles, storedPath);
             unitOfWork.Commit();
 
             return JsonNoContent();
@@ -1138,8 +1142,12 @@ namespace Nssol.Platypus.Controllers.spa
             var files = await trainingHistoryRepository.GetAllAttachedFilesAsync(trainingHistory.Id);
             foreach (var file in files)
             {
+                // ストレージ上のファイルを削除するために保存先ファイルパスを保持しておく。
+                string storedPath = file.StoredPath;
+
+                // 削除処理
                 trainingHistoryRepository.DeleteAttachedFile(file);
-                await storageLogic.DeleteFileAsync(ResourceType.TrainingHistoryAttachedFiles, file.StoredPath);
+                await storageLogic.DeleteFileAsync(ResourceType.TrainingHistoryAttachedFiles, storedPath);
             }
 
             // タグマップを削除

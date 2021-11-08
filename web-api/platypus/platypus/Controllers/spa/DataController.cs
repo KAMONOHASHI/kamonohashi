@@ -520,9 +520,12 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonNotFound($"File ID {fileId.Value} is not found.");
             }
 
+            // ストレージ上のファイルを削除するために保存先ファイルパスを保持しておく。
+            string storedPath = file.DataFile.StoredPath;
+
             // 削除処理
             dataRepository.DeleteFile(data, fileId.Value);
-            await storageLogic.DeleteFileAsync(ResourceType.Data, file.DataFile.StoredPath);
+            await storageLogic.DeleteFileAsync(ResourceType.Data, storedPath);
 
             // 結果に関わらずコミット
             unitOfWork.Commit();

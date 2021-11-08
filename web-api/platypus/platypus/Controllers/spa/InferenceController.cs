@@ -790,8 +790,12 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonNotFound($"File ID {fileId.Value} is not found.");
             }
 
+            // ストレージ上のファイルを削除するために保存先ファイルパスを保持しておく。
+            string storedPath = file.StoredPath;
+
+            // 削除処理
             inferenceHistoryRepository.DeleteAttachedFile(file);
-            await storageLogic.DeleteFileAsync(ResourceType.InferenceHistoryAttachedFiles, file.StoredPath);
+            await storageLogic.DeleteFileAsync(ResourceType.InferenceHistoryAttachedFiles, storedPath);
             unitOfWork.Commit();
 
             return JsonNoContent();
@@ -934,8 +938,12 @@ namespace Nssol.Platypus.Controllers.spa
             var files = await inferenceHistoryRepository.GetAllAttachedFilesAsync(inferenceHistory.Id);
             foreach (var file in files)
             {
+                // ストレージ上のファイルを削除するために保存先ファイルパスを保持しておく。
+                string storedPath = file.StoredPath;
+
+                // 削除処理
                 inferenceHistoryRepository.DeleteAttachedFile(file);
-                await storageLogic.DeleteFileAsync(ResourceType.InferenceHistoryAttachedFiles, file.StoredPath);
+                await storageLogic.DeleteFileAsync(ResourceType.InferenceHistoryAttachedFiles, storedPath);
             }
 
             await dataSetLogic.ReleaseLockAsync(inferenceHistory.DataSetId);
