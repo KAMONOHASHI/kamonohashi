@@ -53,7 +53,7 @@ namespace Nssol.Platypus.Controllers.spa
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetAll([FromQuery] string name, [FromQuery]int? perPage, [FromQuery] int page = 1, bool withTotal = false)
         {
-            var nodes = nodeRepository.GetAll();
+            var nodes = nodeRepository.GetAll().AsEnumerable();
 
             if (string.IsNullOrEmpty(name) == false)
             {

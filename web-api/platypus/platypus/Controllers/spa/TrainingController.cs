@@ -111,7 +111,7 @@ namespace Nssol.Platypus.Controllers.spa
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetAll([FromQuery] SearchInputModel filter, [FromQuery] int? perPage, [FromQuery] int page = 1, bool withTotal = false)
         {
-            var data = trainingHistoryRepository.GetAllIncludeDataSetAndParentWithOrdering();
+            var data = trainingHistoryRepository.GetAllIncludeDataSetAndParentWithOrdering().AsEnumerable();
             data = Search(data, filter);
 
             //未指定、あるいは1000件以上であれば、1000件に指定
@@ -161,22 +161,21 @@ namespace Nssol.Platypus.Controllers.spa
             return status;
         }
 
-
         /// <summary>
         /// データ件数を取得する
         /// </summary>
         /// <param name="filter">検索条件</param>
         private int GetTotalCount(SearchInputModel filter)
         {
-            IQueryable<TrainingHistory> histories;
+            IEnumerable<TrainingHistory> histories;
             if (string.IsNullOrEmpty(filter.DataSet))
             {
-                histories = trainingHistoryRepository.GetAll();
+                histories = trainingHistoryRepository.GetAll().AsEnumerable();
             }
             else
             {
                 //データセット名のフィルターがかかっている場合、データセットも併せて取得しないといけない
-                histories = trainingHistoryRepository.GetAllIncludeDataSet();
+                histories = trainingHistoryRepository.GetAllIncludeDataSet().AsEnumerable();
             }
 
             histories = Search(histories, filter);
@@ -188,9 +187,9 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="sourceData">加工前の検索結果</param>
         /// <param name="filter">検索条件</param>
-        private static IQueryable<TrainingHistory> Search(IQueryable<TrainingHistory> sourceData, SearchInputModel filter)
+        private static IEnumerable<TrainingHistory> Search(IEnumerable<TrainingHistory> sourceData, SearchInputModel filter)
         {
-            IQueryable<TrainingHistory> data = sourceData;
+            IEnumerable<TrainingHistory> data = sourceData;
             data = data
                 .SearchLong(d => d.Id, filter.Id)
                 .SearchString(d => d.Name, filter.Name)
@@ -303,7 +302,7 @@ namespace Nssol.Platypus.Controllers.spa
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetTrainingToMount([FromQuery] MountInputModel filter)
         {
-            var data = trainingHistoryRepository.GetAllIncludeDataSetAndParentWithOrdering();
+            var data = trainingHistoryRepository.GetAllIncludeDataSetAndParentWithOrdering().AsEnumerable();
 
             // ステータスを限定する
             if (filter.Status != null)

@@ -81,7 +81,7 @@ namespace Nssol.Platypus.Controllers.spa
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetAll([FromQuery]SearchInputModel filter, [FromQuery]int? perPage, [FromQuery] int page = 1, bool withTotal = false)
         {
-            var preprocessings = preprocessRepository.GetAllWithOrderby(p => p.Id, false);
+            var preprocessings = preprocessRepository.GetAllWithOrderby(p => p.Id, false).AsEnumerable();
             preprocessings = Search(preprocessings, filter);
 
             // 未指定、あるいは1000件以上であれば、1000件に指定
@@ -103,7 +103,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="filter">検索条件</param>
         private int GetTotalCount(SearchInputModel filter)
         {
-            IQueryable<Preprocess> preprocessings = preprocessRepository.GetAll();
+            IEnumerable<Preprocess> preprocessings = preprocessRepository.GetAll().AsEnumerable();
             preprocessings = Search(preprocessings, filter);
             return preprocessings.Count();
         }
@@ -113,9 +113,9 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="sourceData">加工前の検索結果</param>
         /// <param name="filter">検索条件</param>
-        private static IQueryable<Preprocess> Search(IQueryable<Preprocess> sourceData, SearchInputModel filter)
+        private static IEnumerable<Preprocess> Search(IEnumerable<Preprocess> sourceData, SearchInputModel filter)
         {
-            IQueryable<Preprocess> data = sourceData;
+            IEnumerable<Preprocess> data = sourceData;
             data = data
                 .SearchLong(d => d.Id, filter.Id)
                 .SearchString(d => d.Name, filter.Name)

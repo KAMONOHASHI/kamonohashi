@@ -97,7 +97,7 @@ namespace Nssol.Platypus.Controllers.spa
         [ProducesResponseType(typeof(IEnumerable<InferenceIndexOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetAll([FromQuery] InferenceSearchInputModel filter, [FromQuery] int? perPage, [FromQuery] int page = 1, bool withTotal = false)
         {
-            var data = inferenceHistoryRepository.GetAllIncludeDataSetAndParentWithOrdering();
+            var data = inferenceHistoryRepository.GetAllIncludeDataSetAndParentWithOrdering().AsEnumerable();
             data = Search(data, filter);
 
             //未指定、あるいは1000件以上であれば、1000件に指定
@@ -155,15 +155,15 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="filter">検索条件</param>
         private int GetTotalCount(InferenceSearchInputModel filter)
         {
-            IQueryable<InferenceHistory> histories;
+            IEnumerable<InferenceHistory> histories;
             if (string.IsNullOrEmpty(filter.DataSet))
             {
-                histories = inferenceHistoryRepository.GetAll();
+                histories = inferenceHistoryRepository.GetAll().AsEnumerable();
             }
             else
             {
                 //データセット名のフィルターがかかっている場合、データセットも併せて取得しないといけない
-                histories = inferenceHistoryRepository.GetAllIncludeDataSet();
+                histories = inferenceHistoryRepository.GetAllIncludeDataSet().AsEnumerable();
             }
 
             histories = Search(histories, filter);
@@ -175,9 +175,9 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="sourceData">加工前の検索結果</param>
         /// <param name="filter">検索条件</param>
-        private static IQueryable<InferenceHistory> Search(IQueryable<InferenceHistory> sourceData, InferenceSearchInputModel filter)
+        private static IEnumerable<InferenceHistory> Search(IEnumerable<InferenceHistory> sourceData, InferenceSearchInputModel filter)
         {
-            IQueryable<InferenceHistory> data = sourceData;
+            IEnumerable<InferenceHistory> data = sourceData;
             data = data
                 .SearchLong(d => d.Id, filter.Id)
                 .SearchString(d => d.Name, filter.Name)
@@ -331,7 +331,7 @@ namespace Nssol.Platypus.Controllers.spa
         [ProducesResponseType(typeof(IEnumerable<InferenceIndexOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetInferenceToMount([FromQuery]ApiModels.InferenceApiModels.MountInputModel filter)
         {
-            var data = inferenceHistoryRepository.GetAllIncludeDataSetAndParentWithOrdering();
+            var data = inferenceHistoryRepository.GetAllIncludeDataSetAndParentWithOrdering().AsEnumerable();
 
             // ステータスを限定する
             if (filter.Status != null)

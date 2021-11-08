@@ -62,7 +62,7 @@ namespace Nssol.Platypus.Controllers.spa
         public IActionResult GetAll([FromQuery]SearchInputModel filter, [FromQuery]int? perPage, [FromQuery] int page = 1, bool withTotal = false)
         {
             //タグ付きで取得
-            var data = dataRepository.GetDataIndex();
+            var data = dataRepository.GetDataIndex().AsEnumerable();
 
             data = data
                 .SearchLong(d => d.Id, filter.Id)
@@ -101,7 +101,7 @@ namespace Nssol.Platypus.Controllers.spa
             //タグによるフィルタの有無で、処理方法を大きく変える
             if (filter.Tags != null && filter.Tags.Count() > 0)
             {
-                var data = dataRepository.GetDataIndex();
+                var data = dataRepository.GetDataIndex().AsEnumerable();
 
                 data = data
                     .SearchLong(d => d.Id, filter.Id)
@@ -121,7 +121,7 @@ namespace Nssol.Platypus.Controllers.spa
             else
             {
                 //タグによるフィルタがないので、データ情報だけ取得して件数を数える
-                IQueryable<Data> data = dataRepository.GetAll()
+                IEnumerable<Data> data = dataRepository.GetAll().AsEnumerable()
                     .SearchLong(d => d.Id, filter.Id)
                     .SearchString(d => d.Name, filter.Name)
                     .SearchString(d => d.CreatedBy, filter.CreatedBy)

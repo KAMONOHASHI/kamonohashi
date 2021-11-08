@@ -60,7 +60,7 @@ namespace Nssol.Platypus.Controllers.spa
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetAll([FromQuery]SearchInputModel filter, [FromQuery]int? perPage, [FromQuery] int page = 1, bool withTotal = false)
         {
-            var dataSet = dataSetRepository.GetAll();
+            var dataSet = dataSetRepository.GetAll().AsEnumerable();
             dataSet = Search(dataSet, filter).OrderByDescending(d => d.Id);
 
             //未指定、あるいは1000件以上であれば、1000件に指定
@@ -82,7 +82,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="filter">検索条件</param>
         private int GetTotalCount(SearchInputModel filter)
         {
-            var dataSet = dataSetRepository.GetAll();
+            var dataSet = dataSetRepository.GetAll().AsEnumerable();
             dataSet = Search(dataSet, filter);
             return dataSet.Count();
         }
@@ -92,9 +92,9 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="sourceData">加工前の検索結果</param>
         /// <param name="query">検索条件</param>
-        private IQueryable<DataSet> Search(IQueryable<DataSet> sourceData, SearchInputModel query)
+        private IEnumerable<DataSet> Search(IEnumerable<DataSet> sourceData, SearchInputModel query)
         {
-            IQueryable<DataSet> data = sourceData;
+            IEnumerable<DataSet> data = sourceData;
             return data
                 .SearchLong(d => d.Id, query.Id)
                 .SearchString(d => d.Name, query.Name)

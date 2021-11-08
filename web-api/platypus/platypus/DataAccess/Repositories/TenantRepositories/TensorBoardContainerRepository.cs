@@ -48,10 +48,13 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
         /// </summary>
         public TensorBoardContainer GetAvailableContainer(long trainingHistoryId)
         {
-            TensorBoardContainer container = FindAll(x => 
-                x.TrainingHistoryId == trainingHistoryId &&
-                ContainerStatus.IsAvailable(x.Status)
-            ).Include(t => t.Tenant).FirstOrDefault();
+            TensorBoardContainer container = FindAll(x =>
+                x.TrainingHistoryId == trainingHistoryId
+            ).Include(t => t.Tenant)
+            .AsEnumerable().Where(x =>
+                ContainerStatus.IsAvailable(x.Status))
+            .FirstOrDefault()
+            ;
             return container;
         }
 

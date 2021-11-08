@@ -94,7 +94,7 @@ namespace Nssol.Platypus.Controllers.spa
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetAll([FromQuery]SearchInputModel filter, [FromQuery]int? perPage, [FromQuery] int page = 1, bool withTotal = false)
         {
-            var data = notebookHistoryRepository.GetAllWithOrdering();
+            var data = notebookHistoryRepository.GetAllWithOrdering().AsEnumerable();
             data = Search(data, filter);
 
             //未指定、あるいは1000件以上であれば、1000件に指定
@@ -143,8 +143,8 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="filter">検索条件</param>
         private int GetTotalCount(SearchInputModel filter)
         {
-            IQueryable<NotebookHistory> histories;
-            histories = notebookHistoryRepository.GetAll();
+            IEnumerable<NotebookHistory> histories;
+            histories = notebookHistoryRepository.GetAll().AsEnumerable();
             histories = Search(histories, filter);
             return histories.Count();
         }
@@ -154,9 +154,9 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="sourceData">加工前の検索結果</param>
         /// <param name="filter">検索条件</param>
-        private static IQueryable<NotebookHistory> Search(IQueryable<NotebookHistory> sourceData, SearchInputModel filter)
+        private static IEnumerable<NotebookHistory> Search(IEnumerable<NotebookHistory> sourceData, SearchInputModel filter)
         {
-            IQueryable<NotebookHistory> data = sourceData;
+            IEnumerable<NotebookHistory> data = sourceData;
             data = data
                 .SearchLong(d => d.Id, filter.Id)
                 .SearchString(d => d.Name, filter.Name)
