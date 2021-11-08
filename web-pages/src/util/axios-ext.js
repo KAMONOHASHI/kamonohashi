@@ -1,8 +1,8 @@
 import store from '@/store'
 import { Loading } from 'element-ui'
 import Vue from 'vue'
-import Util from '@/util/util'
 import router from '@/router'
+import Util from './util'
 
 // output logs
 export function axiosLoggerInterceptors($axios) {
@@ -20,9 +20,13 @@ export function axiosLoggerInterceptors($axios) {
 export function axiosAuthInterceptors($axios) {
   $axios.interceptors.request.use(
     function(config) {
-      let token = Util.getCookie('.Platypus.Auth')
-      if (token) {
+      let token = store.getters['account/token']
+      let cookieToken = Util.getCookie('.Platypus.Auth')
+      // ログインしているか確認
+      if (token && cookieToken) {
         config.headers.Authorization = `Bearer ${token}`
+        // 操作タブの認証トークンをcookieに設定
+        Util.setCookie('.Platypus.Auth', token)
       }
       return config
     },
@@ -126,7 +130,7 @@ export function axiosErrorHandlingInterceptors($axios, errorCallback) {
 
         // auth check
         if (status === 401) {
-          Util.deleteCookie('.Platypus.Auth')
+          store.dispatch('account/logout')
           router.push(url)
           vue.$notify.info({
             title: 'ログインしてください',

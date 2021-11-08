@@ -53,7 +53,6 @@ export default {
   data() {
     return {
       iconname: 'pl-arrow-right',
-      unwatchLogin: undefined,
       allMenues: [
         { description: 'データの準備を行う', menus: [] },
         { description: '実験を行う', menus: [] },
@@ -65,26 +64,15 @@ export default {
     ...mapGetters(['menuList']),
   },
   async created() {
-    this.unwatchLogin = this.$store.watch(
-      this.$store.getters.getLoginTenant,
-      this.watchLogin,
-    )
-    await this.fetchMenuList()
     await this.setSubMenues()
-  },
-
-  async beforeDestroy() {
-    this.unwatchLogin()
   },
 
   methods: {
     ...mapActions(['fetchMenuList']),
-    async watchLogin(tenant) {
-      if (tenant) {
+    async setSubMenues() {
+      if (this.menuList) {
         await this.fetchMenuList()
       }
-    },
-    async setSubMenues() {
       this.allMenues[0].menus = this.menuList.filter(menu => {
         return menu.category === 'aq-dataset'
       })
