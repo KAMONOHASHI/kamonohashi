@@ -230,6 +230,7 @@ namespace Nssol.Platypus.Controllers.spa
             var templates = templateRepository
                 .GetAll()
                 .OrderByDescending(x => x.Id)
+                .AsEnumerable()
                 .Where(x => templateLogic.Accessible(x, CurrentUserInfo.SelectedTenant));
             if (withTotal)
             {
@@ -249,6 +250,7 @@ namespace Nssol.Platypus.Controllers.spa
             var templates = templateRepository
                 .GetAll()
                 .OrderByDescending(x => x.Id)
+                .AsEnumerable()
                 .Where(x => templateLogic.IsCreatedTenant(x, CurrentUserInfo.SelectedTenant));
             if (withTotal)
             {
@@ -322,6 +324,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// テンプレートバージョンを作成する
         /// </summary>
         /// <param name="id">テンプレートID</param>
+        /// <param name="model">作成内容</param>
         [HttpPost("admin/templates/{id}/versions")]
         [PermissionFilter(MenuCode.Template)]
         [ProducesResponseType(typeof(VersionIndexOutputModel), (int)HttpStatusCode.Created)]
@@ -454,6 +457,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// テンプレートを編集する
         /// </summary>
         /// <param name="id">テンプレートID</param>
+        /// <param name="model">編集内容</param>
         [HttpPut("admin/templates/{id}")]
         [PermissionFilter(MenuCode.Template)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.OK)]

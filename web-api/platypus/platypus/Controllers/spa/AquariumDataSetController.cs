@@ -140,6 +140,7 @@ namespace Nssol.Platypus.Controllers.spa
             [FromQuery]int page = 1, bool withTotal = false)
         {
             var dataSet = aquariumDataSetRepository.GetAll()
+                .AsEnumerable()
                 .SearchLong(d => d.Id, filter.Id)
                 .SearchString(d => d.Name, filter.Name)
                 .SearchString(d => d.CreatedBy, filter.CreatedBy)

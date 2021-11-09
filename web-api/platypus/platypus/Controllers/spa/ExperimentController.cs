@@ -115,6 +115,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="page">ページ番号。デフォルトは1。</param>
         /// <param name="perPage">表示件数。指定がない場合は上限(1000件)。</param>
         /// <param name="filter">検索条件</param>
+        /// <param name="withTotal">合計件数をレスポンスヘッダ(X-Total-Count)に含めるか。デフォルトはfalse。</param>
         [HttpGet]
         [Filters.PermissionFilter(MenuCode.Experiment)]
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
@@ -129,6 +130,7 @@ namespace Nssol.Platypus.Controllers.spa
                 .Include(x => x.DataSet)
                 .Include(x => x.ExperimentPreprocess).ThenInclude(x => x.TrainingHistory).ThenInclude(x => x.DataSet)
                 .Include(x => x.TrainingHistory).ThenInclude(x => x.DataSet)
+                .AsEnumerable()
                 .SearchLong(d => d.Id, filter.Id)
                 .SearchString(d => d.Name, filter.Name)
                 .SearchTime(d => d.CreatedAt, filter.StartedAt);
