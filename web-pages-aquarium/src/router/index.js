@@ -5,23 +5,8 @@ import login from '@/router/login'
 import account from '@/router/account'
 import error from '@/router/error'
 import dashboard from '@/router/dashboard'
-import data from '@/router/data'
 import dataSet from '@/router/dataSet'
-import preprocessing from '@/router/preprocessing'
-import notebook from '@/router/notebook'
 import training from '@/router/training'
-import inference from '@/router/inference'
-import tenantsetting from '@/router/tenant-setting'
-import tenant from '@/router/tenant'
-import git from '@/router/git'
-import registry from '@/router/registry'
-import storage from '@/router/storage'
-import role from '@/router/role'
-import quota from '@/router/quota'
-import node from '@/router/node'
-import user from '@/router/user'
-import menu from '@/router/menu'
-import clusterResource from '@/router/cluster-resource'
 import version from '@/router/version'
 import modelTemplate from '@/router/model-template'
 import experiment from '@/router/experiment'
@@ -35,23 +20,8 @@ let router = new Router({
     ...account,
     ...error,
     ...dashboard,
-    ...data,
     ...dataSet,
-    ...preprocessing,
-    ...notebook,
     ...training,
-    ...inference,
-    ...tenantsetting,
-    ...tenant,
-    ...git,
-    ...registry,
-    ...storage,
-    ...role,
-    ...quota,
-    ...node,
-    ...user,
-    ...menu,
-    ...clusterResource,
     ...version,
     ...modelTemplate,
     ...experiment,
