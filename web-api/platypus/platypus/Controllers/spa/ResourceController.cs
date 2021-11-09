@@ -255,7 +255,8 @@ namespace Nssol.Platypus.Controllers.spa
                     // KqiAdminNamespace の場合、KQI管理者用とする。
                     model.TenantName = containerManageOptions.KqiAdminNamespace;
                     model.TenantId = 0;
-                }else if (info.TenantName.StartsWith(containerManageOptions.KqiNamespacePrefix))
+                }
+                else if (info.TenantName.StartsWith(containerManageOptions.KqiNamespacePrefix, StringComparison.CurrentCulture))
                 {
                     // KqiNamespacePrefix で始まるテナント名の場合、kqi-systemとする
                     model.TenantName = "kqi-system";
@@ -319,12 +320,14 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonNotFound($"Container named {name} is not found.");
             }
+            // コンテナの種別を確認
+            ContainerType containerType = CheckContainerType(name, true).Item1;
             var result = new ContainerDetailsOutputModel(info)
             {
                 TenantId = tenant.Id,
                 TenantName = tenant.Name,
                 DisplayName = tenant.DisplayName,
-                ContainerType = CheckContainerType(name, true).Item1, //コンテナの種別を確認
+                ContainerType = containerType, //コンテナの種別を確認
                 CreatedBy = userRepository.GetUserName(info.CreatedBy)
             };
 
@@ -454,9 +457,9 @@ namespace Nssol.Platypus.Controllers.spa
         private Tuple<ContainerType, TenantModelBase> CheckContainerType(string containerName, bool force)
         {
             //今はprefixだけで判断する
-            if (containerName.StartsWith("tensorboard"))
+            if (containerName.StartsWith("tensorboard", StringComparison.CurrentCulture))
             {
-                //TensorBoardコンテナ
+                // TensorBoardコンテナ
                 var container = commonDiLogic.DynamicDi<ITensorBoardContainerRepository>().Find(t => t.Name == containerName, force);
                 if (container == null)
                 {
@@ -469,7 +472,7 @@ namespace Nssol.Platypus.Controllers.spa
                     return new Tuple<ContainerType, TenantModelBase>(ContainerType.TensorBoard, container);
                 }
             }
-            else if (containerName.StartsWith("preproc"))
+            else if (containerName.StartsWith("preproc", StringComparison.CurrentCulture))
             {
                 //前処理は preproc-{ID} というルールになってるので、そこからIDを取得する
                 long id = int.Parse(containerName.Substring(containerName.IndexOf('-') + 1));
@@ -487,10 +490,12 @@ namespace Nssol.Platypus.Controllers.spa
 
                 return new Tuple<ContainerType, TenantModelBase>(ContainerType.Preprocessing, container);
             }
-            else if (containerName.StartsWith("notebook"))
+            else if (containerName.StartsWith("notebook", StringComparison.CurrentCulture))
             {
-                //ノートブックコンテナ
-                var container = commonDiLogic.DynamicDi<INotebookHistoryRepository>().Find(t => t.Key == containerName, force);
+                // ノートブックコンテナ
+                // notebook-{ID} というルールになってるので、そこからIDを取得する
+                long id = int.Parse(containerName.Substring(containerName.IndexOf('-') + 1));
+                var container = commonDiLogic.DynamicDi<INotebookHistoryRepository>().Find(t => t.Id == id, force);
                 if (container == null)
                 {
                     // 存在しないハズのコンテナが生き残っている
@@ -509,10 +514,13 @@ namespace Nssol.Platypus.Controllers.spa
                     return new Tuple<ContainerType, TenantModelBase>(ContainerType.Notebook, container);
                 }
             }
-            else if (containerName.StartsWith("inference"))
+            else if (containerName.StartsWith("inference", StringComparison.CurrentCulture))
             {
-                //推論コンテナ
-                var container = commonDiLogic.DynamicDi<IInferenceHistoryRepository>().Find(t => t.Key == containerName, force);
+                // 推論コンテナ
+                // inference-{ID} というルールになってるので、そこからIDを取得する
+                long id = int.Parse(containerName.Substring(containerName.IndexOf('-') + 1));
+
+                var container = commonDiLogic.DynamicDi<IInferenceHistoryRepository>().Find(t => t.Id == id, force);
                 if (container == null)
                 {
                     // 存在しないハズのコンテナが生き残っている
@@ -531,10 +539,13 @@ namespace Nssol.Platypus.Controllers.spa
                     return new Tuple<ContainerType, TenantModelBase>(ContainerType.Inferencing, container);
                 }
             }
-            else if (containerName.StartsWith("training"))
+            else if (containerName.StartsWith("training", StringComparison.CurrentCulture))
             {
-                //学習コンテナ
-                var container = commonDiLogic.DynamicDi<ITrainingHistoryRepository>().Find(t => t.Key == containerName, force);
+                // 学習コンテナ
+                // training-{ID} というルールになってるので、そこからIDを取得する
+                long id = int.Parse(containerName.Substring(containerName.IndexOf('-') + 1));
+
+                var container = commonDiLogic.DynamicDi<ITrainingHistoryRepository>().Find(t => t.Id == id, force);
                 if (container == null)
                 {
                     // 存在しないハズのコンテナが生き残っている
@@ -556,7 +567,7 @@ namespace Nssol.Platypus.Controllers.spa
             else
             {
                 // DBに登録していないテナントデータ削除用（管理者用）コンテナ
-                if (containerName.StartsWith("delete-tenant"))
+                if (containerName.StartsWith("delete-tenant", StringComparison.CurrentCulture))
                 {
                     return new Tuple<ContainerType, TenantModelBase>(ContainerType.DeleteTenant, null);
                 }
@@ -724,7 +735,7 @@ namespace Nssol.Platypus.Controllers.spa
                 }
 
                 // テナント名の照合 (container に ID が無いので名前で照合)
-                if (container.TenantName.Equals(CurrentUserInfo.SelectedTenant.Name))
+                if (container.TenantName.Equals(CurrentUserInfo.SelectedTenant.Name, StringComparison.CurrentCulture))
                 {
                     // 現テナントと同じならリソース情報詳細を追加
                     result[container.NodeName].Add(CreateContainerDetailsOutputModel(container));
@@ -761,10 +772,12 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonNotFound($"Container named {name} is not found.");
             }
+            // コンテナの種別を確認
+            ContainerType containerType = CheckContainerType(name, false).Item1;
             var result = new ContainerDetailsForTenantOutputModel(info)
             {
                 CreatedBy = userRepository.GetUserName(info.CreatedBy),
-                ContainerType = CheckContainerType(name, false).Item1 //コンテナの種別を確認
+                ContainerType = containerType
             };
 
             return JsonOK(result);
