@@ -19,7 +19,7 @@
           size="small"
           type="danger"
           width="100%"
-          @click="removeVariables"
+          @click="removeVariables(index)"
         >
           -
         </el-button>
