@@ -15,7 +15,6 @@
       </el-col>
       <el-col :span="2">
         <el-button
-          v-if="index > 0"
           size="small"
           type="danger"
           width="100%"
