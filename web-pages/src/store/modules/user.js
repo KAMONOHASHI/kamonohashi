@@ -48,7 +48,7 @@ const actions = {
   async put({ commit }, { id, params }) {
     if (params.serviceType === 1) {
       if (params.password) {
-        await api.user.admin.putPassword({ id: id, password: params.password })
+        await api.user.admin.putPassword({ id: id, body: params.password })
       }
     }
     return await api.user.admin.put({ id: id, body: params })
