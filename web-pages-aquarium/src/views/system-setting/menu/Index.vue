@@ -144,7 +144,7 @@ export default {
         for (const data of this.tableData) {
           let params = {
             id: data.id,
-            roleIds: data.roles,
+            body: data.roles,
           }
           await this['menu/put'](params)
         }

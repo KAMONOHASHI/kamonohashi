@@ -92,7 +92,7 @@ export default {
             gpu: quota.gpu,
           }
         })
-        await this.post({ models: model })
+        await this.post({ body: model })
         this.showSuccessMessage()
         this.error = null
       } catch (e) {

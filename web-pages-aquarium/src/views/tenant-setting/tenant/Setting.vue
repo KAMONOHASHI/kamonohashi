@@ -151,7 +151,7 @@ export default {
         if (valid) {
           try {
             let param = {
-              model: {
+              body: {
                 displayName: this.form.displayName,
                 gitIds: this.form.gitEndpoint.selectedIds,
                 defaultGitId: this.form.gitEndpoint.defaultId,

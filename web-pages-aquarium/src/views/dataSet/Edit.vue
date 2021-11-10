@@ -221,7 +221,7 @@ export default {
 
       this['aquariumDataSet/postByIdVersions']({
         id: aqDataset.data.id,
-        model: { datasetId: dataset.data.id },
+        body: { datasetId: dataset.data.id },
       })
     },
 

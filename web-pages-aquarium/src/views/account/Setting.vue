@@ -235,7 +235,7 @@ export default {
     async updateGitToken() {
       try {
         let params = {
-          model: {
+          body: {
             id: this.gitForm.id,
             token: this.gitForm.token,
           },
@@ -253,7 +253,7 @@ export default {
     async updateRegistryToken() {
       try {
         let params = {
-          model: {
+          body: {
             id: this.registryForm.id,
             userName: this.registryForm.userName,
             password: this.registryForm.password,
@@ -272,7 +272,7 @@ export default {
     async updatePassword() {
       try {
         let params = {
-          model: {
+          body: {
             currentPassword: this.passForm.currentPassword,
             newPassword: this.passForm.password[0],
           },

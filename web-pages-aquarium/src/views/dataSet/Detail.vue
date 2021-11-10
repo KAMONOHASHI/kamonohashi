@@ -479,7 +479,7 @@ export default {
       let version = await this['aquariumDataSet/postByIdVersions']({
         //id: aqDataset.data.id,
         id: this.id,
-        model: { datasetId: dataset.data.id },
+        body: { datasetId: dataset.data.id },
       })
       this.version = null
       this.retrieveData()
@@ -723,7 +723,7 @@ export default {
       await this['aquariumDataSet/postByIdVersions']({
         //id: aqDataset.data.id,
         id: this.id,
-        model: { datasetId: dataset.data.id },
+        body: { datasetId: dataset.data.id },
       })
 
       // アップロード完了後の初期化

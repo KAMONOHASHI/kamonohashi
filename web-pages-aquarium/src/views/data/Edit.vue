@@ -230,7 +230,7 @@ export default {
         result = (
           await this.put({
             id: this.id,
-            model: model,
+            body: model,
           })
         ).data
       }

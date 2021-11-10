@@ -73,7 +73,7 @@ const actions = {
 
   // eslint-disable-next-line no-unused-vars
   async post({ state }, params) {
-    return await api.data.post({ model: params })
+    return await api.data.post({ body: params })
   },
 
   // eslint-disable-next-line no-unused-vars
@@ -92,7 +92,7 @@ const actions = {
     }
     await api.data.putFilesById({
       id: id,
-      model: model,
+      body: model,
     })
   },
 

@@ -98,22 +98,22 @@ const actions = {
 
   // eslint-disable-next-line no-unused-vars
   async runById({ commit }, { id, params }) {
-    return await api.preprocessings.runById({ id: id, model: params })
+    return await api.preprocessings.runById({ id: id, body: params })
   },
 
   // eslint-disable-next-line no-unused-vars
   async post({ commit }, params) {
-    return await api.preprocessings.post({ model: params })
+    return await api.preprocessings.post({ body: params })
   },
 
   // eslint-disable-next-line no-unused-vars
   async put({ commit }, { id, params }) {
-    return await api.preprocessings.put({ id: id, model: params })
+    return await api.preprocessings.put({ id: id, body: params })
   },
 
   // eslint-disable-next-line no-unused-vars
   async patch({ commit }, { id, params }) {
-    await api.preprocessings.patch({ id: id, model: params })
+    await api.preprocessings.patch({ id: id, body: params })
   },
 
   // eslint-disable-next-line no-unused-vars

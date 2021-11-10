@@ -69,14 +69,14 @@ const actions = {
 
   // eslint-disable-next-line no-unused-vars
   async post({ commit }, params) {
-    return await api.aquariumDatasets.post({ model: params })
+    return await api.aquariumDatasets.post({ body: params })
   },
 
   // eslint-disable-next-line no-unused-vars
   async postByIdVersions({ commit }, params) {
     return await api.aquariumDatasets.postByIdVersions({
       id: params.id,
-      model: params.model,
+      body: params.body,
     })
   },
 
