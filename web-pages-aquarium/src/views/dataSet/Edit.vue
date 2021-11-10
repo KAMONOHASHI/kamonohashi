@@ -227,13 +227,17 @@ export default {
           }
         })
       } else if (this.importfile == 2) {
-        this.$store.commit('setLoading', false)
-        this.loading = true
-        await this.postDataSet()
-        this.$emit('done')
-        this.error = null
-        this.loading = false
-        this.$store.commit('setLoading', true)
+        await form.validate(async valid => {
+          if (valid) {
+            this.$store.commit('setLoading', false)
+            this.loading = true
+            await this.postDataSet()
+            this.$emit('done')
+            this.error = null
+            this.loading = false
+            this.$store.commit('setLoading', true)
+          }
+        })
       }
     },
 
