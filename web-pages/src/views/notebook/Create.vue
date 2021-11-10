@@ -525,7 +525,7 @@ export default {
   },
   async created() {
     if (this.originId !== null) {
-      if (Object.keys(this.$route.query).length !== 0) {
+      if (Object.keys(this.$route.query).length > 1) {
         this.isCopyCreation = this.$route.query.run.indexOf('copy') !== -1
       } else {
         this.isReRunCreation = true

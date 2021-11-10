@@ -410,7 +410,7 @@ export default {
       })
     },
     async deleteDataSet() {
-      this['aquariumDataSet/delete'](this.id)
+      await this['aquariumDataSet/delete'](this.id)
       this.deleteDataSetDialog = false
       this.$router.push('/aquarium/dataset')
     },

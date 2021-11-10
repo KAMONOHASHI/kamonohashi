@@ -1,18 +1,15 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using Nssol.Platypus.ApiModels.AccountApiModels;
 using Nssol.Platypus.Controllers.Util;
 using Nssol.Platypus.DataAccess.Core;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces;
 using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Infrastructure.Infos;
-using Nssol.Platypus.Infrastructure.Options;
 using Nssol.Platypus.Infrastructure.Types;
 using Nssol.Platypus.Logic.Interfaces;
 using Nssol.Platypus.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -33,21 +30,18 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly IUserRepository userRepository;
         private readonly IMultiTenancyLogic multiTenancyLogic;
         private readonly IUnitOfWork unitOfWork;
-        private readonly WebSecurityOptions webSecurityOptions;
 
         public AccountController(
             ILoginLogic loginLogic,
             IUserRepository userRepository,
             IMultiTenancyLogic multiTenancyLogic,
             IUnitOfWork unitOfWork,
-            IOptions<WebSecurityOptions> webSecurityOptions,
             IHttpContextAccessor accessor) : base(accessor)
         {
             this.loginLogic = loginLogic;
             this.userRepository = userRepository;
             this.multiTenancyLogic = multiTenancyLogic;
             this.unitOfWork = unitOfWork;
-            this.webSecurityOptions = webSecurityOptions.Value;
         }
 
         /// <summary>
@@ -234,6 +228,12 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             Result<List<Claim>, string> authResult = await loginLogic.AuthorizeAsync(UserName, null, tenantId);
+
+            // 認証が失敗したらエラーを返す
+            if (!authResult.IsSuccess)
+            {
+                return JsonBadRequest(authResult.Error);
+            }
             
             // 結果からトークンを作成
             var token = loginLogic.GenerateToken(authResult.Value, expiresIn);

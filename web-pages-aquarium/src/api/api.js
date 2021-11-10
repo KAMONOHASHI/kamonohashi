@@ -17,17 +17,6 @@ ext.axiosErrorHandlingInterceptors(axios)
 gen.setAxios(axios)
 
 // -----------------------------------------------------------------------
-// HTTP Method の拡張
-let simpleStringBody = function(func, paramName) {
-  return async function(params) {
-    if (paramName in params) {
-      params[paramName] = '"' + params[paramName] + '"'
-    }
-    return await func(params)
-  }
-}
-
-// -----------------------------------------------------------------------
 // 使いやすいようにAPI領域で再定義
 // （swagger-vue で自動生成生成：https://github.com/chenweiqun/swagger-vue）
 let api = {
@@ -43,40 +32,10 @@ let api = {
     },
   },
 
-  menu: {
-    admin: {
-      get: gen.getApiV2AdminMenus,
-      put: gen.putApiV2AdminMenusById,
-      getTypes: gen.getApiV2AdminMenuTypes,
-    },
-
-    tenant: {
-      get: gen.getApiV2TenantMenus,
-      put: gen.putApiV2TenantMenusById,
-      getTypes: gen.getApiV2TenantMenuTypes,
-    },
-  },
-
   menuList: {
     getMenuList: gen.getApiV2AccountAquariumMenusList,
   },
 
-  quotas: {
-    get: gen.getApiV2AdminQuotas,
-    post: gen.postApiV2AdminQuotas,
-  },
-
-  nodes: {
-    admin: {
-      get: gen.getApiV2AdminNodes,
-      post: gen.postApiV2AdminNodes,
-      getById: gen.getApiV2AdminNodesById,
-      put: gen.putApiV2AdminNodesById,
-      delete: gen.deleteApiV2AdminNodesById,
-      postSyncFromDb: gen.postApiV2AdminNodesSyncClusterFromDb,
-      getAccessLevel: gen.getApiV2AdminNodeAccessLevels,
-    },
-  },
   templates: {
     admin: {
       getById: gen.getApiV2AdminTemplatesById,
@@ -120,23 +79,6 @@ let api = {
     putRegistries: gen.putApiV2AccountRegistries,
     getGits: gen.getApiV2AccountGits,
     putGits: gen.putApiV2AccountGits,
-  },
-
-  role: {
-    admin: {
-      get: gen.getApiV2AdminRoles,
-      post: gen.postApiV2AdminRoles,
-      getById: gen.getApiV2AdminRolesById,
-      put: gen.putApiV2AdminRolesById,
-      delete: gen.deleteApiV2AdminRolesById,
-    },
-    tenant: {
-      get: gen.getApiV2TenantRoles,
-      post: gen.postApiV2TenantRoles,
-      getById: gen.getApiV2TenantRolesById,
-      put: gen.putApiV2TenantRolesById,
-      delete: gen.deleteApiV2TenantRolesById,
-    },
   },
 
   data: {
@@ -195,43 +137,6 @@ let api = {
     // GET /spa/git/repos/{segments}
   },
 
-  preprocessings: {
-    get: gen.getApiV2Preprocessings,
-    post: gen.postApiV2Preprocessings,
-    getById: gen.getApiV2PreprocessingsById,
-    put: gen.putApiV2PreprocessingsById,
-    delete: gen.deleteApiV2PreprocessingsById,
-    patch: gen.patchApiV2PreprocessingsById,
-    getFilesById: gen.getApiV2PreprocessingsByIdHistoriesByDataIdFiles,
-    getHistory: gen.getApiV2PreprocessingsByIdHistories,
-    getHistroyById: gen.getApiV2PreprocessingsByIdHistoriesByDataId,
-    deleteHistroyById: gen.deleteApiV2PreprocessingsByIdHistoriesByDataId,
-    getEventsById: gen.getApiV2PreprocessingsByIdHistoriesByDataIdEvents,
-    runById: gen.postApiV2PreprocessingsByIdRun,
-  },
-
-  resource: {
-    admin: {
-      getNodes: gen.getApiV2AdminResourceNodes,
-      getTenants: gen.getApiV2AdminResourceTenants,
-      getContainers: gen.getApiV2AdminResourceContainers,
-      getContainerByName: gen.getApiV2AdminResourceContainersByTenantIdByName,
-      deleteContainerByName:
-        gen.deleteApiV2AdminResourceContainersByTenantIdByName,
-      getContainerLogByName:
-        gen.getApiV2AdminResourceContainersByTenantIdByNameLog,
-      getContainerEventsByName:
-        gen.getApiV2AdminResourceContainersByTenantIdByNameEvents,
-    },
-    tenant: {
-      getNodes: gen.getApiV2TenantResourceNodes,
-      getContainers: gen.getApiV2TenantResourceContainers,
-      getContainerByName: gen.getApiV2TenantResourceContainersByName,
-      deleteContainerByName: gen.deleteApiV2TenantResourceContainersByName,
-      getContainerLogByName: gen.getApiV2TenantResourceContainersByNameLog,
-    },
-  },
-
   training: {
     getSimple: gen.getApiV2TrainingSimple,
     get: gen.getApiV2Training,
@@ -253,41 +158,6 @@ let api = {
     getEventsById: gen.getApiV2TrainingByIdEvents,
     getMount: gen.getApiV2TrainingMount,
     getTags: gen.getApiV2TrainingTags,
-  },
-
-  notebook: {
-    getSimple: gen.getApiV2NotebookSimple,
-    get: gen.getApiV2Notebook,
-    post: gen.postApiV2NotebookRun,
-    getById: gen.getApiV2NotebookById,
-    deleteById: gen.deleteApiV2NotebookById,
-    putById: gen.putApiV2NotebookById,
-    getContainerFilesById: gen.getApiV2NotebookByIdContainerFiles,
-    postHaltById: gen.postApiV2NotebookByIdHalt,
-    getEventsById: gen.getApiV2NotebookByIdEvents,
-    getEndpointById: gen.getApiV2NotebookByIdEndpoint,
-    getFilesById: gen.getApiV2NotebookByIdContainerFiles,
-    postRerun: gen.postApiV2NotebookByIdRerun,
-    getAvailableInfiniteTime: gen.getApiV2NotebookAvailableInfiniteTime,
-  },
-
-  inference: {
-    getSimple: gen.getApiV2InferencesSimple,
-    get: gen.getApiV2Inferences,
-    getMount: gen.getApiV2InferencesMount,
-    post: gen.postApiV2InferencesRun,
-    getById: gen.getApiV2InferencesById,
-    deleteById: gen.deleteApiV2InferencesById,
-    putById: gen.putApiV2InferencesById,
-    // GET /spa/trains/{id}/log
-    getFilesById: gen.getApiV2InferencesByIdFiles,
-    getFileSize: gen.getApiV2InferencesByIdFilesByNameSize,
-    postFilesById: gen.postApiV2InferencesByIdFiles,
-    getContainerFilesById: gen.getApiV2InferencesByIdContainerFiles,
-    deleteByIdFilesByFileId: gen.deleteApiV2InferencesByIdFilesByFileId,
-    postHaltById: gen.postApiV2InferencesByIdHalt,
-    postUserCancelById: gen.postApiV2InferencesByIdUserCancel,
-    getEventsById: gen.getApiV2InferencesByIdEvents,
   },
 
   experiment: {
@@ -316,38 +186,6 @@ let api = {
     getDownloadUrl: gen.getApiV2DownloadUrl,
   },
 
-  tenant: {
-    admin: {
-      get: gen.getApiV2AdminTenants,
-      post: gen.postApiV2AdminTenants,
-      getById: gen.getApiV2AdminTenantsById,
-      put: gen.putApiV2AdminTenantsById,
-      delete: gen.deleteApiV2AdminTenantsById,
-    },
-    get: gen.getApiV2Tenant,
-    put: gen.putApiV2Tenant,
-  },
-
-  user: {
-    admin: {
-      get: gen.getApiV2AdminUsers,
-      post: gen.postApiV2AdminUsers,
-      getById: gen.getApiV2AdminUsersById,
-      delete: gen.deleteApiV2AdminUsersById,
-      put: gen.putApiV2AdminUsersById,
-      putPassword: simpleStringBody(
-        gen.putApiV2AdminUsersByIdPassword,
-        'password',
-      ),
-    },
-
-    tenant: {
-      get: gen.getApiV2TenantUsers,
-      getById: gen.getApiV2TenantUsersById,
-      delete: gen.deleteApiV2TenantUsersById,
-      putRoles: gen.putApiV2TenantUsersByIdRoles,
-    },
-  },
   version: {
     get: gen.getApiV2Version,
   },
