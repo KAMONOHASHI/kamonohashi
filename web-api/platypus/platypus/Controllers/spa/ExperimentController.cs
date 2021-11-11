@@ -965,9 +965,11 @@ namespace Nssol.Platypus.Controllers.spa
                 .FindAll(x => x.ExperimentId == id)
                 .Include(x => x.TrainingHistory)
                 .Include(x => x.DataSet)
-                .Include(x => x.DataSetVersion);
+                .Include(x => x.DataSetVersion)
+                .OrderByDescending(x => x.Id)
+                .ToList();
             var result = new List<EvaluationIndexOutputModel>();
-            foreach (var x in evaluations.OrderByDescending(x => x.Id))
+            foreach (var x in evaluations)
             {
                 var status = await UpdateStatus(x.TrainingHistory);
                 result.Add(new EvaluationIndexOutputModel(x, status.ToString()));
