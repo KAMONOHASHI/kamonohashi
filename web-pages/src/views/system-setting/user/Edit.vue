@@ -230,7 +230,7 @@ export default {
             })
             let params = {
               name: this.form.name,
-              body: this.form.password[0],
+              password: this.form.password[0],
               systemRoles: this.form.selectedSystemRoleIds,
               tenants: postTenants,
               serviceType: this.form.serviceType,
