@@ -23,17 +23,67 @@
       </el-row>
 
       <el-row>
-        <h3 style="margin-bottom:10px;margin-top:30px">
+        <el-radio
+          v-model="importfile"
+          label="1"
+          style="display:block;padding:10px"
+        >
           パソコンから画像をアップロード
-        </h3>
-        <div style="margin:20px">
-          パソコンから画像をアップロード
-          任意のファイル形式がアップロードできます。画像の表示はJPG,PNGがサポートされています。<br />
-          一回のアップロードで最大{{
-            fileNumLimit
-          }}ファイル送信できます。アップロードしたファイルはKAMONOHASHIのデータ、データセットに保存されます。
+        </el-radio>
+
+        <el-radio
+          v-model="importfile"
+          label="2"
+          style="display:block;padding:10px"
+        >
+          KAMONOHASHIからデータを選択
+        </el-radio>
+        <hr />
+        <div
+          v-if="importfile == 1"
+          class="importfile-detail"
+          style="padding-top:20px"
+        >
+          <h3 style="margin-bottom:10px;margin-top:30px">
+            パソコンから画像をアップロード
+          </h3>
+          <div style="margin:20px">
+            パソコンから画像をアップロード
+            任意のファイル形式がアップロードできます。画像の表示はJPG,PNGがサポートされています。<br />
+            一回のアップロードで最大{{
+              fileNumLimit
+            }}ファイル送信できます。アップロードしたファイルはKAMONOHASHIのデータ、データセットに保存されます。
+          </div>
+          <kqi-upload-form ref="uploadForm" title="File" :type="type" />
         </div>
-        <kqi-upload-form ref="uploadForm" title="File" :type="type" />
+        <div
+          v-else-if="importfile == 2"
+          class="importfile-detail"
+          style="padding-top:20px"
+        >
+          <h3 style="">KAMONOHASHIからデータを選択</h3>
+
+          <div style="padding:20px">
+            KAMONOHASHIに登録してあるデータを複数選択できます。<br />
+            <kqi-display-error :error="error" />
+            <el-row>
+              <div
+                style="width:80%;height:250px;padding:20px;border:1px solid #CCC;border-radius:5px;margin-top:5px"
+              >
+                <el-checkbox-group v-model="checkList">
+                  <div v-for="item in allDatas" :key="item.id">
+                    <el-checkbox :label="item.id">{{ item.name }}</el-checkbox>
+                  </div>
+                </el-checkbox-group>
+              </div>
+              <kqi-pagination
+                v-model="dataPageStatus"
+                :total="dataTotal"
+                @change="initialize"
+              />
+            </el-row>
+          </div>
+        </div>
       </el-row>
     </el-form>
   </kqi-dialog>
@@ -44,6 +94,7 @@ import KqiDialog from '@/components/KqiDialog'
 import KqiDisplayError from '@/components/KqiDisplayError'
 import KqiUploadForm from '@/components/KqiUploadForm'
 import { mapActions, mapGetters } from 'vuex'
+import KqiPagination from '@/components/KqiPagination'
 //import { createNamespacedHelpers } from 'vuex'
 //const { mapGetters, mapActions } = createNamespacedHelpers('aquariumDataSet')
 
@@ -52,10 +103,12 @@ export default {
     KqiDialog,
     KqiDisplayError,
     KqiUploadForm,
+    KqiPagination,
   },
 
   data() {
     return {
+      importfile: null,
       submitText: '新規登録',
       type: 'Data',
       loading: false,
@@ -73,12 +126,21 @@ export default {
       rules: {
         name: [{ required: true, trigger: 'blur', message: '必須項目です' }],
       },
+      searchCondition: {},
+      dataPageStatus: {
+        currentPage: 1,
+        currentPageSize: 10,
+      },
+      checkList: [],
+      datas: [],
     }
   },
   computed: {
     ...mapGetters({
       registries: ['aquariumDataSet/detail'],
       uploadedFiles: ['data/uploadedFiles'],
+      dataTotal: ['data/total'],
+      allDatas: ['data/data'],
     }),
   },
 
@@ -102,6 +164,7 @@ export default {
       'data/putFile',
       'dataSet/post',
       'data/uploadedFiles',
+      'data/fetchData',
     ]),
 
     async deleteAttachedFile(fileId) {
@@ -117,6 +180,11 @@ export default {
       }
     },
     async initialize() {
+      let params = this.searchCondition
+      params.page = this.dataPageStatus.currentPage
+      params.perPage = this.dataPageStatus.currentPageSize
+      params.withTotal = true
+      await this['data/fetchData'](params)
       let url = this.$route.path
       let type = url.split('/')[3] // ["", "dataset", "{type}", "{id}"]
       switch (type) {
@@ -131,32 +199,51 @@ export default {
 
     async submit() {
       let form = this.$refs.createForm
-      await form.validate(async valid => {
-        if (valid) {
-          this.$store.commit('setLoading', false)
-          this.loading = true
-          if (
-            this.$refs.uploadForm._data.selectedFiles == null ||
-            this.$refs.uploadForm._data.selectedFiles.length == 0
-          ) {
-            this.error = new Error('ファイルを選択してください')
-            this.loading = false
-            this.$store.commit('setLoading', true)
-            return
+      if (this.importfile == 1) {
+        await form.validate(async valid => {
+          if (valid) {
+            this.$store.commit('setLoading', false)
+            this.loading = true
+            if (
+              this.$refs.uploadForm._data.selectedFiles == null ||
+              this.$refs.uploadForm._data.selectedFiles.length == 0
+            ) {
+              this.error = new Error('ファイルを選択してください')
+              this.loading = false
+              this.$store.commit('setLoading', true)
+              return
+            }
+            try {
+              await this.postDataSet()
+              this.$emit('done')
+              this.error = null
+            } catch (e) {
+              this.error = e
+            } finally {
+              // 共通側ローディングを再度有効化
+              this.loading = false
+              this.$store.commit('setLoading', true)
+            }
           }
-          try {
-            await this.postDataSet()
-            this.$emit('done')
-            this.error = null
-          } catch (e) {
-            this.error = e
-          } finally {
-            // 共通側ローディングを再度有効化
-            this.loading = false
-            this.$store.commit('setLoading', true)
+        })
+      } else if (this.importfile == 2) {
+        await form.validate(async valid => {
+          if (valid) {
+            this.$store.commit('setLoading', false)
+            this.loading = true
+            try {
+              await this.postDataSet()
+              this.$emit('done')
+              this.error = null
+            } catch (e) {
+              this.error = e
+            } finally {
+              this.loading = false
+              this.$store.commit('setLoading', true)
+            }
           }
-        }
-      })
+        })
+      }
     },
 
     // ファイルリストの×を押下した時
@@ -196,20 +283,36 @@ export default {
     },
     async postDataSet() {
       let dataset = null
-
-      //ローカルからのデータリストを登録する
-      let dataId = await this.uploadFile(this.form.name)
-
-      //カモノハシのデータセットを登録する
-      let datasetparams = {
-        entries: {},
-        flatEntries: [{ id: dataId }],
-        isFlat: true,
-        name: 'aquqrium_' + this.form.name,
-        memo: '',
+      if (this.importfile == 1) {
+        //ローカルからのデータリストを登録する
+        let dataId = await this.uploadFile(this.form.name)
+        //カモノハシのデータセットを登録する
+        let datasetparams = {
+          entries: {},
+          flatEntries: [{ id: dataId }],
+          isFlat: true,
+          name: 'aquqrium_' + this.form.name,
+          memo: '',
+        }
+        dataset = await this['dataSet/post'](datasetparams)
+      } else if (this.importfile == 2) {
+        //カモノハシのデータを登録する
+        let flatEntry = []
+        if (this.checkList.length == 0) {
+          throw new Error('データを選択してください')
+        }
+        for (let i in this.checkList) {
+          flatEntry.push({ id: this.checkList[i] })
+        }
+        let datasetparams = {
+          entries: {},
+          flatEntries: flatEntry,
+          isFlat: true,
+          name: 'aquqrium_' + this.form.name,
+          memo: '',
+        }
+        dataset = await this['dataSet/post'](datasetparams)
       }
-
-      dataset = await this['dataSet/post'](datasetparams)
 
       //アクアリウムデータセットを登録する
       let aquariumDataSetparams = {
@@ -287,12 +390,11 @@ export default {
   padding: 20px;
 }
 
-.dialog /deep/ label {
-  font-weight: bold !important;
-}
-
 .right-button-group {
   padding-top: 0px;
   text-align: right;
+}
+.dialog /deep/ label {
+  font-weight: 500 !important;
 }
 </style>
