@@ -67,7 +67,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// <param name="nameAlias">別名</param>
         public String GetUserName(string nameAlias)
         {
-            var user = Find(u => u.Alias.Contains(nameAlias));
+            var user = Find(u => u.Alias.Contains(nameAlias, StringComparison.CurrentCulture));
             if (user == null)
             {
                 return "Unknown";
