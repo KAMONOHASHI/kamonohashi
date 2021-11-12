@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Nssol.Platypus.ApiModels;
 using Nssol.Platypus.Controllers.Util;
 using Nssol.Platypus.DataAccess;
@@ -67,9 +68,21 @@ namespace Nssol.Platypus
             {
                 // SwaggerにXMLコメントの内容を反映させるために、サーバ上での XML Document のパスを渡す
                 var location = System.Reflection.Assembly.GetEntryAssembly().Location;
-                var xmlPath = location.Replace("dll", "xml");
+                var xmlPath = location.Replace("dll", "xml", StringComparison.CurrentCulture);
                 return xmlPath;
             }
+        }
+
+        /// <summary>
+        /// 認証キーを取得する
+        /// </summary>
+        /// <param name="services">サービスコンテナ</param>
+        /// <returns>認証キー</returns>
+        private SymmetricSecurityKey GetSymmetricSecurityKey(IServiceCollection services)
+        {
+            var sp = services.BuildServiceProvider();
+            var settingRepository = sp.GetService<ISettingRepository>();
+            return settingRepository.GetApiJwtSigningKey();
         }
 
         /// <summary>
@@ -202,95 +215,94 @@ namespace Nssol.Platypus
 
             #region services.AddAuthentication
 
-            var sp = services.BuildServiceProvider();
-            var settingRepository = sp.GetService<ISettingRepository>();
-            var key = settingRepository.GetApiJwtSigningKey();
+            // 認証キーを取得
+            var key = GetSymmetricSecurityKey(services);
 
             services.AddAuthentication(
                 //既定の認証スキーマ。
                 JwtBearerDefaults.AuthenticationScheme
             )
-                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
-                options =>
+            .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
+            options =>
+            {
+                options.RequireHttpsMetadata = false;
+                options.SaveToken = true;
+                options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
                 {
-                    options.RequireHttpsMetadata = false;
-                    options.SaveToken = true;
-                    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                    // 署名キー検証
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = key,
+                    // iss（issuer）クレーム
+                    ValidateIssuer = true,
+                    ValidIssuer = wsops.ApiJwtIssuer,
+                    // aud（audience）クレーム
+                    ValidateAudience = true,
+                    ValidAudience = wsops.ApiJwtAudience,
+                    // トークンの有効期限の検証
+                    ValidateLifetime = true,
+                    // クライアントとサーバーの間の時刻の設定で許容される最大の時刻のずれ
+                    ClockSkew = TimeSpan.Zero
+                };
+                options.Events = new JwtBearerEvents
+                {
+                    OnTokenValidated = context =>
                     {
-                        // 署名キー検証
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = key,
-                        // iss（issuer）クレーム
-                        ValidateIssuer = true,
-                        ValidIssuer = wsops.ApiJwtIssuer,
-                        // aud（audience）クレーム
-                        ValidateAudience = true,
-                        ValidAudience = wsops.ApiJwtAudience,
-                        // トークンの有効期限の検証
-                        ValidateLifetime = true,
-                        // クライアントとサーバーの間の時刻の設定で許容される最大の時刻のずれ
-                        ClockSkew = TimeSpan.Zero
-                    };
-                    options.Events = new JwtBearerEvents
+                        var token = context.SecurityToken as System.IdentityModel.Tokens.Jwt.JwtSecurityToken;
+                        if (token != null && isDebug)
+                        {
+                            //アクセスログ出力
+                            LogUtil.WritePLog(logger.LogInformation, context.HttpContext, $"Receive authorized api request with token {token.Id} as {token.Subject}");
+                        }
+                        return Task.FromResult(0);
+                    },
+                    OnChallenge = context =>
                     {
-                        OnTokenValidated = context =>
+                        // 失敗した際のメッセージをレスポンスに格納する
+                        if (context.AuthenticateFailure != null)
                         {
-                            var token = context.SecurityToken as System.IdentityModel.Tokens.Jwt.JwtSecurityToken;
-                            if (token != null && isDebug)
+                            context.Response.OnStarting(async state =>
                             {
-                                //アクセスログ出力
-                                LogUtil.WritePLog(logger.LogInformation, context.HttpContext, $"Receive authorized api request with token {token.Id} as {token.Subject}");
-                            }
-                            return Task.FromResult(0);
-                        },
-                        OnChallenge = context =>
+                                // アクセスコードが不正な文字列で復元できない場合や、アクセスコードの期限が切れているときにこちらに入る
+
+                                //期限切れはInfo扱いで出力する
+                                LogUtil.WritePLog(logger.LogInformation, context.HttpContext, $"The Access code is expired or invalid：{context.AuthenticateFailure.Message}");
+
+                                await new CustomJsonResult(StatusCodes.Status401Unauthorized,
+                                    new JsonErrorResponse()
+                                    {
+                                        Type = this.GetType().FullName,
+                                        Title = "The Access code is expired or invalid.",
+                                        Instance = context.Request?.Path.Value
+                                    }
+                                    ).SerializeJsonAsync(((JwtBearerChallengeContext)state).Response);
+                                return;
+                            }, context);
+                        }
+                        else
                         {
-                            // 失敗した際のメッセージをレスポンスに格納する
-                            if (context.AuthenticateFailure != null)
+                            context.Response.OnStarting(async state =>
                             {
-                                context.Response.OnStarting(async state =>
-                                {
-                                    // アクセスコードが不正な文字列で復元できない場合や、アクセスコードの期限が切れているときにこちらに入る
+                                // アクセスコードがヘッダに設定されていない場合はこちらに入る
 
-                                    //期限切れはInfo扱いで出力する
-                                    LogUtil.WritePLog(logger.LogInformation, context.HttpContext, $"The Access code is expired or invalid：{context.AuthenticateFailure.Message}");
+                                //WebAPIは常にplatypus cliから実行されるので、ヘッダが設定されていない場合はありえない。
+                                //なのでここに到達したら不正アクセスと見なして、警告を出力する
+                                LogUtil.WritePLog(logger.LogWarning, context.HttpContext, $"The access code is required. status = {state}");
 
-                                    await new CustomJsonResult(StatusCodes.Status401Unauthorized,
-                                        new JsonErrorResponse()
-                                        {
-                                            Type = this.GetType().FullName,
-                                            Title = "The Access code is expired or invalid.",
-                                            Instance = context.Request?.Path.Value
-                                        }
-                                        ).SerializeJsonAsync(((JwtBearerChallengeContext)state).Response);
-                                    return;
-                                }, context);
-                            }
-                            else
-                            {
-                                context.Response.OnStarting(async state =>
-                                {
-                                    // アクセスコードがヘッダに設定されていない場合はこちらに入る
-
-                                    //WebAPIは常にplatypus cliから実行されるので、ヘッダが設定されていない場合はありえない。
-                                    //なのでここに到達したら不正アクセスと見なして、警告を出力する
-                                    LogUtil.WritePLog(logger.LogWarning, context.HttpContext, $"The access code is required. status = {state}");
-
-                                    await new CustomJsonResult(StatusCodes.Status401Unauthorized,
-                                        new JsonErrorResponse()
-                                        {
-                                            Type = this.GetType().FullName,
-                                            Title = "The access code is required.",
-                                            Instance = context.Request?.Path.Value
-                                        }
-                                        ).SerializeJsonAsync(((JwtBearerChallengeContext)state).Response);
-                                    return;
-                                }, context);
-                            }
-                            return Task.FromResult(0);
-                        },
-                    };
-                });
+                                await new CustomJsonResult(StatusCodes.Status401Unauthorized,
+                                    new JsonErrorResponse()
+                                    {
+                                        Type = this.GetType().FullName,
+                                        Title = "The access code is required.",
+                                        Instance = context.Request?.Path.Value
+                                    }
+                                    ).SerializeJsonAsync(((JwtBearerChallengeContext)state).Response);
+                                return;
+                            }, context);
+                        }
+                        return Task.FromResult(0);
+                    },
+                };
+            });
             #endregion
 
             services.AddCors();
@@ -419,6 +431,7 @@ namespace Nssol.Platypus
                     // UseSwagger と UseSwaggerUi を追加
                     app.UseSwagger(options =>
                     {
+                        // 2.0系への下位互換をサポートする
                         options.SerializeAsV2 = true;
                     });
 
@@ -505,7 +518,7 @@ namespace Nssol.Platypus
         /// <param name="context">コンテキスト</param>
         private bool IsWebSocket(HttpContext context)
         {
-            bool result = context.Request.Path.StartsWithSegments(new PathString("/ws"));
+            bool result = context.Request.Path.StartsWithSegments(new PathString("/ws"), StringComparison.CurrentCulture);
             return result;
         }
 
