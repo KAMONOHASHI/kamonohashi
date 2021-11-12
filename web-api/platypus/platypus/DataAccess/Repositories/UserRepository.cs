@@ -292,13 +292,13 @@ namespace Nssol.Platypus.DataAccess.Repositories
 
             //まずはGitの登録
             //テナントに紐づいているすべてのGitを取得
-            var GitMaps = FindModelAll<TenantGitMap>(m => m.TenantId == tenantId).Include(m => m.Git);
+            var GitMaps = FindModelAll<TenantGitMap>(m => m.TenantId == tenantId).Include(m => m.Git).ToList();
             foreach (var GitMap in GitMaps)
             {
                 UserTenantGitMap utrMap = new UserTenantGitMap()
                 {
                     TenantGitMap = GitMap,
-                    UserId = user.Id
+                    User = user
                 };
 
                 // 既存の認証情報存在チェック
@@ -324,13 +324,13 @@ namespace Nssol.Platypus.DataAccess.Repositories
             List<UserTenantRegistryMap> maps = new List<UserTenantRegistryMap>();
 
             //テナントに紐づいているすべてのレジストリを取得
-            var registryMaps = FindModelAll<TenantRegistryMap>(m => m.TenantId == tenantId).Include(m => m.Registry);
+            var registryMaps = FindModelAll<TenantRegistryMap>(m => m.TenantId == tenantId).Include(m => m.Registry).ToList();
             foreach (var registryMap in registryMaps)
             {
                 UserTenantRegistryMap utrMap = new UserTenantRegistryMap()
                 {
                     TenantRegistryMap = registryMap,
-                    UserId = user.Id
+                    User = user
                 };
 
                 // 既存の認証情報存在チェック
