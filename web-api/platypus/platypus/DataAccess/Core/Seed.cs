@@ -187,9 +187,9 @@ namespace Nssol.Platypus.DataAccess.Core
                 Name = ApplicationConst.DefaultFirstTenantName,
                 DisplayName = ApplicationConst.DefaultFirstTenantDisplayName,
                 DefaultGit = git,
-                DefaultRegistryId = registry.Id,
+                DefaultRegistry = registry,
                 StorageBucket = ApplicationConst.DefaultFirstTenantName,
-                StorageId = storage.Id
+                Storage = storage
             });
             //GitとTenantの対応付け
             TenantGitMap tenantGitMap = AddNewRecordForInit(new TenantGitMap() { Tenant = tenant, Git = git });
