@@ -133,7 +133,8 @@ namespace Nssol.Platypus.Controllers.spa
                 .AsEnumerable()
                 .SearchLong(d => d.Id, filter.Id)
                 .SearchString(d => d.Name, filter.Name)
-                .SearchTime(d => d.CreatedAt, filter.StartedAt);
+                .SearchTime(d => d.CreatedAt, filter.StartedAt)
+                .ToList();
 
             if (withTotal)
             {
