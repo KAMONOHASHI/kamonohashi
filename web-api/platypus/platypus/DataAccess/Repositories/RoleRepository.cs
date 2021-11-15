@@ -69,6 +69,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// Idからロールを取得する。
         /// 対応するロールが見つからない場合はNULLを返す。
         /// </summary>
+        /// <param name="id">ロールID</param>
         public async Task<Role> GetRoleAsync(long id)
         {
             return (await GetAllRolesAsync()).FirstOrDefault(d => d.Id == id);
@@ -77,6 +78,8 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// <summary>
         /// ロールを新規に追加する
         /// </summary>
+        /// <param name="role">新規ロール</param>
+        /// <param name="unitOfWork">The unit of work.</param>
         public void Add(Role role, IUnitOfWork unitOfWork)
         {
             if(role.IsSystemRole && role.TenantId != null)
@@ -95,6 +98,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// 更新用のロール情報を取得する。
         /// 普段はキャッシュからデータをとるが、それだとEntityFrameworkがキャッシュされたオブジェクトのIDを見失って、編集ではなく新規追加になる恐れがある。
         /// </summary>
+        /// <param name="id">ロールID</param>
         public async Task<Role> GetRoleForUpdateAsync(long id)
         {
             return await base.GetByIdAsync(id);
@@ -104,6 +108,8 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// ロール情報を更新する。
         /// 引数のRoleはキャッシュからではなく、<see cref="GetRoleForUpdateAsync(long)"/>で直接DBから取得したものを使うこと。
         /// </summary>
+        /// <param name="role">更新ロール</param>
+        /// <param name="unitOfWork">The unit of work.</param>
         public void Update(Role role, IUnitOfWork unitOfWork)
         {
             //roleを適切に取得していれば、Attachする必要なく、そのまま普通に更新できるはず。
@@ -116,6 +122,8 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// <summary>
         /// ロール情報を削除する
         /// </summary>
+        /// <param name="id">削除ロールID</param>
+        /// <param name="unitOfWork">The unit of work.</param>
         public async Task DeleteAsync(long id, IUnitOfWork unitOfWork)
         {
             var role = await base.GetByIdAsync(id);
@@ -130,6 +138,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// 指定したユーザが持つロールを、Admin・テナント共に取得する。
         /// ユーザIDの存在チェックは行わない。
         /// </summary>
+        /// <param name="userId">ユーザID</param>
         public IEnumerable<Role> GetRoles(long userId)
         {
             var roles = GetModelAll<UserRoleMap>().Include(map => map.Role)
@@ -142,6 +151,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// 指定したテナントが持つカスタムロールを取得する。
         /// テナントIDの存在チェックは行わない。
         /// </summary>
+        /// <param name="tenantId">テナントID</param>
         public async Task<IEnumerable<Role>> GetCustomRolesAsync(long tenantId)
         {
             return (await GetAllRolesAsync()).Where(r => r.TenantId == tenantId);
@@ -151,9 +161,12 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// 指定したユーザが持つシステムロールを取得する。
         /// ユーザIDの存在チェックは行わない。
         /// </summary>
+        /// <param name="userId">ユーザID</param>
         public IEnumerable<Role> GetSystemRoles(long userId)
         {
             var roles = GetModelAll<UserRoleMap>().Include(map => map.Role)
+                // ここでToList()をすることでDBからの取得テーブルを確定させる。
+                .ToList()
                 .Where(map => map.Role.IsSystemRole == true && map.UserId == userId)
                 .Select(map => map.Role);
             return roles;
@@ -163,6 +176,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// 指定したユーザ持つテナントロールを、(テナントID、ロールのリスト）のディクショナリ形式で 取得する。
         /// ユーザIDの存在チェックは行わない。
         /// </summary>
+        /// <param name="userId">ユーザID</param>
         public Dictionary<long, List<Role>> GetTenantRolesDictionary(long userId)
         {
             var maps = GetModelAll<UserRoleMap>().Include(map => map.Role).Include(map => map.TenantMap)
@@ -200,6 +214,8 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// 指定したユーザが特定のテナントで持つテナントロールを取得する。
         /// ユーザID, テナントIDの存在チェックは行わない。
         /// </summary>
+        /// <param name="userId">ユーザID</param>
+        /// <param name="tenantId">テナントID</param>
         public IEnumerable<Role> GetTenantRoles(long userId, long tenantId)
         {
             var roles = GetModelAll<UserRoleMap>().Include(map => map.Role).Include(map => map.TenantMap)
@@ -268,11 +284,12 @@ namespace Nssol.Platypus.DataAccess.Repositories
             }
             AddModel<UserRoleMap>(model);
         }
-        
+
         /// <summary>
         /// 指定したユーザから、すべてのシステムロールを外す。
         /// ユーザIDの存在チェックは行わない。
         /// </summary>
+        /// <param name="userId">ユーザID</param>
         public void DetachSystemRole(long userId)
         {
             DeleteModelAll<UserRoleMap>(map => map.UserId == userId && map.Role.IsSystemRole);
@@ -291,7 +308,8 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// <summary>
         /// 指定したロールに、指定したメニューへのアクセス権限があるか、確認する
         /// </summary>
-        /// <returns></returns>
+        /// <param name="roleId">ロールID</param>
+        /// <param name="menuCode">メニューコード</param>
         public async Task<bool> AuthorizeAsync(long roleId, MenuCode menuCode)
         {
             var roleMaps = await GetMenuRolesMapsAsync();
