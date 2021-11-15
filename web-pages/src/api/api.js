@@ -304,10 +304,7 @@ let api = {
       getById: gen.getApiV2AdminUsersById,
       delete: gen.deleteApiV2AdminUsersById,
       put: gen.putApiV2AdminUsersById,
-      putPassword: simpleStringBody(
-        gen.putApiV2AdminUsersByIdPassword,
-        'password',
-      ),
+      putPassword: simpleStringBody(gen.putApiV2AdminUsersByIdPassword, 'body'),
     },
 
     tenant: {
