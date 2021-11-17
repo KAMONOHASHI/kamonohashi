@@ -33,7 +33,7 @@ def login(server, user, password, tenant, proxy):
     expire_days = config_file.get('expireDays')
     expires_in = expire_days * 24 * 3600 if expire_days is not None else None
     model = rest.AccountApiModelsLoginInputModel(user_name=user, password=password, tenant_id=tenant, expires_in=expires_in)
-    result = api.login(model=model)
+    result = api.login(body=model)
 
     configuration.update_config_file(server=server, proxy=proxy, token=result.token)
     print('user name:', result.user_name)

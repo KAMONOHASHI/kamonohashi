@@ -111,7 +111,7 @@ def create(name, registry_image, registry_tag, data_set_id, entry_point,
     model = rest.TrainingApiModelsCreateInputModel(
         container_image=container_image, cpu=cpu, data_set_id=data_set_id, entry_point=entry_point, git_model=git_model,
         gpu=gpu, memo=memo, memory=memory, name=name, options=option_dict, parent_ids=list(parent_ids), partition=partition, zip=zip, local_data_set=local_data_set)
-    result = api.create_inference(model=model)
+    result = api.create_inference(body=model)
     print('created', result.id)
 
 
@@ -133,7 +133,7 @@ def update(id, name, memo, favorite):
     """Update inference"""
     api = rest.InferenceApi(configuration.get_api_client())
     model = rest.TrainingApiModelsEditInputModel(name=name, memo=memo, favorite=favorite)
-    result = api.update_inference(id, model=model)
+    result = api.update_inference(id, body=model)
     print('updated', result.id)
 
 
@@ -145,7 +145,7 @@ def upload_file(id, file_path):
     api = rest.InferenceApi(configuration.get_api_client())
     attached_info = object_storage.upload_file(api.api_client, file_path, 'InferenceHistoryAttachedFiles')
     model = rest.ComponentsAddFileInputModel(file_name=attached_info.file_name, stored_path=attached_info.stored_path)
-    api.add_inference_file(id, model=model)
+    api.add_inference_file(id, body=model)
 
 
 @inference.command('list-files')
