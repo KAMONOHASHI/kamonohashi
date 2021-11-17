@@ -2540,7 +2540,7 @@ e.g.（比較文字列は半角でOK）
 "＜2018/01/01" → 2018/01/01 00:00:00 以前
      * @param perPage - 表示件数。指定がない場合は上限(1000件)。
      * @param page - ページ番号。デフォルトは1。
-     * @param withTotal - 
+     * @param withTotal - 合計件数をレスポンスヘッダ(X-Total-Count)に含めるか。デフォルトはfalse。
 */
 export const getApiV2Experiment = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -8745,7 +8745,7 @@ export const getApiV2AdminTemplatesByIdURL = function(parameters = {}) {
  * method: putApiV2AdminTemplatesById_TYPE
  * raw_url: putApiV2AdminTemplatesById_RAW_URL
  * @param id - テンプレートID
- * @param body - 
+ * @param body - 編集内容
  */
 export const putApiV2AdminTemplatesById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -8839,7 +8839,7 @@ export const deleteApiV2AdminTemplatesByIdURL = function(parameters = {}) {
  * method: postApiV2AdminTemplatesByIdVersions_TYPE
  * raw_url: postApiV2AdminTemplatesByIdVersions_RAW_URL
  * @param id - テンプレートID
- * @param body - 
+ * @param body - 作成内容
  */
 export const postApiV2AdminTemplatesByIdVersions = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
