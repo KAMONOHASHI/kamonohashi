@@ -50,7 +50,10 @@ def switch_tenant(tenant_id):
     config_file = configuration.try_read_file()
     expire_days = config_file.get('expireDays')
     expires_in = expire_days * 24 * 3600 if expire_days is not None else None
-    result = api.switch_tenant(tenant_id, expires_in=expires_in)
+    if expires_in is not None:
+        result = api.switch_tenant(tenant_id, expires_in=expires_in)
+    else:
+        result = api.switch_tenant(tenant_id)
     configuration.update_config_file(token=result.token)
     print('user name:', result.user_name)
     pprint.pp_primitive('selected tenant:', result.tenant_id, result.tenant_name)
