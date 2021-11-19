@@ -74,7 +74,21 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 foreach (var tag in filter.Tags)
                 {
-                    data = data.SearchString(d => d.Tag, tag);
+                    if (string.IsNullOrEmpty(tag) == false)
+                    {
+                        if (tag.Contains(",", System.StringComparison.CurrentCulture))
+                        {
+                            // tagにカンマ(',')が含まれていたら、分割して一つ一つの文字列で検索する
+                            foreach (var t in tag.Split(","))
+                            {
+                                data = data.SearchString(d => d.Tag, t);
+                            }
+                        }
+                        else
+                        {
+                            data = data.SearchString(d => d.Tag, tag);
+                        }
+                    }
                 }
             }
 

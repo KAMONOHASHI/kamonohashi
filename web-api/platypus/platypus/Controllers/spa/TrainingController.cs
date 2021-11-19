@@ -279,13 +279,34 @@ namespace Nssol.Platypus.Controllers.spa
                 {
                     if (string.IsNullOrEmpty(tag) == false)
                     {
-                        if (tag.StartsWith("!", StringComparison.CurrentCulture))
+                        if (tag.Contains(",", System.StringComparison.CurrentCulture))
                         {
-                            data = data.Where(d => d.TagMaps == null || d.TagMaps.Count == 0 || d.TagMaps.All(m => m.Tag.Name.Contains(tag.Substring(1), StringComparison.CurrentCulture) == false));
+                            // tagにカンマ(',')が含まれていたら、分割して一つ一つの文字列で検索する
+                            foreach (var t in tag.Split(","))
+                            {
+                                if (string.IsNullOrEmpty(t) == false)
+                                {
+                                    if (t.StartsWith("!", StringComparison.CurrentCulture))
+                                    {
+                                        data = data.Where(d => d.TagMaps == null || d.TagMaps.Count == 0 || d.TagMaps.All(m => m.Tag.Name.Contains(t.Substring(1), StringComparison.CurrentCulture) == false));
+                                    }
+                                    else
+                                    {
+                                        data = data.Where(d => d.TagMaps != null && d.TagMaps.Any(m => m.Tag.Name.Contains(t, StringComparison.CurrentCulture)));
+                                    }
+                                }
+                            }
                         }
                         else
                         {
-                            data = data.Where(d => d.TagMaps != null && d.TagMaps.Any(m => m.Tag.Name.Contains(tag, StringComparison.CurrentCulture)));
+                            if (tag.StartsWith("!", StringComparison.CurrentCulture))
+                            {
+                                data = data.Where(d => d.TagMaps == null || d.TagMaps.Count == 0 || d.TagMaps.All(m => m.Tag.Name.Contains(tag.Substring(1), StringComparison.CurrentCulture) == false));
+                            }
+                            else
+                            {
+                                data = data.Where(d => d.TagMaps != null && d.TagMaps.Any(m => m.Tag.Name.Contains(tag, StringComparison.CurrentCulture)));
+                            }
                         }
                     }
                 }
