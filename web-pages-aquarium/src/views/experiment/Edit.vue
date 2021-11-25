@@ -34,12 +34,12 @@
 
               <div
                 class="template-description"
-                style="padding: 10px; font-size: 14px;"
+                style="padding: 10px; font-size: 14px; white-space: break-spaces;"
               >
                 <span v-for="(s, i) in template.memoList" :key="i">
                   <span
                     v-if="s.type == 'url'"
-                    style=" z-index :20;font-size:15px"
+                    style=" z-index:20; font-size:15px; word-wrap:break-word;"
                   >
                     <a
                       href="javascript:void(0)"
