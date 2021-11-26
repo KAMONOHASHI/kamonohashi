@@ -26,6 +26,7 @@
   },
   "devDependencies": {
     "@babel/helper-compilation-targets": "^7.10.4",
+    "@storybook/vue": "^6.0.28",
     "@vue/cli-plugin-babel": "^4.5.7",
     "@vue/cli-plugin-eslint": "^4.5.7",
     "@vue/cli-plugin-router": "^4.5.7",
