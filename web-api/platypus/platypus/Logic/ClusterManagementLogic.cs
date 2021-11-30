@@ -417,7 +417,8 @@ namespace Nssol.Platypus.Logic
             var registryMap = registryLogic.GetCurrentRegistryMap(trainHistory.ContainerRegistryId.Value);
             var gitEndpointResult = await gitLogic.GetPullUrlAsync(gitId, trainHistory.ModelRepository, trainHistory.ModelRepositoryOwner, gitToken);
 
-            if (! gitEndpointResult.IsSuccess) {
+            if (!gitEndpointResult.IsSuccess)
+            {
                 return Result<ContainerInfo, string>.CreateErrorResult(gitEndpointResult.Error);
             }
 
@@ -980,7 +981,7 @@ namespace Nssol.Platypus.Logic
                 Configuration = outModel.Value.Configuration
             };
         }
-        
+
         /// <summary>
         /// 指定したTensorBoardコンテナのステータスをクラスタ管理サービスに問い合わせ、結果でDBを更新する。
         /// </summary>
@@ -1222,7 +1223,8 @@ namespace Nssol.Platypus.Logic
 
                 var gitEndpointResult = await gitLogic.GetPullUrlAsync(gitId, notebookHistory.ModelRepository, notebookHistory.ModelRepositoryOwner);
 
-                if (!gitEndpointResult.IsSuccess) {
+                if (!gitEndpointResult.IsSuccess)
+                {
                     return Result<ContainerInfo, string>.CreateErrorResult(gitEndpointResult.Error);
                 }
 

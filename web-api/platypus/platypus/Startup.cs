@@ -58,7 +58,7 @@ namespace Nssol.Platypus
         /// パイプラインのデバッグがあまりに辛いので、デバッグ用のログを出せるようにした。
         /// </summary>
         private bool isDebug;
-        
+
         /// <summary>
         /// XMLドキュメントのファイルパスを取得する
         /// </summary>

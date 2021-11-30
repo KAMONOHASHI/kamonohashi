@@ -77,7 +77,7 @@ namespace Nssol.Platypus.Logic
             else
             {
                 await trainingHistoryRepository.UpdateStatusAsync(trainingHistory.Id, status, force);
-                
+
                 // DBの更新を確定する
                 unitOfWork.Commit();
             }

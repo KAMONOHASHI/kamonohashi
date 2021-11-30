@@ -1,10 +1,7 @@
 ﻿using Nssol.Platypus.Infrastructure;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Models
 {
@@ -51,7 +48,7 @@ namespace Nssol.Platypus.Models
                 return $"{Storage.NfsRootPath}{StorageBucket}/{ResourceType.Data}";
             }
         }
-        
+
         /// <summary>
         /// コンテナ出力ファイル用のNFSマウント元パス
         /// </summary>

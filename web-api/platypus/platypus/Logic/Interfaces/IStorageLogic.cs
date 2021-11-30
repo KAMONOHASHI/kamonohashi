@@ -1,12 +1,8 @@
-﻿using Amazon.S3.Model;
+﻿using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.LogicModels.StorageLogicModels;
-using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Models;
 using Nssol.Platypus.ServiceModels;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Logic.Interfaces

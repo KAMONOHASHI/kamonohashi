@@ -193,7 +193,7 @@ namespace Nssol.Platypus.Migrations
                 principalTable: "TrainingHistories",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
-            
+
             // TrainingHistoryParentMapsからTrainingHistoriesにParentIdを移行する。
             migrationBuilder.Sql($"UPDATE \"TrainingHistories\" AS Histories SET \"ParentId\" = ParentMaps.\"ParentId\" FROM \"TrainingHistoryParentMaps\" AS ParentMaps WHERE Histories.\"Id\" = ParentMaps.\"TrainingHistoryId\";");
 

@@ -31,7 +31,7 @@ namespace Nssol.Platypus.Models
         /// レジストリサービス種別
         /// </summary>
         [Required]
-        public RegistryServiceType ServiceType {get;set;}
+        public RegistryServiceType ServiceType { get; set; }
 
         /// <summary>
         /// プロジェクト名。
@@ -68,7 +68,8 @@ namespace Nssol.Platypus.Models
         /// レジストリパス
         /// </summary>
         [NotMapped]
-        public string RegistryPath {
+        public string RegistryPath
+        {
             get
             {
                 return $"{Host}:{PortNo}";

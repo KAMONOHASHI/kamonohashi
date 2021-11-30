@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Nssol.Platypus.ServiceModels.Git
+﻿namespace Nssol.Platypus.ServiceModels.Git
 {
     /// <summary>
     /// リポジトリを表すクラス

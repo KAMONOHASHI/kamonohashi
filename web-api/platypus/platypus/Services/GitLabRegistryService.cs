@@ -1,14 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.WebUtilities;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Nssol.Platypus.Infrastructure;
+﻿using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Models;
 using Nssol.Platypus.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -81,7 +76,7 @@ namespace Nssol.Platypus.Services
         private async Task<IEnumerable<GetImagesApiModel>> GetContainerRegistryJsonAsync(Registry registry, string project, string token)
         {
             // API呼び出しパラメータ作成
-            string encodedProjectName = project.Replace("/", "%2F");
+            string encodedProjectName = project.Replace("/", "%2F", StringComparison.CurrentCulture);
             RequestParam param = new RequestParam()
             {
                 BaseUrl = registry.ApiUrl,
@@ -127,7 +122,7 @@ namespace Nssol.Platypus.Services
             }
 
             // API呼び出しパラメータ作成
-            string encodedProjectName = userRegistryMap.Registry.ProjectName.Replace("/", "%2F");
+            string encodedProjectName = userRegistryMap.Registry.ProjectName.Replace("/", "%2F", StringComparison.CurrentCulture);
             RequestParam param = new RequestParam()
             {
                 BaseUrl = registry.ApiUrl,

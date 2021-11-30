@@ -30,13 +30,17 @@ namespace Nssol.Platypus.Logic
         /// <summary>
         /// ログイン中のユーザ情報
         /// </summary>
-        public UserInfo CurrentUserInfo { get {
-                if(currentUserInfo == null)
+        public UserInfo CurrentUserInfo
+        {
+            get
+            {
+                if (currentUserInfo == null)
                 {
                     SetUserInfo();
                 }
                 return currentUserInfo;
-            } }
+            }
+        }
 
         /// <summary>
         /// 現在選択中のテナントIDを取得します。
@@ -45,7 +49,7 @@ namespace Nssol.Platypus.Logic
         {
             get
             {
-                if(CurrentUserInfo?.SelectedTenant == null)
+                if (CurrentUserInfo?.SelectedTenant == null)
                 {
                     //テナントに所属していないユーザがテナント用メニューを使った場合に到達。不到達コード。
                     throw new InvalidOperationException("テナント未所属！");
@@ -84,7 +88,7 @@ namespace Nssol.Platypus.Logic
         /// </summary>
         public string UserName
         {
-        get
+            get
             {
                 return CurrentUserInfo?.Name ?? "-";
             }
@@ -109,7 +113,7 @@ namespace Nssol.Platypus.Logic
             get
             {
                 var identity = this.accessor.HttpContext.GetClaims();
-                if(identity != null)
+                if (identity != null)
                 {
                     return identity.Claims;
                 }

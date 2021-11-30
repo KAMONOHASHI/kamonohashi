@@ -1,7 +1,7 @@
 ﻿using Amazon.S3.Model;
-using Nssol.Platypus.LogicModels.StorageLogicModels;
 using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Logic.Interfaces;
+using Nssol.Platypus.LogicModels.StorageLogicModels;
 using Nssol.Platypus.Models;
 using Nssol.Platypus.ServiceModels;
 using Nssol.Platypus.Services.Interfaces;
@@ -191,7 +191,7 @@ namespace Nssol.Platypus.Logic
             string key = CreateKey(type, fileStoredPath);
             var fileList = await objectStorageService.GetUnderDirAsync(key);
             // 該当ファイルが存在する場合は内容を取得
-            if(fileList.IsSuccess && fileList.Value.Files.Count == 1)
+            if (fileList.IsSuccess && fileList.Value.Files.Count == 1)
             {
                 Uri uri = objectStorageService.GetPreSignedUriForGet(key, fileName, useHttp);
                 var content = await objectStorageService.GetFileContentAsync(uri);
@@ -233,7 +233,7 @@ namespace Nssol.Platypus.Logic
         public async Task<MultiPartUploadModel> GetPartUploadPreSignedUrlAsync(ResourceType type, string fileName, int numPart)
         {
             // 拡張子つきのパス生成
-            var extension = Path.GetExtension(fileName).Replace(".", "");
+            var extension = Path.GetExtension(fileName).Replace(".", "", StringComparison.CurrentCulture);
             var generatedName = Path.ChangeExtension(Guid.NewGuid().ToString(), extension);
 
             var key = CreateKey(type, generatedName);
@@ -281,10 +281,11 @@ namespace Nssol.Platypus.Logic
         /// </summary>
         /// <param name="type">リソース種別</param>
         /// <param name="searchDirPath">検索対象ディレクトリ</param>
-        public async Task<Result<StorageListResultInfo, string>> GetUnderDirAsync(ResourceType type, string searchDirPath) {
+        public async Task<Result<StorageListResultInfo, string>> GetUnderDirAsync(ResourceType type, string searchDirPath)
+        {
 
-           searchDirPath = CreateKey(type, searchDirPath);
-           return await objectStorageService.GetUnderDirAsync("/" + searchDirPath);
+            searchDirPath = CreateKey(type, searchDirPath);
+            return await objectStorageService.GetUnderDirAsync("/" + searchDirPath);
         }
     }
 }

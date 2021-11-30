@@ -88,7 +88,7 @@ namespace Nssol.Platypus.Logic
         {
             //まずは既存のタグをすべて削除
             tagRepository.DeleteAllDataTag(dataId);
-            
+
             foreach (var inputTag in inputTags.Distinct())
             {
                 if (string.IsNullOrEmpty(inputTag) == false)

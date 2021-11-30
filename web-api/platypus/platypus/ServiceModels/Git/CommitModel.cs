@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Nssol.Platypus.ServiceModels.Git
 {
@@ -26,7 +23,7 @@ namespace Nssol.Platypus.ServiceModels.Git
         /// <summary>
         /// コミットコメント
         /// </summary>
-        public string Comment{ get; set; }
+        public string Comment { get; set; }
         /// <summary>
         /// 文字列表現。
         /// </summary>

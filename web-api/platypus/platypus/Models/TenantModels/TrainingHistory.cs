@@ -131,7 +131,7 @@ namespace Nssol.Platypus.Models.TenantModels
         /// ポート
         /// </summary>
         public string Ports { get; set; }
-        
+
         /// <summary>
         /// <see cref="Ports"/> のリスト表現
         /// </summary>
@@ -252,7 +252,7 @@ namespace Nssol.Platypus.Models.TenantModels
         /// <returns>環境変数</returns>
         public Dictionary<string, string> GetOptionDic()
         {
-            if(Options == null)
+            if (Options == null)
             {
                 return new Dictionary<string, string>();
             }
@@ -266,7 +266,7 @@ namespace Nssol.Platypus.Models.TenantModels
         /// <returns>開放するポート番号</returns>
         public List<int> GetPortList()
         {
-            if(Ports == null)
+            if (Ports == null)
             {
                 return new List<int>();
             }
@@ -282,7 +282,7 @@ namespace Nssol.Platypus.Models.TenantModels
         {
             return ContainerStatus.Convert(Status);
         }
-        
+
         /// <summary>
         /// タグ
         /// </summary>

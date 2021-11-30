@@ -48,7 +48,8 @@ namespace Nssol.Platypus.Models
         /// </summary>
         public bool Enable
         {
-            get {
+            get
+            {
                 return AccessLevel != NodeAccessLevel.Disabled;
             }
         }

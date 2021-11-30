@@ -102,7 +102,7 @@ namespace Nssol.Platypus.Models.TenantModels
         /// </summary>
         [ForeignKey(nameof(PreprocessId))]
         public virtual Preprocess Preprocess { get; set; }
-        
+
         /// <summary>
         /// データセットエントリ
         /// </summary>

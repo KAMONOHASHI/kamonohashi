@@ -97,7 +97,7 @@ namespace Nssol.Platypus.Logic.HostedService
                         Memory = (int)x.Memory,
                         Gpu = x.Gpu,
                         ResourceSample = resourceSample,
-                    }; 
+                    };
                 }
                 nodeDictionary[""] = new ResourceNode
                 {
@@ -106,7 +106,7 @@ namespace Nssol.Platypus.Logic.HostedService
                     Memory = 0,
                     Gpu = 0,
                     ResourceSample = resourceSample,
-                }; 
+                };
                 resourceNodeRepository.AddRange(nodeDictionary.Values.AsQueryable());
 
                 var containers = await clusterManagementLogic.GetAllContainerDetailsInfosAsync();

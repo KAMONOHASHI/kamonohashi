@@ -37,7 +37,7 @@ namespace Nssol.Platypus.Logic
         {
             var result = new List<DataFileOutputModel>();
             var properties = dataRepository.GetAllDataProperty(dataId);
-            foreach(var property in properties)
+            foreach (var property in properties)
             {
                 var model = new DataFileOutputModel { Id = dataId, Key = property.Key, FileId = property.Id, FileName = property.DataFile.FileName };
 
@@ -59,7 +59,7 @@ namespace Nssol.Platypus.Logic
         public IEnumerable<DataFileOutputModel> GetDataFiles(Data data, bool withUrl)
         {
             var result = new List<DataFileOutputModel>();
-            
+
             foreach (var property in data.DataProperties)
             {
                 var model = new DataFileOutputModel { Id = data.Id, Key = property.Key, FileId = property.Id, FileName = property.DataFile.FileName };

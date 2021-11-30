@@ -20,7 +20,7 @@ namespace Nssol.Platypus.Swagger
         /// </summary>
         /// <param name="provider">The <see cref="IApiVersionDescriptionProvider">provider</see> used to generate Swagger documents.</param>
         public ConfigureSwaggerOptions(IApiVersionDescriptionProvider provider) => this.provider = provider;
- 
+
         /// <inheritdoc />
         public void Configure(SwaggerGenOptions options)
         {
@@ -29,7 +29,7 @@ namespace Nssol.Platypus.Swagger
             {
                 // APIの署名を記載
                 options.SwaggerDoc(description.GroupName, CreateInfoForApiVersion(description));
-                    
+
                 // デフォルトだと同じクラス名の入出力モデルを使えないので、識別に名前空間名も含める
                 // https://stackoverflow.com/questions/46071513/swagger-error-conflicting-schemaids-duplicate-schemaids-detected-for-types-a-a
                 options.CustomSchemaIds(x => x.FullName);
@@ -43,9 +43,9 @@ namespace Nssol.Platypus.Swagger
                 Type = SecuritySchemeType.ApiKey,
                 Description = "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\""
             });
-            options.OperationFilter<AssignJwtSecurityRequirements>();            
+            options.OperationFilter<AssignJwtSecurityRequirements>();
         }
- 
+
         /// <summary>
         /// APIバージョン情報定義
         /// </summary>

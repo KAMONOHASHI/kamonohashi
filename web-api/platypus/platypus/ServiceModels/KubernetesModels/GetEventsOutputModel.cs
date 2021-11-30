@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Nssol.Platypus.ServiceModels.KubernetesModels
 {
@@ -59,7 +56,7 @@ namespace Nssol.Platypus.ServiceModels.KubernetesModels
             {
                 get
                 {
-                    if(Kind == "Pod")
+                    if (Kind == "Pod")
                     {
                         //Podの場合はコンテナ名-(ランダムな5文字)になる。
                         //既に無くなったものも含め、関連する情報はすべて回収したいので、今は上記フォーマット決め打ちでコンテナ名を判定する

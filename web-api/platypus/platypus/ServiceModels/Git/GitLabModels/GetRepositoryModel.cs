@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Nssol.Platypus.ServiceModels.Git.GitLabModels
+﻿namespace Nssol.Platypus.ServiceModels.Git.GitLabModels
 {
     /// <summary>
     /// GitLabでリポジトリ一覧を取得するときの返り値のモデル。
@@ -18,7 +13,7 @@ namespace Nssol.Platypus.ServiceModels.Git.GitLabModels
         {
             get
             {
-                if(owner == null)
+                if (owner == null)
                 {
                     //グループ用のリポジトリ
                     return @namespace.full_path;

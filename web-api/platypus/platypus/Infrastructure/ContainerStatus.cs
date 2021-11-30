@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Nssol.Platypus.Infrastructure
 {
@@ -237,7 +234,7 @@ namespace Nssol.Platypus.Infrastructure
         /// </summary>
         public ContainerStatus(string name) : base()
         {
-            if(name == "Failed")
+            if (name == "Failed")
             {
                 this.Key = Error.Key;
                 this.Type = Error.Type;
