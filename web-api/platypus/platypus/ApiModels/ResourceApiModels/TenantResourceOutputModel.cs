@@ -2,6 +2,7 @@
 using Nssol.Platypus.Infrastructure.Options;
 using Nssol.Platypus.Models;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace Nssol.Platypus.ApiModels.ResourceApiModels
 {
@@ -100,7 +101,7 @@ namespace Nssol.Platypus.ApiModels.ResourceApiModels
         {
             get
             {
-                return $"{AssignedCpu} /" + (AllocatableCpu == 0 ? "Infinity" : AllocatableCpu.ToString("0.0"));
+                return $"{AssignedCpu} /" + (AllocatableCpu == 0 ? "Infinity" : AllocatableCpu.ToString("0.0", CultureInfo.CurrentCulture));
             }
         }
 
@@ -111,7 +112,7 @@ namespace Nssol.Platypus.ApiModels.ResourceApiModels
         {
             get
             {
-                return $"{AssignedMemory} GB /" + (AllocatableMemory == 0 ? "Infinity" : AllocatableMemory.ToString("0.0 GB"));
+                return $"{AssignedMemory} GB /" + (AllocatableMemory == 0 ? "Infinity" : AllocatableMemory.ToString("0.0 GB", CultureInfo.CurrentCulture));
             }
         }
 
@@ -122,7 +123,7 @@ namespace Nssol.Platypus.ApiModels.ResourceApiModels
         {
             get
             {
-                return $"{AssignedGpu} /" + (AllocatableGpu == 0 ? "Infinity" : AllocatableGpu.ToString("0.0"));
+                return $"{AssignedGpu} /" + (AllocatableGpu == 0 ? "Infinity" : AllocatableGpu.ToString("0.0", CultureInfo.CurrentCulture));
             }
         }
 
@@ -130,7 +131,7 @@ namespace Nssol.Platypus.ApiModels.ResourceApiModels
         /// コンテナリソースのリスト
         /// </summary>
         public List<ContainerDetailsOutputModel> ContainerResourceList { get; set; }
-        
+
         public void Add(ContainerDetailsOutputModel model)
         {
             model.TenantId = Id;

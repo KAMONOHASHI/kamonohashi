@@ -279,7 +279,7 @@ namespace Nssol.Platypus.Controllers.spa
                 {
                     if (string.IsNullOrEmpty(tag) == false)
                     {
-                        if (tag.Contains(",", System.StringComparison.CurrentCulture))
+                        if (tag.Contains(",", StringComparison.CurrentCulture))
                         {
                             // tagにカンマ(',')が含まれていたら、分割して一つ一つの文字列で検索する
                             foreach (var t in tag.Split(","))
@@ -627,10 +627,10 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPut("{id}")]
         [Filters.PermissionFilter(MenuCode.Training)]
         [ProducesResponseType(typeof(SimpleOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> Edit(long? id, [FromBody]EditInputModel model)
+        public async Task<IActionResult> Edit(long? id, [FromBody] EditInputModel model)
         {
             //データの入力チェック
-            if (!ModelState.IsValid || ! id.HasValue)
+            if (!ModelState.IsValid || !id.HasValue)
             {
                 return JsonBadRequest("Invalid inputs.");
             }
@@ -644,7 +644,7 @@ namespace Nssol.Platypus.Controllers.spa
             history.Name = EditColumnNotEmpty(model.Name, history.Name);
             history.Memo = EditColumn(model.Memo, history.Memo);
             history.Favorite = EditColumn(model.Favorite, history.Favorite);
-            
+
             //タグの編集。指定がない場合は変更なしと見なして何もしない。
             if (model.Tags != null)
             {
@@ -679,7 +679,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPost("{id}/files")]
         [Filters.PermissionFilter(MenuCode.Training)]
         [ProducesResponseType(typeof(AttachedFileOutputModel), (int)HttpStatusCode.Created)]
-        public async Task<IActionResult> RegistAttachedFile(long id, [FromBody]AddFileInputModel model)
+        public async Task<IActionResult> RegistAttachedFile(long id, [FromBody] AddFileInputModel model)
         {
             //データの入力チェック
             if (!ModelState.IsValid)
@@ -695,7 +695,7 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             //同じ名前のファイルは登録できない
-            if(await trainingHistoryRepository.ExistsAttachedFileAsync(id, model.FileName))
+            if (await trainingHistoryRepository.ExistsAttachedFileAsync(id, model.FileName))
             {
                 return JsonConflict($"Training {id} has already a file named {model.FileName}.");
             }
@@ -736,15 +736,17 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             // 検索path文字列の先頭・末尾が/でない場合はつける
-            if (!path.StartsWith("/", StringComparison.CurrentCulture)) {
+            if (!path.StartsWith("/", StringComparison.CurrentCulture))
+            {
                 path = "/" + path;
             }
-            if (!path.EndsWith("/", StringComparison.CurrentCulture)) {
+            if (!path.EndsWith("/", StringComparison.CurrentCulture))
+            {
                 path = path + "/";
             }
 
             // windowsから実行された場合、区切り文字が"\\"として送られてくるので"/"に置換する
-            path = path.Replace("\\", "/");
+            path = path.Replace("\\", "/", StringComparison.CurrentCulture);
 
             var rootDir = $"{id}" + path;
 
@@ -754,7 +756,7 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 result.Value.Files.ForEach(x => x.Url = storageLogic.GetPreSignedUriForGetFromKey(x.Key, x.FileName, true).ToString());
             }
-             
+
 
             return JsonOK(result.Value);
         }
@@ -777,7 +779,8 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             var underDir = await storageLogic.GetUnderDirAsync(ResourceType.TrainingContainerAttachedFiles, $"{id}/");
-            if(underDir.IsSuccess == false) {
+            if (underDir.IsSuccess == false)
+            {
                 return JsonError(HttpStatusCode.ServiceUnavailable, "Failed to access the storage service. Please contact to system administrators.");
             }
 
@@ -905,7 +908,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPut("{id}/tensorboard")] //TensorBoardはIDをユーザに通知するわけではないので、POSTではなくPUTで扱う
         [Filters.PermissionFilter(MenuCode.Training, MenuCode.Experiment)]
         [ProducesResponseType(typeof(TensorBoardOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> RunTensorBoard(long id, [FromBody]TensorBoardInputModel model)
+        public async Task<IActionResult> RunTensorBoard(long id, [FromBody] TensorBoardInputModel model)
         {
             //データの存在チェック
             var trainingHistory = await trainingHistoryRepository.GetByIdAsync(id);
@@ -954,7 +957,7 @@ namespace Nssol.Platypus.Controllers.spa
 
             // コンテナテーブルにInsertする
             tensorBoardContainerRepository.Add(container);
-            
+
             unitOfWork.Commit();
 
             return JsonOK(new TensorBoardOutputModel(container, result.Status, containerOptions.WebEndPoint));
@@ -1130,7 +1133,7 @@ namespace Nssol.Platypus.Controllers.spa
             var inferenceHistory = (await inferenceHistoryRepository.GetMountedTrainingAsync(trainingHistory.Id)).FirstOrDefault();
             if (inferenceHistory != null)
             {
-                return (false, DoJsonConflict(typeof(TrainingController), requestUrl, modelState, 
+                return (false, DoJsonConflict(typeof(TrainingController), requestUrl, modelState,
                     $"Training {trainingHistory.Id} has been used by inference."));
             }
 

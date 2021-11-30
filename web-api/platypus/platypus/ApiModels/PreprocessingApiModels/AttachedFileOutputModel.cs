@@ -1,11 +1,4 @@
-﻿using Nssol.Platypus.Models.TenantModels;
-using Nssol.Platypus.Infrastructure;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Nssol.Platypus.ApiModels.PreprocessingApiModels
+﻿namespace Nssol.Platypus.ApiModels.PreprocessingApiModels
 {
     public class PreprocessAttachedFileOutputModel
     {
@@ -13,7 +6,7 @@ namespace Nssol.Platypus.ApiModels.PreprocessingApiModels
         {
         }
 
-        public PreprocessAttachedFileOutputModel(long id,  string fileName, long fileId)
+        public PreprocessAttachedFileOutputModel(long id, string fileName, long fileId)
         {
             this.Id = id;
             this.FileName = fileName;
@@ -25,7 +18,7 @@ namespace Nssol.Platypus.ApiModels.PreprocessingApiModels
         /// </summary>
         public long Id { get; set; }
 
-        
+
         /// <summary>
         /// 添付ファイルID
         /// </summary>

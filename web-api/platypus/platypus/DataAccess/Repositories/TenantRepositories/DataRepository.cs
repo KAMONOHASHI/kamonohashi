@@ -50,7 +50,7 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
                   "(select map.\"DataId\", array_to_string(array_agg(t.\"Name\"), ',') as \"Tag\" " +
                    "from \"DataTagMaps\" as map " +
                    "left join \"Tags\" t on t.\"Id\" = map.\"TagId\" " +
-                   "where map.\"TenantId\" = {0} " + 
+                   "where map.\"TenantId\" = {0} " +
                    "group by map.\"DataId\" " +
                    "order by map.\"DataId\" " +
                 ") tag on d.\"Id\" = tag.\"DataId\" " +
@@ -129,7 +129,7 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
         /// </summary>
         public void DeleteData(Data data)
         {
-            foreach(var file in data.DataProperties)
+            foreach (var file in data.DataProperties)
             {
                 if (file.DataFile != null)
                 {

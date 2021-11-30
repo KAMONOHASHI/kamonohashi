@@ -11,7 +11,7 @@ namespace Nssol.Platypus.ApiModels.TemplateApiModels
         /// 名前
         /// </summary>
         public string Name { get; set; }
- 
+
         /// <summary>
         /// メモ
         /// </summary>

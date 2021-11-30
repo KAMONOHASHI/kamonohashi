@@ -310,7 +310,7 @@ namespace Nssol.Platypus.Controllers.spa
 
             // テンプレートが公開テンプレートでない かつ
             // 作成したテナント以外のテナントからのリクエストの場合はBadrequestを返却
-            if (template.AccessLevel != TemplateAccessLevel.Public 
+            if (template.AccessLevel != TemplateAccessLevel.Public
                 && template.CreaterTenantId != CurrentUserInfo.SelectedTenant.Id)
             {
                 return JsonBadRequest("Invalid access level");
@@ -472,7 +472,7 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonNotFound($"Template ID {id} is not found.");
             }
-            
+
             // 作成したテナント以外のテナントからのリクエストの場合はBadrequestを返却
             if (template.CreaterTenantId != CurrentUserInfo.SelectedTenant.Id)
             {
@@ -510,7 +510,7 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonNotFound($"Template ID {id} is not found.");
             }
-            
+
             // 作成したテナント以外のテナントからのリクエストの場合はBadrequestを返却
             if (template.CreaterTenantId != CurrentUserInfo.SelectedTenant.Id)
             {

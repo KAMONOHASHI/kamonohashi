@@ -79,7 +79,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpGet]
         [PermissionFilter(MenuCode.Preprocess)]
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
-        public IActionResult GetAll([FromQuery]SearchInputModel filter, [FromQuery]int? perPage, [FromQuery] int page = 1, bool withTotal = false)
+        public IActionResult GetAll([FromQuery] SearchInputModel filter, [FromQuery] int? perPage, [FromQuery] int page = 1, bool withTotal = false)
         {
             var preprocessings = preprocessRepository.GetAllWithOrderby(p => p.Id, false).AsEnumerable();
             preprocessings = Search(preprocessings, filter);
@@ -164,7 +164,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPost]
         [PermissionFilter(MenuCode.Preprocess)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.Created)]
-        public async Task<IActionResult> Create([FromBody]CreateInputModel model)
+        public async Task<IActionResult> Create([FromBody] CreateInputModel model)
         {
             // データの入力チェック
             if (!ModelState.IsValid)
@@ -190,7 +190,7 @@ namespace Nssol.Platypus.Controllers.spa
 
             Preprocess preprocessing = new Preprocess();
             var errorResult = await SetPreprocessDetailsAsync(preprocessing, model);
-            if(errorResult != null)
+            if (errorResult != null)
             {
                 return errorResult;
             }
@@ -212,7 +212,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPatch("{id}")]
         [PermissionFilter(MenuCode.Preprocess)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> Edit(long? id, [FromBody]EditInputModel model)
+        public async Task<IActionResult> Edit(long? id, [FromBody] EditInputModel model)
         {
             // データの入力チェック
             if (!ModelState.IsValid || !id.HasValue)
@@ -265,7 +265,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPut("{id}")]
         [PermissionFilter(MenuCode.Preprocess)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> EditDetails(long? id, [FromBody]CreateInputModel model)
+        public async Task<IActionResult> EditDetails(long? id, [FromBody] CreateInputModel model)
         {
             // データの入力チェック
             if (!ModelState.IsValid || !id.HasValue)
@@ -494,7 +494,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpGet("{id}/histories/{dataId}/events")]
         [PermissionFilter(MenuCode.Preprocess)]
         [ProducesResponseType(typeof(HistoriesOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> UploadPreprocessImage([FromRoute]long id, [FromRoute]long dataId)
+        public async Task<IActionResult> UploadPreprocessImage([FromRoute] long id, [FromRoute] long dataId)
         {
             var history = await preprocessHistoryRepository.GetPreprocessIncludeDataAndPreprocessAsync(id, dataId);
             if (history == null)
@@ -562,7 +562,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPost("{id}/run")]
         [PermissionFilter(MenuCode.Preprocess)]
         [ProducesResponseType(typeof(HistoriesOutputModel), (int)HttpStatusCode.Created)]
-        public async Task<IActionResult> RunPreprocessHistory([FromRoute]long id, [FromBody] RunPreprocessHistoryInputModel model)
+        public async Task<IActionResult> RunPreprocessHistory([FromRoute] long id, [FromBody] RunPreprocessHistoryInputModel model)
         {
             // 環境変数名のチェック
             if (model.Options != null && model.Options.Count > 0)
@@ -706,7 +706,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPost("{id}/histories/{dataId}/data")]
         [PermissionFilter(MenuCode.Preprocess)]
         [ProducesResponseType(typeof(HistoriesOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> UploadPreprocessImage([FromRoute]long id, [FromRoute]long dataId,
+        public async Task<IActionResult> UploadPreprocessImage([FromRoute] long id, [FromRoute] long dataId,
             [FromBody] AddOutputDataInputModel model)
         {
             if (!ModelState.IsValid)
@@ -770,7 +770,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPost("{id}/histories/{dataId}/halt")]
         [PermissionFilter(MenuCode.Preprocess)]
         [ProducesResponseType(typeof(HistoriesOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> Halt([FromRoute] long id, [FromRoute]long dataId)
+        public async Task<IActionResult> Halt([FromRoute] long id, [FromRoute] long dataId)
         {
             return await ExitAsync(id, dataId, ContainerStatus.Killed);
         }
@@ -784,7 +784,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPost("{id}/histories/{dataId}/complete")]
         [PermissionFilter(MenuCode.Preprocess)]
         [ProducesResponseType(typeof(HistoriesOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> Complete([FromRoute] long id, [FromRoute]long dataId)
+        public async Task<IActionResult> Complete([FromRoute] long id, [FromRoute] long dataId)
         {
             return await ExitAsync(id, dataId, ContainerStatus.Completed);
         }
@@ -853,7 +853,7 @@ namespace Nssol.Platypus.Controllers.spa
 
             var result = new PreprocessAttachedFileOutputModel(preprocessHistory.Id, fileName, -1)
             {
-                Url = withUrl? storageLogic.GetPreSignedUriForGet(ResourceType.PreprocContainerAttachedFiles, $"{preprocessHistory.Id}/{fileName}", fileName, true).ToString() : null,
+                Url = withUrl ? storageLogic.GetPreSignedUriForGet(ResourceType.PreprocContainerAttachedFiles, $"{preprocessHistory.Id}/{fileName}", fileName, true).ToString() : null,
                 IsLocked = true
             };
             return JsonOK(result);
@@ -883,7 +883,7 @@ namespace Nssol.Platypus.Controllers.spa
 
             // 出力データを削除できるか、確認
             var lockedOutput = preprocessHistoryRepository.GetLockedOutput(preprocessHistory.Id);
-            if(lockedOutput != null)
+            if (lockedOutput != null)
             {
                 return JsonConflict($"Preprocessing History about Preprocess {id} to Data {dataId} can NOT delete. The output data {lockedOutput.Id} is locked.");
             }

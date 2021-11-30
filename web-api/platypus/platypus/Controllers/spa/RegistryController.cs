@@ -103,7 +103,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPost("endpoints")]
         [Filters.PermissionFilter(MenuCode.Registry)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.Created)]
-        public IActionResult Create([FromBody]CreateInputModel model)
+        public IActionResult Create([FromBody] CreateInputModel model)
         {
             // データの入力チェック
             if (!ModelState.IsValid)
@@ -145,7 +145,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPut("endpoints/{id}")]
         [Filters.PermissionFilter(MenuCode.Registry)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> Edit(long? id, [FromBody]CreateInputModel model) //EditとCreateで項目が同じなので、入力モデルを使いまわし
+        public async Task<IActionResult> Edit(long? id, [FromBody] CreateInputModel model) //EditとCreateで項目が同じなので、入力モデルを使いまわし
         {
             // データの入力チェック
             if (!ModelState.IsValid || !id.HasValue)
@@ -302,7 +302,7 @@ namespace Nssol.Platypus.Controllers.spa
                 CurrentUserInfo.SelectedTenant.DefaultRegistry?.Id :
                 registryId;
 
-            if(selectedRegistryId == null)
+            if (selectedRegistryId == null)
             {
                 return JsonNotFound($"There is no registry you can use. Please contact a user administrator.");
             }
@@ -365,7 +365,7 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             // 最後がtagsでなければならない
-            if(segmentsArray[segmentsArray.Length - 1] != "tags")
+            if (segmentsArray[segmentsArray.Length - 1] != "tags")
             {
                 return JsonNotFound();
             }

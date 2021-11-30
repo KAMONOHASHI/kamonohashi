@@ -23,7 +23,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// ロール情報をキャッシュするためのインメモリキャッシュ
         /// </summary>
         private readonly IMemoryCache memoryCache;
-        
+
         /// <summary>
         /// ロール情報のキャッシュ期間
         /// </summary>
@@ -82,7 +82,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// <param name="unitOfWork">The unit of work.</param>
         public void Add(Role role, IUnitOfWork unitOfWork)
         {
-            if(role.IsSystemRole && role.TenantId != null)
+            if (role.IsSystemRole && role.TenantId != null)
             {
                 //Admin向けなのにテナントが設定されていたら制約違反
                 throw new UnauthorizedAccessException($"role {role.Name} is for Admin but belongs to specific tenant {role.TenantId}");
@@ -181,9 +181,9 @@ namespace Nssol.Platypus.DataAccess.Repositories
         {
             var maps = GetModelAll<UserRoleMap>().Include(map => map.Role).Include(map => map.TenantMap)
                 .Where(map => map.Role.IsSystemRole == false && map.UserId == userId && map.TenantMap != null);
-            
+
             var tenantDic = new Dictionary<long, List<Role>>();
-            foreach(var map in maps)
+            foreach (var map in maps)
             {
                 if (tenantDic.ContainsKey(map.TenantMap.TenantId))
                 {
@@ -237,7 +237,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// <param name="isCreate">ユーザが新規作成の状態(=ID未割当)ならtrue</param>
         public void AttachRole(User user, Role role, UserTenantMap userTenantMap, bool isCreate)
         {
-            if(role.IsSystemRole)
+            if (role.IsSystemRole)
             {
                 if (userTenantMap != null)
                 {
@@ -248,7 +248,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
             else
             {
                 //テナントロールの場合
-                if(userTenantMap == null)
+                if (userTenantMap == null)
                 {
                     //userTenantMapはNULLでないといけない
                     throw new UnauthorizedAccessException($"A tenant role {role.Id}:{role.Name} need to be assigned to specific tenant.");
@@ -274,7 +274,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
                 RoleId = role.Id,
                 TenantMapId = userTenantMap?.Id
             };
-            if(isCreate)
+            if (isCreate)
             {
                 model.User = user;
             }

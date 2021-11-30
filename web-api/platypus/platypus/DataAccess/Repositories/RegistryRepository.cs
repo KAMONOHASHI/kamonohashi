@@ -1,12 +1,12 @@
-﻿using Nssol.Platypus.DataAccess.Core;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Nssol.Platypus.DataAccess.Core;
+using Nssol.Platypus.DataAccess.Repositories.Interfaces;
 using Nssol.Platypus.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using Nssol.Platypus.DataAccess.Repositories.Interfaces;
-using System;
 
 namespace Nssol.Platypus.DataAccess.Repositories
 {

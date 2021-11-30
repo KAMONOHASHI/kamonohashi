@@ -1,9 +1,7 @@
-﻿using Nssol.Platypus.Models.TenantModels;
-using Nssol.Platypus.Infrastructure;
-using System;
+﻿using Nssol.Platypus.Infrastructure;
+using Nssol.Platypus.Models.TenantModels;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Nssol.Platypus.ApiModels.DataApiModels
 {

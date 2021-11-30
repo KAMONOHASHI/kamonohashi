@@ -224,14 +224,14 @@ namespace Nssol.Platypus.Controllers.spa
             foreach (var roleId in roleIds)
             {
                 var role = await roleRepository.GetRoleAsync(roleId);
-                if(role == null)
+                if (role == null)
                 {
                     return JsonNotFound($"Role Id {roleId} is not found.");
                 }
 
                 if (role.IsSystemRole)
                 {
-                    if(menu.MenuType != MenuType.System)
+                    if (menu.MenuType != MenuType.System)
                     {
                         //システムメニュー以外はシステムロールを紐づけできない
                         return JsonConflict($"A system menu is only attached to the system role {role.Id}");

@@ -11,6 +11,7 @@ using Nssol.Platypus.Infrastructure.Types;
 using Nssol.Platypus.Logic.Interfaces;
 using Nssol.Platypus.Models;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
@@ -77,7 +78,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPut]
         [Filters.PermissionFilter(MenuCode.Account)]
         [ProducesResponseType(typeof(AccountOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> EditAccountInfo([FromQuery]AccountInputModel model)
+        public async Task<IActionResult> EditAccountInfo([FromQuery] AccountInputModel model)
         {
             //入力値チェック
             if (!ModelState.IsValid)
@@ -130,12 +131,12 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonNotFound($"User ID {CurrentUserInfo.Id} is not found.");
             }
             //パスワード変更を許可するのは、ローカルアカウントのユーザのみ
-            if(user.ServiceType != AuthServiceType.Local)
+            if (user.ServiceType != AuthServiceType.Local)
             {
                 return JsonBadRequest($"Only local account user can change the password. Your account service type is {user.ServiceType} not Local.");
             }
             string oldHash = Infrastructure.Util.GenerateHash(model.CurrentPassword, user.Name);
-            if(oldHash != user.Password)
+            if (oldHash != user.Password)
             {
                 return JsonBadRequest($"Password mismatch. Please input the current correct password.");
             }
@@ -193,7 +194,7 @@ namespace Nssol.Platypus.Controllers.spa
 
             //Tenant name must not be null. Hence "Single" is intended use here.
             // string tenantName = signInResult.Value.Single(c => c.Type == ApplicationConst.ClaimTypeTenantName).Value;
-            long tenantId = long.Parse(signInResult.Value.FirstOrDefault(c => c.Type == ClaimTypes.GroupSid).Value);
+            long tenantId = long.Parse(signInResult.Value.FirstOrDefault(c => c.Type == ClaimTypes.GroupSid).Value, CultureInfo.CurrentCulture);
 
             //テナント取得（ここまでに存在チェックは行われているハズ）
             var tenant = tenantRepository.Get(tenantId);
@@ -234,7 +235,7 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonBadRequest(authResult.Error);
             }
-            
+
             // 結果からトークンを作成
             var token = loginLogic.GenerateToken(authResult.Value, expiresIn);
 

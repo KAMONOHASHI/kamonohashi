@@ -69,7 +69,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
         {
             var user = GetAll()
                 .AsEnumerable()
-                .FirstOrDefault(u => string.IsNullOrEmpty(u.Alias) == false 
+                .FirstOrDefault(u => string.IsNullOrEmpty(u.Alias) == false
                     && u.Alias.Contains(nameAlias, StringComparison.CurrentCulture));
             if (user == null)
             {
@@ -139,14 +139,14 @@ namespace Nssol.Platypus.DataAccess.Repositories
             foreach (UserTenantMap mapping in user.TenantMaps)
             {
                 Tenant tenant = tenantRepository.Get(mapping.TenantId);
-                if(tenant == null)
+                if (tenant == null)
                 {
                     //マップにあるテナント情報が存在しない＝キャッシュとの間に不整合がある、と見なす
                     tenantRepository.Refresh();
                     tenant = tenantRepository.Get(mapping.TenantId); //リフレッシュしてやり直し
                 }
 
-                if(roles.ContainsKey(tenant.Id))
+                if (roles.ContainsKey(tenant.Id))
                 {
                     tenantDic.Add(tenant, roles[tenant.Id]);
                 }
@@ -155,7 +155,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
                     //所属しているけどロールが一つもない状態
                     tenantDic.Add(tenant, new List<Role>());
                 }
-                
+
                 //デフォルトテナントと一致していたら、userInfoに登録
                 if (tenant.Id == user.DefaultTenantId)
                 {
@@ -209,7 +209,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
             {
                 attachedRoles.Add(roles.First(r => r.Name == "researchers"));
             }
-            if(attachedRoles.Count == 0)
+            if (attachedRoles.Count == 0)
             {
                 attachedRoles.Add(roles.First());
             }
@@ -370,7 +370,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
             DeleteModelAll<UserTenantGitMap>(map => map.UserId == userId && gitMapIds.Contains(map.TenantGitMapId));
 
             UserTenantMap tenantMap = FindModel<UserTenantMap>(map => map.UserId == userId && map.TenantId == tenantId);
-            
+
             //まずは既存のロールをすべて削除する
             DeleteModelAll<UserRoleMap>(map => map.TenantMapId == tenantMap.Id);
 

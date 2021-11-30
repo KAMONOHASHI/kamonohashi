@@ -9,6 +9,7 @@ using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Infrastructure.Types;
 using Nssol.Platypus.Logic.Interfaces;
 using Nssol.Platypus.Models.TenantModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -59,7 +60,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpGet]
         [Filters.PermissionFilter(MenuCode.Data, MenuCode.DataSet, MenuCode.Preprocess)]
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
-        public IActionResult GetAll([FromQuery]SearchInputModel filter, [FromQuery]int? perPage, [FromQuery] int page = 1, bool withTotal = false)
+        public IActionResult GetAll([FromQuery] SearchInputModel filter, [FromQuery] int? perPage, [FromQuery] int page = 1, bool withTotal = false)
         {
             //タグ付きで取得
             var data = dataRepository.GetDataIndex().AsEnumerable();
@@ -76,7 +77,7 @@ namespace Nssol.Platypus.Controllers.spa
                 {
                     if (string.IsNullOrEmpty(tag) == false)
                     {
-                        if (tag.Contains(",", System.StringComparison.CurrentCulture))
+                        if (tag.Contains(",", StringComparison.CurrentCulture))
                         {
                             // tagにカンマ(',')が含まれていたら、分割して一つ一つの文字列で検索する
                             foreach (var t in tag.Split(","))
@@ -185,7 +186,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPost]
         [Filters.PermissionFilter(MenuCode.Data)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.Created)]
-        public IActionResult Create([FromBody]CreateInputModel model)
+        public IActionResult Create([FromBody] CreateInputModel model)
         {
             //データの入力チェック
             if (!ModelState.IsValid)
@@ -229,7 +230,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPut("{id}")]
         [Filters.PermissionFilter(MenuCode.Data)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> EditData(long? id, [FromBody]EditInputModel model, [FromServices] ITagRepository tagRepository)
+        public async Task<IActionResult> EditData(long? id, [FromBody] EditInputModel model, [FromServices] ITagRepository tagRepository)
         {
             //データの入力チェック
             if (!ModelState.IsValid || !id.HasValue)
@@ -397,7 +398,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPost("{id}/files")]
         [Filters.PermissionFilter(MenuCode.Data)]
         [ProducesResponseType(typeof(DataFileOutputModel), (int)HttpStatusCode.Created)]
-        public async Task<IActionResult> AddFile(long id, [FromBody]AddFileInputModel model, [FromServices] IDataSetRepository dataSetRepository)
+        public async Task<IActionResult> AddFile(long id, [FromBody] AddFileInputModel model, [FromServices] IDataSetRepository dataSetRepository)
         {
             //データの入力チェック
             if (!ModelState.IsValid)
@@ -442,7 +443,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPost("{id}/files")]
         [Filters.PermissionFilter(MenuCode.Data)]
         [ProducesResponseType(typeof(DataFilesOutputModel), (int)HttpStatusCode.Created)]
-        public async Task<IActionResult> AddStoredFiles(long id, [FromBody]AddFilesInputModel model, [FromServices] IDataSetRepository dataSetRepository)
+        public async Task<IActionResult> AddStoredFiles(long id, [FromBody] AddFilesInputModel model, [FromServices] IDataSetRepository dataSetRepository)
         {
             //データの入力チェック
             if (!ModelState.IsValid)
@@ -527,7 +528,7 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             // ファイルの存在チェック
-            var file= data.DataProperties.FirstOrDefault(d => d.Id == fileId);
+            var file = data.DataProperties.FirstOrDefault(d => d.Id == fileId);
 
             if (file == null)
             {
@@ -571,7 +572,7 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             var checkResult = await CheckDataIsLocked(data, dataSetRepository);
-            if(checkResult != null)
+            if (checkResult != null)
             {
                 return checkResult;
             }

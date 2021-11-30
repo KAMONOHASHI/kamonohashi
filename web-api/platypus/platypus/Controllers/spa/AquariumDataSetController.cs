@@ -63,7 +63,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPost]
         [Filters.PermissionFilter(MenuCode.AquariumDataSet)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.Created)]
-        public IActionResult CreateDataSet([FromBody]CreateInputModel model)
+        public IActionResult CreateDataSet([FromBody] CreateInputModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -89,7 +89,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPost("{id}/versions")]
         [Filters.PermissionFilter(MenuCode.AquariumDataSet)]
         [ProducesResponseType(typeof(VersionIndexOutputModel), (int)HttpStatusCode.Created)]
-        public async Task<IActionResult> CreateDataSetVersion(long id, [FromBody]VersionCreateInputModel model)
+        public async Task<IActionResult> CreateDataSetVersion(long id, [FromBody] VersionCreateInputModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -136,8 +136,8 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpGet]
         [Filters.PermissionFilter(MenuCode.AquariumDataSet, MenuCode.Experiment)]
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
-        public IActionResult GetDataSetList([FromQuery]SearchInputModel filter, [FromQuery]int? perPage,
-            [FromQuery]int page = 1, bool withTotal = false)
+        public IActionResult GetDataSetList([FromQuery] SearchInputModel filter, [FromQuery] int? perPage,
+            [FromQuery] int page = 1, bool withTotal = false)
         {
             var dataSet = aquariumDataSetRepository.GetAll()
                 .AsEnumerable()

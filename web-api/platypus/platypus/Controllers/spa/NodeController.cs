@@ -51,13 +51,13 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpGet]
         [PermissionFilter(MenuCode.Node)]
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
-        public IActionResult GetAll([FromQuery] string name, [FromQuery]int? perPage, [FromQuery] int page = 1, bool withTotal = false)
+        public IActionResult GetAll([FromQuery] string name, [FromQuery] int? perPage, [FromQuery] int page = 1, bool withTotal = false)
         {
             var nodes = nodeRepository.GetAll().AsEnumerable();
 
             if (string.IsNullOrEmpty(name) == false)
             {
-                nodes = nodes.Where(n => n.Name.Contains(name)).OrderBy(n => n.Name);
+                nodes = nodes.Where(n => n.Name.Contains(name, StringComparison.CurrentCulture)).OrderBy(n => n.Name);
             }
             else
             {
@@ -112,7 +112,7 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             var model = new DetailsOutputModel(node);
-            if(model.AccessLevel == NodeAccessLevel.Private)
+            if (model.AccessLevel == NodeAccessLevel.Private)
             {
                 //プライベートモードの時に限り、アクセス可能なテナントを探索する
                 model.AssignedTenants = nodeRepository.GetAssignedTenants(node.Id).Select(t => new DetailsOutputModel.AssignedTenant()
@@ -132,7 +132,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPost]
         [PermissionFilter(MenuCode.Node)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.Created)]
-        public async Task<IActionResult> Create([FromBody]CreateInputModel model,
+        public async Task<IActionResult> Create([FromBody] CreateInputModel model,
             [FromServices] ITenantRepository tenantRepository)
         {
             //データの入力チェック
@@ -158,7 +158,7 @@ namespace Nssol.Platypus.Controllers.spa
                 NotebookEnabled = model.NotebookEnabled
             };
 
-            if(node.AccessLevel != NodeAccessLevel.Disabled)
+            if (node.AccessLevel != NodeAccessLevel.Disabled)
             {
                 //アクセスレベルがDisable以外であれば、k8sとの同期を行う
                 //ノードが存在しない場合を考慮し、もし失敗しても気にせず更新処理を続ける
@@ -217,7 +217,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPut("{id}")]
         [PermissionFilter(MenuCode.Node)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> Edit(long? id, [FromBody]CreateInputModel model,
+        public async Task<IActionResult> Edit(long? id, [FromBody] CreateInputModel model,
             [FromServices] ITenantRepository tenantRepository) //EditとCreateで項目が同じなので、入力モデルを使いまわし
         {
             //データの入力チェック
@@ -237,7 +237,7 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonConflict($"Node {model.Name} already exists: ID = {node.Id}");
             }
-            
+
             //NodeはCLIではなく画面から変更されるので、常にすべての値を入れ替える
             node.Name = model.Name;
             node.Memo = model.Memo;
@@ -334,7 +334,7 @@ namespace Nssol.Platypus.Controllers.spa
                 foreach (var container in response.Value)
                 {
                     // ステータスによらず、全て稼働中と見做す
-                    if (node.Name.Equals(container.NodeName))
+                    if (node.Name.Equals(container.NodeName, StringComparison.CurrentCulture))
                     {
                         runningCount++;
                     }

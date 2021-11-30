@@ -17,7 +17,7 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
     /// </summary>
     /// <seealso cref="Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories.ITensorBoardContainerRepository" />
     public class TensorBoardContainerRepository : RepositoryForTenantBase<TensorBoardContainer>, ITensorBoardContainerRepository
-    {        
+    {
         /// <summary>
         /// コンストラクタ
         /// </summary>

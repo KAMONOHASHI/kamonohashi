@@ -1,9 +1,4 @@
 ﻿using Nssol.Platypus.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Nssol.Platypus.Infrastructure;
 
 namespace Nssol.Platypus.ApiModels.RoleApiModels
 {

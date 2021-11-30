@@ -1,5 +1,5 @@
-﻿using Nssol.Platypus.Models.TenantModels;
-using Nssol.Platypus.Infrastructure;
+﻿using Nssol.Platypus.Infrastructure;
+using Nssol.Platypus.Models.TenantModels;
 
 namespace Nssol.Platypus.ApiModels.PreprocessingApiModels
 {

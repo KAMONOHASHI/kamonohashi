@@ -115,7 +115,7 @@ namespace Nssol.Platypus.Controllers.spa
 
                 //結果に格納
                 result.Add(new QuotaOutputModel(tenant));
-                
+
                 await clusterManagementLogic.SetQuotaAsync(tenant);
             }
 
@@ -212,7 +212,7 @@ namespace Nssol.Platypus.Controllers.spa
                 tensorBoardContainerRepository.Delete(container, true);
             }
             unitOfWork.Commit();
-            if(failure)
+            if (failure)
             {
                 //1件以上失敗しているので、エラー扱い
                 return JsonError(HttpStatusCode.ServiceUnavailable, $"failed to delete some tensorboard containers. deleted: {count}");

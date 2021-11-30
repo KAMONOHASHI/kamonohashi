@@ -13,6 +13,7 @@ using Nssol.Platypus.Models;
 using Nssol.Platypus.Models.TenantModels;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
@@ -92,7 +93,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpGet]
         [Filters.PermissionFilter(MenuCode.Notebook)]
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
-        public IActionResult GetAll([FromQuery]SearchInputModel filter, [FromQuery]int? perPage, [FromQuery] int page = 1, bool withTotal = false)
+        public IActionResult GetAll([FromQuery] SearchInputModel filter, [FromQuery] int? perPage, [FromQuery] int page = 1, bool withTotal = false)
         {
             var data = notebookHistoryRepository.GetAllWithOrdering().AsEnumerable();
             data = Search(data, filter);
@@ -240,7 +241,7 @@ namespace Nssol.Platypus.Controllers.spa
             if (endPoint != null)
             {
                 //ノードポート番号+tokenを返す
-                return endPoint.Port.ToString();
+                return endPoint.Port.ToString(CultureInfo.CurrentCulture);
             }
             return "";
         }
@@ -273,7 +274,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPut("{id}")]
         [Filters.PermissionFilter(MenuCode.Notebook)]
         [ProducesResponseType(typeof(SimpleOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> Edit(long? id, [FromBody]EditInputModel model)
+        public async Task<IActionResult> Edit(long? id, [FromBody] EditInputModel model)
         {
             //データの入力チェック
             if (!ModelState.IsValid || !id.HasValue)
@@ -443,7 +444,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPost("run")]
         [Filters.PermissionFilter(MenuCode.Notebook)]
         [ProducesResponseType(typeof(SimpleOutputModel), (int)HttpStatusCode.Created)]
-        public async Task<IActionResult> Create([FromBody]CreateInputModel model)
+        public async Task<IActionResult> Create([FromBody] CreateInputModel model)
         {
             //データの入力チェック
             if (!ModelState.IsValid)
@@ -620,7 +621,7 @@ namespace Nssol.Platypus.Controllers.spa
                 }
                 notebookHistory.ParentInferenceMaps = maps;
             }
-            
+
             notebookHistoryRepository.Add(notebookHistory);
             unitOfWork.Commit();
 
@@ -679,11 +680,11 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             // 検索path文字列の先頭・末尾が/でない場合はつける
-            if (!path.StartsWith("/"))
+            if (!path.StartsWith("/", StringComparison.CurrentCulture))
             {
                 path = "/" + path;
             }
-            if (!path.EndsWith("/"))
+            if (!path.EndsWith("/", StringComparison.CurrentCulture))
             {
                 path = path + "/";
             }
@@ -749,7 +750,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPost("{id}/rerun")]
         [Filters.PermissionFilter(MenuCode.Notebook)]
         [ProducesResponseType(typeof(SimpleOutputModel), (int)HttpStatusCode.Created)]
-        public async Task<IActionResult> Rerun(long? id, [FromBody]RerunInputModel model)
+        public async Task<IActionResult> Rerun(long? id, [FromBody] RerunInputModel model)
         {
             // データの入力チェック
             if (!ModelState.IsValid)

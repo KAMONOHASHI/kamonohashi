@@ -58,7 +58,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpGet]
         [Filters.PermissionFilter(MenuCode.DataSet, MenuCode.Training, MenuCode.Inference, MenuCode.Notebook)]
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
-        public IActionResult GetAll([FromQuery]SearchInputModel filter, [FromQuery]int? perPage, [FromQuery] int page = 1, bool withTotal = false)
+        public IActionResult GetAll([FromQuery] SearchInputModel filter, [FromQuery] int? perPage, [FromQuery] int page = 1, bool withTotal = false)
         {
             var dataSet = dataSetRepository.GetAll().AsEnumerable();
             dataSet = Search(dataSet, filter).OrderByDescending(d => d.Id);
@@ -265,7 +265,7 @@ namespace Nssol.Platypus.Controllers.spa
 
             //エントリを取得し、データのパスとデータ名のペアを作る
             List<PathPairOutputModel> pathPairs = new List<PathPairOutputModel>();
-            foreach(var entry in dataSet.DataSetEntries)
+            foreach (var entry in dataSet.DataSetEntries)
             {
                 string dataTypeName = dataTypes[entry.DataTypeId];
                 foreach (var data in entry.Data.DataProperties)
@@ -288,7 +288,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPost]
         [Filters.PermissionFilter(MenuCode.DataSet)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.Created)]
-        public async Task<IActionResult> CreateDataSet([FromBody]CreateInputModel model)
+        public async Task<IActionResult> CreateDataSet([FromBody] CreateInputModel model)
         {
             //データの入力チェック
             if (!ModelState.IsValid)
@@ -376,7 +376,7 @@ namespace Nssol.Platypus.Controllers.spa
             }
             dataset.Memo = EditColumn(model.Memo, dataset.Memo);
         }
-        
+
         /// <summary>
         /// データセットのエントリ内容（学習で使用後は編集不可）を変更する
         /// </summary>
@@ -404,7 +404,7 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonConflict($"DataSet {dataSet.Name} has been used by training.");
             }
-            
+
             //メタデータ編集
             EditDataSet(dataSet, model);
 

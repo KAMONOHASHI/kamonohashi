@@ -108,7 +108,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPost]
         [PermissionFilter(MenuCode.Tenant)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.Created)]
-        public async Task<IActionResult> CreateForTenant([FromBody]CreateInputModel model, [FromServices] INodeRepository nodeRepository)
+        public async Task<IActionResult> CreateForTenant([FromBody] CreateInputModel model, [FromServices] INodeRepository nodeRepository)
         {
             //データの入力チェック
             if (!ModelState.IsValid)
@@ -116,8 +116,8 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonBadRequest("Invalid inputs.");
             }
 
-            if 
-                (model.TenantName.StartsWith(containerManageOptions.KqiNamespacePrefix, StringComparison.CurrentCulture) 
+            if
+                (model.TenantName.StartsWith(containerManageOptions.KqiNamespacePrefix, StringComparison.CurrentCulture)
                 || model.TenantName.StartsWith(containerManageOptions.KubernetesNamespacePrefix, StringComparison.CurrentCulture)
                 || containerManageOptions.IgnoreNamespacesList.Contains(model.TenantName)
                 )
@@ -365,7 +365,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPut("{id}")]
         [PermissionFilter(MenuCode.Tenant)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> Edit(long? id, [FromBody]EditInputModel model)
+        public async Task<IActionResult> Edit(long? id, [FromBody] EditInputModel model)
         {
             //データの入力チェック
             if (!ModelState.IsValid || !id.HasValue)
@@ -524,7 +524,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPut("/api/v{api-version:apiVersion}/tenant")]
         [PermissionFilter(MenuCode.TenantSetting)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> EditForTenant([FromBody]EditInputModel model)
+        public async Task<IActionResult> EditForTenant([FromBody] EditInputModel model)
         {
             return await Edit(CurrentUserInfo.SelectedTenant.Id, model);
         }

@@ -79,17 +79,17 @@ namespace Nssol.Platypus.Controllers.spa
         {
             var nodes = nodeRepository.GetAll().OrderBy(n => n.Name);
             var nodeInfos = (await clusterManagementLogic.GetAllNodesAsync())?.ToList(); //Removeできるように、Listにしておく
-            if(nodeInfos == null)
+            if (nodeInfos == null)
             {
                 return JsonError(HttpStatusCode.ServiceUnavailable, string.Join("\n", "Fetching nodes is failed."));
             }
             var result = new Dictionary<string, NodeResourceOutputModel>();
 
             //DBから探索
-            foreach(var node in nodes)
+            foreach (var node in nodes)
             {
                 var info = nodeInfos.FirstOrDefault(i => i.Name == node.Name);
-                if(info == null)
+                if (info == null)
                 {
                     result.Add(node.Name, new NodeResourceOutputModel(node));
                 }
@@ -100,7 +100,7 @@ namespace Nssol.Platypus.Controllers.spa
                 }
             }
             //k8sにしかないノードを追加
-            foreach(var info in nodeInfos)
+            foreach (var info in nodeInfos)
             {
                 result.Add(info.Name, new NodeResourceOutputModel(info));
             }
@@ -108,9 +108,9 @@ namespace Nssol.Platypus.Controllers.spa
             var response = await clusterManagementLogic.GetAllContainerDetailsInfosAsync();
             if (response.IsSuccess)
             {
-                foreach(var container in response.Value)
+                foreach (var container in response.Value)
                 {
-                    if(string.IsNullOrEmpty(container.NodeName))
+                    if (string.IsNullOrEmpty(container.NodeName))
                     {
                         //ノード名がNULL＝まだ未割当
                         if (result.ContainsKey("*Unassigned*") == false)
@@ -119,7 +119,7 @@ namespace Nssol.Platypus.Controllers.spa
                         }
                         result["*Unassigned*"].Add(CreateContainerDetailsOutputModel(container));
                     }
-                    else if(result.ContainsKey(container.NodeName))
+                    else if (result.ContainsKey(container.NodeName))
                     {
                         result[container.NodeName].Add(CreateContainerDetailsOutputModel(container));
                     }
@@ -127,7 +127,7 @@ namespace Nssol.Platypus.Controllers.spa
                     {
                         //nodeInfoから必要な情報を取って、結果に含める
                         var nodeInfo = nodeInfos.Find(n => n.Name == container.NodeName);
-                        if(nodeInfo == null)
+                        if (nodeInfo == null)
                         {
                             //登録ノードに所属していないコンテナは無視
                             continue;
@@ -165,7 +165,7 @@ namespace Nssol.Platypus.Controllers.spa
         {
             var nodes = nodeRepository.GetAll().OrderBy(n => n.Name);
             var result = tenantRepository.GetAllTenants().OrderBy(t => t.DisplayName).ToDictionary(t => t.Name, t => new TenantResourceOutputModel(t));
-            
+
             var response = await clusterManagementLogic.GetAllContainerDetailsInfosAsync();
             if (response.IsSuccess)
             {
@@ -199,7 +199,7 @@ namespace Nssol.Platypus.Controllers.spa
                         result.Add(container.TenantName, unknownModel);
                     }
                 }
-                
+
                 foreach (var tenant in result.Values)
                 {
                     // ノード名の昇順に並び替える
@@ -248,7 +248,7 @@ namespace Nssol.Platypus.Controllers.spa
                 CreatedBy = userRepository.GetUserName(info.CreatedBy)
             };
             var tenant = tenantRepository.GetFromTenantName(info.TenantName);
-            if(tenant == null)
+            if (tenant == null)
             {
                 if (info.TenantName == containerManageOptions.KqiAdminNamespace)
                 {
@@ -316,7 +316,7 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             var info = await clusterManagementLogic.GetContainerDetailsInfoAsync(name, tenant.Name, true);
-            if(info.Status == ContainerStatus.None)
+            if (info.Status == ContainerStatus.None)
             {
                 return JsonNotFound($"Container named {name} is not found.");
             }
@@ -475,12 +475,12 @@ namespace Nssol.Platypus.Controllers.spa
             else if (containerName.StartsWith("preproc", StringComparison.CurrentCulture))
             {
                 //前処理は preproc-{ID} というルールになってるので、そこからIDを取得する
-                long id = int.Parse(containerName.Substring(containerName.IndexOf('-') + 1));
+                long id = int.Parse(containerName.Substring(containerName.IndexOf('-', StringComparison.CurrentCulture) + 1));
 
                 //前処理コンテナ
                 var container = commonDiLogic.DynamicDi<IPreprocessHistoryRepository>().GetPreprocessHistoryIncludeDataAndPreprocess(id, force);
 
-                if(container == null)
+                if (container == null)
                 {
                     //前処理が存在しない＝DB上では前処理削除に成功したんだけど、コンテナの削除には何かの原因で失敗した状態
                     // 存在しないハズのコンテナが生き残っている
@@ -494,7 +494,7 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 // ノートブックコンテナ
                 // notebook-{ID} というルールになってるので、そこからIDを取得する
-                long id = int.Parse(containerName.Substring(containerName.IndexOf('-') + 1));
+                long id = int.Parse(containerName.Substring(containerName.IndexOf('-', StringComparison.CurrentCulture) + 1));
                 var container = commonDiLogic.DynamicDi<INotebookHistoryRepository>().Find(t => t.Id == id, force);
                 if (container == null)
                 {
@@ -518,7 +518,7 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 // 推論コンテナ
                 // inference-{ID} というルールになってるので、そこからIDを取得する
-                long id = int.Parse(containerName.Substring(containerName.IndexOf('-') + 1));
+                long id = int.Parse(containerName.Substring(containerName.IndexOf('-', StringComparison.CurrentCulture) + 1));
 
                 var container = commonDiLogic.DynamicDi<IInferenceHistoryRepository>().Find(t => t.Id == id, force);
                 if (container == null)
@@ -543,7 +543,7 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 // 学習コンテナ
                 // training-{ID} というルールになってるので、そこからIDを取得する
-                long id = int.Parse(containerName.Substring(containerName.IndexOf('-') + 1));
+                long id = int.Parse(containerName.Substring(containerName.IndexOf('-', StringComparison.CurrentCulture) + 1));
 
                 var container = commonDiLogic.DynamicDi<ITrainingHistoryRepository>().Find(t => t.Id == id, force);
                 if (container == null)
@@ -552,7 +552,7 @@ namespace Nssol.Platypus.Controllers.spa
                     LogWarning($"Find unknown container: {containerName}");
                     return new Tuple<ContainerType, TenantModelBase>(ContainerType.Unknown, null);
                 }
-                else if(container.GetStatus().Exist() == false)
+                else if (container.GetStatus().Exist() == false)
                 {
                     // 既に終了しているハズのジョブのコンテナ＝何かの理由でコンテナだけ消せなかった
                     // ジョブ側には何の影響も与えたくないので、未知のコンテナとして削除する

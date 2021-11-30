@@ -1,9 +1,6 @@
 ﻿using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Infrastructure.Types;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Nssol.Platypus.ApiModels.MenuApiModels
 {
@@ -31,7 +28,7 @@ namespace Nssol.Platypus.ApiModels.MenuApiModels
         /// 説明
         /// </summary>
         public string Description { get; set; }
-        
+
         /// <summary>
         /// アクセス可能なロール情報
         /// </summary>

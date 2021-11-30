@@ -329,7 +329,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpGet("mount")]
         [Filters.PermissionFilter(MenuCode.Notebook, MenuCode.Inference)]
         [ProducesResponseType(typeof(IEnumerable<InferenceIndexOutputModel>), (int)HttpStatusCode.OK)]
-        public IActionResult GetInferenceToMount([FromQuery]ApiModels.InferenceApiModels.MountInputModel filter)
+        public IActionResult GetInferenceToMount([FromQuery] ApiModels.InferenceApiModels.MountInputModel filter)
         {
             var data = inferenceHistoryRepository.GetAllIncludeDataSetAndParentWithOrdering().AsEnumerable();
 
@@ -692,17 +692,17 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             // 検索path文字列の先頭・末尾が/でない場合はつける
-            if (!path.StartsWith("/"))
+            if (!path.StartsWith("/", StringComparison.CurrentCulture))
             {
                 path = "/" + path;
             }
-            if (!path.EndsWith("/"))
+            if (!path.EndsWith("/", StringComparison.CurrentCulture))
             {
                 path = path + "/";
             }
 
             // windowsから実行された場合、区切り文字が"\\"として送られてくるので"/"に置換する
-            path = path.Replace("\\", "/");
+            path = path.Replace("\\", "/", StringComparison.CurrentCulture);
 
             var rootDir = $"{id}" + path;
 
