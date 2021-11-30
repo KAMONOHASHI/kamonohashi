@@ -3,7 +3,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Nssol.Platypus.Migrations
 {
-    public partial class v311 : Migration
+    public partial class v320 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
