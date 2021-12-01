@@ -109,9 +109,9 @@ namespace Nssol.Platypus.Infrastructure.Options
 
         /// <summary>
         /// データを取得するためのREST APIのベースURL。
-        /// TODO: 互換性用。<see cref="WebEndPoint"/>か<see cref="WebServerUrl"/>を使用すること。
+        /// 互換性用。<see cref="WebEndPoint"/>か<see cref="WebServerUrl"/>を使用すること。
         /// </summary>
-        [Obsolete]
+        [Obsolete("互換性用。WebEndPointかWebServerUrlを使用すること。")]
         public string DataSetServerUrl { get; set; }
 
         /// <summary>
@@ -155,6 +155,7 @@ namespace Nssol.Platypus.Infrastructure.Options
         /// <summary>
         /// データを取得するためのREST APIのベースURL。
         /// </summary>
+        [Obsolete("互換性用")]
         public string WebServerUrl
         {
             get
