@@ -226,14 +226,14 @@ namespace Nssol.Platypus.Logic
         /// <summary>
         /// 分割アップロード用URLの取得
         /// </summary>
-        /// <param name="type"></param>
-        /// <param name="fileName"></param>
-        /// <param name="numPart"></param>
-        /// <returns></returns>
-        public async Task<MultiPartUploadModel> GetPartUploadPreSignedUrlAsync(ResourceType type, string fileName, int numPart)
+        /// <param name="type">リソース種別</param>
+        /// <param name="fileStoredPath">ファイルのPath</param>
+        /// <param name="numPart">分割数</param>
+        /// <returns>分割アップロード情報</returns>
+        public async Task<MultiPartUploadModel> GetPartUploadPreSignedUrlAsync(ResourceType type, string fileStoredPath, int numPart)
         {
             // 拡張子つきのパス生成
-            var extension = Path.GetExtension(fileName).Replace(".", "", StringComparison.CurrentCulture);
+            var extension = Path.GetExtension(fileStoredPath).Replace(".", "", StringComparison.CurrentCulture);
             var generatedName = Path.ChangeExtension(Guid.NewGuid().ToString(), extension);
 
             var key = CreateKey(type, generatedName);
@@ -251,7 +251,7 @@ namespace Nssol.Platypus.Logic
                 PartsSum = numPart,
                 UploadId = uploadId,
                 Key = key,
-                FileName = fileName,
+                FileName = fileStoredPath,
                 StoredPath = generatedName,
             };
 

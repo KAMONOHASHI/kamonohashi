@@ -70,6 +70,7 @@ namespace Nssol.Platypus.Logic.Interfaces
         /// 指定されたデータファイルのファイルサイズを返す。
         /// </summary>
         /// <param name="type">リソース種別</param>
+        /// <param name="fileStoredPath">ファイルのPath</param>
         /// <returns>ファイルサイズ</returns>
         long GetFileSize(ResourceType type, string fileStoredPath);
 
@@ -98,10 +99,10 @@ namespace Nssol.Platypus.Logic.Interfaces
         /// <summary>
         /// 分割アップロード用URLの取得
         /// </summary>
-        /// <param name="type"></param>
-        /// <param name="fileStoredPath"></param>
-        /// <param name="numPart"></param>
-        /// <returns></returns>
+        /// <param name="type">リソース種別</param>
+        /// <param name="fileStoredPath">ファイルのPath</param>
+        /// <param name="numPart">分割数</param>
+        /// <returns>分割アップロード情報</returns>
         Task<MultiPartUploadModel> GetPartUploadPreSignedUrlAsync(ResourceType type, string fileStoredPath, int numPart);
 
         /// <summary>

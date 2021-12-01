@@ -68,6 +68,15 @@ namespace Nssol.Platypus.Logic.Interfaces
         /// <param name="owner">オーナー名</param>
         /// <returns>git pullするためのURL</returns>
         Task<Result<GitEndpointModel, string>> GetPullUrlAsync(long gitId, string repositoryName, string owner);
+
+        /// <summary>
+        /// git pullするためのURLを取得する。
+        /// </summary>
+        /// <param name="gitId">Git ID</param>
+        /// <param name="repositoryName">リポジトリ名</param>
+        /// <param name="owner">オーナー名</param>
+        /// <param name="extraToken">Gitの認証トークン</param>
+        /// <returns>git pullするためのURL</returns>
         Task<Result<GitEndpointModel, string>> GetPullUrlAsync(long gitId, string repositoryName, string owner, string extraToken);
 
         /// <summary>

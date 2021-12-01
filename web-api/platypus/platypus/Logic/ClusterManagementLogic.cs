@@ -400,6 +400,9 @@ namespace Nssol.Platypus.Logic
         /// 新規に画像認識の訓練用コンテナを作成する。
         /// </summary>
         /// <param name="trainHistory">対象の学習履歴</param>
+        /// <param name="scriptType">コンテナ起動時に実行するスクリプトの種類。</param>
+        /// <param name="regisryTokenName">レジストリの認証トークン</param>
+        /// <param name="gitToken">Gitの認証トークン</param>
         /// <returns>作成したコンテナのステータス</returns>
         public async Task<Result<ContainerInfo, string>> RunTrainContainerAsync(TrainingHistory trainHistory, string scriptType,
             string regisryTokenName, string gitToken)

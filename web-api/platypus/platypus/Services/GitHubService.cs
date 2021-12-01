@@ -218,6 +218,11 @@ namespace Nssol.Platypus.Services
             }
         }
 
+        /// <summary>
+        /// 指定したtokenのgitサービス側のユーザー名を取得する
+        /// </summary>
+        /// <param name="gitMap">Git情報</param>
+        /// <returns>コミット詳細</returns>
         public async Task<Result<string, string>> GetUserNameByTokenAsync(UserTenantGitMap gitMap)
         {
             // API呼び出しパラメータ作成

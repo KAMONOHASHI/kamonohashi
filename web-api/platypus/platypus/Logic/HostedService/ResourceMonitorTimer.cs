@@ -74,6 +74,7 @@ namespace Nssol.Platypus.Logic.HostedService
         /// <summary>
         /// クラスタ上に登録されているノードおよびコンテナのリソース情報をDBに登録する。
         /// </summary>
+        /// <param name="state"></param>
         /// <param name="doWorkCount">実行回数</param>
         protected override async void DoWork(object state, int doWorkCount)
         {
