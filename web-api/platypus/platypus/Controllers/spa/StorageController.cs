@@ -206,8 +206,7 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonBadRequest("The uploading file can not be parted. The file may be empty (0 byte).");
             }
-            ResourceType type;
-            if (Enum.TryParse(model.Type, true, out type) == false)
+            if (Enum.TryParse(model.Type, true, out ResourceType type) == false)
             {
                 LogDebug("有効なリソースタイプが指定されていません。");
                 return JsonBadRequest($"Unexpected resource type { model.Type}");
@@ -246,8 +245,7 @@ namespace Nssol.Platypus.Controllers.spa
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
         public IActionResult GetStorageUrl(string type, string storedPath, string fileName, bool secure)
         {
-            ResourceType resourceType;
-            if (string.IsNullOrEmpty(storedPath) || Enum.TryParse<ResourceType>(type, true, out resourceType) == false)
+            if (string.IsNullOrEmpty(storedPath) || Enum.TryParse<ResourceType>(type, true, out ResourceType resourceType) == false)
             {
                 return JsonBadRequest("Invalid inputs.");
             }
