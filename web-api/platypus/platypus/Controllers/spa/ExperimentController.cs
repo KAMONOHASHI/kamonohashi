@@ -719,7 +719,8 @@ namespace Nssol.Platypus.Controllers.spa
             var evaluations = evaluationRepository
                 .GetAll()
                 .Include(x => x.TrainingHistory)
-                .Where(x => x.ExperimentId == id);
+                .Where(x => x.ExperimentId == id)
+                .ToList();
             foreach (var x in evaluations)
             {
                 evaluationRepository.Delete(x);
