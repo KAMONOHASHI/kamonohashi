@@ -13,7 +13,6 @@ using Nssol.Platypus.Models;
 using Nssol.Platypus.Models.TenantModels;
 using Nssol.Platypus.Models.TenantModels.Aquarium;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -194,7 +193,7 @@ namespace Nssol.Platypus.Controllers.spa
                 .Include(x => x.DataSetVersion)
                 .Include(x => x.TrainingHistory).ThenInclude(x => x.DataSet)
                 .Include(x => x.ExperimentPreprocess).ThenInclude(x => x.TrainingHistory).ThenInclude(x => x.DataSet)
-                .SingleOrDefaultAsync(x => x.Id == id);
+                .SingleOrDefaultAsync(x => x.Id == id); 
             if (experiment == null)
             {
                 return JsonNotFound($"Experiment ID {id} is not found.");
@@ -233,7 +232,7 @@ namespace Nssol.Platypus.Controllers.spa
             };
             experimentRepository.Add(experiment);
             unitOfWork.Commit();
-
+         
             // kamonohashi学習に必要な情報を設定
             var trainingCreateInputModel = new ApiModels.TrainingApiModels.CreateInputModel
             {
@@ -340,7 +339,7 @@ namespace Nssol.Platypus.Controllers.spa
                 EntryPoint = templateVersion.PreprocessEntryPoint,
                 Options = new Dictionary<string, string>
                 {
-                    { "EXPERIMENT_ID", experiment.Id.ToString(CultureInfo.CurrentCulture) },
+                    { "EXPERIMENT_ID", experiment.Id.ToString() },
                 },
                 Cpu = templateVersion.PreprocessCpu,
                 Memory = templateVersion.PreprocessMemory,
@@ -352,7 +351,7 @@ namespace Nssol.Platypus.Controllers.spa
                 Zip = false,
                 LocalDataSet = false,
             };
-
+           
             // kamonohashi学習を開始
             (var trainingHistory, var result) = await TrainingController.DoCreate(trainingCreateInputModel,
                 dataSetRepository, nodeRepository, tenantRepository, trainingHistoryRepository,
@@ -687,7 +686,7 @@ namespace Nssol.Platypus.Controllers.spa
             var selectedTenantName = CurrentUserInfo.SelectedTenant.Name;
             var userName = "";
             var password = token ?? registryMap?.RegistryPassword ?? "";
-
+            
             var result = await clusterManagementLogic.RegistRegistryToTenantAsync(tokenKey, url, registry, selectedTenantName,
                 userName, password);
             return result ? tokenKey : null;
@@ -719,7 +718,8 @@ namespace Nssol.Platypus.Controllers.spa
             var evaluations = evaluationRepository
                 .GetAll()
                 .Include(x => x.TrainingHistory)
-                .Where(x => x.ExperimentId == id);
+                .Where(x => x.ExperimentId == id)
+                .ToList();
             foreach (var x in evaluations)
             {
                 evaluationRepository.Delete(x);
@@ -938,7 +938,7 @@ namespace Nssol.Platypus.Controllers.spa
                 evaluation.TrainingHistoryId = trainingHistory.Id;
                 evaluationRepository.Update(evaluation);
                 ((JsonResult)result).Value = new EvaluationSimpleOutputModel(evaluation);
-            }
+            } 
             else
             {
                 evaluationRepository.Delete(evaluation);
