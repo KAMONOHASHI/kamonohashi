@@ -39,6 +39,7 @@
       </div>
     </div>
     <Container
+      v-if="isAllChecked != null"
       class="container"
       :group-name="'1'"
       :get-child-payload="getChildPayload"
@@ -50,7 +51,17 @@
         <div class="draggable-data">
           <el-row>
             <el-col :span="checkSpanSize">
-              <el-checkbox v-model="data.checked" @change="handleCheck()" />
+              <el-checkbox
+                v-if="isAllChecked"
+                v-model="data.checked"
+                checked
+                @change="handleCheck()"
+              />
+              <el-checkbox
+                v-else
+                v-model="data.checked"
+                @change="handleCheck()"
+              />
             </el-col>
             <el-col :span="idSpanSize">
               <el-checkbox v-model="data.checked" @change="handleCheck()">
@@ -145,7 +156,15 @@
         :current-page="viewInfo.currentPage"
         :total="viewInfo.filteredTotal"
         @current-change="
-          page => emitPaging(viewInfo.entryName, page, searchCondition)
+          page =>
+            emitPaging(
+              viewInfo.entryName,
+              page,
+              searchCondition,
+              dataList,
+              isAllChecked,
+              isAllCheckedOld,
+            )
         "
       />
     </div>
@@ -227,6 +246,7 @@ export default {
       assignSpanSize: 5,
       infoSpanSize: 3,
       isAllChecked: false, // 全選択ボタンを押されているかどうか
+      isAllCheckedOld: false, // 全選択ボタンを押されていたかどうか
     }
   },
   computed: {
@@ -243,6 +263,7 @@ export default {
   },
   created() {
     this.bind()
+
     this.$forceUpdate()
   },
   beforeUpdate() {
@@ -256,6 +277,7 @@ export default {
       }
     }
   },
+
   methods: {
     ...mapActions(['fetchData']),
     // レスポンシブ対応
@@ -325,17 +347,21 @@ export default {
     },
 
     handleAllCheck(checked) {
+      this.$emit('allCheck', { entryName: this.viewInfo.entryName })
+
       this.dataList.forEach(x => {
         x.checked = checked
       })
+      this.isAllCheckedOld = checked
       this.$forceUpdate()
     },
+
     async handleSelectedCommand(command) {
       let moveDataList = []
-      if (this.isAllChecked) {
-        if (this.viewInfo.entryName == 'all　data') {
+      if (this.viewInfo.entryName == 'all　data') {
+        if (this.isAllChecked) {
           let params = {}
-          //alldataの場合だけ全データとってくるようにする
+          //全データとってくるようにする
           let maxpage = Math.ceil(this.total / 100)
           for (let i = 1; i <= maxpage; i++) {
             params.page = i
@@ -344,17 +370,68 @@ export default {
             await this.fetchData(params)
             moveDataList = moveDataList.concat(this.data)
           }
+          let dataList = this.dataList.filter(x => x.checked)
+          dataList.forEach(originalData => {
+            originalData.checked = false
+          })
+          await this.$emit('addAll', {
+            from: this.viewInfo.entryName,
+            to: command,
+          })
+        } else if (this.isAllCheckedOld) {
+          moveDataList = []
+          await this.$emit('addAllDataOld', {
+            to: command,
+            datalist: this.viewInfo.dataList,
+          })
+          moveDataList = this.dataList.filter(x => x.checked)
+          moveDataList.forEach(originalData => {
+            originalData.checked = false
+          })
+          this.$forceUpdate()
         } else {
           moveDataList = []
-          this.$emit('addAll', { from: this.viewInfo.entryName, to: command })
+          await this.$emit('addAllData', {
+            to: command,
+            datalist: this.viewInfo.dataList,
+          })
+          moveDataList = this.dataList.filter(x => x.checked)
+          moveDataList.forEach(originalData => {
+            originalData.checked = false
+          })
           this.$forceUpdate()
         }
-        let dataList = this.dataList.filter(x => x.checked)
-        dataList.forEach(originalData => {
-          originalData.checked = false
-        })
       } else {
-        moveDataList = this.dataList.filter(x => x.checked)
+        if (this.isAllChecked) {
+          moveDataList = []
+          await this.$emit('addAll', {
+            from: this.viewInfo.entryName,
+            to: command,
+          })
+          this.$forceUpdate()
+          let dataList = this.dataList.filter(x => x.checked)
+          dataList.forEach(originalData => {
+            originalData.checked = false
+          })
+        } else {
+          let noChecklist = []
+          for (let i in this.viewInfo.dataList) {
+            if (
+              this.viewInfo.dataList[i].checked == null ||
+              this.viewInfo.dataList[i].checked == false
+            ) {
+              noChecklist.push(this.viewInfo.dataList[i])
+            }
+          }
+          moveDataList = []
+          await this.$emit('addAllOld', {
+            from: this.viewInfo.entryName,
+            to: command,
+            noChecklist: noChecklist,
+          })
+          this.$forceUpdate()
+          moveDataList = this.dataList.filter(x => x.checked)
+        }
       }
       moveDataList.forEach(originalData => {
         originalData.checked = false
@@ -376,8 +453,10 @@ export default {
         }
       })
       this.isAllChecked = false // 全選択ボタンは非選択状態にする
+      this.isAllCheckedOld = false
     },
     handleCheck() {
+      this.isAllChecked = false
       this.$forceUpdate()
     },
     async showData(data) {
@@ -396,8 +475,22 @@ export default {
         filter: this.searchCondition,
       })
     },
-    emitPaging(entryName, page, searchCondition) {
-      this.$emit('paging', { entryName, page, searchCondition })
+    emitPaging(
+      entryName,
+      page,
+      searchCondition,
+      dataList,
+      isAllChecked,
+      isAllCheckedOld,
+    ) {
+      this.$emit('paging', {
+        entryName,
+        page,
+        searchCondition,
+        dataList,
+        isAllChecked,
+        isAllCheckedOld,
+      })
     },
     getTotalPages() {
       if (
