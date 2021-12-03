@@ -12,7 +12,7 @@
           <span>ダッシュボード</span>
         </el-menu-item>
       </div>
-      <div v-for="(menu, index) in trees" :key="index">
+      <div v-for="(menu, index) in menuTree" :key="index">
         <el-submenu v-if="menu.children" :index="String(index)">
           <template slot="title">
             <icon
@@ -48,6 +48,10 @@
           <span slot="title">{{ menu.label }}</span>
         </el-menu-item>
       </div>
+      <el-menu-item index="/version" @click="handleClick('/version')">
+        <i class="el-icon-info" />
+        <span>バージョン情報</span>
+      </el-menu-item>
     </el-menu>
 
     <!--スクロール調整-->
@@ -63,7 +67,6 @@ export default {
   data() {
     return {
       isCollapse: false,
-      trees: null,
       activeIndex: null,
     }
   },
@@ -77,7 +80,6 @@ export default {
   },
 
   created() {
-    this.$store.watch(this.$store.getters.getLoginTenant, this.watchLogin)
     this.activeIndex = this.$route.path
     this.setActiveIndex()
   },
@@ -107,15 +109,6 @@ export default {
     async handleClick(url) {
       if (url) {
         this.$router.push(url)
-      }
-    },
-
-    async watchLogin(tenant) {
-      if (tenant) {
-        await this.fetchMenuTree()
-        this.trees = this.menuTree
-      } else {
-        this.trees = null
       }
     },
 

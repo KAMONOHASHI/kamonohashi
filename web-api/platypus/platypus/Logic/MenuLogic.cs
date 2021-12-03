@@ -706,37 +706,7 @@ namespace Nssol.Platypus.Logic
             ExperimentMenu,
             ExperimentHistoryMenu,
             TemplateMenu,
-            new MenuItemInfo()
-            {
-                Name = "テナント設定",
-                Category = "pl-tenant-setting",
-                Children = new List<MenuItemInfo>()
-                {
-                    TenantSettingMenu,
-                    //TenantRoleMenu,
-                    TenantUserMenu,
-                    //TenantMenuAccessMenu,
-                    TenantResourceMenu
-                }
-            },
-            new MenuItemInfo()
-            {
-                Name = "システム設定",
-                Category = "pl-system-setting",
-                Children = new List<MenuItemInfo>()
-                {
-                    TenantMenu,
-                    GitMenu,
-                    RegistryMenu,
-                    StorageMenu,
-                    RoleMenu,
-                    QuotaMenu,
-                    NodeMenu,
-                    UserMenu,
-                    MenuAccessMenu,
-                    ResourceMenu
-                }
-            }
+
         };
 
         #endregion

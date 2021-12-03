@@ -24,7 +24,7 @@
               v-model="scope.row.cpu"
               size="small"
               :min="0"
-              :max="200"
+              :max="250"
               controls-position="right"
             />
           </template>
@@ -34,7 +34,7 @@
             <el-input-number
               v-model="scope.row.memory"
               :min="0"
-              :max="200"
+              :max="500"
               size="small"
               controls-position="right"
             />

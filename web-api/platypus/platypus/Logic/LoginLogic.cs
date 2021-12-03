@@ -8,7 +8,6 @@ using Nssol.Platypus.Infrastructure.Options;
 using Nssol.Platypus.Infrastructure.Types;
 using Nssol.Platypus.Logic.Interfaces;
 using Nssol.Platypus.LogicModels;
-using Nssol.Platypus.Models;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -34,7 +33,6 @@ namespace Nssol.Platypus.Logic
         private readonly IUserRepository userRepository;
         private readonly ISettingRepository settingRepository;
         private readonly IUnitOfWork unitOfWork;
-        private readonly ITenantRepository tenantRepository;
         private readonly ActiveDirectoryOptions adOptions;
         private readonly WebSecurityOptions webSecurityOptions;
 
@@ -42,7 +40,6 @@ namespace Nssol.Platypus.Logic
         /// コンストラクタ
         /// </summary>
         public LoginLogic(
-            ITenantRepository tenantRepository,
             IUserRepository userRepository,
             ISettingRepository settingRepository,
             IUnitOfWork unitOfWork,
@@ -50,7 +47,6 @@ namespace Nssol.Platypus.Logic
             IOptions<ActiveDirectoryOptions> adOptions,
             IOptions<WebSecurityOptions> webSecurityOptions) : base(commonDiLogic)
         {
-            this.tenantRepository = tenantRepository;
             this.userRepository = userRepository;
             this.settingRepository = settingRepository;
             this.unitOfWork = unitOfWork;
@@ -139,7 +135,7 @@ namespace Nssol.Platypus.Logic
             {
                 //指定したテナントに所属していない
                 LogError($"User {userName} does NOT have a permission to tenant {tenantId}");
-                return Result<List<Claim>, string>.CreateErrorResult("Invalid tenant ID.");
+                return Result<List<Claim>, string>.CreateErrorResult($"Invalid tenant ID. Current user does not have a permission to tenant {tenantId}.");
             }
 
             userInfo.SelectTenant(tenantId);

@@ -177,6 +177,11 @@ const actions = {
     )
     commit('setFileList', newList)
   },
+
+  // eslint-disable-next-line no-unused-vars
+  async fetchFileSize({ state }, params) {
+    return (await api.training.getFileSize(params)).data.fileSize
+  },
 }
 
 // mutations

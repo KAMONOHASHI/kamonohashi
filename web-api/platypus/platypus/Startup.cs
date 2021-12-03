@@ -22,6 +22,7 @@ using Nssol.Platypus.Infrastructure.Options;
 using Nssol.Platypus.Logic;
 using Nssol.Platypus.Logic.HostedService;
 using Nssol.Platypus.Logic.Interfaces;
+using Nssol.Platypus.Models;
 using Nssol.Platypus.Services;
 using Nssol.Platypus.Services.Interfaces;
 using Nssol.Platypus.Swagger;
@@ -84,6 +85,8 @@ namespace Nssol.Platypus
             services.Configure<BackupPostgresTimerOptions>(Configuration.GetSection("BackupPostgresTimerOptions"));
             services.Configure<DBInitRetryOptions>(Configuration.GetSection("DBInitRetryOptions"));
             services.Configure<GetKQIReleaseVersionTimerOptions>(Configuration.GetSection("GetKQIReleaseVersionTimerOptions"));
+            services.Configure<ResourceMonitorOptions>(Configuration.GetSection("ResourceMonitorOptions"));
+            services.Configure<ResourceMonitorTimerOptions>(Configuration.GetSection("ResourceMonitorTimerOptions"));
 
             services.Configure<SyncClusterFromDBOptions>(Configuration.GetSection("SyncClusterFromDBOptions"));
             services.Configure<DeployOptions>(Configuration.GetSection("DeployOptions"));
@@ -109,6 +112,7 @@ namespace Nssol.Platypus
             services.AddTransient<IMenuLogic, MenuLogic>();
             services.AddTransient<IVersionLogic, VersionLogic>();
             services.AddTransient<ITemplateLogic, TemplateLogic>();
+            services.AddTransient<IResourceMonitorLogic, ResourceMonitorLogic>();
 
             // ServiceのDI設定
             services.AddTransient<IClusterManagementService, KubernetesService>();
@@ -151,6 +155,10 @@ namespace Nssol.Platypus
             services.AddTransient<IAquariumEvaluationRepository, AquariumEvaluationRepository>();
             services.AddTransient<IAquariumDataSetRepository, AquariumDataSetRepository>();
             services.AddTransient<IAquariumDataSetVersionRepository, AquariumDataSetVersionRepository>();
+            services.AddTransient<IRepository<ResourceSample>, RepositoryBase<ResourceSample>>();
+            services.AddTransient<IRepository<ResourceNode>, RepositoryBase<ResourceNode>>();
+            services.AddTransient<IRepository<ResourceContainer>, RepositoryBase<ResourceContainer>>();
+            services.AddTransient<IRepository<ResourceJob>, RepositoryBase<ResourceJob>>();
 
             // その他のDI設定
             services.AddTransient<IUnitOfWork, UnitOfWork>();
@@ -169,6 +177,7 @@ namespace Nssol.Platypus
             services.AddSingleton<BackupPostgresTimer>();
             services.AddSingleton<SyncClusterFromDBTimer>();
             services.AddSingleton<GetKQIReleaseVersionTimer>();
+            services.AddSingleton<ResourceMonitorTimer>();
 
             //ASP.NET Core MVCの追加
             WebSecurityOptions wsops = new WebSecurityOptions();
@@ -346,6 +355,7 @@ namespace Nssol.Platypus
             services.AddHostedService<BackupPostgresTimer>();
             services.AddHostedService<SyncClusterFromDBTimer>();
             services.AddHostedService<GetKQIReleaseVersionTimer>();
+            services.AddHostedService<ResourceMonitorTimer>();
         }
 
         /// <summary>

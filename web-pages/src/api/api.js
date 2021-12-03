@@ -34,6 +34,7 @@ let api = {
   cluster: {
     getPartitions: gen.ApiV2TenantPartitionsGet,
     getQuota: gen.ApiV2TenantQuotaGet,
+    getTenantNodes: gen.ApiV2TenantNodesGet,
 
     admin: {
       getQuotas: gen.ApiV2AdminQuotasGet,
@@ -195,6 +196,14 @@ let api = {
         gen.ApiV2AdminResourceContainersByTenantIdByNameLogGet,
       getContainerEventsByName:
         gen.ApiV2AdminResourceContainersByTenantIdByNameEventsGet,
+      getHistoriesContainersMetadata:
+        gen.ApiV2AdminResourceHistoriesContainersMetadataGet,
+      getHistoriesContainersData:
+        gen.ApiV2AdminResourceHistoriesContainersDataGet,
+      deleteHistoriesContainers: gen.ApiV2AdminResourceHistoriesContainersPatch,
+      getHistoriesJobsMetadata: gen.ApiV2AdminResourceHistoriesJobsMetadataGet,
+      getHistoriesJobsData: gen.ApiV2AdminResourceHistoriesJobsDataGet,
+      deleteHistoriesJobs: gen.ApiV2AdminResourceHistoriesJobsPatch,
     },
     tenant: {
       getNodes: gen.ApiV2TenantResourceNodesGet,
@@ -214,6 +223,7 @@ let api = {
     putById: gen.ApiV2TrainingByIdPut,
     // GET /spa/trains/{id}/log
     getFilesById: gen.ApiV2TrainingByIdFilesGet,
+    getFileSize: gen.ApiV2TrainingByIdFilesByNameSizeGet,
     postFilesById: gen.ApiV2TrainingByIdFilesPost,
     getContainerFilesById: gen.ApiV2TrainingByIdContainer_filesGet,
     deleteByIdFilesByFileId: gen.ApiV2TrainingByIdFilesByFileIdDelete,
@@ -253,6 +263,7 @@ let api = {
     putById: gen.ApiV2InferencesByIdPut,
     // GET /spa/trains/{id}/log
     getFilesById: gen.ApiV2InferencesByIdFilesGet,
+    getFileSize: gen.ApiV2InferencesByIdFilesByNameSizeGet,
     postFilesById: gen.ApiV2InferencesByIdFilesPost,
     getContainerFilesById: gen.ApiV2InferencesByIdContainer_filesGet,
     deleteByIdFilesByFileId: gen.ApiV2InferencesByIdFilesByFileIdDelete,

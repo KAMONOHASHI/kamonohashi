@@ -210,6 +210,17 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
         }
 
         /// <summary>
+        /// 指定したIDとファイル名の学習履歴添付ファイルを取得します。
+        /// </summary>
+        /// <param name="id">学習履歴ID</param>
+        /// <param name="fileName">ファイル名</param>
+        /// <returns>添付ファイル</returns>
+        public TrainingHistoryAttachedFile GetAttachedFile(long id, string fileName)
+        {
+            return GetModelAll<TrainingHistoryAttachedFile>().FirstOrDefault(d => d.TrainingHistoryId == id && d.FileName == fileName);
+        }
+
+        /// <summary>
         /// 学習履歴添付ファイルを追加します。
         /// </summary>
         /// <param name="file">追加対象のファイル</param>
