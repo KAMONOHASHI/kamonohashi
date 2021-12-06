@@ -132,9 +132,10 @@ const actions = {
     }
   },
 
-  // eslint-disable-next-line no-unused-vars
-  async delete({ state }, id) {
+  async delete({ commit }, id) {
     await api.experiment.deleteById({ id: id })
+    commit('clearDetail')
+    commit('clearEvaluations')
   },
 
   // eslint-disable-next-line no-unused-vars
@@ -210,6 +211,9 @@ const mutations = {
   },
   setEvaluations(state, { evaluations }) {
     state.evaluations = evaluations
+  },
+  clearEvaluations(state) {
+    state.evaluations = []
   },
 }
 
