@@ -465,7 +465,7 @@ namespace Nssol.Platypus.Logic
                 { "LANG", "C.UTF-8"},  // python実行時のエラー回避
                 { "ZIP_FILE_CREATED", trainHistory.Zip.ToString() },  // 結果をzip圧縮するか否か
                 { "LOCAL_DATASET", trainHistory.LocalDataSet.ToString() },  // ローカルにデータをコピーするか否か
-                { "KAMONOHASHI_SYSTEM_VERSION", versionLogic.GetVersion() }  // KAMONOHASHIのバージョン情報
+                { "KQI_VERSION", versionLogic.GetVersion() }  // KAMONOHASHIのバージョン情報
             };
 
             //コンテナを起動するために必要な設定値をインスタンス化
@@ -688,7 +688,7 @@ namespace Nssol.Platypus.Logic
                 { "LANG", "C.UTF-8"},  // python実行時のエラー回避
                 { "ZIP_FILE_CREATED", inferenceHistory.Zip.ToString() },  // 結果をzip圧縮するか否か
                 { "LOCAL_DATASET", inferenceHistory.LocalDataSet.ToString() },  // ローカルにデータをコピーするか否か
-                { "KAMONOHASHI_SYSTEM_VERSION", versionLogic.GetVersion() }  // KAMONOHASHIのバージョン情報
+                { "KQI_VERSION", versionLogic.GetVersion() }  // KAMONOHASHIのバージョン情報
             };
 
             //コンテナを起動するために必要な設定値をインスタンス化
@@ -1097,7 +1097,7 @@ namespace Nssol.Platypus.Logic
                 { "EXPIRES_IN", notebookHistory.ExpiresIn != 0 ? notebookHistory.ExpiresIn.ToString() : "infinity"},  // コンテナ生存期間
                 { "LOCAL_DATASET", notebookHistory.LocalDataSet.ToString() },  // ローカルにデータをコピーするか否か
                 { "JUPYTERLAB_VERSION", notebookHistory.JupyterLabVersion },
-                { "KAMONOHASHI_SYSTEM_VERSION", versionLogic.GetVersion() }  // KAMONOHASHIのバージョン情報
+                { "KQI_VERSION", versionLogic.GetVersion() }  // KAMONOHASHIのバージョン情報
             };
 
             //コンテナを起動するために必要な設定値をインスタンス化
