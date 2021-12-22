@@ -134,7 +134,12 @@ const actions = {
   },
 
   async switchTenant({ commit, dispatch }, { tenantId }) {
-    let loginData = (await api.account.postTokenTenants({ tenantId })).data
+    let loginData = (
+      await api.account.postTokenTenants({
+        tenantId: tenantId,
+        body: { expiresIn: null },
+      })
+    ).data
     let token = loginData.token
     commit('setToken', { token })
     commit('setLoginData', { loginData })

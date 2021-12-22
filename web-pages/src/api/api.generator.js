@@ -217,7 +217,7 @@ export const postApiV2AccountLoginURL = function(parameters = {}) {
  * method: postApiV2AccountTenantsByTenantIdToken_TYPE
  * raw_url: postApiV2AccountTenantsByTenantIdToken_RAW_URL
  * @param tenantId - テナントID
- * @param expiresIn - 有効期限(秒)。省略時はシステムの既定値。
+ * @param body - テナント切替用入力モデル
  */
 export const postApiV2AccountTenantsByTenantIdToken = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -230,8 +230,8 @@ export const postApiV2AccountTenantsByTenantIdToken = function(parameters = {}) 
   if (parameters['tenantId'] === undefined) {
     return Promise.reject(new Error('Missing required  parameter: tenantId'))
   }
-  if (parameters['expiresIn'] !== undefined) {
-    queryParameters['expiresIn'] = parameters['expiresIn']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -251,9 +251,6 @@ export const postApiV2AccountTenantsByTenantIdTokenURL = function(parameters = {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/account/tenants/{tenantId}/token'
   path = path.replace('{tenantId}', `${parameters['tenantId']}`)
-  if (parameters['expiresIn'] !== undefined) {
-    queryParameters['expiresIn'] = parameters['expiresIn']
-  }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]

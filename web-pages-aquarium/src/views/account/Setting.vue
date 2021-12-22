@@ -220,7 +220,7 @@ export default {
       try {
         let params = {
           tenantId: this.account.selectedTenant.id,
-          expiresIn: this.tokenForm.day * 60 * 60 * 24,
+          body: { expiresIn: this.tokenForm.day * 60 * 60 * 24 },
         }
         // 新規アクセストークンを取得する
         await this['account/postTokenTenants'](params)
