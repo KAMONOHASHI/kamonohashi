@@ -122,6 +122,12 @@
       "post": {
         "tags": ["Account"],
         "summary": "現在の認証情報を使用し、新規にアクセストークンを取得する",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
         "produces": ["application/json"],
         "parameters": [
           {
@@ -133,11 +139,12 @@
             "format": "int64"
           },
           {
-            "in": "query",
-            "name": "expiresIn",
-            "description": "有効期限(秒)。省略時はシステムの既定値。",
-            "type": "integer",
-            "format": "int32"
+            "in": "body",
+            "name": "body",
+            "description": "テナント切替用入力モデル",
+            "schema": {
+              "$ref": "#/definitions/Nssol.Platypus.ApiModels.AccountApiModels.SwitchTenantInputModel"
+            }
           }
         ],
         "responses": {
@@ -7842,6 +7849,17 @@
           "items": {
             "$ref": "#/definitions/Nssol.Platypus.ApiModels.AccountApiModels.RegistryCredentialOutputModel"
           }
+        }
+      }
+    },
+    "Nssol.Platypus.ApiModels.AccountApiModels.SwitchTenantInputModel": {
+      "description": "テナント切替用入力モデル",
+      "type": "object",
+      "properties": {
+        "expiresIn": {
+          "format": "int32",
+          "description": "有効期限(秒)。省略時はシステムの既定値。",
+          "type": "integer"
         }
       }
     },

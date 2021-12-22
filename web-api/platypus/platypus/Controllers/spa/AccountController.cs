@@ -215,12 +215,12 @@ namespace Nssol.Platypus.Controllers.spa
         /// 現在の認証情報を使用し、新規にアクセストークンを取得する
         /// </summary>
         /// <param name="tenantId">テナントID</param>
-        /// <param name="expiresIn">有効期限(秒)。省略時はシステムの既定値。</param>
+        /// <param name="model">テナント切替用入力モデル</param>
         /// <param name="tenantRepository">DI用</param>
         [HttpPost("tenants/{tenantId}/token")]
         [Filters.PermissionFilter(MenuCode.Account)]
         [ProducesResponseType(typeof(LoginOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> SwitchTenantAsync([FromRoute] long tenantId, [FromServices] ITenantRepository tenantRepository, [FromQuery] int? expiresIn)
+        public async Task<IActionResult> SwitchTenantAsync([FromRoute] long tenantId, [FromServices] ITenantRepository tenantRepository, [FromBody] SwitchTenantInputModel model)
         {
             var tenant = tenantRepository.Get(tenantId);
             if (tenant == null)
@@ -237,7 +237,7 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             // 結果からトークンを作成
-            var token = loginLogic.GenerateToken(authResult.Value, expiresIn);
+            var token = loginLogic.GenerateToken(authResult.Value, model.ExpiresIn);
 
             var result = new LoginOutputModel()
             {
