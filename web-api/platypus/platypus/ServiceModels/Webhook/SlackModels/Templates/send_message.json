@@ -1,0 +1,49 @@
+{
+  "attachments": [
+    {
+      "color": "@(Model.Color)",
+      "blocks": [
+        {
+          "type": "header",
+          "text": {
+            "type": "plain_text",
+            "text": "@(Model.Title)",
+            "emoji": true
+          }
+        },
+        {
+          "type": "section",
+          "fields": [
+            {
+              "type": "mrkdwn",
+              "text": "*ID:*\n@(Model.Id)"
+            },
+            {
+              "type": "mrkdwn",
+              "text": "*Name:*\n@(Model.Name)"
+            },
+            {
+              "type": "mrkdwn",
+              "text": "*Tenant:*\n@(Model.TenantName)"
+            },
+            {
+              "type": "mrkdwn",
+              "text": "*Created by:*\n@(Model.UserName)"
+            },
+            {
+              "type": "mrkdwn",
+              "text": "*Status:*\n@(Model.Status)"
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "text": {
+            "type": "mrkdwn",
+            "text": "<@(Model.URL)|More>"
+          }
+        }
+      ]
+    }
+  ]
+}

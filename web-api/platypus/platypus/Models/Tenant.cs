@@ -1,10 +1,7 @@
 ﻿using Nssol.Platypus.Infrastructure;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Models
 {
@@ -230,5 +227,10 @@ namespace Nssol.Platypus.Models
         /// レジストリとのマッピング情報
         /// </summary>
         public virtual ICollection<TenantGitMap> GitMaps { get; set; }
+
+        /// <summary>
+        /// Slackの通知先URL
+        /// </summary>
+        public string SlackUrl { get; set; }
     }
 }

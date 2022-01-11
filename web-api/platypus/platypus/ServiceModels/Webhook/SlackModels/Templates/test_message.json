@@ -1,0 +1,33 @@
+﻿{
+  "attachments": [
+    {
+      "color": "#67C23A",
+      "blocks": [
+        {
+          "type": "header",
+          "text": {
+            "type": "plain_text",
+            "text": "KAMONOHASHI テスト通知",
+            "emoji": true
+          }
+        },
+        {
+          "type": "section",
+          "fields": [
+            {
+              "type": "mrkdwn",
+              "text": "*送信者:*\n@(Model.UserName)"
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "text": {
+            "type": "mrkdwn",
+            "text": "*URL:*\n@(Model.URL)"
+          }
+        }
+      ]
+    }
+  ]
+}
