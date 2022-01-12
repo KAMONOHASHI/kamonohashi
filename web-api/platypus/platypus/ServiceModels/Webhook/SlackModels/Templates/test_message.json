@@ -13,6 +13,13 @@
         },
         {
           "type": "section",
+          "text": {
+            "type": "mrkdwn",
+            "text": "@(Model.Mention)"
+          }
+        },
+        {
+          "type": "section",
           "fields": [
             {
               "type": "mrkdwn",

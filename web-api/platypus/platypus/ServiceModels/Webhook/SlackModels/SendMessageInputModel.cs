@@ -1,13 +1,15 @@
-﻿using System.Text.RegularExpressions;
-using Nssol.Platypus.Infrastructure;
-using Nssol.Platypus.Models;
+﻿using Nssol.Platypus.Models;
+using System.Text.RegularExpressions;
 
 namespace Nssol.Platypus.ServiceModels.Webhook.SlackModels
 {
+    /// <summary>
+    /// Slackのメッセージ送信用モデル
+    /// </summary>
     public class SendMessageInputModel
     {
         /// <summary>
-        /// メッセージブロックの淵の色
+        /// メッセージブロックの縁の色
         /// </summary>
         public string Color { get; set; }
 
@@ -17,9 +19,14 @@ namespace Nssol.Platypus.ServiceModels.Webhook.SlackModels
         public string Title { get; set; }
 
         /// <summary>
+        /// メンションID
+        /// </summary>
+        public string MentionId { get; set; }
+
+        /// <summary>
         /// 対象ジョブの履歴ID
         /// </summary>
-        public long? Id { get; set; }
+        public long Id { get; set; }
 
         /// <summary>
         /// 対象ジョブの名前
@@ -54,19 +61,26 @@ namespace Nssol.Platypus.ServiceModels.Webhook.SlackModels
         /// <summary>
         ///  メッセージ送信先ベースURL
         /// </summary>
-        public string BaseUrl { get { return getBaseUrl(); } }
+        public string BaseUrl { get { return GetBaseUrl(); } }
 
         /// <summary>
         ///  メッセージ送信先ApiPath
         /// </summary>
-        public string ApiPath { get { return getApiPath(); } }
+        public string ApiPath { get { return GetApiPath(); } }
         
-        private string getBaseUrl()
+        /// <summary>
+        /// 送信先URLからベースURLを取得する
+        /// </summary>
+        private string GetBaseUrl()
         {
             return Regex.Match(this.WebhookUrl, @"https://.*?/").Value;
         }
 
-        private string getApiPath()
+        /// <summary>
+        /// 送信先URLからAPIパスを取得する
+        /// </summary>
+        /// <returns></returns>
+        private string GetApiPath()
         {
             return Regex.Replace(this.WebhookUrl, @"https://.*?/", "/");
         }

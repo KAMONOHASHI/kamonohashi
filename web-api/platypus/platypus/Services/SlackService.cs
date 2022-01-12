@@ -25,6 +25,7 @@ namespace Nssol.Platypus.Services
             {
                 Color = model.Color,
                 Title = model.Title,
+                Mention = model.MentionId,
                 Id = model.Id,
                 Name = model.Name,
                 TenantName = model.Tenant.Name,

@@ -1,5 +1,6 @@
 {
   "attachments": [
+
     {
       "color": "@(Model.Color)",
       "blocks": [
@@ -7,8 +8,15 @@
           "type": "header",
           "text": {
             "type": "plain_text",
-            "text": "@(Model.Title)",
+            "text": "@Raw(Model.Title)",
             "emoji": true
+          }
+        },
+        {
+          "type": "section",
+          "text": {
+            "type": "mrkdwn",
+            "text": "@(Model.Mention)",
           }
         },
         {
@@ -16,23 +24,23 @@
           "fields": [
             {
               "type": "mrkdwn",
-              "text": "*ID:*\n@(Model.Id)"
+              "text": "*ID:*\n @(Model.Id)"
             },
             {
               "type": "mrkdwn",
-              "text": "*Name:*\n@(Model.Name)"
+              "text": "*Name:*\n @Raw(Model.Name)"
             },
             {
               "type": "mrkdwn",
-              "text": "*Tenant:*\n@(Model.TenantName)"
+              "text": "*Tenant:*\n @(Model.TenantName)"
             },
             {
               "type": "mrkdwn",
-              "text": "*Created by:*\n@(Model.UserName)"
+              "text": "*Created by:*\n @(Model.UserName)"
             },
             {
               "type": "mrkdwn",
-              "text": "*Status:*\n@(Model.Status)"
+              "text": "*Status:*\n @(Model.Status)"
             }
           ]
         },
