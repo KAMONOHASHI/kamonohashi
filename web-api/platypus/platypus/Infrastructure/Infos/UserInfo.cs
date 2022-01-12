@@ -117,5 +117,15 @@ namespace Nssol.Platypus.Infrastructure
                 SelectedTenant = tenant;
             }
         }
+
+        /// <summary>
+        /// Slackの送信先URL
+        /// </summary>
+        public string SlackUrl { get; set; }
+
+        /// <summary>
+        /// SlackメッセージのメンションID
+        /// </summary>
+        public string MentionId { get; set; }
     }
 }

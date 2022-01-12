@@ -21,6 +21,7 @@ namespace Nssol.Platypus.Logic.Interfaces
         /// <summary>
         /// テスト通知する
         /// </summary>
+        /// <param name="model">Webhook情報モデル</param>
         Task<bool> InformTest(WebhookModel model);
     }
 }

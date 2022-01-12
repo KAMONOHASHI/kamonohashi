@@ -109,11 +109,13 @@ namespace Nssol.Platypus
             services.AddTransient<IMenuLogic, MenuLogic>();
             services.AddTransient<IVersionLogic, VersionLogic>();
             services.AddTransient<ITemplateLogic, TemplateLogic>();
+            services.AddTransient<ISlackLogic, SlackLogic>();
 
             // ServiceのDI設定
             services.AddTransient<IClusterManagementService, KubernetesService>();
             services.AddTransient<IObjectStorageService, ObjectStorageS3Service>();
             services.AddTransient<IVersionService, VersionService>();
+            services.AddTransient<ISlackService, SlackService>();
             // 切替のため型指定でDI設定
             services.AddTransient<GitHubService>();
             services.AddTransient<GitLabService>();

@@ -15,7 +15,7 @@ namespace Nssol.Platypus.Logic
     {
 
         private readonly ISlackService slackService;
-        private ContainerManageOptions containerOptions;
+        private readonly ContainerManageOptions containerOptions;
 
         /// <summary>
         /// コンストラクタ
