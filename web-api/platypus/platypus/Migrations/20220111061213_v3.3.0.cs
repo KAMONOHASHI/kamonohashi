@@ -15,11 +15,6 @@ namespace Nssol.Platypus.Migrations
                 name: "SlackUrl",
                 table: "Users",
                 nullable: true);
-
-            migrationBuilder.AddColumn<string>(
-                name: "SlackUrl",
-                table: "Tenants",
-                nullable: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -31,10 +26,6 @@ namespace Nssol.Platypus.Migrations
             migrationBuilder.DropColumn(
                 name: "SlackUrl",
                 table: "Users");
-
-            migrationBuilder.DropColumn(
-                name: "SlackUrl",
-                table: "Tenants");
         }
     }
 }

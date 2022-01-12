@@ -227,10 +227,5 @@ namespace Nssol.Platypus.Models
         /// レジストリとのマッピング情報
         /// </summary>
         public virtual ICollection<TenantGitMap> GitMaps { get; set; }
-
-        /// <summary>
-        /// Slackの通知先URL
-        /// </summary>
-        public string SlackUrl { get; set; }
     }
 }

@@ -494,8 +494,6 @@ namespace Nssol.Platypus.Migrations
                         .IsRequired()
                         .HasMaxLength(128);
 
-                    b.Property<string>("SlackUrl");
-
                     b.Property<string>("StorageBucket");
 
                     b.Property<long?>("StorageId");
