@@ -19,7 +19,7 @@
 @:            "text": "@@@(Model.Mention)"
 @:          }
 @:        },
-}        
+}
         {
           "type": "section",
           "fields": [
