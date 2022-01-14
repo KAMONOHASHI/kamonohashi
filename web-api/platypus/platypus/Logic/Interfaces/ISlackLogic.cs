@@ -1,7 +1,7 @@
 ﻿using Nssol.Platypus.ApiModels.AccountApiModels;
+using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Models.TenantModels;
 using System.Threading.Tasks;
-using Nssol.Platypus.Infrastructure;
 
 namespace Nssol.Platypus.Logic.Interfaces
 {

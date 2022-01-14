@@ -93,9 +93,9 @@
     <Content Update="ServiceModels\Webhook\SlackModels\Templates\send_message.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-	<Content Update="ServiceModels\Webhook\SlackModels\Templates\test_message.json">
+    <Content Update="ServiceModels\Webhook\SlackModels\Templates\test_message.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</Content>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

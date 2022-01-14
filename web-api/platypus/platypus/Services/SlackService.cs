@@ -1,8 +1,8 @@
-﻿using System.Threading.Tasks;
-using Nssol.Platypus.Services.Interfaces;
+﻿using Nssol.Platypus.Logic.Interfaces;
 using Nssol.Platypus.ServiceModels.Webhook.SlackModels;
+using Nssol.Platypus.Services.Interfaces;
 using System.Net.Http;
-using Nssol.Platypus.Logic.Interfaces;
+using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Services
 {

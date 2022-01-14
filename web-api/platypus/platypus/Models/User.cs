@@ -1,12 +1,7 @@
-﻿using Nssol.Platypus.Infrastructure;
-using Nssol.Platypus.Infrastructure.Types;
-using System;
+﻿using Nssol.Platypus.Infrastructure.Types;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Security.Principal;
-using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Models
 {
