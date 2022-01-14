@@ -611,6 +611,151 @@ export const ApiV2AccountRegistriesPutURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * WebHook情報を取得する
+ * request: ApiV2AccountWebhookGet
+ * url: ApiV2AccountWebhookGetURL
+ * method: ApiV2AccountWebhookGet_TYPE
+ * raw_url: ApiV2AccountWebhookGet_RAW_URL
+ */
+export const ApiV2AccountWebhookGet = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/account/webhook'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2AccountWebhookGet_RAW_URL = function() {
+  return '/api/v2/account/webhook'
+}
+export const ApiV2AccountWebhookGet_TYPE = function() {
+  return 'get'
+}
+export const ApiV2AccountWebhookGetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/account/webhook'
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * WebHook情報を更新する
+ * request: ApiV2AccountWebhookPut
+ * url: ApiV2AccountWebhookPutURL
+ * method: ApiV2AccountWebhookPut_TYPE
+ * raw_url: ApiV2AccountWebhookPut_RAW_URL
+ * @param slackUrl - Slackの送信先URL
+ * @param mentionId - SlackメッセージのメンションID
+ */
+export const ApiV2AccountWebhookPut = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/account/webhook'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['slackUrl'] !== undefined) {
+    queryParameters['SlackUrl'] = parameters['slackUrl']
+  }
+  if (parameters['mentionId'] !== undefined) {
+    queryParameters['MentionId'] = parameters['mentionId']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('put', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2AccountWebhookPut_RAW_URL = function() {
+  return '/api/v2/account/webhook'
+}
+export const ApiV2AccountWebhookPut_TYPE = function() {
+  return 'put'
+}
+export const ApiV2AccountWebhookPutURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/account/webhook'
+  if (parameters['slackUrl'] !== undefined) {
+    queryParameters['SlackUrl'] = parameters['slackUrl']
+  }
+  if (parameters['mentionId'] !== undefined) {
+    queryParameters['MentionId'] = parameters['mentionId']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * テスト通知を送信する
+ * request: ApiV2AccountTestGet
+ * url: ApiV2AccountTestGetURL
+ * method: ApiV2AccountTestGet_TYPE
+ * raw_url: ApiV2AccountTestGet_RAW_URL
+ * @param slackUrl - Slackの送信先URL
+ * @param mentionId - SlackメッセージのメンションID
+ */
+export const ApiV2AccountTestGet = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/account/test'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['slackUrl'] !== undefined) {
+    queryParameters['SlackUrl'] = parameters['slackUrl']
+  }
+  if (parameters['mentionId'] !== undefined) {
+    queryParameters['MentionId'] = parameters['mentionId']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2AccountTestGet_RAW_URL = function() {
+  return '/api/v2/account/test'
+}
+export const ApiV2AccountTestGet_TYPE = function() {
+  return 'get'
+}
+export const ApiV2AccountTestGetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/account/test'
+  if (parameters['slackUrl'] !== undefined) {
+    queryParameters['SlackUrl'] = parameters['slackUrl']
+  }
+  if (parameters['mentionId'] !== undefined) {
+    queryParameters['MentionId'] = parameters['mentionId']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
 * 指定された条件でページングされた状態で、アクアリウムデータセット一覧を取得する
 * request: ApiV2AquariumDatasetsGet
 * url: ApiV2AquariumDatasetsGetURL
