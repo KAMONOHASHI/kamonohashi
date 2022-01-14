@@ -1,6 +1,7 @@
 ﻿{
   "attachments": [
     {
+      "fallback": "KAMONOHASHI テスト通知",
       "color": "#67C23A",
       "blocks": [
         {
