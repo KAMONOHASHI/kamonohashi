@@ -7,6 +7,7 @@ const state = {
   account: {},
   menuList: [],
   menuTree: [],
+  webhook: {},
 }
 
 // getters
@@ -25,6 +26,9 @@ const getters = {
   },
   menuTree(state) {
     return state.menuTree
+  },
+  webhook(state) {
+    return state.webhook
   },
 
   // データ管理のアクセス権があるかどうか
@@ -79,6 +83,12 @@ const actions = {
     commit('setMenuTree', { menuTree })
   },
 
+  async fetchWebhook({ commit }) {
+    let response = await api.account.getWebhook()
+    let webhook = response.data
+    commit('setWebhook', { webhook })
+  },
+
   // eslint-disable-next-line no-unused-vars
   async put({ commit }, params) {
     return await api.account.put(params)
@@ -111,6 +121,16 @@ const actions = {
   async putRegistryToken({ commit }, params) {
     return await api.account.putRegistries(params)
   },
+
+  // eslint-disable-next-line no-unused-vars
+  async putWebhook({ commit }, params) {
+    return await api.account.putWebhook(params)
+  },
+
+  // eslint-disable-next-line no-unused-vars
+  async sendNotification({ commit }, params) {
+    return await api.account.getWebhookTest(params)
+  },
 }
 
 // mutations
@@ -129,6 +149,9 @@ const mutations = {
   },
   setMenuTree(state, { menuTree }) {
     state.menuTree = menuTree
+  },
+  setWebhook(state, { webhook }) {
+    state.webhook = webhook
   },
 }
 

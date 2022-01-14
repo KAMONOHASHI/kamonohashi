@@ -50,6 +50,13 @@
           <label v-if="passwordChangeEnabled" for="tab1_5">
             Password
           </label>
+          <input
+            id="tab1_6"
+            type="radio"
+            name="cp_tab"
+            aria-controls="six_tab01"
+          />
+          <label for="tab1_6">Webhook</label>
 
           <div class="cp_tabpanels">
             <!-- デフォルトテナント設定 -->
@@ -101,6 +108,16 @@
                 @updatePassword="updatePassword"
               />
             </div>
+
+            <!-- Webhook設定 -->
+            <div id="six_tab01" class="cp_tabpanel">
+              <kqi-display-error :error="webhookError" />
+              <webhook-setting
+                v-model="webhookForm"
+                @updateWebhook="updateWebhook"
+                @sendNotification="sendNotification"
+              />
+            </div>
           </div>
         </div>
       </el-card>
@@ -117,6 +134,7 @@ import GitTokenSetting from '@/views/account/GitTokenSetting'
 import RegistryTokenSetting from '@/views/account/RegistryTokenSetting'
 import PasswordSetting from './PasswordSetting'
 import { mapGetters, mapActions } from 'vuex'
+import WebhookSetting from './WebhookSetting.vue'
 
 export default {
   title: 'ユーザ情報設定',
@@ -128,6 +146,7 @@ export default {
     GitTokenSetting,
     RegistryTokenSetting,
     PasswordSetting,
+    WebhookSetting,
   },
   data() {
     return {
@@ -136,6 +155,7 @@ export default {
       gitTokenError: null,
       registryTokenError: null,
       passwordError: null,
+      webhookError: null,
       defaultTenantName: '',
       tokenForm: {
         token: '',
@@ -159,6 +179,10 @@ export default {
         currentPassword: '',
         password: ['', ''],
       },
+      webhookForm: {
+        slackUrl: '',
+        mentionId: '',
+      },
     }
   },
   computed: {
@@ -169,6 +193,7 @@ export default {
       defaultGitId: ['gitSelector/defaultGitId'],
       registries: ['registrySelector/registries'],
       defaultRegistryId: ['registrySelector/defaultRegistryId'],
+      webhook: ['account/webhook'],
     }),
   },
   async created() {
@@ -189,16 +214,23 @@ export default {
     this.registryForm = this.registries.find(registry => {
       return registry.id === this.defaultRegistryId
     })
+
+    // Webhook情報を取得する
+    await this['account/fetchWebhook']()
+    this.webhookForm = this.webhook
   },
 
   methods: {
     ...mapActions([
       'account/fetchAccount',
+      'account/fetchWebhook',
       'account/put',
       'account/putPassword',
       'account/postTokenTenants',
       'account/putGitToken',
       'account/putRegistryToken',
+      'account/putWebhook',
+      'account/sendNotification',
       'gitSelector/fetchGits',
       'registrySelector/fetchRegistries',
     ]),
@@ -282,6 +314,34 @@ export default {
         this.passwordError = null
       } catch (error) {
         this.passwordError = error
+      }
+    },
+
+    async updateWebhook() {
+      try {
+        let params = {
+          slackUrl: this.webhookForm.slackUrl,
+          mentionId: this.webhookForm.mentionId,
+        }
+        await this['account/putWebhook'](params)
+        this.showSuccessMessage()
+        this.passwordError = null
+      } catch (error) {
+        this.webhookError = error
+      }
+    },
+
+    async sendNotification() {
+      try {
+        let params = {
+          slackUrl: this.webhookForm.slackUrl,
+          mentionId: this.webhookForm.mentionId,
+        }
+        await this['account/sendNotification'](params)
+        this.showSuccessMessage()
+        this.webhookError = null
+      } catch (error) {
+        this.webhookError = error
       }
     },
   },
