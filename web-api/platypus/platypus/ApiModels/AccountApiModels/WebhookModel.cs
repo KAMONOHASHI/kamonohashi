@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Nssol.Platypus.ApiModels.AccountApiModels
+﻿namespace Nssol.Platypus.ApiModels.AccountApiModels
 {
     /// <summary>
     /// Webhook用モデル

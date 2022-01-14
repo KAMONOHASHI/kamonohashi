@@ -44,6 +44,7 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly IStorageLogic storageLogic;
         private readonly IGitLogic gitLogic;
         private readonly IClusterManagementLogic clusterManagementLogic;
+        private readonly ISlackLogic slackLogic;
         private readonly ContainerManageOptions containerOptions;
         private readonly IUnitOfWork unitOfWork;
 
@@ -64,6 +65,7 @@ namespace Nssol.Platypus.Controllers.spa
             IStorageLogic storageLogic,
             IGitLogic gitLogic,
             IClusterManagementLogic clusterManagementLogic,
+            ISlackLogic slackLogic,
             IOptions<ContainerManageOptions> containerOptions,
             IUnitOfWork unitOfWork,
             IHttpContextAccessor accessor) : base(accessor)
@@ -81,6 +83,7 @@ namespace Nssol.Platypus.Controllers.spa
             this.storageLogic = storageLogic;
             this.gitLogic = gitLogic;
             this.clusterManagementLogic = clusterManagementLogic;
+            this.slackLogic = slackLogic;
             this.containerOptions = containerOptions.Value;
             this.unitOfWork = unitOfWork;
         }
@@ -1028,6 +1031,7 @@ namespace Nssol.Platypus.Controllers.spa
                 CurrentUserInfo,
                 ModelState,
                 storageLogic,
+                slackLogic,
                 inferenceHistoryRepository,
                 tensorBoardContainerRepository,
                 tagRepository,
@@ -1045,6 +1049,7 @@ namespace Nssol.Platypus.Controllers.spa
             UserInfo currentUserInfo,
             ModelStateDictionary modelState,
             IStorageLogic storageLogic,
+            ISlackLogic slackLogic,
             IInferenceHistoryRepository inferenceHistoryRepository,
             ITensorBoardContainerRepository tensorBoardContainerRepository,
             ITagRepository tagRepository,
@@ -1058,7 +1063,7 @@ namespace Nssol.Platypus.Controllers.spa
                 return (false, DoJsonNotFound(typeof(TrainingController), requestUrl, modelState,
                     $"Training ID {id} is not found."));
             }
-
+            
             //ステータスを確認
 
             var status = trainingHistory.GetStatus();
@@ -1089,6 +1094,9 @@ namespace Nssol.Platypus.Controllers.spa
                 //実行中であれば、コンテナを削除
                 await clusterManagementLogic.DeleteContainerAsync(
                     ContainerType.Training, trainingHistory.Key, currentUserInfo.SelectedTenant.Name, false);
+
+                // 通知処理
+                slackLogic.InformJobResult(trainingHistory);
             }
 
             //TensorBoardを起動中だった場合は、そっちも消す

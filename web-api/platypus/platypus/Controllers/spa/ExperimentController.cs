@@ -43,6 +43,7 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly IClusterManagementLogic clusterManagementLogic;
         private readonly IDataSetLogic dataSetLogic;
         private readonly IRegistryLogic registryLogic;
+        private readonly ISlackLogic slackLogic;
         private readonly IUnitOfWork unitOfWork;
         private readonly ITrainingHistoryRepository trainingHistoryRepository;
         private readonly IInferenceHistoryRepository inferenceHistoryRepository;
@@ -69,6 +70,7 @@ namespace Nssol.Platypus.Controllers.spa
             IClusterManagementLogic clusterManagementLogic,
             IDataSetLogic dataSetLogic,
             IRegistryLogic registryLogic,
+            ISlackLogic slackLogic,
             IUnitOfWork unitOfWork,
         IInferenceHistoryRepository inferenceHistoryRepository,
         ITensorBoardContainerRepository tensorBoardContainerRepository,
@@ -94,6 +96,7 @@ namespace Nssol.Platypus.Controllers.spa
             this.clusterManagementLogic = clusterManagementLogic;
             this.dataSetLogic = dataSetLogic;
             this.registryLogic = registryLogic;
+            this.slackLogic = slackLogic;
             this.inferenceHistoryRepository = inferenceHistoryRepository;
             this.tensorBoardContainerRepository = tensorBoardContainerRepository;
             this.tagRepository = tagRepository;
@@ -723,6 +726,7 @@ namespace Nssol.Platypus.Controllers.spa
                         CurrentUserInfo,
                         ModelState,
                         storageLogic,
+                        slackLogic,
                         inferenceHistoryRepository,
                         tensorBoardContainerRepository,
                         tagRepository,
@@ -747,6 +751,7 @@ namespace Nssol.Platypus.Controllers.spa
                     CurrentUserInfo,
                     ModelState,
                     storageLogic,
+                    slackLogic,
                     inferenceHistoryRepository,
                     tensorBoardContainerRepository,
                     tagRepository,
@@ -774,6 +779,7 @@ namespace Nssol.Platypus.Controllers.spa
                         CurrentUserInfo,
                         ModelState,
                         storageLogic,
+                        slackLogic,
                         inferenceHistoryRepository,
                         tensorBoardContainerRepository,
                         tagRepository,
@@ -999,6 +1005,7 @@ namespace Nssol.Platypus.Controllers.spa
                     CurrentUserInfo,
                     ModelState,
                     storageLogic,
+                    slackLogic,
                     inferenceHistoryRepository,
                     tensorBoardContainerRepository,
                     tagRepository,

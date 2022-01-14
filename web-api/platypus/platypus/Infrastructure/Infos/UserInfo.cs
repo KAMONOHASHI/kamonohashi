@@ -1,10 +1,9 @@
-﻿using Nssol.Platypus.Models;
-using Nssol.Platypus.Infrastructure.Types;
+﻿using Nssol.Platypus.Infrastructure.Types;
+using Nssol.Platypus.Models;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Infrastructure
 {
