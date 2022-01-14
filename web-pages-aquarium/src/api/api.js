@@ -119,6 +119,9 @@ let api = {
     putRegistries: gen.ApiV2AccountRegistriesPut,
     getGits: gen.ApiV2AccountGitsGet,
     putGits: gen.ApiV2AccountGitsPut,
+    getWebhook: gen.ApiV2AccountWebhookGet,
+    putWebhook: gen.ApiV2AccountWebhookPut,
+    getWebhookTest: gen.ApiV2AccountTestGet,
   },
 
   role: {
