@@ -93,6 +93,9 @@
     <Content Update="ServiceModels\Webhook\SlackModels\Templates\send_message.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+	<Content Update="ServiceModels\Webhook\SlackModels\Templates\test_message.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</Content>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -153,9 +156,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="ServiceModels\KubernetesModels\Templates\ConfigMap\experiment_training_scripts.yaml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-      <None Update="ServiceModels\KubernetesModels\Templates\ConfigMap\experiment_training_scripts.yaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
