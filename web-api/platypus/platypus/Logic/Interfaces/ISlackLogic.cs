@@ -1,9 +1,13 @@
 ﻿using Nssol.Platypus.ApiModels.AccountApiModels;
 using Nssol.Platypus.Models.TenantModels;
 using System.Threading.Tasks;
+using Nssol.Platypus.Infrastructure;
 
 namespace Nssol.Platypus.Logic.Interfaces
 {
+    /// <summary>
+    /// Slack通知用ロジックインターフェース
+    /// </summary>
     public interface ISlackLogic
     {
         /// <summary>
@@ -22,6 +26,6 @@ namespace Nssol.Platypus.Logic.Interfaces
         /// テスト通知する
         /// </summary>
         /// <param name="model">Webhook情報モデル</param>
-        Task<bool> InformTest(WebhookModel model);
+        Task<Result<string,string>> InformTest(WebhookModel model);
     }
 }

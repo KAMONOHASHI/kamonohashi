@@ -1,6 +1,5 @@
 {
   "attachments": [
-
     {
       "color": "@(Model.Color)",
       "blocks": [
@@ -12,14 +11,15 @@
             "emoji": true
           }
         },
-        {
-          "type": "section",
-          "text": {
-            "type": "mrkdwn",
-            "text": "@(Model.Mention)",
-          }
-        },
-        {
+@if (Model.Mention != null) {
+@:       {
+@:          "type": "section",
+@:          "text": {
+@:            "type": "mrkdwn",
+@:            "text": "@@@(Model.Mention)"
+@:          }
+@:        },
+}        {
           "type": "section",
           "fields": [
             {
@@ -40,7 +40,11 @@
             },
             {
               "type": "mrkdwn",
-              "text": "*Status:*\n @(Model.Status)"
+@if (Model.Status != null) {
+@:            "text": "*Status:*\n @(Model.Status)"
+} else {
+@:            "text" : "*Message:*\n @Raw(Model.Message)"
+}
             }
           ]
         },

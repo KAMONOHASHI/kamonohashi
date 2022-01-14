@@ -24,6 +24,11 @@ namespace Nssol.Platypus.ServiceModels.Webhook.SlackModels
         public string MentionId { get; set; }
 
         /// <summary>
+        /// メッセージ文
+        /// </summary>
+        public string Message { get; set; }
+
+        /// <summary>
         /// 対象ジョブの履歴ID
         /// </summary>
         public long Id { get; set; }
@@ -73,16 +78,15 @@ namespace Nssol.Platypus.ServiceModels.Webhook.SlackModels
         /// </summary>
         private string GetBaseUrl()
         {
-            return Regex.Match(this.WebhookUrl, @"https://.*?/").Value;
+            return Regex.Match(WebhookUrl, @"https://.*?/").Value;
         }
 
         /// <summary>
         /// 送信先URLからAPIパスを取得する
         /// </summary>
-        /// <returns></returns>
         private string GetApiPath()
         {
-            return Regex.Replace(this.WebhookUrl, @"https://.*?/", "/");
+            return Regex.Replace(WebhookUrl, @"https://.*?/", "/");
         }
     }
 }

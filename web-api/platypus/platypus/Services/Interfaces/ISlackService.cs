@@ -3,6 +3,9 @@ using Nssol.Platypus.ServiceModels.Webhook.SlackModels;
 
 namespace Nssol.Platypus.Services.Interfaces
 {
+    /// <summary>
+    /// Slack通知用サービスインターフェース
+    /// </summary>
     public interface ISlackService
     {
         /// <summary>
@@ -16,6 +19,6 @@ namespace Nssol.Platypus.Services.Interfaces
         /// </summary>
         /// <param name="model">メッセージ送信モデル</param>
         /// <returns>メッセージ送信可否</returns>
-        Task<bool> sendTestMessageAsync(SendMessageInputModel model);
+        Task<bool> SendTestMessageAsync(SendMessageInputModel model);
     }
 }

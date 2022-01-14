@@ -123,7 +123,9 @@ namespace Nssol.Platypus.DataAccess.Repositories
                 Id = user.Id,
                 Name = user.Name,
                 Alias = user.Alias,
-                ServiceType = user.ServiceType
+                ServiceType = user.ServiceType,
+                SlackUrl = user.SlackUrl,
+                MentionId = user.MentionId
             };
 
             userInfo.SystemRoles = roleRepository.GetSystemRoles(user.Id);

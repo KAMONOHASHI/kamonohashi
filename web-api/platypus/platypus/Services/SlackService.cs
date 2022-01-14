@@ -2,18 +2,21 @@
 using Nssol.Platypus.Services.Interfaces;
 using Nssol.Platypus.ServiceModels.Webhook.SlackModels;
 using System.Net.Http;
+using Nssol.Platypus.Logic.Interfaces;
 
 namespace Nssol.Platypus.Services
 {
+    /// <summary>
+    /// Slack通知用サービス
+    /// </summary>
     public class SlackService : PlatypusServiceBase, ISlackService
     {
         /// <summary>
         /// コンストラクタ
         /// </summary>
         public SlackService(
-            Logic.Interfaces.ICommonDiLogic commonDiLogic) : base(commonDiLogic, @"ServiceModels/Webhook/SlackModels/Templates")
-        {
-        }
+            ICommonDiLogic commonDiLogic)
+            : base(commonDiLogic, @"ServiceModels/Webhook/SlackModels/Templates") { }
 
         /// <summary>
         /// Slackにメッセージを送信する
@@ -31,11 +34,13 @@ namespace Nssol.Platypus.Services
                 TenantName = model.Tenant.Name,
                 UserName = model.CreatedBy,
                 Status = model.Status,
-                URL = model.Url
+                URL = model.Url,
+                Message = model.Message
             });
+
             try
             {
-                var response = await this.SendPostRequestAsync(new RequestParam()
+                var response = await SendPostRequestAsync(new RequestParam()
                 {
                     BaseUrl = model.BaseUrl,
                     ApiPath = model.ApiPath,
@@ -57,16 +62,18 @@ namespace Nssol.Platypus.Services
         /// </summary>
         /// <param name="model">メッセージ送信モデル</param>
         /// <returns>メッセージ送信可否</returns>
-        public async Task<bool> sendTestMessageAsync(SendMessageInputModel model)
+        public async Task<bool> SendTestMessageAsync(SendMessageInputModel model)
         {
             string body = await RenderEngine.CompileRenderAsync("test_message.json", new
             {
                 UserName = model.CreatedBy,
-                URL = model.Url
+                URL = model.Url,
+                Mention = model.MentionId
             });
+
             try
             {
-                var response = await this.SendPostRequestAsync(new RequestParam()
+                var response = await SendPostRequestAsync(new RequestParam()
                 {
                     BaseUrl = model.BaseUrl,
                     ApiPath = model.ApiPath,
