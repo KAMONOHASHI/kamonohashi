@@ -129,7 +129,7 @@ const actions = {
 
   // eslint-disable-next-line no-unused-vars
   async sendNotification({ commit }, params) {
-    return await api.account.getWebhookTest(params)
+    return await api.account.postWebhookTest(params)
   },
 }
 

@@ -179,11 +179,11 @@ namespace Nssol.Platypus.Logic
 
             if (result)
             {
-                return Result<string, string>.CreateResult("");
+                return Result<string, string>.CreateResult("メッセージの送信に成功しました");
             }
             else
             {
-                return Result<string, string>.CreateErrorResult("メッセージの送信に失敗しました。URLの入力が間違っています。");
+                return Result<string, string>.CreateErrorResult("メッセージの送信に失敗しました。入力されたURLに誤りがあります");
             }
         }
     }

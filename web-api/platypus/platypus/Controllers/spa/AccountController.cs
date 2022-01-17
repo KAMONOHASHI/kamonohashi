@@ -480,7 +480,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// テスト通知を送信する
         /// </summary>
         /// <param name="model">Webhook情報モデル</param>
-        [HttpGet("webhook/slack/test")]
+        [HttpPost("webhook/slack/test")]
         [Filters.PermissionFilter(MenuCode.Account)]
         [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> SendTestNotification(WebhookModel model)

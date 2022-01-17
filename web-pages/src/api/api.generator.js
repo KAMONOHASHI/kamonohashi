@@ -704,14 +704,14 @@ export const ApiV2AccountWebhookSlackPutURL = function(parameters = {}) {
 }
 /**
  * テスト通知を送信する
- * request: ApiV2AccountWebhookSlackTestGet
- * url: ApiV2AccountWebhookSlackTestGetURL
- * method: ApiV2AccountWebhookSlackTestGet_TYPE
- * raw_url: ApiV2AccountWebhookSlackTestGet_RAW_URL
+ * request: ApiV2AccountWebhookSlackTestPost
+ * url: ApiV2AccountWebhookSlackTestPostURL
+ * method: ApiV2AccountWebhookSlackTestPost_TYPE
+ * raw_url: ApiV2AccountWebhookSlackTestPost_RAW_URL
  * @param slackUrl - Slackの送信先URL
  * @param mentionId - SlackメッセージのメンションID
  */
-export const ApiV2AccountWebhookSlackTestGet = function(parameters = {}) {
+export const ApiV2AccountWebhookSlackTestPost = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/account/webhook/slack/test'
@@ -729,15 +729,15 @@ export const ApiV2AccountWebhookSlackTestGet = function(parameters = {}) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]
     });
   }
-  return request('get', domain + path, body, queryParameters, form, config)
+  return request('post', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AccountWebhookSlackTestGet_RAW_URL = function() {
+export const ApiV2AccountWebhookSlackTestPost_RAW_URL = function() {
   return '/api/v2/account/webhook/slack/test'
 }
-export const ApiV2AccountWebhookSlackTestGet_TYPE = function() {
-  return 'get'
+export const ApiV2AccountWebhookSlackTestPost_TYPE = function() {
+  return 'post'
 }
-export const ApiV2AccountWebhookSlackTestGetURL = function(parameters = {}) {
+export const ApiV2AccountWebhookSlackTestPostURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/account/webhook/slack/test'

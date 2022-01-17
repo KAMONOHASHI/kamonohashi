@@ -121,7 +121,7 @@ let api = {
     putGits: gen.ApiV2AccountGitsPut,
     getWebhook: gen.ApiV2AccountWebhookSlackGet,
     putWebhook: gen.ApiV2AccountWebhookSlackPut,
-    getWebhookTest: gen.ApiV2AccountWebhookSlackTestGet,
+    postWebhookTest: gen.ApiV2AccountWebhookSlackTestPost,
   },
 
   role: {
