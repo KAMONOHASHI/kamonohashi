@@ -54,7 +54,7 @@ namespace Nssol.Platypus.Logic
             // KAMONOHASHIのホスト情報が登録されていないときは通知しない
             if (string.IsNullOrEmpty(containerOptions.WebEndPoint))
             {
-                LogWarning("ホスト情報が未登録なため通知処理をスキップしました");
+                LogWarning("ホスト情報が未登録のため通知処理をスキップしました");
                 return ;
             }
 
@@ -109,7 +109,7 @@ namespace Nssol.Platypus.Logic
             // KAMONOHASHIのホスト情報が登録されていないときは通知しない
             if (string.IsNullOrEmpty(containerOptions.WebEndPoint))
             {
-                LogWarning("ホスト情報が未登録なため通知処理をスキップしました");
+                LogWarning("ホスト情報が未登録のため通知処理をスキップしました");
                 return;
             }
 
@@ -165,7 +165,7 @@ namespace Nssol.Platypus.Logic
             // KAMONOHASHIのホスト情報が登録されていないときは通知しない
             if (string.IsNullOrEmpty(containerOptions.WebEndPoint))
             {
-                return Result<string, string>.CreateErrorResult("KAMONOHASHIのホスト情報が登録されていないため、通知出来ませんでした");
+                return Result<string, string>.CreateErrorResult("KAMONOHASHIのホスト情報が登録されていないため、通知できませんでした");
             }
 
             // テスト通知を送信
@@ -183,7 +183,7 @@ namespace Nssol.Platypus.Logic
             }
             else
             {
-                return Result<string, string>.CreateErrorResult("メッセージの送信に失敗しました");
+                return Result<string, string>.CreateErrorResult("メッセージの送信に失敗しました。URLの入力が間違っています。");
             }
         }
     }

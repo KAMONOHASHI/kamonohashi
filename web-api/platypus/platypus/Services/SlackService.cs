@@ -1,6 +1,7 @@
 ﻿using Nssol.Platypus.Logic.Interfaces;
 using Nssol.Platypus.ServiceModels.Webhook.SlackModels;
 using Nssol.Platypus.Services.Interfaces;
+using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -51,6 +52,10 @@ namespace Nssol.Platypus.Services
                     LogWarning("メッセージ送信に失敗: " + response.Error);
                 }
             }
+            catch (InvalidOperationException)
+            {
+                LogWarning("メッセージ送信に失敗: URLに誤りがあります");
+            }
             catch (HttpRequestException)
             {
                 LogWarning("メッセージ送信に失敗: URLに誤りがあります");
@@ -88,6 +93,11 @@ namespace Nssol.Platypus.Services
                     LogWarning("メッセージ送信に失敗: " + response.Error);
                     return false;
                 }
+            }
+            catch (InvalidOperationException)
+            {
+                LogWarning("メッセージ送信に失敗: URLに誤りがあります");
+                return false;
             }
             catch (HttpRequestException)
             {
