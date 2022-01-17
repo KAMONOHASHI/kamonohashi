@@ -438,11 +438,13 @@ namespace Nssol.Platypus.Controllers.spa
             return JsonOK(result);
         }
 
+        #region Webhook
+
         /// <summary>
         /// WebHook情報を取得する
         /// </summary>
         [Filters.PermissionFilter(MenuCode.Account)]
-        [HttpGet("webhook")]
+        [HttpGet("webhook/slack")]
         [ProducesResponseType(typeof(WebhookModel), (int)HttpStatusCode.OK)]
         public IActionResult GetWebHookInfo()
         {
@@ -462,7 +464,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="model">Webhook情報モデル</param>
         [Filters.PermissionFilter(MenuCode.Account)]
-        [HttpPut("webhook")]
+        [HttpPut("webhook/slack")]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         public async Task<IActionResult> EditWebHookInfo(WebhookModel model)
         {
@@ -478,7 +480,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// テスト通知を送信する
         /// </summary>
         /// <param name="model">Webhook情報モデル</param>
-        [HttpGet("test")]
+        [HttpGet("webhook/slack/test")]
         [Filters.PermissionFilter(MenuCode.Account)]
         [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> SendTestNotification(WebhookModel model)
@@ -493,5 +495,6 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonBadRequest(result.Error);
             }
         }
+        #endregion
     }
 }
