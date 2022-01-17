@@ -1,13 +1,17 @@
 import api from '@/api/api'
+import Util from '@/util/util'
+
+const cookieTokenKey = '.Platypus.Auth'
 
 // initial state
 const state = {
   loginData: {},
-  token: {},
+  token: Util.getCookie(cookieTokenKey),
   account: {},
   menuList: [],
   menuTree: [],
   webhook: {},
+  logined: false,
 }
 
 // getters
@@ -30,7 +34,18 @@ const getters = {
   webhook(state) {
     return state.webhook
   },
-
+  getTenantId(state) {
+    return state.loginData.tenantId
+  },
+  getTenantName(state) {
+    return state.loginData.tenantName
+  },
+  getUserName(state) {
+    return state.loginData.userName
+  },
+  isLogined() {
+    return state.logined
+  },
   // データ管理のアクセス権があるかどうか
   isAvailableData(state) {
     return state.menuTree.some(menu => {
@@ -88,6 +103,11 @@ const actions = {
     let webhook = response.data
     commit('setWebhook', { webhook })
   },
+  
+  async fetchMenu({ dispatch }) {
+    dispatch('fetchMenuList')
+    dispatch('fetchMenuTree')
+  },
 
   // eslint-disable-next-line no-unused-vars
   async put({ commit }, params) {
@@ -98,18 +118,48 @@ const actions = {
   async putPassword({ commit }, params) {
     return await api.account.putPassword(params)
   },
-
-  async postLogin({ commit }, params) {
+  // eslint-disable-next-line no-unused-vars
+  async login({ commit, dispatch }, { userName, password }) {
+    let params = {
+      $config: { apiDisabledError: true },
+      model: {
+        userName: userName,
+        password: password,
+      },
+    }
     let response = await api.account.postLogin(params)
     let loginData = response.data
+    let token = loginData.token
+    commit('setToken', { token })
     commit('setLoginData', { loginData })
+    Util.setCookie(cookieTokenKey, token)
+    await dispatch('fetchAccount')
+    await dispatch('fetchMenu')
+    commit('setLogined')
   },
 
-  async postTokenTenants({ commit }, params) {
+  logout({ commit }) {
+    commit('setLogout')
+    Util.deleteCookie(cookieTokenKey)
+  },
+
+  async switchTenant({ commit, dispatch }, { tenantId }) {
+    let loginData = (await api.account.postTokenTenants({ tenantId })).data
+    let token = loginData.token
+    commit('setToken', { token })
+    commit('setLoginData', { loginData })
+    Util.setCookie(cookieTokenKey, token)
+    await dispatch('fetchAccount')
+    await dispatch('fetchMenu')
+  },
+
+  async postTokenTenants({ commit, dispatch }, params) {
     let loginData = (await api.account.postTokenTenants(params)).data
     let token = loginData.token
     commit('setToken', { token })
     commit('setLoginData', { loginData })
+    Util.setCookie(cookieTokenKey, token)
+    dispatch('fetchMenu')
   },
 
   // eslint-disable-next-line no-unused-vars
@@ -142,6 +192,7 @@ const mutations = {
     state.token = token
   },
   setAccount(state, { account }) {
+    state.logined = true
     state.account = account
   },
   setMenuList(state, { menuList }) {
@@ -152,6 +203,17 @@ const mutations = {
   },
   setWebhook(state, { webhook }) {
     state.webhook = webhook
+  },
+  setLogined(state) {
+    state.logined = true
+  },
+  setLogout(state) {
+    state.loginData = {}
+    state.menuList = []
+    state.menuTree = []
+    state.token = null
+
+    state.logined = false
   },
 }
 

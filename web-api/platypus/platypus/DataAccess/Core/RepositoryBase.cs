@@ -32,7 +32,7 @@ namespace Nssol.Platypus.DataAccess.Core
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        internal RepositoryBase(CommonDbContext dataContext)
+        public RepositoryBase(CommonDbContext dataContext)
         {
             DataContext = dataContext;
             dbset = DataContext.Set<TModel>();

@@ -48,15 +48,11 @@ export default new Vuex.Store({
     version,
   },
   state: {
-    // ログイン情報
-    loginName: '',
-    loginTenant: '',
     // 画面ブロック（ローディング）情報
     loading: true,
     loadingCnt: 0,
   },
   getters: {
-    getLoginTenant: state => () => state.loginTenant,
     getLoadingCnt: state => () => state.loadingCnt,
     getLoading: state => () => state.loading,
   },
@@ -69,10 +65,6 @@ export default new Vuex.Store({
     },
     decrementLoading(state) {
       state.loadingCnt--
-    },
-    setLogin(state, { name, tenant }) {
-      state.loginName = name
-      state.loginTenant = tenant
     },
   },
   actions: {

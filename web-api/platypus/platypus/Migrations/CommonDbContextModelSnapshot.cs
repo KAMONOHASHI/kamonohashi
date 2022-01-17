@@ -190,6 +190,154 @@ namespace Nssol.Platypus.Migrations
                     b.ToTable("Registries");
                 });
 
+            modelBuilder.Entity("Nssol.Platypus.Models.ResourceContainer", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("Cpu");
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired();
+
+                    b.Property<int>("Gpu");
+
+                    b.Property<int>("Memory");
+
+                    b.Property<DateTime>("ModifiedAt");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired();
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.Property<long>("NodeId");
+
+                    b.Property<string>("Status")
+                        .IsRequired();
+
+                    b.Property<long>("TenantId");
+
+                    b.Property<string>("TenantName")
+                        .IsRequired();
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NodeId");
+
+                    b.ToTable("ResourceContainers");
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.ResourceJob", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("ContainerName")
+                        .IsRequired();
+
+                    b.Property<int>("Cpu");
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired();
+
+                    b.Property<int>("Gpu");
+
+                    b.Property<DateTime>("JobCompletedAt");
+
+                    b.Property<DateTime>("JobCreatedAt");
+
+                    b.Property<DateTime?>("JobStartedAt");
+
+                    b.Property<int>("Memory");
+
+                    b.Property<DateTime>("ModifiedAt");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired();
+
+                    b.Property<int>("NodeCpu");
+
+                    b.Property<int>("NodeGpu");
+
+                    b.Property<int>("NodeMemory");
+
+                    b.Property<string>("NodeName")
+                        .IsRequired();
+
+                    b.Property<string>("Status")
+                        .IsRequired();
+
+                    b.Property<long>("TenantId");
+
+                    b.Property<string>("TenantName")
+                        .IsRequired();
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ResourceJobs");
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.ResourceNode", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("Cpu");
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired();
+
+                    b.Property<int>("Gpu");
+
+                    b.Property<int>("Memory");
+
+                    b.Property<DateTime>("ModifiedAt");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired();
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.Property<long>("SampleId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SampleId");
+
+                    b.ToTable("ResourceNodes");
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.ResourceSample", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired();
+
+                    b.Property<DateTime>("ModifiedAt");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired();
+
+                    b.Property<DateTime>("SampledAt");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ResourceSamples");
+                });
+
             modelBuilder.Entity("Nssol.Platypus.Models.Role", b =>
                 {
                     b.Property<long>("Id")
@@ -1209,6 +1357,8 @@ namespace Nssol.Platypus.Migrations
 
                     b.Property<int>("Gpu");
 
+                    b.Property<DateTime?>("JobStartedAt");
+
                     b.Property<string>("JupyterLabVersion")
                         .IsRequired();
 
@@ -1949,6 +2099,22 @@ namespace Nssol.Platypus.Migrations
                     b.HasOne("Nssol.Platypus.Models.Tenant", "Tenant")
                         .WithMany()
                         .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.ResourceContainer", b =>
+                {
+                    b.HasOne("Nssol.Platypus.Models.ResourceNode", "ResourceNode")
+                        .WithMany("ResourceContainers")
+                        .HasForeignKey("NodeId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.ResourceNode", b =>
+                {
+                    b.HasOne("Nssol.Platypus.Models.ResourceSample", "ResourceSample")
+                        .WithMany("ResourceNodes")
+                        .HasForeignKey("SampleId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

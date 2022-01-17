@@ -111,6 +111,26 @@ namespace Nssol.Platypus.DataAccess
         /// </summary>
         public virtual DbSet<UserTenantGitMap> UserTenantGitMaps { get; set; }
 
+        /// <summary>
+        /// リソースモニタサンプルテーブル
+        /// </summary>
+        public virtual DbSet<ResourceSample> ResourceSamples { get; set; }
+
+        /// <summary>
+        /// リソースモニタノードテーブル
+        /// </summary>
+        public virtual DbSet<ResourceNode> ResourceNodes { get; set; }
+
+        /// <summary>
+        /// リソースモニタコンテナテーブル
+        /// </summary>
+        public virtual DbSet<ResourceContainer> ResourceContainers { get; set; }
+
+        /// <summary>
+        /// リソースモニタジョブテーブル
+        /// </summary>
+        public virtual DbSet<ResourceJob> ResourceJobs { get; set; }
+
         #endregion
 
         #region テナント用DbSet

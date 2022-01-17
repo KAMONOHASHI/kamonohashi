@@ -10,10 +10,10 @@
           <el-col :span="4">
             <img
               class="logo"
-              src="@/assets/logo_A.png"
+              src="@/assets/logo_login_aquarium.png"
               alt=""
               width="150px"
-              height="126px"
+              height="150px"
             />
           </el-col>
           <el-col :span="20">

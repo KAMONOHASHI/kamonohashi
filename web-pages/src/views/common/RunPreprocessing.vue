@@ -76,6 +76,7 @@
 </template>
 
 <script>
+import Util from '@/util/util'
 import KqiDisplayError from '@/components/KqiDisplayError'
 import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
 import KqiPreprocessingsSelector from '@/components/selector/KqiPreprocessingSelector'
@@ -181,6 +182,7 @@ export default {
     async runPreprocessing() {
       let form = this.$refs.preprocessingForm
       await form.validate(async valid => {
+        this.error = null
         if (valid) {
           let selectedIdList = []
           if (this.idArray === null) {
@@ -219,12 +221,11 @@ export default {
                 title: 'Success',
                 message: `ID:${dataId}の前処理を実行しました`,
               })
-              this.error = null
             } catch (e) {
               this.error = e
             }
           })
-          await this.sleep(1000)
+          await Util.wait(2000)
           // エラーがない場合、前処理履歴画面に遷移
           if (this.form.movePreprocessingPage && this.error === null) {
             this.emitHistoryPage(this.form.preprocessingId)
@@ -238,9 +239,6 @@ export default {
           }
         }
       })
-    },
-    sleep(ms) {
-      return new Promise(resolve => setTimeout(resolve, ms))
     },
 
     onPreprocessingChanged() {

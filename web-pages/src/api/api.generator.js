@@ -1352,6 +1352,45 @@ export const ApiV2TenantQuotaGetURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * 接続中のテナントが利用可能なノード一覧（リソース値を含む）を取得する。
+ * request: ApiV2TenantNodesGet
+ * url: ApiV2TenantNodesGetURL
+ * method: ApiV2TenantNodesGet_TYPE
+ * raw_url: ApiV2TenantNodesGet_RAW_URL
+ */
+export const ApiV2TenantNodesGet = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/tenant/nodes'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2TenantNodesGet_RAW_URL = function() {
+  return '/api/v2/tenant/nodes'
+}
+export const ApiV2TenantNodesGet_TYPE = function() {
+  return 'get'
+}
+export const ApiV2TenantNodesGetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/tenant/nodes'
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * REST APIとして定時バッチから実行される想定。
  * request: ApiV2AdminTensorboardsDelete
  * url: ApiV2AdminTensorboardsDeleteURL
@@ -4292,6 +4331,57 @@ export const ApiV2InferencesByIdFilesByFileIdDeleteURL = function(parameters = {
   let path = '/api/v2/inferences/{id}/files/{fileId}'
   path = path.replace('{id}', `${parameters['id']}`)
   path = path.replace('{fileId}', `${parameters['fileId']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 推論履歴添付ファイルのサイズ(Byte)を取得する
+ * request: ApiV2InferencesByIdFilesByNameSizeGet
+ * url: ApiV2InferencesByIdFilesByNameSizeGetURL
+ * method: ApiV2InferencesByIdFilesByNameSizeGet_TYPE
+ * raw_url: ApiV2InferencesByIdFilesByNameSizeGet_RAW_URL
+ * @param id - 対象の推論履歴ID
+ * @param name - 対象ファイル名
+ */
+export const ApiV2InferencesByIdFilesByNameSizeGet = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/inferences/{id}/files/{name}/size'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  path = path.replace('{name}', `${parameters['name']}`)
+  if (parameters['name'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: name'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2InferencesByIdFilesByNameSizeGet_RAW_URL = function() {
+  return '/api/v2/inferences/{id}/files/{name}/size'
+}
+export const ApiV2InferencesByIdFilesByNameSizeGet_TYPE = function() {
+  return 'get'
+}
+export const ApiV2InferencesByIdFilesByNameSizeGetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/inferences/{id}/files/{name}/size'
+  path = path.replace('{id}', `${parameters['id']}`)
+  path = path.replace('{name}', `${parameters['name']}`)
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]
@@ -7488,6 +7578,290 @@ export const ApiV2TenantResourceContainersByNameLogGetURL = function(parameters 
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * コンテナリソース履歴のメタデータを取得する
+ * request: ApiV2AdminResourceHistoriesContainersMetadataGet
+ * url: ApiV2AdminResourceHistoriesContainersMetadataGetURL
+ * method: ApiV2AdminResourceHistoriesContainersMetadataGet_TYPE
+ * raw_url: ApiV2AdminResourceHistoriesContainersMetadataGet_RAW_URL
+ */
+export const ApiV2AdminResourceHistoriesContainersMetadataGet = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/admin/resource/histories/containers/metadata'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2AdminResourceHistoriesContainersMetadataGet_RAW_URL = function() {
+  return '/api/v2/admin/resource/histories/containers/metadata'
+}
+export const ApiV2AdminResourceHistoriesContainersMetadataGet_TYPE = function() {
+  return 'get'
+}
+export const ApiV2AdminResourceHistoriesContainersMetadataGetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/admin/resource/histories/containers/metadata'
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * コンテナリソース履歴のデータを取得する
+ * request: ApiV2AdminResourceHistoriesContainersDataGet
+ * url: ApiV2AdminResourceHistoriesContainersDataGetURL
+ * method: ApiV2AdminResourceHistoriesContainersDataGet_TYPE
+ * raw_url: ApiV2AdminResourceHistoriesContainersDataGet_RAW_URL
+ * @param startDate - 開始日
+ * @param endDate - 終了日
+ * @param withHeader - ヘッダ情報を付与するか
+ */
+export const ApiV2AdminResourceHistoriesContainersDataGet = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/admin/resource/histories/containers/data'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['startDate'] !== undefined) {
+    queryParameters['startDate'] = parameters['startDate']
+  }
+  if (parameters['endDate'] !== undefined) {
+    queryParameters['endDate'] = parameters['endDate']
+  }
+  if (parameters['withHeader'] !== undefined) {
+    queryParameters['withHeader'] = parameters['withHeader']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2AdminResourceHistoriesContainersDataGet_RAW_URL = function() {
+  return '/api/v2/admin/resource/histories/containers/data'
+}
+export const ApiV2AdminResourceHistoriesContainersDataGet_TYPE = function() {
+  return 'get'
+}
+export const ApiV2AdminResourceHistoriesContainersDataGetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/admin/resource/histories/containers/data'
+  if (parameters['startDate'] !== undefined) {
+    queryParameters['startDate'] = parameters['startDate']
+  }
+  if (parameters['endDate'] !== undefined) {
+    queryParameters['endDate'] = parameters['endDate']
+  }
+  if (parameters['withHeader'] !== undefined) {
+    queryParameters['withHeader'] = parameters['withHeader']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * コンテナリソース履歴を削除する
+ * request: ApiV2AdminResourceHistoriesContainersPatch
+ * url: ApiV2AdminResourceHistoriesContainersPatchURL
+ * method: ApiV2AdminResourceHistoriesContainersPatch_TYPE
+ * raw_url: ApiV2AdminResourceHistoriesContainersPatch_RAW_URL
+ * @param model - 削除対象の入力モデル
+ */
+export const ApiV2AdminResourceHistoriesContainersPatch = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/admin/resource/histories/containers'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['model'] !== undefined) {
+    body = parameters['model']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('patch', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2AdminResourceHistoriesContainersPatch_RAW_URL = function() {
+  return '/api/v2/admin/resource/histories/containers'
+}
+export const ApiV2AdminResourceHistoriesContainersPatch_TYPE = function() {
+  return 'patch'
+}
+export const ApiV2AdminResourceHistoriesContainersPatchURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/admin/resource/histories/containers'
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * ジョブ実行履歴のメタデータを取得する
+ * request: ApiV2AdminResourceHistoriesJobsMetadataGet
+ * url: ApiV2AdminResourceHistoriesJobsMetadataGetURL
+ * method: ApiV2AdminResourceHistoriesJobsMetadataGet_TYPE
+ * raw_url: ApiV2AdminResourceHistoriesJobsMetadataGet_RAW_URL
+ */
+export const ApiV2AdminResourceHistoriesJobsMetadataGet = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/admin/resource/histories/jobs/metadata'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2AdminResourceHistoriesJobsMetadataGet_RAW_URL = function() {
+  return '/api/v2/admin/resource/histories/jobs/metadata'
+}
+export const ApiV2AdminResourceHistoriesJobsMetadataGet_TYPE = function() {
+  return 'get'
+}
+export const ApiV2AdminResourceHistoriesJobsMetadataGetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/admin/resource/histories/jobs/metadata'
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * ジョブ実行履歴のデータを取得する
+ * request: ApiV2AdminResourceHistoriesJobsDataGet
+ * url: ApiV2AdminResourceHistoriesJobsDataGetURL
+ * method: ApiV2AdminResourceHistoriesJobsDataGet_TYPE
+ * raw_url: ApiV2AdminResourceHistoriesJobsDataGet_RAW_URL
+ * @param startDate - 開始日
+ * @param endDate - 終了日
+ * @param withHeader - ヘッダ情報を付与するか
+ */
+export const ApiV2AdminResourceHistoriesJobsDataGet = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/admin/resource/histories/jobs/data'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['startDate'] !== undefined) {
+    queryParameters['startDate'] = parameters['startDate']
+  }
+  if (parameters['endDate'] !== undefined) {
+    queryParameters['endDate'] = parameters['endDate']
+  }
+  if (parameters['withHeader'] !== undefined) {
+    queryParameters['withHeader'] = parameters['withHeader']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2AdminResourceHistoriesJobsDataGet_RAW_URL = function() {
+  return '/api/v2/admin/resource/histories/jobs/data'
+}
+export const ApiV2AdminResourceHistoriesJobsDataGet_TYPE = function() {
+  return 'get'
+}
+export const ApiV2AdminResourceHistoriesJobsDataGetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/admin/resource/histories/jobs/data'
+  if (parameters['startDate'] !== undefined) {
+    queryParameters['startDate'] = parameters['startDate']
+  }
+  if (parameters['endDate'] !== undefined) {
+    queryParameters['endDate'] = parameters['endDate']
+  }
+  if (parameters['withHeader'] !== undefined) {
+    queryParameters['withHeader'] = parameters['withHeader']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * ジョブ実行履歴を削除する
+ * request: ApiV2AdminResourceHistoriesJobsPatch
+ * url: ApiV2AdminResourceHistoriesJobsPatchURL
+ * method: ApiV2AdminResourceHistoriesJobsPatch_TYPE
+ * raw_url: ApiV2AdminResourceHistoriesJobsPatch_RAW_URL
+ * @param model - 削除対象の入力モデル
+ */
+export const ApiV2AdminResourceHistoriesJobsPatch = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/admin/resource/histories/jobs'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['model'] !== undefined) {
+    body = parameters['model']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('patch', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2AdminResourceHistoriesJobsPatch_RAW_URL = function() {
+  return '/api/v2/admin/resource/histories/jobs'
+}
+export const ApiV2AdminResourceHistoriesJobsPatch_TYPE = function() {
+  return 'patch'
+}
+export const ApiV2AdminResourceHistoriesJobsPatchURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/admin/resource/histories/jobs'
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * 全ロール一覧を取得
  * request: ApiV2AdminRolesGet
  * url: ApiV2AdminRolesGetURL
@@ -9761,6 +10135,57 @@ export const ApiV2TrainingByIdFilesByFileIdDeleteURL = function(parameters = {})
   let path = '/api/v2/training/{id}/files/{fileId}'
   path = path.replace('{id}', `${parameters['id']}`)
   path = path.replace('{fileId}', `${parameters['fileId']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 学習履歴添付ファイルのサイズ(Byte)を取得する
+ * request: ApiV2TrainingByIdFilesByNameSizeGet
+ * url: ApiV2TrainingByIdFilesByNameSizeGetURL
+ * method: ApiV2TrainingByIdFilesByNameSizeGet_TYPE
+ * raw_url: ApiV2TrainingByIdFilesByNameSizeGet_RAW_URL
+ * @param id - 対象の学習履歴ID
+ * @param name - 対象ファイル名
+ */
+export const ApiV2TrainingByIdFilesByNameSizeGet = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/training/{id}/files/{name}/size'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  path = path.replace('{name}', `${parameters['name']}`)
+  if (parameters['name'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: name'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const ApiV2TrainingByIdFilesByNameSizeGet_RAW_URL = function() {
+  return '/api/v2/training/{id}/files/{name}/size'
+}
+export const ApiV2TrainingByIdFilesByNameSizeGet_TYPE = function() {
+  return 'get'
+}
+export const ApiV2TrainingByIdFilesByNameSizeGetURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/training/{id}/files/{name}/size'
+  path = path.replace('{id}', `${parameters['id']}`)
+  path = path.replace('{name}', `${parameters['name']}`)
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]
