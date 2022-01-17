@@ -26,7 +26,7 @@
           "fields": [
             {
               "type": "mrkdwn",
-              "text": "*送信者:*\n@(Model.UserName)"
+              "text": "*Sender:*\n@(Model.UserName)"
             }
           ]
         },

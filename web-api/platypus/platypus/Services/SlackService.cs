@@ -32,7 +32,7 @@ namespace Nssol.Platypus.Services
                 Mention = model.MentionId,
                 Id = model.Id,
                 Name = model.Name,
-                TenantName = model.Tenant.Name,
+                TenantName = model.Tenant.DisplayName,
                 UserName = model.CreatedBy,
                 Status = model.Status,
                 URL = model.Url,
