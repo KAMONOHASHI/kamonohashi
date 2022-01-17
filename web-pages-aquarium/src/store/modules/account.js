@@ -84,7 +84,7 @@ const actions = {
   },
 
   async fetchWebhook({ commit }) {
-    let response = await api.account.getWebhook()
+    let response = await api.account.getWebhookSlack()
     let webhook = response.data
     commit('setWebhook', { webhook })
   },
@@ -124,12 +124,12 @@ const actions = {
 
   // eslint-disable-next-line no-unused-vars
   async putWebhook({ commit }, params) {
-    return await api.account.putWebhook(params)
+    return await api.account.putWebhookSlack(params)
   },
 
   // eslint-disable-next-line no-unused-vars
   async sendNotification({ commit }, params) {
-    return await api.account.postWebhookTest(params)
+    return await api.account.postWebhookSlackTest(params)
   },
 }
 
