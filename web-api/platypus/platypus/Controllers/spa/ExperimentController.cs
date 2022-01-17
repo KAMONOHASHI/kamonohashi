@@ -51,9 +51,6 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly IClusterManagementLogic clusterManagementLogic;
         private readonly ISlackLogic slackLogic;
         private readonly IUnitOfWork unitOfWork;
-        private readonly ITrainingHistoryRepository trainingHistoryRepository;
-        private readonly IInferenceHistoryRepository inferenceHistoryRepository;
-        private readonly ITensorBoardContainerRepository tensorBoardContainerRepository;
         private readonly ITagRepository tagRepository;
         
         /// <summary>

@@ -74,10 +74,10 @@ namespace Nssol.Platypus.Logic
                 {
                     // 再確認してもまだ存在していたら、コンテナ削除
                     await clusterManagementLogic.DeleteContainerAsync(
-                        ContainerType.Training, trainingHistory.Key, tenant.Name, force);;
+                        ContainerType.Training, trainingHistory.Key, tenant.Name, force);
 
                     // 通知処理
-                    slackLogic.InformJobResult(trainingHistory);       
+                    slackLogic.InformJobResult(trainingHistory);
                 }
             }
             else
