@@ -1,15 +1,20 @@
 <template>
   <div>
-    <el-row class="row-element" style="margin-top: 30px;font-size: 18px;">
+    <el-row class="row-element" style="font-size:18px;">
       <el-col :span="6">Slack</el-col>
     </el-row>
-    <el-row class="row-element" style="margin-top: 20px;margin-left:20px">
+    <el-row class="row-element" style="margin-top:20px; margin-left:20px;">
       <el-col :span="3">通知先URL</el-col>
       <el-col :span="19">
-        <el-input :value="value.slackUrl" type="text" @input="slackUrlChange" />
+        <el-input
+          :value="value.slackUrl"
+          type="text"
+          placeholder="https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX"
+          @input="slackUrlChange"
+        />
       </el-col>
     </el-row>
-    <el-row class="row-element" style="margin-top: 30px;margin-left:20px">
+    <el-row class="row-element" style="margin-left:20px;">
       <el-col :span="3">メンション</el-col>
       <el-col :span="19">
         <el-input
