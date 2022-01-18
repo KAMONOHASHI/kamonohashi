@@ -107,9 +107,6 @@ namespace Nssol.Platypus.Controllers.spa
             this.trainingLogic = trainingLogic;
             this.clusterManagementLogic = clusterManagementLogic;
             this.slackLogic = slackLogic;
-            this.inferenceHistoryRepository = inferenceHistoryRepository;
-            this.tensorBoardContainerRepository = tensorBoardContainerRepository;
-            this.tagRepository = tagRepository;
             this.unitOfWork = unitOfWork;
         }
 

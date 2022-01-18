@@ -1087,8 +1087,8 @@ namespace Nssol.Platypus.Controllers.spa
                 return (false, DoJsonNotFound(typeof(TrainingController), requestUrl, modelState,
                     $"Training ID {id} is not found."));
             }
-            
-            //ステータスを確認
+
+            // ステータスを確認
 
             var tenant = currentUserInfo.SelectedTenant;
             var status = trainingHistory.GetStatus();
