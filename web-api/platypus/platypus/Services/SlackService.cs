@@ -50,6 +50,12 @@ namespace Nssol.Platypus.Services
                 if (!response.IsSuccess)
                 {
                     LogWarning("メッセージ送信に失敗: " + response.Error);
+                    return;
+                }
+                // Slackへのメッセージ送信が成功したときは"ok"が返される
+                if (!response.Value.Equals("ok", StringComparison.CurrentCulture))
+                {
+                    LogWarning("メッセージ送信に失敗");
                 }
             }
             catch (InvalidOperationException)
@@ -84,15 +90,19 @@ namespace Nssol.Platypus.Services
                     ApiPath = model.ApiPath,
                     Body = body
                 });
-                if (response.IsSuccess)
-                {
-                    return true;
-                }
-                else
+                if(!response.IsSuccess)
                 {
                     LogWarning("メッセージ送信に失敗: " + response.Error);
                     return false;
                 }
+                // Slackへのメッセージ送信が成功したときは"ok"が返される
+                if (!response.Value.Equals("ok", StringComparison.CurrentCulture))
+                {
+                    LogWarning("メッセージ送信に失敗");
+                    return false;
+                }
+
+                return true;
             }
             catch (InvalidOperationException)
             {
