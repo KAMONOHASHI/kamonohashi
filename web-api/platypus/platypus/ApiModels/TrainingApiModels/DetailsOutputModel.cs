@@ -68,7 +68,7 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
                 Options.Add(new KeyValuePair<string, string>(option.Key, option.Value));
             }
 
-            foreach(var port in history.GetPortList())
+            foreach (var port in history.GetPortList())
             {
                 Ports.Add(port);
             }
@@ -177,7 +177,7 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         /// <summary>
         /// 実行時間
         /// </summary>
-        public string ExecutionTime { get; set;  }
+        public string ExecutionTime { get; set; }
 
         /// <summary>
         /// zip圧縮するか否か。

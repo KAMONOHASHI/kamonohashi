@@ -149,7 +149,7 @@ const actions = {
 
   // eslint-disable-next-line no-unused-vars
   async deleteHistoriesContainers({ commit }, params) {
-    return await api.resource.admin.deleteHistoriesContainers({ model: params })
+    return await api.resource.admin.deleteHistoriesContainers({ body: params })
   },
 
   async fetchHistoriesJobsMetadata({ commit }, params) {
@@ -168,7 +168,7 @@ const actions = {
 
   // eslint-disable-next-line no-unused-vars
   async deleteHistoriesJobs({ commit }, params) {
-    return await api.resource.admin.deleteHistoriesJobs({ model: params })
+    return await api.resource.admin.deleteHistoriesJobs({ body: params })
   },
 }
 

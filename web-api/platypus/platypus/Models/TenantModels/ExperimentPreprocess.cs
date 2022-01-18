@@ -48,7 +48,7 @@ namespace Nssol.Platypus.Models.TenantModels
         /// テンプレート
         /// </summary>
         [ForeignKey(nameof(TemplateId))]
-        public Template Template{ get; set; }
+        public Template Template { get; set; }
 
         /// <summary>
         /// テンプレートバージョン

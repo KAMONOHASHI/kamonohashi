@@ -5,7 +5,6 @@ using Nssol.Platypus.ApiModels.VersionApiModels;
 using Nssol.Platypus.Controllers.Util;
 using Nssol.Platypus.Logic.Interfaces;
 using Nssol.Platypus.ServiceModels;
-using System;
 using System.Collections.Generic;
 using System.Net;
 
@@ -14,6 +13,7 @@ namespace Nssol.Platypus.Controllers.spa
     /// <summary>
     /// バージョン情報を扱うためのAPI集
     /// </summary>
+    [ApiController]
     [ApiVersion("1"), ApiVersion("2")]
     [Route("api/v{api-version:apiVersion}/version")]
     public class VersionController : PlatypusApiControllerBase

@@ -31,7 +31,7 @@ namespace Nssol.Platypus.Controllers.Util
         /// TODO: Python3系やLinux/Macで空文字列を指定した際のASP.NET側の文字列がどうなるか検証する。
         /// </remarks>
         public const string ValueOfEmptyString = "''";
-        
+
         /// <summary>
         /// ログインユーザ情報。
         /// </summary>
@@ -188,7 +188,7 @@ namespace Nssol.Platypus.Controllers.Util
         /// <param name="message">送信するエラーメッセージ</param>
         protected JsonResult JsonValidationError(string message = null)
         {
-            foreach(var model in ModelState.Values)
+            foreach (var model in ModelState.Values)
             {
 
             }
@@ -220,7 +220,7 @@ namespace Nssol.Platypus.Controllers.Util
             return JsonError(HttpStatusCode.Conflict, message);
         }
 
-        protected static JsonResult DoJsonConflict(System.Type type, string requestUrl, ModelStateDictionary modelState, 
+        protected static JsonResult DoJsonConflict(System.Type type, string requestUrl, ModelStateDictionary modelState,
             string message = null)
         {
             return DoJsonError(HttpStatusCode.Conflict, message,

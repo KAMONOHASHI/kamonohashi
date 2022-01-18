@@ -20,6 +20,7 @@ namespace Nssol.Platypus.Controllers.spa
     /// <summary>
     /// テンプレートAPI
     /// </summary>
+    [ApiController]
     [ApiVersion("1"), ApiVersion("2")]
     [Route("api/v{api-version:apiVersion}")]
     public class TemplateController : PlatypusApiControllerBase
@@ -229,6 +230,7 @@ namespace Nssol.Platypus.Controllers.spa
             var templates = templateRepository
                 .GetAll()
                 .OrderByDescending(x => x.Id)
+                .AsEnumerable()
                 .Where(x => templateLogic.Accessible(x, CurrentUserInfo.SelectedTenant));
             if (withTotal)
             {
@@ -248,6 +250,7 @@ namespace Nssol.Platypus.Controllers.spa
             var templates = templateRepository
                 .GetAll()
                 .OrderByDescending(x => x.Id)
+                .AsEnumerable()
                 .Where(x => templateLogic.IsCreatedTenant(x, CurrentUserInfo.SelectedTenant));
             if (withTotal)
             {
@@ -307,7 +310,7 @@ namespace Nssol.Platypus.Controllers.spa
 
             // テンプレートが公開テンプレートでない かつ
             // 作成したテナント以外のテナントからのリクエストの場合はBadrequestを返却
-            if (template.AccessLevel != TemplateAccessLevel.Public 
+            if (template.AccessLevel != TemplateAccessLevel.Public
                 && template.CreaterTenantId != CurrentUserInfo.SelectedTenant.Id)
             {
                 return JsonBadRequest("Invalid access level");
@@ -321,6 +324,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// テンプレートバージョンを作成する
         /// </summary>
         /// <param name="id">テンプレートID</param>
+        /// <param name="model">作成内容</param>
         [HttpPost("admin/templates/{id}/versions")]
         [PermissionFilter(MenuCode.Template)]
         [ProducesResponseType(typeof(VersionIndexOutputModel), (int)HttpStatusCode.Created)]
@@ -453,6 +457,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// テンプレートを編集する
         /// </summary>
         /// <param name="id">テンプレートID</param>
+        /// <param name="model">編集内容</param>
         [HttpPut("admin/templates/{id}")]
         [PermissionFilter(MenuCode.Template)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.OK)]
@@ -467,7 +472,7 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonNotFound($"Template ID {id} is not found.");
             }
-            
+
             // 作成したテナント以外のテナントからのリクエストの場合はBadrequestを返却
             if (template.CreaterTenantId != CurrentUserInfo.SelectedTenant.Id)
             {
@@ -505,7 +510,7 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonNotFound($"Template ID {id} is not found.");
             }
-            
+
             // 作成したテナント以外のテナントからのリクエストの場合はBadrequestを返却
             if (template.CreaterTenantId != CurrentUserInfo.SelectedTenant.Id)
             {

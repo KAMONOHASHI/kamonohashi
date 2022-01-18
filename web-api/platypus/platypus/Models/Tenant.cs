@@ -48,7 +48,7 @@ namespace Nssol.Platypus.Models
                 return $"{Storage.NfsRootPath}{StorageBucket}/{ResourceType.Data}";
             }
         }
-        
+
         /// <summary>
         /// コンテナ出力ファイル用のNFSマウント元パス
         /// </summary>

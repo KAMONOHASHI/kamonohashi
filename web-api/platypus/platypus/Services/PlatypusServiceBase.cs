@@ -1,7 +1,5 @@
-﻿
-using Microsoft.AspNetCore.WebUtilities;
+﻿using Microsoft.AspNetCore.WebUtilities;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Nssol.Platypus.Infrastructure;
 using RazorLight;
 using RazorLight.Razor;
@@ -38,7 +36,7 @@ namespace Nssol.Platypus.Services
         /// </summary>
         public PlatypusServiceBase(Logic.Interfaces.ICommonDiLogic commonDiLogic, string templateDir = null) : base(commonDiLogic)
         {
-            if(string.IsNullOrEmpty(templateDir) == false)
+            if (string.IsNullOrEmpty(templateDir) == false)
             {
                 string path = Path.Combine(Directory.GetCurrentDirectory(), templateDir);
                 var project = new FileSystemRazorProject(path);
@@ -76,7 +74,7 @@ namespace Nssol.Platypus.Services
         /// <param name="param">リクエストパラメータ</param>
         /// <param name="errLogMode">ログモードで true ならエラー出力</param>
         /// <returns>送信結果</returns>
-        protected async Task<ResponseResult> SendGetRequestAsync(RequestParam param, bool errLogMode=true)
+        protected async Task<ResponseResult> SendGetRequestAsync(RequestParam param, bool errLogMode = true)
         {
             return await SendRequestAndGetStringAsync(HttpMethod.Get, param, errLogMode);
         }
@@ -132,7 +130,7 @@ namespace Nssol.Platypus.Services
         /// <param name="param">リクエストパラメータ</param>
         /// <param name="errLogMode">ログモードで true ならエラー出力</param>
         /// <returns>送信結果</returns>
-        private async Task<ResponseResult> SendRequestAndGetStringAsync(HttpMethod method, RequestParam param, bool errLogMode=true)
+        private async Task<ResponseResult> SendRequestAndGetStringAsync(HttpMethod method, RequestParam param, bool errLogMode = true)
         {
             using (HttpResponseMessage response = await SendRequestAsync(method, param))
             {
@@ -183,15 +181,15 @@ namespace Nssol.Platypus.Services
                     client.DefaultRequestHeaders.Add("User-Agent", param.UserAgent);
                 }
                 //その他ヘッダ追加
-                if(param.Headers != null && param.Headers.Count > 0)
+                if (param.Headers != null && param.Headers.Count > 0)
                 {
-                    foreach(var header in param.Headers)
+                    foreach (var header in param.Headers)
                     {
                         client.DefaultRequestHeaders.Add(header.Key, header.Value);
                     }
                 }
-                
-                string url = param.BaseUrl.EndsWith("/") ? $"{param.BaseUrl}{param.RequestUri.TrimStart('/')}" : $"{param.BaseUrl}/{param.RequestUri.TrimStart('/')}";
+
+                string url = param.BaseUrl.EndsWith("/", StringComparison.CurrentCulture) ? $"{param.BaseUrl}{param.RequestUri.TrimStart('/')}" : $"{param.BaseUrl}/{param.RequestUri.TrimStart('/')}";
 
                 LogDebug($"API呼び出し {method.Method} {url}");
 
@@ -308,13 +306,13 @@ namespace Nssol.Platypus.Services
             {
                 get
                 {
-                    if(QueryParams == null)
+                    if (QueryParams == null)
                     {
                         return ApiPath;
                     }
                     string uri = QueryHelpers.AddQueryString(ApiPath, QueryParams);
                     //上記のURLエンコードのバグ、(); が正しくエスケープされない
-                    uri = uri.Replace("(", "%28").Replace(")", "%29").Replace(";", "%3B");
+                    uri = uri.Replace("(", "%28", StringComparison.CurrentCulture).Replace(")", "%29", StringComparison.CurrentCulture).Replace(";", "%3B", StringComparison.CurrentCulture);
 
                     return uri;
                 }
@@ -327,12 +325,12 @@ namespace Nssol.Platypus.Services
             {
                 get
                 {
-                    if(string.IsNullOrEmpty(UserName) == false && string.IsNullOrEmpty(Password) == false)
+                    if (string.IsNullOrEmpty(UserName) == false && string.IsNullOrEmpty(Password) == false)
                     {
                         var byteArray = Encoding.ASCII.GetBytes(string.Format("{0}:{1}", UserName, Password));
                         return new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
                     }
-                    else if(string.IsNullOrEmpty(Token) == false)
+                    else if (string.IsNullOrEmpty(Token) == false)
                     {
                         var tokenType = TokenType ?? "Bearer";
                         return new AuthenticationHeaderValue(tokenType, Token);

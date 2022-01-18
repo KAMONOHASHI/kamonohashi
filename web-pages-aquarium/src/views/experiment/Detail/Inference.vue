@@ -320,14 +320,14 @@ export default {
       this.deleteId = null
     },
     async retrieveData() {
+      //推論一覧を取得
+      await this['experiment/fetchEvaluations'](this.id)
       //アクアリウムデータセットリストを取得
       let params = this.searchCondition
       params.page = this.pageStatus.currentPage
       params.perPage = this.pageStatus.currentPageSize
       params.withTotal = true
       await this['aquariumDataSet/fetchDataSets'](params)
-      //推論一覧を取得
-      await this['experiment/fetchEvaluations'](this.id)
     },
     closeDrawer() {
       this.listType = 'dataSet'

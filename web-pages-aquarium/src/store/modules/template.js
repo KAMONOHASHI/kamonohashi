@@ -62,7 +62,7 @@ const actions = {
   },
   // eslint-disable-next-line no-unused-vars
   async post({ commit }, params) {
-    return await api.templates.admin.post({ model: params })
+    return await api.templates.admin.post({ body: params })
   },
   async fetchVersions({ commit }, id) {
     let versions = (await api.templates.admin.getByIdVersions({ id: id })).data

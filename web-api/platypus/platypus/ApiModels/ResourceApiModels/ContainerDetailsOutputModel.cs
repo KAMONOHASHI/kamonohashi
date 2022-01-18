@@ -1,9 +1,4 @@
-﻿using Nssol.Platypus.Infrastructure;
-using Nssol.Platypus.Infrastructure.Infos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Nssol.Platypus.Infrastructure.Infos;
 
 namespace Nssol.Platypus.ApiModels.ResourceApiModels
 {

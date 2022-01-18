@@ -42,7 +42,7 @@ class TenantApi(object):
         >>> result = thread.get()
 
         :param async_req bool
-        :param TenantApiModelsCreateInputModel model:
+        :param TenantApiModelsCreateInputModel body:
         :return: TenantApiModelsIndexOutputModel
                  If the method is called asynchronously,
                  returns the request thread.
@@ -63,13 +63,13 @@ class TenantApi(object):
         >>> result = thread.get()
 
         :param async_req bool
-        :param TenantApiModelsCreateInputModel model:
+        :param TenantApiModelsCreateInputModel body:
         :return: TenantApiModelsIndexOutputModel
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['model']  # noqa: E501
+        all_params = ['body']  # noqa: E501
         all_params.append('async_req')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -97,8 +97,8 @@ class TenantApi(object):
         local_var_files = {}
 
         body_params = None
-        if 'model' in params:
-            body_params = params['model']
+        if 'body' in params:
+            body_params = params['body']
         # HTTP header `Accept`
         header_params['Accept'] = self.api_client.select_header_accept(
             ['application/json'])  # noqa: E501
@@ -407,7 +407,7 @@ class TenantApi(object):
 
         :param async_req bool
         :param int id: (required)
-        :param TenantApiModelsEditInputModel model:
+        :param TenantApiModelsEditInputModel body:
         :return: TenantApiModelsIndexOutputModel
                  If the method is called asynchronously,
                  returns the request thread.
@@ -429,13 +429,13 @@ class TenantApi(object):
 
         :param async_req bool
         :param int id: (required)
-        :param TenantApiModelsEditInputModel model:
+        :param TenantApiModelsEditInputModel body:
         :return: TenantApiModelsIndexOutputModel
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['id', 'model']  # noqa: E501
+        all_params = ['id', 'body']  # noqa: E501
         all_params.append('async_req')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -469,8 +469,8 @@ class TenantApi(object):
         local_var_files = {}
 
         body_params = None
-        if 'model' in params:
-            body_params = params['model']
+        if 'body' in params:
+            body_params = params['body']
         # HTTP header `Accept`
         header_params['Accept'] = self.api_client.select_header_accept(
             ['application/json'])  # noqa: E501

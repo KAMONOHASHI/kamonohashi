@@ -8,7 +8,7 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories
     /// <summary>
     /// タグテーブルにアクセスするためのレポジトリ
     /// </summary>
-    public interface ITagRepository: IRepositoryForTenant<Tag>
+    public interface ITagRepository : IRepositoryForTenant<Tag>
     {
         #region データ
 

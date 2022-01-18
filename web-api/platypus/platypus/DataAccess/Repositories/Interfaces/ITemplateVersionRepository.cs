@@ -6,5 +6,5 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces
     /// <summary>
     /// テンプレートバージョンテーブルにアクセスするためのリポジトリインターフェース
     /// </summary>
-    public interface ITemplateVersionRepository : IRepository<TemplateVersion> {}
+    public interface ITemplateVersionRepository : IRepository<TemplateVersion> { }
 }

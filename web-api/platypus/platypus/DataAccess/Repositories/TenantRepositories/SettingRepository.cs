@@ -55,7 +55,7 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
                 string apiSecurityTokenPass;
 
                 var settings = GetAll();
-                if(settings?.Count() == 0)
+                if (settings?.Count() == 0)
                 {
                     //初回起動なので、乱数でパスフレーズを作る
                     apiSecurityTokenPass = Util.GenerateRandamString(32);
@@ -86,7 +86,7 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
             bool isInitializeDB = false;
 
             int retryCount = 1;
-            for ( ; retryCount <= DBInitRetryOptions.InitDBRetryMaxCount; retryCount++)
+            for (; retryCount <= DBInitRetryOptions.InitDBRetryMaxCount; retryCount++)
             {
                 if (retryCount > 1)
                 {

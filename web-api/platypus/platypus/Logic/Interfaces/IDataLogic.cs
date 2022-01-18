@@ -1,8 +1,6 @@
 ﻿using Nssol.Platypus.ApiModels.DataApiModels;
 using Nssol.Platypus.Models.TenantModels;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Logic.Interfaces

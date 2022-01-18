@@ -4,9 +4,7 @@ using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Infrastructure.Options;
 using Nssol.Platypus.Models;
 using Nssol.Platypus.ServiceModels.Git;
-using Nssol.Platypus.ServiceModels.Git.GitHubModels;
 using Nssol.Platypus.ServiceModels.GitHubModels;
-using Nssol.Platypus.Services.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -79,7 +77,7 @@ namespace Nssol.Platypus.Services
                             result.Select(e => new RepositoryModel()
                             {
                                 Owner = e.owner.login, //GitHub,GitBucketではAPI実行にそのリポジトリのオーナー名が必要なので、それをKeyに入れる
-                            Name = e.name,
+                                Name = e.name,
                                 FullName = e.full_name,
                             }).OrderBy(e => e.FullName));
                 }
@@ -99,7 +97,7 @@ namespace Nssol.Platypus.Services
         {
             RequestParam param = new RequestParam()
             {
-                BaseUrl = gitMap.Git.ApiUrl.TrimEnd('/')+"/api/v3",
+                BaseUrl = gitMap.Git.ApiUrl.TrimEnd('/') + "/api/v3",
                 Token = gitMap.GitToken,
                 UserAgent = "C#App",
                 TokenType = "token",

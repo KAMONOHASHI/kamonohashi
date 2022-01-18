@@ -43,7 +43,7 @@ namespace Nssol.Platypus.Logic.HostedService
             this.logger = logger;
             this.timerScheduleOptions = timerScheduleOptions;
             doWorkCount = 0;
-            
+
             // timer オブジェクトは StartAsync() 初回実行時に生成
             this.timer = null;
 

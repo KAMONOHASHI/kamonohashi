@@ -17,6 +17,10 @@ using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Controllers.spa
 {
+    /// <summary>
+    /// ユーザ管理を扱うためのAPI集
+    /// </summary>
+    [ApiController]
     [ApiVersion("1"), ApiVersion("2")]
     [Route("api/v{api-version:apiVersion}/admin/users")]
     public class UserController : PlatypusApiControllerBase
@@ -258,7 +262,7 @@ namespace Nssol.Platypus.Controllers.spa
 
                 // このテナントが既に紐づけられているか確認
                 Tenant currentTenant = currentTenants.FirstOrDefault(t => t.Id == tenantInput.Id);
-                if(currentTenant != null)
+                if (currentTenant != null)
                 {
                     //ロールが変更されている可能性があるので、更新処理を行う
                     //一度テナントから外す
@@ -380,7 +384,7 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             var maps = userRepository.AttachTenant(user, tenant.Id, roles);
-            if(maps != null)
+            if (maps != null)
             {
                 foreach (var map in maps)
                 {
@@ -438,7 +442,8 @@ namespace Nssol.Platypus.Controllers.spa
             var users = userRepository.GetUsers(tenantId).OrderBy(u => u.Name).ToList();
 
             //ロール情報紐づけて、返す
-            return JsonOK(users.Select(u => {
+            return JsonOK(users.Select(u =>
+            {
                 var result = new IndexForTenantOutputModel(u);
                 result.Roles = roleRepository.GetTenantRoles(u.Id, tenantId).OrderBy(r => r.SortOrder).Select(r => new RoleInfo(r));
                 return result;
@@ -465,7 +470,7 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonNotFound($"User ID {id} is not found.");
             }
             var tenantId = CurrentUserInfo.SelectedTenant.Id;
-            if(await userRepository.IsMemberAsync(user.Id, tenantId) == false)
+            if (await userRepository.IsMemberAsync(user.Id, tenantId) == false)
             {
                 //指定したユーザが同じテナントに所属していない場合、404扱い
                 LogWarning($"User {user.Name} is NOT a member of Tenant {tenantId} yet.");

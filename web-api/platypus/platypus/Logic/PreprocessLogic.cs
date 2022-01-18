@@ -59,7 +59,7 @@ namespace Nssol.Platypus.Logic
         {
             // 前処理結果を削除
             bool result = true;
-            foreach (var outputDataId in preprocessHistoryRepository.GetPreprocessOutputs(preprocessHistory.Id))
+            foreach (var outputDataId in preprocessHistoryRepository.GetPreprocessOutputs(preprocessHistory.Id).ToList())
             {
                 //1件でも失敗したら結果はfalse。ただし、エラーが出ても最後まで消し切る。
                 result &= await dataLogic.DeleteDataAsync(outputDataId);

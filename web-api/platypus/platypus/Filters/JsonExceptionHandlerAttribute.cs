@@ -36,7 +36,7 @@ namespace Nssol.Platypus.Filters
             Infrastructure.LogUtil.WriteErrorPLog(Logger, context.HttpContext, "Raise Unhandled Exception in API Request.", context.Exception);
 
             int statusCode = 500;
-            if(context.Exception is UnauthorizedAccessException)
+            if (context.Exception is UnauthorizedAccessException)
             {
                 //権限のない操作を実行した。トークン不正の可能性があるので、ログオフさせるために403ではなく401を返す。
                 statusCode = 401;

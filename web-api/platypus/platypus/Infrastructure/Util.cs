@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -57,20 +58,20 @@ namespace Nssol.Platypus.Infrastructure
         /// <param name="data">クエリ</param>
         /// <param name="page">ページ番号。スタートは1。</param>
         /// <param name="perPage">表示件数</param>
-        public static IQueryable<T> Paging<T>(this IQueryable<T> data, int page, int perPage) where T : Models.ModelBase
+        public static IEnumerable<T> Paging<T>(this IEnumerable<T> data, int page, int perPage) where T : Models.ModelBase
         {
             int skip = perPage * (page - 1);
             return data.Skip(skip).Take(perPage);
         }
 
         /// <summary>
-        /// <see cref="IQueryable{T}"/>に、文字列の部分一致条件を追加する。
+        /// <see cref="IEnumerable{T}"/>に、文字列の部分一致条件を追加する。
         /// <paramref name="query"/>が未指定だった場合は<paramref name="data"/>をそのまま返す。
         /// </summary>
         /// <param name="data">元のクエリ</param>
         /// <param name="keySelector">比較する文字列を選択する関数</param>
         /// <param name="query">検索文字列（部分一致）</param>
-        public static IQueryable<T> SearchString<T>(this IQueryable<T> data, Func<T, string> keySelector, string query) where T : Models.ModelBase
+        public static IEnumerable<T> SearchString<T>(this IEnumerable<T> data, Func<T, string> keySelector, string query) where T : Models.ModelBase
         {
             if (string.IsNullOrEmpty(query))
             {
@@ -84,13 +85,13 @@ namespace Nssol.Platypus.Infrastructure
         }
 
         /// <summary>
-        /// <see cref="IQueryable{T}"/>に、数値の比較条件を追加する。
+        /// <see cref="IEnumerable{T}"/>に、数値の比較条件を追加する。
         /// <paramref name="query"/>が未指定だった場合は<paramref name="data"/>をそのまま返す。
         /// </summary>
         /// <param name="data">元のクエリ</param>
         /// <param name="keySelector">比較する数値を選択する関数</param>
         /// <param name="query">比較文字列＋数値の形式</param>
-        public static IQueryable<T> SearchLong<T>(this IQueryable<T> data, Func<T, long> keySelector, string query) where T : Models.ModelBase
+        public static IEnumerable<T> SearchLong<T>(this IEnumerable<T> data, Func<T, long> keySelector, string query) where T : Models.ModelBase
         {
             if (string.IsNullOrEmpty(query))
             {
@@ -144,7 +145,7 @@ namespace Nssol.Platypus.Infrastructure
         }
 
         /// <summary>
-        /// <see cref="IQueryable{T}"/>に、時刻の比較条件を追加する。
+        /// <see cref="IEnumerable{T}"/>に、時刻の比較条件を追加する。
         /// <paramref name="query"/>が未指定だった場合は<paramref name="data"/>をそのまま返す。
         /// 
         /// e.g.（比較文字列は半角でOK）
@@ -155,7 +156,7 @@ namespace Nssol.Platypus.Infrastructure
         /// <param name="data">元のクエリ</param>
         /// <param name="keySelector">比較する時刻を選択する関数</param>
         /// <param name="query">比較文字列＋時刻の形式</param>
-        public static IQueryable<T> SearchTime<T>(this IQueryable<T> data, Func<T, DateTime> keySelector, string query) where T : Models.ModelBase
+        public static IEnumerable<T> SearchTime<T>(this IEnumerable<T> data, Func<T, DateTime> keySelector, string query) where T : Models.ModelBase
         {
             if (string.IsNullOrEmpty(query))
             {

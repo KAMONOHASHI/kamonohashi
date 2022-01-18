@@ -76,17 +76,17 @@ const actions = {
 
   // eslint-disable-next-line no-unused-vars
   async post({ commit }, params) {
-    return await api.datasets.post({ model: params })
+    return await api.datasets.post({ body: params })
   },
 
   // eslint-disable-next-line no-unused-vars
   async put({ commit }, { id, params }) {
-    return await api.datasets.put({ id: id, model: params })
+    return await api.datasets.put({ id: id, body: params })
   },
 
   // eslint-disable-next-line no-unused-vars
   async patch({ commit }, { id, params }) {
-    await api.datasets.patch({ id: id, model: params })
+    await api.datasets.patch({ id: id, body: params })
   },
 
   // eslint-disable-next-line no-unused-vars

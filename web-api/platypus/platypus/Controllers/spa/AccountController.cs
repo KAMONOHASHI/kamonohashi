@@ -11,6 +11,7 @@ using Nssol.Platypus.Infrastructure.Types;
 using Nssol.Platypus.Logic.Interfaces;
 using Nssol.Platypus.Models;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
@@ -18,6 +19,10 @@ using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Controllers.spa
 {
+    /// <summary>
+    /// アカウント管理を扱うためのAPI集
+    /// </summary>
+    [ApiController]
     [ApiVersion("1"), ApiVersion("2")]
     [Route("api/v{api-version:apiVersion}/account")]
     public class AccountController : PlatypusApiControllerBase
@@ -76,7 +81,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPut]
         [Filters.PermissionFilter(MenuCode.Account)]
         [ProducesResponseType(typeof(AccountOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> EditAccountInfo(AccountInputModel model)
+        public async Task<IActionResult> EditAccountInfo([FromQuery] AccountInputModel model)
         {
             //入力値チェック
             if (!ModelState.IsValid)
@@ -129,12 +134,12 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonNotFound($"User ID {CurrentUserInfo.Id} is not found.");
             }
             //パスワード変更を許可するのは、ローカルアカウントのユーザのみ
-            if(user.ServiceType != AuthServiceType.Local)
+            if (user.ServiceType != AuthServiceType.Local)
             {
                 return JsonBadRequest($"Only local account user can change the password. Your account service type is {user.ServiceType} not Local.");
             }
             string oldHash = Infrastructure.Util.GenerateHash(model.CurrentPassword, user.Name);
-            if(oldHash != user.Password)
+            if (oldHash != user.Password)
             {
                 return JsonBadRequest($"Password mismatch. Please input the current correct password.");
             }
@@ -192,7 +197,7 @@ namespace Nssol.Platypus.Controllers.spa
 
             //Tenant name must not be null. Hence "Single" is intended use here.
             // string tenantName = signInResult.Value.Single(c => c.Type == ApplicationConst.ClaimTypeTenantName).Value;
-            long tenantId = long.Parse(signInResult.Value.FirstOrDefault(c => c.Type == ClaimTypes.GroupSid).Value);
+            long tenantId = long.Parse(signInResult.Value.FirstOrDefault(c => c.Type == ClaimTypes.GroupSid).Value, CultureInfo.CurrentCulture);
 
             //テナント取得（ここまでに存在チェックは行われているハズ）
             var tenant = tenantRepository.Get(tenantId);
@@ -213,12 +218,12 @@ namespace Nssol.Platypus.Controllers.spa
         /// 現在の認証情報を使用し、新規にアクセストークンを取得する
         /// </summary>
         /// <param name="tenantId">テナントID</param>
-        /// <param name="expiresIn">有効期限(秒)。省略時はシステムの既定値。</param>
+        /// <param name="model">テナント切替用入力モデル</param>
         /// <param name="tenantRepository">DI用</param>
         [HttpPost("tenants/{tenantId}/token")]
         [Filters.PermissionFilter(MenuCode.Account)]
         [ProducesResponseType(typeof(LoginOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> SwitchTenantAsync([FromRoute] long tenantId, [FromServices] ITenantRepository tenantRepository, [FromQuery] int? expiresIn)
+        public async Task<IActionResult> SwitchTenantAsync([FromRoute] long tenantId, [FromServices] ITenantRepository tenantRepository, [FromBody] SwitchTenantInputModel model)
         {
             var tenant = tenantRepository.Get(tenantId);
             if (tenant == null)
@@ -233,9 +238,9 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonBadRequest(authResult.Error);
             }
-            
+
             // 結果からトークンを作成
-            var token = loginLogic.GenerateToken(authResult.Value, expiresIn);
+            var token = loginLogic.GenerateToken(authResult.Value, model.ExpiresIn);
 
             var result = new LoginOutputModel()
             {

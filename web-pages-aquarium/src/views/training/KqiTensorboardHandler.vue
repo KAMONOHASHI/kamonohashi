@@ -240,7 +240,7 @@ export default {
 
       let params = {
         id: this.id,
-        model: {
+        body: {
           expiresIn: this.expiresIn * 60 * 60,
           selectedHistoryIds:
             selectedHistoryIds.length !== 0 ? selectedHistoryIds : null,

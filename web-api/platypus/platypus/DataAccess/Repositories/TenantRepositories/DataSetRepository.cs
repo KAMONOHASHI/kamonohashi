@@ -1,12 +1,10 @@
-﻿using Nssol.Platypus.DataAccess.Core;
+﻿using Microsoft.EntityFrameworkCore;
+using Nssol.Platypus.DataAccess.Core;
+using Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories;
 using Nssol.Platypus.Models.TenantModels;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Nssol.Platypus.DataAccess.Repositories.Interfaces;
-using Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories;
 
 namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
 {
@@ -101,7 +99,7 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
         public DataSet GetLockedDataSetByData(long dataId)
         {
             var lockedEntry = GetModelAll<DataSetEntry>().Include(e => e.DataSet).Where(entry => entry.DataId == dataId && entry.DataSet.IsLocked == true).FirstOrDefault();
-            if(lockedEntry == null)
+            if (lockedEntry == null)
             {
                 return null;
             }

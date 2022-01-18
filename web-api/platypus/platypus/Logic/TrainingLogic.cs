@@ -64,7 +64,7 @@ namespace Nssol.Platypus.Logic
                     ? (await clusterManagementLogic.GetAllNodesAsync()).FirstOrDefault(x => x.Name == info.NodeName)
                     : null;
 
-                /// ジョブ実行履歴追加
+                // ジョブ実行履歴追加
                 AddJobHistory(trainingHistory, node, tenant, info, status.Key);
 
                 // 実コンテナ削除の結果は確認せず、DBの更新を先に確定する（コンテナがいないなら、そのまま消しても問題ない想定）
@@ -83,7 +83,7 @@ namespace Nssol.Platypus.Logic
             else
             {
                 await trainingHistoryRepository.UpdateStatusAsync(trainingHistory.Id, status, force);
-                
+
                 // DBの更新を確定する
                 unitOfWork.Commit();
             }

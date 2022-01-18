@@ -8,7 +8,7 @@ namespace Nssol.Platypus.Models
     /// <summary>
     /// ユーザー情報
     /// </summary>
-    public class User:ModelBase
+    public class User : ModelBase
     {
         /// <summary>
         /// ユーザ名

@@ -12,7 +12,7 @@
         /// 比較文字列＋数値の形式。
         /// </summary>
         public string Id { get; set; }
-        
+
         /// <summary>
         /// 名前
         /// </summary>
@@ -32,7 +32,7 @@
         /// メモ
         /// </summary>
         public string Memo { get; set; }
-        
+
         /// <summary>
         /// ステータス
         /// </summary>

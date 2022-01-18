@@ -7,8 +7,8 @@ namespace Nssol.Platypus.ApiModels.ExperimentApiModels
     /// </summary>
     public class DetailsOutputModel : IndexOutputModel
     {
-        public DetailsOutputModel(Experiment experiment, string status) 
-            : base(experiment, status) 
+        public DetailsOutputModel(Experiment experiment, string status)
+            : base(experiment, status)
         {
             DataSetVersion = new Aquarium.DataSetApiModels.VersionIndexOutputModel(experiment.DataSetVersion);
             TemplateVersion = new TemplateApiModels.VersionIndexOutputModel(experiment.TemplateVersion);

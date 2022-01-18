@@ -1,8 +1,6 @@
-﻿using System;
+﻿using Nssol.Platypus.Infrastructure.Infos;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Nssol.Platypus.Infrastructure.Infos;
 
 namespace Nssol.Platypus.ApiModels.AccountApiModels
 {
@@ -53,7 +51,7 @@ namespace Nssol.Platypus.ApiModels.AccountApiModels
                     Children = new List<MenuTreeOutputModel>(),
                     Category = menu.Category
                 };
-                foreach(MenuItemInfo child in menu.Children)
+                foreach (MenuItemInfo child in menu.Children)
                 {
                     group.Children.Add(GenerateMenu(child, lang));
                 }

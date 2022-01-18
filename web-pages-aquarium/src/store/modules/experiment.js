@@ -65,13 +65,13 @@ const actions = {
   },
   // eslint-disable-next-line no-unused-vars
   async post({ commit }, params) {
-    return await api.experiment.post({ model: params })
+    return await api.experiment.post({ body: params })
   },
   // eslint-disable-next-line no-unused-vars
   async postPreprocessingComplete({ commit }, { id, params }) {
     return await api.experiment.postPreprocessingCompleteById({
       id: id,
-      model: params,
+      body: params,
     })
   },
 
@@ -127,14 +127,15 @@ const actions = {
       fileInfo[i].FileName = fileInfo[i].name
       await api.experiment.postFilesById({
         id: id,
-        model: fileInfo[i],
+        body: fileInfo[i],
       })
     }
   },
 
-  // eslint-disable-next-line no-unused-vars
-  async delete({ state }, id) {
+  async delete({ commit }, id) {
     await api.experiment.deleteById({ id: id })
+    commit('clearDetail')
+    commit('clearEvaluations')
   },
 
   // eslint-disable-next-line no-unused-vars
@@ -155,7 +156,7 @@ const actions = {
   async postEvaluations({ commit }, { id, params }) {
     return await api.experiment.postEvaluationsById({
       id: id,
-      model: params,
+      body: params,
     })
   },
 
@@ -210,6 +211,9 @@ const mutations = {
   },
   setEvaluations(state, { evaluations }) {
     state.evaluations = evaluations
+  },
+  clearEvaluations(state) {
+    state.evaluations = []
   },
 }
 

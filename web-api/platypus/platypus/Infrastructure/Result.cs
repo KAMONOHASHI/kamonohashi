@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Nssol.Platypus.Infrastructure
+﻿namespace Nssol.Platypus.Infrastructure
 {
     /// <summary>
     /// 別のレイヤの処理を呼びだす際に、正常終了時と異常終了時で異なる型を返したいときに利用するクラス。
     /// </summary>
     /// <typeparam name="T">正常終了時の結果の型</typeparam>
     /// <typeparam name="U">異常終了時の結果の型</typeparam>
-    public class Result<T,U>
+    public class Result<T, U>
     {
         /// <summary>
         /// 結果の成否

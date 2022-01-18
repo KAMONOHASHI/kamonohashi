@@ -1,10 +1,5 @@
-﻿using Nssol.Platypus.Infrastructure;
-using Nssol.Platypus.Infrastructure.Infos;
-using Nssol.Platypus.Models;
-using System;
+﻿using Nssol.Platypus.Infrastructure.Infos;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Nssol.Platypus.ApiModels.AccountApiModels
 {

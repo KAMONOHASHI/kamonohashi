@@ -31,7 +31,7 @@ namespace Nssol.Platypus.Services
         public async virtual Task<Result<IEnumerable<RepositoryModel>, string>> GetAllRepositoriesAsync(UserTenantGitMap gitMap)
         {
             var response = await SendGetFullPageRequestsAsync<GetRepositoryModel>("/api/v4/projects", gitMap, new Dictionary<string, string>());
-            
+
             if (response.IsSuccess)
             {
                 //ロジック層に返すための汎用モデルに変換
@@ -80,7 +80,7 @@ namespace Nssol.Platypus.Services
                 var result = JsonConvert.DeserializeObject<IEnumerable<GetRepositoryModel>>(response.Value);
                 //ロジック層に返すための版用モデルに変換
                 var outModel = result.FirstOrDefault(r => r.path_with_namespace == $"{owner}/{repositoryName}");
-                if(outModel == null)
+                if (outModel == null)
                 {
                     string message = $"Repository {owner}/{repositoryName} is not found.";
                     LogWarning(message);
@@ -106,7 +106,7 @@ namespace Nssol.Platypus.Services
         public async Task<Result<IEnumerable<BranchModel>, string>> GetAllBranchesAsync(UserTenantGitMap gitMap, string repositoryName, string owner)
         {
             var projectId = await GetProjectIdAsync(gitMap, repositoryName, owner);
-            if(projectId.IsSuccess == false)
+            if (projectId.IsSuccess == false)
             {
                 //プロジェクトIDがない＝ブランチが一つもない＝という事なので、nullを返却
                 return Result<IEnumerable<BranchModel>, string>.CreateResult(null);
@@ -119,7 +119,8 @@ namespace Nssol.Platypus.Services
             if (response.IsSuccess)
             {
                 return Result<IEnumerable<BranchModel>, string>.CreateResult(
-                        response.Value.Select(e => new BranchModel() {
+                        response.Value.Select(e => new BranchModel()
+                        {
                             BranchName = e.name,
                             CommitId = e.commit?.id
                         }));
@@ -307,7 +308,7 @@ namespace Nssol.Platypus.Services
                     outModel.AddRange(result);
 
                     int totalPages = int.Parse(response.Headers.First(h => h.Key == "X-Total-Pages").Value.First());
-                    if(totalPages <= page)
+                    if (totalPages <= page)
                     {
                         return Result<List<T>, string>.CreateResult(outModel);
                     }
@@ -323,6 +324,11 @@ namespace Nssol.Platypus.Services
             while (true);
         }
 
+        /// <summary>
+        /// 指定したtokenのgitサービス側のユーザー名を取得する
+        /// </summary>
+        /// <param name="gitMap">Git情報</param>
+        /// <returns>コミット詳細</returns>
         public async Task<Result<string, string>> GetUserNameByTokenAsync(UserTenantGitMap gitMap)
         {
             // API呼び出しパラメータ作成

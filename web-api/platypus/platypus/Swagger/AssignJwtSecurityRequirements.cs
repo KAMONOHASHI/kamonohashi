@@ -1,10 +1,8 @@
-﻿using System.Linq;
-using System.Collections.Generic;
-using Swashbuckle.AspNetCore.Swagger;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.Authorization;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Nssol.Platypus.Swagger
 {
@@ -14,20 +12,32 @@ namespace Nssol.Platypus.Swagger
         /// Swagger UI用のフィルタ。
         /// Swagger上でAPIを実行する際のJWTトークン認証対応を実現する。
         /// </summary>
-        public void Apply(Operation operation, OperationFilterContext context)
+        public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
             if (operation.Security == null)
-                operation.Security = new List<IDictionary<string, IEnumerable<string>>>();
+            {
+                operation.Security = new List<OpenApiSecurityRequirement>();
+            }
 
             //AllowAnonymousが付いている場合は、アクセスコードを要求しない
             var allowAnonymousAccess = context.MethodInfo.CustomAttributes.Any(a => a.AttributeType == typeof(AllowAnonymousAttribute));
 
             if (allowAnonymousAccess == false)
             {
-                var oAuthRequirements = new Dictionary<string, IEnumerable<string>>
-            {
-                { "api_key", new List<string>() }
-            };
+                var oAuthRequirements = new OpenApiSecurityRequirement()
+                {
+                    {
+                        new OpenApiSecurityScheme()
+                        {
+                            Reference = new OpenApiReference()
+                            {
+                                Id = "api_key",
+                                Type = ReferenceType.SecurityScheme
+                            }
+                        },
+                        new List<string>()
+                    }
+                };
 
                 operation.Security.Add(oAuthRequirements);
             }

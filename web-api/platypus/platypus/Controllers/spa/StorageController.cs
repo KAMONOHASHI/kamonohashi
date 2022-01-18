@@ -21,6 +21,7 @@ namespace Nssol.Platypus.Controllers.spa
     /// URLはアクションメソッド単位で割り当てる。
     /// 多数のメニューで使用される想定のため、権限制御は行わない。
     /// </summary>
+    [ApiController]
     [ApiVersion("1"), ApiVersion("2")]
     public class StorageController : PlatypusApiControllerBase
     {
@@ -84,7 +85,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPost("/api/v{api-version:apiVersion}/admin/storage/endpoints")]
         [Filters.PermissionFilter(MenuCode.Storage)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.Created)]
-        public IActionResult Create([FromBody]CreateInputModel model)
+        public IActionResult Create([FromBody] CreateInputModel model)
         {
             //データの入力チェック
             if (!ModelState.IsValid)
@@ -117,7 +118,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPut("/api/v{api-version:apiVersion}/admin/storage/endpoints/{id}")]
         [Filters.PermissionFilter(MenuCode.Storage)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> Edit(long? id, [FromBody]CreateInputModel model) //EditとCreateで項目が同じなので、入力モデルを使いまわし
+        public async Task<IActionResult> Edit(long? id, [FromBody] CreateInputModel model) //EditとCreateで項目が同じなので、入力モデルを使いまわし
         {
             //データの入力チェック
             if (!ModelState.IsValid || !id.HasValue)
@@ -195,7 +196,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         [HttpGet("/api/v{api-version:apiVersion}/upload/parameter")]
         [ProducesResponseType(typeof(MultiPartUploadModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetMultipleUploadUrlv2([FromQuery]MultiPartUploadInputModel model)
+        public async Task<IActionResult> GetMultipleUploadUrlv2([FromQuery] MultiPartUploadInputModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -205,8 +206,7 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonBadRequest("The uploading file can not be parted. The file may be empty (0 byte).");
             }
-            ResourceType type;
-            if(Enum.TryParse(model.Type, true, out type) == false)
+            if (Enum.TryParse(model.Type, true, out ResourceType type) == false)
             {
                 LogDebug("有効なリソースタイプが指定されていません。");
                 return JsonBadRequest($"Unexpected resource type { model.Type}");
@@ -219,7 +219,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         [HttpPost("/api/v{api-version:apiVersion}/upload/complete")]
         [ProducesResponseType(typeof(CompleteMultiplePartUploadInputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> CompleteMultiUploadv2([FromBody]CompleteMultiplePartUploadInputModel model)
+        public async Task<IActionResult> CompleteMultiUploadv2([FromBody] CompleteMultiplePartUploadInputModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -245,8 +245,7 @@ namespace Nssol.Platypus.Controllers.spa
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
         public IActionResult GetStorageUrl(string type, string storedPath, string fileName, bool secure)
         {
-            ResourceType resourceType;
-            if (string.IsNullOrEmpty(storedPath) || Enum.TryParse<ResourceType>(type, true, out resourceType) == false)
+            if (string.IsNullOrEmpty(storedPath) || Enum.TryParse<ResourceType>(type, true, out ResourceType resourceType) == false)
             {
                 return JsonBadRequest("Invalid inputs.");
             }

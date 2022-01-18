@@ -44,7 +44,7 @@ namespace Nssol.Platypus.Services.Interfaces
         /// 指定したコンテナの情報をエンドポイント付きで取得する。
         /// </summary>
         Task<ContainerEndpointInfo> GetContainerEndpointInfoAsync(string containerName, string tenantName, string token);
-        
+
         /// <summary>
         /// コンテナを削除する。
         /// 対象コンテナが存在しない場合はエラーになる。

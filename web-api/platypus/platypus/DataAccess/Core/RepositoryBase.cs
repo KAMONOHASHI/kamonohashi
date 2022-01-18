@@ -1,13 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
+using Nssol.Platypus.Infrastructure;
+using Nssol.Platypus.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Memory;
-using Nssol.Platypus.Models;
-using Microsoft.Extensions.Logging;
-using Nssol.Platypus.Infrastructure;
 
 namespace Nssol.Platypus.DataAccess.Core
 {
