@@ -7,7 +7,7 @@ namespace Nssol.Platypus.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
-                name: "MentionId",
+                name: "Mention",
                 table: "Users",
                 nullable: true);
 
@@ -20,7 +20,7 @@ namespace Nssol.Platypus.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "MentionId",
+                name: "Mention",
                 table: "Users");
 
             migrationBuilder.DropColumn(

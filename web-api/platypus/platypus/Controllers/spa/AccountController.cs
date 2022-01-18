@@ -454,7 +454,7 @@ namespace Nssol.Platypus.Controllers.spa
             WebhookModel model = new WebhookModel()
             {
                 SlackUrl = userInfo.SlackUrl,
-                MentionId = userInfo.MentionId
+                Mention = userInfo.Mention
             };
 
             return JsonOK(model);
@@ -471,7 +471,7 @@ namespace Nssol.Platypus.Controllers.spa
         {
             User user = await userRepository.GetByIdAsync(multiTenancyLogic.CurrentUserInfo.Id);
             user.SlackUrl = model.SlackUrl;
-            user.MentionId = model.MentionId;
+            user.Mention = model.Mention;
             unitOfWork.Commit();
 
             return JsonNoContent();
@@ -489,7 +489,7 @@ namespace Nssol.Platypus.Controllers.spa
             var result = await slackLogic.InformTest(model);
             if (result.IsSuccess)
             {
-                return JsonOK(true);
+                return JsonOK(result);
             }
             else
             {

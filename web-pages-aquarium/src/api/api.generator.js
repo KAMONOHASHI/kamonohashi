@@ -656,7 +656,7 @@ export const ApiV2AccountWebhookSlackGetURL = function(parameters = {}) {
  * method: ApiV2AccountWebhookSlackPut_TYPE
  * raw_url: ApiV2AccountWebhookSlackPut_RAW_URL
  * @param slackUrl - Slackの送信先URL
- * @param mentionId - SlackメッセージのメンションID
+ * @param mention - Slackメッセージのメンション
  */
 export const ApiV2AccountWebhookSlackPut = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -668,8 +668,8 @@ export const ApiV2AccountWebhookSlackPut = function(parameters = {}) {
   if (parameters['slackUrl'] !== undefined) {
     queryParameters['SlackUrl'] = parameters['slackUrl']
   }
-  if (parameters['mentionId'] !== undefined) {
-    queryParameters['MentionId'] = parameters['mentionId']
+  if (parameters['mention'] !== undefined) {
+    queryParameters['Mention'] = parameters['mention']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -691,8 +691,8 @@ export const ApiV2AccountWebhookSlackPutURL = function(parameters = {}) {
   if (parameters['slackUrl'] !== undefined) {
     queryParameters['SlackUrl'] = parameters['slackUrl']
   }
-  if (parameters['mentionId'] !== undefined) {
-    queryParameters['MentionId'] = parameters['mentionId']
+  if (parameters['mention'] !== undefined) {
+    queryParameters['Mention'] = parameters['mention']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -709,7 +709,7 @@ export const ApiV2AccountWebhookSlackPutURL = function(parameters = {}) {
  * method: ApiV2AccountWebhookSlackTestPost_TYPE
  * raw_url: ApiV2AccountWebhookSlackTestPost_RAW_URL
  * @param slackUrl - Slackの送信先URL
- * @param mentionId - SlackメッセージのメンションID
+ * @param mention - Slackメッセージのメンション
  */
 export const ApiV2AccountWebhookSlackTestPost = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -721,8 +721,8 @@ export const ApiV2AccountWebhookSlackTestPost = function(parameters = {}) {
   if (parameters['slackUrl'] !== undefined) {
     queryParameters['SlackUrl'] = parameters['slackUrl']
   }
-  if (parameters['mentionId'] !== undefined) {
-    queryParameters['MentionId'] = parameters['mentionId']
+  if (parameters['mention'] !== undefined) {
+    queryParameters['Mention'] = parameters['mention']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -744,8 +744,8 @@ export const ApiV2AccountWebhookSlackTestPostURL = function(parameters = {}) {
   if (parameters['slackUrl'] !== undefined) {
     queryParameters['SlackUrl'] = parameters['slackUrl']
   }
-  if (parameters['mentionId'] !== undefined) {
-    queryParameters['MentionId'] = parameters['mentionId']
+  if (parameters['mention'] !== undefined) {
+    queryParameters['Mention'] = parameters['mention']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {

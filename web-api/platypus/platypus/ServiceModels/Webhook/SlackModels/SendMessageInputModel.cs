@@ -19,9 +19,9 @@ namespace Nssol.Platypus.ServiceModels.Webhook.SlackModels
         public string Title { get; set; }
 
         /// <summary>
-        /// メンションID
+        /// メンション
         /// </summary>
-        public string MentionId { get; set; }
+        public string Mention { get; set; }
 
         /// <summary>
         /// メッセージ文

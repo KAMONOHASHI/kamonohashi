@@ -123,8 +123,8 @@ namespace Nssol.Platypus.Infrastructure
         public string SlackUrl { get; set; }
 
         /// <summary>
-        /// SlackメッセージのメンションID
+        /// Slackメッセージのメンション
         /// </summary>
-        public string MentionId { get; set; }
+        public string Mention { get; set; }
     }
 }

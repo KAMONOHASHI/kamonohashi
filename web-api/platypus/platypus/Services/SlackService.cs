@@ -29,7 +29,7 @@ namespace Nssol.Platypus.Services
             {
                 Color = model.Color,
                 Title = model.Title,
-                Mention = model.MentionId,
+                Mention = model.Mention,
                 Id = model.Id,
                 Name = model.Name,
                 TenantName = model.Tenant.DisplayName,
@@ -73,7 +73,7 @@ namespace Nssol.Platypus.Services
             {
                 UserName = model.CreatedBy,
                 URL = model.Url,
-                Mention = model.MentionId
+                Mention = model.Mention
             });
 
             try

@@ -1930,7 +1930,7 @@ namespace Nssol.Platypus.Migrations
 
                     b.Property<long>("DefaultTenantId");
 
-                    b.Property<string>("MentionId");
+                    b.Property<string>("Mention");
 
                     b.Property<DateTime>("ModifiedAt");
 

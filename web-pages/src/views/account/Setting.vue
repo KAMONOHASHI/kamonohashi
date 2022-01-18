@@ -133,8 +133,8 @@ import AccessTokenSetting from './AccessTokenSetting'
 import GitTokenSetting from '@/views/account/GitTokenSetting'
 import RegistryTokenSetting from '@/views/account/RegistryTokenSetting'
 import PasswordSetting from './PasswordSetting'
+import WebhookSetting from './WebhookSetting'
 import { mapGetters, mapActions } from 'vuex'
-import WebhookSetting from './WebhookSetting.vue'
 
 export default {
   title: 'ユーザ情報設定',
@@ -181,7 +181,7 @@ export default {
       },
       webhookForm: {
         slackUrl: '',
-        mentionId: '',
+        mention: '',
       },
     }
   },
@@ -321,7 +321,7 @@ export default {
       try {
         let params = {
           slackUrl: this.webhookForm.slackUrl,
-          mentionId: this.webhookForm.mentionId,
+          mention: this.webhookForm.mention,
         }
         await this['account/putWebhook'](params)
         this.showSuccessMessage()
@@ -335,7 +335,7 @@ export default {
       try {
         let params = {
           slackUrl: this.webhookForm.slackUrl,
-          mentionId: this.webhookForm.mentionId,
+          mention: this.webhookForm.mention,
         }
         await this['account/sendNotification'](params)
         this.showSuccessMessage()
