@@ -50,20 +50,25 @@ namespace Nssol.Platypus.Services
                 if (!response.IsSuccess)
                 {
                     LogWarning("メッセージ送信に失敗: " + response.Error);
+                    return;
                 }
                 // Slackへのメッセージ送信が成功したときは"ok"が返される
                 if (!"ok".Equals(response.Value, StringComparison.CurrentCulture))
                 {
                     LogWarning("メッセージ送信に失敗");
+                    return;
                 }
+                return;
             }
             catch (InvalidOperationException)
             {
                 LogWarning("メッセージ送信に失敗: URLに誤りがあります");
+                return;
             }
             catch (HttpRequestException)
             {
                 LogWarning("メッセージ送信に失敗: URLに誤りがあります");
+                return;
             }
         }
 
