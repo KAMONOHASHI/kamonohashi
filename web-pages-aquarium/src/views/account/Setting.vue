@@ -42,20 +42,20 @@
           />
           <label for="tab1_4">Registry Token</label>
           <input
-            id="tab1_6"
+            id="tab1_5"
             type="radio"
             name="cp_tab"
             aria-controls="fifth_tab01"
           />
-          <label for="tab1_6">Webhook</label>
+          <label for="tab1_5">Webhook</label>
           <input
             v-if="passwordChangeEnabled"
-            id="tab1_5"
+            id="tab1_6"
             type="radio"
             name="cp_tab"
             aria-controls="sixth_tab01"
           />
-          <label v-if="passwordChangeEnabled" for="tab1_5">
+          <label v-if="passwordChangeEnabled" for="tab1_6">
             Password
           </label>
 
@@ -137,8 +137,8 @@ import AccessTokenSetting from './AccessTokenSetting'
 import GitTokenSetting from '@/views/account/GitTokenSetting'
 import RegistryTokenSetting from '@/views/account/RegistryTokenSetting'
 import PasswordSetting from './PasswordSetting'
+import WebhookSetting from './WebhookSetting'
 import { mapGetters, mapActions } from 'vuex'
-import WebhookSetting from './WebhookSetting.vue'
 
 export default {
   title: 'ユーザ情報設定',
