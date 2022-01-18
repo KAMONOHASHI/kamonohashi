@@ -117,7 +117,7 @@ export default {
           try {
             let params = {
               id: this.id,
-              roleIds: this.form.tenantRoleIds,
+              body: this.form.tenantRoleIds,
             }
             await this['user/tenantRolesPut'](params)
             this.emitDone()

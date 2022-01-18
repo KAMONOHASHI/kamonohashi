@@ -9,7 +9,6 @@ using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Infrastructure.Infos;
 using Nssol.Platypus.Infrastructure.Types;
 using Nssol.Platypus.Logic.Interfaces;
-using Nssol.Platypus.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +17,10 @@ using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Controllers.spa
 {
+    /// <summary>
+    /// メニューアクセス管理を扱うためのAPI集
+    /// </summary>
+    [ApiController]
     [ApiVersion("1"), ApiVersion("2")]
     [Route("api/v{api-version:apiVersion}/menu")]
     public class MenuController : PlatypusApiControllerBase
@@ -221,14 +224,14 @@ namespace Nssol.Platypus.Controllers.spa
             foreach (var roleId in roleIds)
             {
                 var role = await roleRepository.GetRoleAsync(roleId);
-                if(role == null)
+                if (role == null)
                 {
                     return JsonNotFound($"Role Id {roleId} is not found.");
                 }
 
                 if (role.IsSystemRole)
                 {
-                    if(menu.MenuType != MenuType.System)
+                    if (menu.MenuType != MenuType.System)
                     {
                         //システムメニュー以外はシステムロールを紐づけできない
                         return JsonConflict($"A system menu is only attached to the system role {role.Id}");

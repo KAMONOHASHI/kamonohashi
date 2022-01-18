@@ -1,12 +1,10 @@
-﻿using Nssol.Platypus.DataAccess.Core;
+﻿using Microsoft.EntityFrameworkCore;
+using Nssol.Platypus.DataAccess.Core;
+using Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories;
 using Nssol.Platypus.Models.TenantModels;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Nssol.Platypus.DataAccess.Repositories.Interfaces;
-using Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories;
 
 namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
 {
@@ -141,19 +139,19 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
         public PreprocessHistoryOutput GetLockedOutput(long id)
         {
             //判定1: ロックされたデータセットに含まれているか
-            PreprocessHistoryOutput lockedOutput = FindModelAll<PreprocessHistoryOutput>(o => o.PreprocessHistoryId == id).Where(o => 
+            PreprocessHistoryOutput lockedOutput = FindModelAll<PreprocessHistoryOutput>(o => o.PreprocessHistoryId == id).Where(o =>
                 GetDbSet<DataSetEntry>().Include(e => e.DataSet) //出力結果を含み、編集不可なデータセットが1件以上あるか
                 .Where(e => e.DataSet.IsLocked)
                 .Where(e => e.DataId == o.OutputDataId).Count() > 0
             ).FirstOrDefault();
 
-            if(lockedOutput != null)
+            if (lockedOutput != null)
             {
                 return lockedOutput;
             }
 
             //判定2: 前処理出力が更に前処理されているか
-            lockedOutput = FindModelAll<PreprocessHistoryOutput>(o => o.PreprocessHistoryId == id).Where(o => 
+            lockedOutput = FindModelAll<PreprocessHistoryOutput>(o => o.PreprocessHistoryId == id).Where(o =>
                 GetDbSet<PreprocessHistory>().Where(history => history.InputDataId == o.OutputDataId).Count() > 0
             ).FirstOrDefault();
 
@@ -191,7 +189,7 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
         {
             //履歴出力を削除
             DeleteModelAll<PreprocessHistoryOutput>(p => p.PreprocessHistoryId == entity.Id);
-            
+
             //前処理履歴自体をDBから削除
             base.Delete(entity);
         }

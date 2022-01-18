@@ -1,13 +1,9 @@
-﻿using Microsoft.AspNetCore.Localization;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Nssol.Platypus.Infrastructure;
-using System;
-using System.Linq;
-using System.Security.Claims;
-using System.Globalization;
-using Microsoft.Extensions.Localization;
 using Nssol.Platypus.Logic.Interfaces;
+using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 
 namespace Nssol.Platypus.Logic
 {

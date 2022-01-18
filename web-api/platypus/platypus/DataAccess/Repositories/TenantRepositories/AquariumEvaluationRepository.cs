@@ -14,7 +14,7 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
     public class AquariumEvaluationRepository : RepositoryForTenantBase<Evaluation>, IAquariumEvaluationRepository
     {
         public AquariumEvaluationRepository(CommonDbContext context, IHttpContextAccessor accessor)
-            : base(context, accessor) {}
+            : base(context, accessor) { }
 
         public Task<bool> ExistsAsync(Expression<Func<Evaluation, bool>> where, bool force)
             => ExistsModelAsync(where, force);

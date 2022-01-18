@@ -18,6 +18,7 @@ namespace Nssol.Platypus.Controllers.spa
     /// <summary>
     /// データセット管理を扱うためのAPI集
     /// </summary>
+    [ApiController]
     [ApiVersion("1"), ApiVersion("2")]
     [Route("api/v{api-version:apiVersion}/datasets")]
     public class DataSetController : PlatypusApiControllerBase
@@ -57,9 +58,9 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpGet]
         [Filters.PermissionFilter(MenuCode.DataSet, MenuCode.Training, MenuCode.Inference, MenuCode.Notebook)]
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
-        public IActionResult GetAll([FromQuery]SearchInputModel filter, [FromQuery]int? perPage, [FromQuery] int page = 1, bool withTotal = false)
+        public IActionResult GetAll([FromQuery] SearchInputModel filter, [FromQuery] int? perPage, [FromQuery] int page = 1, bool withTotal = false)
         {
-            var dataSet = dataSetRepository.GetAll();
+            var dataSet = dataSetRepository.GetAll().AsEnumerable();
             dataSet = Search(dataSet, filter).OrderByDescending(d => d.Id);
 
             //未指定、あるいは1000件以上であれば、1000件に指定
@@ -81,7 +82,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="filter">検索条件</param>
         private int GetTotalCount(SearchInputModel filter)
         {
-            var dataSet = dataSetRepository.GetAll();
+            var dataSet = dataSetRepository.GetAll().AsEnumerable();
             dataSet = Search(dataSet, filter);
             return dataSet.Count();
         }
@@ -91,9 +92,9 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="sourceData">加工前の検索結果</param>
         /// <param name="query">検索条件</param>
-        private IQueryable<DataSet> Search(IQueryable<DataSet> sourceData, SearchInputModel query)
+        private IEnumerable<DataSet> Search(IEnumerable<DataSet> sourceData, SearchInputModel query)
         {
-            IQueryable<DataSet> data = sourceData;
+            IEnumerable<DataSet> data = sourceData;
             return data
                 .SearchLong(d => d.Id, query.Id)
                 .SearchString(d => d.Name, query.Name)
@@ -264,7 +265,7 @@ namespace Nssol.Platypus.Controllers.spa
 
             //エントリを取得し、データのパスとデータ名のペアを作る
             List<PathPairOutputModel> pathPairs = new List<PathPairOutputModel>();
-            foreach(var entry in dataSet.DataSetEntries)
+            foreach (var entry in dataSet.DataSetEntries)
             {
                 string dataTypeName = dataTypes[entry.DataTypeId];
                 foreach (var data in entry.Data.DataProperties)
@@ -287,7 +288,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPost]
         [Filters.PermissionFilter(MenuCode.DataSet)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.Created)]
-        public async Task<IActionResult> CreateDataSet([FromBody]CreateInputModel model)
+        public async Task<IActionResult> CreateDataSet([FromBody] CreateInputModel model)
         {
             //データの入力チェック
             if (!ModelState.IsValid)
@@ -375,7 +376,7 @@ namespace Nssol.Platypus.Controllers.spa
             }
             dataset.Memo = EditColumn(model.Memo, dataset.Memo);
         }
-        
+
         /// <summary>
         /// データセットのエントリ内容（学習で使用後は編集不可）を変更する
         /// </summary>
@@ -403,7 +404,7 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonConflict($"DataSet {dataSet.Name} has been used by training.");
             }
-            
+
             //メタデータ編集
             EditDataSet(dataSet, model);
 

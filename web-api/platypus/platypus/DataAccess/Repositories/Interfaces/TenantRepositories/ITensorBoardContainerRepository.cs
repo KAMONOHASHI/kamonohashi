@@ -27,7 +27,7 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories
         /// 現在のテナント内で、学習履歴IDが等しく、Disable状態じゃないコンテナを取得します。
         /// </summary>
         TensorBoardContainer GetAvailableContainer(long trainingHistoryId);
-        
+
         /// <summary>
         /// 指定したIDのTensorBoardコンテナのステータスを更新する。
         /// </summary>

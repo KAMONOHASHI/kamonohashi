@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Controllers.Util
 {
@@ -20,9 +17,9 @@ namespace Nssol.Platypus.Controllers.Util
 
         public override bool IsValid(object value)
         {
-            if(value is IEnumerable<string>)
+            if (value is IEnumerable<string>)
             {
-                foreach(string str in value as IEnumerable<string>)
+                foreach (string str in value as IEnumerable<string>)
                 {
                     if (base.IsValid(str) == false)
                     {

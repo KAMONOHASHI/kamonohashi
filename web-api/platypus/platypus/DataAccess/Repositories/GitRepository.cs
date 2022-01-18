@@ -72,7 +72,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
                 maps = new List<UserTenantGitMap>();
 
                 //テナントに紐づいているすべてのユーザを取得
-                var userMaps = FindModelAll<UserTenantMap>(m => m.TenantId == tenant.Id);
+                var userMaps = FindModelAll<UserTenantMap>(m => m.TenantId == tenant.Id).ToList();
                 foreach (var userMap in userMaps)
                 {
                     UserTenantGitMap utgMap = new UserTenantGitMap()

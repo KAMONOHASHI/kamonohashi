@@ -20,6 +20,7 @@ namespace Nssol.Platypus.Controllers.spa
     /// <summary>
     /// テナント管理を扱うためのAPI集
     /// </summary>
+    [ApiController]
     [ApiVersion("1"), ApiVersion("2")]
     [Route("api/v{api-version:apiVersion}/admin/tenants")]
     public class TenantController : PlatypusApiControllerBase
@@ -107,7 +108,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPost]
         [PermissionFilter(MenuCode.Tenant)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.Created)]
-        public async Task<IActionResult> CreateForTenant([FromBody]CreateInputModel model, [FromServices] INodeRepository nodeRepository)
+        public async Task<IActionResult> CreateForTenant([FromBody] CreateInputModel model, [FromServices] INodeRepository nodeRepository)
         {
             //データの入力チェック
             if (!ModelState.IsValid)
@@ -115,9 +116,9 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonBadRequest("Invalid inputs.");
             }
 
-            if 
-                (model.TenantName.StartsWith(containerManageOptions.KqiNamespacePrefix) 
-                || model.TenantName.StartsWith(containerManageOptions.KubernetesNamespacePrefix)
+            if
+                (model.TenantName.StartsWith(containerManageOptions.KqiNamespacePrefix, StringComparison.CurrentCulture)
+                || model.TenantName.StartsWith(containerManageOptions.KubernetesNamespacePrefix, StringComparison.CurrentCulture)
                 || containerManageOptions.IgnoreNamespacesList.Contains(model.TenantName)
                 )
             {
@@ -279,7 +280,7 @@ namespace Nssol.Platypus.Controllers.spa
                 foreach (var c in containers.Value)
                 {
                     // ステータスによらず、全て稼働中と見做す
-                    if (c.TenantName.Equals(tenant.Name))
+                    if (c.TenantName.Equals(tenant.Name, StringComparison.CurrentCulture))
                     {
                         runningCount += 1;
                     }
@@ -289,11 +290,11 @@ namespace Nssol.Platypus.Controllers.spa
                 {
                     return JsonConflict($"Running containers exists deleting tenant. tenant name=[{tenant.Name}], running container count=[{runningCount}]");
                 }
-                containers.Value.Where(x => x.TenantName.Equals(tenant.Name));
+                containers.Value.Where(x => x.TenantName.Equals(tenant.Name, StringComparison.CurrentCulture));
             }
 
             // 削除対象のテナントを所有するユーザ・リストを獲得
-            IEnumerable<User> users = userRepository.GetUsers(id);
+            IEnumerable<User> users = userRepository.GetUsers(id).ToList();
             foreach (User user in users)
             {
                 UserInfo userInfo = userRepository.GetUserInfo(user);
@@ -364,7 +365,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPut("{id}")]
         [PermissionFilter(MenuCode.Tenant)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> Edit(long? id, [FromBody]EditInputModel model)
+        public async Task<IActionResult> Edit(long? id, [FromBody] EditInputModel model)
         {
             //データの入力チェック
             if (!ModelState.IsValid || !id.HasValue)
@@ -523,7 +524,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPut("/api/v{api-version:apiVersion}/tenant")]
         [PermissionFilter(MenuCode.TenantSetting)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> EditForTenant([FromBody]EditInputModel model)
+        public async Task<IActionResult> EditForTenant([FromBody] EditInputModel model)
         {
             return await Edit(CurrentUserInfo.SelectedTenant.Id, model);
         }

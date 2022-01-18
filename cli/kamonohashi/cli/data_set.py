@@ -103,7 +103,7 @@ def create(file):
         logging.info('begin io %s', file)
         json_dict = json.load(f)
         logging.info('end io %s', file)
-    result = api.create_dataset(model=json_dict)
+    result = api.create_dataset(body=json_dict)
     print('created', result.id)
 
 
@@ -139,7 +139,7 @@ def update(id, file):
         logging.info('begin io %s', file)
         json_dict = json.load(f)
         logging.info('end io %s', file)
-    result = api.update_dataset(id, model=json_dict)
+    result = api.update_dataset(id, body=json_dict)
     print('updated', result.id)
 
 
@@ -151,7 +151,7 @@ def update_meta_info(id, name, memo):
     """Update meta information of a dataset"""
     api = rest.DataSetApi(configuration.get_api_client())
     model = rest.DataSetApiModelsEditInputModel(name=name, memo=memo)
-    result = api.patch_dataset(id, model=model)
+    result = api.patch_dataset(id, body=model)
     print('meta-info updated', result.id)
 
 

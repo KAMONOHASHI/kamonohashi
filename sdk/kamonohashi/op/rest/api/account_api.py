@@ -127,7 +127,7 @@ class AccountApi(object):
         >>> result = thread.get()
 
         :param async_req bool
-        :param AccountApiModelsLoginInputModel model:
+        :param AccountApiModelsLoginInputModel body:
         :return: AccountApiModelsLoginOutputModel
                  If the method is called asynchronously,
                  returns the request thread.
@@ -148,13 +148,13 @@ class AccountApi(object):
         >>> result = thread.get()
 
         :param async_req bool
-        :param AccountApiModelsLoginInputModel model:
+        :param AccountApiModelsLoginInputModel body:
         :return: AccountApiModelsLoginOutputModel
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['model']  # noqa: E501
+        all_params = ['body']  # noqa: E501
         all_params.append('async_req')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -182,8 +182,8 @@ class AccountApi(object):
         local_var_files = {}
 
         body_params = None
-        if 'model' in params:
-            body_params = params['model']
+        if 'body' in params:
+            body_params = params['body']
         # HTTP header `Accept`
         header_params['Accept'] = self.api_client.select_header_accept(
             ['application/json'])  # noqa: E501
@@ -221,7 +221,7 @@ class AccountApi(object):
 
         :param async_req bool
         :param int tenant_id: (required)
-        :param int expires_in:
+        :param AccountApiModelsSwitchTenantInputModel body:
         :return: AccountApiModelsLoginOutputModel
                  If the method is called asynchronously,
                  returns the request thread.
@@ -243,13 +243,13 @@ class AccountApi(object):
 
         :param async_req bool
         :param int tenant_id: (required)
-        :param int expires_in:
+        :param AccountApiModelsSwitchTenantInputModel body:
         :return: AccountApiModelsLoginOutputModel
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['tenant_id', 'expires_in']  # noqa: E501
+        all_params = ['tenant_id', 'body']  # noqa: E501
         all_params.append('async_req')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -276,8 +276,6 @@ class AccountApi(object):
             path_params['tenantId'] = params['tenant_id']  # noqa: E501
 
         query_params = []
-        if 'expires_in' in params:
-            query_params.append(('expiresIn', params['expires_in']))  # noqa: E501
 
         header_params = {}
 
@@ -285,9 +283,15 @@ class AccountApi(object):
         local_var_files = {}
 
         body_params = None
+        if 'body' in params:
+            body_params = params['body']
         # HTTP header `Accept`
         header_params['Accept'] = self.api_client.select_header_accept(
             ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json-patch+json', 'application/json', 'text/json', 'application/*+json'])  # noqa: E501
 
         # Authentication setting
         auth_settings = ['api_key']  # noqa: E501

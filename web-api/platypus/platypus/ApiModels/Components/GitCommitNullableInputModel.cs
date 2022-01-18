@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Nssol.Platypus.ApiModels.Components
+﻿namespace Nssol.Platypus.ApiModels.Components
 {
     /// <summary>
     /// <see cref="GitCommitInputModel"/>からRequiredを消したもの。

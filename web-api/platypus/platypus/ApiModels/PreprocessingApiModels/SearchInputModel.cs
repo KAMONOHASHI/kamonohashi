@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Nssol.Platypus.ApiModels.PreprocessingApiModels
+﻿namespace Nssol.Platypus.ApiModels.PreprocessingApiModels
 {
     /// <summary>
     /// 学習履歴検索の入力モデル。

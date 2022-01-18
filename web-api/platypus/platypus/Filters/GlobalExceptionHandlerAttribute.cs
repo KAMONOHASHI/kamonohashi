@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -37,8 +35,8 @@ namespace Nssol.Platypus.Filters
         /// <inheritdoc />
         public async override Task OnExceptionAsync(ExceptionContext context)
         {
-            if (context.ActionDescriptor.FilterDescriptors.Where(x=>x.Filter.GetType() == typeof(ServiceFilterAttribute))
-                .Count(x=>(x.Filter as ServiceFilterAttribute).ServiceType == typeof(JsonExceptionHandlerAttribute)) > 0)
+            if (context.ActionDescriptor.FilterDescriptors.Where(x => x.Filter.GetType() == typeof(ServiceFilterAttribute))
+                .Count(x => (x.Filter as ServiceFilterAttribute).ServiceType == typeof(JsonExceptionHandlerAttribute)) > 0)
             {
                 await base.OnExceptionAsync(context);
                 return;

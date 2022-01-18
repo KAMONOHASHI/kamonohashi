@@ -106,7 +106,7 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces
         /// <param name="roles">テナントロール</param>
         /// <exception cref="ArgumentException"><paramref name="roles"/>にシステムロールが含まれていたり、別テナント用のロールが含まれていた場合</exception>
         void ChangeTenantRole(long userId, long tenantId, IEnumerable<Role> roles);
-        
+
         /// <summary>
         /// 指定したユーザ、テナントに対するクラスタトークンを取得する
         /// </summary>

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Nssol.Platypus.ServiceModels.Git.GitHubModels
+﻿namespace Nssol.Platypus.ServiceModels.Git.GitHubModels
 {
     /// <summary>
     /// ブランチ一覧取得（/repos/:owner/:repository/branches）の結果モデル

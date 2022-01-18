@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Nssol.Platypus.Infrastructure.Types;
+﻿using Nssol.Platypus.Infrastructure.Types;
 using Nssol.Platypus.Models;
 
 namespace Nssol.Platypus.ApiModels.AccountApiModels

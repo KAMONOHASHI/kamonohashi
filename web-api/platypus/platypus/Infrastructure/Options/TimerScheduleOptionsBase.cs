@@ -88,7 +88,7 @@ namespace Nssol.Platypus.Infrastructure.Options
                     valid = false;
                     return;
                 }
-            } 
+            }
             else
             {
                 LogDebug($"{classMethodName}: 実行間隔は指定されていません。");
@@ -131,7 +131,7 @@ namespace Nssol.Platypus.Infrastructure.Options
                     valid = false;
                     return;
                 }
-                if (key_val[0].ToLower().StartsWith("every"))
+                if (key_val[0].ToLower().StartsWith("every", StringComparison.CurrentCulture))
                 {
                     // １週間全ての曜日に時間設定
                     for (int weekIndex = 0; weekIndex < 7; weekIndex++)
@@ -139,7 +139,7 @@ namespace Nssol.Platypus.Infrastructure.Options
                         weekTimeArray[weekIndex] = new DateTime(sunday_base.Year, sunday_base.Month, sunday_base.Day + weekIndex, time.Hour, time.Minute, time.Second);
                     }
                 }
-                else if (key_val[0].ToLower().StartsWith("dynamic"))
+                else if (key_val[0].ToLower().StartsWith("dynamic", StringComparison.CurrentCulture))
                 {
                     // 初回サーバ起動の曜日、時間によって動的に時間が設定される
                     DateTime now = TimeZoneInfo.ConvertTime(DateTime.UtcNow, TimeZoneInfo.Utc, timeZoneInfo);
@@ -237,7 +237,7 @@ namespace Nssol.Platypus.Infrastructure.Options
             DateTime zoneNowTime = TimeZoneInfo.ConvertTime(DateTime.UtcNow, TimeZoneInfo.Utc, timeZoneInfo);
             LogDebug($"{classMethodName}: タイムゾーン \"{timeZoneInfo.Id}\" での現在日付: 曜日 {zoneNowTime.ToString("dddd")}, 日付時刻 {zoneNowTime.ToString("G")}");
             TimeSpan zoneNowTimeSpan = new TimeSpan(zoneNowTime.Hour, zoneNowTime.Minute, zoneNowTime.Second);
-            int nowWeekIndex = (int) zoneNowTime.DayOfWeek;
+            int nowWeekIndex = (int)zoneNowTime.DayOfWeek;
             if (weekTimeArray[nowWeekIndex] != null)
             {
                 // 当該曜日で現時刻より後のスケジュールが存在するなら、その時刻までの TimeSpan を返却
@@ -305,33 +305,33 @@ namespace Nssol.Platypus.Infrastructure.Options
         /// <returns>曜日番号</returns>
         private int GetWeekIndex(string weekName)
         {
-            if (weekName.ToLower().StartsWith("sun"))
+            if (weekName.ToLower().StartsWith("sun", StringComparison.CurrentCulture))
             {
-                return (int) DayOfWeek.Sunday;
+                return (int)DayOfWeek.Sunday;
             }
-            else if (weekName.ToLower().StartsWith("mon"))
+            else if (weekName.ToLower().StartsWith("mon", StringComparison.CurrentCulture))
             {
-                return (int) DayOfWeek.Monday;
+                return (int)DayOfWeek.Monday;
             }
-            else if (weekName.ToLower().StartsWith("tue"))
+            else if (weekName.ToLower().StartsWith("tue", StringComparison.CurrentCulture))
             {
-                return (int) DayOfWeek.Tuesday;
+                return (int)DayOfWeek.Tuesday;
             }
-            else if (weekName.ToLower().StartsWith("wed"))
+            else if (weekName.ToLower().StartsWith("wed", StringComparison.CurrentCulture))
             {
-                return (int) DayOfWeek.Wednesday;
+                return (int)DayOfWeek.Wednesday;
             }
-            else if (weekName.ToLower().StartsWith("thu"))
+            else if (weekName.ToLower().StartsWith("thu", StringComparison.CurrentCulture))
             {
-                return (int) DayOfWeek.Thursday;
+                return (int)DayOfWeek.Thursday;
             }
-            else if (weekName.ToLower().StartsWith("fri"))
+            else if (weekName.ToLower().StartsWith("fri", StringComparison.CurrentCulture))
             {
-                return (int) DayOfWeek.Friday;
+                return (int)DayOfWeek.Friday;
             }
-            else if (weekName.ToLower().StartsWith("sat"))
+            else if (weekName.ToLower().StartsWith("sat", StringComparison.CurrentCulture))
             {
-                return (int) DayOfWeek.Saturday;
+                return (int)DayOfWeek.Saturday;
             }
             return -1;
         }

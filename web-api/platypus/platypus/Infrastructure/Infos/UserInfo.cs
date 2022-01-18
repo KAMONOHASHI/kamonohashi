@@ -1,10 +1,9 @@
-﻿using Nssol.Platypus.Models;
-using Nssol.Platypus.Infrastructure.Types;
+﻿using Nssol.Platypus.Infrastructure.Types;
+using Nssol.Platypus.Models;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Infrastructure
 {
@@ -42,7 +41,7 @@ namespace Nssol.Platypus.Infrastructure
         /// 所属しているシステムロール
         /// </summary>
         public IEnumerable<Role> SystemRoles { get; set; }
-        
+
         /// <summary>
         /// 現在選択中のテナントのロール情報
         /// </summary>
@@ -94,7 +93,7 @@ namespace Nssol.Platypus.Infrastructure
         /// </summary>
         public void SelectTenant(long? tenantId)
         {
-            if(tenantId == null)
+            if (tenantId == null)
             {
                 // テナントが指定されていない場合にはデフォルトテナント、それすらない場合は一番上にあるテナントを取得する
                 if (DefaultTenant == null)
@@ -109,7 +108,7 @@ namespace Nssol.Platypus.Infrastructure
             else
             {
                 var tenant = TenantDic.Keys.FirstOrDefault(t => t.Id == tenantId);
-                if(tenant == null)
+                if (tenant == null)
                 {
                     //テナントIDが明示的に指定されていて、そのテナントへのアクセス権がない（＝トークンを取った後でテナントを外された）
                     throw new UnauthorizedAccessException("You have lost a role for the access.");

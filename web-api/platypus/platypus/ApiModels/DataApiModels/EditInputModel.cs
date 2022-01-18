@@ -1,10 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Nssol.Platypus.Models.TenantModels;
-using System;
+﻿using Nssol.Platypus.Controllers.Util;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Nssol.Platypus.Controllers.Util;
 
 namespace Nssol.Platypus.ApiModels.DataApiModels
 {

@@ -125,11 +125,11 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// </summary>
         public Tenant GetFromTenantName(string tenantName)
         {
-            if(string.IsNullOrEmpty(tenantName))
+            if (string.IsNullOrEmpty(tenantName))
             {
                 return null;
             }
-            return tenants.FirstOrDefault(d => d.Name.Equals(tenantName));
+            return tenants.FirstOrDefault(d => d.Name.Equals(tenantName, StringComparison.CurrentCulture));
         }
 
         /// <summary>
@@ -196,7 +196,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// </summary>
         public void DeleteClusterToken(long tenantId)
         {
-            foreach(var map in FindModelAll<UserTenantMap>(map => map.TenantId == tenantId))
+            foreach (var map in FindModelAll<UserTenantMap>(map => map.TenantId == tenantId))
             {
                 map.ClusterToken = null;
             }

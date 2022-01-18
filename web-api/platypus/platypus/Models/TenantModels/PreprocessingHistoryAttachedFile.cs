@@ -1,10 +1,7 @@
 ﻿using Nssol.Platypus.Infrastructure;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Models.TenantModels
 {
@@ -57,7 +54,7 @@ namespace Nssol.Platypus.Models.TenantModels
             }
             set
             {
-                if(value.Type != ResourceType.PreprocContainerAttachedFiles)
+                if (value.Type != ResourceType.PreprocContainerAttachedFiles)
                 {
                     throw new ArgumentException($"Unexpected resource type: expected = {ResourceType.PreprocContainerAttachedFiles}, actual = {value.Type}");
                 }

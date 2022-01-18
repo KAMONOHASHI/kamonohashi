@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Nssol.Platypus.Infrastructure.Options
+﻿namespace Nssol.Platypus.Infrastructure.Options
 {
     /// <summary>
     /// 認証に使用するActiveDirectoryの接続情報を保持するクラス
@@ -44,7 +39,7 @@ namespace Nssol.Platypus.Infrastructure.Options
         {
             get
             {
-                if(string.IsNullOrEmpty(BaseOu))
+                if (string.IsNullOrEmpty(BaseOu))
                 {
                     return $"OU = { Domain }";
                 }

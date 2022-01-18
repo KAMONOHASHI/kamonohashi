@@ -17,7 +17,7 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
     /// </summary>
     /// <seealso cref="Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories.ITensorBoardContainerRepository" />
     public class TensorBoardContainerRepository : RepositoryForTenantBase<TensorBoardContainer>, ITensorBoardContainerRepository
-    {        
+    {
         /// <summary>
         /// コンストラクタ
         /// </summary>
@@ -48,10 +48,13 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
         /// </summary>
         public TensorBoardContainer GetAvailableContainer(long trainingHistoryId)
         {
-            TensorBoardContainer container = FindAll(x => 
-                x.TrainingHistoryId == trainingHistoryId &&
-                ContainerStatus.IsAvailable(x.Status)
-            ).Include(t => t.Tenant).FirstOrDefault();
+            TensorBoardContainer container = FindAll(x =>
+                x.TrainingHistoryId == trainingHistoryId
+            ).Include(t => t.Tenant)
+            // ここからはクライアント側で実行するためAsEnumerable()を実行する
+            .AsEnumerable().Where(x =>
+                ContainerStatus.IsAvailable(x.Status))
+            .FirstOrDefault();
             return container;
         }
 

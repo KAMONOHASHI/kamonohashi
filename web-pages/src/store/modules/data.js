@@ -71,7 +71,7 @@ const actions = {
 
   // eslint-disable-next-line no-unused-vars
   async post({ state }, params) {
-    return await api.data.post({ model: params })
+    return await api.data.post({ body: params })
   },
 
   // eslint-disable-next-line no-unused-vars
@@ -81,16 +81,16 @@ const actions = {
 
   // eslint-disable-next-line no-unused-vars
   async putFile({ commit }, { id, fileInfo }) {
-    let model = { files: [] }
+    let body = { files: [] }
     for (let i = 0; i < fileInfo.length; i++) {
-      model.files.push({
+      body.files.push({
         fileName: fileInfo[i].name,
         storedPath: fileInfo[i].storedPath,
       })
     }
     await api.data.putFilesById({
       id: id,
-      model: model,
+      body: body,
     })
   },
 

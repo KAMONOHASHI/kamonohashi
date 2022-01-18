@@ -2,6 +2,9 @@
 using log4net.Config;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Nssol.Platypus.Infrastructure;
 using System;
 using System.IO;
 using System.Reflection;
@@ -30,12 +33,22 @@ namespace Nssol.Platypus
             host.Run();
         }
 
-        private static IWebHost BuildWebHost2(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
+        private static IWebHost BuildWebHost2(string[] args)
+        {
+            return WebHost.CreateDefaultBuilder(args)
                 .CaptureStartupErrors(true)
+                // ログ設定
+                .ConfigureLogging((hostingContext, logging) =>
+                {
+                    logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
+                    logging.AddConsole();
+                    logging.AddDebug();
+                    logging.AddProvider(new Log4NetProvider());
+                })
                 .UseStartup<Startup>()
                 .UseUrls("http://*:5000")
                 .Build();
+        }
 
         /// <summary>
         /// log4net の設定ファイルを読み込み、環境変数を置換する

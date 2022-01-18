@@ -91,7 +91,7 @@ namespace Nssol.Platypus.Logic
                     return Result<List<Claim>, string>.CreateErrorResult(result.Error);
                 }
 
-                if(user == null)
+                if (user == null)
                 {
                     //ログインに成功したが、ユーザ存在しない（＝LDAPの新規ログイン＝ユーザを作成する）
                     userRepository.AddLdapUser(userName);
@@ -131,7 +131,7 @@ namespace Nssol.Platypus.Logic
             }
 
             //テナント名が非Nullだった場合、アクセス権を確認
-            if (tenantId.HasValue &&  userInfo.TenantDic.Keys.FirstOrDefault(t => t.Id == tenantId) == null)
+            if (tenantId.HasValue && userInfo.TenantDic.Keys.FirstOrDefault(t => t.Id == tenantId) == null)
             {
                 //指定したテナントに所属していない
                 LogError($"User {userName} does NOT have a permission to tenant {tenantId}");
@@ -141,7 +141,7 @@ namespace Nssol.Platypus.Logic
             userInfo.SelectTenant(tenantId);
             //テナントIDをクレームに追加
             claims.Add(new Claim(ClaimTypes.GroupSid, userInfo.SelectedTenant.Id.ToString()));
-            
+
             return Result<List<Claim>, string>.CreateResult(claims);
 
         }
@@ -211,7 +211,7 @@ namespace Nssol.Platypus.Logic
         public JwtToken GenerateToken(List<Claim> claims, int? expiresIn = null)
         {
             string userName = claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
-            if(string.IsNullOrEmpty(userName))
+            if (string.IsNullOrEmpty(userName))
             {
                 throw new UnauthorizedAccessException("引数にユーザ名が含まれていません。未認証ユーザからのトークンの発行要求が発生しました。");
             }
@@ -227,7 +227,7 @@ namespace Nssol.Platypus.Logic
             DateTime expireDate;
             //期限が切れるまでの秒数
             long expireSec;
-            if(expiresIn == null)
+            if (expiresIn == null)
             {
                 //期限が指定されていなかったら、設定ファイルの値を使う
                 expireDate = now.AddSeconds(webSecurityOptions.ApiJwtExpirationSec);

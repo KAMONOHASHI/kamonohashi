@@ -74,6 +74,7 @@ namespace Nssol.Platypus.Logic.HostedService
         /// <summary>
         /// クラスタ上に登録されているノードおよびコンテナのリソース情報をDBに登録する。
         /// </summary>
+        /// <param name="state"></param>
         /// <param name="doWorkCount">実行回数</param>
         protected override async void DoWork(object state, int doWorkCount)
         {
@@ -97,7 +98,7 @@ namespace Nssol.Platypus.Logic.HostedService
                         Memory = (int)x.Memory,
                         Gpu = x.Gpu,
                         ResourceSample = resourceSample,
-                    }; 
+                    };
                 }
                 nodeDictionary[""] = new ResourceNode
                 {
@@ -106,7 +107,7 @@ namespace Nssol.Platypus.Logic.HostedService
                     Memory = 0,
                     Gpu = 0,
                     ResourceSample = resourceSample,
-                }; 
+                };
                 resourceNodeRepository.AddRange(nodeDictionary.Values.AsQueryable());
 
                 var containers = await clusterManagementLogic.GetAllContainerDetailsInfosAsync();

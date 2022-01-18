@@ -134,7 +134,7 @@ export default {
 
       let params = {
         id: this.id,
-        model: {
+        body: {
           expiresIn: this.expiresIn,
         },
       }

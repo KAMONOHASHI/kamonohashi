@@ -73,12 +73,12 @@ const actions = {
 
   // eslint-disable-next-line no-unused-vars
   async post({ commit }, params) {
-    return await api.notebook.post({ model: params })
+    return await api.notebook.post({ body: params })
   },
 
   // eslint-disable-next-line no-unused-vars
   async postRerun({ commit }, { id, params }) {
-    return await api.notebook.postRerun({ id: id, model: params })
+    return await api.notebook.postRerun({ id: id, body: params })
   },
 
   // eslint-disable-next-line no-unused-vars

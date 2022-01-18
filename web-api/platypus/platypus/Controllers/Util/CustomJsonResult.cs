@@ -5,7 +5,6 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -74,7 +73,7 @@ namespace Nssol.Platypus.Controllers.Util
             response.Headers.Add("Cache-Control", "no-store, no-cache");
             response.Headers.Add("X-XSS-Protection", "1; mode=block");
 
-            if(response.Headers.ContainsKey("Access-Control-Allow-Origin"))
+            if (response.Headers.ContainsKey("Access-Control-Allow-Origin"))
             {
                 response.Headers["Access-Control-Allow-Origin"] = "*";
             }

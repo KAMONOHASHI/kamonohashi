@@ -26,22 +26,22 @@ namespace Nssol.Platypus.ApiModels.NotebookApiModels
         /// ID
         /// </summary>
         public long? Id { get; set; }
-        
+
         /// <summary>
         /// 表示用ID
         /// </summary>
         public long? DisplayId { get; set; }
-        
+
         /// <summary>
         /// 名前
         /// </summary>
         public string Name { get; set; }
-        
+
         /// <summary>
         /// メモ
         /// </summary>
         public string Memo { get; set; }
-        
+
         /// <summary>
         /// ステータス
         /// </summary>

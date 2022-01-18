@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Nssol.Platypus.DataAccess.Repositories.Interfaces;
+﻿using Nssol.Platypus.DataAccess.Repositories.Interfaces;
 using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Infrastructure.Types;
 using Nssol.Platypus.Logic.Interfaces;
@@ -8,7 +7,6 @@ using Nssol.Platypus.Services;
 using Nssol.Platypus.Services.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Logic
@@ -87,7 +85,7 @@ namespace Nssol.Platypus.Logic
             }
             Registry registry = registryMap.Registry;
             IRegistryService registryService = GetRegistryService(registry);
-            if(registryService != null)
+            if (registryService != null)
             {
                 return await registryService.GetAllImageListAsync(registryMap);
             }
@@ -107,7 +105,7 @@ namespace Nssol.Platypus.Logic
         public async Task<Result<List<string>, string>> GetAllTagListAsync(long registryId, string imageName)
         {
             UserTenantRegistryMap registryMap = GetCurrentRegistryMap(registryId);
-            if(registryMap == null)
+            if (registryMap == null)
             {
                 return Result<List<string>, string>.CreateErrorResult($"registry {registryId} does NOT map to the current user");
             }
@@ -115,7 +113,7 @@ namespace Nssol.Platypus.Logic
             IRegistryService registryService = GetRegistryService(registry);
             if (registry != null)
             {
-                string image = imageName.StartsWith("/") ? imageName.Substring(1) : imageName;
+                string image = imageName.StartsWith("/", StringComparison.CurrentCulture) ? imageName.Substring(1) : imageName;
                 return await registryService.GetAllTagListAsync(registryMap, image);
             }
             else
@@ -140,9 +138,9 @@ namespace Nssol.Platypus.Logic
         /// <returns></returns>
         private IRegistryService GetRegistryService(Registry registry)
         {
-            if(registry != null)
+            if (registry != null)
             {
-                if(registry.ServiceType == RegistryServiceType.DockerHub)
+                if (registry.ServiceType == RegistryServiceType.DockerHub)
                 {
                     return CommonDiLogic.DynamicDi<DockerHubRegistryService>();
                 }

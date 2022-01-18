@@ -25,7 +25,7 @@ namespace Nssol.Platypus.Models.TenantModels
         /// </summary>
         [ForeignKey(nameof(TagId))]
         public virtual Tag Tag { get; set; }
-        
+
         /// <summary>
         /// 学習履歴の実体
         /// </summary>

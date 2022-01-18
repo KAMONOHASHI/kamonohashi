@@ -324,7 +324,7 @@ namespace Nssol.Platypus.DataAccess.Core
         protected async Task<T> GetModelByIdAsync<T>(long id, bool force = false) where T : TenantModelBase
         {
             T model = await DataContext.Set<T>().FindAsync(id);
-            if(model == null)
+            if (model == null)
             {
                 return null;
             }

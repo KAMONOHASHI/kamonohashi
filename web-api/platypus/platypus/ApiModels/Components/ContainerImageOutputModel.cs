@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Nssol.Platypus.ApiModels.Components
+﻿namespace Nssol.Platypus.ApiModels.Components
 {
     public class ContainerImageOutputModel : ContainerImageInputModel
     {
