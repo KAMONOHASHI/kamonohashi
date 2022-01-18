@@ -931,7 +931,7 @@ namespace Nssol.Platypus.Controllers.spa
                 await clusterManagementLogic.DeleteContainerAsync(
                     ContainerType.Training, inferenceHistory.Key, tenant.Name, false);
 
-                //通知処理
+                // 通知処理
                 slackLogic.InformJobResult(inferenceHistory);
             }
 

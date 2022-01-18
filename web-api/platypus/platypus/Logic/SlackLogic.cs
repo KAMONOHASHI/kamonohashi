@@ -23,8 +23,8 @@ namespace Nssol.Platypus.Logic
         private readonly Dictionary<ContainerStatus, string> ColorDictionary
             = new Dictionary<ContainerStatus, string>
         {
-            { ContainerStatus.Completed, "#67C23A" },
-            { ContainerStatus.Killed, "#D00000" },
+            { ContainerStatus.Completed,    "#67C23A" },
+            { ContainerStatus.Killed,       "#D00000" },
             { ContainerStatus.UserCanceled, "#E6A23C" }
         };
 
@@ -39,7 +39,7 @@ namespace Nssol.Platypus.Logic
             this.slackService = slackService;
             this.containerOptions = containerOptions.Value;
         }
-        
+
         /// <summary>
         /// 学習結果を通知する
         /// </summary>
@@ -55,7 +55,7 @@ namespace Nssol.Platypus.Logic
             if (string.IsNullOrEmpty(containerOptions.WebEndPoint))
             {
                 LogWarning("ホスト情報が未登録のため通知処理をスキップしました");
-                return ;
+                return;
             }
 
             // 終了ステータスでないときは履歴削除として判定して処理する
@@ -154,7 +154,7 @@ namespace Nssol.Platypus.Logic
         /// テスト通知する
         /// </summary>
         /// <param name="model">Webhook情報モデル</param>
-        public async Task<Result<string,string>> InformTest(WebhookModel model)
+        public async Task<Result<string, string>> InformTest(WebhookModel model)
         {
             // SlackURLが設定されていないときは通知しない
             if (string.IsNullOrEmpty(model.SlackUrl))
