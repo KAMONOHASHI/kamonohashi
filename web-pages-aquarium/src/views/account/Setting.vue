@@ -42,21 +42,22 @@
           />
           <label for="tab1_4">Registry Token</label>
           <input
+            id="tab1_6"
+            type="radio"
+            name="cp_tab"
+            aria-controls="fifth_tab01"
+          />
+          <label for="tab1_6">Webhook</label>
+          <input
+            v-if="passwordChangeEnabled"
             id="tab1_5"
             type="radio"
             name="cp_tab"
-            aria-controls="five_tab01"
+            aria-controls="sixth_tab01"
           />
           <label v-if="passwordChangeEnabled" for="tab1_5">
             Password
           </label>
-          <input
-            id="tab1_6"
-            type="radio"
-            name="cp_tab"
-            aria-controls="six_tab01"
-          />
-          <label for="tab1_6">Webhook</label>
 
           <div class="cp_tabpanels">
             <!-- デフォルトテナント設定 -->
@@ -99,23 +100,26 @@
               />
             </div>
 
-            <!-- パスワード変更 -->
-            <div id="five_tab01" class="cp_tabpanel">
-              <kqi-display-error :error="passwordError" />
-              <Password-Setting
-                v-if="passwordChangeEnabled"
-                v-model="passForm"
-                @updatePassword="updatePassword"
-              />
-            </div>
-
             <!-- Webhook設定 -->
-            <div id="six_tab01" class="cp_tabpanel">
+            <div id="fifth_tab01" class="cp_tabpanel">
               <kqi-display-error :error="webhookError" />
               <webhook-setting
                 v-model="webhookForm"
                 @updateWebhook="updateWebhook"
                 @sendNotification="sendNotification"
+              />
+            </div>
+
+            <!-- パスワード変更 -->
+            <div
+              v-if="passwordChangeEnabled"
+              id="sixth_tab01"
+              class="cp_tabpanel"
+            >
+              <kqi-display-error :error="passwordError" />
+              <Password-Setting
+                v-model="passForm"
+                @updatePassword="updatePassword"
               />
             </div>
           </div>
@@ -325,7 +329,7 @@ export default {
         }
         await this['account/putWebhook'](params)
         this.showSuccessMessage()
-        this.passwordError = null
+        this.webhookError = null
       } catch (error) {
         this.webhookError = error
       }

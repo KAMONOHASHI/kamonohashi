@@ -5,19 +5,20 @@
     </el-row>
     <el-row class="row-element" style="margin-top: 20px;margin-left:20px">
       <el-col :span="3">通知先URL</el-col>
-      <el-col :span="19"
-        ><el-input :value="value.slackUrl" type="text" @input="slackUrlChange"
-      /></el-col>
+      <el-col :span="19">
+        <el-input :value="value.slackUrl" type="text" @input="slackUrlChange" />
+      </el-col>
     </el-row>
     <el-row class="row-element" style="margin-top: 30px;margin-left:20px">
       <el-col :span="3">メンション</el-col>
-      <el-col :span="19"
-        ><el-input
+      <el-col :span="19">
+        <el-input
           :value="value.mention"
           type="text"
           placeholder="mention"
           @input="mentionChange"
-      /></el-col>
+        />
+      </el-col>
     </el-row>
     <el-row>
       <el-col class="button-group" :span="21">
