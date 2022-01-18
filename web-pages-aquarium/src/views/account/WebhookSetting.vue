@@ -13,10 +13,10 @@
       <el-col :span="3">メンション</el-col>
       <el-col :span="19"
         ><el-input
-          :value="value.mentionId"
+          :value="value.mention"
           type="text"
           placeholder="mention"
-          @input="mentionIdChange"
+          @input="mentionChange"
       /></el-col>
     </el-row>
     <el-row>
@@ -41,7 +41,7 @@ export default {
       type: Object,
       default: () => ({
         slackUrl: '',
-        mentionId: '',
+        mention: '',
       }),
     },
   },
@@ -51,9 +51,9 @@ export default {
       form.slackUrl = slackUrl
       this.$emit('input', form)
     },
-    mentionIdChange(mentionId) {
+    mentionChange(mention) {
       let form = Object.assign({}, this.value)
-      form.mentionId = mentionId
+      form.mention = mention
       this.$emit('input', form)
     },
   },
