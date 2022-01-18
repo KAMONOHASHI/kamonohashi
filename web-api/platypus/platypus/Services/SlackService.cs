@@ -35,7 +35,7 @@ namespace Nssol.Platypus.Services
                 TenantName = model.Tenant.DisplayName,
                 UserName = model.CreatedBy,
                 Status = model.Status,
-                URL = model.Url,
+                Url = model.Url,
                 Message = model.Message
             });
 
@@ -72,7 +72,7 @@ namespace Nssol.Platypus.Services
             string body = await RenderEngine.CompileRenderAsync("test_message.json", new
             {
                 UserName = model.CreatedBy,
-                URL = model.Url,
+                Url = model.Url,
                 Mention = model.Mention
             });
 

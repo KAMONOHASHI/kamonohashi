@@ -34,7 +34,7 @@
             },
             {
               "type": "mrkdwn",
-              "text": "*Tenant:*\n @(Model.TenantName)"
+              "text": "*Tenant:*\n @Raw(Model.TenantName)"
             },
             {
               "type": "mrkdwn",
@@ -54,7 +54,7 @@
           "type": "section",
           "text": {
             "type": "mrkdwn",
-            "text": "<@(Model.URL)|More>"
+            "text": "<@(Model.Url)|More>"
           }
         }
       ]

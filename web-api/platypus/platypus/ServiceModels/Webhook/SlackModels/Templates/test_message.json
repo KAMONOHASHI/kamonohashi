@@ -34,7 +34,7 @@
           "type": "section",
           "text": {
             "type": "mrkdwn",
-            "text": "*URL:*\n@(Model.URL)"
+            "text": "*URL:*\n@(Model.Url)"
           }
         }
       ]
