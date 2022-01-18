@@ -54,7 +54,7 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly ISlackLogic slackLogic;
         private readonly IUnitOfWork unitOfWork;
         private readonly ITagRepository tagRepository;
-        
+
         /// <summary>
         /// コンストラクタ
         /// </summary>
