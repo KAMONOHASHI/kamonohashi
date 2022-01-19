@@ -17,7 +17,7 @@
 @:          "type": "section",
 @:          "text": {
 @:            "type": "mrkdwn",
-@:            "text": "@@@(Model.Mention)"
+@:            "text": "@@@Raw(Model.Mention)"
 @:          }
 @:        },
 }
