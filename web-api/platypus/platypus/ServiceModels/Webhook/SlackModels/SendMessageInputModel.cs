@@ -72,13 +72,13 @@ namespace Nssol.Platypus.ServiceModels.Webhook.SlackModels
         ///  メッセージ送信先ApiPath
         /// </summary>
         public string ApiPath { get { return GetApiPath(); } }
-
+        
         /// <summary>
         /// 送信先URLからベースURLを取得する
         /// </summary>
         private string GetBaseUrl()
         {
-            return Regex.Match(WebhookUrl, @"https://.*?/").Value;
+            return Regex.Match(WebhookUrl, @"https://hooks.slack.com/").Value;
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace Nssol.Platypus.ServiceModels.Webhook.SlackModels
         /// </summary>
         private string GetApiPath()
         {
-            return Regex.Replace(WebhookUrl, @"https://.*?/", "/");
+            return Regex.Replace(WebhookUrl, @"https://hooks.slack.com/", "/");
         }
     }
 }
