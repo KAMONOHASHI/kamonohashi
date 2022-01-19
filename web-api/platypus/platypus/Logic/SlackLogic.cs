@@ -67,7 +67,7 @@ namespace Nssol.Platypus.Logic
                     Id = history.Id,
                     Name = history.Name,
                     CreatedBy = history.CreatedBy,
-                    Mention = CurrentUserInfo.Mention,
+                    Mention = string.IsNullOrEmpty(CurrentUserInfo.Mention) ? null : CurrentUserInfo.Mention,
                     Status = history.GetStatus().Name,
                     Tenant = CurrentUserInfo.SelectedTenant,
                     Url = $"http://{containerOptions.WebEndPoint}/kamonohashi/#/training/{history.Id}?tenantId={CurrentUserInfo.SelectedTenant.Id}",
@@ -84,7 +84,7 @@ namespace Nssol.Platypus.Logic
                     Id = history.Id,
                     Name = history.Name,
                     CreatedBy = history.CreatedBy,
-                    Mention = CurrentUserInfo.Mention,
+                    Mention = string.IsNullOrEmpty(CurrentUserInfo.Mention) ? null : CurrentUserInfo.Mention,
                     Tenant = CurrentUserInfo.SelectedTenant,
                     Url = $"http://{containerOptions.WebEndPoint}/kamonohashi/#/training?tenantId={CurrentUserInfo.SelectedTenant.Id}",
                     Title = "KAMONOHASHI 学習履歴削除通知",
@@ -122,7 +122,7 @@ namespace Nssol.Platypus.Logic
                     Id = history.Id,
                     Name = history.Name,
                     CreatedBy = history.CreatedBy,
-                    Mention = CurrentUserInfo.Mention,
+                    Mention = string.IsNullOrEmpty(CurrentUserInfo.Mention) ? null : CurrentUserInfo.Mention,
                     Status = history.GetStatus().Name,
                     Tenant = CurrentUserInfo.SelectedTenant,
                     Url = $"http://{containerOptions.WebEndPoint}/kamonohashi/#/inference/{history.Id}?tenantId={CurrentUserInfo.SelectedTenant.Id}",
@@ -139,7 +139,7 @@ namespace Nssol.Platypus.Logic
                     Id = history.Id,
                     Name = history.Name,
                     CreatedBy = history.CreatedBy,
-                    Mention = CurrentUserInfo.Mention,
+                    Mention = string.IsNullOrEmpty(CurrentUserInfo.Mention) ? null : CurrentUserInfo.Mention,
                     Tenant = CurrentUserInfo.SelectedTenant,
                     Url = $"http://{containerOptions.WebEndPoint}/kamonohashi/#/inference?tenantId={CurrentUserInfo.SelectedTenant.Id}",
                     Title = "KAMONOHASHI 推論履歴削除通知",
@@ -174,7 +174,7 @@ namespace Nssol.Platypus.Logic
                 CreatedBy = CurrentUserInfo.Name,
                 Url = $"http://{containerOptions.WebEndPoint}/kamonohashi/#/",
                 WebhookUrl = model.SlackUrl,
-                Mention = model.Mention
+                Mention = string.IsNullOrEmpty(model.Mention) ? null : model.Mention
             });
 
             if (result)

@@ -476,7 +476,7 @@ namespace Nssol.Platypus.Controllers.spa
         {
             User user = await userRepository.GetByIdAsync(multiTenancyLogic.CurrentUserInfo.Id);
             user.SlackUrl = model.SlackUrl;
-            user.Mention = model.Mention;
+            user.Mention = string.IsNullOrEmpty(model.Mention) ? null : model.Mention;
             unitOfWork.Commit();
 
             return JsonNoContent();
