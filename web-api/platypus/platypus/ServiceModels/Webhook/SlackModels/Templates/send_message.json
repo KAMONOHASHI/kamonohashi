@@ -40,16 +40,23 @@
               "type": "mrkdwn",
               "text": "*Created by:*\n @(Model.UserName)"
             },
-            {
-              "type": "mrkdwn",
 @if (Model.Status != null) {
+@:          {
+@:            "type": "mrkdwn",
 @:            "text": "*Status:*\n @(Model.Status)"
-} else {
-@:            "text" : "*Message:*\n @Raw(Model.Message)"
+@:          }
 }
-            }
           ]
         },
+@if (Model.Status == null) {
+@:      {
+@:        "type": "section",
+@:        "text": {
+@:          "type": "mrkdwn",
+@:          "text": "*Message:*\n @Raw(Model.Message)"
+@:        }
+@:      },
+}
         {
           "type": "section",
           "text": {
