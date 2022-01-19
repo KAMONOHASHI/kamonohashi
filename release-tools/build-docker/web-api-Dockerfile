@@ -1,5 +1,5 @@
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
-RUN dotnet tool install --global dotnet-ef --version 3.1.19
+RUN dotnet tool install --global dotnet-ef
 COPY /platypus/platypus /src/
 ARG version
 RUN cd /src/  && \    
