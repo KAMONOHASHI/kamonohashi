@@ -121,6 +121,3 @@ namespace Nssol.Platypus.Services
         }
     }
 }
-
-
-

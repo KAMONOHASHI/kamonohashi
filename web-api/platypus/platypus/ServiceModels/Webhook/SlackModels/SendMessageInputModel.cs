@@ -72,7 +72,7 @@ namespace Nssol.Platypus.ServiceModels.Webhook.SlackModels
         ///  メッセージ送信先ApiPath
         /// </summary>
         public string ApiPath { get { return GetApiPath(); } }
-        
+
         /// <summary>
         /// 送信先URLからベースURLを取得する
         /// </summary>
