@@ -105,6 +105,7 @@ namespace Nssol.Platypus.Controllers.spa
             this.tagLogic = tagLogic;
             this.gitLogic = gitLogic;
             this.dataSetLogic = dataSetLogic;
+            this.registryLogic = registryLogic;
             this.storageLogic = storageLogic;
             this.trainingLogic = trainingLogic;
             this.clusterManagementLogic = clusterManagementLogic;
