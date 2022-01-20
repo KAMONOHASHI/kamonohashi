@@ -62,6 +62,7 @@
               @selectGit="selectGit"
               @selectRepository="selectRepository"
               @selectBranch="selectBranch"
+              @searchCommitId="searchCommitId"
             />
           </el-col>
           <el-col :span="12">
@@ -169,6 +170,7 @@
                 @selectGit="selectGit"
                 @selectRepository="selectRepository"
                 @selectBranch="selectBranch"
+                @searchCommitId="searchCommitId"
               />
             </el-col>
             <el-col :span="12">
@@ -675,6 +677,16 @@ export default {
         this['gitSelector/fetchCommits'],
         branchName,
       )
+    },
+    async searchCommitId(commitId) {
+      await this['gitSelector/fetchCommitDetail']({
+        gitId: this.form.gitModel.git.id,
+        repository: this.form.gitModel.repository,
+        commitId: commitId,
+      })
+      if (this.commitDetail != null) {
+        this.form.gitModel.commit = this.commitDetail
+      }
     },
   },
 }

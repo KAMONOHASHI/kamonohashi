@@ -160,7 +160,8 @@ const actions = {
       let commitDetail = (await api.git.getCommit(params)).data
       commit('setCommitDetail', { commitDetail })
     } catch {
-      commit('setCommitDetail', null)
+      let commitDetail = null
+      commit('setCommitDetail', { commitDetail })
     }
   },
 

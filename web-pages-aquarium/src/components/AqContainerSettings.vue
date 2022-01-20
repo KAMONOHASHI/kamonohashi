@@ -43,6 +43,7 @@
             @selectGit="selectGit"
             @selectRepository="selectRepository"
             @selectBranch="selectBranch"
+            @searchCommitId="searchCommitId"
           />
 
           <el-row>
@@ -156,6 +157,7 @@ export default {
       defaultGitId: ['gitSelector/defaultGitId'],
       quota: ['cluster/quota'],
       loadingRepositories: ['gitSelector/loadingRepositories'],
+      searchCommitDetail: ['gitSelector/commitDetail'],
     }),
     form: {
       get() {
@@ -405,6 +407,17 @@ export default {
         this.commits = (await api.git.getCommits(params)).data
       }
     },
+    async searchCommitId(commitId) {
+      await this['gitSelector/fetchCommitDetail']({
+        gitId: this.form.gitModel.git.id,
+        repository: this.form.gitModel.repository,
+        commitId: commitId,
+      })
+
+      if (this.searchCommitDetail != null) {
+        this.form.gitModel.commit = this.searchCommitDetail
+      }
+    },
     // apiでテンプレートを登録するための入力値チェックを行い、formの中身を成形する
     async prepareSubmit() {
       // 入力値チェック
@@ -506,6 +519,7 @@ export default {
       'registrySelector/fetchRegistries',
       'gitSelector/fetchGits',
       'cluster/fetchQuota',
+      'gitSelector/fetchCommitDetail',
     ]),
   },
 }
