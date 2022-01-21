@@ -413,7 +413,7 @@ export default {
           dataList.forEach(originalData => {
             originalData.checked = false
           })
-        } else {
+        } else if (this.isAllCheckedOld) {
           let noChecklist = []
           for (let i in this.viewInfo.dataList) {
             if (
@@ -430,6 +430,9 @@ export default {
             noChecklist: noChecklist,
           })
           this.$forceUpdate()
+          moveDataList = this.dataList.filter(x => x.checked)
+        } else {
+          moveDataList = []
           moveDataList = this.dataList.filter(x => x.checked)
         }
       }
