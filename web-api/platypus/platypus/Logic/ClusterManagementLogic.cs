@@ -275,6 +275,7 @@ namespace Nssol.Platypus.Logic
                 { "PYTHONUNBUFFERED", "true" }, // python実行時の標準出力・エラーのバッファリングをなくす
                 { "LC_ALL", "C.UTF-8"},  // python実行時のエラー回避
                 { "LANG", "C.UTF-8"}  // python実行時のエラー回避
+                { "KQI_VERSION", versionLogic.GetVersion() }  // KAMONOHASHIのバージョン情報
             };
 
             //コンテナを起動するために必要な設定値をインスタンス化
