@@ -274,7 +274,7 @@ namespace Nssol.Platypus.Logic
                 { "KQI_TOKEN", loginLogic.GenerateToken().AccessToken },
                 { "PYTHONUNBUFFERED", "true" }, // python実行時の標準出力・エラーのバッファリングをなくす
                 { "LC_ALL", "C.UTF-8"},  // python実行時のエラー回避
-                { "LANG", "C.UTF-8"}  // python実行時のエラー回避
+                { "LANG", "C.UTF-8"},  // python実行時のエラー回避
                 { "KQI_VERSION", versionLogic.GetVersion() }  // KAMONOHASHIのバージョン情報
             };
 
