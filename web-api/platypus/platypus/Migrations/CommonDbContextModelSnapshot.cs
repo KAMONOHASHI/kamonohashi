@@ -2553,6 +2553,9 @@ namespace Nssol.Platypus.Migrations
                     b.Property<long>("DefaultTenantId")
                         .HasColumnType("bigint");
 
+                    b.Property<string>("Mention")
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("ModifiedAt")
                         .HasColumnType("timestamp without time zone");
 
@@ -2569,6 +2572,9 @@ namespace Nssol.Platypus.Migrations
 
                     b.Property<int>("ServiceType")
                         .HasColumnType("integer");
+
+                    b.Property<string>("SlackUrl")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 

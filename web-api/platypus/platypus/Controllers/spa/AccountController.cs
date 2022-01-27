@@ -28,18 +28,21 @@ namespace Nssol.Platypus.Controllers.spa
     public class AccountController : PlatypusApiControllerBase
     {
         private readonly ILoginLogic loginLogic;
+        private readonly ISlackLogic slackLogic;
         private readonly IUserRepository userRepository;
         private readonly IMultiTenancyLogic multiTenancyLogic;
         private readonly IUnitOfWork unitOfWork;
 
         public AccountController(
             ILoginLogic loginLogic,
+            ISlackLogic slackLogic,
             IUserRepository userRepository,
             IMultiTenancyLogic multiTenancyLogic,
             IUnitOfWork unitOfWork,
             IHttpContextAccessor accessor) : base(accessor)
         {
             this.loginLogic = loginLogic;
+            this.slackLogic = slackLogic;
             this.userRepository = userRepository;
             this.multiTenancyLogic = multiTenancyLogic;
             this.unitOfWork = unitOfWork;
@@ -440,5 +443,64 @@ namespace Nssol.Platypus.Controllers.spa
 
             return JsonOK(result);
         }
+
+        #region Webhook
+
+        /// <summary>
+        /// WebHook情報を取得する
+        /// </summary>
+        [Filters.PermissionFilter(MenuCode.Account)]
+        [HttpGet("webhook/slack")]
+        [ProducesResponseType(typeof(WebhookModel), (int)HttpStatusCode.OK)]
+        public IActionResult GetWebHookInfo()
+        {
+            var userInfo = multiTenancyLogic.CurrentUserInfo;
+
+            WebhookModel model = new WebhookModel()
+            {
+                SlackUrl = userInfo.SlackUrl,
+                Mention = userInfo.Mention
+            };
+
+            return JsonOK(model);
+        }
+
+        /// <summary>
+        /// WebHook情報を更新する
+        /// </summary>
+        /// <param name="model">Webhook情報モデル</param>
+        [Filters.PermissionFilter(MenuCode.Account)]
+        [HttpPut("webhook/slack")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        public async Task<IActionResult> EditWebHookInfo(WebhookModel model)
+        {
+            User user = await userRepository.GetByIdAsync(multiTenancyLogic.CurrentUserInfo.Id);
+            user.SlackUrl = model.SlackUrl;
+            user.Mention = string.IsNullOrEmpty(model.Mention) ? null : model.Mention;
+            unitOfWork.Commit();
+
+            return JsonNoContent();
+        }
+
+        /// <summary>
+        /// テスト通知を送信する
+        /// </summary>
+        /// <param name="model">Webhook情報モデル</param>
+        [HttpPost("webhook/slack/test")]
+        [Filters.PermissionFilter(MenuCode.Account)]
+        [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> SendTestNotification(WebhookModel model)
+        {
+            var result = await slackLogic.InformTest(model);
+            if (result.IsSuccess)
+            {
+                return JsonOK(result);
+            }
+            else
+            {
+                return JsonBadRequest(result.Error);
+            }
+        }
+        #endregion
     }
 }

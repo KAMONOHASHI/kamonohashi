@@ -47,5 +47,15 @@ namespace Nssol.Platypus.Models
         /// </summary>
         [ForeignKey(nameof(DefaultTenantId))]
         public virtual Tenant DefaultTenant { get; set; }
+
+        /// <summary>
+        /// Slackの送信先URL
+        /// </summary>
+        public string SlackUrl { get; set; }
+
+        /// <summary>
+        /// Slackメッセージのメンション
+        /// </summary>
+        public string Mention { get; set; }
     }
 }

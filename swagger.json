@@ -12,9 +12,13 @@
   "paths": {
     "/api/v2/account": {
       "get": {
-        "tags": ["Account"],
+        "tags": [
+          "Account"
+        ],
         "summary": "ログインユーザのアカウント情報を取得する",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -25,14 +29,18 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "put": {
-        "tags": ["Account"],
+        "tags": [
+          "Account"
+        ],
         "summary": "ログインユーザのアカウント情報を変更する",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "query",
@@ -52,14 +60,16 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/account/password": {
       "put": {
-        "tags": ["Account"],
+        "tags": [
+          "Account"
+        ],
         "summary": "ログインユーザのパスワードを変更する",
         "consumes": [
           "application/json-patch+json",
@@ -83,14 +93,16 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/account/login": {
       "post": {
-        "tags": ["Account"],
+        "tags": [
+          "Account"
+        ],
         "summary": "ログインする",
         "consumes": [
           "application/json-patch+json",
@@ -98,7 +110,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "body",
@@ -120,7 +134,9 @@
     },
     "/api/v2/account/tenants/{tenantId}/token": {
       "post": {
-        "tags": ["Account"],
+        "tags": [
+          "Account"
+        ],
         "summary": "現在の認証情報を使用し、新規にアクセストークンを取得する",
         "consumes": [
           "application/json-patch+json",
@@ -128,7 +144,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -157,16 +175,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/account/menus/tree": {
       "get": {
-        "tags": ["Account"],
+        "tags": [
+          "Account"
+        ],
         "summary": "アクセス可能なKQIのメニュー一覧をツリー形式で取得する。",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "query",
@@ -187,16 +209,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/account/menus/list": {
       "get": {
-        "tags": ["Account"],
+        "tags": [
+          "Account"
+        ],
         "summary": "アクセス可能なKQIのメニュー一覧をリスト形式で取得する。",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "query",
@@ -217,16 +243,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/account/aquarium/menus/tree": {
       "get": {
-        "tags": ["Account"],
+        "tags": [
+          "Account"
+        ],
         "summary": "アクセス可能なAquariumのメニュー一覧をツリー形式で取得する。",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "query",
@@ -247,16 +277,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/account/aquarium/menus/list": {
       "get": {
-        "tags": ["Account"],
+        "tags": [
+          "Account"
+        ],
         "summary": "アクセス可能なAquariumのメニュー一覧をリスト形式で取得する。",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "query",
@@ -277,16 +311,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/account/gits": {
       "get": {
-        "tags": ["Account"],
+        "tags": [
+          "Account"
+        ],
         "summary": "選択中のテナントにおけるGit情報を取得する",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -297,12 +335,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "put": {
-        "tags": ["Account"],
+        "tags": [
+          "Account"
+        ],
         "summary": "選択中のテナントにおけるGitのトークン情報を更新する。",
         "consumes": [
           "application/json-patch+json",
@@ -310,7 +350,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "body",
@@ -331,16 +373,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/account/registries": {
       "get": {
-        "tags": ["Account"],
+        "tags": [
+          "Account"
+        ],
         "summary": "選択中のテナントにおけるレジストリ情報を取得する",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -351,12 +397,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "put": {
-        "tags": ["Account"],
+        "tags": [
+          "Account"
+        ],
         "summary": "選択中のテナントにおけるレジストリのトークン情報を更新する。",
         "consumes": [
           "application/json-patch+json",
@@ -364,7 +412,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "body",
@@ -385,14 +435,112 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
+          }
+        ]
+      }
+    },
+    "/api/v2/account/webhook/slack": {
+      "get": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "WebHook情報を取得する",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Nssol.Platypus.ApiModels.AccountApiModels.WebhookModel"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": [ ]
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "WebHook情報を更新する",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Webhook情報モデル",
+            "schema": {
+              "$ref": "#/definitions/Nssol.Platypus.ApiModels.AccountApiModels.WebhookModel"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {
+            "api_key": [ ]
+          }
+        ]
+      }
+    },
+    "/api/v2/account/webhook/slack/test": {
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "テスト通知を送信する",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Webhook情報モデル",
+            "schema": {
+              "$ref": "#/definitions/Nssol.Platypus.ApiModels.AccountApiModels.WebhookModel"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/aquarium/datasets": {
       "post": {
-        "tags": ["AquariumDataSet"],
+        "tags": [
+          "AquariumDataSet"
+        ],
         "summary": "アクアリウムデータセットを作成する",
         "consumes": [
           "application/json-patch+json",
@@ -400,7 +548,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "body",
@@ -421,14 +571,18 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "get": {
-        "tags": ["AquariumDataSet"],
+        "tags": [
+          "AquariumDataSet"
+        ],
         "summary": "指定された条件でページングされた状態で、アクアリウムデータセット一覧を取得する",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "query",
@@ -502,14 +656,16 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/aquarium/datasets/{id}/versions": {
       "post": {
-        "tags": ["AquariumDataSet"],
+        "tags": [
+          "AquariumDataSet"
+        ],
         "summary": "アクアリウムデータセットバージョンを作成する",
         "consumes": [
           "application/json-patch+json",
@@ -517,7 +673,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -546,14 +704,18 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "get": {
-        "tags": ["AquariumDataSet"],
+        "tags": [
+          "AquariumDataSet"
+        ],
         "summary": "アクアリウムデータセットバージョン一覧を取得する",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -577,16 +739,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/aquarium/datasets/{id}/versions/{versionId}": {
       "get": {
-        "tags": ["AquariumDataSet"],
+        "tags": [
+          "AquariumDataSet"
+        ],
         "summary": "アクアリウムデータセットバージョンを取得する",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -615,12 +781,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "delete": {
-        "tags": ["AquariumDataSet"],
+        "tags": [
+          "AquariumDataSet"
+        ],
         "summary": "アクアリウムデータセットバージョンを削除する",
         "parameters": [
           {
@@ -647,14 +815,16 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/aquarium/datasets/{id}": {
       "delete": {
-        "tags": ["AquariumDataSet"],
+        "tags": [
+          "AquariumDataSet"
+        ],
         "summary": "アクアリウムデータセットを削除する",
         "parameters": [
           {
@@ -673,16 +843,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/tenant/partitions": {
       "get": {
-        "tags": ["Cluster"],
+        "tags": [
+          "Cluster"
+        ],
         "summary": "接続中のテナントに有効なパーティションの一覧を取得する。",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -696,16 +870,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/admin/partitions": {
       "get": {
-        "tags": ["Cluster"],
+        "tags": [
+          "Cluster"
+        ],
         "summary": "パーティションの一覧を取得する。",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -719,16 +897,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/admin/quotas": {
       "get": {
-        "tags": ["Cluster"],
+        "tags": [
+          "Cluster"
+        ],
         "summary": "クォータ設定を取得する。",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -742,12 +924,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "post": {
-        "tags": ["Cluster"],
+        "tags": [
+          "Cluster"
+        ],
         "summary": "クォータ設定を更新する。",
         "description": "0が指定された場合、上限なしを示す。また、指定のなかったテナントは更新しない。",
         "consumes": [
@@ -756,7 +940,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "body",
@@ -782,16 +968,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/tenant/quota": {
       "get": {
-        "tags": ["Cluster"],
+        "tags": [
+          "Cluster"
+        ],
         "summary": "接続中テナントのクォータ情報を取得",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -802,16 +992,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/tenant/nodes": {
       "get": {
-        "tags": ["Cluster"],
+        "tags": [
+          "Cluster"
+        ],
         "summary": "接続中のテナントが利用可能なノード一覧（リソース値を含む）を取得する。",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -825,17 +1019,21 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/admin/tensorboards": {
       "delete": {
-        "tags": ["Cluster"],
+        "tags": [
+          "Cluster"
+        ],
         "summary": "DB上の全てのTensorBoardコンテナ情報を対応する実コンテナごと削除する。",
         "description": "REST APIとして定時バッチから実行される想定。",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -847,16 +1045,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/admin/events/{id}": {
       "get": {
-        "tags": ["Cluster"],
+        "tags": [
+          "Cluster"
+        ],
         "summary": "イベントを取得する",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -886,16 +1088,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/data": {
       "get": {
-        "tags": ["Data"],
+        "tags": [
+          "Data"
+        ],
         "summary": "指定された条件でページングされた状態で、データ一覧を取得。\r\nタグ情報が含まれる。",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "query",
@@ -972,12 +1178,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "post": {
-        "tags": ["Data"],
+        "tags": [
+          "Data"
+        ],
         "summary": "データの新規作成",
         "consumes": [
           "application/json-patch+json",
@@ -985,7 +1193,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "body",
@@ -1005,16 +1215,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/data/{id}": {
       "get": {
-        "tags": ["Data"],
+        "tags": [
+          "Data"
+        ],
         "summary": "指定したIDのデータ詳細情報を取得する。",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -1035,12 +1249,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "put": {
-        "tags": ["Data"],
+        "tags": [
+          "Data"
+        ],
         "summary": "データ編集メソッド。\r\nファイルの追加は別のメソッドで行う。",
         "consumes": [
           "application/json-patch+json",
@@ -1048,7 +1264,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -1077,12 +1295,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "delete": {
-        "tags": ["Data"],
+        "tags": [
+          "Data"
+        ],
         "summary": "指定したデータを削除する",
         "parameters": [
           {
@@ -1101,16 +1321,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/data/{id}/tags/{tag}": {
       "put": {
-        "tags": ["Data"],
+        "tags": [
+          "Data"
+        ],
         "summary": "指定したデータに対してタグを追加する。",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -1136,12 +1360,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "delete": {
-        "tags": ["Data"],
+        "tags": [
+          "Data"
+        ],
         "summary": "指定したデータからタグを削除する。",
         "parameters": [
           {
@@ -1165,16 +1391,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/data/{id}/files/{name}": {
       "get": {
-        "tags": ["Data"],
+        "tags": [
+          "Data"
+        ],
         "summary": "ファイルのダウンロードURLを取得する",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -1202,16 +1432,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/data/{id}/files/{name}/size": {
       "get": {
-        "tags": ["Data"],
+        "tags": [
+          "Data"
+        ],
         "summary": "ファイルのサイズ(Byte)を取得する",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -1239,16 +1473,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/data/{id}/files": {
       "get": {
-        "tags": ["Data"],
+        "tags": [
+          "Data"
+        ],
         "summary": "指定したデータのファイル情報を全て取得する",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -1278,12 +1516,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "post": {
-        "tags": ["Data"],
+        "tags": [
+          "Data"
+        ],
         "summary": "ファイルを追加する。",
         "consumes": [
           "application/json-patch+json",
@@ -1291,7 +1531,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -1320,14 +1562,16 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/data/{id}/files/{fileId}": {
       "delete": {
-        "tags": ["Data"],
+        "tags": [
+          "Data"
+        ],
         "summary": "指定されたIDのファイルを削除する",
         "parameters": [
           {
@@ -1354,16 +1598,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/data/datatags": {
       "get": {
-        "tags": ["Data"],
+        "tags": [
+          "Data"
+        ],
         "summary": "選択中のテナントに登録されているデータ管理で使用できるタグを表示する",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -1377,12 +1625,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "delete": {
-        "tags": ["Data"],
+        "tags": [
+          "Data"
+        ],
         "responses": {
           "204": {
             "description": "Success"
@@ -1390,16 +1640,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/datasets": {
       "get": {
-        "tags": ["DataSet"],
+        "tags": [
+          "DataSet"
+        ],
         "summary": "指定された条件でページングされた状態で、データセット一覧を取得",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "query",
@@ -1461,12 +1715,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "post": {
-        "tags": ["DataSet"],
+        "tags": [
+          "DataSet"
+        ],
         "summary": "データセットを新規作成する",
         "consumes": [
           "application/json-patch+json",
@@ -1474,7 +1730,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "body",
@@ -1495,16 +1753,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/datasets/{id}": {
       "get": {
-        "tags": ["DataSet"],
+        "tags": [
+          "DataSet"
+        ],
         "summary": "指定したIDのデータセット詳細情報を取得する。",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -1525,12 +1787,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "patch": {
-        "tags": ["DataSet"],
+        "tags": [
+          "DataSet"
+        ],
         "summary": "データセットの付属情報（メモなど、任意のタイミングで変更できるもの）を変更する。",
         "consumes": [
           "application/json-patch+json",
@@ -1538,7 +1802,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -1567,12 +1833,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "put": {
-        "tags": ["DataSet"],
+        "tags": [
+          "DataSet"
+        ],
         "summary": "データセットのエントリ内容（学習で使用後は編集不可）を変更する",
         "consumes": [
           "application/json-patch+json",
@@ -1580,7 +1848,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -1609,12 +1879,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "delete": {
-        "tags": ["DataSet"],
+        "tags": [
+          "DataSet"
+        ],
         "summary": "データセットを削除する",
         "parameters": [
           {
@@ -1633,16 +1905,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/datasets/{id}/files": {
       "get": {
-        "tags": ["DataSet"],
+        "tags": [
+          "DataSet"
+        ],
         "summary": "指定したIDのデータセットに含まれるデータファイル情報を取得する。",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -1669,16 +1945,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/datasets/{id}/pathpairs": {
       "get": {
-        "tags": ["DataSet"],
+        "tags": [
+          "DataSet"
+        ],
         "summary": "指定したIDのデータセットに含まれるデータとNFS上のデータ名のペア情報を取得する。",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -1702,16 +1982,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/datatypes": {
       "get": {
-        "tags": ["DataSet"],
+        "tags": [
+          "DataSet"
+        ],
         "summary": "全データ種別を取得する",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -1725,16 +2009,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/experiment": {
       "get": {
-        "tags": ["Experiment"],
+        "tags": [
+          "Experiment"
+        ],
         "summary": "指定された条件でページングされた状態で、実験一覧を取得する",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "query",
@@ -1790,16 +2078,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/experiment/{id}": {
       "get": {
-        "tags": ["Experiment"],
+        "tags": [
+          "Experiment"
+        ],
         "summary": "実験を取得する",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -1820,12 +2112,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "delete": {
-        "tags": ["Experiment"],
+        "tags": [
+          "Experiment"
+        ],
         "summary": "実験を削除する",
         "parameters": [
           {
@@ -1844,14 +2138,16 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/experiment/run": {
       "post": {
-        "tags": ["Experiment"],
+        "tags": [
+          "Experiment"
+        ],
         "summary": "実験を開始する",
         "consumes": [
           "application/json-patch+json",
@@ -1859,7 +2155,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "body",
@@ -1879,16 +2177,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/experiment/{id}/preprocessing/complete": {
       "post": {
-        "tags": ["Experiment"],
+        "tags": [
+          "Experiment"
+        ],
         "summary": "前処理を正常終了させ、後続の学習を開始する",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -1909,14 +2211,16 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/experiment/{id}/evaluations": {
       "post": {
-        "tags": ["Experiment"],
+        "tags": [
+          "Experiment"
+        ],
         "summary": "アクアリウム推論を作成する",
         "consumes": [
           "application/json-patch+json",
@@ -1924,7 +2228,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -1953,14 +2259,18 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "get": {
-        "tags": ["Experiment"],
+        "tags": [
+          "Experiment"
+        ],
         "summary": "アクアリウム推論一覧を取得する",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -1984,14 +2294,16 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/experiment/{id}/evaluations/{evaluationId}": {
       "delete": {
-        "tags": ["Experiment"],
+        "tags": [
+          "Experiment"
+        ],
         "summary": "アクアリウム推論を削除する",
         "parameters": [
           {
@@ -2018,16 +2330,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/admin/git/endpoints": {
       "get": {
-        "tags": ["Git"],
+        "tags": [
+          "Git"
+        ],
         "summary": "登録済みのGitエンドポイント一覧を取得",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -2041,12 +2357,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "post": {
-        "tags": ["Git"],
+        "tags": [
+          "Git"
+        ],
         "summary": "新規にGitエンドポイントを登録する",
         "consumes": [
           "application/json-patch+json",
@@ -2054,7 +2372,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "body",
@@ -2075,16 +2395,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/admin/git/types": {
       "get": {
-        "tags": ["Git"],
+        "tags": [
+          "Git"
+        ],
         "summary": "Git種別一覧を取得",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -2098,16 +2422,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/admin/git/endpoints/{id}": {
       "get": {
-        "tags": ["Git"],
+        "tags": [
+          "Git"
+        ],
         "summary": "指定されたIDのGitエンドポイント情報を取得。",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -2128,12 +2456,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "put": {
-        "tags": ["Git"],
+        "tags": [
+          "Git"
+        ],
         "summary": "Gitエンドポイント情報の編集",
         "consumes": [
           "application/json-patch+json",
@@ -2141,7 +2471,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -2170,12 +2502,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "delete": {
-        "tags": ["Git"],
+        "tags": [
+          "Git"
+        ],
         "summary": "Gitエンドポイント情報の削除",
         "parameters": [
           {
@@ -2194,16 +2528,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/tenant/git/endpoints": {
       "get": {
-        "tags": ["Git"],
+        "tags": [
+          "Git"
+        ],
         "summary": "テナント管理者が選択可能な登録済みのGitエンドポイント一覧を取得",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -2217,16 +2555,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/git/{gitId}/repos": {
       "get": {
-        "tags": ["Git"],
+        "tags": [
+          "Git"
+        ],
         "summary": "全てのリポジトリを取得する",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -2249,16 +2591,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/git/{gitId}/repos/{owner}/{repositoryName}/branches": {
       "get": {
-        "tags": ["Git"],
+        "tags": [
+          "Git"
+        ],
         "summary": "ブランチ一覧を取得する",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -2296,16 +2642,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/git/{gitId}/repos/{owner}/{repositoryName}/commits": {
       "get": {
-        "tags": ["Git"],
+        "tags": [
+          "Git"
+        ],
         "summary": "コミット一覧を取得する",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -2349,16 +2699,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/git/{gitId}/repos/{owner}/{repositoryName}/commits/{commitId}": {
       "get": {
-        "tags": ["Git"],
+        "tags": [
+          "Git"
+        ],
         "summary": "指定したコミットIDのコミット詳細を取得する",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -2400,14 +2754,16 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/git/{gitId}/repos/{segments}": {
       "get": {
-        "tags": ["Git"],
+        "tags": [
+          "Git"
+        ],
         "summary": "階層化されたURLを吸収するためのダミーAPI。\r\n製品版のSwaggerからは削除する。",
         "parameters": [
           {
@@ -2436,16 +2792,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/inferences/simple": {
       "get": {
-        "tags": ["Inference"],
+        "tags": [
+          "Inference"
+        ],
         "summary": "全推論履歴のIDと名前を取得",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -2459,16 +2819,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/inferences": {
       "get": {
-        "tags": ["Inference"],
+        "tags": [
+          "Inference"
+        ],
         "summary": "指定された条件でページングされた状態で、全推論履歴を取得",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "query",
@@ -2578,16 +2942,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/inferences/mount": {
       "get": {
-        "tags": ["Inference"],
+        "tags": [
+          "Inference"
+        ],
         "summary": "マウントする推論履歴を取得",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "query",
@@ -2612,16 +2980,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/inferences/{id}": {
       "get": {
-        "tags": ["Inference"],
+        "tags": [
+          "Inference"
+        ],
         "summary": "指定されたIDの推論履歴の詳細情報を取得",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -2642,12 +3014,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "put": {
-        "tags": ["Inference"],
+        "tags": [
+          "Inference"
+        ],
         "summary": "推論履歴の編集",
         "consumes": [
           "application/json-patch+json",
@@ -2655,7 +3029,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -2684,12 +3060,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "delete": {
-        "tags": ["Inference"],
+        "tags": [
+          "Inference"
+        ],
         "summary": "推論履歴を削除",
         "parameters": [
           {
@@ -2708,16 +3086,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/inferences/{id}/events": {
       "get": {
-        "tags": ["Inference"],
+        "tags": [
+          "Inference"
+        ],
         "summary": "指定された推論履歴のエラーイベントを取得",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -2738,14 +3120,16 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/inferences/run": {
       "post": {
-        "tags": ["Inference"],
+        "tags": [
+          "Inference"
+        ],
         "summary": "新規に推論を開始",
         "consumes": [
           "application/json-patch+json",
@@ -2753,7 +3137,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "body",
@@ -2774,14 +3160,16 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/inferences/{id}/files": {
       "post": {
-        "tags": ["Inference"],
+        "tags": [
+          "Inference"
+        ],
         "summary": "推論履歴添付ファイルを登録",
         "consumes": [
           "application/json-patch+json",
@@ -2789,7 +3177,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -2818,14 +3208,18 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "get": {
-        "tags": ["Inference"],
+        "tags": [
+          "Inference"
+        ],
         "summary": "推論履歴添付ファイルの一覧を取得",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -2856,17 +3250,21 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/inferences/{id}/container-files": {
       "get": {
-        "tags": ["Inference"],
+        "tags": [
+          "Inference"
+        ],
         "summary": "コンテナの出力ファイルの一覧を取得",
         "description": "コンテナの/output/配下から指定ディレクトリパスの直下を検索する\r\n検索対象ディレクトリが見つからない場合もファイル・ディレクトリが空の結果を返す",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -2901,14 +3299,16 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/inferences/{id}/files/{fileId}": {
       "delete": {
-        "tags": ["Inference"],
+        "tags": [
+          "Inference"
+        ],
         "summary": "推論履歴添付ファイルを削除",
         "parameters": [
           {
@@ -2935,16 +3335,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/inferences/{id}/files/{name}/size": {
       "get": {
-        "tags": ["Inference"],
+        "tags": [
+          "Inference"
+        ],
         "summary": "推論履歴添付ファイルのサイズ(Byte)を取得する",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -2972,16 +3376,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/inferences/{id}/halt": {
       "post": {
-        "tags": ["Inference"],
+        "tags": [
+          "Inference"
+        ],
         "summary": "推論を途中で強制終了",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -3002,16 +3410,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/inferences/{id}/user-cancel": {
       "post": {
-        "tags": ["Inference"],
+        "tags": [
+          "Inference"
+        ],
         "summary": "推論を途中で強制終了させる。\r\nユーザ自身がジョブを停止させた場合。",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -3032,16 +3444,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/inferences/{id}/complete": {
       "post": {
-        "tags": ["Inference"],
+        "tags": [
+          "Inference"
+        ],
         "summary": "推論を正常終了",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -3062,16 +3478,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/tenant/menus": {
       "get": {
-        "tags": ["Menu"],
+        "tags": [
+          "Menu"
+        ],
         "summary": "テナント向けに、メニューとロールのマッピング情報一覧を取得",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -3085,14 +3505,16 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/tenant/menus/{id}": {
       "put": {
-        "tags": ["Menu"],
+        "tags": [
+          "Menu"
+        ],
         "summary": "テナント向けの、メニューとロールのマッピング情報を更新",
         "consumes": [
           "application/json-patch+json",
@@ -3100,7 +3522,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -3129,16 +3553,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/tenant/menu-types": {
       "get": {
-        "tags": ["Menu"],
+        "tags": [
+          "Menu"
+        ],
         "summary": "テナント向けのメニュー種別一覧を取得",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -3152,16 +3580,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/admin/menus": {
       "get": {
-        "tags": ["Menu"],
+        "tags": [
+          "Menu"
+        ],
         "summary": "管理者向けに、メニューとロールのマッピング情報一覧を取得",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -3175,14 +3607,16 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/admin/menus/{id}": {
       "put": {
-        "tags": ["Menu"],
+        "tags": [
+          "Menu"
+        ],
         "summary": "管理者向けの、メニューとロールのマッピング情報を更新",
         "consumes": [
           "application/json-patch+json",
@@ -3190,7 +3624,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -3219,16 +3655,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/admin/menu-types": {
       "get": {
-        "tags": ["Menu"],
+        "tags": [
+          "Menu"
+        ],
         "summary": "管理者向けメニュー種別一覧を取得",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -3242,16 +3682,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/admin/nodes": {
       "get": {
-        "tags": ["Node"],
+        "tags": [
+          "Node"
+        ],
         "summary": "全ノード一覧を取得",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "query",
@@ -3291,12 +3735,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "post": {
-        "tags": ["Node"],
+        "tags": [
+          "Node"
+        ],
         "summary": "新規にノードを登録する",
         "consumes": [
           "application/json-patch+json",
@@ -3304,7 +3750,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "body",
@@ -3324,16 +3772,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/admin/node-access-levels": {
       "get": {
-        "tags": ["Node"],
+        "tags": [
+          "Node"
+        ],
         "summary": "ノードアクセスレベルの一覧を取得する",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -3347,16 +3799,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/admin/nodes/{id}": {
       "get": {
-        "tags": ["Node"],
+        "tags": [
+          "Node"
+        ],
         "summary": "指定されたIDのノード情報を取得。",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -3377,12 +3833,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "put": {
-        "tags": ["Node"],
+        "tags": [
+          "Node"
+        ],
         "summary": "ノード情報の編集",
         "consumes": [
           "application/json-patch+json",
@@ -3390,7 +3848,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -3417,12 +3877,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "delete": {
-        "tags": ["Node"],
+        "tags": [
+          "Node"
+        ],
         "summary": "ノードを削除する。",
         "parameters": [
           {
@@ -3440,16 +3902,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/admin/nodes/sync-cluster-from-db": {
       "post": {
-        "tags": ["Node"],
+        "tags": [
+          "Node"
+        ],
         "summary": "ノード情報をDBからClusterへ同期させる",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -3463,16 +3929,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/notebook/simple": {
       "get": {
-        "tags": ["Notebook"],
+        "tags": [
+          "Notebook"
+        ],
         "summary": "全ノートブック履歴のIDと名前を取得",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -3486,16 +3956,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/notebook": {
       "get": {
-        "tags": ["Notebook"],
+        "tags": [
+          "Notebook"
+        ],
         "summary": "指定された条件でページングされた状態で、全ノートブック履歴を取得",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "query",
@@ -3569,16 +4043,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/notebook/{id}": {
       "get": {
-        "tags": ["Notebook"],
+        "tags": [
+          "Notebook"
+        ],
         "summary": "指定されたIDのノートブック履歴の詳細情報を取得。",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -3599,12 +4077,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "put": {
-        "tags": ["Notebook"],
+        "tags": [
+          "Notebook"
+        ],
         "summary": "ノートブック履歴の編集",
         "consumes": [
           "application/json-patch+json",
@@ -3612,7 +4092,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -3641,12 +4123,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "delete": {
-        "tags": ["Notebook"],
+        "tags": [
+          "Notebook"
+        ],
         "summary": "ノートブック履歴を削除する。",
         "parameters": [
           {
@@ -3665,16 +4149,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/notebook/{id}/events": {
       "get": {
-        "tags": ["Notebook"],
+        "tags": [
+          "Notebook"
+        ],
         "summary": "指定されたノートブック履歴のエラーイベントを取得します。",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -3695,16 +4183,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/notebook/{id}/endpoint": {
       "get": {
-        "tags": ["Notebook"],
+        "tags": [
+          "Notebook"
+        ],
         "summary": "指定されたノートブック履歴のエンドポイントを取得します。",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -3725,14 +4217,16 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/notebook/run": {
       "post": {
-        "tags": ["Notebook"],
+        "tags": [
+          "Notebook"
+        ],
         "summary": "新規にノートブックコンテナを開始する",
         "consumes": [
           "application/json-patch+json",
@@ -3740,7 +4234,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "body",
@@ -3761,17 +4257,21 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/notebook/{id}/container-files": {
       "get": {
-        "tags": ["Notebook"],
+        "tags": [
+          "Notebook"
+        ],
         "summary": "コンテナの出力ファイルの一覧を取得する。",
         "description": "コンテナの/output/配下から指定ディレクトリパスの直下を検索する\r\n検索対象ディレクトリが見つからない場合もファイル・ディレクトリが空の結果を返す",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -3806,16 +4306,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/notebook/{id}/halt": {
       "post": {
-        "tags": ["Notebook"],
+        "tags": [
+          "Notebook"
+        ],
         "summary": "ノートブックコンテナを途中で強制終了させる。",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -3836,14 +4340,16 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/notebook/{id}/rerun": {
       "post": {
-        "tags": ["Notebook"],
+        "tags": [
+          "Notebook"
+        ],
         "summary": "指定されたノートブック履歴のコンテナを再起動する",
         "consumes": [
           "application/json-patch+json",
@@ -3851,7 +4357,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -3880,16 +4388,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/notebook/available-infinite-time": {
       "get": {
-        "tags": ["Notebook"],
+        "tags": [
+          "Notebook"
+        ],
         "summary": "選択中のテナントのノートブック無期限利用可否フラグを取得する",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -3900,16 +4412,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/preprocessings": {
       "get": {
-        "tags": ["Preprocessing"],
+        "tags": [
+          "Preprocessing"
+        ],
         "summary": "指定された条件でページングされた状態で、全前処理を取得",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "query",
@@ -3971,12 +4487,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "post": {
-        "tags": ["Preprocessing"],
+        "tags": [
+          "Preprocessing"
+        ],
         "summary": "新規に前処理を登録する",
         "consumes": [
           "application/json-patch+json",
@@ -3984,7 +4502,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "body",
@@ -4005,16 +4525,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/preprocessings/{id}": {
       "get": {
-        "tags": ["Preprocessing"],
+        "tags": [
+          "Preprocessing"
+        ],
         "summary": "指定されたIDの前処理の詳細情報を取得。",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -4035,12 +4559,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "patch": {
-        "tags": ["Preprocessing"],
+        "tags": [
+          "Preprocessing"
+        ],
         "summary": "前処理の編集",
         "description": "前処理が実行済みの場合でも編集可能な項目のみ扱う",
         "consumes": [
@@ -4049,7 +4575,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -4078,12 +4606,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "put": {
-        "tags": ["Preprocessing"],
+        "tags": [
+          "Preprocessing"
+        ],
         "summary": "前処理の詳細情報編集",
         "description": "全ての項目が対象だが、一度でも前処理が実行されていた場合、編集不可",
         "consumes": [
@@ -4092,7 +4622,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -4121,12 +4653,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "delete": {
-        "tags": ["Preprocessing"],
+        "tags": [
+          "Preprocessing"
+        ],
         "summary": "前処理を削除する。",
         "description": "一度でも前処理が実行されていた場合、削除不可",
         "parameters": [
@@ -4146,16 +4680,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/preprocessings/{id}/histories": {
       "get": {
-        "tags": ["Preprocessing"],
+        "tags": [
+          "Preprocessing"
+        ],
         "summary": "指定した前処理の履歴情報を取得する。",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -4179,16 +4717,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/preprocessings/{id}/histories/{dataId}": {
       "get": {
-        "tags": ["Preprocessing"],
+        "tags": [
+          "Preprocessing"
+        ],
         "summary": "指定されたデータに対する前処理の履歴を取得。",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -4217,15 +4759,19 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "post": {
-        "tags": ["Preprocessing"],
+        "tags": [
+          "Preprocessing"
+        ],
         "summary": "前処理履歴を作成する。",
         "description": "前処理実行用のコンテナなどは起動しない。ローカル環境など、KAMONOHASHI外で作成した前処理結果をアップロードする際に用いる。\r\n作成された前処理履歴は実行中のステータスとなり、前処理結果の追加が可能な状態になる。",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -4254,12 +4800,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "delete": {
-        "tags": ["Preprocessing"],
+        "tags": [
+          "Preprocessing"
+        ],
         "summary": "前処理履歴を削除する。生成された前処理済みデータもまとめて削除する。",
         "parameters": [
           {
@@ -4286,16 +4834,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/preprocessings/{id}/histories/{dataId}/events": {
       "get": {
-        "tags": ["Preprocessing"],
+        "tags": [
+          "Preprocessing"
+        ],
         "summary": "前処理履歴のイベントを取得する",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -4324,14 +4876,16 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/preprocessings/{id}/run": {
       "post": {
-        "tags": ["Preprocessing"],
+        "tags": [
+          "Preprocessing"
+        ],
         "summary": "前処理を実行し、履歴を作成する。",
         "description": "前処理実行用のコンテナを起動する。\r\n作成された前処理履歴は実行中のステータスとなり、前処理結果の追加が可能な状態になる。",
         "consumes": [
@@ -4340,7 +4894,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -4369,14 +4925,16 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/preprocessings/{id}/histories/{dataId}/data": {
       "post": {
-        "tags": ["Preprocessing"],
+        "tags": [
+          "Preprocessing"
+        ],
         "summary": "前処理履歴に出力データを追加する。\r\n追加する対象の前処理履歴は実行中のステータスのみ許可される。",
         "consumes": [
           "application/json-patch+json",
@@ -4384,7 +4942,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -4421,16 +4981,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/preprocessings/{id}/histories/{dataId}/halt": {
       "post": {
-        "tags": ["Preprocessing"],
+        "tags": [
+          "Preprocessing"
+        ],
         "summary": "前処理履歴の登録を異常終了させる。\r\n前処理履歴はエラーのステータスとなり、前処理結果の追加が不可能な状態になる。",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -4459,16 +5023,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/preprocessings/{id}/histories/{dataId}/complete": {
       "post": {
-        "tags": ["Preprocessing"],
+        "tags": [
+          "Preprocessing"
+        ],
         "summary": "前処理履歴の登録を完了する。\r\n前処理履歴は完了のステータスとなり、前処理結果の追加が不可能な状態になる。",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -4497,16 +5065,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/preprocessings/{id}/histories/{dataId}/files": {
       "get": {
-        "tags": ["Preprocessing"],
+        "tags": [
+          "Preprocessing"
+        ],
         "summary": "前処理履歴添付ファイルの一覧を取得する。",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -4541,16 +5113,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/admin/registry/endpoints": {
       "get": {
-        "tags": ["Registry"],
+        "tags": [
+          "Registry"
+        ],
         "summary": "登録済みのDockerレジストリ エンドポイント一覧を取得",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -4564,12 +5140,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "post": {
-        "tags": ["Registry"],
+        "tags": [
+          "Registry"
+        ],
         "summary": "新規にDockerレジストリ エンドポイントを登録する",
         "consumes": [
           "application/json-patch+json",
@@ -4577,7 +5155,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "body",
@@ -4598,16 +5178,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/admin/registry/types": {
       "get": {
-        "tags": ["Registry"],
+        "tags": [
+          "Registry"
+        ],
         "summary": "Dockerレジストリ種別一覧を取得",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -4621,16 +5205,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/admin/registry/endpoints/{id}": {
       "get": {
-        "tags": ["Registry"],
+        "tags": [
+          "Registry"
+        ],
         "summary": "指定されたIDのDockerレジストリ エンドポイント情報を取得",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -4651,12 +5239,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "put": {
-        "tags": ["Registry"],
+        "tags": [
+          "Registry"
+        ],
         "summary": "Dockerレジストリ エンドポイント情報の編集",
         "consumes": [
           "application/json-patch+json",
@@ -4664,7 +5254,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -4693,12 +5285,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "delete": {
-        "tags": ["Registry"],
+        "tags": [
+          "Registry"
+        ],
         "summary": "Dockerレジストリ エンドポイント情報の削除",
         "parameters": [
           {
@@ -4717,16 +5311,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/tenant/registry/endpoints": {
       "get": {
-        "tags": ["Registry"],
+        "tags": [
+          "Registry"
+        ],
         "summary": "テナント管理者が選択可能な登録済みのDockerレジストリ エンドポイント一覧を取得",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -4740,16 +5338,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/registries/{registryId}/images": {
       "get": {
-        "tags": ["Registry"],
+        "tags": [
+          "Registry"
+        ],
         "summary": "レジストリに存在する全イメージの取得",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -4773,16 +5375,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/registries/{registryId}/images/{image}/tags": {
       "get": {
-        "tags": ["Registry"],
+        "tags": [
+          "Registry"
+        ],
         "summary": "イメージ名に対応するタグ一覧を取得",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -4813,14 +5419,16 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/registries/{registryId}/images/{segments}": {
       "get": {
-        "tags": ["Registry"],
+        "tags": [
+          "Registry"
+        ],
         "summary": "階層化されたURLを吸収するためのダミーAPI。\r\n製品版のSwaggerからは削除する。",
         "parameters": [
           {
@@ -4844,16 +5452,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/admin/resource/nodes": {
       "get": {
-        "tags": ["Resource"],
+        "tags": [
+          "Resource"
+        ],
         "summary": "ノード単位のリソースデータを取得する",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -4867,16 +5479,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/admin/resource/tenants": {
       "get": {
-        "tags": ["Resource"],
+        "tags": [
+          "Resource"
+        ],
         "summary": "テナント単位のリソースデータを取得する",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -4890,16 +5506,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/admin/resource/containers": {
       "get": {
-        "tags": ["Resource"],
+        "tags": [
+          "Resource"
+        ],
         "summary": "起動中のコンテナ一覧を取得する",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -4913,16 +5533,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/admin/resource/container-types": {
       "get": {
-        "tags": ["Resource"],
+        "tags": [
+          "Resource"
+        ],
         "summary": "コンテナ種別一覧を取得",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -4936,16 +5560,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/admin/resource/containers/{tenantId}/{name}": {
       "get": {
-        "tags": ["Resource"],
+        "tags": [
+          "Resource"
+        ],
         "summary": "指定コンテナのリソースデータを取得する",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -4973,12 +5601,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "delete": {
-        "tags": ["Resource"],
+        "tags": [
+          "Resource"
+        ],
         "summary": "指定コンテナを削除する",
         "parameters": [
           {
@@ -5004,16 +5634,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/admin/resource/containers/{tenantId}/{name}/log": {
       "get": {
-        "tags": ["Resource"],
+        "tags": [
+          "Resource"
+        ],
         "summary": "指定コンテナのログを取得する",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -5041,16 +5675,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/admin/resource/containers/{tenantId}/{name}/events": {
       "get": {
-        "tags": ["Resource"],
+        "tags": [
+          "Resource"
+        ],
         "summary": "指定コンテナのイベントを取得する",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -5078,16 +5716,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/tenant/resource/containers": {
       "get": {
-        "tags": ["Resource"],
+        "tags": [
+          "Resource"
+        ],
         "summary": "特定テナント向けに起動中のコンテナ一覧を取得する",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -5101,16 +5743,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/tenant/resource/nodes": {
       "get": {
-        "tags": ["Resource"],
+        "tags": [
+          "Resource"
+        ],
         "summary": "特定テナントに紐づくノード単位のリソースデータを取得する",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -5124,16 +5770,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/tenant/resource/containers/{name}": {
       "get": {
-        "tags": ["Resource"],
+        "tags": [
+          "Resource"
+        ],
         "summary": "指定コンテナのリソースデータを取得する",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -5153,12 +5803,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "delete": {
-        "tags": ["Resource"],
+        "tags": [
+          "Resource"
+        ],
         "summary": "指定コンテナを削除する",
         "parameters": [
           {
@@ -5175,16 +5827,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/tenant/resource/containers/{name}/log": {
       "get": {
-        "tags": ["Resource"],
+        "tags": [
+          "Resource"
+        ],
         "summary": "指定コンテナのログを取得する",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -5204,16 +5860,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/admin/resource/histories/containers/metadata": {
       "get": {
-        "tags": ["Resource"],
+        "tags": [
+          "Resource"
+        ],
         "summary": "コンテナリソース履歴のメタデータを取得する",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -5224,14 +5884,16 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/admin/resource/histories/containers/data": {
       "get": {
-        "tags": ["Resource"],
+        "tags": [
+          "Resource"
+        ],
         "summary": "コンテナリソース履歴のデータを取得する",
         "parameters": [
           {
@@ -5260,14 +5922,16 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/admin/resource/histories/containers": {
       "patch": {
-        "tags": ["Resource"],
+        "tags": [
+          "Resource"
+        ],
         "summary": "コンテナリソース履歴を削除する",
         "consumes": [
           "application/json-patch+json",
@@ -5292,16 +5956,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/admin/resource/histories/jobs/metadata": {
       "get": {
-        "tags": ["Resource"],
+        "tags": [
+          "Resource"
+        ],
         "summary": "ジョブ実行履歴のメタデータを取得する",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -5312,14 +5980,16 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/admin/resource/histories/jobs/data": {
       "get": {
-        "tags": ["Resource"],
+        "tags": [
+          "Resource"
+        ],
         "summary": "ジョブ実行履歴のデータを取得する",
         "parameters": [
           {
@@ -5348,14 +6018,16 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/admin/resource/histories/jobs": {
       "patch": {
-        "tags": ["Resource"],
+        "tags": [
+          "Resource"
+        ],
         "summary": "ジョブ実行履歴を削除する",
         "consumes": [
           "application/json-patch+json",
@@ -5380,16 +6052,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/admin/roles": {
       "get": {
-        "tags": ["Role"],
+        "tags": [
+          "Role"
+        ],
         "summary": "全ロール一覧を取得",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -5403,12 +6079,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "post": {
-        "tags": ["Role"],
+        "tags": [
+          "Role"
+        ],
         "summary": "新規にロールを登録する",
         "consumes": [
           "application/json-patch+json",
@@ -5416,7 +6094,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "body",
@@ -5436,16 +6116,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/admin/roles/{id}": {
       "get": {
-        "tags": ["Role"],
+        "tags": [
+          "Role"
+        ],
         "summary": "指定されたIDのロール情報を取得。",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -5466,12 +6150,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "put": {
-        "tags": ["Role"],
+        "tags": [
+          "Role"
+        ],
         "summary": "ロール情報の編集",
         "consumes": [
           "application/json-patch+json",
@@ -5479,7 +6165,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -5506,12 +6194,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "delete": {
-        "tags": ["Role"],
+        "tags": [
+          "Role"
+        ],
         "summary": "ロールを削除する。",
         "parameters": [
           {
@@ -5529,17 +6219,21 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/tenant/roles": {
       "get": {
-        "tags": ["Role"],
+        "tags": [
+          "Role"
+        ],
         "summary": "現在選択中のテナントで利用可能なロール一覧を取得。",
         "description": "システムロール以外の共通ロールと、テナント用カスタムロールが対象。",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -5553,12 +6247,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "post": {
-        "tags": ["Role"],
+        "tags": [
+          "Role"
+        ],
         "summary": "新規にロールを登録する",
         "consumes": [
           "application/json-patch+json",
@@ -5566,7 +6262,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "body",
@@ -5586,16 +6284,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/tenant/roles/{id}": {
       "get": {
-        "tags": ["Role"],
+        "tags": [
+          "Role"
+        ],
         "summary": "指定されたIDのテナント用カスタムロール情報を取得。",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -5616,12 +6318,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "put": {
-        "tags": ["Role"],
+        "tags": [
+          "Role"
+        ],
         "summary": "テナント用カスタムロール情報の編集",
         "consumes": [
           "application/json-patch+json",
@@ -5629,7 +6333,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -5656,12 +6362,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "delete": {
-        "tags": ["Role"],
+        "tags": [
+          "Role"
+        ],
         "summary": "テナント用カスタムロールを削除する。",
         "parameters": [
           {
@@ -5679,16 +6387,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/admin/storage/endpoints": {
       "get": {
-        "tags": ["Storage"],
+        "tags": [
+          "Storage"
+        ],
         "summary": "登録済みのStorageエンドポイント一覧を取得",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -5702,12 +6414,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "post": {
-        "tags": ["Storage"],
+        "tags": [
+          "Storage"
+        ],
         "summary": "新規にStorageエンドポイントを登録する",
         "consumes": [
           "application/json-patch+json",
@@ -5715,7 +6429,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "body",
@@ -5735,16 +6451,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/admin/storage/endpoints/{id}": {
       "get": {
-        "tags": ["Storage"],
+        "tags": [
+          "Storage"
+        ],
         "summary": "指定されたIDのStorageエンドポイント情報を取得。",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -5765,12 +6485,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "put": {
-        "tags": ["Storage"],
+        "tags": [
+          "Storage"
+        ],
         "summary": "Storageエンドポイント情報の編集",
         "consumes": [
           "application/json-patch+json",
@@ -5778,7 +6500,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -5805,12 +6529,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "delete": {
-        "tags": ["Storage"],
+        "tags": [
+          "Storage"
+        ],
         "summary": "Storageエンドポイント情報の削除",
         "parameters": [
           {
@@ -5828,16 +6554,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/upload/parameter": {
       "get": {
-        "tags": ["Storage"],
+        "tags": [
+          "Storage"
+        ],
         "summary": "分割アップロードを行うためのパラメータを取得する",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "query",
@@ -5872,14 +6602,16 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/upload/complete": {
       "post": {
-        "tags": ["Storage"],
+        "tags": [
+          "Storage"
+        ],
         "summary": "分割アップロードの処理を完了する",
         "consumes": [
           "application/json-patch+json",
@@ -5887,7 +6619,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "body",
@@ -5907,16 +6641,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/download/url": {
       "get": {
-        "tags": ["Storage"],
+        "tags": [
+          "Storage"
+        ],
         "summary": "ダウンロード用の一時署名URLを取得する",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "query",
@@ -5953,16 +6691,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/tenant/templates": {
       "get": {
-        "tags": ["Template"],
+        "tags": [
+          "Template"
+        ],
         "summary": "接続中のテナントに有効なテンプレート一覧を取得する",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "query",
@@ -5984,16 +6726,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/templates": {
       "get": {
-        "tags": ["Template"],
+        "tags": [
+          "Template"
+        ],
         "summary": "接続中のテナントで作成されたテンプレート一覧を取得する",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "query",
@@ -6015,14 +6761,16 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/admin/templates": {
       "post": {
-        "tags": ["Template"],
+        "tags": [
+          "Template"
+        ],
         "summary": "テンプレートを作成する",
         "consumes": [
           "application/json-patch+json",
@@ -6030,7 +6778,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "body",
@@ -6050,16 +6800,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/admin/templates/{id}": {
       "get": {
-        "tags": ["Template"],
+        "tags": [
+          "Template"
+        ],
         "summary": "テンプレートを取得する",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -6080,12 +6834,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "put": {
-        "tags": ["Template"],
+        "tags": [
+          "Template"
+        ],
         "summary": "テンプレートを編集する",
         "consumes": [
           "application/json-patch+json",
@@ -6093,7 +6849,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -6122,12 +6880,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "delete": {
-        "tags": ["Template"],
+        "tags": [
+          "Template"
+        ],
         "summary": "テンプレートを削除する",
         "parameters": [
           {
@@ -6146,14 +6906,16 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/admin/templates/{id}/versions": {
       "post": {
-        "tags": ["Template"],
+        "tags": [
+          "Template"
+        ],
         "summary": "テンプレートバージョンを作成する",
         "consumes": [
           "application/json-patch+json",
@@ -6161,7 +6923,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -6190,14 +6954,18 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "get": {
-        "tags": ["Template"],
+        "tags": [
+          "Template"
+        ],
         "summary": "テンプレートバージョン一覧を取得する",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -6221,16 +6989,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/admin/templates/{id}/versions/{versionId}": {
       "get": {
-        "tags": ["Template"],
+        "tags": [
+          "Template"
+        ],
         "summary": "テンプレートバージョンを取得する",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -6259,12 +7031,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "delete": {
-        "tags": ["Template"],
+        "tags": [
+          "Template"
+        ],
         "summary": "テンプレートバージョンを削除する",
         "parameters": [
           {
@@ -6291,16 +7065,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/admin/tenants": {
       "get": {
-        "tags": ["Tenant"],
+        "tags": [
+          "Tenant"
+        ],
         "summary": "テナント一覧を取得",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -6314,12 +7092,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "post": {
-        "tags": ["Tenant"],
+        "tags": [
+          "Tenant"
+        ],
         "summary": "新規にテナントを登録する",
         "consumes": [
           "application/json-patch+json",
@@ -6327,7 +7107,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "body",
@@ -6348,16 +7130,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/admin/tenants/{id}": {
       "get": {
-        "tags": ["Tenant"],
+        "tags": [
+          "Tenant"
+        ],
         "summary": "指定されたIDのテナント情報を取得。",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -6378,14 +7164,18 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "delete": {
-        "tags": ["Tenant"],
+        "tags": [
+          "Tenant"
+        ],
         "summary": "テナントを削除する。(他のユーザが未ログイン状態の時間帯で実施するのが望ましい)",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -6406,12 +7196,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "put": {
-        "tags": ["Tenant"],
+        "tags": [
+          "Tenant"
+        ],
         "summary": "テナント情報の編集",
         "consumes": [
           "application/json-patch+json",
@@ -6419,7 +7211,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -6448,16 +7242,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/tenant": {
       "get": {
-        "tags": ["Tenant"],
+        "tags": [
+          "Tenant"
+        ],
         "summary": "接続中のテナントの情報を取得。",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -6468,12 +7266,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "put": {
-        "tags": ["Tenant"],
+        "tags": [
+          "Tenant"
+        ],
         "summary": "接続中のテナントの情報の編集",
         "consumes": [
           "application/json-patch+json",
@@ -6481,7 +7281,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "body",
@@ -6502,16 +7304,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/training/simple": {
       "get": {
-        "tags": ["Training"],
+        "tags": [
+          "Training"
+        ],
         "summary": "全学習履歴のIDと名前を取得",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -6525,16 +7331,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/training": {
       "get": {
-        "tags": ["Training"],
+        "tags": [
+          "Training"
+        ],
         "summary": "指定された条件でページングされた状態で、全学習履歴を取得",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "query",
@@ -6641,16 +7451,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/training/mount": {
       "get": {
-        "tags": ["Training"],
+        "tags": [
+          "Training"
+        ],
         "summary": "マウントする学習履歴を取得",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "query",
@@ -6675,16 +7489,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/training/{id}": {
       "get": {
-        "tags": ["Training"],
+        "tags": [
+          "Training"
+        ],
         "summary": "指定されたIDの学習履歴の詳細情報を取得。",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -6705,12 +7523,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "put": {
-        "tags": ["Training"],
+        "tags": [
+          "Training"
+        ],
         "summary": "学習履歴の編集",
         "consumes": [
           "application/json-patch+json",
@@ -6718,7 +7538,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -6747,12 +7569,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "delete": {
-        "tags": ["Training"],
+        "tags": [
+          "Training"
+        ],
         "summary": "学習履歴を削除する。",
         "parameters": [
           {
@@ -6771,16 +7595,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/training/{id}/events": {
       "get": {
-        "tags": ["Training"],
+        "tags": [
+          "Training"
+        ],
         "summary": "指定された学習履歴のエラーイベントを取得します。",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -6801,14 +7629,16 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/training/run": {
       "post": {
-        "tags": ["Training"],
+        "tags": [
+          "Training"
+        ],
         "summary": "新規に学習を開始する",
         "consumes": [
           "application/json-patch+json",
@@ -6816,7 +7646,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "body",
@@ -6837,14 +7669,16 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/training/{id}/files": {
       "post": {
-        "tags": ["Training"],
+        "tags": [
+          "Training"
+        ],
         "summary": "学習履歴添付ファイルを登録する。",
         "consumes": [
           "application/json-patch+json",
@@ -6852,7 +7686,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -6881,14 +7717,18 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "get": {
-        "tags": ["Training"],
+        "tags": [
+          "Training"
+        ],
         "summary": "学習履歴添付ファイルの一覧を取得する。",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -6919,17 +7759,21 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/training/{id}/container-files": {
       "get": {
-        "tags": ["Training"],
+        "tags": [
+          "Training"
+        ],
         "summary": "コンテナの出力ファイルの一覧を取得する。",
         "description": "コンテナの/output/配下から指定ディレクトリパスの直下を検索する\r\n検索対象ディレクトリが見つからない場合もファイル・ディレクトリが空の結果を返す",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -6964,14 +7808,16 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/training/{id}/files/{fileId}": {
       "delete": {
-        "tags": ["Training"],
+        "tags": [
+          "Training"
+        ],
         "summary": "学習履歴添付ファイルを削除する",
         "parameters": [
           {
@@ -6998,16 +7844,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/training/{id}/files/{name}/size": {
       "get": {
-        "tags": ["Training"],
+        "tags": [
+          "Training"
+        ],
         "summary": "学習履歴添付ファイルのサイズ(Byte)を取得する",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -7035,16 +7885,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/training/{id}/tensorboard": {
       "get": {
-        "tags": ["Training"],
+        "tags": [
+          "Training"
+        ],
         "summary": "指定したTensorBoardコンテナ情報を取得する",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -7065,12 +7919,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "put": {
-        "tags": ["Training"],
+        "tags": [
+          "Training"
+        ],
         "summary": "指定した学習のTensor Boardを立てる",
         "consumes": [
           "application/json-patch+json",
@@ -7078,7 +7934,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -7107,12 +7965,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "delete": {
-        "tags": ["Training"],
+        "tags": [
+          "Training"
+        ],
         "summary": "指定した学習のTensor Boardを削除する",
         "parameters": [
           {
@@ -7131,16 +7991,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/training/{id}/halt": {
       "post": {
-        "tags": ["Training"],
+        "tags": [
+          "Training"
+        ],
         "summary": "学習を途中で強制終了させる。",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -7161,16 +8025,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/training/{id}/user-cancel": {
       "post": {
-        "tags": ["Training"],
+        "tags": [
+          "Training"
+        ],
         "summary": "学習を途中で強制終了させる。\r\nユーザ自身がジョブを停止させた場合。",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -7191,16 +8059,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/training/{id}/complete": {
       "post": {
-        "tags": ["Training"],
+        "tags": [
+          "Training"
+        ],
         "summary": "学習を正常終了させる。",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -7221,16 +8093,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/training/tags": {
       "get": {
-        "tags": ["Training"],
+        "tags": [
+          "Training"
+        ],
         "summary": "選択中のテナントに登録されている学習管理で使用するタグを表示する",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -7244,16 +8120,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/admin/users": {
       "get": {
-        "tags": ["User"],
+        "tags": [
+          "User"
+        ],
         "summary": "管理者向けにユーザの一覧を取得する。",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -7267,12 +8147,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "post": {
-        "tags": ["User"],
+        "tags": [
+          "User"
+        ],
         "summary": "ユーザをローカルアカウントとして新規追加する",
         "consumes": [
           "application/json-patch+json",
@@ -7280,7 +8162,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "body",
@@ -7300,16 +8184,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/admin/users/{id}": {
       "get": {
-        "tags": ["User"],
+        "tags": [
+          "User"
+        ],
         "summary": "管理者向けに指定したユーザの情報を取得する。",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -7329,12 +8217,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "delete": {
-        "tags": ["User"],
+        "tags": [
+          "User"
+        ],
         "summary": "指定したユーザを削除する",
         "parameters": [
           {
@@ -7352,12 +8242,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "put": {
-        "tags": ["User"],
+        "tags": [
+          "User"
+        ],
         "summary": "指定したユーザを編集する",
         "consumes": [
           "application/json-patch+json",
@@ -7365,7 +8257,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -7392,14 +8286,16 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/admin/users/{id}/password": {
       "put": {
-        "tags": ["User"],
+        "tags": [
+          "User"
+        ],
         "summary": "指定したユーザのパスワードを変更する",
         "consumes": [
           "application/json-patch+json",
@@ -7430,16 +8326,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/tenant/users": {
       "get": {
-        "tags": ["User"],
+        "tags": [
+          "User"
+        ],
         "summary": "テナント向けに、所属しているユーザの一覧を取得する。",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -7453,16 +8353,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/tenant/users/{id}": {
       "get": {
-        "tags": ["User"],
+        "tags": [
+          "User"
+        ],
         "summary": "テナント向けに指定したユーザの情報を取得する。",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -7482,12 +8386,14 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       },
       "delete": {
-        "tags": ["User"],
+        "tags": [
+          "User"
+        ],
         "summary": "指定したユーザを接続中のテナントから削除する",
         "parameters": [
           {
@@ -7506,14 +8412,16 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/tenant/users/{id}/roles": {
       "put": {
-        "tags": ["User"],
+        "tags": [
+          "User"
+        ],
         "summary": "指定したユーザについての接続中のテナントに対するロール情報を編集する",
         "consumes": [
           "application/json-patch+json",
@@ -7521,7 +8429,9 @@
           "text/json",
           "application/*+json"
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -7554,16 +8464,20 @@
         },
         "security": [
           {
-            "api_key": []
+            "api_key": [ ]
           }
         ]
       }
     },
     "/api/v2/version": {
       "get": {
-        "tags": ["Version"],
+        "tags": [
+          "Version"
+        ],
         "summary": "バージョン情報を取得",
-        "produces": ["application/json"],
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -7608,7 +8522,9 @@
       }
     },
     "Nssol.Platypus.ApiModels.AccountApiModels.GitCredentialInputModel": {
-      "required": ["id"],
+      "required": [
+        "id"
+      ],
       "type": "object",
       "properties": {
         "id": {
@@ -7661,7 +8577,10 @@
       }
     },
     "Nssol.Platypus.ApiModels.AccountApiModels.LoginInputModel": {
-      "required": ["password", "userName"],
+      "required": [
+        "password",
+        "userName"
+      ],
       "type": "object",
       "properties": {
         "userName": {
@@ -7774,7 +8693,10 @@
       }
     },
     "Nssol.Platypus.ApiModels.AccountApiModels.PasswordInputModel": {
-      "required": ["currentPassword", "newPassword"],
+      "required": [
+        "currentPassword",
+        "newPassword"
+      ],
       "type": "object",
       "properties": {
         "currentPassword": {
@@ -7788,7 +8710,9 @@
       }
     },
     "Nssol.Platypus.ApiModels.AccountApiModels.RegistryCredentialInputModel": {
-      "required": ["id"],
+      "required": [
+        "id"
+      ],
       "type": "object",
       "properties": {
         "id": {
@@ -7863,9 +8787,25 @@
         }
       }
     },
+    "Nssol.Platypus.ApiModels.AccountApiModels.WebhookModel": {
+      "description": "Webhook用モデル",
+      "type": "object",
+      "properties": {
+        "slackUrl": {
+          "description": "Slackの送信先URL",
+          "type": "string"
+        },
+        "mention": {
+          "description": "Slackメッセージのメンション",
+          "type": "string"
+        }
+      }
+    },
     "Nssol.Platypus.ApiModels.Aquarium.DataSetApiModels.CreateInputModel": {
       "description": "アクアリウムデータセット作成の入力モデル",
-      "required": ["name"],
+      "required": [
+        "name"
+      ],
       "type": "object",
       "properties": {
         "name": {
@@ -7912,7 +8852,9 @@
     },
     "Nssol.Platypus.ApiModels.Aquarium.DataSetApiModels.VersionCreateInputModel": {
       "description": "アクアリウムデータセットバージョン作成の入力モデル",
-      "required": ["dataSetId"],
+      "required": [
+        "dataSetId"
+      ],
       "type": "object",
       "properties": {
         "dataSetId": {
@@ -8065,7 +9007,9 @@
     },
     "Nssol.Platypus.ApiModels.ClusterApiModels.QuotaInputModel": {
       "description": "クォータ設定情報入力モデル",
-      "required": ["tenantId"],
+      "required": [
+        "tenantId"
+      ],
       "type": "object",
       "properties": {
         "tenantId": {
@@ -8092,7 +9036,9 @@
     },
     "Nssol.Platypus.ApiModels.ClusterApiModels.QuotaOutputModel": {
       "description": "クォータ設定情報出力モデル",
-      "required": ["tenantId"],
+      "required": [
+        "tenantId"
+      ],
       "type": "object",
       "properties": {
         "tenantId": {
@@ -8122,7 +9068,10 @@
       }
     },
     "Nssol.Platypus.ApiModels.Components.AddFileInputModel": {
-      "required": ["fileName", "storedPath"],
+      "required": [
+        "fileName",
+        "storedPath"
+      ],
       "type": "object",
       "properties": {
         "fileName": {
@@ -8136,7 +9085,10 @@
       }
     },
     "Nssol.Platypus.ApiModels.Components.ContainerImageInputModel": {
-      "required": ["image", "tag"],
+      "required": [
+        "image",
+        "tag"
+      ],
       "type": "object",
       "properties": {
         "registryId": {
@@ -8155,7 +9107,10 @@
       }
     },
     "Nssol.Platypus.ApiModels.Components.ContainerImageOutputModel": {
-      "required": ["image", "tag"],
+      "required": [
+        "image",
+        "tag"
+      ],
       "type": "object",
       "properties": {
         "registryId": {
@@ -8183,7 +9138,10 @@
       }
     },
     "Nssol.Platypus.ApiModels.Components.GitCommitInputModel": {
-      "required": ["owner", "repository"],
+      "required": [
+        "owner",
+        "repository"
+      ],
       "type": "object",
       "properties": {
         "gitId": {
@@ -8237,7 +9195,10 @@
       }
     },
     "Nssol.Platypus.ApiModels.Components.GitCommitOutputModel": {
-      "required": ["owner", "repository"],
+      "required": [
+        "owner",
+        "repository"
+      ],
       "type": "object",
       "properties": {
         "gitId": {
@@ -8268,7 +9229,9 @@
       }
     },
     "Nssol.Platypus.ApiModels.DataApiModels.AddFilesInputModel": {
-      "required": ["files"],
+      "required": [
+        "files"
+      ],
       "type": "object",
       "properties": {
         "files": {
@@ -8281,7 +9244,9 @@
       }
     },
     "Nssol.Platypus.ApiModels.DataApiModels.CreateInputModel": {
-      "required": ["name"],
+      "required": [
+        "name"
+      ],
       "type": "object",
       "properties": {
         "name": {
@@ -8537,7 +9502,10 @@
     },
     "Nssol.Platypus.ApiModels.DataSetApiModels.CreateInputModel": {
       "description": "データセット作成の入力モデル",
-      "required": ["entries", "name"],
+      "required": [
+        "entries",
+        "name"
+      ],
       "type": "object",
       "properties": {
         "name": {
@@ -8572,7 +9540,9 @@
       }
     },
     "Nssol.Platypus.ApiModels.DataSetApiModels.CreateInputModel+Entry": {
-      "required": ["id"],
+      "required": [
+        "id"
+      ],
       "type": "object",
       "properties": {
         "id": {
@@ -8836,7 +9806,9 @@
     },
     "Nssol.Platypus.ApiModels.ExperimentApiModels.CreateInputModel": {
       "description": "実験開始の入力モデル",
-      "required": ["name"],
+      "required": [
+        "name"
+      ],
       "type": "object",
       "properties": {
         "name": {
@@ -8928,7 +9900,9 @@
     },
     "Nssol.Platypus.ApiModels.ExperimentApiModels.EvaluationCreateInputModel": {
       "description": "アクアリウム推論作成の入力モデル",
-      "required": ["name"],
+      "required": [
+        "name"
+      ],
       "type": "object",
       "properties": {
         "name": {
@@ -9111,7 +10085,12 @@
       }
     },
     "Nssol.Platypus.ApiModels.GitApiModels.CreateInputModel": {
-      "required": ["apiUrl", "name", "repositoryUrl", "serviceType"],
+      "required": [
+        "apiUrl",
+        "name",
+        "repositoryUrl",
+        "serviceType"
+      ],
       "type": "object",
       "properties": {
         "name": {
@@ -9744,7 +10723,10 @@
       }
     },
     "Nssol.Platypus.ApiModels.NodeApiModels.CreateInputModel": {
-      "required": ["accessLevel", "name"],
+      "required": [
+        "accessLevel",
+        "name"
+      ],
       "type": "object",
       "properties": {
         "name": {
@@ -9916,7 +10898,13 @@
     },
     "Nssol.Platypus.ApiModels.NotebookApiModels.CreateInputModel": {
       "description": "ノートブック新規実行モデル",
-      "required": ["cpu", "expiresIn", "gpu", "memory", "name"],
+      "required": [
+        "cpu",
+        "expiresIn",
+        "gpu",
+        "memory",
+        "name"
+      ],
       "type": "object",
       "properties": {
         "name": {
@@ -10245,7 +11233,12 @@
     },
     "Nssol.Platypus.ApiModels.NotebookApiModels.RerunInputModel": {
       "description": "ノートブック再起動モデル",
-      "required": ["cpu", "expiresIn", "gpu", "memory"],
+      "required": [
+        "cpu",
+        "expiresIn",
+        "gpu",
+        "memory"
+      ],
       "type": "object",
       "properties": {
         "dataSetId": {
@@ -10389,7 +11382,9 @@
     },
     "Nssol.Platypus.ApiModels.PreprocessingApiModels.CreateInputModel": {
       "description": "前処理作成の入力モデル",
-      "required": ["name"],
+      "required": [
+        "name"
+      ],
       "type": "object",
       "properties": {
         "name": {
@@ -10686,7 +11681,12 @@
     },
     "Nssol.Platypus.ApiModels.PreprocessingApiModels.RunPreprocessHistoryInputModel": {
       "description": "前処理履歴の実行入力モデル",
-      "required": ["cpu", "dataId", "gpu", "memory"],
+      "required": [
+        "cpu",
+        "dataId",
+        "gpu",
+        "memory"
+      ],
       "type": "object",
       "properties": {
         "dataId": {
@@ -11152,7 +12152,11 @@
       }
     },
     "Nssol.Platypus.ApiModels.RoleApiModels.CreateForTenantInputModel": {
-      "required": ["displayName", "name", "sortOrder"],
+      "required": [
+        "displayName",
+        "name",
+        "sortOrder"
+      ],
       "type": "object",
       "properties": {
         "name": {
@@ -11172,7 +12176,11 @@
     },
     "Nssol.Platypus.ApiModels.RoleApiModels.CreateInputModel": {
       "description": "テナント用ロールでも設定可能な項目はNssol.Platypus.ApiModels.RoleApiModels.CreateForTenantInputModelで管理。\r\nAdminのみが設定可能な項目（テナント用ロールでは自動設定される項目）のみ、このクラスで管理。",
-      "required": ["displayName", "name", "sortOrder"],
+      "required": [
+        "displayName",
+        "name",
+        "sortOrder"
+      ],
       "type": "object",
       "properties": {
         "name": {
@@ -11256,7 +12264,11 @@
       }
     },
     "Nssol.Platypus.ApiModels.RoleApiModels.EditForTenantInputModel": {
-      "required": ["displayName", "name", "sortOrder"],
+      "required": [
+        "displayName",
+        "name",
+        "sortOrder"
+      ],
       "type": "object",
       "properties": {
         "name": {
@@ -11275,7 +12287,11 @@
       }
     },
     "Nssol.Platypus.ApiModels.RoleApiModels.EditInputModel": {
-      "required": ["displayName", "name", "sortOrder"],
+      "required": [
+        "displayName",
+        "name",
+        "sortOrder"
+      ],
       "type": "object",
       "properties": {
         "name": {
@@ -11483,7 +12499,10 @@
     },
     "Nssol.Platypus.ApiModels.TemplateApiModels.ContainerImageInputModel": {
       "description": "コンテナ情報の入力モデル",
-      "required": ["image", "tag"],
+      "required": [
+        "image",
+        "tag"
+      ],
       "type": "object",
       "properties": {
         "registryId": {
@@ -11507,7 +12526,10 @@
     },
     "Nssol.Platypus.ApiModels.TemplateApiModels.ContainerImageOutputModel": {
       "description": "コンテナ情報の出力モデル",
-      "required": ["image", "tag"],
+      "required": [
+        "image",
+        "tag"
+      ],
       "type": "object",
       "properties": {
         "registryId": {
@@ -11540,7 +12562,9 @@
     },
     "Nssol.Platypus.ApiModels.TemplateApiModels.CreateInputModel": {
       "description": "テンプレート作成の入力モデル",
-      "required": ["name"],
+      "required": [
+        "name"
+      ],
       "type": "object",
       "properties": {
         "name": {
@@ -11606,7 +12630,10 @@
     },
     "Nssol.Platypus.ApiModels.TemplateApiModels.GitCommitOutputModel": {
       "description": "Git情報の出力モデル",
-      "required": ["owner", "repository"],
+      "required": [
+        "owner",
+        "repository"
+      ],
       "type": "object",
       "properties": {
         "gitId": {
@@ -12069,7 +13096,12 @@
       }
     },
     "Nssol.Platypus.ApiModels.TenantApiModels.EditInputModel": {
-      "required": ["displayName", "gitIds", "registryIds", "storageId"],
+      "required": [
+        "displayName",
+        "gitIds",
+        "registryIds",
+        "storageId"
+      ],
       "type": "object",
       "properties": {
         "displayName": {
@@ -12687,7 +13719,11 @@
       }
     },
     "Nssol.Platypus.ApiModels.UserApiModels.CreateInputModel": {
-      "required": ["name", "password", "tenants"],
+      "required": [
+        "name",
+        "password",
+        "tenants"
+      ],
       "type": "object",
       "properties": {
         "name": {
@@ -12717,7 +13753,9 @@
       }
     },
     "Nssol.Platypus.ApiModels.UserApiModels.CreateInputModel+TenantInfoModel": {
-      "required": ["id"],
+      "required": [
+        "id"
+      ],
       "type": "object",
       "properties": {
         "id": {
@@ -12737,7 +13775,9 @@
       }
     },
     "Nssol.Platypus.ApiModels.UserApiModels.EditInputModel": {
-      "required": ["tenants"],
+      "required": [
+        "tenants"
+      ],
       "type": "object",
       "properties": {
         "systemRoles": {
@@ -12758,7 +13798,9 @@
       }
     },
     "Nssol.Platypus.ApiModels.UserApiModels.EditInputModel+TenantInfoModel": {
-      "required": ["id"],
+      "required": [
+        "id"
+      ],
       "type": "object",
       "properties": {
         "id": {
@@ -13020,15 +14062,47 @@
       "format": "int32",
       "description": "メニューコードの一覧",
       "enum": [
-        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
-        20, 21, 22, 23, 24, 25, 26, 27, 28, 29
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29
       ],
       "type": "integer"
     },
     "Nssol.Platypus.Infrastructure.NodeAccessLevel": {
       "format": "int32",
       "description": "ノードのアクセスレベル。",
-      "enum": [0, 1, 2],
+      "enum": [
+        0,
+        1,
+        2
+      ],
       "type": "integer"
     },
     "Nssol.Platypus.Infrastructure.StorageDirInfo": {
@@ -13077,40 +14151,78 @@
     "Nssol.Platypus.Infrastructure.TemplateAccessLevel": {
       "format": "int32",
       "description": "テンプレートのアクセスレベル。",
-      "enum": [0, 1, 2],
+      "enum": [
+        0,
+        1,
+        2
+      ],
       "type": "integer"
     },
     "Nssol.Platypus.Infrastructure.Types.AuthServiceType": {
       "format": "int32",
-      "enum": [0, 1, 2],
+      "enum": [
+        0,
+        1,
+        2
+      ],
       "type": "integer"
     },
     "Nssol.Platypus.Infrastructure.Types.ContainerType": {
       "format": "int32",
       "description": "コンテナ種別",
-      "enum": [0, 1, 2, 3, 4, 5, 6],
+      "enum": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
       "type": "integer"
     },
     "Nssol.Platypus.Infrastructure.Types.GitServiceType": {
       "format": "int32",
       "description": "Git種別",
-      "enum": [0, 1, 2, 3, 4],
+      "enum": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
       "type": "integer"
     },
     "Nssol.Platypus.Infrastructure.Types.MenuType": {
       "format": "int32",
       "description": "メニュー種別",
-      "enum": [0, 1, 2, 3, 4],
+      "enum": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
       "type": "integer"
     },
     "Nssol.Platypus.Infrastructure.Types.RegistryServiceType": {
       "format": "int32",
-      "enum": [0, 1, 2, 3, 4],
+      "enum": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
       "type": "integer"
     },
     "Nssol.Platypus.LogicModels.StorageLogicModels.CompleteMultiplePartUploadInputModel": {
       "description": "アップロード完了処理モデル",
-      "required": ["key", "partETags", "uploadId"],
+      "required": [
+        "key",
+        "partETags",
+        "uploadId"
+      ],
       "type": "object",
       "properties": {
         "partETags": {

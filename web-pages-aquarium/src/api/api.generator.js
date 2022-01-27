@@ -608,6 +608,131 @@ export const putApiV2AccountRegistriesURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * WebHook情報を取得する
+ * request: getApiV2AccountWebhookSlack
+ * url: getApiV2AccountWebhookSlackURL
+ * method: getApiV2AccountWebhookSlack_TYPE
+ * raw_url: getApiV2AccountWebhookSlack_RAW_URL
+ */
+export const getApiV2AccountWebhookSlack = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/account/webhook/slack'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const getApiV2AccountWebhookSlack_RAW_URL = function() {
+  return '/api/v2/account/webhook/slack'
+}
+export const getApiV2AccountWebhookSlack_TYPE = function() {
+  return 'get'
+}
+export const getApiV2AccountWebhookSlackURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/account/webhook/slack'
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * WebHook情報を更新する
+ * request: putApiV2AccountWebhookSlack
+ * url: putApiV2AccountWebhookSlackURL
+ * method: putApiV2AccountWebhookSlack_TYPE
+ * raw_url: putApiV2AccountWebhookSlack_RAW_URL
+ * @param body - Webhook情報モデル
+ */
+export const putApiV2AccountWebhookSlack = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/account/webhook/slack'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('put', domain + path, body, queryParameters, form, config)
+}
+export const putApiV2AccountWebhookSlack_RAW_URL = function() {
+  return '/api/v2/account/webhook/slack'
+}
+export const putApiV2AccountWebhookSlack_TYPE = function() {
+  return 'put'
+}
+export const putApiV2AccountWebhookSlackURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/account/webhook/slack'
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * テスト通知を送信する
+ * request: postApiV2AccountWebhookSlackTest
+ * url: postApiV2AccountWebhookSlackTestURL
+ * method: postApiV2AccountWebhookSlackTest_TYPE
+ * raw_url: postApiV2AccountWebhookSlackTest_RAW_URL
+ * @param body - Webhook情報モデル
+ */
+export const postApiV2AccountWebhookSlackTest = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/account/webhook/slack/test'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('post', domain + path, body, queryParameters, form, config)
+}
+export const postApiV2AccountWebhookSlackTest_RAW_URL = function() {
+  return '/api/v2/account/webhook/slack/test'
+}
+export const postApiV2AccountWebhookSlackTest_TYPE = function() {
+  return 'post'
+}
+export const postApiV2AccountWebhookSlackTestURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/account/webhook/slack/test'
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * アクアリウムデータセットを作成する
  * request: postApiV2AquariumDatasets
  * url: postApiV2AquariumDatasetsURL

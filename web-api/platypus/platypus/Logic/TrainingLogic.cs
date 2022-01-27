@@ -18,6 +18,7 @@ namespace Nssol.Platypus.Logic
         private readonly ITrainingHistoryRepository trainingHistoryRepository;
         private readonly ITensorBoardContainerRepository tensorBoardContainerRepository;
         private readonly IClusterManagementLogic clusterManagementLogic;
+        private readonly ISlackLogic slackLogic;
         private readonly IResourceMonitorLogic resourceMonitorLogic;
         private readonly ITenantRepository tenantRepository;
         private readonly IUnitOfWork unitOfWork;
@@ -26,6 +27,7 @@ namespace Nssol.Platypus.Logic
             ITrainingHistoryRepository trainingHistoryRepository,
             ITensorBoardContainerRepository tensorBoardContainerRepository,
             IClusterManagementLogic clusterManagementLogic,
+            ISlackLogic slackLogic,
             IResourceMonitorLogic resourceMonitorLogic,
             ITenantRepository tenantRepository,
             IUnitOfWork unitOfWork,
@@ -34,6 +36,7 @@ namespace Nssol.Platypus.Logic
             this.trainingHistoryRepository = trainingHistoryRepository;
             this.tensorBoardContainerRepository = tensorBoardContainerRepository;
             this.clusterManagementLogic = clusterManagementLogic;
+            this.slackLogic = slackLogic;
             this.resourceMonitorLogic = resourceMonitorLogic;
             this.tenantRepository = tenantRepository;
             this.unitOfWork = unitOfWork;
@@ -72,6 +75,9 @@ namespace Nssol.Platypus.Logic
                     // 再確認してもまだ存在していたら、コンテナ削除
                     await clusterManagementLogic.DeleteContainerAsync(
                         ContainerType.Training, trainingHistory.Key, tenant.Name, force);
+
+                    // 通知処理
+                    slackLogic.InformJobResult(trainingHistory);
                 }
             }
             else

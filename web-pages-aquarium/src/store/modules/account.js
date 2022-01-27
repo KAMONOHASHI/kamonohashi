@@ -10,6 +10,7 @@ const state = {
   account: {},
   menuList: [],
   menuTree: [],
+  webhook: {},
   logined: false,
 }
 
@@ -29,6 +30,9 @@ const getters = {
   },
   menuTree(state) {
     return state.menuTree
+  },
+  webhook(state) {
+    return state.webhook
   },
   getTenantId(state) {
     return state.loginData.tenantId
@@ -92,6 +96,12 @@ const actions = {
     let response = await api.account.getTreeMenus()
     let menuTree = response.data
     commit('setMenuTree', { menuTree })
+  },
+
+  async fetchWebhook({ commit }) {
+    let response = await api.account.getWebhookSlack()
+    let webhook = response.data
+    commit('setWebhook', { webhook })
   },
 
   async fetchMenu({ dispatch }) {
@@ -166,6 +176,16 @@ const actions = {
   async putRegistryToken({ commit }, params) {
     return await api.account.putRegistries(params)
   },
+
+  // eslint-disable-next-line no-unused-vars
+  async putWebhook({ commit }, params) {
+    return await api.account.putWebhookSlack(params)
+  },
+
+  // eslint-disable-next-line no-unused-vars
+  async sendNotification({ commit }, params) {
+    return await api.account.postWebhookSlackTest(params)
+  },
 }
 
 // mutations
@@ -185,6 +205,9 @@ const mutations = {
   },
   setMenuTree(state, { menuTree }) {
     state.menuTree = menuTree
+  },
+  setWebhook(state, { webhook }) {
+    state.webhook = webhook
   },
   setLogined(state) {
     state.logined = true
