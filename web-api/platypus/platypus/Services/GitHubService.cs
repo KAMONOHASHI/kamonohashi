@@ -110,8 +110,9 @@ namespace Nssol.Platypus.Services
         /// <param name="repositoryName">リポジトリ名</param>
         /// <param name="owner">オーナー名</param>
         /// <param name="branchName">ブランチ名</param>
+        /// <param name="page">ページ番号</param>
         /// <returns>コミット一覧</returns>
-        public async Task<Result<IEnumerable<CommitModel>, string>> GetAllCommitsAsync(UserTenantGitMap gitMap, string repositoryName, string owner, string branchName)
+        public async Task<Result<IEnumerable<CommitModel>, string>> GetAllCommitsAsync(UserTenantGitMap gitMap, string repositoryName, string owner, string branchName,string page)
         {
             // API呼び出しパラメータ作成
             RequestParam param = CreateRequestParam(gitMap);
@@ -120,7 +121,9 @@ namespace Nssol.Platypus.Services
             {
                 param.QueryParams = new Dictionary<string, string>
                 {
-                    { "sha", branchName }
+                    { "sha", branchName},
+                    { "per_page", "100"},
+                    { "page", page}
                 };
             }
 

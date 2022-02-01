@@ -128,19 +128,24 @@
           @visible-change="visibleChangeCommit"
         >
           <!-- 選択解除用 -->
-          <el-option key="HEAD" label="HEAD" :value="null" />
-          <el-option
-            v-for="item in filteredOptions"
-            :key="item.commitId"
-            :label="
-              createCommitIdAndComment(
-                item.commitId,
-                item.committerName,
-                item.comment,
-              )
-            "
-            :value="item"
-          />
+          <el-option-group>
+            <el-option key="HEAD" label="HEAD" :value="null" />
+            <el-option
+              v-for="item in filteredOptions"
+              :key="item.commitId"
+              :label="
+                createCommitIdAndComment(
+                  item.commitId,
+                  item.committerName,
+                  item.comment,
+                )
+              "
+              :value="item"
+            />
+            <el-button style="margin-left:10px" @click="selectMore"
+              >more</el-button
+            >
+          </el-option-group>
         </el-select>
       </el-col>
       <el-col v-else :span="12">
@@ -274,10 +279,9 @@ export default {
         if (this.commits.length > 0) {
           // コミット一覧に含まれていないコミットの場合、一覧に追加する。
           let index = this.commits.findIndex(
-            commit => commit === this.value.commit,
+            commit => commit.commitId === this.value.commit.commitId,
           )
           if (index < 0) {
-            this.commits.push(this.value.commit)
             this.containsPastCommit = true
           }
         }
@@ -294,6 +298,8 @@ export default {
             this.value.commit.comment,
           )
         }
+
+        this.$refs.commitId.$forceUpdate()
       }
     },
   },
@@ -343,6 +349,10 @@ export default {
       this.$emit('selectBranch', branch === '' ? null : branch.branchName)
     },
 
+    selectMore() {
+      this.$emit('getMoreCommits')
+      return
+    },
     // 選択しているコミットが切り替わった時に呼ばれるイベントハンドラ。
     changeCommit(commit) {
       let gitModel = this.value
@@ -377,6 +387,7 @@ export default {
       if (query == '') {
         //フィルタが空の場合はすべての選択肢を表示する
         this.filteredOptions = [...this.commits]
+        return
       } else {
         //フィルタが空でない場合は部分一致する選択肢を表示する
         for (let i in this.commits) {

@@ -51,13 +51,14 @@
             :gits="gits"
             :repositories="repositories"
             :branches="branches"
-            :commits="commits"
+            :commits="commitsList"
             :loading-repositories="loadingRepositories"
             heading="スクリプト"
             @selectGit="selectGit"
             @selectRepository="selectRepository"
             @selectBranch="selectBranch"
             @searchCommitId="searchCommitId"
+            @getMoreCommits="getMoreCommits"
           />
         </el-col>
         <el-col :span="12">
@@ -96,6 +97,8 @@ export default {
   },
   data() {
     return {
+      commitsList: [],
+      commitsPage: 1,
       form: {
         name: null,
         entryPoint: null,
@@ -416,11 +419,14 @@ export default {
       }
     },
     async selectBranch(branchName) {
+      this.commitsPage = 1
       await gitSelectorUtil.selectBranch(
         this.form,
         this['gitSelector/fetchCommits'],
         branchName,
+        this.commitsPage,
       )
+      this.commitsList = [...this.commits]
     },
     async searchCommitId(commitId) {
       await this['gitSelector/fetchCommitDetail']({
@@ -431,6 +437,16 @@ export default {
       if (this.commitDetail != null) {
         this.form.gitModel.commit = this.commitDetail
       }
+    },
+    async getMoreCommits() {
+      this.commitsPage++
+      await gitSelectorUtil.selectBranch(
+        this.form,
+        this['gitSelector/fetchCommits'],
+        this.form.gitModel.branch.branchName,
+        this.commitsPage,
+      )
+      this.commitsList = this.commitsList.concat(this.commits)
     },
   },
 }

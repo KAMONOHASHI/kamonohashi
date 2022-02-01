@@ -68,7 +68,8 @@ export default class GitSelectorUtil {
   // form: form object
   // fetchCommits: 'gitSelector/fetchCommits'
   // branchName: 選択したブランチ名
-  static async selectBranch(form, fetchCommits, branchName) {
+  // page: ページ番号
+  static async selectBranch(form, fetchCommits, branchName, page) {
     // 過去の選択状態をリセット
     form.gitModel.commit = null
 
@@ -78,6 +79,7 @@ export default class GitSelectorUtil {
         gitId: form.gitModel.git.id,
         repository: form.gitModel.repository,
         branchName: branchName,
+        page: page,
       })
     }
   }

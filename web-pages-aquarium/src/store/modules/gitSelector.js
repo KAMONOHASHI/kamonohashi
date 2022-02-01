@@ -118,12 +118,13 @@ const actions = {
     }
   },
 
-  async fetchCommits({ commit }, { gitId, repository, branchName }) {
+  async fetchCommits({ commit }, { gitId, repository, branchName, page }) {
     let params = {
       gitId: gitId,
       owner: repository.owner,
       repositoryName: repository.name,
       branch: branchName,
+      page: page,
     }
     try {
       let commits = (await api.git.getCommits(params)).data
