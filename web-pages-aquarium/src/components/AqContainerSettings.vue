@@ -265,9 +265,10 @@ export default {
         })
       }
 
-      if (commit !== null) {
+      if (commit) {
         this.form.gitModel.commit = commit
-      } else if (commit === null) {
+      } else {
+        // コミット一覧に含まれないコミットなので、コミット情報を新たに取得する
         let params = {
           gitId: this.form.gitModel.git.id,
           owner: this.form.gitModel.repository.owner,
@@ -275,7 +276,7 @@ export default {
           commitId: gitModel.commitId,
         }
         let commitDetail = (await api.git.getCommit(params)).data
-        this.commits.push(commitDetail)
+        this.form.gitModel.commit = commitDetail
       }
     },
     // レジストリサーバーを選択する

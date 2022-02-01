@@ -1,9 +1,6 @@
-﻿using System;
+﻿using Nssol.Platypus.Controllers.Util;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-using Nssol.Platypus.Controllers.Util;
 
 namespace Nssol.Platypus.ApiModels.DataApiModels
 {

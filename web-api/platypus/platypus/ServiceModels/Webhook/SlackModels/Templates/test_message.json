@@ -1,0 +1,43 @@
+﻿{
+  "attachments": [
+    {
+      "fallback": "KAMONOHASHI テスト通知",
+      "color": "#67C23A",
+      "blocks": [
+        {
+          "type": "header",
+          "text": {
+            "type": "plain_text",
+            "text": "KAMONOHASHI テスト通知",
+            "emoji": true
+          }
+        },
+@if (Model.Mention != null) {
+@:       {
+@:          "type": "section",
+@:          "text": {
+@:            "type": "mrkdwn",
+@:            "text": "@@@Raw(Model.Mention)"
+@:          }
+@:        },
+}   
+        {
+          "type": "section",
+          "fields": [
+            {
+              "type": "mrkdwn",
+              "text": "*Sender:*\n@(Model.UserName)"
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "text": {
+            "type": "mrkdwn",
+            "text": "*URL:*\n@(Model.Url)"
+          }
+        }
+      ]
+    }
+  ]
+}

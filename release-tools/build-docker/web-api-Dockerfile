@@ -1,10 +1,11 @@
-FROM mcr.microsoft.com/dotnet/core/sdk:2.1 AS build
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
+RUN dotnet tool install --global dotnet-ef --version 3.1.19
 COPY /platypus/platypus /src/
 ARG version
 RUN cd /src/  && \    
     dotnet publish -c Release -o /output /p:InformationalVersion=$version
 
-FROM mcr.microsoft.com/dotnet/core/aspnet:2.1
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
 RUN groupadd -r -g 800 platypus-api && \
     useradd -r -s /bin/false -g platypus-api -u 800 platypus-api
 COPY --from=build /output /app

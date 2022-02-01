@@ -1,10 +1,6 @@
-﻿using Nssol.Platypus.Infrastructure;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Models
 {
@@ -63,7 +59,7 @@ namespace Nssol.Platypus.Models
         {
             get
             {
-                return NfsRoot.EndsWith("/") ? NfsRoot : NfsRoot + "/";
+                return NfsRoot.EndsWith("/", StringComparison.CurrentCulture) ? NfsRoot : NfsRoot + "/";
             }
         }
     }

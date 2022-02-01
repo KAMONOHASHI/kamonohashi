@@ -61,12 +61,12 @@ namespace Nssol.Platypus.Services.Interfaces
         /// <param name="commitId">コミットID</param>
         /// <returns>コミット詳細</returns>
         Task<Result<CommitModel, string>> GetCommitByIdAsync(UserTenantGitMap gitMap, string repositoryName, string owner, string commitId);
+
         /// <summary>
         /// 指定したtokenのgitサービス側のユーザー名を取得する
         /// </summary>
-        /// <param name="token">token</param>
+        /// <param name="gitMap">Git情報</param>
         /// <returns>コミット詳細</returns>
         Task<Result<string, string>> GetUserNameByTokenAsync(UserTenantGitMap gitMap);
-
     }
 }

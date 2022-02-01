@@ -19,7 +19,8 @@ namespace Nssol.Platypus.ApiModels.NotebookApiModels
         public DetailsOutputModel(NotebookHistory history) : base(history)
         {
             Key = history.Key;
-            if (history.DataSet != null) {
+            if (history.DataSet != null)
+            {
                 DataSet = new DataSetApiModels.IndexOutputModel(history.DataSet);
             }
 
@@ -31,7 +32,7 @@ namespace Nssol.Platypus.ApiModels.NotebookApiModels
                     var parent = new TrainingApiModels.IndexOutputModel(parentTrainingMaps.Parent);
                     Parents.Add(parent);
                 }
-                Parents.Sort(delegate(TrainingApiModels.IndexOutputModel parent1, TrainingApiModels.IndexOutputModel parent2) 
+                Parents.Sort(delegate (TrainingApiModels.IndexOutputModel parent1, TrainingApiModels.IndexOutputModel parent2)
                 {
                     return parent1.Id.CompareTo(parent2.Id);
                 });
@@ -120,23 +121,23 @@ namespace Nssol.Platypus.ApiModels.NotebookApiModels
         /// ノートブックモデルGit情報
         /// </summary>
         public GitCommitOutputModel GitModel { get; set; }
-        
+
         /// <summary>
         /// オプション。
         /// ViewModelではDictionaryを使わないという規約のため、KVPのリストで返す。
         /// </summary>
         public List<KeyValuePair<string, string>> Options { get; set; }
-        
+
         /// <summary>
         /// コンテナイメージ
         /// </summary>
         public ContainerImageOutputModel ContainerImage { get; set; }
-        
+
         /// <summary>
         /// 完了日時
         /// </summary>
         public string CompletedAt { get; set; }
-        
+
         /// <summary>
         /// 開始日時
         /// </summary>
@@ -206,7 +207,7 @@ namespace Nssol.Platypus.ApiModels.NotebookApiModels
         /// <summary>
         /// 実行時間
         /// </summary>
-        public string ExecutionTime { get; set;  }
+        public string ExecutionTime { get; set; }
 
         /// <summary>
         /// コンテナの生存期間(秒)

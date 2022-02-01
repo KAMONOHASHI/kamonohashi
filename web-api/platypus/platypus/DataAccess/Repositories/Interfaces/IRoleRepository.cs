@@ -1,9 +1,7 @@
 ﻿using Nssol.Platypus.DataAccess.Core;
 using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Models;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Nssol.Platypus.DataAccess.Repositories.Interfaces
@@ -34,7 +32,7 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces
         /// ロールを新規に追加する
         /// </summary>
         void Add(Role role, IUnitOfWork unitOfWork);
-        
+
         /// <summary>
         /// 更新用のロール情報を取得する。
         /// 普段はキャッシュからデータをとるが、それだとEntityFrameworkがキャッシュされたオブジェクトのIDを見失って、編集ではなく新規追加になる恐れがある。

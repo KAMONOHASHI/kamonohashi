@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Nssol.Platypus.Infrastructure.Options
+﻿namespace Nssol.Platypus.Infrastructure.Options
 {
     public class DBInitRetryOptions
     {

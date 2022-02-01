@@ -114,7 +114,7 @@ def create(name, registry_image, registry_tag, data_set_id, entry_point,
     model = rest.TrainingApiModelsCreateInputModel(
         container_image=container_image, cpu=cpu, data_set_id=data_set_id, entry_point=entry_point, git_model=git_model,
         gpu=gpu, memo=memo, memory=memory, name=name, options=option_dict, parent_ids=list(parent_ids), partition=partition, tags=list(tags), zip=zip, local_data_set=local_data_set)
-    result = api.create_training(model=model)
+    result = api.create_training(body=model)
     print('created', result.id)
 
 
@@ -137,7 +137,7 @@ def update(id, name, memo, favorite, tags):
     """Update training"""
     api = rest.TrainingApi(configuration.get_api_client())
     model = rest.TrainingApiModelsEditInputModel(name=name, memo=memo, favorite=favorite, tags=list(tags))
-    result = api.update_training(id, model=model)
+    result = api.update_training(id, body=model)
     print('updated', result.id)
 
 
@@ -149,7 +149,7 @@ def upload_file(id, file_path):
     api = rest.TrainingApi(configuration.get_api_client())
     attached_info = object_storage.upload_file(api.api_client, file_path, 'TrainingHistoryAttachedFiles')
     model = rest.ComponentsAddFileInputModel(file_name=attached_info.file_name, stored_path=attached_info.stored_path)
-    api.add_training_file(id, model=model)
+    api.add_training_file(id, body=model)
 
 
 @training.command('list-files')

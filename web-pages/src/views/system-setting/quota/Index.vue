@@ -84,7 +84,7 @@ export default {
     ...mapActions(['fetchQuotas', 'post']),
     async update() {
       try {
-        let model = this.quotasData.map(function(quota) {
+        let body = this.quotasData.map(function(quota) {
           return {
             tenantId: quota.tenantId,
             cpu: quota.cpu,
@@ -92,7 +92,7 @@ export default {
             gpu: quota.gpu,
           }
         })
-        await this.post({ models: model })
+        await this.post({ body: body })
         this.showSuccessMessage()
         this.error = null
       } catch (e) {

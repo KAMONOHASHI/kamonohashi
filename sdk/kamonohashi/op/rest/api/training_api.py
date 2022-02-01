@@ -43,7 +43,7 @@ class TrainingApi(object):
 
         :param async_req bool
         :param int id: (required)
-        :param ComponentsAddFileInputModel model:
+        :param ComponentsAddFileInputModel body:
         :return: TrainingApiModelsAttachedFileOutputModel
                  If the method is called asynchronously,
                  returns the request thread.
@@ -65,13 +65,13 @@ class TrainingApi(object):
 
         :param async_req bool
         :param int id: (required)
-        :param ComponentsAddFileInputModel model:
+        :param ComponentsAddFileInputModel body:
         :return: TrainingApiModelsAttachedFileOutputModel
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['id', 'model']  # noqa: E501
+        all_params = ['id', 'body']  # noqa: E501
         all_params.append('async_req')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -105,8 +105,8 @@ class TrainingApi(object):
         local_var_files = {}
 
         body_params = None
-        if 'model' in params:
-            body_params = params['model']
+        if 'body' in params:
+            body_params = params['body']
         # HTTP header `Accept`
         header_params['Accept'] = self.api_client.select_header_accept(
             ['application/json'])  # noqa: E501
@@ -236,7 +236,7 @@ class TrainingApi(object):
         >>> result = thread.get()
 
         :param async_req bool
-        :param TrainingApiModelsCreateInputModel model:
+        :param TrainingApiModelsCreateInputModel body:
         :return: TrainingApiModelsSimpleOutputModel
                  If the method is called asynchronously,
                  returns the request thread.
@@ -257,13 +257,13 @@ class TrainingApi(object):
         >>> result = thread.get()
 
         :param async_req bool
-        :param TrainingApiModelsCreateInputModel model:
+        :param TrainingApiModelsCreateInputModel body:
         :return: TrainingApiModelsSimpleOutputModel
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['model']  # noqa: E501
+        all_params = ['body']  # noqa: E501
         all_params.append('async_req')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -291,8 +291,8 @@ class TrainingApi(object):
         local_var_files = {}
 
         body_params = None
-        if 'model' in params:
-            body_params = params['model']
+        if 'body' in params:
+            body_params = params['body']
         # HTTP header `Accept`
         header_params['Accept'] = self.api_client.select_header_accept(
             ['application/json'])  # noqa: E501
@@ -886,7 +886,7 @@ class TrainingApi(object):
             query_params.append(('EntryPoint', params['entry_point']))  # noqa: E501
         if 'tag' in params:
             query_params.append(('tag', params['tag']))  # noqa: E501
-            collection_formats['tag'] = 'multi'  # noqa: E501
+            collection_formats['tag'] = 'csv'  # noqa: E501
         if 'per_page' in params:
             query_params.append(('perPage', params['per_page']))  # noqa: E501
         if 'page' in params:
@@ -1131,7 +1131,7 @@ class TrainingApi(object):
 
         :param async_req bool
         :param int id: (required)
-        :param TrainingApiModelsEditInputModel model:
+        :param TrainingApiModelsEditInputModel body:
         :return: TrainingApiModelsSimpleOutputModel
                  If the method is called asynchronously,
                  returns the request thread.
@@ -1153,13 +1153,13 @@ class TrainingApi(object):
 
         :param async_req bool
         :param int id: (required)
-        :param TrainingApiModelsEditInputModel model:
+        :param TrainingApiModelsEditInputModel body:
         :return: TrainingApiModelsSimpleOutputModel
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['id', 'model']  # noqa: E501
+        all_params = ['id', 'body']  # noqa: E501
         all_params.append('async_req')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -1193,8 +1193,8 @@ class TrainingApi(object):
         local_var_files = {}
 
         body_params = None
-        if 'model' in params:
-            body_params = params['model']
+        if 'body' in params:
+            body_params = params['body']
         # HTTP header `Accept`
         header_params['Accept'] = self.api_client.select_header_accept(
             ['application/json'])  # noqa: E501

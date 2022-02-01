@@ -103,7 +103,7 @@ def create(file):
         logging.info('begin io %s', file)
         json_dict = json.load(f)
         logging.info('end io %s', file)
-    result = api.create_preprocessing(model=json_dict)
+    result = api.create_preprocessing(body=json_dict)
     print('created', result.id)
 
 
@@ -138,7 +138,7 @@ def update(id, file):
         logging.info('begin io %s', file)
         json_dict = json.load(f)
         logging.info('end io %s', file)
-    result = api.update_preprocessing(id, model=json_dict)
+    result = api.update_preprocessing(id, body=json_dict)
     print('updated', result.id)
 
 
@@ -153,7 +153,7 @@ def patch(id, name, memo, cpu, memory, gpu):
     """Update meta information of a preprocessing"""
     api = rest.PreprocessingApi(configuration.get_api_client())
     model = rest.PreprocessingApiModelsEditInputModel(name=name, memo=memo, cpu=cpu, memory=memory, gpu=gpu)
-    result = api.patch_preprocessing(id, model=model)
+    result = api.patch_preprocessing(id, body=model)
     print('meta-info updated', result.id)
 
 
@@ -197,7 +197,7 @@ def build_history(id, data_id, source, memo, tags):
                                                                            stored_path=upload_info.stored_path))
             model = rest.PreprocessingApiModelsAddOutputDataInputModel(files=uploaded_files, name=entry,
                                                                        memo=memo, tags=list(tags))
-            api.add_preprocessing_history_files(id, data_id, model=model)
+            api.add_preprocessing_history_files(id, data_id, body=model)
 
     result = api.complete_preprocessing_history(id, data_id)
     print('built ', result.preprocess_id, '.', result.data_id, sep='')
@@ -222,7 +222,7 @@ def build_history_files(id, data_id, source, memo, tags):
                                                                            stored_path=upload_info.stored_path))
             model = rest.PreprocessingApiModelsAddOutputDataInputModel(files=uploaded_files, name=entry,
                                                                        memo=memo, tags=list(tags))
-            api.add_preprocessing_history_files(id, data_id, model=model)
+            api.add_preprocessing_history_files(id, data_id, body=model)
 
     api.complete_preprocessing_history(id, data_id)
 
@@ -264,5 +264,5 @@ def run(id, data_id, cpu, memory, gpu, partition, options):
     for x in data_id:
         model = rest.PreprocessingApiModelsRunPreprocessHistoryInputModel(
             cpu=cpu, data_id=x, gpu=gpu, memory=memory, options=option_dict, partition=partition)
-        result = api.run_preprocessing(id, model=model)
+        result = api.run_preprocessing(id, body=model)
         print('started ', result.preprocess_id, '.', result.data_id, sep='')

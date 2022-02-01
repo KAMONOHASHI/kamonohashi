@@ -38,12 +38,12 @@ export const request = (method, url, body, queryParameters, form, config) => {
  ==========================================================*/
 /**
  * ログインユーザのアカウント情報を取得する
- * request: ApiV2AccountGet
- * url: ApiV2AccountGetURL
- * method: ApiV2AccountGet_TYPE
- * raw_url: ApiV2AccountGet_RAW_URL
+ * request: getApiV2Account
+ * url: getApiV2AccountURL
+ * method: getApiV2Account_TYPE
+ * raw_url: getApiV2Account_RAW_URL
  */
-export const ApiV2AccountGet = function(parameters = {}) {
+export const getApiV2Account = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/account'
@@ -57,13 +57,13 @@ export const ApiV2AccountGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AccountGet_RAW_URL = function() {
+export const getApiV2Account_RAW_URL = function() {
   return '/api/v2/account'
 }
-export const ApiV2AccountGet_TYPE = function() {
+export const getApiV2Account_TYPE = function() {
   return 'get'
 }
-export const ApiV2AccountGetURL = function(parameters = {}) {
+export const getApiV2AccountURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/account'
@@ -77,13 +77,13 @@ export const ApiV2AccountGetURL = function(parameters = {}) {
 }
 /**
  * ログインユーザのアカウント情報を変更する
- * request: ApiV2AccountPut
- * url: ApiV2AccountPutURL
- * method: ApiV2AccountPut_TYPE
- * raw_url: ApiV2AccountPut_RAW_URL
+ * request: putApiV2Account
+ * url: putApiV2AccountURL
+ * method: putApiV2Account_TYPE
+ * raw_url: putApiV2Account_RAW_URL
  * @param defaultTenant - デフォルトテナント
  */
-export const ApiV2AccountPut = function(parameters = {}) {
+export const putApiV2Account = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/account'
@@ -103,13 +103,13 @@ export const ApiV2AccountPut = function(parameters = {}) {
   }
   return request('put', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AccountPut_RAW_URL = function() {
+export const putApiV2Account_RAW_URL = function() {
   return '/api/v2/account'
 }
-export const ApiV2AccountPut_TYPE = function() {
+export const putApiV2Account_TYPE = function() {
   return 'put'
 }
-export const ApiV2AccountPutURL = function(parameters = {}) {
+export const putApiV2AccountURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/account'
@@ -126,21 +126,21 @@ export const ApiV2AccountPutURL = function(parameters = {}) {
 }
 /**
  * ログインユーザのパスワードを変更する
- * request: ApiV2AccountPasswordPut
- * url: ApiV2AccountPasswordPutURL
- * method: ApiV2AccountPasswordPut_TYPE
- * raw_url: ApiV2AccountPasswordPut_RAW_URL
- * @param model - 
+ * request: putApiV2AccountPassword
+ * url: putApiV2AccountPasswordURL
+ * method: putApiV2AccountPassword_TYPE
+ * raw_url: putApiV2AccountPassword_RAW_URL
+ * @param body - 
  */
-export const ApiV2AccountPasswordPut = function(parameters = {}) {
+export const putApiV2AccountPassword = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/account/password'
   let body
   let queryParameters = {}
   let form = {}
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -149,13 +149,13 @@ export const ApiV2AccountPasswordPut = function(parameters = {}) {
   }
   return request('put', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AccountPasswordPut_RAW_URL = function() {
+export const putApiV2AccountPassword_RAW_URL = function() {
   return '/api/v2/account/password'
 }
-export const ApiV2AccountPasswordPut_TYPE = function() {
+export const putApiV2AccountPassword_TYPE = function() {
   return 'put'
 }
-export const ApiV2AccountPasswordPutURL = function(parameters = {}) {
+export const putApiV2AccountPasswordURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/account/password'
@@ -169,21 +169,21 @@ export const ApiV2AccountPasswordPutURL = function(parameters = {}) {
 }
 /**
  * ログインする
- * request: ApiV2AccountLoginPost
- * url: ApiV2AccountLoginPostURL
- * method: ApiV2AccountLoginPost_TYPE
- * raw_url: ApiV2AccountLoginPost_RAW_URL
- * @param model - 
+ * request: postApiV2AccountLogin
+ * url: postApiV2AccountLoginURL
+ * method: postApiV2AccountLogin_TYPE
+ * raw_url: postApiV2AccountLogin_RAW_URL
+ * @param body - 
  */
-export const ApiV2AccountLoginPost = function(parameters = {}) {
+export const postApiV2AccountLogin = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/account/login'
   let body
   let queryParameters = {}
   let form = {}
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -192,13 +192,13 @@ export const ApiV2AccountLoginPost = function(parameters = {}) {
   }
   return request('post', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AccountLoginPost_RAW_URL = function() {
+export const postApiV2AccountLogin_RAW_URL = function() {
   return '/api/v2/account/login'
 }
-export const ApiV2AccountLoginPost_TYPE = function() {
+export const postApiV2AccountLogin_TYPE = function() {
   return 'post'
 }
-export const ApiV2AccountLoginPostURL = function(parameters = {}) {
+export const postApiV2AccountLoginURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/account/login'
@@ -212,14 +212,14 @@ export const ApiV2AccountLoginPostURL = function(parameters = {}) {
 }
 /**
  * 現在の認証情報を使用し、新規にアクセストークンを取得する
- * request: ApiV2AccountTenantsByTenantIdTokenPost
- * url: ApiV2AccountTenantsByTenantIdTokenPostURL
- * method: ApiV2AccountTenantsByTenantIdTokenPost_TYPE
- * raw_url: ApiV2AccountTenantsByTenantIdTokenPost_RAW_URL
+ * request: postApiV2AccountTenantsByTenantIdToken
+ * url: postApiV2AccountTenantsByTenantIdTokenURL
+ * method: postApiV2AccountTenantsByTenantIdToken_TYPE
+ * raw_url: postApiV2AccountTenantsByTenantIdToken_RAW_URL
  * @param tenantId - テナントID
- * @param expiresIn - 有効期限(秒)。省略時はシステムの既定値。
+ * @param body - テナント切替用入力モデル
  */
-export const ApiV2AccountTenantsByTenantIdTokenPost = function(parameters = {}) {
+export const postApiV2AccountTenantsByTenantIdToken = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/account/tenants/{tenantId}/token'
@@ -230,8 +230,8 @@ export const ApiV2AccountTenantsByTenantIdTokenPost = function(parameters = {}) 
   if (parameters['tenantId'] === undefined) {
     return Promise.reject(new Error('Missing required  parameter: tenantId'))
   }
-  if (parameters['expiresIn'] !== undefined) {
-    queryParameters['expiresIn'] = parameters['expiresIn']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -240,20 +240,17 @@ export const ApiV2AccountTenantsByTenantIdTokenPost = function(parameters = {}) 
   }
   return request('post', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AccountTenantsByTenantIdTokenPost_RAW_URL = function() {
+export const postApiV2AccountTenantsByTenantIdToken_RAW_URL = function() {
   return '/api/v2/account/tenants/{tenantId}/token'
 }
-export const ApiV2AccountTenantsByTenantIdTokenPost_TYPE = function() {
+export const postApiV2AccountTenantsByTenantIdToken_TYPE = function() {
   return 'post'
 }
-export const ApiV2AccountTenantsByTenantIdTokenPostURL = function(parameters = {}) {
+export const postApiV2AccountTenantsByTenantIdTokenURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/account/tenants/{tenantId}/token'
   path = path.replace('{tenantId}', `${parameters['tenantId']}`)
-  if (parameters['expiresIn'] !== undefined) {
-    queryParameters['expiresIn'] = parameters['expiresIn']
-  }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]
@@ -264,13 +261,13 @@ export const ApiV2AccountTenantsByTenantIdTokenPostURL = function(parameters = {
 }
 /**
  * アクセス可能なKQIのメニュー一覧をツリー形式で取得する。
- * request: ApiV2AccountMenusTreeGet
- * url: ApiV2AccountMenusTreeGetURL
- * method: ApiV2AccountMenusTreeGet_TYPE
- * raw_url: ApiV2AccountMenusTreeGet_RAW_URL
+ * request: getApiV2AccountMenusTree
+ * url: getApiV2AccountMenusTreeURL
+ * method: getApiV2AccountMenusTree_TYPE
+ * raw_url: getApiV2AccountMenusTree_RAW_URL
  * @param lang - 
  */
-export const ApiV2AccountMenusTreeGet = function(parameters = {}) {
+export const getApiV2AccountMenusTree = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/account/menus/tree'
@@ -287,13 +284,13 @@ export const ApiV2AccountMenusTreeGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AccountMenusTreeGet_RAW_URL = function() {
+export const getApiV2AccountMenusTree_RAW_URL = function() {
   return '/api/v2/account/menus/tree'
 }
-export const ApiV2AccountMenusTreeGet_TYPE = function() {
+export const getApiV2AccountMenusTree_TYPE = function() {
   return 'get'
 }
-export const ApiV2AccountMenusTreeGetURL = function(parameters = {}) {
+export const getApiV2AccountMenusTreeURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/account/menus/tree'
@@ -310,13 +307,13 @@ export const ApiV2AccountMenusTreeGetURL = function(parameters = {}) {
 }
 /**
  * アクセス可能なKQIのメニュー一覧をリスト形式で取得する。
- * request: ApiV2AccountMenusListGet
- * url: ApiV2AccountMenusListGetURL
- * method: ApiV2AccountMenusListGet_TYPE
- * raw_url: ApiV2AccountMenusListGet_RAW_URL
+ * request: getApiV2AccountMenusList
+ * url: getApiV2AccountMenusListURL
+ * method: getApiV2AccountMenusList_TYPE
+ * raw_url: getApiV2AccountMenusList_RAW_URL
  * @param lang - 
  */
-export const ApiV2AccountMenusListGet = function(parameters = {}) {
+export const getApiV2AccountMenusList = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/account/menus/list'
@@ -333,13 +330,13 @@ export const ApiV2AccountMenusListGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AccountMenusListGet_RAW_URL = function() {
+export const getApiV2AccountMenusList_RAW_URL = function() {
   return '/api/v2/account/menus/list'
 }
-export const ApiV2AccountMenusListGet_TYPE = function() {
+export const getApiV2AccountMenusList_TYPE = function() {
   return 'get'
 }
-export const ApiV2AccountMenusListGetURL = function(parameters = {}) {
+export const getApiV2AccountMenusListURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/account/menus/list'
@@ -356,13 +353,13 @@ export const ApiV2AccountMenusListGetURL = function(parameters = {}) {
 }
 /**
  * アクセス可能なAquariumのメニュー一覧をツリー形式で取得する。
- * request: ApiV2AccountAquariumMenusTreeGet
- * url: ApiV2AccountAquariumMenusTreeGetURL
- * method: ApiV2AccountAquariumMenusTreeGet_TYPE
- * raw_url: ApiV2AccountAquariumMenusTreeGet_RAW_URL
+ * request: getApiV2AccountAquariumMenusTree
+ * url: getApiV2AccountAquariumMenusTreeURL
+ * method: getApiV2AccountAquariumMenusTree_TYPE
+ * raw_url: getApiV2AccountAquariumMenusTree_RAW_URL
  * @param lang - 
  */
-export const ApiV2AccountAquariumMenusTreeGet = function(parameters = {}) {
+export const getApiV2AccountAquariumMenusTree = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/account/aquarium/menus/tree'
@@ -379,13 +376,13 @@ export const ApiV2AccountAquariumMenusTreeGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AccountAquariumMenusTreeGet_RAW_URL = function() {
+export const getApiV2AccountAquariumMenusTree_RAW_URL = function() {
   return '/api/v2/account/aquarium/menus/tree'
 }
-export const ApiV2AccountAquariumMenusTreeGet_TYPE = function() {
+export const getApiV2AccountAquariumMenusTree_TYPE = function() {
   return 'get'
 }
-export const ApiV2AccountAquariumMenusTreeGetURL = function(parameters = {}) {
+export const getApiV2AccountAquariumMenusTreeURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/account/aquarium/menus/tree'
@@ -402,13 +399,13 @@ export const ApiV2AccountAquariumMenusTreeGetURL = function(parameters = {}) {
 }
 /**
  * アクセス可能なAquariumのメニュー一覧をリスト形式で取得する。
- * request: ApiV2AccountAquariumMenusListGet
- * url: ApiV2AccountAquariumMenusListGetURL
- * method: ApiV2AccountAquariumMenusListGet_TYPE
- * raw_url: ApiV2AccountAquariumMenusListGet_RAW_URL
+ * request: getApiV2AccountAquariumMenusList
+ * url: getApiV2AccountAquariumMenusListURL
+ * method: getApiV2AccountAquariumMenusList_TYPE
+ * raw_url: getApiV2AccountAquariumMenusList_RAW_URL
  * @param lang - 
  */
-export const ApiV2AccountAquariumMenusListGet = function(parameters = {}) {
+export const getApiV2AccountAquariumMenusList = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/account/aquarium/menus/list'
@@ -425,13 +422,13 @@ export const ApiV2AccountAquariumMenusListGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AccountAquariumMenusListGet_RAW_URL = function() {
+export const getApiV2AccountAquariumMenusList_RAW_URL = function() {
   return '/api/v2/account/aquarium/menus/list'
 }
-export const ApiV2AccountAquariumMenusListGet_TYPE = function() {
+export const getApiV2AccountAquariumMenusList_TYPE = function() {
   return 'get'
 }
-export const ApiV2AccountAquariumMenusListGetURL = function(parameters = {}) {
+export const getApiV2AccountAquariumMenusListURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/account/aquarium/menus/list'
@@ -448,12 +445,12 @@ export const ApiV2AccountAquariumMenusListGetURL = function(parameters = {}) {
 }
 /**
  * 選択中のテナントにおけるGit情報を取得する
- * request: ApiV2AccountGitsGet
- * url: ApiV2AccountGitsGetURL
- * method: ApiV2AccountGitsGet_TYPE
- * raw_url: ApiV2AccountGitsGet_RAW_URL
+ * request: getApiV2AccountGits
+ * url: getApiV2AccountGitsURL
+ * method: getApiV2AccountGits_TYPE
+ * raw_url: getApiV2AccountGits_RAW_URL
  */
-export const ApiV2AccountGitsGet = function(parameters = {}) {
+export const getApiV2AccountGits = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/account/gits'
@@ -467,13 +464,13 @@ export const ApiV2AccountGitsGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AccountGitsGet_RAW_URL = function() {
+export const getApiV2AccountGits_RAW_URL = function() {
   return '/api/v2/account/gits'
 }
-export const ApiV2AccountGitsGet_TYPE = function() {
+export const getApiV2AccountGits_TYPE = function() {
   return 'get'
 }
-export const ApiV2AccountGitsGetURL = function(parameters = {}) {
+export const getApiV2AccountGitsURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/account/gits'
@@ -487,21 +484,21 @@ export const ApiV2AccountGitsGetURL = function(parameters = {}) {
 }
 /**
  * 選択中のテナントにおけるGitのトークン情報を更新する。
- * request: ApiV2AccountGitsPut
- * url: ApiV2AccountGitsPutURL
- * method: ApiV2AccountGitsPut_TYPE
- * raw_url: ApiV2AccountGitsPut_RAW_URL
- * @param model - 更新内容
+ * request: putApiV2AccountGits
+ * url: putApiV2AccountGitsURL
+ * method: putApiV2AccountGits_TYPE
+ * raw_url: putApiV2AccountGits_RAW_URL
+ * @param body - 更新内容
  */
-export const ApiV2AccountGitsPut = function(parameters = {}) {
+export const putApiV2AccountGits = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/account/gits'
   let body
   let queryParameters = {}
   let form = {}
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -510,13 +507,13 @@ export const ApiV2AccountGitsPut = function(parameters = {}) {
   }
   return request('put', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AccountGitsPut_RAW_URL = function() {
+export const putApiV2AccountGits_RAW_URL = function() {
   return '/api/v2/account/gits'
 }
-export const ApiV2AccountGitsPut_TYPE = function() {
+export const putApiV2AccountGits_TYPE = function() {
   return 'put'
 }
-export const ApiV2AccountGitsPutURL = function(parameters = {}) {
+export const putApiV2AccountGitsURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/account/gits'
@@ -530,12 +527,12 @@ export const ApiV2AccountGitsPutURL = function(parameters = {}) {
 }
 /**
  * 選択中のテナントにおけるレジストリ情報を取得する
- * request: ApiV2AccountRegistriesGet
- * url: ApiV2AccountRegistriesGetURL
- * method: ApiV2AccountRegistriesGet_TYPE
- * raw_url: ApiV2AccountRegistriesGet_RAW_URL
+ * request: getApiV2AccountRegistries
+ * url: getApiV2AccountRegistriesURL
+ * method: getApiV2AccountRegistries_TYPE
+ * raw_url: getApiV2AccountRegistries_RAW_URL
  */
-export const ApiV2AccountRegistriesGet = function(parameters = {}) {
+export const getApiV2AccountRegistries = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/account/registries'
@@ -549,13 +546,13 @@ export const ApiV2AccountRegistriesGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AccountRegistriesGet_RAW_URL = function() {
+export const getApiV2AccountRegistries_RAW_URL = function() {
   return '/api/v2/account/registries'
 }
-export const ApiV2AccountRegistriesGet_TYPE = function() {
+export const getApiV2AccountRegistries_TYPE = function() {
   return 'get'
 }
-export const ApiV2AccountRegistriesGetURL = function(parameters = {}) {
+export const getApiV2AccountRegistriesURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/account/registries'
@@ -569,21 +566,21 @@ export const ApiV2AccountRegistriesGetURL = function(parameters = {}) {
 }
 /**
  * 選択中のテナントにおけるレジストリのトークン情報を更新する。
- * request: ApiV2AccountRegistriesPut
- * url: ApiV2AccountRegistriesPutURL
- * method: ApiV2AccountRegistriesPut_TYPE
- * raw_url: ApiV2AccountRegistriesPut_RAW_URL
- * @param model - 更新内容
+ * request: putApiV2AccountRegistries
+ * url: putApiV2AccountRegistriesURL
+ * method: putApiV2AccountRegistries_TYPE
+ * raw_url: putApiV2AccountRegistries_RAW_URL
+ * @param body - 更新内容
  */
-export const ApiV2AccountRegistriesPut = function(parameters = {}) {
+export const putApiV2AccountRegistries = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/account/registries'
   let body
   let queryParameters = {}
   let form = {}
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -592,13 +589,13 @@ export const ApiV2AccountRegistriesPut = function(parameters = {}) {
   }
   return request('put', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AccountRegistriesPut_RAW_URL = function() {
+export const putApiV2AccountRegistries_RAW_URL = function() {
   return '/api/v2/account/registries'
 }
-export const ApiV2AccountRegistriesPut_TYPE = function() {
+export const putApiV2AccountRegistries_TYPE = function() {
   return 'put'
 }
-export const ApiV2AccountRegistriesPutURL = function(parameters = {}) {
+export const putApiV2AccountRegistriesURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/account/registries'
@@ -611,11 +608,179 @@ export const ApiV2AccountRegistriesPutURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * WebHook情報を取得する
+ * request: getApiV2AccountWebhookSlack
+ * url: getApiV2AccountWebhookSlackURL
+ * method: getApiV2AccountWebhookSlack_TYPE
+ * raw_url: getApiV2AccountWebhookSlack_RAW_URL
+ */
+export const getApiV2AccountWebhookSlack = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/account/webhook/slack'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const getApiV2AccountWebhookSlack_RAW_URL = function() {
+  return '/api/v2/account/webhook/slack'
+}
+export const getApiV2AccountWebhookSlack_TYPE = function() {
+  return 'get'
+}
+export const getApiV2AccountWebhookSlackURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/account/webhook/slack'
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * WebHook情報を更新する
+ * request: putApiV2AccountWebhookSlack
+ * url: putApiV2AccountWebhookSlackURL
+ * method: putApiV2AccountWebhookSlack_TYPE
+ * raw_url: putApiV2AccountWebhookSlack_RAW_URL
+ * @param body - Webhook情報モデル
+ */
+export const putApiV2AccountWebhookSlack = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/account/webhook/slack'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('put', domain + path, body, queryParameters, form, config)
+}
+export const putApiV2AccountWebhookSlack_RAW_URL = function() {
+  return '/api/v2/account/webhook/slack'
+}
+export const putApiV2AccountWebhookSlack_TYPE = function() {
+  return 'put'
+}
+export const putApiV2AccountWebhookSlackURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/account/webhook/slack'
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * テスト通知を送信する
+ * request: postApiV2AccountWebhookSlackTest
+ * url: postApiV2AccountWebhookSlackTestURL
+ * method: postApiV2AccountWebhookSlackTest_TYPE
+ * raw_url: postApiV2AccountWebhookSlackTest_RAW_URL
+ * @param body - Webhook情報モデル
+ */
+export const postApiV2AccountWebhookSlackTest = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/account/webhook/slack/test'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('post', domain + path, body, queryParameters, form, config)
+}
+export const postApiV2AccountWebhookSlackTest_RAW_URL = function() {
+  return '/api/v2/account/webhook/slack/test'
+}
+export const postApiV2AccountWebhookSlackTest_TYPE = function() {
+  return 'post'
+}
+export const postApiV2AccountWebhookSlackTestURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/account/webhook/slack/test'
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * アクアリウムデータセットを作成する
+ * request: postApiV2AquariumDatasets
+ * url: postApiV2AquariumDatasetsURL
+ * method: postApiV2AquariumDatasets_TYPE
+ * raw_url: postApiV2AquariumDatasets_RAW_URL
+ * @param body - アクアリウムデータセット
+ */
+export const postApiV2AquariumDatasets = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/aquarium/datasets'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('post', domain + path, body, queryParameters, form, config)
+}
+export const postApiV2AquariumDatasets_RAW_URL = function() {
+  return '/api/v2/aquarium/datasets'
+}
+export const postApiV2AquariumDatasets_TYPE = function() {
+  return 'post'
+}
+export const postApiV2AquariumDatasetsURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/aquarium/datasets'
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
 * 指定された条件でページングされた状態で、アクアリウムデータセット一覧を取得する
-* request: ApiV2AquariumDatasetsGet
-* url: ApiV2AquariumDatasetsGetURL
-* method: ApiV2AquariumDatasetsGet_TYPE
-* raw_url: ApiV2AquariumDatasetsGet_RAW_URL
+* request: getApiV2AquariumDatasets
+* url: getApiV2AquariumDatasetsURL
+* method: getApiV2AquariumDatasets_TYPE
+* raw_url: getApiV2AquariumDatasets_RAW_URL
      * @param id - IDの検索条件。
 比較文字列＋数値の形式。
      * @param name - 名前
@@ -637,7 +802,7 @@ e.g.（比較文字列は半角でOK）
      * @param page - ページ番号。デフォルトは1。
      * @param withTotal - 合計件数をレスポンスヘッダ(X-Total-Count)に含めるか。デフォルトはfalse。
 */
-export const ApiV2AquariumDatasetsGet = function(parameters = {}) {
+export const getApiV2AquariumDatasets = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/aquarium/datasets'
@@ -678,13 +843,13 @@ export const ApiV2AquariumDatasetsGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AquariumDatasetsGet_RAW_URL = function() {
+export const getApiV2AquariumDatasets_RAW_URL = function() {
   return '/api/v2/aquarium/datasets'
 }
-export const ApiV2AquariumDatasetsGet_TYPE = function() {
+export const getApiV2AquariumDatasets_TYPE = function() {
   return 'get'
 }
-export const ApiV2AquariumDatasetsGetURL = function(parameters = {}) {
+export const getApiV2AquariumDatasetsURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/aquarium/datasets'
@@ -715,94 +880,6 @@ export const ApiV2AquariumDatasetsGetURL = function(parameters = {}) {
   if (parameters['withTotal'] !== undefined) {
     queryParameters['withTotal'] = parameters['withTotal']
   }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
- * アクアリウムデータセットを作成する
- * request: ApiV2AquariumDatasetsPost
- * url: ApiV2AquariumDatasetsPostURL
- * method: ApiV2AquariumDatasetsPost_TYPE
- * raw_url: ApiV2AquariumDatasetsPost_RAW_URL
- * @param model - アクアリウムデータセット
- */
-export const ApiV2AquariumDatasetsPost = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/api/v2/aquarium/datasets'
-  let body
-  let queryParameters = {}
-  let form = {}
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('post', domain + path, body, queryParameters, form, config)
-}
-export const ApiV2AquariumDatasetsPost_RAW_URL = function() {
-  return '/api/v2/aquarium/datasets'
-}
-export const ApiV2AquariumDatasetsPost_TYPE = function() {
-  return 'post'
-}
-export const ApiV2AquariumDatasetsPostURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/api/v2/aquarium/datasets'
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
- * アクアリウムデータセットバージョン一覧を取得する
- * request: ApiV2AquariumDatasetsByIdVersionsGet
- * url: ApiV2AquariumDatasetsByIdVersionsGetURL
- * method: ApiV2AquariumDatasetsByIdVersionsGet_TYPE
- * raw_url: ApiV2AquariumDatasetsByIdVersionsGet_RAW_URL
- * @param id - アクアリウムデータセットID
- */
-export const ApiV2AquariumDatasetsByIdVersionsGet = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/api/v2/aquarium/datasets/{id}/versions'
-  let body
-  let queryParameters = {}
-  let form = {}
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters['id'] === undefined) {
-    return Promise.reject(new Error('Missing required  parameter: id'))
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('get', domain + path, body, queryParameters, form, config)
-}
-export const ApiV2AquariumDatasetsByIdVersionsGet_RAW_URL = function() {
-  return '/api/v2/aquarium/datasets/{id}/versions'
-}
-export const ApiV2AquariumDatasetsByIdVersionsGet_TYPE = function() {
-  return 'get'
-}
-export const ApiV2AquariumDatasetsByIdVersionsGetURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/api/v2/aquarium/datasets/{id}/versions'
-  path = path.replace('{id}', `${parameters['id']}`)
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]
@@ -813,14 +890,14 @@ export const ApiV2AquariumDatasetsByIdVersionsGetURL = function(parameters = {})
 }
 /**
  * アクアリウムデータセットバージョンを作成する
- * request: ApiV2AquariumDatasetsByIdVersionsPost
- * url: ApiV2AquariumDatasetsByIdVersionsPostURL
- * method: ApiV2AquariumDatasetsByIdVersionsPost_TYPE
- * raw_url: ApiV2AquariumDatasetsByIdVersionsPost_RAW_URL
+ * request: postApiV2AquariumDatasetsByIdVersions
+ * url: postApiV2AquariumDatasetsByIdVersionsURL
+ * method: postApiV2AquariumDatasetsByIdVersions_TYPE
+ * raw_url: postApiV2AquariumDatasetsByIdVersions_RAW_URL
  * @param id - アクアリウムデータセットID
- * @param model - アクアリウムデータセットバージョン
+ * @param body - アクアリウムデータセットバージョン
  */
-export const ApiV2AquariumDatasetsByIdVersionsPost = function(parameters = {}) {
+export const postApiV2AquariumDatasetsByIdVersions = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/aquarium/datasets/{id}/versions'
@@ -831,8 +908,8 @@ export const ApiV2AquariumDatasetsByIdVersionsPost = function(parameters = {}) {
   if (parameters['id'] === undefined) {
     return Promise.reject(new Error('Missing required  parameter: id'))
   }
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -841,13 +918,58 @@ export const ApiV2AquariumDatasetsByIdVersionsPost = function(parameters = {}) {
   }
   return request('post', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AquariumDatasetsByIdVersionsPost_RAW_URL = function() {
+export const postApiV2AquariumDatasetsByIdVersions_RAW_URL = function() {
   return '/api/v2/aquarium/datasets/{id}/versions'
 }
-export const ApiV2AquariumDatasetsByIdVersionsPost_TYPE = function() {
+export const postApiV2AquariumDatasetsByIdVersions_TYPE = function() {
   return 'post'
 }
-export const ApiV2AquariumDatasetsByIdVersionsPostURL = function(parameters = {}) {
+export const postApiV2AquariumDatasetsByIdVersionsURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/aquarium/datasets/{id}/versions'
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * アクアリウムデータセットバージョン一覧を取得する
+ * request: getApiV2AquariumDatasetsByIdVersions
+ * url: getApiV2AquariumDatasetsByIdVersionsURL
+ * method: getApiV2AquariumDatasetsByIdVersions_TYPE
+ * raw_url: getApiV2AquariumDatasetsByIdVersions_RAW_URL
+ * @param id - アクアリウムデータセットID
+ */
+export const getApiV2AquariumDatasetsByIdVersions = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/aquarium/datasets/{id}/versions'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const getApiV2AquariumDatasetsByIdVersions_RAW_URL = function() {
+  return '/api/v2/aquarium/datasets/{id}/versions'
+}
+export const getApiV2AquariumDatasetsByIdVersions_TYPE = function() {
+  return 'get'
+}
+export const getApiV2AquariumDatasetsByIdVersionsURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/aquarium/datasets/{id}/versions'
@@ -862,14 +984,14 @@ export const ApiV2AquariumDatasetsByIdVersionsPostURL = function(parameters = {}
 }
 /**
  * アクアリウムデータセットバージョンを取得する
- * request: ApiV2AquariumDatasetsByIdVersionsByVersionIdGet
- * url: ApiV2AquariumDatasetsByIdVersionsByVersionIdGetURL
- * method: ApiV2AquariumDatasetsByIdVersionsByVersionIdGet_TYPE
- * raw_url: ApiV2AquariumDatasetsByIdVersionsByVersionIdGet_RAW_URL
+ * request: getApiV2AquariumDatasetsByIdVersionsByVersionId
+ * url: getApiV2AquariumDatasetsByIdVersionsByVersionIdURL
+ * method: getApiV2AquariumDatasetsByIdVersionsByVersionId_TYPE
+ * raw_url: getApiV2AquariumDatasetsByIdVersionsByVersionId_RAW_URL
  * @param id - アクアリウムデータセットID
  * @param versionId - アクアリウムデータセットバージョンID
  */
-export const ApiV2AquariumDatasetsByIdVersionsByVersionIdGet = function(parameters = {}) {
+export const getApiV2AquariumDatasetsByIdVersionsByVersionId = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/aquarium/datasets/{id}/versions/{versionId}'
@@ -891,13 +1013,13 @@ export const ApiV2AquariumDatasetsByIdVersionsByVersionIdGet = function(paramete
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AquariumDatasetsByIdVersionsByVersionIdGet_RAW_URL = function() {
+export const getApiV2AquariumDatasetsByIdVersionsByVersionId_RAW_URL = function() {
   return '/api/v2/aquarium/datasets/{id}/versions/{versionId}'
 }
-export const ApiV2AquariumDatasetsByIdVersionsByVersionIdGet_TYPE = function() {
+export const getApiV2AquariumDatasetsByIdVersionsByVersionId_TYPE = function() {
   return 'get'
 }
-export const ApiV2AquariumDatasetsByIdVersionsByVersionIdGetURL = function(parameters = {}) {
+export const getApiV2AquariumDatasetsByIdVersionsByVersionIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/aquarium/datasets/{id}/versions/{versionId}'
@@ -913,14 +1035,14 @@ export const ApiV2AquariumDatasetsByIdVersionsByVersionIdGetURL = function(param
 }
 /**
  * アクアリウムデータセットバージョンを削除する
- * request: ApiV2AquariumDatasetsByIdVersionsByVersionIdDelete
- * url: ApiV2AquariumDatasetsByIdVersionsByVersionIdDeleteURL
- * method: ApiV2AquariumDatasetsByIdVersionsByVersionIdDelete_TYPE
- * raw_url: ApiV2AquariumDatasetsByIdVersionsByVersionIdDelete_RAW_URL
+ * request: deleteApiV2AquariumDatasetsByIdVersionsByVersionId
+ * url: deleteApiV2AquariumDatasetsByIdVersionsByVersionIdURL
+ * method: deleteApiV2AquariumDatasetsByIdVersionsByVersionId_TYPE
+ * raw_url: deleteApiV2AquariumDatasetsByIdVersionsByVersionId_RAW_URL
  * @param id - アクアリウムデータセットID
  * @param versionId - アクアリウムデータセットバージョンID
  */
-export const ApiV2AquariumDatasetsByIdVersionsByVersionIdDelete = function(parameters = {}) {
+export const deleteApiV2AquariumDatasetsByIdVersionsByVersionId = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/aquarium/datasets/{id}/versions/{versionId}'
@@ -942,13 +1064,13 @@ export const ApiV2AquariumDatasetsByIdVersionsByVersionIdDelete = function(param
   }
   return request('delete', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AquariumDatasetsByIdVersionsByVersionIdDelete_RAW_URL = function() {
+export const deleteApiV2AquariumDatasetsByIdVersionsByVersionId_RAW_URL = function() {
   return '/api/v2/aquarium/datasets/{id}/versions/{versionId}'
 }
-export const ApiV2AquariumDatasetsByIdVersionsByVersionIdDelete_TYPE = function() {
+export const deleteApiV2AquariumDatasetsByIdVersionsByVersionId_TYPE = function() {
   return 'delete'
 }
-export const ApiV2AquariumDatasetsByIdVersionsByVersionIdDeleteURL = function(parameters = {}) {
+export const deleteApiV2AquariumDatasetsByIdVersionsByVersionIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/aquarium/datasets/{id}/versions/{versionId}'
@@ -964,13 +1086,13 @@ export const ApiV2AquariumDatasetsByIdVersionsByVersionIdDeleteURL = function(pa
 }
 /**
  * アクアリウムデータセットを削除する
- * request: ApiV2AquariumDatasetsByIdDelete
- * url: ApiV2AquariumDatasetsByIdDeleteURL
- * method: ApiV2AquariumDatasetsByIdDelete_TYPE
- * raw_url: ApiV2AquariumDatasetsByIdDelete_RAW_URL
+ * request: deleteApiV2AquariumDatasetsById
+ * url: deleteApiV2AquariumDatasetsByIdURL
+ * method: deleteApiV2AquariumDatasetsById_TYPE
+ * raw_url: deleteApiV2AquariumDatasetsById_RAW_URL
  * @param id - アクアリウムデータセットID
  */
-export const ApiV2AquariumDatasetsByIdDelete = function(parameters = {}) {
+export const deleteApiV2AquariumDatasetsById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/aquarium/datasets/{id}'
@@ -988,13 +1110,13 @@ export const ApiV2AquariumDatasetsByIdDelete = function(parameters = {}) {
   }
   return request('delete', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AquariumDatasetsByIdDelete_RAW_URL = function() {
+export const deleteApiV2AquariumDatasetsById_RAW_URL = function() {
   return '/api/v2/aquarium/datasets/{id}'
 }
-export const ApiV2AquariumDatasetsByIdDelete_TYPE = function() {
+export const deleteApiV2AquariumDatasetsById_TYPE = function() {
   return 'delete'
 }
-export const ApiV2AquariumDatasetsByIdDeleteURL = function(parameters = {}) {
+export const deleteApiV2AquariumDatasetsByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/aquarium/datasets/{id}'
@@ -1009,12 +1131,12 @@ export const ApiV2AquariumDatasetsByIdDeleteURL = function(parameters = {}) {
 }
 /**
  * 接続中のテナントに有効なパーティションの一覧を取得する。
- * request: ApiV2TenantPartitionsGet
- * url: ApiV2TenantPartitionsGetURL
- * method: ApiV2TenantPartitionsGet_TYPE
- * raw_url: ApiV2TenantPartitionsGet_RAW_URL
+ * request: getApiV2TenantPartitions
+ * url: getApiV2TenantPartitionsURL
+ * method: getApiV2TenantPartitions_TYPE
+ * raw_url: getApiV2TenantPartitions_RAW_URL
  */
-export const ApiV2TenantPartitionsGet = function(parameters = {}) {
+export const getApiV2TenantPartitions = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/tenant/partitions'
@@ -1028,13 +1150,13 @@ export const ApiV2TenantPartitionsGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2TenantPartitionsGet_RAW_URL = function() {
+export const getApiV2TenantPartitions_RAW_URL = function() {
   return '/api/v2/tenant/partitions'
 }
-export const ApiV2TenantPartitionsGet_TYPE = function() {
+export const getApiV2TenantPartitions_TYPE = function() {
   return 'get'
 }
-export const ApiV2TenantPartitionsGetURL = function(parameters = {}) {
+export const getApiV2TenantPartitionsURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/tenant/partitions'
@@ -1048,12 +1170,12 @@ export const ApiV2TenantPartitionsGetURL = function(parameters = {}) {
 }
 /**
  * パーティションの一覧を取得する。
- * request: ApiV2AdminPartitionsGet
- * url: ApiV2AdminPartitionsGetURL
- * method: ApiV2AdminPartitionsGet_TYPE
- * raw_url: ApiV2AdminPartitionsGet_RAW_URL
+ * request: getApiV2AdminPartitions
+ * url: getApiV2AdminPartitionsURL
+ * method: getApiV2AdminPartitions_TYPE
+ * raw_url: getApiV2AdminPartitions_RAW_URL
  */
-export const ApiV2AdminPartitionsGet = function(parameters = {}) {
+export const getApiV2AdminPartitions = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/partitions'
@@ -1067,13 +1189,13 @@ export const ApiV2AdminPartitionsGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminPartitionsGet_RAW_URL = function() {
+export const getApiV2AdminPartitions_RAW_URL = function() {
   return '/api/v2/admin/partitions'
 }
-export const ApiV2AdminPartitionsGet_TYPE = function() {
+export const getApiV2AdminPartitions_TYPE = function() {
   return 'get'
 }
-export const ApiV2AdminPartitionsGetURL = function(parameters = {}) {
+export const getApiV2AdminPartitionsURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/partitions'
@@ -1087,12 +1209,12 @@ export const ApiV2AdminPartitionsGetURL = function(parameters = {}) {
 }
 /**
  * クォータ設定を取得する。
- * request: ApiV2AdminQuotasGet
- * url: ApiV2AdminQuotasGetURL
- * method: ApiV2AdminQuotasGet_TYPE
- * raw_url: ApiV2AdminQuotasGet_RAW_URL
+ * request: getApiV2AdminQuotas
+ * url: getApiV2AdminQuotasURL
+ * method: getApiV2AdminQuotas_TYPE
+ * raw_url: getApiV2AdminQuotas_RAW_URL
  */
-export const ApiV2AdminQuotasGet = function(parameters = {}) {
+export const getApiV2AdminQuotas = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/quotas'
@@ -1106,13 +1228,13 @@ export const ApiV2AdminQuotasGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminQuotasGet_RAW_URL = function() {
+export const getApiV2AdminQuotas_RAW_URL = function() {
   return '/api/v2/admin/quotas'
 }
-export const ApiV2AdminQuotasGet_TYPE = function() {
+export const getApiV2AdminQuotas_TYPE = function() {
   return 'get'
 }
-export const ApiV2AdminQuotasGetURL = function(parameters = {}) {
+export const getApiV2AdminQuotasURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/quotas'
@@ -1126,21 +1248,21 @@ export const ApiV2AdminQuotasGetURL = function(parameters = {}) {
 }
 /**
  * 0が指定された場合、上限なしを示す。また、指定のなかったテナントは更新しない。
- * request: ApiV2AdminQuotasPost
- * url: ApiV2AdminQuotasPostURL
- * method: ApiV2AdminQuotasPost_TYPE
- * raw_url: ApiV2AdminQuotasPost_RAW_URL
- * @param models - 
+ * request: postApiV2AdminQuotas
+ * url: postApiV2AdminQuotasURL
+ * method: postApiV2AdminQuotas_TYPE
+ * raw_url: postApiV2AdminQuotas_RAW_URL
+ * @param body - 
  */
-export const ApiV2AdminQuotasPost = function(parameters = {}) {
+export const postApiV2AdminQuotas = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/quotas'
   let body
   let queryParameters = {}
   let form = {}
-  if (parameters['models'] !== undefined) {
-    body = parameters['models']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -1149,13 +1271,13 @@ export const ApiV2AdminQuotasPost = function(parameters = {}) {
   }
   return request('post', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminQuotasPost_RAW_URL = function() {
+export const postApiV2AdminQuotas_RAW_URL = function() {
   return '/api/v2/admin/quotas'
 }
-export const ApiV2AdminQuotasPost_TYPE = function() {
+export const postApiV2AdminQuotas_TYPE = function() {
   return 'post'
 }
-export const ApiV2AdminQuotasPostURL = function(parameters = {}) {
+export const postApiV2AdminQuotasURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/quotas'
@@ -1169,12 +1291,12 @@ export const ApiV2AdminQuotasPostURL = function(parameters = {}) {
 }
 /**
  * 接続中テナントのクォータ情報を取得
- * request: ApiV2TenantQuotaGet
- * url: ApiV2TenantQuotaGetURL
- * method: ApiV2TenantQuotaGet_TYPE
- * raw_url: ApiV2TenantQuotaGet_RAW_URL
+ * request: getApiV2TenantQuota
+ * url: getApiV2TenantQuotaURL
+ * method: getApiV2TenantQuota_TYPE
+ * raw_url: getApiV2TenantQuota_RAW_URL
  */
-export const ApiV2TenantQuotaGet = function(parameters = {}) {
+export const getApiV2TenantQuota = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/tenant/quota'
@@ -1188,13 +1310,13 @@ export const ApiV2TenantQuotaGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2TenantQuotaGet_RAW_URL = function() {
+export const getApiV2TenantQuota_RAW_URL = function() {
   return '/api/v2/tenant/quota'
 }
-export const ApiV2TenantQuotaGet_TYPE = function() {
+export const getApiV2TenantQuota_TYPE = function() {
   return 'get'
 }
-export const ApiV2TenantQuotaGetURL = function(parameters = {}) {
+export const getApiV2TenantQuotaURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/tenant/quota'
@@ -1208,12 +1330,12 @@ export const ApiV2TenantQuotaGetURL = function(parameters = {}) {
 }
 /**
  * 接続中のテナントが利用可能なノード一覧（リソース値を含む）を取得する。
- * request: ApiV2TenantNodesGet
- * url: ApiV2TenantNodesGetURL
- * method: ApiV2TenantNodesGet_TYPE
- * raw_url: ApiV2TenantNodesGet_RAW_URL
+ * request: getApiV2TenantNodes
+ * url: getApiV2TenantNodesURL
+ * method: getApiV2TenantNodes_TYPE
+ * raw_url: getApiV2TenantNodes_RAW_URL
  */
-export const ApiV2TenantNodesGet = function(parameters = {}) {
+export const getApiV2TenantNodes = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/tenant/nodes'
@@ -1227,13 +1349,13 @@ export const ApiV2TenantNodesGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2TenantNodesGet_RAW_URL = function() {
+export const getApiV2TenantNodes_RAW_URL = function() {
   return '/api/v2/tenant/nodes'
 }
-export const ApiV2TenantNodesGet_TYPE = function() {
+export const getApiV2TenantNodes_TYPE = function() {
   return 'get'
 }
-export const ApiV2TenantNodesGetURL = function(parameters = {}) {
+export const getApiV2TenantNodesURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/tenant/nodes'
@@ -1247,12 +1369,12 @@ export const ApiV2TenantNodesGetURL = function(parameters = {}) {
 }
 /**
  * REST APIとして定時バッチから実行される想定。
- * request: ApiV2AdminTensorboardsDelete
- * url: ApiV2AdminTensorboardsDeleteURL
- * method: ApiV2AdminTensorboardsDelete_TYPE
- * raw_url: ApiV2AdminTensorboardsDelete_RAW_URL
+ * request: deleteApiV2AdminTensorboards
+ * url: deleteApiV2AdminTensorboardsURL
+ * method: deleteApiV2AdminTensorboards_TYPE
+ * raw_url: deleteApiV2AdminTensorboards_RAW_URL
  */
-export const ApiV2AdminTensorboardsDelete = function(parameters = {}) {
+export const deleteApiV2AdminTensorboards = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/tensorboards'
@@ -1266,13 +1388,13 @@ export const ApiV2AdminTensorboardsDelete = function(parameters = {}) {
   }
   return request('delete', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminTensorboardsDelete_RAW_URL = function() {
+export const deleteApiV2AdminTensorboards_RAW_URL = function() {
   return '/api/v2/admin/tensorboards'
 }
-export const ApiV2AdminTensorboardsDelete_TYPE = function() {
+export const deleteApiV2AdminTensorboards_TYPE = function() {
   return 'delete'
 }
-export const ApiV2AdminTensorboardsDeleteURL = function(parameters = {}) {
+export const deleteApiV2AdminTensorboardsURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/tensorboards'
@@ -1286,14 +1408,14 @@ export const ApiV2AdminTensorboardsDeleteURL = function(parameters = {}) {
 }
 /**
  * イベントを取得する
- * request: ApiV2AdminEventsByIdGet
- * url: ApiV2AdminEventsByIdGetURL
- * method: ApiV2AdminEventsByIdGet_TYPE
- * raw_url: ApiV2AdminEventsByIdGet_RAW_URL
+ * request: getApiV2AdminEventsById
+ * url: getApiV2AdminEventsByIdURL
+ * method: getApiV2AdminEventsById_TYPE
+ * raw_url: getApiV2AdminEventsById_RAW_URL
  * @param id - テナントID
  * @param name - コンテナ名
  */
-export const ApiV2AdminEventsByIdGet = function(parameters = {}) {
+export const getApiV2AdminEventsById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/events/{id}'
@@ -1314,13 +1436,13 @@ export const ApiV2AdminEventsByIdGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminEventsByIdGet_RAW_URL = function() {
+export const getApiV2AdminEventsById_RAW_URL = function() {
   return '/api/v2/admin/events/{id}'
 }
-export const ApiV2AdminEventsByIdGet_TYPE = function() {
+export const getApiV2AdminEventsById_TYPE = function() {
   return 'get'
 }
-export const ApiV2AdminEventsByIdGetURL = function(parameters = {}) {
+export const getApiV2AdminEventsByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/events/{id}'
@@ -1339,10 +1461,10 @@ export const ApiV2AdminEventsByIdGetURL = function(parameters = {}) {
 /**
 * 指定された条件でページングされた状態で、データ一覧を取得。
 タグ情報が含まれる。
-* request: ApiV2DataGet
-* url: ApiV2DataGetURL
-* method: ApiV2DataGet_TYPE
-* raw_url: ApiV2DataGet_RAW_URL
+* request: getApiV2Data
+* url: getApiV2DataURL
+* method: getApiV2Data_TYPE
+* raw_url: getApiV2Data_RAW_URL
      * @param id - IDの検索条件。
 比較文字列＋数値の形式。
      * @param name - 名前
@@ -1359,7 +1481,7 @@ e.g.（比較文字列は半角でOK）
      * @param page - ページ番号。デフォルトは1。
      * @param withTotal - 合計件数をレスポンスヘッダ(X-Total-Count)に含めるか。デフォルトはfalse。
 */
-export const ApiV2DataGet = function(parameters = {}) {
+export const getApiV2Data = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/data'
@@ -1400,13 +1522,13 @@ export const ApiV2DataGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2DataGet_RAW_URL = function() {
+export const getApiV2Data_RAW_URL = function() {
   return '/api/v2/data'
 }
-export const ApiV2DataGet_TYPE = function() {
+export const getApiV2Data_TYPE = function() {
   return 'get'
 }
-export const ApiV2DataGetURL = function(parameters = {}) {
+export const getApiV2DataURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/data'
@@ -1447,21 +1569,21 @@ export const ApiV2DataGetURL = function(parameters = {}) {
 }
 /**
  * データの新規作成
- * request: ApiV2DataPost
- * url: ApiV2DataPostURL
- * method: ApiV2DataPost_TYPE
- * raw_url: ApiV2DataPost_RAW_URL
- * @param model - 
+ * request: postApiV2Data
+ * url: postApiV2DataURL
+ * method: postApiV2Data_TYPE
+ * raw_url: postApiV2Data_RAW_URL
+ * @param body - 
  */
-export const ApiV2DataPost = function(parameters = {}) {
+export const postApiV2Data = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/data'
   let body
   let queryParameters = {}
   let form = {}
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -1470,13 +1592,13 @@ export const ApiV2DataPost = function(parameters = {}) {
   }
   return request('post', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2DataPost_RAW_URL = function() {
+export const postApiV2Data_RAW_URL = function() {
   return '/api/v2/data'
 }
-export const ApiV2DataPost_TYPE = function() {
+export const postApiV2Data_TYPE = function() {
   return 'post'
 }
-export const ApiV2DataPostURL = function(parameters = {}) {
+export const postApiV2DataURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/data'
@@ -1490,13 +1612,13 @@ export const ApiV2DataPostURL = function(parameters = {}) {
 }
 /**
  * 指定したIDのデータ詳細情報を取得する。
- * request: ApiV2DataByIdGet
- * url: ApiV2DataByIdGetURL
- * method: ApiV2DataByIdGet_TYPE
- * raw_url: ApiV2DataByIdGet_RAW_URL
+ * request: getApiV2DataById
+ * url: getApiV2DataByIdURL
+ * method: getApiV2DataById_TYPE
+ * raw_url: getApiV2DataById_RAW_URL
  * @param id - データID
  */
-export const ApiV2DataByIdGet = function(parameters = {}) {
+export const getApiV2DataById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/data/{id}'
@@ -1514,13 +1636,13 @@ export const ApiV2DataByIdGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2DataByIdGet_RAW_URL = function() {
+export const getApiV2DataById_RAW_URL = function() {
   return '/api/v2/data/{id}'
 }
-export const ApiV2DataByIdGet_TYPE = function() {
+export const getApiV2DataById_TYPE = function() {
   return 'get'
 }
-export const ApiV2DataByIdGetURL = function(parameters = {}) {
+export const getApiV2DataByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/data/{id}'
@@ -1536,14 +1658,14 @@ export const ApiV2DataByIdGetURL = function(parameters = {}) {
 /**
 * データ編集メソッド。
 ファイルの追加は別のメソッドで行う。
-* request: ApiV2DataByIdPut
-* url: ApiV2DataByIdPutURL
-* method: ApiV2DataByIdPut_TYPE
-* raw_url: ApiV2DataByIdPut_RAW_URL
+* request: putApiV2DataById
+* url: putApiV2DataByIdURL
+* method: putApiV2DataById_TYPE
+* raw_url: putApiV2DataById_RAW_URL
      * @param id - 変更対象のデータID
-     * @param model - 変更内容
+     * @param body - 変更内容
 */
-export const ApiV2DataByIdPut = function(parameters = {}) {
+export const putApiV2DataById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/data/{id}'
@@ -1554,8 +1676,8 @@ export const ApiV2DataByIdPut = function(parameters = {}) {
   if (parameters['id'] === undefined) {
     return Promise.reject(new Error('Missing required  parameter: id'))
   }
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -1564,13 +1686,13 @@ export const ApiV2DataByIdPut = function(parameters = {}) {
   }
   return request('put', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2DataByIdPut_RAW_URL = function() {
+export const putApiV2DataById_RAW_URL = function() {
   return '/api/v2/data/{id}'
 }
-export const ApiV2DataByIdPut_TYPE = function() {
+export const putApiV2DataById_TYPE = function() {
   return 'put'
 }
-export const ApiV2DataByIdPutURL = function(parameters = {}) {
+export const putApiV2DataByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/data/{id}'
@@ -1585,13 +1707,13 @@ export const ApiV2DataByIdPutURL = function(parameters = {}) {
 }
 /**
  * 指定したデータを削除する
- * request: ApiV2DataByIdDelete
- * url: ApiV2DataByIdDeleteURL
- * method: ApiV2DataByIdDelete_TYPE
- * raw_url: ApiV2DataByIdDelete_RAW_URL
+ * request: deleteApiV2DataById
+ * url: deleteApiV2DataByIdURL
+ * method: deleteApiV2DataById_TYPE
+ * raw_url: deleteApiV2DataById_RAW_URL
  * @param id - データID
  */
-export const ApiV2DataByIdDelete = function(parameters = {}) {
+export const deleteApiV2DataById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/data/{id}'
@@ -1609,13 +1731,13 @@ export const ApiV2DataByIdDelete = function(parameters = {}) {
   }
   return request('delete', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2DataByIdDelete_RAW_URL = function() {
+export const deleteApiV2DataById_RAW_URL = function() {
   return '/api/v2/data/{id}'
 }
-export const ApiV2DataByIdDelete_TYPE = function() {
+export const deleteApiV2DataById_TYPE = function() {
   return 'delete'
 }
-export const ApiV2DataByIdDeleteURL = function(parameters = {}) {
+export const deleteApiV2DataByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/data/{id}'
@@ -1630,14 +1752,14 @@ export const ApiV2DataByIdDeleteURL = function(parameters = {}) {
 }
 /**
  * 指定したデータに対してタグを追加する。
- * request: ApiV2DataByIdTagsByTagPut
- * url: ApiV2DataByIdTagsByTagPutURL
- * method: ApiV2DataByIdTagsByTagPut_TYPE
- * raw_url: ApiV2DataByIdTagsByTagPut_RAW_URL
+ * request: putApiV2DataByIdTagsByTag
+ * url: putApiV2DataByIdTagsByTagURL
+ * method: putApiV2DataByIdTagsByTag_TYPE
+ * raw_url: putApiV2DataByIdTagsByTag_RAW_URL
  * @param id - 
  * @param tag - 
  */
-export const ApiV2DataByIdTagsByTagPut = function(parameters = {}) {
+export const putApiV2DataByIdTagsByTag = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/data/{id}/tags/{tag}'
@@ -1659,13 +1781,13 @@ export const ApiV2DataByIdTagsByTagPut = function(parameters = {}) {
   }
   return request('put', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2DataByIdTagsByTagPut_RAW_URL = function() {
+export const putApiV2DataByIdTagsByTag_RAW_URL = function() {
   return '/api/v2/data/{id}/tags/{tag}'
 }
-export const ApiV2DataByIdTagsByTagPut_TYPE = function() {
+export const putApiV2DataByIdTagsByTag_TYPE = function() {
   return 'put'
 }
-export const ApiV2DataByIdTagsByTagPutURL = function(parameters = {}) {
+export const putApiV2DataByIdTagsByTagURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/data/{id}/tags/{tag}'
@@ -1681,14 +1803,14 @@ export const ApiV2DataByIdTagsByTagPutURL = function(parameters = {}) {
 }
 /**
  * 指定したデータからタグを削除する。
- * request: ApiV2DataByIdTagsByTagDelete
- * url: ApiV2DataByIdTagsByTagDeleteURL
- * method: ApiV2DataByIdTagsByTagDelete_TYPE
- * raw_url: ApiV2DataByIdTagsByTagDelete_RAW_URL
+ * request: deleteApiV2DataByIdTagsByTag
+ * url: deleteApiV2DataByIdTagsByTagURL
+ * method: deleteApiV2DataByIdTagsByTag_TYPE
+ * raw_url: deleteApiV2DataByIdTagsByTag_RAW_URL
  * @param id - 
  * @param tag - 
  */
-export const ApiV2DataByIdTagsByTagDelete = function(parameters = {}) {
+export const deleteApiV2DataByIdTagsByTag = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/data/{id}/tags/{tag}'
@@ -1710,13 +1832,13 @@ export const ApiV2DataByIdTagsByTagDelete = function(parameters = {}) {
   }
   return request('delete', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2DataByIdTagsByTagDelete_RAW_URL = function() {
+export const deleteApiV2DataByIdTagsByTag_RAW_URL = function() {
   return '/api/v2/data/{id}/tags/{tag}'
 }
-export const ApiV2DataByIdTagsByTagDelete_TYPE = function() {
+export const deleteApiV2DataByIdTagsByTag_TYPE = function() {
   return 'delete'
 }
-export const ApiV2DataByIdTagsByTagDeleteURL = function(parameters = {}) {
+export const deleteApiV2DataByIdTagsByTagURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/data/{id}/tags/{tag}'
@@ -1732,14 +1854,14 @@ export const ApiV2DataByIdTagsByTagDeleteURL = function(parameters = {}) {
 }
 /**
  * ファイルのダウンロードURLを取得する
- * request: ApiV2DataByIdFilesByNameGet
- * url: ApiV2DataByIdFilesByNameGetURL
- * method: ApiV2DataByIdFilesByNameGet_TYPE
- * raw_url: ApiV2DataByIdFilesByNameGet_RAW_URL
+ * request: getApiV2DataByIdFilesByName
+ * url: getApiV2DataByIdFilesByNameURL
+ * method: getApiV2DataByIdFilesByName_TYPE
+ * raw_url: getApiV2DataByIdFilesByName_RAW_URL
  * @param id - 対象データID
  * @param name - 対象ファイル名
  */
-export const ApiV2DataByIdFilesByNameGet = function(parameters = {}) {
+export const getApiV2DataByIdFilesByName = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/data/{id}/files/{name}'
@@ -1761,13 +1883,13 @@ export const ApiV2DataByIdFilesByNameGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2DataByIdFilesByNameGet_RAW_URL = function() {
+export const getApiV2DataByIdFilesByName_RAW_URL = function() {
   return '/api/v2/data/{id}/files/{name}'
 }
-export const ApiV2DataByIdFilesByNameGet_TYPE = function() {
+export const getApiV2DataByIdFilesByName_TYPE = function() {
   return 'get'
 }
-export const ApiV2DataByIdFilesByNameGetURL = function(parameters = {}) {
+export const getApiV2DataByIdFilesByNameURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/data/{id}/files/{name}'
@@ -1783,14 +1905,14 @@ export const ApiV2DataByIdFilesByNameGetURL = function(parameters = {}) {
 }
 /**
  * ファイルのサイズ(Byte)を取得する
- * request: ApiV2DataByIdFilesByNameSizeGet
- * url: ApiV2DataByIdFilesByNameSizeGetURL
- * method: ApiV2DataByIdFilesByNameSizeGet_TYPE
- * raw_url: ApiV2DataByIdFilesByNameSizeGet_RAW_URL
+ * request: getApiV2DataByIdFilesByNameSize
+ * url: getApiV2DataByIdFilesByNameSizeURL
+ * method: getApiV2DataByIdFilesByNameSize_TYPE
+ * raw_url: getApiV2DataByIdFilesByNameSize_RAW_URL
  * @param id - 対象データID
  * @param name - 対象ファイル名
  */
-export const ApiV2DataByIdFilesByNameSizeGet = function(parameters = {}) {
+export const getApiV2DataByIdFilesByNameSize = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/data/{id}/files/{name}/size'
@@ -1812,13 +1934,13 @@ export const ApiV2DataByIdFilesByNameSizeGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2DataByIdFilesByNameSizeGet_RAW_URL = function() {
+export const getApiV2DataByIdFilesByNameSize_RAW_URL = function() {
   return '/api/v2/data/{id}/files/{name}/size'
 }
-export const ApiV2DataByIdFilesByNameSizeGet_TYPE = function() {
+export const getApiV2DataByIdFilesByNameSize_TYPE = function() {
   return 'get'
 }
-export const ApiV2DataByIdFilesByNameSizeGetURL = function(parameters = {}) {
+export const getApiV2DataByIdFilesByNameSizeURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/data/{id}/files/{name}/size'
@@ -1834,14 +1956,14 @@ export const ApiV2DataByIdFilesByNameSizeGetURL = function(parameters = {}) {
 }
 /**
  * 指定したデータのファイル情報を全て取得する
- * request: ApiV2DataByIdFilesGet
- * url: ApiV2DataByIdFilesGetURL
- * method: ApiV2DataByIdFilesGet_TYPE
- * raw_url: ApiV2DataByIdFilesGet_RAW_URL
+ * request: getApiV2DataByIdFiles
+ * url: getApiV2DataByIdFilesURL
+ * method: getApiV2DataByIdFiles_TYPE
+ * raw_url: getApiV2DataByIdFiles_RAW_URL
  * @param id - 対象データID
  * @param withUrl - 結果にダウンロード用のURLを含めるか
  */
-export const ApiV2DataByIdFilesGet = function(parameters = {}) {
+export const getApiV2DataByIdFiles = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/data/{id}/files'
@@ -1862,13 +1984,13 @@ export const ApiV2DataByIdFilesGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2DataByIdFilesGet_RAW_URL = function() {
+export const getApiV2DataByIdFiles_RAW_URL = function() {
   return '/api/v2/data/{id}/files'
 }
-export const ApiV2DataByIdFilesGet_TYPE = function() {
+export const getApiV2DataByIdFiles_TYPE = function() {
   return 'get'
 }
-export const ApiV2DataByIdFilesGetURL = function(parameters = {}) {
+export const getApiV2DataByIdFilesURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/data/{id}/files'
@@ -1886,14 +2008,14 @@ export const ApiV2DataByIdFilesGetURL = function(parameters = {}) {
 }
 /**
  * ファイルを追加する。
- * request: ApiV2DataByIdFilesPost
- * url: ApiV2DataByIdFilesPostURL
- * method: ApiV2DataByIdFilesPost_TYPE
- * raw_url: ApiV2DataByIdFilesPost_RAW_URL
+ * request: postApiV2DataByIdFiles
+ * url: postApiV2DataByIdFilesURL
+ * method: postApiV2DataByIdFiles_TYPE
+ * raw_url: postApiV2DataByIdFiles_RAW_URL
  * @param id - 変更対象のデータID
- * @param model - 追加するファイル情報
+ * @param body - 追加するファイル情報
  */
-export const ApiV2DataByIdFilesPost = function(parameters = {}) {
+export const postApiV2DataByIdFiles = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/data/{id}/files'
@@ -1904,8 +2026,8 @@ export const ApiV2DataByIdFilesPost = function(parameters = {}) {
   if (parameters['id'] === undefined) {
     return Promise.reject(new Error('Missing required  parameter: id'))
   }
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -1914,13 +2036,13 @@ export const ApiV2DataByIdFilesPost = function(parameters = {}) {
   }
   return request('post', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2DataByIdFilesPost_RAW_URL = function() {
+export const postApiV2DataByIdFiles_RAW_URL = function() {
   return '/api/v2/data/{id}/files'
 }
-export const ApiV2DataByIdFilesPost_TYPE = function() {
+export const postApiV2DataByIdFiles_TYPE = function() {
   return 'post'
 }
-export const ApiV2DataByIdFilesPostURL = function(parameters = {}) {
+export const postApiV2DataByIdFilesURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/data/{id}/files'
@@ -1935,14 +2057,14 @@ export const ApiV2DataByIdFilesPostURL = function(parameters = {}) {
 }
 /**
  * 指定されたIDのファイルを削除する
- * request: ApiV2DataByIdFilesByFileIdDelete
- * url: ApiV2DataByIdFilesByFileIdDeleteURL
- * method: ApiV2DataByIdFilesByFileIdDelete_TYPE
- * raw_url: ApiV2DataByIdFilesByFileIdDelete_RAW_URL
+ * request: deleteApiV2DataByIdFilesByFileId
+ * url: deleteApiV2DataByIdFilesByFileIdURL
+ * method: deleteApiV2DataByIdFilesByFileId_TYPE
+ * raw_url: deleteApiV2DataByIdFilesByFileId_RAW_URL
  * @param id - 対象のデータID
  * @param fileId - 削除するファイルのID
  */
-export const ApiV2DataByIdFilesByFileIdDelete = function(parameters = {}) {
+export const deleteApiV2DataByIdFilesByFileId = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/data/{id}/files/{fileId}'
@@ -1964,13 +2086,13 @@ export const ApiV2DataByIdFilesByFileIdDelete = function(parameters = {}) {
   }
   return request('delete', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2DataByIdFilesByFileIdDelete_RAW_URL = function() {
+export const deleteApiV2DataByIdFilesByFileId_RAW_URL = function() {
   return '/api/v2/data/{id}/files/{fileId}'
 }
-export const ApiV2DataByIdFilesByFileIdDelete_TYPE = function() {
+export const deleteApiV2DataByIdFilesByFileId_TYPE = function() {
   return 'delete'
 }
-export const ApiV2DataByIdFilesByFileIdDeleteURL = function(parameters = {}) {
+export const deleteApiV2DataByIdFilesByFileIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/data/{id}/files/{fileId}'
@@ -1986,12 +2108,12 @@ export const ApiV2DataByIdFilesByFileIdDeleteURL = function(parameters = {}) {
 }
 /**
  * 選択中のテナントに登録されているデータ管理で使用できるタグを表示する
- * request: ApiV2DataDatatagsGet
- * url: ApiV2DataDatatagsGetURL
- * method: ApiV2DataDatatagsGet_TYPE
- * raw_url: ApiV2DataDatatagsGet_RAW_URL
+ * request: getApiV2DataDatatags
+ * url: getApiV2DataDatatagsURL
+ * method: getApiV2DataDatatags_TYPE
+ * raw_url: getApiV2DataDatatags_RAW_URL
  */
-export const ApiV2DataDatatagsGet = function(parameters = {}) {
+export const getApiV2DataDatatags = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/data/datatags'
@@ -2005,13 +2127,13 @@ export const ApiV2DataDatatagsGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2DataDatatagsGet_RAW_URL = function() {
+export const getApiV2DataDatatags_RAW_URL = function() {
   return '/api/v2/data/datatags'
 }
-export const ApiV2DataDatatagsGet_TYPE = function() {
+export const getApiV2DataDatatags_TYPE = function() {
   return 'get'
 }
-export const ApiV2DataDatatagsGetURL = function(parameters = {}) {
+export const getApiV2DataDatatagsURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/data/datatags'
@@ -2025,12 +2147,12 @@ export const ApiV2DataDatatagsGetURL = function(parameters = {}) {
 }
 /**
  * 
- * request: ApiV2DataDatatagsDelete
- * url: ApiV2DataDatatagsDeleteURL
- * method: ApiV2DataDatatagsDelete_TYPE
- * raw_url: ApiV2DataDatatagsDelete_RAW_URL
+ * request: deleteApiV2DataDatatags
+ * url: deleteApiV2DataDatatagsURL
+ * method: deleteApiV2DataDatatags_TYPE
+ * raw_url: deleteApiV2DataDatatags_RAW_URL
  */
-export const ApiV2DataDatatagsDelete = function(parameters = {}) {
+export const deleteApiV2DataDatatags = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/data/datatags'
@@ -2044,13 +2166,13 @@ export const ApiV2DataDatatagsDelete = function(parameters = {}) {
   }
   return request('delete', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2DataDatatagsDelete_RAW_URL = function() {
+export const deleteApiV2DataDatatags_RAW_URL = function() {
   return '/api/v2/data/datatags'
 }
-export const ApiV2DataDatatagsDelete_TYPE = function() {
+export const deleteApiV2DataDatatags_TYPE = function() {
   return 'delete'
 }
-export const ApiV2DataDatatagsDeleteURL = function(parameters = {}) {
+export const deleteApiV2DataDatatagsURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/data/datatags'
@@ -2064,10 +2186,10 @@ export const ApiV2DataDatatagsDeleteURL = function(parameters = {}) {
 }
 /**
 * 指定された条件でページングされた状態で、データセット一覧を取得
-* request: ApiV2DatasetsGet
-* url: ApiV2DatasetsGetURL
-* method: ApiV2DatasetsGet_TYPE
-* raw_url: ApiV2DatasetsGet_RAW_URL
+* request: getApiV2Datasets
+* url: getApiV2DatasetsURL
+* method: getApiV2Datasets_TYPE
+* raw_url: getApiV2Datasets_RAW_URL
      * @param id - IDの検索条件。
 比較文字列＋数値の形式。
      * @param name - 名前
@@ -2082,7 +2204,7 @@ e.g.（比較文字列は半角でOK）
      * @param page - ページ番号。デフォルトは1。
      * @param withTotal - 合計件数をレスポンスヘッダ(X-Total-Count)に含めるか。デフォルトはfalse。
 */
-export const ApiV2DatasetsGet = function(parameters = {}) {
+export const getApiV2Datasets = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/datasets'
@@ -2117,13 +2239,13 @@ export const ApiV2DatasetsGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2DatasetsGet_RAW_URL = function() {
+export const getApiV2Datasets_RAW_URL = function() {
   return '/api/v2/datasets'
 }
-export const ApiV2DatasetsGet_TYPE = function() {
+export const getApiV2Datasets_TYPE = function() {
   return 'get'
 }
-export const ApiV2DatasetsGetURL = function(parameters = {}) {
+export const getApiV2DatasetsURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/datasets'
@@ -2158,21 +2280,21 @@ export const ApiV2DatasetsGetURL = function(parameters = {}) {
 }
 /**
  * データセットを新規作成する
- * request: ApiV2DatasetsPost
- * url: ApiV2DatasetsPostURL
- * method: ApiV2DatasetsPost_TYPE
- * raw_url: ApiV2DatasetsPost_RAW_URL
- * @param model - 新規作成内容
+ * request: postApiV2Datasets
+ * url: postApiV2DatasetsURL
+ * method: postApiV2Datasets_TYPE
+ * raw_url: postApiV2Datasets_RAW_URL
+ * @param body - 新規作成内容
  */
-export const ApiV2DatasetsPost = function(parameters = {}) {
+export const postApiV2Datasets = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/datasets'
   let body
   let queryParameters = {}
   let form = {}
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -2181,13 +2303,13 @@ export const ApiV2DatasetsPost = function(parameters = {}) {
   }
   return request('post', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2DatasetsPost_RAW_URL = function() {
+export const postApiV2Datasets_RAW_URL = function() {
   return '/api/v2/datasets'
 }
-export const ApiV2DatasetsPost_TYPE = function() {
+export const postApiV2Datasets_TYPE = function() {
   return 'post'
 }
-export const ApiV2DatasetsPostURL = function(parameters = {}) {
+export const postApiV2DatasetsURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/datasets'
@@ -2201,13 +2323,13 @@ export const ApiV2DatasetsPostURL = function(parameters = {}) {
 }
 /**
  * 指定したIDのデータセット詳細情報を取得する。
- * request: ApiV2DatasetsByIdGet
- * url: ApiV2DatasetsByIdGetURL
- * method: ApiV2DatasetsByIdGet_TYPE
- * raw_url: ApiV2DatasetsByIdGet_RAW_URL
+ * request: getApiV2DatasetsById
+ * url: getApiV2DatasetsByIdURL
+ * method: getApiV2DatasetsById_TYPE
+ * raw_url: getApiV2DatasetsById_RAW_URL
  * @param id - データセットID
  */
-export const ApiV2DatasetsByIdGet = function(parameters = {}) {
+export const getApiV2DatasetsById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/datasets/{id}'
@@ -2225,13 +2347,62 @@ export const ApiV2DatasetsByIdGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2DatasetsByIdGet_RAW_URL = function() {
+export const getApiV2DatasetsById_RAW_URL = function() {
   return '/api/v2/datasets/{id}'
 }
-export const ApiV2DatasetsByIdGet_TYPE = function() {
+export const getApiV2DatasetsById_TYPE = function() {
   return 'get'
 }
-export const ApiV2DatasetsByIdGetURL = function(parameters = {}) {
+export const getApiV2DatasetsByIdURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/datasets/{id}'
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * データセットの付属情報（メモなど、任意のタイミングで変更できるもの）を変更する。
+ * request: patchApiV2DatasetsById
+ * url: patchApiV2DatasetsByIdURL
+ * method: patchApiV2DatasetsById_TYPE
+ * raw_url: patchApiV2DatasetsById_RAW_URL
+ * @param id - データセットID
+ * @param body - 変更内容
+ */
+export const patchApiV2DatasetsById = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/datasets/{id}'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('patch', domain + path, body, queryParameters, form, config)
+}
+export const patchApiV2DatasetsById_RAW_URL = function() {
+  return '/api/v2/datasets/{id}'
+}
+export const patchApiV2DatasetsById_TYPE = function() {
+  return 'patch'
+}
+export const patchApiV2DatasetsByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/datasets/{id}'
@@ -2246,14 +2417,14 @@ export const ApiV2DatasetsByIdGetURL = function(parameters = {}) {
 }
 /**
  * データセットのエントリ内容（学習で使用後は編集不可）を変更する
- * request: ApiV2DatasetsByIdPut
- * url: ApiV2DatasetsByIdPutURL
- * method: ApiV2DatasetsByIdPut_TYPE
- * raw_url: ApiV2DatasetsByIdPut_RAW_URL
+ * request: putApiV2DatasetsById
+ * url: putApiV2DatasetsByIdURL
+ * method: putApiV2DatasetsById_TYPE
+ * raw_url: putApiV2DatasetsById_RAW_URL
  * @param id - データセットID
- * @param model - 変更内容
+ * @param body - 変更内容
  */
-export const ApiV2DatasetsByIdPut = function(parameters = {}) {
+export const putApiV2DatasetsById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/datasets/{id}'
@@ -2264,8 +2435,8 @@ export const ApiV2DatasetsByIdPut = function(parameters = {}) {
   if (parameters['id'] === undefined) {
     return Promise.reject(new Error('Missing required  parameter: id'))
   }
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -2274,13 +2445,13 @@ export const ApiV2DatasetsByIdPut = function(parameters = {}) {
   }
   return request('put', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2DatasetsByIdPut_RAW_URL = function() {
+export const putApiV2DatasetsById_RAW_URL = function() {
   return '/api/v2/datasets/{id}'
 }
-export const ApiV2DatasetsByIdPut_TYPE = function() {
+export const putApiV2DatasetsById_TYPE = function() {
   return 'put'
 }
-export const ApiV2DatasetsByIdPutURL = function(parameters = {}) {
+export const putApiV2DatasetsByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/datasets/{id}'
@@ -2295,13 +2466,13 @@ export const ApiV2DatasetsByIdPutURL = function(parameters = {}) {
 }
 /**
  * データセットを削除する
- * request: ApiV2DatasetsByIdDelete
- * url: ApiV2DatasetsByIdDeleteURL
- * method: ApiV2DatasetsByIdDelete_TYPE
- * raw_url: ApiV2DatasetsByIdDelete_RAW_URL
+ * request: deleteApiV2DatasetsById
+ * url: deleteApiV2DatasetsByIdURL
+ * method: deleteApiV2DatasetsById_TYPE
+ * raw_url: deleteApiV2DatasetsById_RAW_URL
  * @param id - データセットID
  */
-export const ApiV2DatasetsByIdDelete = function(parameters = {}) {
+export const deleteApiV2DatasetsById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/datasets/{id}'
@@ -2319,62 +2490,13 @@ export const ApiV2DatasetsByIdDelete = function(parameters = {}) {
   }
   return request('delete', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2DatasetsByIdDelete_RAW_URL = function() {
+export const deleteApiV2DatasetsById_RAW_URL = function() {
   return '/api/v2/datasets/{id}'
 }
-export const ApiV2DatasetsByIdDelete_TYPE = function() {
+export const deleteApiV2DatasetsById_TYPE = function() {
   return 'delete'
 }
-export const ApiV2DatasetsByIdDeleteURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/api/v2/datasets/{id}'
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
- * データセットの付属情報（メモなど、任意のタイミングで変更できるもの）を変更する。
- * request: ApiV2DatasetsByIdPatch
- * url: ApiV2DatasetsByIdPatchURL
- * method: ApiV2DatasetsByIdPatch_TYPE
- * raw_url: ApiV2DatasetsByIdPatch_RAW_URL
- * @param id - データセットID
- * @param model - 変更内容
- */
-export const ApiV2DatasetsByIdPatch = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/api/v2/datasets/{id}'
-  let body
-  let queryParameters = {}
-  let form = {}
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters['id'] === undefined) {
-    return Promise.reject(new Error('Missing required  parameter: id'))
-  }
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('patch', domain + path, body, queryParameters, form, config)
-}
-export const ApiV2DatasetsByIdPatch_RAW_URL = function() {
-  return '/api/v2/datasets/{id}'
-}
-export const ApiV2DatasetsByIdPatch_TYPE = function() {
-  return 'patch'
-}
-export const ApiV2DatasetsByIdPatchURL = function(parameters = {}) {
+export const deleteApiV2DatasetsByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/datasets/{id}'
@@ -2389,14 +2511,14 @@ export const ApiV2DatasetsByIdPatchURL = function(parameters = {}) {
 }
 /**
  * 指定したIDのデータセットに含まれるデータファイル情報を取得する。
- * request: ApiV2DatasetsByIdFilesGet
- * url: ApiV2DatasetsByIdFilesGetURL
- * method: ApiV2DatasetsByIdFilesGet_TYPE
- * raw_url: ApiV2DatasetsByIdFilesGet_RAW_URL
+ * request: getApiV2DatasetsByIdFiles
+ * url: getApiV2DatasetsByIdFilesURL
+ * method: getApiV2DatasetsByIdFiles_TYPE
+ * raw_url: getApiV2DatasetsByIdFiles_RAW_URL
  * @param id - データセットID
  * @param withUrl - 結果にダウンロード用のURLを含めるか
  */
-export const ApiV2DatasetsByIdFilesGet = function(parameters = {}) {
+export const getApiV2DatasetsByIdFiles = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/datasets/{id}/files'
@@ -2417,13 +2539,13 @@ export const ApiV2DatasetsByIdFilesGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2DatasetsByIdFilesGet_RAW_URL = function() {
+export const getApiV2DatasetsByIdFiles_RAW_URL = function() {
   return '/api/v2/datasets/{id}/files'
 }
-export const ApiV2DatasetsByIdFilesGet_TYPE = function() {
+export const getApiV2DatasetsByIdFiles_TYPE = function() {
   return 'get'
 }
-export const ApiV2DatasetsByIdFilesGetURL = function(parameters = {}) {
+export const getApiV2DatasetsByIdFilesURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/datasets/{id}/files'
@@ -2441,13 +2563,13 @@ export const ApiV2DatasetsByIdFilesGetURL = function(parameters = {}) {
 }
 /**
  * 指定したIDのデータセットに含まれるデータとNFS上のデータ名のペア情報を取得する。
- * request: ApiV2DatasetsByIdPathpairsGet
- * url: ApiV2DatasetsByIdPathpairsGetURL
- * method: ApiV2DatasetsByIdPathpairsGet_TYPE
- * raw_url: ApiV2DatasetsByIdPathpairsGet_RAW_URL
+ * request: getApiV2DatasetsByIdPathpairs
+ * url: getApiV2DatasetsByIdPathpairsURL
+ * method: getApiV2DatasetsByIdPathpairs_TYPE
+ * raw_url: getApiV2DatasetsByIdPathpairs_RAW_URL
  * @param id - データセットID
  */
-export const ApiV2DatasetsByIdPathpairsGet = function(parameters = {}) {
+export const getApiV2DatasetsByIdPathpairs = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/datasets/{id}/pathpairs'
@@ -2465,13 +2587,13 @@ export const ApiV2DatasetsByIdPathpairsGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2DatasetsByIdPathpairsGet_RAW_URL = function() {
+export const getApiV2DatasetsByIdPathpairs_RAW_URL = function() {
   return '/api/v2/datasets/{id}/pathpairs'
 }
-export const ApiV2DatasetsByIdPathpairsGet_TYPE = function() {
+export const getApiV2DatasetsByIdPathpairs_TYPE = function() {
   return 'get'
 }
-export const ApiV2DatasetsByIdPathpairsGetURL = function(parameters = {}) {
+export const getApiV2DatasetsByIdPathpairsURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/datasets/{id}/pathpairs'
@@ -2486,12 +2608,12 @@ export const ApiV2DatasetsByIdPathpairsGetURL = function(parameters = {}) {
 }
 /**
  * 全データ種別を取得する
- * request: ApiV2DatatypesGet
- * url: ApiV2DatatypesGetURL
- * method: ApiV2DatatypesGet_TYPE
- * raw_url: ApiV2DatatypesGet_RAW_URL
+ * request: getApiV2Datatypes
+ * url: getApiV2DatatypesURL
+ * method: getApiV2Datatypes_TYPE
+ * raw_url: getApiV2Datatypes_RAW_URL
  */
-export const ApiV2DatatypesGet = function(parameters = {}) {
+export const getApiV2Datatypes = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/datatypes'
@@ -2505,13 +2627,13 @@ export const ApiV2DatatypesGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2DatatypesGet_RAW_URL = function() {
+export const getApiV2Datatypes_RAW_URL = function() {
   return '/api/v2/datatypes'
 }
-export const ApiV2DatatypesGet_TYPE = function() {
+export const getApiV2Datatypes_TYPE = function() {
   return 'get'
 }
-export const ApiV2DatatypesGetURL = function(parameters = {}) {
+export const getApiV2DatatypesURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/datatypes'
@@ -2525,10 +2647,10 @@ export const ApiV2DatatypesGetURL = function(parameters = {}) {
 }
 /**
 * 指定された条件でページングされた状態で、実験一覧を取得する
-* request: ApiV2ExperimentGet
-* url: ApiV2ExperimentGetURL
-* method: ApiV2ExperimentGet_TYPE
-* raw_url: ApiV2ExperimentGet_RAW_URL
+* request: getApiV2Experiment
+* url: getApiV2ExperimentURL
+* method: getApiV2Experiment_TYPE
+* raw_url: getApiV2Experiment_RAW_URL
      * @param id - IDの検索条件。
 比較文字列＋数値の形式。
      * @param name - 名前
@@ -2540,9 +2662,9 @@ e.g.（比較文字列は半角でOK）
 "＜2018/01/01" → 2018/01/01 00:00:00 以前
      * @param perPage - 表示件数。指定がない場合は上限(1000件)。
      * @param page - ページ番号。デフォルトは1。
-     * @param withTotal - 
+     * @param withTotal - 合計件数をレスポンスヘッダ(X-Total-Count)に含めるか。デフォルトはfalse。
 */
-export const ApiV2ExperimentGet = function(parameters = {}) {
+export const getApiV2Experiment = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/experiment'
@@ -2574,13 +2696,13 @@ export const ApiV2ExperimentGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2ExperimentGet_RAW_URL = function() {
+export const getApiV2Experiment_RAW_URL = function() {
   return '/api/v2/experiment'
 }
-export const ApiV2ExperimentGet_TYPE = function() {
+export const getApiV2Experiment_TYPE = function() {
   return 'get'
 }
-export const ApiV2ExperimentGetURL = function(parameters = {}) {
+export const getApiV2ExperimentURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/experiment'
@@ -2612,13 +2734,13 @@ export const ApiV2ExperimentGetURL = function(parameters = {}) {
 }
 /**
  * 実験を取得する
- * request: ApiV2ExperimentByIdGet
- * url: ApiV2ExperimentByIdGetURL
- * method: ApiV2ExperimentByIdGet_TYPE
- * raw_url: ApiV2ExperimentByIdGet_RAW_URL
+ * request: getApiV2ExperimentById
+ * url: getApiV2ExperimentByIdURL
+ * method: getApiV2ExperimentById_TYPE
+ * raw_url: getApiV2ExperimentById_RAW_URL
  * @param id - 実験ID
  */
-export const ApiV2ExperimentByIdGet = function(parameters = {}) {
+export const getApiV2ExperimentById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/experiment/{id}'
@@ -2636,13 +2758,13 @@ export const ApiV2ExperimentByIdGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2ExperimentByIdGet_RAW_URL = function() {
+export const getApiV2ExperimentById_RAW_URL = function() {
   return '/api/v2/experiment/{id}'
 }
-export const ApiV2ExperimentByIdGet_TYPE = function() {
+export const getApiV2ExperimentById_TYPE = function() {
   return 'get'
 }
-export const ApiV2ExperimentByIdGetURL = function(parameters = {}) {
+export const getApiV2ExperimentByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/experiment/{id}'
@@ -2657,13 +2779,13 @@ export const ApiV2ExperimentByIdGetURL = function(parameters = {}) {
 }
 /**
  * 実験を削除する
- * request: ApiV2ExperimentByIdDelete
- * url: ApiV2ExperimentByIdDeleteURL
- * method: ApiV2ExperimentByIdDelete_TYPE
- * raw_url: ApiV2ExperimentByIdDelete_RAW_URL
+ * request: deleteApiV2ExperimentById
+ * url: deleteApiV2ExperimentByIdURL
+ * method: deleteApiV2ExperimentById_TYPE
+ * raw_url: deleteApiV2ExperimentById_RAW_URL
  * @param id - 実験ID
  */
-export const ApiV2ExperimentByIdDelete = function(parameters = {}) {
+export const deleteApiV2ExperimentById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/experiment/{id}'
@@ -2681,13 +2803,13 @@ export const ApiV2ExperimentByIdDelete = function(parameters = {}) {
   }
   return request('delete', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2ExperimentByIdDelete_RAW_URL = function() {
+export const deleteApiV2ExperimentById_RAW_URL = function() {
   return '/api/v2/experiment/{id}'
 }
-export const ApiV2ExperimentByIdDelete_TYPE = function() {
+export const deleteApiV2ExperimentById_TYPE = function() {
   return 'delete'
 }
-export const ApiV2ExperimentByIdDeleteURL = function(parameters = {}) {
+export const deleteApiV2ExperimentByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/experiment/{id}'
@@ -2702,21 +2824,21 @@ export const ApiV2ExperimentByIdDeleteURL = function(parameters = {}) {
 }
 /**
  * 実験を開始する
- * request: ApiV2ExperimentRunPost
- * url: ApiV2ExperimentRunPostURL
- * method: ApiV2ExperimentRunPost_TYPE
- * raw_url: ApiV2ExperimentRunPost_RAW_URL
- * @param model - 
+ * request: postApiV2ExperimentRun
+ * url: postApiV2ExperimentRunURL
+ * method: postApiV2ExperimentRun_TYPE
+ * raw_url: postApiV2ExperimentRun_RAW_URL
+ * @param body - 
  */
-export const ApiV2ExperimentRunPost = function(parameters = {}) {
+export const postApiV2ExperimentRun = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/experiment/run'
   let body
   let queryParameters = {}
   let form = {}
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -2725,13 +2847,13 @@ export const ApiV2ExperimentRunPost = function(parameters = {}) {
   }
   return request('post', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2ExperimentRunPost_RAW_URL = function() {
+export const postApiV2ExperimentRun_RAW_URL = function() {
   return '/api/v2/experiment/run'
 }
-export const ApiV2ExperimentRunPost_TYPE = function() {
+export const postApiV2ExperimentRun_TYPE = function() {
   return 'post'
 }
-export const ApiV2ExperimentRunPostURL = function(parameters = {}) {
+export const postApiV2ExperimentRunURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/experiment/run'
@@ -2745,13 +2867,13 @@ export const ApiV2ExperimentRunPostURL = function(parameters = {}) {
 }
 /**
  * 前処理を正常終了させ、後続の学習を開始する
- * request: ApiV2ExperimentByIdPreprocessingCompletePost
- * url: ApiV2ExperimentByIdPreprocessingCompletePostURL
- * method: ApiV2ExperimentByIdPreprocessingCompletePost_TYPE
- * raw_url: ApiV2ExperimentByIdPreprocessingCompletePost_RAW_URL
+ * request: postApiV2ExperimentByIdPreprocessingComplete
+ * url: postApiV2ExperimentByIdPreprocessingCompleteURL
+ * method: postApiV2ExperimentByIdPreprocessingComplete_TYPE
+ * raw_url: postApiV2ExperimentByIdPreprocessingComplete_RAW_URL
  * @param id - 学習履歴ID
  */
-export const ApiV2ExperimentByIdPreprocessingCompletePost = function(parameters = {}) {
+export const postApiV2ExperimentByIdPreprocessingComplete = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/experiment/{id}/preprocessing/complete'
@@ -2769,13 +2891,13 @@ export const ApiV2ExperimentByIdPreprocessingCompletePost = function(parameters 
   }
   return request('post', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2ExperimentByIdPreprocessingCompletePost_RAW_URL = function() {
+export const postApiV2ExperimentByIdPreprocessingComplete_RAW_URL = function() {
   return '/api/v2/experiment/{id}/preprocessing/complete'
 }
-export const ApiV2ExperimentByIdPreprocessingCompletePost_TYPE = function() {
+export const postApiV2ExperimentByIdPreprocessingComplete_TYPE = function() {
   return 'post'
 }
-export const ApiV2ExperimentByIdPreprocessingCompletePostURL = function(parameters = {}) {
+export const postApiV2ExperimentByIdPreprocessingCompleteURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/experiment/{id}/preprocessing/complete'
@@ -2789,14 +2911,63 @@ export const ApiV2ExperimentByIdPreprocessingCompletePostURL = function(paramete
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * アクアリウム推論を作成する
+ * request: postApiV2ExperimentByIdEvaluations
+ * url: postApiV2ExperimentByIdEvaluationsURL
+ * method: postApiV2ExperimentByIdEvaluations_TYPE
+ * raw_url: postApiV2ExperimentByIdEvaluations_RAW_URL
+ * @param id - 実験ID
+ * @param body - アクアリウム推論
+ */
+export const postApiV2ExperimentByIdEvaluations = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/experiment/{id}/evaluations'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('post', domain + path, body, queryParameters, form, config)
+}
+export const postApiV2ExperimentByIdEvaluations_RAW_URL = function() {
+  return '/api/v2/experiment/{id}/evaluations'
+}
+export const postApiV2ExperimentByIdEvaluations_TYPE = function() {
+  return 'post'
+}
+export const postApiV2ExperimentByIdEvaluationsURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/experiment/{id}/evaluations'
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * アクアリウム推論一覧を取得する
- * request: ApiV2ExperimentByIdEvaluationsGet
- * url: ApiV2ExperimentByIdEvaluationsGetURL
- * method: ApiV2ExperimentByIdEvaluationsGet_TYPE
- * raw_url: ApiV2ExperimentByIdEvaluationsGet_RAW_URL
+ * request: getApiV2ExperimentByIdEvaluations
+ * url: getApiV2ExperimentByIdEvaluationsURL
+ * method: getApiV2ExperimentByIdEvaluations_TYPE
+ * raw_url: getApiV2ExperimentByIdEvaluations_RAW_URL
  * @param id - 実験ID
  */
-export const ApiV2ExperimentByIdEvaluationsGet = function(parameters = {}) {
+export const getApiV2ExperimentByIdEvaluations = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/experiment/{id}/evaluations'
@@ -2814,62 +2985,13 @@ export const ApiV2ExperimentByIdEvaluationsGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2ExperimentByIdEvaluationsGet_RAW_URL = function() {
+export const getApiV2ExperimentByIdEvaluations_RAW_URL = function() {
   return '/api/v2/experiment/{id}/evaluations'
 }
-export const ApiV2ExperimentByIdEvaluationsGet_TYPE = function() {
+export const getApiV2ExperimentByIdEvaluations_TYPE = function() {
   return 'get'
 }
-export const ApiV2ExperimentByIdEvaluationsGetURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/api/v2/experiment/{id}/evaluations'
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
- * アクアリウム推論を作成する
- * request: ApiV2ExperimentByIdEvaluationsPost
- * url: ApiV2ExperimentByIdEvaluationsPostURL
- * method: ApiV2ExperimentByIdEvaluationsPost_TYPE
- * raw_url: ApiV2ExperimentByIdEvaluationsPost_RAW_URL
- * @param id - 実験ID
- * @param model - アクアリウム推論
- */
-export const ApiV2ExperimentByIdEvaluationsPost = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/api/v2/experiment/{id}/evaluations'
-  let body
-  let queryParameters = {}
-  let form = {}
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters['id'] === undefined) {
-    return Promise.reject(new Error('Missing required  parameter: id'))
-  }
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('post', domain + path, body, queryParameters, form, config)
-}
-export const ApiV2ExperimentByIdEvaluationsPost_RAW_URL = function() {
-  return '/api/v2/experiment/{id}/evaluations'
-}
-export const ApiV2ExperimentByIdEvaluationsPost_TYPE = function() {
-  return 'post'
-}
-export const ApiV2ExperimentByIdEvaluationsPostURL = function(parameters = {}) {
+export const getApiV2ExperimentByIdEvaluationsURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/experiment/{id}/evaluations'
@@ -2884,14 +3006,14 @@ export const ApiV2ExperimentByIdEvaluationsPostURL = function(parameters = {}) {
 }
 /**
  * アクアリウム推論を削除する
- * request: ApiV2ExperimentByIdEvaluationsByEvaluationIdDelete
- * url: ApiV2ExperimentByIdEvaluationsByEvaluationIdDeleteURL
- * method: ApiV2ExperimentByIdEvaluationsByEvaluationIdDelete_TYPE
- * raw_url: ApiV2ExperimentByIdEvaluationsByEvaluationIdDelete_RAW_URL
+ * request: deleteApiV2ExperimentByIdEvaluationsByEvaluationId
+ * url: deleteApiV2ExperimentByIdEvaluationsByEvaluationIdURL
+ * method: deleteApiV2ExperimentByIdEvaluationsByEvaluationId_TYPE
+ * raw_url: deleteApiV2ExperimentByIdEvaluationsByEvaluationId_RAW_URL
  * @param id - 実験ID
  * @param evaluationId - アクアリウム推論ID
  */
-export const ApiV2ExperimentByIdEvaluationsByEvaluationIdDelete = function(parameters = {}) {
+export const deleteApiV2ExperimentByIdEvaluationsByEvaluationId = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/experiment/{id}/evaluations/{evaluationId}'
@@ -2913,13 +3035,13 @@ export const ApiV2ExperimentByIdEvaluationsByEvaluationIdDelete = function(param
   }
   return request('delete', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2ExperimentByIdEvaluationsByEvaluationIdDelete_RAW_URL = function() {
+export const deleteApiV2ExperimentByIdEvaluationsByEvaluationId_RAW_URL = function() {
   return '/api/v2/experiment/{id}/evaluations/{evaluationId}'
 }
-export const ApiV2ExperimentByIdEvaluationsByEvaluationIdDelete_TYPE = function() {
+export const deleteApiV2ExperimentByIdEvaluationsByEvaluationId_TYPE = function() {
   return 'delete'
 }
-export const ApiV2ExperimentByIdEvaluationsByEvaluationIdDeleteURL = function(parameters = {}) {
+export const deleteApiV2ExperimentByIdEvaluationsByEvaluationIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/experiment/{id}/evaluations/{evaluationId}'
@@ -2935,12 +3057,12 @@ export const ApiV2ExperimentByIdEvaluationsByEvaluationIdDeleteURL = function(pa
 }
 /**
  * 登録済みのGitエンドポイント一覧を取得
- * request: ApiV2AdminGitEndpointsGet
- * url: ApiV2AdminGitEndpointsGetURL
- * method: ApiV2AdminGitEndpointsGet_TYPE
- * raw_url: ApiV2AdminGitEndpointsGet_RAW_URL
+ * request: getApiV2AdminGitEndpoints
+ * url: getApiV2AdminGitEndpointsURL
+ * method: getApiV2AdminGitEndpoints_TYPE
+ * raw_url: getApiV2AdminGitEndpoints_RAW_URL
  */
-export const ApiV2AdminGitEndpointsGet = function(parameters = {}) {
+export const getApiV2AdminGitEndpoints = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/git/endpoints'
@@ -2954,13 +3076,13 @@ export const ApiV2AdminGitEndpointsGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminGitEndpointsGet_RAW_URL = function() {
+export const getApiV2AdminGitEndpoints_RAW_URL = function() {
   return '/api/v2/admin/git/endpoints'
 }
-export const ApiV2AdminGitEndpointsGet_TYPE = function() {
+export const getApiV2AdminGitEndpoints_TYPE = function() {
   return 'get'
 }
-export const ApiV2AdminGitEndpointsGetURL = function(parameters = {}) {
+export const getApiV2AdminGitEndpointsURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/git/endpoints'
@@ -2974,21 +3096,21 @@ export const ApiV2AdminGitEndpointsGetURL = function(parameters = {}) {
 }
 /**
  * 新規にGitエンドポイントを登録する
- * request: ApiV2AdminGitEndpointsPost
- * url: ApiV2AdminGitEndpointsPostURL
- * method: ApiV2AdminGitEndpointsPost_TYPE
- * raw_url: ApiV2AdminGitEndpointsPost_RAW_URL
- * @param model - 新規作成モデル
+ * request: postApiV2AdminGitEndpoints
+ * url: postApiV2AdminGitEndpointsURL
+ * method: postApiV2AdminGitEndpoints_TYPE
+ * raw_url: postApiV2AdminGitEndpoints_RAW_URL
+ * @param body - 新規作成モデル
  */
-export const ApiV2AdminGitEndpointsPost = function(parameters = {}) {
+export const postApiV2AdminGitEndpoints = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/git/endpoints'
   let body
   let queryParameters = {}
   let form = {}
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -2997,13 +3119,13 @@ export const ApiV2AdminGitEndpointsPost = function(parameters = {}) {
   }
   return request('post', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminGitEndpointsPost_RAW_URL = function() {
+export const postApiV2AdminGitEndpoints_RAW_URL = function() {
   return '/api/v2/admin/git/endpoints'
 }
-export const ApiV2AdminGitEndpointsPost_TYPE = function() {
+export const postApiV2AdminGitEndpoints_TYPE = function() {
   return 'post'
 }
-export const ApiV2AdminGitEndpointsPostURL = function(parameters = {}) {
+export const postApiV2AdminGitEndpointsURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/git/endpoints'
@@ -3017,12 +3139,12 @@ export const ApiV2AdminGitEndpointsPostURL = function(parameters = {}) {
 }
 /**
  * Git種別一覧を取得
- * request: ApiV2AdminGitTypesGet
- * url: ApiV2AdminGitTypesGetURL
- * method: ApiV2AdminGitTypesGet_TYPE
- * raw_url: ApiV2AdminGitTypesGet_RAW_URL
+ * request: getApiV2AdminGitTypes
+ * url: getApiV2AdminGitTypesURL
+ * method: getApiV2AdminGitTypes_TYPE
+ * raw_url: getApiV2AdminGitTypes_RAW_URL
  */
-export const ApiV2AdminGitTypesGet = function(parameters = {}) {
+export const getApiV2AdminGitTypes = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/git/types'
@@ -3036,13 +3158,13 @@ export const ApiV2AdminGitTypesGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminGitTypesGet_RAW_URL = function() {
+export const getApiV2AdminGitTypes_RAW_URL = function() {
   return '/api/v2/admin/git/types'
 }
-export const ApiV2AdminGitTypesGet_TYPE = function() {
+export const getApiV2AdminGitTypes_TYPE = function() {
   return 'get'
 }
-export const ApiV2AdminGitTypesGetURL = function(parameters = {}) {
+export const getApiV2AdminGitTypesURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/git/types'
@@ -3056,13 +3178,13 @@ export const ApiV2AdminGitTypesGetURL = function(parameters = {}) {
 }
 /**
  * 指定されたIDのGitエンドポイント情報を取得。
- * request: ApiV2AdminGitEndpointsByIdGet
- * url: ApiV2AdminGitEndpointsByIdGetURL
- * method: ApiV2AdminGitEndpointsByIdGet_TYPE
- * raw_url: ApiV2AdminGitEndpointsByIdGet_RAW_URL
+ * request: getApiV2AdminGitEndpointsById
+ * url: getApiV2AdminGitEndpointsByIdURL
+ * method: getApiV2AdminGitEndpointsById_TYPE
+ * raw_url: getApiV2AdminGitEndpointsById_RAW_URL
  * @param id - GitエンドポイントID
  */
-export const ApiV2AdminGitEndpointsByIdGet = function(parameters = {}) {
+export const getApiV2AdminGitEndpointsById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/git/endpoints/{id}'
@@ -3080,13 +3202,13 @@ export const ApiV2AdminGitEndpointsByIdGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminGitEndpointsByIdGet_RAW_URL = function() {
+export const getApiV2AdminGitEndpointsById_RAW_URL = function() {
   return '/api/v2/admin/git/endpoints/{id}'
 }
-export const ApiV2AdminGitEndpointsByIdGet_TYPE = function() {
+export const getApiV2AdminGitEndpointsById_TYPE = function() {
   return 'get'
 }
-export const ApiV2AdminGitEndpointsByIdGetURL = function(parameters = {}) {
+export const getApiV2AdminGitEndpointsByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/git/endpoints/{id}'
@@ -3101,14 +3223,14 @@ export const ApiV2AdminGitEndpointsByIdGetURL = function(parameters = {}) {
 }
 /**
  * Gitエンドポイント情報の編集
- * request: ApiV2AdminGitEndpointsByIdPut
- * url: ApiV2AdminGitEndpointsByIdPutURL
- * method: ApiV2AdminGitEndpointsByIdPut_TYPE
- * raw_url: ApiV2AdminGitEndpointsByIdPut_RAW_URL
+ * request: putApiV2AdminGitEndpointsById
+ * url: putApiV2AdminGitEndpointsByIdURL
+ * method: putApiV2AdminGitEndpointsById_TYPE
+ * raw_url: putApiV2AdminGitEndpointsById_RAW_URL
  * @param id - 編集対象GitID
- * @param model - 編集モデル
+ * @param body - 編集モデル
  */
-export const ApiV2AdminGitEndpointsByIdPut = function(parameters = {}) {
+export const putApiV2AdminGitEndpointsById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/git/endpoints/{id}'
@@ -3119,8 +3241,8 @@ export const ApiV2AdminGitEndpointsByIdPut = function(parameters = {}) {
   if (parameters['id'] === undefined) {
     return Promise.reject(new Error('Missing required  parameter: id'))
   }
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -3129,13 +3251,13 @@ export const ApiV2AdminGitEndpointsByIdPut = function(parameters = {}) {
   }
   return request('put', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminGitEndpointsByIdPut_RAW_URL = function() {
+export const putApiV2AdminGitEndpointsById_RAW_URL = function() {
   return '/api/v2/admin/git/endpoints/{id}'
 }
-export const ApiV2AdminGitEndpointsByIdPut_TYPE = function() {
+export const putApiV2AdminGitEndpointsById_TYPE = function() {
   return 'put'
 }
-export const ApiV2AdminGitEndpointsByIdPutURL = function(parameters = {}) {
+export const putApiV2AdminGitEndpointsByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/git/endpoints/{id}'
@@ -3150,13 +3272,13 @@ export const ApiV2AdminGitEndpointsByIdPutURL = function(parameters = {}) {
 }
 /**
  * Gitエンドポイント情報の削除
- * request: ApiV2AdminGitEndpointsByIdDelete
- * url: ApiV2AdminGitEndpointsByIdDeleteURL
- * method: ApiV2AdminGitEndpointsByIdDelete_TYPE
- * raw_url: ApiV2AdminGitEndpointsByIdDelete_RAW_URL
+ * request: deleteApiV2AdminGitEndpointsById
+ * url: deleteApiV2AdminGitEndpointsByIdURL
+ * method: deleteApiV2AdminGitEndpointsById_TYPE
+ * raw_url: deleteApiV2AdminGitEndpointsById_RAW_URL
  * @param id - 削除対象GitID
  */
-export const ApiV2AdminGitEndpointsByIdDelete = function(parameters = {}) {
+export const deleteApiV2AdminGitEndpointsById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/git/endpoints/{id}'
@@ -3174,13 +3296,13 @@ export const ApiV2AdminGitEndpointsByIdDelete = function(parameters = {}) {
   }
   return request('delete', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminGitEndpointsByIdDelete_RAW_URL = function() {
+export const deleteApiV2AdminGitEndpointsById_RAW_URL = function() {
   return '/api/v2/admin/git/endpoints/{id}'
 }
-export const ApiV2AdminGitEndpointsByIdDelete_TYPE = function() {
+export const deleteApiV2AdminGitEndpointsById_TYPE = function() {
   return 'delete'
 }
-export const ApiV2AdminGitEndpointsByIdDeleteURL = function(parameters = {}) {
+export const deleteApiV2AdminGitEndpointsByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/git/endpoints/{id}'
@@ -3195,12 +3317,12 @@ export const ApiV2AdminGitEndpointsByIdDeleteURL = function(parameters = {}) {
 }
 /**
  * テナント管理者が選択可能な登録済みのGitエンドポイント一覧を取得
- * request: ApiV2TenantGitEndpointsGet
- * url: ApiV2TenantGitEndpointsGetURL
- * method: ApiV2TenantGitEndpointsGet_TYPE
- * raw_url: ApiV2TenantGitEndpointsGet_RAW_URL
+ * request: getApiV2TenantGitEndpoints
+ * url: getApiV2TenantGitEndpointsURL
+ * method: getApiV2TenantGitEndpoints_TYPE
+ * raw_url: getApiV2TenantGitEndpoints_RAW_URL
  */
-export const ApiV2TenantGitEndpointsGet = function(parameters = {}) {
+export const getApiV2TenantGitEndpoints = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/tenant/git/endpoints'
@@ -3214,13 +3336,13 @@ export const ApiV2TenantGitEndpointsGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2TenantGitEndpointsGet_RAW_URL = function() {
+export const getApiV2TenantGitEndpoints_RAW_URL = function() {
   return '/api/v2/tenant/git/endpoints'
 }
-export const ApiV2TenantGitEndpointsGet_TYPE = function() {
+export const getApiV2TenantGitEndpoints_TYPE = function() {
   return 'get'
 }
-export const ApiV2TenantGitEndpointsGetURL = function(parameters = {}) {
+export const getApiV2TenantGitEndpointsURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/tenant/git/endpoints'
@@ -3234,13 +3356,13 @@ export const ApiV2TenantGitEndpointsGetURL = function(parameters = {}) {
 }
 /**
  * 全てのリポジトリを取得する
- * request: ApiV2GitByGitIdReposGet
- * url: ApiV2GitByGitIdReposGetURL
- * method: ApiV2GitByGitIdReposGet_TYPE
- * raw_url: ApiV2GitByGitIdReposGet_RAW_URL
+ * request: getApiV2GitByGitIdRepos
+ * url: getApiV2GitByGitIdReposURL
+ * method: getApiV2GitByGitIdRepos_TYPE
+ * raw_url: getApiV2GitByGitIdRepos_RAW_URL
  * @param gitId - 
  */
-export const ApiV2GitByGitIdReposGet = function(parameters = {}) {
+export const getApiV2GitByGitIdRepos = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/git/{gitId}/repos'
@@ -3258,13 +3380,13 @@ export const ApiV2GitByGitIdReposGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2GitByGitIdReposGet_RAW_URL = function() {
+export const getApiV2GitByGitIdRepos_RAW_URL = function() {
   return '/api/v2/git/{gitId}/repos'
 }
-export const ApiV2GitByGitIdReposGet_TYPE = function() {
+export const getApiV2GitByGitIdRepos_TYPE = function() {
   return 'get'
 }
-export const ApiV2GitByGitIdReposGetURL = function(parameters = {}) {
+export const getApiV2GitByGitIdReposURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/git/{gitId}/repos'
@@ -3279,15 +3401,15 @@ export const ApiV2GitByGitIdReposGetURL = function(parameters = {}) {
 }
 /**
  * ブランチ一覧を取得する
- * request: ApiV2GitByGitIdReposByOwnerByRepositoryNameBranchesGet
- * url: ApiV2GitByGitIdReposByOwnerByRepositoryNameBranchesGetURL
- * method: ApiV2GitByGitIdReposByOwnerByRepositoryNameBranchesGet_TYPE
- * raw_url: ApiV2GitByGitIdReposByOwnerByRepositoryNameBranchesGet_RAW_URL
+ * request: getApiV2GitByGitIdReposByOwnerByRepositoryNameBranches
+ * url: getApiV2GitByGitIdReposByOwnerByRepositoryNameBranchesURL
+ * method: getApiV2GitByGitIdReposByOwnerByRepositoryNameBranches_TYPE
+ * raw_url: getApiV2GitByGitIdReposByOwnerByRepositoryNameBranches_RAW_URL
  * @param gitId - GitId
  * @param owner - オーナー名
  * @param repositoryName - リポジトリ名
  */
-export const ApiV2GitByGitIdReposByOwnerByRepositoryNameBranchesGet = function(parameters = {}) {
+export const getApiV2GitByGitIdReposByOwnerByRepositoryNameBranches = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/git/{gitId}/repos/{owner}/{repositoryName}/branches'
@@ -3313,13 +3435,13 @@ export const ApiV2GitByGitIdReposByOwnerByRepositoryNameBranchesGet = function(p
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2GitByGitIdReposByOwnerByRepositoryNameBranchesGet_RAW_URL = function() {
+export const getApiV2GitByGitIdReposByOwnerByRepositoryNameBranches_RAW_URL = function() {
   return '/api/v2/git/{gitId}/repos/{owner}/{repositoryName}/branches'
 }
-export const ApiV2GitByGitIdReposByOwnerByRepositoryNameBranchesGet_TYPE = function() {
+export const getApiV2GitByGitIdReposByOwnerByRepositoryNameBranches_TYPE = function() {
   return 'get'
 }
-export const ApiV2GitByGitIdReposByOwnerByRepositoryNameBranchesGetURL = function(parameters = {}) {
+export const getApiV2GitByGitIdReposByOwnerByRepositoryNameBranchesURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/git/{gitId}/repos/{owner}/{repositoryName}/branches'
@@ -3336,17 +3458,17 @@ export const ApiV2GitByGitIdReposByOwnerByRepositoryNameBranchesGetURL = functio
 }
 /**
  * コミット一覧を取得する
- * request: ApiV2GitByGitIdReposByOwnerByRepositoryNameCommitsGet
- * url: ApiV2GitByGitIdReposByOwnerByRepositoryNameCommitsGetURL
- * method: ApiV2GitByGitIdReposByOwnerByRepositoryNameCommitsGet_TYPE
- * raw_url: ApiV2GitByGitIdReposByOwnerByRepositoryNameCommitsGet_RAW_URL
+ * request: getApiV2GitByGitIdReposByOwnerByRepositoryNameCommits
+ * url: getApiV2GitByGitIdReposByOwnerByRepositoryNameCommitsURL
+ * method: getApiV2GitByGitIdReposByOwnerByRepositoryNameCommits_TYPE
+ * raw_url: getApiV2GitByGitIdReposByOwnerByRepositoryNameCommits_RAW_URL
  * @param gitId - GitId
  * @param owner - オーナー名
  * @param repositoryName - リポジトリ名
  * @param branch - ブランチ名
  * @param page - ページ番号
  */
-export const ApiV2GitByGitIdReposByOwnerByRepositoryNameCommitsGet = function(parameters = {}) {
+export const getApiV2GitByGitIdReposByOwnerByRepositoryNameCommits = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/git/{gitId}/repos/{owner}/{repositoryName}/commits'
@@ -3378,13 +3500,13 @@ export const ApiV2GitByGitIdReposByOwnerByRepositoryNameCommitsGet = function(pa
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2GitByGitIdReposByOwnerByRepositoryNameCommitsGet_RAW_URL = function() {
+export const getApiV2GitByGitIdReposByOwnerByRepositoryNameCommits_RAW_URL = function() {
   return '/api/v2/git/{gitId}/repos/{owner}/{repositoryName}/commits'
 }
-export const ApiV2GitByGitIdReposByOwnerByRepositoryNameCommitsGet_TYPE = function() {
+export const getApiV2GitByGitIdReposByOwnerByRepositoryNameCommits_TYPE = function() {
   return 'get'
 }
-export const ApiV2GitByGitIdReposByOwnerByRepositoryNameCommitsGetURL = function(parameters = {}) {
+export const getApiV2GitByGitIdReposByOwnerByRepositoryNameCommitsURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/git/{gitId}/repos/{owner}/{repositoryName}/commits'
@@ -3407,16 +3529,16 @@ export const ApiV2GitByGitIdReposByOwnerByRepositoryNameCommitsGetURL = function
 }
 /**
  * 指定したコミットIDのコミット詳細を取得する
- * request: ApiV2GitByGitIdReposByOwnerByRepositoryNameCommitsByCommitIdGet
- * url: ApiV2GitByGitIdReposByOwnerByRepositoryNameCommitsByCommitIdGetURL
- * method: ApiV2GitByGitIdReposByOwnerByRepositoryNameCommitsByCommitIdGet_TYPE
- * raw_url: ApiV2GitByGitIdReposByOwnerByRepositoryNameCommitsByCommitIdGet_RAW_URL
+ * request: getApiV2GitByGitIdReposByOwnerByRepositoryNameCommitsByCommitId
+ * url: getApiV2GitByGitIdReposByOwnerByRepositoryNameCommitsByCommitIdURL
+ * method: getApiV2GitByGitIdReposByOwnerByRepositoryNameCommitsByCommitId_TYPE
+ * raw_url: getApiV2GitByGitIdReposByOwnerByRepositoryNameCommitsByCommitId_RAW_URL
  * @param gitId - GitId
  * @param owner - オーナー名
  * @param repositoryName - リポジトリ名
  * @param commitId - コミットID
  */
-export const ApiV2GitByGitIdReposByOwnerByRepositoryNameCommitsByCommitIdGet = function(parameters = {}) {
+export const getApiV2GitByGitIdReposByOwnerByRepositoryNameCommitsByCommitId = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/git/{gitId}/repos/{owner}/{repositoryName}/commits/{commitId}'
@@ -3446,13 +3568,13 @@ export const ApiV2GitByGitIdReposByOwnerByRepositoryNameCommitsByCommitIdGet = f
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2GitByGitIdReposByOwnerByRepositoryNameCommitsByCommitIdGet_RAW_URL = function() {
+export const getApiV2GitByGitIdReposByOwnerByRepositoryNameCommitsByCommitId_RAW_URL = function() {
   return '/api/v2/git/{gitId}/repos/{owner}/{repositoryName}/commits/{commitId}'
 }
-export const ApiV2GitByGitIdReposByOwnerByRepositoryNameCommitsByCommitIdGet_TYPE = function() {
+export const getApiV2GitByGitIdReposByOwnerByRepositoryNameCommitsByCommitId_TYPE = function() {
   return 'get'
 }
-export const ApiV2GitByGitIdReposByOwnerByRepositoryNameCommitsByCommitIdGetURL = function(parameters = {}) {
+export const getApiV2GitByGitIdReposByOwnerByRepositoryNameCommitsByCommitIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/git/{gitId}/repos/{owner}/{repositoryName}/commits/{commitId}'
@@ -3471,16 +3593,16 @@ export const ApiV2GitByGitIdReposByOwnerByRepositoryNameCommitsByCommitIdGetURL 
 /**
 * 階層化されたURLを吸収するためのダミーAPI。
 製品版のSwaggerからは削除する。
-* request: ApiV2GitByGitIdReposBySegmentsGet
-* url: ApiV2GitByGitIdReposBySegmentsGetURL
-* method: ApiV2GitByGitIdReposBySegmentsGet_TYPE
-* raw_url: ApiV2GitByGitIdReposBySegmentsGet_RAW_URL
+* request: getApiV2GitByGitIdReposBySegments
+* url: getApiV2GitByGitIdReposBySegmentsURL
+* method: getApiV2GitByGitIdReposBySegments_TYPE
+* raw_url: getApiV2GitByGitIdReposBySegments_RAW_URL
      * @param gitId - 
      * @param segments - 
      * @param branch - 
      * @param page - 
 */
-export const ApiV2GitByGitIdReposBySegmentsGet = function(parameters = {}) {
+export const getApiV2GitByGitIdReposBySegments = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/git/{gitId}/repos/{segments}'
@@ -3508,13 +3630,13 @@ export const ApiV2GitByGitIdReposBySegmentsGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2GitByGitIdReposBySegmentsGet_RAW_URL = function() {
+export const getApiV2GitByGitIdReposBySegments_RAW_URL = function() {
   return '/api/v2/git/{gitId}/repos/{segments}'
 }
-export const ApiV2GitByGitIdReposBySegmentsGet_TYPE = function() {
+export const getApiV2GitByGitIdReposBySegments_TYPE = function() {
   return 'get'
 }
-export const ApiV2GitByGitIdReposBySegmentsGetURL = function(parameters = {}) {
+export const getApiV2GitByGitIdReposBySegmentsURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/git/{gitId}/repos/{segments}'
@@ -3536,12 +3658,12 @@ export const ApiV2GitByGitIdReposBySegmentsGetURL = function(parameters = {}) {
 }
 /**
  * 全推論履歴のIDと名前を取得
- * request: ApiV2InferencesSimpleGet
- * url: ApiV2InferencesSimpleGetURL
- * method: ApiV2InferencesSimpleGet_TYPE
- * raw_url: ApiV2InferencesSimpleGet_RAW_URL
+ * request: getApiV2InferencesSimple
+ * url: getApiV2InferencesSimpleURL
+ * method: getApiV2InferencesSimple_TYPE
+ * raw_url: getApiV2InferencesSimple_RAW_URL
  */
-export const ApiV2InferencesSimpleGet = function(parameters = {}) {
+export const getApiV2InferencesSimple = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/inferences/simple'
@@ -3555,13 +3677,13 @@ export const ApiV2InferencesSimpleGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2InferencesSimpleGet_RAW_URL = function() {
+export const getApiV2InferencesSimple_RAW_URL = function() {
   return '/api/v2/inferences/simple'
 }
-export const ApiV2InferencesSimpleGet_TYPE = function() {
+export const getApiV2InferencesSimple_TYPE = function() {
   return 'get'
 }
-export const ApiV2InferencesSimpleGetURL = function(parameters = {}) {
+export const getApiV2InferencesSimpleURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/inferences/simple'
@@ -3575,10 +3697,10 @@ export const ApiV2InferencesSimpleGetURL = function(parameters = {}) {
 }
 /**
 * 指定された条件でページングされた状態で、全推論履歴を取得
-* request: ApiV2InferencesGet
-* url: ApiV2InferencesGetURL
-* method: ApiV2InferencesGet_TYPE
-* raw_url: ApiV2InferencesGet_RAW_URL
+* request: getApiV2Inferences
+* url: getApiV2InferencesURL
+* method: getApiV2Inferences_TYPE
+* raw_url: getApiV2Inferences_RAW_URL
      * @param id - IDの検索条件。
 比較文字列＋数値の形式。
      * @param name - 名前
@@ -3601,7 +3723,7 @@ e.g.（比較文字列は半角でOK）
      * @param page - ページ番号。デフォルトは1。
      * @param withTotal - 合計件数をレスポンスヘッダ(X-Total-Count)に含めるか。デフォルトはfalse。
 */
-export const ApiV2InferencesGet = function(parameters = {}) {
+export const getApiV2Inferences = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/inferences'
@@ -3660,13 +3782,13 @@ export const ApiV2InferencesGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2InferencesGet_RAW_URL = function() {
+export const getApiV2Inferences_RAW_URL = function() {
   return '/api/v2/inferences'
 }
-export const ApiV2InferencesGet_TYPE = function() {
+export const getApiV2Inferences_TYPE = function() {
   return 'get'
 }
-export const ApiV2InferencesGetURL = function(parameters = {}) {
+export const getApiV2InferencesURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/inferences'
@@ -3725,13 +3847,13 @@ export const ApiV2InferencesGetURL = function(parameters = {}) {
 }
 /**
  * マウントする推論履歴を取得
- * request: ApiV2InferencesMountGet
- * url: ApiV2InferencesMountGetURL
- * method: ApiV2InferencesMountGet_TYPE
- * raw_url: ApiV2InferencesMountGet_RAW_URL
+ * request: getApiV2InferencesMount
+ * url: getApiV2InferencesMountURL
+ * method: getApiV2InferencesMount_TYPE
+ * raw_url: getApiV2InferencesMount_RAW_URL
  * @param status - ステータス
  */
-export const ApiV2InferencesMountGet = function(parameters = {}) {
+export const getApiV2InferencesMount = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/inferences/mount'
@@ -3748,13 +3870,13 @@ export const ApiV2InferencesMountGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2InferencesMountGet_RAW_URL = function() {
+export const getApiV2InferencesMount_RAW_URL = function() {
   return '/api/v2/inferences/mount'
 }
-export const ApiV2InferencesMountGet_TYPE = function() {
+export const getApiV2InferencesMount_TYPE = function() {
   return 'get'
 }
-export const ApiV2InferencesMountGetURL = function(parameters = {}) {
+export const getApiV2InferencesMountURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/inferences/mount'
@@ -3771,13 +3893,13 @@ export const ApiV2InferencesMountGetURL = function(parameters = {}) {
 }
 /**
  * 指定されたIDの推論履歴の詳細情報を取得
- * request: ApiV2InferencesByIdGet
- * url: ApiV2InferencesByIdGetURL
- * method: ApiV2InferencesByIdGet_TYPE
- * raw_url: ApiV2InferencesByIdGet_RAW_URL
+ * request: getApiV2InferencesById
+ * url: getApiV2InferencesByIdURL
+ * method: getApiV2InferencesById_TYPE
+ * raw_url: getApiV2InferencesById_RAW_URL
  * @param id - 推論履歴ID
  */
-export const ApiV2InferencesByIdGet = function(parameters = {}) {
+export const getApiV2InferencesById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/inferences/{id}'
@@ -3795,13 +3917,13 @@ export const ApiV2InferencesByIdGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2InferencesByIdGet_RAW_URL = function() {
+export const getApiV2InferencesById_RAW_URL = function() {
   return '/api/v2/inferences/{id}'
 }
-export const ApiV2InferencesByIdGet_TYPE = function() {
+export const getApiV2InferencesById_TYPE = function() {
   return 'get'
 }
-export const ApiV2InferencesByIdGetURL = function(parameters = {}) {
+export const getApiV2InferencesByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/inferences/{id}'
@@ -3816,14 +3938,14 @@ export const ApiV2InferencesByIdGetURL = function(parameters = {}) {
 }
 /**
  * 推論履歴の編集
- * request: ApiV2InferencesByIdPut
- * url: ApiV2InferencesByIdPutURL
- * method: ApiV2InferencesByIdPut_TYPE
- * raw_url: ApiV2InferencesByIdPut_RAW_URL
+ * request: putApiV2InferencesById
+ * url: putApiV2InferencesByIdURL
+ * method: putApiV2InferencesById_TYPE
+ * raw_url: putApiV2InferencesById_RAW_URL
  * @param id - 変更対象の推論履歴ID
- * @param model - 変更内容
+ * @param body - 変更内容
  */
-export const ApiV2InferencesByIdPut = function(parameters = {}) {
+export const putApiV2InferencesById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/inferences/{id}'
@@ -3834,8 +3956,8 @@ export const ApiV2InferencesByIdPut = function(parameters = {}) {
   if (parameters['id'] === undefined) {
     return Promise.reject(new Error('Missing required  parameter: id'))
   }
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -3844,13 +3966,13 @@ export const ApiV2InferencesByIdPut = function(parameters = {}) {
   }
   return request('put', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2InferencesByIdPut_RAW_URL = function() {
+export const putApiV2InferencesById_RAW_URL = function() {
   return '/api/v2/inferences/{id}'
 }
-export const ApiV2InferencesByIdPut_TYPE = function() {
+export const putApiV2InferencesById_TYPE = function() {
   return 'put'
 }
-export const ApiV2InferencesByIdPutURL = function(parameters = {}) {
+export const putApiV2InferencesByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/inferences/{id}'
@@ -3865,13 +3987,13 @@ export const ApiV2InferencesByIdPutURL = function(parameters = {}) {
 }
 /**
  * 推論履歴を削除
- * request: ApiV2InferencesByIdDelete
- * url: ApiV2InferencesByIdDeleteURL
- * method: ApiV2InferencesByIdDelete_TYPE
- * raw_url: ApiV2InferencesByIdDelete_RAW_URL
+ * request: deleteApiV2InferencesById
+ * url: deleteApiV2InferencesByIdURL
+ * method: deleteApiV2InferencesById_TYPE
+ * raw_url: deleteApiV2InferencesById_RAW_URL
  * @param id - 推論履歴ID
  */
-export const ApiV2InferencesByIdDelete = function(parameters = {}) {
+export const deleteApiV2InferencesById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/inferences/{id}'
@@ -3889,13 +4011,13 @@ export const ApiV2InferencesByIdDelete = function(parameters = {}) {
   }
   return request('delete', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2InferencesByIdDelete_RAW_URL = function() {
+export const deleteApiV2InferencesById_RAW_URL = function() {
   return '/api/v2/inferences/{id}'
 }
-export const ApiV2InferencesByIdDelete_TYPE = function() {
+export const deleteApiV2InferencesById_TYPE = function() {
   return 'delete'
 }
-export const ApiV2InferencesByIdDeleteURL = function(parameters = {}) {
+export const deleteApiV2InferencesByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/inferences/{id}'
@@ -3910,13 +4032,13 @@ export const ApiV2InferencesByIdDeleteURL = function(parameters = {}) {
 }
 /**
  * 指定された推論履歴のエラーイベントを取得
- * request: ApiV2InferencesByIdEventsGet
- * url: ApiV2InferencesByIdEventsGetURL
- * method: ApiV2InferencesByIdEventsGet_TYPE
- * raw_url: ApiV2InferencesByIdEventsGet_RAW_URL
+ * request: getApiV2InferencesByIdEvents
+ * url: getApiV2InferencesByIdEventsURL
+ * method: getApiV2InferencesByIdEvents_TYPE
+ * raw_url: getApiV2InferencesByIdEvents_RAW_URL
  * @param id - 推論履歴ID
  */
-export const ApiV2InferencesByIdEventsGet = function(parameters = {}) {
+export const getApiV2InferencesByIdEvents = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/inferences/{id}/events'
@@ -3934,13 +4056,13 @@ export const ApiV2InferencesByIdEventsGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2InferencesByIdEventsGet_RAW_URL = function() {
+export const getApiV2InferencesByIdEvents_RAW_URL = function() {
   return '/api/v2/inferences/{id}/events'
 }
-export const ApiV2InferencesByIdEventsGet_TYPE = function() {
+export const getApiV2InferencesByIdEvents_TYPE = function() {
   return 'get'
 }
-export const ApiV2InferencesByIdEventsGetURL = function(parameters = {}) {
+export const getApiV2InferencesByIdEventsURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/inferences/{id}/events'
@@ -3955,21 +4077,21 @@ export const ApiV2InferencesByIdEventsGetURL = function(parameters = {}) {
 }
 /**
  * 新規に推論を開始
- * request: ApiV2InferencesRunPost
- * url: ApiV2InferencesRunPostURL
- * method: ApiV2InferencesRunPost_TYPE
- * raw_url: ApiV2InferencesRunPost_RAW_URL
- * @param model - 新規推論実行内容
+ * request: postApiV2InferencesRun
+ * url: postApiV2InferencesRunURL
+ * method: postApiV2InferencesRun_TYPE
+ * raw_url: postApiV2InferencesRun_RAW_URL
+ * @param body - 新規推論実行内容
  */
-export const ApiV2InferencesRunPost = function(parameters = {}) {
+export const postApiV2InferencesRun = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/inferences/run'
   let body
   let queryParameters = {}
   let form = {}
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -3978,13 +4100,13 @@ export const ApiV2InferencesRunPost = function(parameters = {}) {
   }
   return request('post', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2InferencesRunPost_RAW_URL = function() {
+export const postApiV2InferencesRun_RAW_URL = function() {
   return '/api/v2/inferences/run'
 }
-export const ApiV2InferencesRunPost_TYPE = function() {
+export const postApiV2InferencesRun_TYPE = function() {
   return 'post'
 }
-export const ApiV2InferencesRunPostURL = function(parameters = {}) {
+export const postApiV2InferencesRunURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/inferences/run'
@@ -3997,15 +4119,64 @@ export const ApiV2InferencesRunPostURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * 推論履歴添付ファイルを登録
+ * request: postApiV2InferencesByIdFiles
+ * url: postApiV2InferencesByIdFilesURL
+ * method: postApiV2InferencesByIdFiles_TYPE
+ * raw_url: postApiV2InferencesByIdFiles_RAW_URL
+ * @param id - 対象の推論履歴ID
+ * @param body - 追加するファイル情報
+ */
+export const postApiV2InferencesByIdFiles = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/inferences/{id}/files'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('post', domain + path, body, queryParameters, form, config)
+}
+export const postApiV2InferencesByIdFiles_RAW_URL = function() {
+  return '/api/v2/inferences/{id}/files'
+}
+export const postApiV2InferencesByIdFiles_TYPE = function() {
+  return 'post'
+}
+export const postApiV2InferencesByIdFilesURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/inferences/{id}/files'
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * 推論履歴添付ファイルの一覧を取得
- * request: ApiV2InferencesByIdFilesGet
- * url: ApiV2InferencesByIdFilesGetURL
- * method: ApiV2InferencesByIdFilesGet_TYPE
- * raw_url: ApiV2InferencesByIdFilesGet_RAW_URL
+ * request: getApiV2InferencesByIdFiles
+ * url: getApiV2InferencesByIdFilesURL
+ * method: getApiV2InferencesByIdFiles_TYPE
+ * raw_url: getApiV2InferencesByIdFiles_RAW_URL
  * @param id - 対象の推論履歴ID
  * @param withUrl - 結果にダウンロード用のURLを含めるか
  */
-export const ApiV2InferencesByIdFilesGet = function(parameters = {}) {
+export const getApiV2InferencesByIdFiles = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/inferences/{id}/files'
@@ -4026,13 +4197,13 @@ export const ApiV2InferencesByIdFilesGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2InferencesByIdFilesGet_RAW_URL = function() {
+export const getApiV2InferencesByIdFiles_RAW_URL = function() {
   return '/api/v2/inferences/{id}/files'
 }
-export const ApiV2InferencesByIdFilesGet_TYPE = function() {
+export const getApiV2InferencesByIdFiles_TYPE = function() {
   return 'get'
 }
-export const ApiV2InferencesByIdFilesGetURL = function(parameters = {}) {
+export const getApiV2InferencesByIdFilesURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/inferences/{id}/files'
@@ -4049,66 +4220,17 @@ export const ApiV2InferencesByIdFilesGetURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
- * 推論履歴添付ファイルを登録
- * request: ApiV2InferencesByIdFilesPost
- * url: ApiV2InferencesByIdFilesPostURL
- * method: ApiV2InferencesByIdFilesPost_TYPE
- * raw_url: ApiV2InferencesByIdFilesPost_RAW_URL
- * @param id - 対象の推論履歴ID
- * @param model - 追加するファイル情報
- */
-export const ApiV2InferencesByIdFilesPost = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/api/v2/inferences/{id}/files'
-  let body
-  let queryParameters = {}
-  let form = {}
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters['id'] === undefined) {
-    return Promise.reject(new Error('Missing required  parameter: id'))
-  }
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('post', domain + path, body, queryParameters, form, config)
-}
-export const ApiV2InferencesByIdFilesPost_RAW_URL = function() {
-  return '/api/v2/inferences/{id}/files'
-}
-export const ApiV2InferencesByIdFilesPost_TYPE = function() {
-  return 'post'
-}
-export const ApiV2InferencesByIdFilesPostURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/api/v2/inferences/{id}/files'
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
 * コンテナの/output/配下から指定ディレクトリパスの直下を検索する
 検索対象ディレクトリが見つからない場合もファイル・ディレクトリが空の結果を返す
-* request: ApiV2InferencesByIdContainer_filesGet
-* url: ApiV2InferencesByIdContainer_filesGetURL
-* method: ApiV2InferencesByIdContainer_filesGet_TYPE
-* raw_url: ApiV2InferencesByIdContainer_filesGet_RAW_URL
+* request: getApiV2InferencesByIdContainerFiles
+* url: getApiV2InferencesByIdContainerFilesURL
+* method: getApiV2InferencesByIdContainerFiles_TYPE
+* raw_url: getApiV2InferencesByIdContainerFiles_RAW_URL
      * @param id - 対象の推論履歴ID
      * @param path - 検索対象ディレクトリ。使用可能文字は「-_1-9a-zA-Z/」
      * @param withUrl - 結果にダウンロード用のURLを含めるか
 */
-export const ApiV2InferencesByIdContainer_filesGet = function(parameters = {}) {
+export const getApiV2InferencesByIdContainerFiles = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/inferences/{id}/container-files'
@@ -4132,13 +4254,13 @@ export const ApiV2InferencesByIdContainer_filesGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2InferencesByIdContainer_filesGet_RAW_URL = function() {
+export const getApiV2InferencesByIdContainerFiles_RAW_URL = function() {
   return '/api/v2/inferences/{id}/container-files'
 }
-export const ApiV2InferencesByIdContainer_filesGet_TYPE = function() {
+export const getApiV2InferencesByIdContainerFiles_TYPE = function() {
   return 'get'
 }
-export const ApiV2InferencesByIdContainer_filesGetURL = function(parameters = {}) {
+export const getApiV2InferencesByIdContainerFilesURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/inferences/{id}/container-files'
@@ -4159,14 +4281,14 @@ export const ApiV2InferencesByIdContainer_filesGetURL = function(parameters = {}
 }
 /**
  * 推論履歴添付ファイルを削除
- * request: ApiV2InferencesByIdFilesByFileIdDelete
- * url: ApiV2InferencesByIdFilesByFileIdDeleteURL
- * method: ApiV2InferencesByIdFilesByFileIdDelete_TYPE
- * raw_url: ApiV2InferencesByIdFilesByFileIdDelete_RAW_URL
+ * request: deleteApiV2InferencesByIdFilesByFileId
+ * url: deleteApiV2InferencesByIdFilesByFileIdURL
+ * method: deleteApiV2InferencesByIdFilesByFileId_TYPE
+ * raw_url: deleteApiV2InferencesByIdFilesByFileId_RAW_URL
  * @param id - 対象の推論履歴ID
  * @param fileId - 削除するファイルのID
  */
-export const ApiV2InferencesByIdFilesByFileIdDelete = function(parameters = {}) {
+export const deleteApiV2InferencesByIdFilesByFileId = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/inferences/{id}/files/{fileId}'
@@ -4188,13 +4310,13 @@ export const ApiV2InferencesByIdFilesByFileIdDelete = function(parameters = {}) 
   }
   return request('delete', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2InferencesByIdFilesByFileIdDelete_RAW_URL = function() {
+export const deleteApiV2InferencesByIdFilesByFileId_RAW_URL = function() {
   return '/api/v2/inferences/{id}/files/{fileId}'
 }
-export const ApiV2InferencesByIdFilesByFileIdDelete_TYPE = function() {
+export const deleteApiV2InferencesByIdFilesByFileId_TYPE = function() {
   return 'delete'
 }
-export const ApiV2InferencesByIdFilesByFileIdDeleteURL = function(parameters = {}) {
+export const deleteApiV2InferencesByIdFilesByFileIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/inferences/{id}/files/{fileId}'
@@ -4210,14 +4332,14 @@ export const ApiV2InferencesByIdFilesByFileIdDeleteURL = function(parameters = {
 }
 /**
  * 推論履歴添付ファイルのサイズ(Byte)を取得する
- * request: ApiV2InferencesByIdFilesByNameSizeGet
- * url: ApiV2InferencesByIdFilesByNameSizeGetURL
- * method: ApiV2InferencesByIdFilesByNameSizeGet_TYPE
- * raw_url: ApiV2InferencesByIdFilesByNameSizeGet_RAW_URL
+ * request: getApiV2InferencesByIdFilesByNameSize
+ * url: getApiV2InferencesByIdFilesByNameSizeURL
+ * method: getApiV2InferencesByIdFilesByNameSize_TYPE
+ * raw_url: getApiV2InferencesByIdFilesByNameSize_RAW_URL
  * @param id - 対象の推論履歴ID
  * @param name - 対象ファイル名
  */
-export const ApiV2InferencesByIdFilesByNameSizeGet = function(parameters = {}) {
+export const getApiV2InferencesByIdFilesByNameSize = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/inferences/{id}/files/{name}/size'
@@ -4239,13 +4361,13 @@ export const ApiV2InferencesByIdFilesByNameSizeGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2InferencesByIdFilesByNameSizeGet_RAW_URL = function() {
+export const getApiV2InferencesByIdFilesByNameSize_RAW_URL = function() {
   return '/api/v2/inferences/{id}/files/{name}/size'
 }
-export const ApiV2InferencesByIdFilesByNameSizeGet_TYPE = function() {
+export const getApiV2InferencesByIdFilesByNameSize_TYPE = function() {
   return 'get'
 }
-export const ApiV2InferencesByIdFilesByNameSizeGetURL = function(parameters = {}) {
+export const getApiV2InferencesByIdFilesByNameSizeURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/inferences/{id}/files/{name}/size'
@@ -4261,13 +4383,13 @@ export const ApiV2InferencesByIdFilesByNameSizeGetURL = function(parameters = {}
 }
 /**
  * 推論を途中で強制終了
- * request: ApiV2InferencesByIdHaltPost
- * url: ApiV2InferencesByIdHaltPostURL
- * method: ApiV2InferencesByIdHaltPost_TYPE
- * raw_url: ApiV2InferencesByIdHaltPost_RAW_URL
+ * request: postApiV2InferencesByIdHalt
+ * url: postApiV2InferencesByIdHaltURL
+ * method: postApiV2InferencesByIdHalt_TYPE
+ * raw_url: postApiV2InferencesByIdHalt_RAW_URL
  * @param id - 推論履歴ID
  */
-export const ApiV2InferencesByIdHaltPost = function(parameters = {}) {
+export const postApiV2InferencesByIdHalt = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/inferences/{id}/halt'
@@ -4285,13 +4407,13 @@ export const ApiV2InferencesByIdHaltPost = function(parameters = {}) {
   }
   return request('post', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2InferencesByIdHaltPost_RAW_URL = function() {
+export const postApiV2InferencesByIdHalt_RAW_URL = function() {
   return '/api/v2/inferences/{id}/halt'
 }
-export const ApiV2InferencesByIdHaltPost_TYPE = function() {
+export const postApiV2InferencesByIdHalt_TYPE = function() {
   return 'post'
 }
-export const ApiV2InferencesByIdHaltPostURL = function(parameters = {}) {
+export const postApiV2InferencesByIdHaltURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/inferences/{id}/halt'
@@ -4307,13 +4429,13 @@ export const ApiV2InferencesByIdHaltPostURL = function(parameters = {}) {
 /**
 * 推論を途中で強制終了させる。
 ユーザ自身がジョブを停止させた場合。
-* request: ApiV2InferencesByIdUser_cancelPost
-* url: ApiV2InferencesByIdUser_cancelPostURL
-* method: ApiV2InferencesByIdUser_cancelPost_TYPE
-* raw_url: ApiV2InferencesByIdUser_cancelPost_RAW_URL
+* request: postApiV2InferencesByIdUserCancel
+* url: postApiV2InferencesByIdUserCancelURL
+* method: postApiV2InferencesByIdUserCancel_TYPE
+* raw_url: postApiV2InferencesByIdUserCancel_RAW_URL
      * @param id - 推論履歴ID
 */
-export const ApiV2InferencesByIdUser_cancelPost = function(parameters = {}) {
+export const postApiV2InferencesByIdUserCancel = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/inferences/{id}/user-cancel'
@@ -4331,13 +4453,13 @@ export const ApiV2InferencesByIdUser_cancelPost = function(parameters = {}) {
   }
   return request('post', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2InferencesByIdUser_cancelPost_RAW_URL = function() {
+export const postApiV2InferencesByIdUserCancel_RAW_URL = function() {
   return '/api/v2/inferences/{id}/user-cancel'
 }
-export const ApiV2InferencesByIdUser_cancelPost_TYPE = function() {
+export const postApiV2InferencesByIdUserCancel_TYPE = function() {
   return 'post'
 }
-export const ApiV2InferencesByIdUser_cancelPostURL = function(parameters = {}) {
+export const postApiV2InferencesByIdUserCancelURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/inferences/{id}/user-cancel'
@@ -4352,13 +4474,13 @@ export const ApiV2InferencesByIdUser_cancelPostURL = function(parameters = {}) {
 }
 /**
  * 推論を正常終了
- * request: ApiV2InferencesByIdCompletePost
- * url: ApiV2InferencesByIdCompletePostURL
- * method: ApiV2InferencesByIdCompletePost_TYPE
- * raw_url: ApiV2InferencesByIdCompletePost_RAW_URL
+ * request: postApiV2InferencesByIdComplete
+ * url: postApiV2InferencesByIdCompleteURL
+ * method: postApiV2InferencesByIdComplete_TYPE
+ * raw_url: postApiV2InferencesByIdComplete_RAW_URL
  * @param id - 推論履歴ID
  */
-export const ApiV2InferencesByIdCompletePost = function(parameters = {}) {
+export const postApiV2InferencesByIdComplete = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/inferences/{id}/complete'
@@ -4376,13 +4498,13 @@ export const ApiV2InferencesByIdCompletePost = function(parameters = {}) {
   }
   return request('post', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2InferencesByIdCompletePost_RAW_URL = function() {
+export const postApiV2InferencesByIdComplete_RAW_URL = function() {
   return '/api/v2/inferences/{id}/complete'
 }
-export const ApiV2InferencesByIdCompletePost_TYPE = function() {
+export const postApiV2InferencesByIdComplete_TYPE = function() {
   return 'post'
 }
-export const ApiV2InferencesByIdCompletePostURL = function(parameters = {}) {
+export const postApiV2InferencesByIdCompleteURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/inferences/{id}/complete'
@@ -4397,12 +4519,12 @@ export const ApiV2InferencesByIdCompletePostURL = function(parameters = {}) {
 }
 /**
  * テナント向けに、メニューとロールのマッピング情報一覧を取得
- * request: ApiV2TenantMenusGet
- * url: ApiV2TenantMenusGetURL
- * method: ApiV2TenantMenusGet_TYPE
- * raw_url: ApiV2TenantMenusGet_RAW_URL
+ * request: getApiV2TenantMenus
+ * url: getApiV2TenantMenusURL
+ * method: getApiV2TenantMenus_TYPE
+ * raw_url: getApiV2TenantMenus_RAW_URL
  */
-export const ApiV2TenantMenusGet = function(parameters = {}) {
+export const getApiV2TenantMenus = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/tenant/menus'
@@ -4416,13 +4538,13 @@ export const ApiV2TenantMenusGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2TenantMenusGet_RAW_URL = function() {
+export const getApiV2TenantMenus_RAW_URL = function() {
   return '/api/v2/tenant/menus'
 }
-export const ApiV2TenantMenusGet_TYPE = function() {
+export const getApiV2TenantMenus_TYPE = function() {
   return 'get'
 }
-export const ApiV2TenantMenusGetURL = function(parameters = {}) {
+export const getApiV2TenantMenusURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/tenant/menus'
@@ -4436,14 +4558,14 @@ export const ApiV2TenantMenusGetURL = function(parameters = {}) {
 }
 /**
  * テナント向けの、メニューとロールのマッピング情報を更新
- * request: ApiV2TenantMenusByIdPut
- * url: ApiV2TenantMenusByIdPutURL
- * method: ApiV2TenantMenusByIdPut_TYPE
- * raw_url: ApiV2TenantMenusByIdPut_RAW_URL
+ * request: putApiV2TenantMenusById
+ * url: putApiV2TenantMenusByIdURL
+ * method: putApiV2TenantMenusById_TYPE
+ * raw_url: putApiV2TenantMenusById_RAW_URL
  * @param id - 
- * @param roleIds - 
+ * @param body - 
  */
-export const ApiV2TenantMenusByIdPut = function(parameters = {}) {
+export const putApiV2TenantMenusById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/tenant/menus/{id}'
@@ -4454,8 +4576,8 @@ export const ApiV2TenantMenusByIdPut = function(parameters = {}) {
   if (parameters['id'] === undefined) {
     return Promise.reject(new Error('Missing required  parameter: id'))
   }
-  if (parameters['roleIds'] !== undefined) {
-    body = parameters['roleIds']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -4464,13 +4586,13 @@ export const ApiV2TenantMenusByIdPut = function(parameters = {}) {
   }
   return request('put', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2TenantMenusByIdPut_RAW_URL = function() {
+export const putApiV2TenantMenusById_RAW_URL = function() {
   return '/api/v2/tenant/menus/{id}'
 }
-export const ApiV2TenantMenusByIdPut_TYPE = function() {
+export const putApiV2TenantMenusById_TYPE = function() {
   return 'put'
 }
-export const ApiV2TenantMenusByIdPutURL = function(parameters = {}) {
+export const putApiV2TenantMenusByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/tenant/menus/{id}'
@@ -4485,12 +4607,12 @@ export const ApiV2TenantMenusByIdPutURL = function(parameters = {}) {
 }
 /**
  * テナント向けのメニュー種別一覧を取得
- * request: ApiV2TenantMenu_typesGet
- * url: ApiV2TenantMenu_typesGetURL
- * method: ApiV2TenantMenu_typesGet_TYPE
- * raw_url: ApiV2TenantMenu_typesGet_RAW_URL
+ * request: getApiV2TenantMenuTypes
+ * url: getApiV2TenantMenuTypesURL
+ * method: getApiV2TenantMenuTypes_TYPE
+ * raw_url: getApiV2TenantMenuTypes_RAW_URL
  */
-export const ApiV2TenantMenu_typesGet = function(parameters = {}) {
+export const getApiV2TenantMenuTypes = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/tenant/menu-types'
@@ -4504,13 +4626,13 @@ export const ApiV2TenantMenu_typesGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2TenantMenu_typesGet_RAW_URL = function() {
+export const getApiV2TenantMenuTypes_RAW_URL = function() {
   return '/api/v2/tenant/menu-types'
 }
-export const ApiV2TenantMenu_typesGet_TYPE = function() {
+export const getApiV2TenantMenuTypes_TYPE = function() {
   return 'get'
 }
-export const ApiV2TenantMenu_typesGetURL = function(parameters = {}) {
+export const getApiV2TenantMenuTypesURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/tenant/menu-types'
@@ -4524,12 +4646,12 @@ export const ApiV2TenantMenu_typesGetURL = function(parameters = {}) {
 }
 /**
  * 管理者向けに、メニューとロールのマッピング情報一覧を取得
- * request: ApiV2AdminMenusGet
- * url: ApiV2AdminMenusGetURL
- * method: ApiV2AdminMenusGet_TYPE
- * raw_url: ApiV2AdminMenusGet_RAW_URL
+ * request: getApiV2AdminMenus
+ * url: getApiV2AdminMenusURL
+ * method: getApiV2AdminMenus_TYPE
+ * raw_url: getApiV2AdminMenus_RAW_URL
  */
-export const ApiV2AdminMenusGet = function(parameters = {}) {
+export const getApiV2AdminMenus = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/menus'
@@ -4543,13 +4665,13 @@ export const ApiV2AdminMenusGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminMenusGet_RAW_URL = function() {
+export const getApiV2AdminMenus_RAW_URL = function() {
   return '/api/v2/admin/menus'
 }
-export const ApiV2AdminMenusGet_TYPE = function() {
+export const getApiV2AdminMenus_TYPE = function() {
   return 'get'
 }
-export const ApiV2AdminMenusGetURL = function(parameters = {}) {
+export const getApiV2AdminMenusURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/menus'
@@ -4563,14 +4685,14 @@ export const ApiV2AdminMenusGetURL = function(parameters = {}) {
 }
 /**
  * 管理者向けの、メニューとロールのマッピング情報を更新
- * request: ApiV2AdminMenusByIdPut
- * url: ApiV2AdminMenusByIdPutURL
- * method: ApiV2AdminMenusByIdPut_TYPE
- * raw_url: ApiV2AdminMenusByIdPut_RAW_URL
+ * request: putApiV2AdminMenusById
+ * url: putApiV2AdminMenusByIdURL
+ * method: putApiV2AdminMenusById_TYPE
+ * raw_url: putApiV2AdminMenusById_RAW_URL
  * @param id - 
- * @param roleIds - 
+ * @param body - 
  */
-export const ApiV2AdminMenusByIdPut = function(parameters = {}) {
+export const putApiV2AdminMenusById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/menus/{id}'
@@ -4581,8 +4703,8 @@ export const ApiV2AdminMenusByIdPut = function(parameters = {}) {
   if (parameters['id'] === undefined) {
     return Promise.reject(new Error('Missing required  parameter: id'))
   }
-  if (parameters['roleIds'] !== undefined) {
-    body = parameters['roleIds']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -4591,13 +4713,13 @@ export const ApiV2AdminMenusByIdPut = function(parameters = {}) {
   }
   return request('put', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminMenusByIdPut_RAW_URL = function() {
+export const putApiV2AdminMenusById_RAW_URL = function() {
   return '/api/v2/admin/menus/{id}'
 }
-export const ApiV2AdminMenusByIdPut_TYPE = function() {
+export const putApiV2AdminMenusById_TYPE = function() {
   return 'put'
 }
-export const ApiV2AdminMenusByIdPutURL = function(parameters = {}) {
+export const putApiV2AdminMenusByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/menus/{id}'
@@ -4612,12 +4734,12 @@ export const ApiV2AdminMenusByIdPutURL = function(parameters = {}) {
 }
 /**
  * 管理者向けメニュー種別一覧を取得
- * request: ApiV2AdminMenu_typesGet
- * url: ApiV2AdminMenu_typesGetURL
- * method: ApiV2AdminMenu_typesGet_TYPE
- * raw_url: ApiV2AdminMenu_typesGet_RAW_URL
+ * request: getApiV2AdminMenuTypes
+ * url: getApiV2AdminMenuTypesURL
+ * method: getApiV2AdminMenuTypes_TYPE
+ * raw_url: getApiV2AdminMenuTypes_RAW_URL
  */
-export const ApiV2AdminMenu_typesGet = function(parameters = {}) {
+export const getApiV2AdminMenuTypes = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/menu-types'
@@ -4631,13 +4753,13 @@ export const ApiV2AdminMenu_typesGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminMenu_typesGet_RAW_URL = function() {
+export const getApiV2AdminMenuTypes_RAW_URL = function() {
   return '/api/v2/admin/menu-types'
 }
-export const ApiV2AdminMenu_typesGet_TYPE = function() {
+export const getApiV2AdminMenuTypes_TYPE = function() {
   return 'get'
 }
-export const ApiV2AdminMenu_typesGetURL = function(parameters = {}) {
+export const getApiV2AdminMenuTypesURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/menu-types'
@@ -4651,16 +4773,16 @@ export const ApiV2AdminMenu_typesGetURL = function(parameters = {}) {
 }
 /**
  * 全ノード一覧を取得
- * request: ApiV2AdminNodesGet
- * url: ApiV2AdminNodesGetURL
- * method: ApiV2AdminNodesGet_TYPE
- * raw_url: ApiV2AdminNodesGet_RAW_URL
+ * request: getApiV2AdminNodes
+ * url: getApiV2AdminNodesURL
+ * method: getApiV2AdminNodes_TYPE
+ * raw_url: getApiV2AdminNodes_RAW_URL
  * @param name - 
  * @param perPage - 
  * @param page - 
  * @param withTotal - 
  */
-export const ApiV2AdminNodesGet = function(parameters = {}) {
+export const getApiV2AdminNodes = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/nodes'
@@ -4686,13 +4808,13 @@ export const ApiV2AdminNodesGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminNodesGet_RAW_URL = function() {
+export const getApiV2AdminNodes_RAW_URL = function() {
   return '/api/v2/admin/nodes'
 }
-export const ApiV2AdminNodesGet_TYPE = function() {
+export const getApiV2AdminNodes_TYPE = function() {
   return 'get'
 }
-export const ApiV2AdminNodesGetURL = function(parameters = {}) {
+export const getApiV2AdminNodesURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/nodes'
@@ -4718,21 +4840,21 @@ export const ApiV2AdminNodesGetURL = function(parameters = {}) {
 }
 /**
  * 新規にノードを登録する
- * request: ApiV2AdminNodesPost
- * url: ApiV2AdminNodesPostURL
- * method: ApiV2AdminNodesPost_TYPE
- * raw_url: ApiV2AdminNodesPost_RAW_URL
- * @param model - 
+ * request: postApiV2AdminNodes
+ * url: postApiV2AdminNodesURL
+ * method: postApiV2AdminNodes_TYPE
+ * raw_url: postApiV2AdminNodes_RAW_URL
+ * @param body - 
  */
-export const ApiV2AdminNodesPost = function(parameters = {}) {
+export const postApiV2AdminNodes = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/nodes'
   let body
   let queryParameters = {}
   let form = {}
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -4741,13 +4863,13 @@ export const ApiV2AdminNodesPost = function(parameters = {}) {
   }
   return request('post', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminNodesPost_RAW_URL = function() {
+export const postApiV2AdminNodes_RAW_URL = function() {
   return '/api/v2/admin/nodes'
 }
-export const ApiV2AdminNodesPost_TYPE = function() {
+export const postApiV2AdminNodes_TYPE = function() {
   return 'post'
 }
-export const ApiV2AdminNodesPostURL = function(parameters = {}) {
+export const postApiV2AdminNodesURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/nodes'
@@ -4761,12 +4883,12 @@ export const ApiV2AdminNodesPostURL = function(parameters = {}) {
 }
 /**
  * ノードアクセスレベルの一覧を取得する
- * request: ApiV2AdminNode_access_levelsGet
- * url: ApiV2AdminNode_access_levelsGetURL
- * method: ApiV2AdminNode_access_levelsGet_TYPE
- * raw_url: ApiV2AdminNode_access_levelsGet_RAW_URL
+ * request: getApiV2AdminNodeAccessLevels
+ * url: getApiV2AdminNodeAccessLevelsURL
+ * method: getApiV2AdminNodeAccessLevels_TYPE
+ * raw_url: getApiV2AdminNodeAccessLevels_RAW_URL
  */
-export const ApiV2AdminNode_access_levelsGet = function(parameters = {}) {
+export const getApiV2AdminNodeAccessLevels = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/node-access-levels'
@@ -4780,13 +4902,13 @@ export const ApiV2AdminNode_access_levelsGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminNode_access_levelsGet_RAW_URL = function() {
+export const getApiV2AdminNodeAccessLevels_RAW_URL = function() {
   return '/api/v2/admin/node-access-levels'
 }
-export const ApiV2AdminNode_access_levelsGet_TYPE = function() {
+export const getApiV2AdminNodeAccessLevels_TYPE = function() {
   return 'get'
 }
-export const ApiV2AdminNode_access_levelsGetURL = function(parameters = {}) {
+export const getApiV2AdminNodeAccessLevelsURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/node-access-levels'
@@ -4800,13 +4922,13 @@ export const ApiV2AdminNode_access_levelsGetURL = function(parameters = {}) {
 }
 /**
  * 指定されたIDのノード情報を取得。
- * request: ApiV2AdminNodesByIdGet
- * url: ApiV2AdminNodesByIdGetURL
- * method: ApiV2AdminNodesByIdGet_TYPE
- * raw_url: ApiV2AdminNodesByIdGet_RAW_URL
+ * request: getApiV2AdminNodesById
+ * url: getApiV2AdminNodesByIdURL
+ * method: getApiV2AdminNodesById_TYPE
+ * raw_url: getApiV2AdminNodesById_RAW_URL
  * @param id - ノードID
  */
-export const ApiV2AdminNodesByIdGet = function(parameters = {}) {
+export const getApiV2AdminNodesById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/nodes/{id}'
@@ -4824,13 +4946,13 @@ export const ApiV2AdminNodesByIdGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminNodesByIdGet_RAW_URL = function() {
+export const getApiV2AdminNodesById_RAW_URL = function() {
   return '/api/v2/admin/nodes/{id}'
 }
-export const ApiV2AdminNodesByIdGet_TYPE = function() {
+export const getApiV2AdminNodesById_TYPE = function() {
   return 'get'
 }
-export const ApiV2AdminNodesByIdGetURL = function(parameters = {}) {
+export const getApiV2AdminNodesByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/nodes/{id}'
@@ -4845,14 +4967,14 @@ export const ApiV2AdminNodesByIdGetURL = function(parameters = {}) {
 }
 /**
  * ノード情報の編集
- * request: ApiV2AdminNodesByIdPut
- * url: ApiV2AdminNodesByIdPutURL
- * method: ApiV2AdminNodesByIdPut_TYPE
- * raw_url: ApiV2AdminNodesByIdPut_RAW_URL
+ * request: putApiV2AdminNodesById
+ * url: putApiV2AdminNodesByIdURL
+ * method: putApiV2AdminNodesById_TYPE
+ * raw_url: putApiV2AdminNodesById_RAW_URL
  * @param id - 
- * @param model - 
+ * @param body - 
  */
-export const ApiV2AdminNodesByIdPut = function(parameters = {}) {
+export const putApiV2AdminNodesById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/nodes/{id}'
@@ -4863,8 +4985,8 @@ export const ApiV2AdminNodesByIdPut = function(parameters = {}) {
   if (parameters['id'] === undefined) {
     return Promise.reject(new Error('Missing required  parameter: id'))
   }
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -4873,13 +4995,13 @@ export const ApiV2AdminNodesByIdPut = function(parameters = {}) {
   }
   return request('put', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminNodesByIdPut_RAW_URL = function() {
+export const putApiV2AdminNodesById_RAW_URL = function() {
   return '/api/v2/admin/nodes/{id}'
 }
-export const ApiV2AdminNodesByIdPut_TYPE = function() {
+export const putApiV2AdminNodesById_TYPE = function() {
   return 'put'
 }
-export const ApiV2AdminNodesByIdPutURL = function(parameters = {}) {
+export const putApiV2AdminNodesByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/nodes/{id}'
@@ -4894,13 +5016,13 @@ export const ApiV2AdminNodesByIdPutURL = function(parameters = {}) {
 }
 /**
  * ノードを削除する。
- * request: ApiV2AdminNodesByIdDelete
- * url: ApiV2AdminNodesByIdDeleteURL
- * method: ApiV2AdminNodesByIdDelete_TYPE
- * raw_url: ApiV2AdminNodesByIdDelete_RAW_URL
+ * request: deleteApiV2AdminNodesById
+ * url: deleteApiV2AdminNodesByIdURL
+ * method: deleteApiV2AdminNodesById_TYPE
+ * raw_url: deleteApiV2AdminNodesById_RAW_URL
  * @param id - 
  */
-export const ApiV2AdminNodesByIdDelete = function(parameters = {}) {
+export const deleteApiV2AdminNodesById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/nodes/{id}'
@@ -4918,13 +5040,13 @@ export const ApiV2AdminNodesByIdDelete = function(parameters = {}) {
   }
   return request('delete', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminNodesByIdDelete_RAW_URL = function() {
+export const deleteApiV2AdminNodesById_RAW_URL = function() {
   return '/api/v2/admin/nodes/{id}'
 }
-export const ApiV2AdminNodesByIdDelete_TYPE = function() {
+export const deleteApiV2AdminNodesById_TYPE = function() {
   return 'delete'
 }
-export const ApiV2AdminNodesByIdDeleteURL = function(parameters = {}) {
+export const deleteApiV2AdminNodesByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/nodes/{id}'
@@ -4939,12 +5061,12 @@ export const ApiV2AdminNodesByIdDeleteURL = function(parameters = {}) {
 }
 /**
  * ノード情報をDBからClusterへ同期させる
- * request: ApiV2AdminNodesSync_cluster_from_dbPost
- * url: ApiV2AdminNodesSync_cluster_from_dbPostURL
- * method: ApiV2AdminNodesSync_cluster_from_dbPost_TYPE
- * raw_url: ApiV2AdminNodesSync_cluster_from_dbPost_RAW_URL
+ * request: postApiV2AdminNodesSyncClusterFromDb
+ * url: postApiV2AdminNodesSyncClusterFromDbURL
+ * method: postApiV2AdminNodesSyncClusterFromDb_TYPE
+ * raw_url: postApiV2AdminNodesSyncClusterFromDb_RAW_URL
  */
-export const ApiV2AdminNodesSync_cluster_from_dbPost = function(parameters = {}) {
+export const postApiV2AdminNodesSyncClusterFromDb = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/nodes/sync-cluster-from-db'
@@ -4958,13 +5080,13 @@ export const ApiV2AdminNodesSync_cluster_from_dbPost = function(parameters = {})
   }
   return request('post', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminNodesSync_cluster_from_dbPost_RAW_URL = function() {
+export const postApiV2AdminNodesSyncClusterFromDb_RAW_URL = function() {
   return '/api/v2/admin/nodes/sync-cluster-from-db'
 }
-export const ApiV2AdminNodesSync_cluster_from_dbPost_TYPE = function() {
+export const postApiV2AdminNodesSyncClusterFromDb_TYPE = function() {
   return 'post'
 }
-export const ApiV2AdminNodesSync_cluster_from_dbPostURL = function(parameters = {}) {
+export const postApiV2AdminNodesSyncClusterFromDbURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/nodes/sync-cluster-from-db'
@@ -4978,12 +5100,12 @@ export const ApiV2AdminNodesSync_cluster_from_dbPostURL = function(parameters = 
 }
 /**
  * 全ノートブック履歴のIDと名前を取得
- * request: ApiV2NotebookSimpleGet
- * url: ApiV2NotebookSimpleGetURL
- * method: ApiV2NotebookSimpleGet_TYPE
- * raw_url: ApiV2NotebookSimpleGet_RAW_URL
+ * request: getApiV2NotebookSimple
+ * url: getApiV2NotebookSimpleURL
+ * method: getApiV2NotebookSimple_TYPE
+ * raw_url: getApiV2NotebookSimple_RAW_URL
  */
-export const ApiV2NotebookSimpleGet = function(parameters = {}) {
+export const getApiV2NotebookSimple = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/notebook/simple'
@@ -4997,13 +5119,13 @@ export const ApiV2NotebookSimpleGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2NotebookSimpleGet_RAW_URL = function() {
+export const getApiV2NotebookSimple_RAW_URL = function() {
   return '/api/v2/notebook/simple'
 }
-export const ApiV2NotebookSimpleGet_TYPE = function() {
+export const getApiV2NotebookSimple_TYPE = function() {
   return 'get'
 }
-export const ApiV2NotebookSimpleGetURL = function(parameters = {}) {
+export const getApiV2NotebookSimpleURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/notebook/simple'
@@ -5017,10 +5139,10 @@ export const ApiV2NotebookSimpleGetURL = function(parameters = {}) {
 }
 /**
 * 指定された条件でページングされた状態で、全ノートブック履歴を取得
-* request: ApiV2NotebookGet
-* url: ApiV2NotebookGetURL
-* method: ApiV2NotebookGet_TYPE
-* raw_url: ApiV2NotebookGet_RAW_URL
+* request: getApiV2Notebook
+* url: getApiV2NotebookURL
+* method: getApiV2Notebook_TYPE
+* raw_url: getApiV2Notebook_RAW_URL
      * @param id - IDの検索条件。
 比較文字列＋数値の形式。
      * @param name - 名前
@@ -5032,7 +5154,7 @@ export const ApiV2NotebookSimpleGetURL = function(parameters = {}) {
      * @param page - ページ番号。デフォルトは1。
      * @param withTotal - 合計件数をレスポンスヘッダ(X-Total-Count)に含めるか。デフォルトはfalse。
 */
-export const ApiV2NotebookGet = function(parameters = {}) {
+export const getApiV2Notebook = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/notebook'
@@ -5073,13 +5195,13 @@ export const ApiV2NotebookGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2NotebookGet_RAW_URL = function() {
+export const getApiV2Notebook_RAW_URL = function() {
   return '/api/v2/notebook'
 }
-export const ApiV2NotebookGet_TYPE = function() {
+export const getApiV2Notebook_TYPE = function() {
   return 'get'
 }
-export const ApiV2NotebookGetURL = function(parameters = {}) {
+export const getApiV2NotebookURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/notebook'
@@ -5120,13 +5242,13 @@ export const ApiV2NotebookGetURL = function(parameters = {}) {
 }
 /**
  * 指定されたIDのノートブック履歴の詳細情報を取得。
- * request: ApiV2NotebookByIdGet
- * url: ApiV2NotebookByIdGetURL
- * method: ApiV2NotebookByIdGet_TYPE
- * raw_url: ApiV2NotebookByIdGet_RAW_URL
+ * request: getApiV2NotebookById
+ * url: getApiV2NotebookByIdURL
+ * method: getApiV2NotebookById_TYPE
+ * raw_url: getApiV2NotebookById_RAW_URL
  * @param id - ノートブック履歴ID
  */
-export const ApiV2NotebookByIdGet = function(parameters = {}) {
+export const getApiV2NotebookById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/notebook/{id}'
@@ -5144,13 +5266,13 @@ export const ApiV2NotebookByIdGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2NotebookByIdGet_RAW_URL = function() {
+export const getApiV2NotebookById_RAW_URL = function() {
   return '/api/v2/notebook/{id}'
 }
-export const ApiV2NotebookByIdGet_TYPE = function() {
+export const getApiV2NotebookById_TYPE = function() {
   return 'get'
 }
-export const ApiV2NotebookByIdGetURL = function(parameters = {}) {
+export const getApiV2NotebookByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/notebook/{id}'
@@ -5165,14 +5287,14 @@ export const ApiV2NotebookByIdGetURL = function(parameters = {}) {
 }
 /**
  * ノートブック履歴の編集
- * request: ApiV2NotebookByIdPut
- * url: ApiV2NotebookByIdPutURL
- * method: ApiV2NotebookByIdPut_TYPE
- * raw_url: ApiV2NotebookByIdPut_RAW_URL
+ * request: putApiV2NotebookById
+ * url: putApiV2NotebookByIdURL
+ * method: putApiV2NotebookById_TYPE
+ * raw_url: putApiV2NotebookById_RAW_URL
  * @param id - 変更対象のノートブック履歴ID
- * @param model - 変更内容
+ * @param body - 変更内容
  */
-export const ApiV2NotebookByIdPut = function(parameters = {}) {
+export const putApiV2NotebookById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/notebook/{id}'
@@ -5183,8 +5305,8 @@ export const ApiV2NotebookByIdPut = function(parameters = {}) {
   if (parameters['id'] === undefined) {
     return Promise.reject(new Error('Missing required  parameter: id'))
   }
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -5193,13 +5315,13 @@ export const ApiV2NotebookByIdPut = function(parameters = {}) {
   }
   return request('put', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2NotebookByIdPut_RAW_URL = function() {
+export const putApiV2NotebookById_RAW_URL = function() {
   return '/api/v2/notebook/{id}'
 }
-export const ApiV2NotebookByIdPut_TYPE = function() {
+export const putApiV2NotebookById_TYPE = function() {
   return 'put'
 }
-export const ApiV2NotebookByIdPutURL = function(parameters = {}) {
+export const putApiV2NotebookByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/notebook/{id}'
@@ -5214,13 +5336,13 @@ export const ApiV2NotebookByIdPutURL = function(parameters = {}) {
 }
 /**
  * ノートブック履歴を削除する。
- * request: ApiV2NotebookByIdDelete
- * url: ApiV2NotebookByIdDeleteURL
- * method: ApiV2NotebookByIdDelete_TYPE
- * raw_url: ApiV2NotebookByIdDelete_RAW_URL
+ * request: deleteApiV2NotebookById
+ * url: deleteApiV2NotebookByIdURL
+ * method: deleteApiV2NotebookById_TYPE
+ * raw_url: deleteApiV2NotebookById_RAW_URL
  * @param id - ノートブック履歴ID
  */
-export const ApiV2NotebookByIdDelete = function(parameters = {}) {
+export const deleteApiV2NotebookById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/notebook/{id}'
@@ -5238,13 +5360,13 @@ export const ApiV2NotebookByIdDelete = function(parameters = {}) {
   }
   return request('delete', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2NotebookByIdDelete_RAW_URL = function() {
+export const deleteApiV2NotebookById_RAW_URL = function() {
   return '/api/v2/notebook/{id}'
 }
-export const ApiV2NotebookByIdDelete_TYPE = function() {
+export const deleteApiV2NotebookById_TYPE = function() {
   return 'delete'
 }
-export const ApiV2NotebookByIdDeleteURL = function(parameters = {}) {
+export const deleteApiV2NotebookByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/notebook/{id}'
@@ -5259,13 +5381,13 @@ export const ApiV2NotebookByIdDeleteURL = function(parameters = {}) {
 }
 /**
  * 指定されたノートブック履歴のエラーイベントを取得します。
- * request: ApiV2NotebookByIdEventsGet
- * url: ApiV2NotebookByIdEventsGetURL
- * method: ApiV2NotebookByIdEventsGet_TYPE
- * raw_url: ApiV2NotebookByIdEventsGet_RAW_URL
+ * request: getApiV2NotebookByIdEvents
+ * url: getApiV2NotebookByIdEventsURL
+ * method: getApiV2NotebookByIdEvents_TYPE
+ * raw_url: getApiV2NotebookByIdEvents_RAW_URL
  * @param id - ノートブック履歴ID
  */
-export const ApiV2NotebookByIdEventsGet = function(parameters = {}) {
+export const getApiV2NotebookByIdEvents = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/notebook/{id}/events'
@@ -5283,13 +5405,13 @@ export const ApiV2NotebookByIdEventsGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2NotebookByIdEventsGet_RAW_URL = function() {
+export const getApiV2NotebookByIdEvents_RAW_URL = function() {
   return '/api/v2/notebook/{id}/events'
 }
-export const ApiV2NotebookByIdEventsGet_TYPE = function() {
+export const getApiV2NotebookByIdEvents_TYPE = function() {
   return 'get'
 }
-export const ApiV2NotebookByIdEventsGetURL = function(parameters = {}) {
+export const getApiV2NotebookByIdEventsURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/notebook/{id}/events'
@@ -5304,13 +5426,13 @@ export const ApiV2NotebookByIdEventsGetURL = function(parameters = {}) {
 }
 /**
  * 指定されたノートブック履歴のエンドポイントを取得します。
- * request: ApiV2NotebookByIdEndpointGet
- * url: ApiV2NotebookByIdEndpointGetURL
- * method: ApiV2NotebookByIdEndpointGet_TYPE
- * raw_url: ApiV2NotebookByIdEndpointGet_RAW_URL
+ * request: getApiV2NotebookByIdEndpoint
+ * url: getApiV2NotebookByIdEndpointURL
+ * method: getApiV2NotebookByIdEndpoint_TYPE
+ * raw_url: getApiV2NotebookByIdEndpoint_RAW_URL
  * @param id - ノートブック履歴ID
  */
-export const ApiV2NotebookByIdEndpointGet = function(parameters = {}) {
+export const getApiV2NotebookByIdEndpoint = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/notebook/{id}/endpoint'
@@ -5328,13 +5450,13 @@ export const ApiV2NotebookByIdEndpointGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2NotebookByIdEndpointGet_RAW_URL = function() {
+export const getApiV2NotebookByIdEndpoint_RAW_URL = function() {
   return '/api/v2/notebook/{id}/endpoint'
 }
-export const ApiV2NotebookByIdEndpointGet_TYPE = function() {
+export const getApiV2NotebookByIdEndpoint_TYPE = function() {
   return 'get'
 }
-export const ApiV2NotebookByIdEndpointGetURL = function(parameters = {}) {
+export const getApiV2NotebookByIdEndpointURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/notebook/{id}/endpoint'
@@ -5349,21 +5471,21 @@ export const ApiV2NotebookByIdEndpointGetURL = function(parameters = {}) {
 }
 /**
  * 新規にノートブックコンテナを開始する
- * request: ApiV2NotebookRunPost
- * url: ApiV2NotebookRunPostURL
- * method: ApiV2NotebookRunPost_TYPE
- * raw_url: ApiV2NotebookRunPost_RAW_URL
- * @param model - 新規実行内容
+ * request: postApiV2NotebookRun
+ * url: postApiV2NotebookRunURL
+ * method: postApiV2NotebookRun_TYPE
+ * raw_url: postApiV2NotebookRun_RAW_URL
+ * @param body - 新規実行内容
  */
-export const ApiV2NotebookRunPost = function(parameters = {}) {
+export const postApiV2NotebookRun = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/notebook/run'
   let body
   let queryParameters = {}
   let form = {}
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -5372,13 +5494,13 @@ export const ApiV2NotebookRunPost = function(parameters = {}) {
   }
   return request('post', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2NotebookRunPost_RAW_URL = function() {
+export const postApiV2NotebookRun_RAW_URL = function() {
   return '/api/v2/notebook/run'
 }
-export const ApiV2NotebookRunPost_TYPE = function() {
+export const postApiV2NotebookRun_TYPE = function() {
   return 'post'
 }
-export const ApiV2NotebookRunPostURL = function(parameters = {}) {
+export const postApiV2NotebookRunURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/notebook/run'
@@ -5393,15 +5515,15 @@ export const ApiV2NotebookRunPostURL = function(parameters = {}) {
 /**
 * コンテナの/output/配下から指定ディレクトリパスの直下を検索する
 検索対象ディレクトリが見つからない場合もファイル・ディレクトリが空の結果を返す
-* request: ApiV2NotebookByIdContainer_filesGet
-* url: ApiV2NotebookByIdContainer_filesGetURL
-* method: ApiV2NotebookByIdContainer_filesGet_TYPE
-* raw_url: ApiV2NotebookByIdContainer_filesGet_RAW_URL
+* request: getApiV2NotebookByIdContainerFiles
+* url: getApiV2NotebookByIdContainerFilesURL
+* method: getApiV2NotebookByIdContainerFiles_TYPE
+* raw_url: getApiV2NotebookByIdContainerFiles_RAW_URL
      * @param id - 対象のノートブック履歴ID
      * @param path - 検索対象ディレクトリ。使用可能文字は「-_1-9a-zA-Z/」
      * @param withUrl - 結果にダウンロード用のURLを含めるか
 */
-export const ApiV2NotebookByIdContainer_filesGet = function(parameters = {}) {
+export const getApiV2NotebookByIdContainerFiles = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/notebook/{id}/container-files'
@@ -5425,13 +5547,13 @@ export const ApiV2NotebookByIdContainer_filesGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2NotebookByIdContainer_filesGet_RAW_URL = function() {
+export const getApiV2NotebookByIdContainerFiles_RAW_URL = function() {
   return '/api/v2/notebook/{id}/container-files'
 }
-export const ApiV2NotebookByIdContainer_filesGet_TYPE = function() {
+export const getApiV2NotebookByIdContainerFiles_TYPE = function() {
   return 'get'
 }
-export const ApiV2NotebookByIdContainer_filesGetURL = function(parameters = {}) {
+export const getApiV2NotebookByIdContainerFilesURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/notebook/{id}/container-files'
@@ -5452,13 +5574,13 @@ export const ApiV2NotebookByIdContainer_filesGetURL = function(parameters = {}) 
 }
 /**
  * ノートブックコンテナを途中で強制終了させる。
- * request: ApiV2NotebookByIdHaltPost
- * url: ApiV2NotebookByIdHaltPostURL
- * method: ApiV2NotebookByIdHaltPost_TYPE
- * raw_url: ApiV2NotebookByIdHaltPost_RAW_URL
+ * request: postApiV2NotebookByIdHalt
+ * url: postApiV2NotebookByIdHaltURL
+ * method: postApiV2NotebookByIdHalt_TYPE
+ * raw_url: postApiV2NotebookByIdHalt_RAW_URL
  * @param id - ノートブック履歴ID
  */
-export const ApiV2NotebookByIdHaltPost = function(parameters = {}) {
+export const postApiV2NotebookByIdHalt = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/notebook/{id}/halt'
@@ -5476,13 +5598,13 @@ export const ApiV2NotebookByIdHaltPost = function(parameters = {}) {
   }
   return request('post', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2NotebookByIdHaltPost_RAW_URL = function() {
+export const postApiV2NotebookByIdHalt_RAW_URL = function() {
   return '/api/v2/notebook/{id}/halt'
 }
-export const ApiV2NotebookByIdHaltPost_TYPE = function() {
+export const postApiV2NotebookByIdHalt_TYPE = function() {
   return 'post'
 }
-export const ApiV2NotebookByIdHaltPostURL = function(parameters = {}) {
+export const postApiV2NotebookByIdHaltURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/notebook/{id}/halt'
@@ -5497,14 +5619,14 @@ export const ApiV2NotebookByIdHaltPostURL = function(parameters = {}) {
 }
 /**
  * 指定されたノートブック履歴のコンテナを再起動する
- * request: ApiV2NotebookByIdRerunPost
- * url: ApiV2NotebookByIdRerunPostURL
- * method: ApiV2NotebookByIdRerunPost_TYPE
- * raw_url: ApiV2NotebookByIdRerunPost_RAW_URL
+ * request: postApiV2NotebookByIdRerun
+ * url: postApiV2NotebookByIdRerunURL
+ * method: postApiV2NotebookByIdRerun_TYPE
+ * raw_url: postApiV2NotebookByIdRerun_RAW_URL
  * @param id - ノートブック履歴ID
- * @param model - 再起動内容
+ * @param body - 再起動内容
  */
-export const ApiV2NotebookByIdRerunPost = function(parameters = {}) {
+export const postApiV2NotebookByIdRerun = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/notebook/{id}/rerun'
@@ -5515,8 +5637,8 @@ export const ApiV2NotebookByIdRerunPost = function(parameters = {}) {
   if (parameters['id'] === undefined) {
     return Promise.reject(new Error('Missing required  parameter: id'))
   }
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -5525,13 +5647,13 @@ export const ApiV2NotebookByIdRerunPost = function(parameters = {}) {
   }
   return request('post', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2NotebookByIdRerunPost_RAW_URL = function() {
+export const postApiV2NotebookByIdRerun_RAW_URL = function() {
   return '/api/v2/notebook/{id}/rerun'
 }
-export const ApiV2NotebookByIdRerunPost_TYPE = function() {
+export const postApiV2NotebookByIdRerun_TYPE = function() {
   return 'post'
 }
-export const ApiV2NotebookByIdRerunPostURL = function(parameters = {}) {
+export const postApiV2NotebookByIdRerunURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/notebook/{id}/rerun'
@@ -5546,12 +5668,12 @@ export const ApiV2NotebookByIdRerunPostURL = function(parameters = {}) {
 }
 /**
  * 選択中のテナントのノートブック無期限利用可否フラグを取得する
- * request: ApiV2NotebookAvailable_infinite_timeGet
- * url: ApiV2NotebookAvailable_infinite_timeGetURL
- * method: ApiV2NotebookAvailable_infinite_timeGet_TYPE
- * raw_url: ApiV2NotebookAvailable_infinite_timeGet_RAW_URL
+ * request: getApiV2NotebookAvailableInfiniteTime
+ * url: getApiV2NotebookAvailableInfiniteTimeURL
+ * method: getApiV2NotebookAvailableInfiniteTime_TYPE
+ * raw_url: getApiV2NotebookAvailableInfiniteTime_RAW_URL
  */
-export const ApiV2NotebookAvailable_infinite_timeGet = function(parameters = {}) {
+export const getApiV2NotebookAvailableInfiniteTime = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/notebook/available-infinite-time'
@@ -5565,13 +5687,13 @@ export const ApiV2NotebookAvailable_infinite_timeGet = function(parameters = {})
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2NotebookAvailable_infinite_timeGet_RAW_URL = function() {
+export const getApiV2NotebookAvailableInfiniteTime_RAW_URL = function() {
   return '/api/v2/notebook/available-infinite-time'
 }
-export const ApiV2NotebookAvailable_infinite_timeGet_TYPE = function() {
+export const getApiV2NotebookAvailableInfiniteTime_TYPE = function() {
   return 'get'
 }
-export const ApiV2NotebookAvailable_infinite_timeGetURL = function(parameters = {}) {
+export const getApiV2NotebookAvailableInfiniteTimeURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/notebook/available-infinite-time'
@@ -5585,10 +5707,10 @@ export const ApiV2NotebookAvailable_infinite_timeGetURL = function(parameters = 
 }
 /**
 * 指定された条件でページングされた状態で、全前処理を取得
-* request: ApiV2PreprocessingsGet
-* url: ApiV2PreprocessingsGetURL
-* method: ApiV2PreprocessingsGet_TYPE
-* raw_url: ApiV2PreprocessingsGet_RAW_URL
+* request: getApiV2Preprocessings
+* url: getApiV2PreprocessingsURL
+* method: getApiV2Preprocessings_TYPE
+* raw_url: getApiV2Preprocessings_RAW_URL
      * @param id - IDの検索条件。
 比較文字列＋数値の形式。
      * @param name - 名前
@@ -5603,7 +5725,7 @@ e.g.（比較文字列は半角でOK）
      * @param page - ページ番号。デフォルトは1。
      * @param withTotal - 合計件数をレスポンスヘッダ(X-Total-Count)に含めるか。デフォルトはfalse。
 */
-export const ApiV2PreprocessingsGet = function(parameters = {}) {
+export const getApiV2Preprocessings = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/preprocessings'
@@ -5638,13 +5760,13 @@ export const ApiV2PreprocessingsGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2PreprocessingsGet_RAW_URL = function() {
+export const getApiV2Preprocessings_RAW_URL = function() {
   return '/api/v2/preprocessings'
 }
-export const ApiV2PreprocessingsGet_TYPE = function() {
+export const getApiV2Preprocessings_TYPE = function() {
   return 'get'
 }
-export const ApiV2PreprocessingsGetURL = function(parameters = {}) {
+export const getApiV2PreprocessingsURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/preprocessings'
@@ -5679,21 +5801,21 @@ export const ApiV2PreprocessingsGetURL = function(parameters = {}) {
 }
 /**
  * 新規に前処理を登録する
- * request: ApiV2PreprocessingsPost
- * url: ApiV2PreprocessingsPostURL
- * method: ApiV2PreprocessingsPost_TYPE
- * raw_url: ApiV2PreprocessingsPost_RAW_URL
- * @param model - 新規作成内容
+ * request: postApiV2Preprocessings
+ * url: postApiV2PreprocessingsURL
+ * method: postApiV2Preprocessings_TYPE
+ * raw_url: postApiV2Preprocessings_RAW_URL
+ * @param body - 新規作成内容
  */
-export const ApiV2PreprocessingsPost = function(parameters = {}) {
+export const postApiV2Preprocessings = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/preprocessings'
   let body
   let queryParameters = {}
   let form = {}
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -5702,13 +5824,13 @@ export const ApiV2PreprocessingsPost = function(parameters = {}) {
   }
   return request('post', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2PreprocessingsPost_RAW_URL = function() {
+export const postApiV2Preprocessings_RAW_URL = function() {
   return '/api/v2/preprocessings'
 }
-export const ApiV2PreprocessingsPost_TYPE = function() {
+export const postApiV2Preprocessings_TYPE = function() {
   return 'post'
 }
-export const ApiV2PreprocessingsPostURL = function(parameters = {}) {
+export const postApiV2PreprocessingsURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/preprocessings'
@@ -5722,13 +5844,13 @@ export const ApiV2PreprocessingsPostURL = function(parameters = {}) {
 }
 /**
  * 指定されたIDの前処理の詳細情報を取得。
- * request: ApiV2PreprocessingsByIdGet
- * url: ApiV2PreprocessingsByIdGetURL
- * method: ApiV2PreprocessingsByIdGet_TYPE
- * raw_url: ApiV2PreprocessingsByIdGet_RAW_URL
+ * request: getApiV2PreprocessingsById
+ * url: getApiV2PreprocessingsByIdURL
+ * method: getApiV2PreprocessingsById_TYPE
+ * raw_url: getApiV2PreprocessingsById_RAW_URL
  * @param id - 前処理ID
  */
-export const ApiV2PreprocessingsByIdGet = function(parameters = {}) {
+export const getApiV2PreprocessingsById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/preprocessings/{id}'
@@ -5746,13 +5868,62 @@ export const ApiV2PreprocessingsByIdGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2PreprocessingsByIdGet_RAW_URL = function() {
+export const getApiV2PreprocessingsById_RAW_URL = function() {
   return '/api/v2/preprocessings/{id}'
 }
-export const ApiV2PreprocessingsByIdGet_TYPE = function() {
+export const getApiV2PreprocessingsById_TYPE = function() {
   return 'get'
 }
-export const ApiV2PreprocessingsByIdGetURL = function(parameters = {}) {
+export const getApiV2PreprocessingsByIdURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/preprocessings/{id}'
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 前処理が実行済みの場合でも編集可能な項目のみ扱う
+ * request: patchApiV2PreprocessingsById
+ * url: patchApiV2PreprocessingsByIdURL
+ * method: patchApiV2PreprocessingsById_TYPE
+ * raw_url: patchApiV2PreprocessingsById_RAW_URL
+ * @param id - 変更対象の前処理ID
+ * @param body - 変更内容
+ */
+export const patchApiV2PreprocessingsById = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/preprocessings/{id}'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('patch', domain + path, body, queryParameters, form, config)
+}
+export const patchApiV2PreprocessingsById_RAW_URL = function() {
+  return '/api/v2/preprocessings/{id}'
+}
+export const patchApiV2PreprocessingsById_TYPE = function() {
+  return 'patch'
+}
+export const patchApiV2PreprocessingsByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/preprocessings/{id}'
@@ -5767,14 +5938,14 @@ export const ApiV2PreprocessingsByIdGetURL = function(parameters = {}) {
 }
 /**
  * 全ての項目が対象だが、一度でも前処理が実行されていた場合、編集不可
- * request: ApiV2PreprocessingsByIdPut
- * url: ApiV2PreprocessingsByIdPutURL
- * method: ApiV2PreprocessingsByIdPut_TYPE
- * raw_url: ApiV2PreprocessingsByIdPut_RAW_URL
+ * request: putApiV2PreprocessingsById
+ * url: putApiV2PreprocessingsByIdURL
+ * method: putApiV2PreprocessingsById_TYPE
+ * raw_url: putApiV2PreprocessingsById_RAW_URL
  * @param id - 変更対象の前処理ID
- * @param model - 変更内容
+ * @param body - 変更内容
  */
-export const ApiV2PreprocessingsByIdPut = function(parameters = {}) {
+export const putApiV2PreprocessingsById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/preprocessings/{id}'
@@ -5785,8 +5956,8 @@ export const ApiV2PreprocessingsByIdPut = function(parameters = {}) {
   if (parameters['id'] === undefined) {
     return Promise.reject(new Error('Missing required  parameter: id'))
   }
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -5795,13 +5966,13 @@ export const ApiV2PreprocessingsByIdPut = function(parameters = {}) {
   }
   return request('put', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2PreprocessingsByIdPut_RAW_URL = function() {
+export const putApiV2PreprocessingsById_RAW_URL = function() {
   return '/api/v2/preprocessings/{id}'
 }
-export const ApiV2PreprocessingsByIdPut_TYPE = function() {
+export const putApiV2PreprocessingsById_TYPE = function() {
   return 'put'
 }
-export const ApiV2PreprocessingsByIdPutURL = function(parameters = {}) {
+export const putApiV2PreprocessingsByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/preprocessings/{id}'
@@ -5816,13 +5987,13 @@ export const ApiV2PreprocessingsByIdPutURL = function(parameters = {}) {
 }
 /**
  * 一度でも前処理が実行されていた場合、削除不可
- * request: ApiV2PreprocessingsByIdDelete
- * url: ApiV2PreprocessingsByIdDeleteURL
- * method: ApiV2PreprocessingsByIdDelete_TYPE
- * raw_url: ApiV2PreprocessingsByIdDelete_RAW_URL
+ * request: deleteApiV2PreprocessingsById
+ * url: deleteApiV2PreprocessingsByIdURL
+ * method: deleteApiV2PreprocessingsById_TYPE
+ * raw_url: deleteApiV2PreprocessingsById_RAW_URL
  * @param id - 前処理ID
  */
-export const ApiV2PreprocessingsByIdDelete = function(parameters = {}) {
+export const deleteApiV2PreprocessingsById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/preprocessings/{id}'
@@ -5840,62 +6011,13 @@ export const ApiV2PreprocessingsByIdDelete = function(parameters = {}) {
   }
   return request('delete', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2PreprocessingsByIdDelete_RAW_URL = function() {
+export const deleteApiV2PreprocessingsById_RAW_URL = function() {
   return '/api/v2/preprocessings/{id}'
 }
-export const ApiV2PreprocessingsByIdDelete_TYPE = function() {
+export const deleteApiV2PreprocessingsById_TYPE = function() {
   return 'delete'
 }
-export const ApiV2PreprocessingsByIdDeleteURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/api/v2/preprocessings/{id}'
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
- * 前処理が実行済みの場合でも編集可能な項目のみ扱う
- * request: ApiV2PreprocessingsByIdPatch
- * url: ApiV2PreprocessingsByIdPatchURL
- * method: ApiV2PreprocessingsByIdPatch_TYPE
- * raw_url: ApiV2PreprocessingsByIdPatch_RAW_URL
- * @param id - 変更対象の前処理ID
- * @param model - 変更内容
- */
-export const ApiV2PreprocessingsByIdPatch = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/api/v2/preprocessings/{id}'
-  let body
-  let queryParameters = {}
-  let form = {}
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters['id'] === undefined) {
-    return Promise.reject(new Error('Missing required  parameter: id'))
-  }
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('patch', domain + path, body, queryParameters, form, config)
-}
-export const ApiV2PreprocessingsByIdPatch_RAW_URL = function() {
-  return '/api/v2/preprocessings/{id}'
-}
-export const ApiV2PreprocessingsByIdPatch_TYPE = function() {
-  return 'patch'
-}
-export const ApiV2PreprocessingsByIdPatchURL = function(parameters = {}) {
+export const deleteApiV2PreprocessingsByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/preprocessings/{id}'
@@ -5910,13 +6032,13 @@ export const ApiV2PreprocessingsByIdPatchURL = function(parameters = {}) {
 }
 /**
  * 指定した前処理の履歴情報を取得する。
- * request: ApiV2PreprocessingsByIdHistoriesGet
- * url: ApiV2PreprocessingsByIdHistoriesGetURL
- * method: ApiV2PreprocessingsByIdHistoriesGet_TYPE
- * raw_url: ApiV2PreprocessingsByIdHistoriesGet_RAW_URL
+ * request: getApiV2PreprocessingsByIdHistories
+ * url: getApiV2PreprocessingsByIdHistoriesURL
+ * method: getApiV2PreprocessingsByIdHistories_TYPE
+ * raw_url: getApiV2PreprocessingsByIdHistories_RAW_URL
  * @param id - 前処理ID
  */
-export const ApiV2PreprocessingsByIdHistoriesGet = function(parameters = {}) {
+export const getApiV2PreprocessingsByIdHistories = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/preprocessings/{id}/histories'
@@ -5934,13 +6056,13 @@ export const ApiV2PreprocessingsByIdHistoriesGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2PreprocessingsByIdHistoriesGet_RAW_URL = function() {
+export const getApiV2PreprocessingsByIdHistories_RAW_URL = function() {
   return '/api/v2/preprocessings/{id}/histories'
 }
-export const ApiV2PreprocessingsByIdHistoriesGet_TYPE = function() {
+export const getApiV2PreprocessingsByIdHistories_TYPE = function() {
   return 'get'
 }
-export const ApiV2PreprocessingsByIdHistoriesGetURL = function(parameters = {}) {
+export const getApiV2PreprocessingsByIdHistoriesURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/preprocessings/{id}/histories'
@@ -5955,14 +6077,14 @@ export const ApiV2PreprocessingsByIdHistoriesGetURL = function(parameters = {}) 
 }
 /**
  * 指定されたデータに対する前処理の履歴を取得。
- * request: ApiV2PreprocessingsByIdHistoriesByDataIdGet
- * url: ApiV2PreprocessingsByIdHistoriesByDataIdGetURL
- * method: ApiV2PreprocessingsByIdHistoriesByDataIdGet_TYPE
- * raw_url: ApiV2PreprocessingsByIdHistoriesByDataIdGet_RAW_URL
+ * request: getApiV2PreprocessingsByIdHistoriesByDataId
+ * url: getApiV2PreprocessingsByIdHistoriesByDataIdURL
+ * method: getApiV2PreprocessingsByIdHistoriesByDataId_TYPE
+ * raw_url: getApiV2PreprocessingsByIdHistoriesByDataId_RAW_URL
  * @param id - 前処理ID
  * @param dataId - データID
  */
-export const ApiV2PreprocessingsByIdHistoriesByDataIdGet = function(parameters = {}) {
+export const getApiV2PreprocessingsByIdHistoriesByDataId = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/preprocessings/{id}/histories/{dataId}'
@@ -5984,13 +6106,13 @@ export const ApiV2PreprocessingsByIdHistoriesByDataIdGet = function(parameters =
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2PreprocessingsByIdHistoriesByDataIdGet_RAW_URL = function() {
+export const getApiV2PreprocessingsByIdHistoriesByDataId_RAW_URL = function() {
   return '/api/v2/preprocessings/{id}/histories/{dataId}'
 }
-export const ApiV2PreprocessingsByIdHistoriesByDataIdGet_TYPE = function() {
+export const getApiV2PreprocessingsByIdHistoriesByDataId_TYPE = function() {
   return 'get'
 }
-export const ApiV2PreprocessingsByIdHistoriesByDataIdGetURL = function(parameters = {}) {
+export const getApiV2PreprocessingsByIdHistoriesByDataIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/preprocessings/{id}/histories/{dataId}'
@@ -6007,14 +6129,14 @@ export const ApiV2PreprocessingsByIdHistoriesByDataIdGetURL = function(parameter
 /**
 * 前処理実行用のコンテナなどは起動しない。ローカル環境など、KAMONOHASHI外で作成した前処理結果をアップロードする際に用いる。
 作成された前処理履歴は実行中のステータスとなり、前処理結果の追加が可能な状態になる。
-* request: ApiV2PreprocessingsByIdHistoriesByDataIdPost
-* url: ApiV2PreprocessingsByIdHistoriesByDataIdPostURL
-* method: ApiV2PreprocessingsByIdHistoriesByDataIdPost_TYPE
-* raw_url: ApiV2PreprocessingsByIdHistoriesByDataIdPost_RAW_URL
+* request: postApiV2PreprocessingsByIdHistoriesByDataId
+* url: postApiV2PreprocessingsByIdHistoriesByDataIdURL
+* method: postApiV2PreprocessingsByIdHistoriesByDataId_TYPE
+* raw_url: postApiV2PreprocessingsByIdHistoriesByDataId_RAW_URL
      * @param id - 前処理ID
      * @param dataId - 入力データID
 */
-export const ApiV2PreprocessingsByIdHistoriesByDataIdPost = function(parameters = {}) {
+export const postApiV2PreprocessingsByIdHistoriesByDataId = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/preprocessings/{id}/histories/{dataId}'
@@ -6036,13 +6158,13 @@ export const ApiV2PreprocessingsByIdHistoriesByDataIdPost = function(parameters 
   }
   return request('post', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2PreprocessingsByIdHistoriesByDataIdPost_RAW_URL = function() {
+export const postApiV2PreprocessingsByIdHistoriesByDataId_RAW_URL = function() {
   return '/api/v2/preprocessings/{id}/histories/{dataId}'
 }
-export const ApiV2PreprocessingsByIdHistoriesByDataIdPost_TYPE = function() {
+export const postApiV2PreprocessingsByIdHistoriesByDataId_TYPE = function() {
   return 'post'
 }
-export const ApiV2PreprocessingsByIdHistoriesByDataIdPostURL = function(parameters = {}) {
+export const postApiV2PreprocessingsByIdHistoriesByDataIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/preprocessings/{id}/histories/{dataId}'
@@ -6058,14 +6180,14 @@ export const ApiV2PreprocessingsByIdHistoriesByDataIdPostURL = function(paramete
 }
 /**
  * 前処理履歴を削除する。生成された前処理済みデータもまとめて削除する。
- * request: ApiV2PreprocessingsByIdHistoriesByDataIdDelete
- * url: ApiV2PreprocessingsByIdHistoriesByDataIdDeleteURL
- * method: ApiV2PreprocessingsByIdHistoriesByDataIdDelete_TYPE
- * raw_url: ApiV2PreprocessingsByIdHistoriesByDataIdDelete_RAW_URL
+ * request: deleteApiV2PreprocessingsByIdHistoriesByDataId
+ * url: deleteApiV2PreprocessingsByIdHistoriesByDataIdURL
+ * method: deleteApiV2PreprocessingsByIdHistoriesByDataId_TYPE
+ * raw_url: deleteApiV2PreprocessingsByIdHistoriesByDataId_RAW_URL
  * @param id - 前処理ID
  * @param dataId - 入力データID
  */
-export const ApiV2PreprocessingsByIdHistoriesByDataIdDelete = function(parameters = {}) {
+export const deleteApiV2PreprocessingsByIdHistoriesByDataId = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/preprocessings/{id}/histories/{dataId}'
@@ -6087,13 +6209,13 @@ export const ApiV2PreprocessingsByIdHistoriesByDataIdDelete = function(parameter
   }
   return request('delete', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2PreprocessingsByIdHistoriesByDataIdDelete_RAW_URL = function() {
+export const deleteApiV2PreprocessingsByIdHistoriesByDataId_RAW_URL = function() {
   return '/api/v2/preprocessings/{id}/histories/{dataId}'
 }
-export const ApiV2PreprocessingsByIdHistoriesByDataIdDelete_TYPE = function() {
+export const deleteApiV2PreprocessingsByIdHistoriesByDataId_TYPE = function() {
   return 'delete'
 }
-export const ApiV2PreprocessingsByIdHistoriesByDataIdDeleteURL = function(parameters = {}) {
+export const deleteApiV2PreprocessingsByIdHistoriesByDataIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/preprocessings/{id}/histories/{dataId}'
@@ -6109,14 +6231,14 @@ export const ApiV2PreprocessingsByIdHistoriesByDataIdDeleteURL = function(parame
 }
 /**
  * 前処理履歴のイベントを取得する
- * request: ApiV2PreprocessingsByIdHistoriesByDataIdEventsGet
- * url: ApiV2PreprocessingsByIdHistoriesByDataIdEventsGetURL
- * method: ApiV2PreprocessingsByIdHistoriesByDataIdEventsGet_TYPE
- * raw_url: ApiV2PreprocessingsByIdHistoriesByDataIdEventsGet_RAW_URL
+ * request: getApiV2PreprocessingsByIdHistoriesByDataIdEvents
+ * url: getApiV2PreprocessingsByIdHistoriesByDataIdEventsURL
+ * method: getApiV2PreprocessingsByIdHistoriesByDataIdEvents_TYPE
+ * raw_url: getApiV2PreprocessingsByIdHistoriesByDataIdEvents_RAW_URL
  * @param id - 前処理ID
  * @param dataId - 入力データID
  */
-export const ApiV2PreprocessingsByIdHistoriesByDataIdEventsGet = function(parameters = {}) {
+export const getApiV2PreprocessingsByIdHistoriesByDataIdEvents = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/preprocessings/{id}/histories/{dataId}/events'
@@ -6138,13 +6260,13 @@ export const ApiV2PreprocessingsByIdHistoriesByDataIdEventsGet = function(parame
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2PreprocessingsByIdHistoriesByDataIdEventsGet_RAW_URL = function() {
+export const getApiV2PreprocessingsByIdHistoriesByDataIdEvents_RAW_URL = function() {
   return '/api/v2/preprocessings/{id}/histories/{dataId}/events'
 }
-export const ApiV2PreprocessingsByIdHistoriesByDataIdEventsGet_TYPE = function() {
+export const getApiV2PreprocessingsByIdHistoriesByDataIdEvents_TYPE = function() {
   return 'get'
 }
-export const ApiV2PreprocessingsByIdHistoriesByDataIdEventsGetURL = function(parameters = {}) {
+export const getApiV2PreprocessingsByIdHistoriesByDataIdEventsURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/preprocessings/{id}/histories/{dataId}/events'
@@ -6161,14 +6283,14 @@ export const ApiV2PreprocessingsByIdHistoriesByDataIdEventsGetURL = function(par
 /**
 * 前処理実行用のコンテナを起動する。
 作成された前処理履歴は実行中のステータスとなり、前処理結果の追加が可能な状態になる。
-* request: ApiV2PreprocessingsByIdRunPost
-* url: ApiV2PreprocessingsByIdRunPostURL
-* method: ApiV2PreprocessingsByIdRunPost_TYPE
-* raw_url: ApiV2PreprocessingsByIdRunPost_RAW_URL
+* request: postApiV2PreprocessingsByIdRun
+* url: postApiV2PreprocessingsByIdRunURL
+* method: postApiV2PreprocessingsByIdRun_TYPE
+* raw_url: postApiV2PreprocessingsByIdRun_RAW_URL
      * @param id - 前処理ID
-     * @param model - 実行設定
+     * @param body - 実行設定
 */
-export const ApiV2PreprocessingsByIdRunPost = function(parameters = {}) {
+export const postApiV2PreprocessingsByIdRun = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/preprocessings/{id}/run'
@@ -6179,8 +6301,8 @@ export const ApiV2PreprocessingsByIdRunPost = function(parameters = {}) {
   if (parameters['id'] === undefined) {
     return Promise.reject(new Error('Missing required  parameter: id'))
   }
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -6189,13 +6311,13 @@ export const ApiV2PreprocessingsByIdRunPost = function(parameters = {}) {
   }
   return request('post', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2PreprocessingsByIdRunPost_RAW_URL = function() {
+export const postApiV2PreprocessingsByIdRun_RAW_URL = function() {
   return '/api/v2/preprocessings/{id}/run'
 }
-export const ApiV2PreprocessingsByIdRunPost_TYPE = function() {
+export const postApiV2PreprocessingsByIdRun_TYPE = function() {
   return 'post'
 }
-export const ApiV2PreprocessingsByIdRunPostURL = function(parameters = {}) {
+export const postApiV2PreprocessingsByIdRunURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/preprocessings/{id}/run'
@@ -6211,15 +6333,15 @@ export const ApiV2PreprocessingsByIdRunPostURL = function(parameters = {}) {
 /**
 * 前処理履歴に出力データを追加する。
 追加する対象の前処理履歴は実行中のステータスのみ許可される。
-* request: ApiV2PreprocessingsByIdHistoriesByDataIdDataPost
-* url: ApiV2PreprocessingsByIdHistoriesByDataIdDataPostURL
-* method: ApiV2PreprocessingsByIdHistoriesByDataIdDataPost_TYPE
-* raw_url: ApiV2PreprocessingsByIdHistoriesByDataIdDataPost_RAW_URL
+* request: postApiV2PreprocessingsByIdHistoriesByDataIdData
+* url: postApiV2PreprocessingsByIdHistoriesByDataIdDataURL
+* method: postApiV2PreprocessingsByIdHistoriesByDataIdData_TYPE
+* raw_url: postApiV2PreprocessingsByIdHistoriesByDataIdData_RAW_URL
      * @param id - 前処理ID
      * @param dataId - 入力データID
-     * @param model - データ情報
+     * @param body - データ情報
 */
-export const ApiV2PreprocessingsByIdHistoriesByDataIdDataPost = function(parameters = {}) {
+export const postApiV2PreprocessingsByIdHistoriesByDataIdData = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/preprocessings/{id}/histories/{dataId}/data'
@@ -6234,8 +6356,8 @@ export const ApiV2PreprocessingsByIdHistoriesByDataIdDataPost = function(paramet
   if (parameters['dataId'] === undefined) {
     return Promise.reject(new Error('Missing required  parameter: dataId'))
   }
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -6244,13 +6366,13 @@ export const ApiV2PreprocessingsByIdHistoriesByDataIdDataPost = function(paramet
   }
   return request('post', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2PreprocessingsByIdHistoriesByDataIdDataPost_RAW_URL = function() {
+export const postApiV2PreprocessingsByIdHistoriesByDataIdData_RAW_URL = function() {
   return '/api/v2/preprocessings/{id}/histories/{dataId}/data'
 }
-export const ApiV2PreprocessingsByIdHistoriesByDataIdDataPost_TYPE = function() {
+export const postApiV2PreprocessingsByIdHistoriesByDataIdData_TYPE = function() {
   return 'post'
 }
-export const ApiV2PreprocessingsByIdHistoriesByDataIdDataPostURL = function(parameters = {}) {
+export const postApiV2PreprocessingsByIdHistoriesByDataIdDataURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/preprocessings/{id}/histories/{dataId}/data'
@@ -6267,14 +6389,14 @@ export const ApiV2PreprocessingsByIdHistoriesByDataIdDataPostURL = function(para
 /**
 * 前処理履歴の登録を異常終了させる。
 前処理履歴はエラーのステータスとなり、前処理結果の追加が不可能な状態になる。
-* request: ApiV2PreprocessingsByIdHistoriesByDataIdHaltPost
-* url: ApiV2PreprocessingsByIdHistoriesByDataIdHaltPostURL
-* method: ApiV2PreprocessingsByIdHistoriesByDataIdHaltPost_TYPE
-* raw_url: ApiV2PreprocessingsByIdHistoriesByDataIdHaltPost_RAW_URL
+* request: postApiV2PreprocessingsByIdHistoriesByDataIdHalt
+* url: postApiV2PreprocessingsByIdHistoriesByDataIdHaltURL
+* method: postApiV2PreprocessingsByIdHistoriesByDataIdHalt_TYPE
+* raw_url: postApiV2PreprocessingsByIdHistoriesByDataIdHalt_RAW_URL
      * @param id - 前処理ID
      * @param dataId - 入力データID
 */
-export const ApiV2PreprocessingsByIdHistoriesByDataIdHaltPost = function(parameters = {}) {
+export const postApiV2PreprocessingsByIdHistoriesByDataIdHalt = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/preprocessings/{id}/histories/{dataId}/halt'
@@ -6296,13 +6418,13 @@ export const ApiV2PreprocessingsByIdHistoriesByDataIdHaltPost = function(paramet
   }
   return request('post', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2PreprocessingsByIdHistoriesByDataIdHaltPost_RAW_URL = function() {
+export const postApiV2PreprocessingsByIdHistoriesByDataIdHalt_RAW_URL = function() {
   return '/api/v2/preprocessings/{id}/histories/{dataId}/halt'
 }
-export const ApiV2PreprocessingsByIdHistoriesByDataIdHaltPost_TYPE = function() {
+export const postApiV2PreprocessingsByIdHistoriesByDataIdHalt_TYPE = function() {
   return 'post'
 }
-export const ApiV2PreprocessingsByIdHistoriesByDataIdHaltPostURL = function(parameters = {}) {
+export const postApiV2PreprocessingsByIdHistoriesByDataIdHaltURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/preprocessings/{id}/histories/{dataId}/halt'
@@ -6319,14 +6441,14 @@ export const ApiV2PreprocessingsByIdHistoriesByDataIdHaltPostURL = function(para
 /**
 * 前処理履歴の登録を完了する。
 前処理履歴は完了のステータスとなり、前処理結果の追加が不可能な状態になる。
-* request: ApiV2PreprocessingsByIdHistoriesByDataIdCompletePost
-* url: ApiV2PreprocessingsByIdHistoriesByDataIdCompletePostURL
-* method: ApiV2PreprocessingsByIdHistoriesByDataIdCompletePost_TYPE
-* raw_url: ApiV2PreprocessingsByIdHistoriesByDataIdCompletePost_RAW_URL
+* request: postApiV2PreprocessingsByIdHistoriesByDataIdComplete
+* url: postApiV2PreprocessingsByIdHistoriesByDataIdCompleteURL
+* method: postApiV2PreprocessingsByIdHistoriesByDataIdComplete_TYPE
+* raw_url: postApiV2PreprocessingsByIdHistoriesByDataIdComplete_RAW_URL
      * @param id - 前処理ID
      * @param dataId - 入力データID
 */
-export const ApiV2PreprocessingsByIdHistoriesByDataIdCompletePost = function(parameters = {}) {
+export const postApiV2PreprocessingsByIdHistoriesByDataIdComplete = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/preprocessings/{id}/histories/{dataId}/complete'
@@ -6348,13 +6470,13 @@ export const ApiV2PreprocessingsByIdHistoriesByDataIdCompletePost = function(par
   }
   return request('post', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2PreprocessingsByIdHistoriesByDataIdCompletePost_RAW_URL = function() {
+export const postApiV2PreprocessingsByIdHistoriesByDataIdComplete_RAW_URL = function() {
   return '/api/v2/preprocessings/{id}/histories/{dataId}/complete'
 }
-export const ApiV2PreprocessingsByIdHistoriesByDataIdCompletePost_TYPE = function() {
+export const postApiV2PreprocessingsByIdHistoriesByDataIdComplete_TYPE = function() {
   return 'post'
 }
-export const ApiV2PreprocessingsByIdHistoriesByDataIdCompletePostURL = function(parameters = {}) {
+export const postApiV2PreprocessingsByIdHistoriesByDataIdCompleteURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/preprocessings/{id}/histories/{dataId}/complete'
@@ -6370,15 +6492,15 @@ export const ApiV2PreprocessingsByIdHistoriesByDataIdCompletePostURL = function(
 }
 /**
  * 前処理履歴添付ファイルの一覧を取得する。
- * request: ApiV2PreprocessingsByIdHistoriesByDataIdFilesGet
- * url: ApiV2PreprocessingsByIdHistoriesByDataIdFilesGetURL
- * method: ApiV2PreprocessingsByIdHistoriesByDataIdFilesGet_TYPE
- * raw_url: ApiV2PreprocessingsByIdHistoriesByDataIdFilesGet_RAW_URL
+ * request: getApiV2PreprocessingsByIdHistoriesByDataIdFiles
+ * url: getApiV2PreprocessingsByIdHistoriesByDataIdFilesURL
+ * method: getApiV2PreprocessingsByIdHistoriesByDataIdFiles_TYPE
+ * raw_url: getApiV2PreprocessingsByIdHistoriesByDataIdFiles_RAW_URL
  * @param id - 対象の前処理履歴ID
  * @param dataId - 入力データID
  * @param withUrl - 結果にダウンロード用のURLを含めるか
  */
-export const ApiV2PreprocessingsByIdHistoriesByDataIdFilesGet = function(parameters = {}) {
+export const getApiV2PreprocessingsByIdHistoriesByDataIdFiles = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/preprocessings/{id}/histories/{dataId}/files'
@@ -6403,13 +6525,13 @@ export const ApiV2PreprocessingsByIdHistoriesByDataIdFilesGet = function(paramet
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2PreprocessingsByIdHistoriesByDataIdFilesGet_RAW_URL = function() {
+export const getApiV2PreprocessingsByIdHistoriesByDataIdFiles_RAW_URL = function() {
   return '/api/v2/preprocessings/{id}/histories/{dataId}/files'
 }
-export const ApiV2PreprocessingsByIdHistoriesByDataIdFilesGet_TYPE = function() {
+export const getApiV2PreprocessingsByIdHistoriesByDataIdFiles_TYPE = function() {
   return 'get'
 }
-export const ApiV2PreprocessingsByIdHistoriesByDataIdFilesGetURL = function(parameters = {}) {
+export const getApiV2PreprocessingsByIdHistoriesByDataIdFilesURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/preprocessings/{id}/histories/{dataId}/files'
@@ -6428,12 +6550,12 @@ export const ApiV2PreprocessingsByIdHistoriesByDataIdFilesGetURL = function(para
 }
 /**
  * 登録済みのDockerレジストリ エンドポイント一覧を取得
- * request: ApiV2AdminRegistryEndpointsGet
- * url: ApiV2AdminRegistryEndpointsGetURL
- * method: ApiV2AdminRegistryEndpointsGet_TYPE
- * raw_url: ApiV2AdminRegistryEndpointsGet_RAW_URL
+ * request: getApiV2AdminRegistryEndpoints
+ * url: getApiV2AdminRegistryEndpointsURL
+ * method: getApiV2AdminRegistryEndpoints_TYPE
+ * raw_url: getApiV2AdminRegistryEndpoints_RAW_URL
  */
-export const ApiV2AdminRegistryEndpointsGet = function(parameters = {}) {
+export const getApiV2AdminRegistryEndpoints = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/registry/endpoints'
@@ -6447,13 +6569,13 @@ export const ApiV2AdminRegistryEndpointsGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminRegistryEndpointsGet_RAW_URL = function() {
+export const getApiV2AdminRegistryEndpoints_RAW_URL = function() {
   return '/api/v2/admin/registry/endpoints'
 }
-export const ApiV2AdminRegistryEndpointsGet_TYPE = function() {
+export const getApiV2AdminRegistryEndpoints_TYPE = function() {
   return 'get'
 }
-export const ApiV2AdminRegistryEndpointsGetURL = function(parameters = {}) {
+export const getApiV2AdminRegistryEndpointsURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/registry/endpoints'
@@ -6467,21 +6589,21 @@ export const ApiV2AdminRegistryEndpointsGetURL = function(parameters = {}) {
 }
 /**
  * 新規にDockerレジストリ エンドポイントを登録する
- * request: ApiV2AdminRegistryEndpointsPost
- * url: ApiV2AdminRegistryEndpointsPostURL
- * method: ApiV2AdminRegistryEndpointsPost_TYPE
- * raw_url: ApiV2AdminRegistryEndpointsPost_RAW_URL
- * @param model - 新規作成モデル
+ * request: postApiV2AdminRegistryEndpoints
+ * url: postApiV2AdminRegistryEndpointsURL
+ * method: postApiV2AdminRegistryEndpoints_TYPE
+ * raw_url: postApiV2AdminRegistryEndpoints_RAW_URL
+ * @param body - 新規作成モデル
  */
-export const ApiV2AdminRegistryEndpointsPost = function(parameters = {}) {
+export const postApiV2AdminRegistryEndpoints = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/registry/endpoints'
   let body
   let queryParameters = {}
   let form = {}
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -6490,13 +6612,13 @@ export const ApiV2AdminRegistryEndpointsPost = function(parameters = {}) {
   }
   return request('post', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminRegistryEndpointsPost_RAW_URL = function() {
+export const postApiV2AdminRegistryEndpoints_RAW_URL = function() {
   return '/api/v2/admin/registry/endpoints'
 }
-export const ApiV2AdminRegistryEndpointsPost_TYPE = function() {
+export const postApiV2AdminRegistryEndpoints_TYPE = function() {
   return 'post'
 }
-export const ApiV2AdminRegistryEndpointsPostURL = function(parameters = {}) {
+export const postApiV2AdminRegistryEndpointsURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/registry/endpoints'
@@ -6510,12 +6632,12 @@ export const ApiV2AdminRegistryEndpointsPostURL = function(parameters = {}) {
 }
 /**
  * Dockerレジストリ種別一覧を取得
- * request: ApiV2AdminRegistryTypesGet
- * url: ApiV2AdminRegistryTypesGetURL
- * method: ApiV2AdminRegistryTypesGet_TYPE
- * raw_url: ApiV2AdminRegistryTypesGet_RAW_URL
+ * request: getApiV2AdminRegistryTypes
+ * url: getApiV2AdminRegistryTypesURL
+ * method: getApiV2AdminRegistryTypes_TYPE
+ * raw_url: getApiV2AdminRegistryTypes_RAW_URL
  */
-export const ApiV2AdminRegistryTypesGet = function(parameters = {}) {
+export const getApiV2AdminRegistryTypes = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/registry/types'
@@ -6529,13 +6651,13 @@ export const ApiV2AdminRegistryTypesGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminRegistryTypesGet_RAW_URL = function() {
+export const getApiV2AdminRegistryTypes_RAW_URL = function() {
   return '/api/v2/admin/registry/types'
 }
-export const ApiV2AdminRegistryTypesGet_TYPE = function() {
+export const getApiV2AdminRegistryTypes_TYPE = function() {
   return 'get'
 }
-export const ApiV2AdminRegistryTypesGetURL = function(parameters = {}) {
+export const getApiV2AdminRegistryTypesURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/registry/types'
@@ -6549,13 +6671,13 @@ export const ApiV2AdminRegistryTypesGetURL = function(parameters = {}) {
 }
 /**
  * 指定されたIDのDockerレジストリ エンドポイント情報を取得
- * request: ApiV2AdminRegistryEndpointsByIdGet
- * url: ApiV2AdminRegistryEndpointsByIdGetURL
- * method: ApiV2AdminRegistryEndpointsByIdGet_TYPE
- * raw_url: ApiV2AdminRegistryEndpointsByIdGet_RAW_URL
+ * request: getApiV2AdminRegistryEndpointsById
+ * url: getApiV2AdminRegistryEndpointsByIdURL
+ * method: getApiV2AdminRegistryEndpointsById_TYPE
+ * raw_url: getApiV2AdminRegistryEndpointsById_RAW_URL
  * @param id - レジストリID
  */
-export const ApiV2AdminRegistryEndpointsByIdGet = function(parameters = {}) {
+export const getApiV2AdminRegistryEndpointsById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/registry/endpoints/{id}'
@@ -6573,13 +6695,13 @@ export const ApiV2AdminRegistryEndpointsByIdGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminRegistryEndpointsByIdGet_RAW_URL = function() {
+export const getApiV2AdminRegistryEndpointsById_RAW_URL = function() {
   return '/api/v2/admin/registry/endpoints/{id}'
 }
-export const ApiV2AdminRegistryEndpointsByIdGet_TYPE = function() {
+export const getApiV2AdminRegistryEndpointsById_TYPE = function() {
   return 'get'
 }
-export const ApiV2AdminRegistryEndpointsByIdGetURL = function(parameters = {}) {
+export const getApiV2AdminRegistryEndpointsByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/registry/endpoints/{id}'
@@ -6594,14 +6716,14 @@ export const ApiV2AdminRegistryEndpointsByIdGetURL = function(parameters = {}) {
 }
 /**
  * Dockerレジストリ エンドポイント情報の編集
- * request: ApiV2AdminRegistryEndpointsByIdPut
- * url: ApiV2AdminRegistryEndpointsByIdPutURL
- * method: ApiV2AdminRegistryEndpointsByIdPut_TYPE
- * raw_url: ApiV2AdminRegistryEndpointsByIdPut_RAW_URL
+ * request: putApiV2AdminRegistryEndpointsById
+ * url: putApiV2AdminRegistryEndpointsByIdURL
+ * method: putApiV2AdminRegistryEndpointsById_TYPE
+ * raw_url: putApiV2AdminRegistryEndpointsById_RAW_URL
  * @param id - 編集対象レジストリID
- * @param model - 編集モデル
+ * @param body - 編集モデル
  */
-export const ApiV2AdminRegistryEndpointsByIdPut = function(parameters = {}) {
+export const putApiV2AdminRegistryEndpointsById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/registry/endpoints/{id}'
@@ -6612,8 +6734,8 @@ export const ApiV2AdminRegistryEndpointsByIdPut = function(parameters = {}) {
   if (parameters['id'] === undefined) {
     return Promise.reject(new Error('Missing required  parameter: id'))
   }
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -6622,13 +6744,13 @@ export const ApiV2AdminRegistryEndpointsByIdPut = function(parameters = {}) {
   }
   return request('put', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminRegistryEndpointsByIdPut_RAW_URL = function() {
+export const putApiV2AdminRegistryEndpointsById_RAW_URL = function() {
   return '/api/v2/admin/registry/endpoints/{id}'
 }
-export const ApiV2AdminRegistryEndpointsByIdPut_TYPE = function() {
+export const putApiV2AdminRegistryEndpointsById_TYPE = function() {
   return 'put'
 }
-export const ApiV2AdminRegistryEndpointsByIdPutURL = function(parameters = {}) {
+export const putApiV2AdminRegistryEndpointsByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/registry/endpoints/{id}'
@@ -6643,13 +6765,13 @@ export const ApiV2AdminRegistryEndpointsByIdPutURL = function(parameters = {}) {
 }
 /**
  * Dockerレジストリ エンドポイント情報の削除
- * request: ApiV2AdminRegistryEndpointsByIdDelete
- * url: ApiV2AdminRegistryEndpointsByIdDeleteURL
- * method: ApiV2AdminRegistryEndpointsByIdDelete_TYPE
- * raw_url: ApiV2AdminRegistryEndpointsByIdDelete_RAW_URL
+ * request: deleteApiV2AdminRegistryEndpointsById
+ * url: deleteApiV2AdminRegistryEndpointsByIdURL
+ * method: deleteApiV2AdminRegistryEndpointsById_TYPE
+ * raw_url: deleteApiV2AdminRegistryEndpointsById_RAW_URL
  * @param id - 削除対象レジストリID
  */
-export const ApiV2AdminRegistryEndpointsByIdDelete = function(parameters = {}) {
+export const deleteApiV2AdminRegistryEndpointsById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/registry/endpoints/{id}'
@@ -6667,13 +6789,13 @@ export const ApiV2AdminRegistryEndpointsByIdDelete = function(parameters = {}) {
   }
   return request('delete', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminRegistryEndpointsByIdDelete_RAW_URL = function() {
+export const deleteApiV2AdminRegistryEndpointsById_RAW_URL = function() {
   return '/api/v2/admin/registry/endpoints/{id}'
 }
-export const ApiV2AdminRegistryEndpointsByIdDelete_TYPE = function() {
+export const deleteApiV2AdminRegistryEndpointsById_TYPE = function() {
   return 'delete'
 }
-export const ApiV2AdminRegistryEndpointsByIdDeleteURL = function(parameters = {}) {
+export const deleteApiV2AdminRegistryEndpointsByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/registry/endpoints/{id}'
@@ -6688,12 +6810,12 @@ export const ApiV2AdminRegistryEndpointsByIdDeleteURL = function(parameters = {}
 }
 /**
  * テナント管理者が選択可能な登録済みのDockerレジストリ エンドポイント一覧を取得
- * request: ApiV2TenantRegistryEndpointsGet
- * url: ApiV2TenantRegistryEndpointsGetURL
- * method: ApiV2TenantRegistryEndpointsGet_TYPE
- * raw_url: ApiV2TenantRegistryEndpointsGet_RAW_URL
+ * request: getApiV2TenantRegistryEndpoints
+ * url: getApiV2TenantRegistryEndpointsURL
+ * method: getApiV2TenantRegistryEndpoints_TYPE
+ * raw_url: getApiV2TenantRegistryEndpoints_RAW_URL
  */
-export const ApiV2TenantRegistryEndpointsGet = function(parameters = {}) {
+export const getApiV2TenantRegistryEndpoints = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/tenant/registry/endpoints'
@@ -6707,13 +6829,13 @@ export const ApiV2TenantRegistryEndpointsGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2TenantRegistryEndpointsGet_RAW_URL = function() {
+export const getApiV2TenantRegistryEndpoints_RAW_URL = function() {
   return '/api/v2/tenant/registry/endpoints'
 }
-export const ApiV2TenantRegistryEndpointsGet_TYPE = function() {
+export const getApiV2TenantRegistryEndpoints_TYPE = function() {
   return 'get'
 }
-export const ApiV2TenantRegistryEndpointsGetURL = function(parameters = {}) {
+export const getApiV2TenantRegistryEndpointsURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/tenant/registry/endpoints'
@@ -6727,13 +6849,13 @@ export const ApiV2TenantRegistryEndpointsGetURL = function(parameters = {}) {
 }
 /**
  * レジストリに存在する全イメージの取得
- * request: ApiV2RegistriesByRegistryIdImagesGet
- * url: ApiV2RegistriesByRegistryIdImagesGetURL
- * method: ApiV2RegistriesByRegistryIdImagesGet_TYPE
- * raw_url: ApiV2RegistriesByRegistryIdImagesGet_RAW_URL
+ * request: getApiV2RegistriesByRegistryIdImages
+ * url: getApiV2RegistriesByRegistryIdImagesURL
+ * method: getApiV2RegistriesByRegistryIdImages_TYPE
+ * raw_url: getApiV2RegistriesByRegistryIdImages_RAW_URL
  * @param registryId - レジストリID
  */
-export const ApiV2RegistriesByRegistryIdImagesGet = function(parameters = {}) {
+export const getApiV2RegistriesByRegistryIdImages = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/registries/{registryId}/images'
@@ -6751,13 +6873,13 @@ export const ApiV2RegistriesByRegistryIdImagesGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2RegistriesByRegistryIdImagesGet_RAW_URL = function() {
+export const getApiV2RegistriesByRegistryIdImages_RAW_URL = function() {
   return '/api/v2/registries/{registryId}/images'
 }
-export const ApiV2RegistriesByRegistryIdImagesGet_TYPE = function() {
+export const getApiV2RegistriesByRegistryIdImages_TYPE = function() {
   return 'get'
 }
-export const ApiV2RegistriesByRegistryIdImagesGetURL = function(parameters = {}) {
+export const getApiV2RegistriesByRegistryIdImagesURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/registries/{registryId}/images'
@@ -6772,14 +6894,14 @@ export const ApiV2RegistriesByRegistryIdImagesGetURL = function(parameters = {})
 }
 /**
  * イメージ名に対応するタグ一覧を取得
- * request: ApiV2RegistriesByRegistryIdImagesByImageTagsGet
- * url: ApiV2RegistriesByRegistryIdImagesByImageTagsGetURL
- * method: ApiV2RegistriesByRegistryIdImagesByImageTagsGet_TYPE
- * raw_url: ApiV2RegistriesByRegistryIdImagesByImageTagsGet_RAW_URL
+ * request: getApiV2RegistriesByRegistryIdImagesByImageTags
+ * url: getApiV2RegistriesByRegistryIdImagesByImageTagsURL
+ * method: getApiV2RegistriesByRegistryIdImagesByImageTags_TYPE
+ * raw_url: getApiV2RegistriesByRegistryIdImagesByImageTags_RAW_URL
  * @param registryId - レジストリID
  * @param image - イメージ名
  */
-export const ApiV2RegistriesByRegistryIdImagesByImageTagsGet = function(parameters = {}) {
+export const getApiV2RegistriesByRegistryIdImagesByImageTags = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/registries/{registryId}/images/{image}/tags'
@@ -6801,13 +6923,13 @@ export const ApiV2RegistriesByRegistryIdImagesByImageTagsGet = function(paramete
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2RegistriesByRegistryIdImagesByImageTagsGet_RAW_URL = function() {
+export const getApiV2RegistriesByRegistryIdImagesByImageTags_RAW_URL = function() {
   return '/api/v2/registries/{registryId}/images/{image}/tags'
 }
-export const ApiV2RegistriesByRegistryIdImagesByImageTagsGet_TYPE = function() {
+export const getApiV2RegistriesByRegistryIdImagesByImageTags_TYPE = function() {
   return 'get'
 }
-export const ApiV2RegistriesByRegistryIdImagesByImageTagsGetURL = function(parameters = {}) {
+export const getApiV2RegistriesByRegistryIdImagesByImageTagsURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/registries/{registryId}/images/{image}/tags'
@@ -6824,14 +6946,14 @@ export const ApiV2RegistriesByRegistryIdImagesByImageTagsGetURL = function(param
 /**
 * 階層化されたURLを吸収するためのダミーAPI。
 製品版のSwaggerからは削除する。
-* request: ApiV2RegistriesByRegistryIdImagesBySegmentsGet
-* url: ApiV2RegistriesByRegistryIdImagesBySegmentsGetURL
-* method: ApiV2RegistriesByRegistryIdImagesBySegmentsGet_TYPE
-* raw_url: ApiV2RegistriesByRegistryIdImagesBySegmentsGet_RAW_URL
+* request: getApiV2RegistriesByRegistryIdImagesBySegments
+* url: getApiV2RegistriesByRegistryIdImagesBySegmentsURL
+* method: getApiV2RegistriesByRegistryIdImagesBySegments_TYPE
+* raw_url: getApiV2RegistriesByRegistryIdImagesBySegments_RAW_URL
      * @param registryId - 
      * @param segments - 
 */
-export const ApiV2RegistriesByRegistryIdImagesBySegmentsGet = function(parameters = {}) {
+export const getApiV2RegistriesByRegistryIdImagesBySegments = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/registries/{registryId}/images/{segments}'
@@ -6853,13 +6975,13 @@ export const ApiV2RegistriesByRegistryIdImagesBySegmentsGet = function(parameter
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2RegistriesByRegistryIdImagesBySegmentsGet_RAW_URL = function() {
+export const getApiV2RegistriesByRegistryIdImagesBySegments_RAW_URL = function() {
   return '/api/v2/registries/{registryId}/images/{segments}'
 }
-export const ApiV2RegistriesByRegistryIdImagesBySegmentsGet_TYPE = function() {
+export const getApiV2RegistriesByRegistryIdImagesBySegments_TYPE = function() {
   return 'get'
 }
-export const ApiV2RegistriesByRegistryIdImagesBySegmentsGetURL = function(parameters = {}) {
+export const getApiV2RegistriesByRegistryIdImagesBySegmentsURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/registries/{registryId}/images/{segments}'
@@ -6875,12 +6997,12 @@ export const ApiV2RegistriesByRegistryIdImagesBySegmentsGetURL = function(parame
 }
 /**
  * ノード単位のリソースデータを取得する
- * request: ApiV2AdminResourceNodesGet
- * url: ApiV2AdminResourceNodesGetURL
- * method: ApiV2AdminResourceNodesGet_TYPE
- * raw_url: ApiV2AdminResourceNodesGet_RAW_URL
+ * request: getApiV2AdminResourceNodes
+ * url: getApiV2AdminResourceNodesURL
+ * method: getApiV2AdminResourceNodes_TYPE
+ * raw_url: getApiV2AdminResourceNodes_RAW_URL
  */
-export const ApiV2AdminResourceNodesGet = function(parameters = {}) {
+export const getApiV2AdminResourceNodes = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/resource/nodes'
@@ -6894,13 +7016,13 @@ export const ApiV2AdminResourceNodesGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminResourceNodesGet_RAW_URL = function() {
+export const getApiV2AdminResourceNodes_RAW_URL = function() {
   return '/api/v2/admin/resource/nodes'
 }
-export const ApiV2AdminResourceNodesGet_TYPE = function() {
+export const getApiV2AdminResourceNodes_TYPE = function() {
   return 'get'
 }
-export const ApiV2AdminResourceNodesGetURL = function(parameters = {}) {
+export const getApiV2AdminResourceNodesURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/resource/nodes'
@@ -6914,12 +7036,12 @@ export const ApiV2AdminResourceNodesGetURL = function(parameters = {}) {
 }
 /**
  * テナント単位のリソースデータを取得する
- * request: ApiV2AdminResourceTenantsGet
- * url: ApiV2AdminResourceTenantsGetURL
- * method: ApiV2AdminResourceTenantsGet_TYPE
- * raw_url: ApiV2AdminResourceTenantsGet_RAW_URL
+ * request: getApiV2AdminResourceTenants
+ * url: getApiV2AdminResourceTenantsURL
+ * method: getApiV2AdminResourceTenants_TYPE
+ * raw_url: getApiV2AdminResourceTenants_RAW_URL
  */
-export const ApiV2AdminResourceTenantsGet = function(parameters = {}) {
+export const getApiV2AdminResourceTenants = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/resource/tenants'
@@ -6933,13 +7055,13 @@ export const ApiV2AdminResourceTenantsGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminResourceTenantsGet_RAW_URL = function() {
+export const getApiV2AdminResourceTenants_RAW_URL = function() {
   return '/api/v2/admin/resource/tenants'
 }
-export const ApiV2AdminResourceTenantsGet_TYPE = function() {
+export const getApiV2AdminResourceTenants_TYPE = function() {
   return 'get'
 }
-export const ApiV2AdminResourceTenantsGetURL = function(parameters = {}) {
+export const getApiV2AdminResourceTenantsURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/resource/tenants'
@@ -6953,12 +7075,12 @@ export const ApiV2AdminResourceTenantsGetURL = function(parameters = {}) {
 }
 /**
  * 起動中のコンテナ一覧を取得する
- * request: ApiV2AdminResourceContainersGet
- * url: ApiV2AdminResourceContainersGetURL
- * method: ApiV2AdminResourceContainersGet_TYPE
- * raw_url: ApiV2AdminResourceContainersGet_RAW_URL
+ * request: getApiV2AdminResourceContainers
+ * url: getApiV2AdminResourceContainersURL
+ * method: getApiV2AdminResourceContainers_TYPE
+ * raw_url: getApiV2AdminResourceContainers_RAW_URL
  */
-export const ApiV2AdminResourceContainersGet = function(parameters = {}) {
+export const getApiV2AdminResourceContainers = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/resource/containers'
@@ -6972,13 +7094,13 @@ export const ApiV2AdminResourceContainersGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminResourceContainersGet_RAW_URL = function() {
+export const getApiV2AdminResourceContainers_RAW_URL = function() {
   return '/api/v2/admin/resource/containers'
 }
-export const ApiV2AdminResourceContainersGet_TYPE = function() {
+export const getApiV2AdminResourceContainers_TYPE = function() {
   return 'get'
 }
-export const ApiV2AdminResourceContainersGetURL = function(parameters = {}) {
+export const getApiV2AdminResourceContainersURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/resource/containers'
@@ -6992,12 +7114,12 @@ export const ApiV2AdminResourceContainersGetURL = function(parameters = {}) {
 }
 /**
  * コンテナ種別一覧を取得
- * request: ApiV2AdminResourceContainer_typesGet
- * url: ApiV2AdminResourceContainer_typesGetURL
- * method: ApiV2AdminResourceContainer_typesGet_TYPE
- * raw_url: ApiV2AdminResourceContainer_typesGet_RAW_URL
+ * request: getApiV2AdminResourceContainerTypes
+ * url: getApiV2AdminResourceContainerTypesURL
+ * method: getApiV2AdminResourceContainerTypes_TYPE
+ * raw_url: getApiV2AdminResourceContainerTypes_RAW_URL
  */
-export const ApiV2AdminResourceContainer_typesGet = function(parameters = {}) {
+export const getApiV2AdminResourceContainerTypes = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/resource/container-types'
@@ -7011,13 +7133,13 @@ export const ApiV2AdminResourceContainer_typesGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminResourceContainer_typesGet_RAW_URL = function() {
+export const getApiV2AdminResourceContainerTypes_RAW_URL = function() {
   return '/api/v2/admin/resource/container-types'
 }
-export const ApiV2AdminResourceContainer_typesGet_TYPE = function() {
+export const getApiV2AdminResourceContainerTypes_TYPE = function() {
   return 'get'
 }
-export const ApiV2AdminResourceContainer_typesGetURL = function(parameters = {}) {
+export const getApiV2AdminResourceContainerTypesURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/resource/container-types'
@@ -7031,14 +7153,14 @@ export const ApiV2AdminResourceContainer_typesGetURL = function(parameters = {})
 }
 /**
  * 指定コンテナのリソースデータを取得する
- * request: ApiV2AdminResourceContainersByTenantIdByNameGet
- * url: ApiV2AdminResourceContainersByTenantIdByNameGetURL
- * method: ApiV2AdminResourceContainersByTenantIdByNameGet_TYPE
- * raw_url: ApiV2AdminResourceContainersByTenantIdByNameGet_RAW_URL
+ * request: getApiV2AdminResourceContainersByTenantIdByName
+ * url: getApiV2AdminResourceContainersByTenantIdByNameURL
+ * method: getApiV2AdminResourceContainersByTenantIdByName_TYPE
+ * raw_url: getApiV2AdminResourceContainersByTenantIdByName_RAW_URL
  * @param tenantId - テナントID
  * @param name - コンテナ名
  */
-export const ApiV2AdminResourceContainersByTenantIdByNameGet = function(parameters = {}) {
+export const getApiV2AdminResourceContainersByTenantIdByName = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/resource/containers/{tenantId}/{name}'
@@ -7060,13 +7182,13 @@ export const ApiV2AdminResourceContainersByTenantIdByNameGet = function(paramete
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminResourceContainersByTenantIdByNameGet_RAW_URL = function() {
+export const getApiV2AdminResourceContainersByTenantIdByName_RAW_URL = function() {
   return '/api/v2/admin/resource/containers/{tenantId}/{name}'
 }
-export const ApiV2AdminResourceContainersByTenantIdByNameGet_TYPE = function() {
+export const getApiV2AdminResourceContainersByTenantIdByName_TYPE = function() {
   return 'get'
 }
-export const ApiV2AdminResourceContainersByTenantIdByNameGetURL = function(parameters = {}) {
+export const getApiV2AdminResourceContainersByTenantIdByNameURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/resource/containers/{tenantId}/{name}'
@@ -7082,14 +7204,14 @@ export const ApiV2AdminResourceContainersByTenantIdByNameGetURL = function(param
 }
 /**
  * 指定コンテナを削除する
- * request: ApiV2AdminResourceContainersByTenantIdByNameDelete
- * url: ApiV2AdminResourceContainersByTenantIdByNameDeleteURL
- * method: ApiV2AdminResourceContainersByTenantIdByNameDelete_TYPE
- * raw_url: ApiV2AdminResourceContainersByTenantIdByNameDelete_RAW_URL
+ * request: deleteApiV2AdminResourceContainersByTenantIdByName
+ * url: deleteApiV2AdminResourceContainersByTenantIdByNameURL
+ * method: deleteApiV2AdminResourceContainersByTenantIdByName_TYPE
+ * raw_url: deleteApiV2AdminResourceContainersByTenantIdByName_RAW_URL
  * @param tenantId - テナントID
  * @param name - コンテナ名
  */
-export const ApiV2AdminResourceContainersByTenantIdByNameDelete = function(parameters = {}) {
+export const deleteApiV2AdminResourceContainersByTenantIdByName = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/resource/containers/{tenantId}/{name}'
@@ -7111,13 +7233,13 @@ export const ApiV2AdminResourceContainersByTenantIdByNameDelete = function(param
   }
   return request('delete', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminResourceContainersByTenantIdByNameDelete_RAW_URL = function() {
+export const deleteApiV2AdminResourceContainersByTenantIdByName_RAW_URL = function() {
   return '/api/v2/admin/resource/containers/{tenantId}/{name}'
 }
-export const ApiV2AdminResourceContainersByTenantIdByNameDelete_TYPE = function() {
+export const deleteApiV2AdminResourceContainersByTenantIdByName_TYPE = function() {
   return 'delete'
 }
-export const ApiV2AdminResourceContainersByTenantIdByNameDeleteURL = function(parameters = {}) {
+export const deleteApiV2AdminResourceContainersByTenantIdByNameURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/resource/containers/{tenantId}/{name}'
@@ -7133,14 +7255,14 @@ export const ApiV2AdminResourceContainersByTenantIdByNameDeleteURL = function(pa
 }
 /**
  * 指定コンテナのログを取得する
- * request: ApiV2AdminResourceContainersByTenantIdByNameLogGet
- * url: ApiV2AdminResourceContainersByTenantIdByNameLogGetURL
- * method: ApiV2AdminResourceContainersByTenantIdByNameLogGet_TYPE
- * raw_url: ApiV2AdminResourceContainersByTenantIdByNameLogGet_RAW_URL
+ * request: getApiV2AdminResourceContainersByTenantIdByNameLog
+ * url: getApiV2AdminResourceContainersByTenantIdByNameLogURL
+ * method: getApiV2AdminResourceContainersByTenantIdByNameLog_TYPE
+ * raw_url: getApiV2AdminResourceContainersByTenantIdByNameLog_RAW_URL
  * @param tenantId - テナントID
  * @param name - コンテナ名
  */
-export const ApiV2AdminResourceContainersByTenantIdByNameLogGet = function(parameters = {}) {
+export const getApiV2AdminResourceContainersByTenantIdByNameLog = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/resource/containers/{tenantId}/{name}/log'
@@ -7162,13 +7284,13 @@ export const ApiV2AdminResourceContainersByTenantIdByNameLogGet = function(param
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminResourceContainersByTenantIdByNameLogGet_RAW_URL = function() {
+export const getApiV2AdminResourceContainersByTenantIdByNameLog_RAW_URL = function() {
   return '/api/v2/admin/resource/containers/{tenantId}/{name}/log'
 }
-export const ApiV2AdminResourceContainersByTenantIdByNameLogGet_TYPE = function() {
+export const getApiV2AdminResourceContainersByTenantIdByNameLog_TYPE = function() {
   return 'get'
 }
-export const ApiV2AdminResourceContainersByTenantIdByNameLogGetURL = function(parameters = {}) {
+export const getApiV2AdminResourceContainersByTenantIdByNameLogURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/resource/containers/{tenantId}/{name}/log'
@@ -7184,14 +7306,14 @@ export const ApiV2AdminResourceContainersByTenantIdByNameLogGetURL = function(pa
 }
 /**
  * 指定コンテナのイベントを取得する
- * request: ApiV2AdminResourceContainersByTenantIdByNameEventsGet
- * url: ApiV2AdminResourceContainersByTenantIdByNameEventsGetURL
- * method: ApiV2AdminResourceContainersByTenantIdByNameEventsGet_TYPE
- * raw_url: ApiV2AdminResourceContainersByTenantIdByNameEventsGet_RAW_URL
+ * request: getApiV2AdminResourceContainersByTenantIdByNameEvents
+ * url: getApiV2AdminResourceContainersByTenantIdByNameEventsURL
+ * method: getApiV2AdminResourceContainersByTenantIdByNameEvents_TYPE
+ * raw_url: getApiV2AdminResourceContainersByTenantIdByNameEvents_RAW_URL
  * @param tenantId - テナントID
  * @param name - コンテナ名
  */
-export const ApiV2AdminResourceContainersByTenantIdByNameEventsGet = function(parameters = {}) {
+export const getApiV2AdminResourceContainersByTenantIdByNameEvents = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/resource/containers/{tenantId}/{name}/events'
@@ -7213,13 +7335,13 @@ export const ApiV2AdminResourceContainersByTenantIdByNameEventsGet = function(pa
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminResourceContainersByTenantIdByNameEventsGet_RAW_URL = function() {
+export const getApiV2AdminResourceContainersByTenantIdByNameEvents_RAW_URL = function() {
   return '/api/v2/admin/resource/containers/{tenantId}/{name}/events'
 }
-export const ApiV2AdminResourceContainersByTenantIdByNameEventsGet_TYPE = function() {
+export const getApiV2AdminResourceContainersByTenantIdByNameEvents_TYPE = function() {
   return 'get'
 }
-export const ApiV2AdminResourceContainersByTenantIdByNameEventsGetURL = function(parameters = {}) {
+export const getApiV2AdminResourceContainersByTenantIdByNameEventsURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/resource/containers/{tenantId}/{name}/events'
@@ -7235,12 +7357,12 @@ export const ApiV2AdminResourceContainersByTenantIdByNameEventsGetURL = function
 }
 /**
  * 特定テナント向けに起動中のコンテナ一覧を取得する
- * request: ApiV2TenantResourceContainersGet
- * url: ApiV2TenantResourceContainersGetURL
- * method: ApiV2TenantResourceContainersGet_TYPE
- * raw_url: ApiV2TenantResourceContainersGet_RAW_URL
+ * request: getApiV2TenantResourceContainers
+ * url: getApiV2TenantResourceContainersURL
+ * method: getApiV2TenantResourceContainers_TYPE
+ * raw_url: getApiV2TenantResourceContainers_RAW_URL
  */
-export const ApiV2TenantResourceContainersGet = function(parameters = {}) {
+export const getApiV2TenantResourceContainers = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/tenant/resource/containers'
@@ -7254,13 +7376,13 @@ export const ApiV2TenantResourceContainersGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2TenantResourceContainersGet_RAW_URL = function() {
+export const getApiV2TenantResourceContainers_RAW_URL = function() {
   return '/api/v2/tenant/resource/containers'
 }
-export const ApiV2TenantResourceContainersGet_TYPE = function() {
+export const getApiV2TenantResourceContainers_TYPE = function() {
   return 'get'
 }
-export const ApiV2TenantResourceContainersGetURL = function(parameters = {}) {
+export const getApiV2TenantResourceContainersURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/tenant/resource/containers'
@@ -7274,12 +7396,12 @@ export const ApiV2TenantResourceContainersGetURL = function(parameters = {}) {
 }
 /**
  * 特定テナントに紐づくノード単位のリソースデータを取得する
- * request: ApiV2TenantResourceNodesGet
- * url: ApiV2TenantResourceNodesGetURL
- * method: ApiV2TenantResourceNodesGet_TYPE
- * raw_url: ApiV2TenantResourceNodesGet_RAW_URL
+ * request: getApiV2TenantResourceNodes
+ * url: getApiV2TenantResourceNodesURL
+ * method: getApiV2TenantResourceNodes_TYPE
+ * raw_url: getApiV2TenantResourceNodes_RAW_URL
  */
-export const ApiV2TenantResourceNodesGet = function(parameters = {}) {
+export const getApiV2TenantResourceNodes = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/tenant/resource/nodes'
@@ -7293,13 +7415,13 @@ export const ApiV2TenantResourceNodesGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2TenantResourceNodesGet_RAW_URL = function() {
+export const getApiV2TenantResourceNodes_RAW_URL = function() {
   return '/api/v2/tenant/resource/nodes'
 }
-export const ApiV2TenantResourceNodesGet_TYPE = function() {
+export const getApiV2TenantResourceNodes_TYPE = function() {
   return 'get'
 }
-export const ApiV2TenantResourceNodesGetURL = function(parameters = {}) {
+export const getApiV2TenantResourceNodesURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/tenant/resource/nodes'
@@ -7313,13 +7435,13 @@ export const ApiV2TenantResourceNodesGetURL = function(parameters = {}) {
 }
 /**
  * 指定コンテナのリソースデータを取得する
- * request: ApiV2TenantResourceContainersByNameGet
- * url: ApiV2TenantResourceContainersByNameGetURL
- * method: ApiV2TenantResourceContainersByNameGet_TYPE
- * raw_url: ApiV2TenantResourceContainersByNameGet_RAW_URL
+ * request: getApiV2TenantResourceContainersByName
+ * url: getApiV2TenantResourceContainersByNameURL
+ * method: getApiV2TenantResourceContainersByName_TYPE
+ * raw_url: getApiV2TenantResourceContainersByName_RAW_URL
  * @param name - コンテナ名
  */
-export const ApiV2TenantResourceContainersByNameGet = function(parameters = {}) {
+export const getApiV2TenantResourceContainersByName = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/tenant/resource/containers/{name}'
@@ -7337,13 +7459,13 @@ export const ApiV2TenantResourceContainersByNameGet = function(parameters = {}) 
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2TenantResourceContainersByNameGet_RAW_URL = function() {
+export const getApiV2TenantResourceContainersByName_RAW_URL = function() {
   return '/api/v2/tenant/resource/containers/{name}'
 }
-export const ApiV2TenantResourceContainersByNameGet_TYPE = function() {
+export const getApiV2TenantResourceContainersByName_TYPE = function() {
   return 'get'
 }
-export const ApiV2TenantResourceContainersByNameGetURL = function(parameters = {}) {
+export const getApiV2TenantResourceContainersByNameURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/tenant/resource/containers/{name}'
@@ -7358,13 +7480,13 @@ export const ApiV2TenantResourceContainersByNameGetURL = function(parameters = {
 }
 /**
  * 指定コンテナを削除する
- * request: ApiV2TenantResourceContainersByNameDelete
- * url: ApiV2TenantResourceContainersByNameDeleteURL
- * method: ApiV2TenantResourceContainersByNameDelete_TYPE
- * raw_url: ApiV2TenantResourceContainersByNameDelete_RAW_URL
+ * request: deleteApiV2TenantResourceContainersByName
+ * url: deleteApiV2TenantResourceContainersByNameURL
+ * method: deleteApiV2TenantResourceContainersByName_TYPE
+ * raw_url: deleteApiV2TenantResourceContainersByName_RAW_URL
  * @param name - 
  */
-export const ApiV2TenantResourceContainersByNameDelete = function(parameters = {}) {
+export const deleteApiV2TenantResourceContainersByName = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/tenant/resource/containers/{name}'
@@ -7382,13 +7504,13 @@ export const ApiV2TenantResourceContainersByNameDelete = function(parameters = {
   }
   return request('delete', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2TenantResourceContainersByNameDelete_RAW_URL = function() {
+export const deleteApiV2TenantResourceContainersByName_RAW_URL = function() {
   return '/api/v2/tenant/resource/containers/{name}'
 }
-export const ApiV2TenantResourceContainersByNameDelete_TYPE = function() {
+export const deleteApiV2TenantResourceContainersByName_TYPE = function() {
   return 'delete'
 }
-export const ApiV2TenantResourceContainersByNameDeleteURL = function(parameters = {}) {
+export const deleteApiV2TenantResourceContainersByNameURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/tenant/resource/containers/{name}'
@@ -7403,13 +7525,13 @@ export const ApiV2TenantResourceContainersByNameDeleteURL = function(parameters 
 }
 /**
  * 指定コンテナのログを取得する
- * request: ApiV2TenantResourceContainersByNameLogGet
- * url: ApiV2TenantResourceContainersByNameLogGetURL
- * method: ApiV2TenantResourceContainersByNameLogGet_TYPE
- * raw_url: ApiV2TenantResourceContainersByNameLogGet_RAW_URL
+ * request: getApiV2TenantResourceContainersByNameLog
+ * url: getApiV2TenantResourceContainersByNameLogURL
+ * method: getApiV2TenantResourceContainersByNameLog_TYPE
+ * raw_url: getApiV2TenantResourceContainersByNameLog_RAW_URL
  * @param name - コンテナ名
  */
-export const ApiV2TenantResourceContainersByNameLogGet = function(parameters = {}) {
+export const getApiV2TenantResourceContainersByNameLog = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/tenant/resource/containers/{name}/log'
@@ -7427,13 +7549,13 @@ export const ApiV2TenantResourceContainersByNameLogGet = function(parameters = {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2TenantResourceContainersByNameLogGet_RAW_URL = function() {
+export const getApiV2TenantResourceContainersByNameLog_RAW_URL = function() {
   return '/api/v2/tenant/resource/containers/{name}/log'
 }
-export const ApiV2TenantResourceContainersByNameLogGet_TYPE = function() {
+export const getApiV2TenantResourceContainersByNameLog_TYPE = function() {
   return 'get'
 }
-export const ApiV2TenantResourceContainersByNameLogGetURL = function(parameters = {}) {
+export const getApiV2TenantResourceContainersByNameLogURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/tenant/resource/containers/{name}/log'
@@ -7448,12 +7570,12 @@ export const ApiV2TenantResourceContainersByNameLogGetURL = function(parameters 
 }
 /**
  * コンテナリソース履歴のメタデータを取得する
- * request: ApiV2AdminResourceHistoriesContainersMetadataGet
- * url: ApiV2AdminResourceHistoriesContainersMetadataGetURL
- * method: ApiV2AdminResourceHistoriesContainersMetadataGet_TYPE
- * raw_url: ApiV2AdminResourceHistoriesContainersMetadataGet_RAW_URL
+ * request: getApiV2AdminResourceHistoriesContainersMetadata
+ * url: getApiV2AdminResourceHistoriesContainersMetadataURL
+ * method: getApiV2AdminResourceHistoriesContainersMetadata_TYPE
+ * raw_url: getApiV2AdminResourceHistoriesContainersMetadata_RAW_URL
  */
-export const ApiV2AdminResourceHistoriesContainersMetadataGet = function(parameters = {}) {
+export const getApiV2AdminResourceHistoriesContainersMetadata = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/resource/histories/containers/metadata'
@@ -7467,13 +7589,13 @@ export const ApiV2AdminResourceHistoriesContainersMetadataGet = function(paramet
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminResourceHistoriesContainersMetadataGet_RAW_URL = function() {
+export const getApiV2AdminResourceHistoriesContainersMetadata_RAW_URL = function() {
   return '/api/v2/admin/resource/histories/containers/metadata'
 }
-export const ApiV2AdminResourceHistoriesContainersMetadataGet_TYPE = function() {
+export const getApiV2AdminResourceHistoriesContainersMetadata_TYPE = function() {
   return 'get'
 }
-export const ApiV2AdminResourceHistoriesContainersMetadataGetURL = function(parameters = {}) {
+export const getApiV2AdminResourceHistoriesContainersMetadataURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/resource/histories/containers/metadata'
@@ -7487,15 +7609,15 @@ export const ApiV2AdminResourceHistoriesContainersMetadataGetURL = function(para
 }
 /**
  * コンテナリソース履歴のデータを取得する
- * request: ApiV2AdminResourceHistoriesContainersDataGet
- * url: ApiV2AdminResourceHistoriesContainersDataGetURL
- * method: ApiV2AdminResourceHistoriesContainersDataGet_TYPE
- * raw_url: ApiV2AdminResourceHistoriesContainersDataGet_RAW_URL
+ * request: getApiV2AdminResourceHistoriesContainersData
+ * url: getApiV2AdminResourceHistoriesContainersDataURL
+ * method: getApiV2AdminResourceHistoriesContainersData_TYPE
+ * raw_url: getApiV2AdminResourceHistoriesContainersData_RAW_URL
  * @param startDate - 開始日
  * @param endDate - 終了日
  * @param withHeader - ヘッダ情報を付与するか
  */
-export const ApiV2AdminResourceHistoriesContainersDataGet = function(parameters = {}) {
+export const getApiV2AdminResourceHistoriesContainersData = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/resource/histories/containers/data'
@@ -7518,13 +7640,13 @@ export const ApiV2AdminResourceHistoriesContainersDataGet = function(parameters 
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminResourceHistoriesContainersDataGet_RAW_URL = function() {
+export const getApiV2AdminResourceHistoriesContainersData_RAW_URL = function() {
   return '/api/v2/admin/resource/histories/containers/data'
 }
-export const ApiV2AdminResourceHistoriesContainersDataGet_TYPE = function() {
+export const getApiV2AdminResourceHistoriesContainersData_TYPE = function() {
   return 'get'
 }
-export const ApiV2AdminResourceHistoriesContainersDataGetURL = function(parameters = {}) {
+export const getApiV2AdminResourceHistoriesContainersDataURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/resource/histories/containers/data'
@@ -7547,21 +7669,21 @@ export const ApiV2AdminResourceHistoriesContainersDataGetURL = function(paramete
 }
 /**
  * コンテナリソース履歴を削除する
- * request: ApiV2AdminResourceHistoriesContainersPatch
- * url: ApiV2AdminResourceHistoriesContainersPatchURL
- * method: ApiV2AdminResourceHistoriesContainersPatch_TYPE
- * raw_url: ApiV2AdminResourceHistoriesContainersPatch_RAW_URL
- * @param model - 削除対象の入力モデル
+ * request: patchApiV2AdminResourceHistoriesContainers
+ * url: patchApiV2AdminResourceHistoriesContainersURL
+ * method: patchApiV2AdminResourceHistoriesContainers_TYPE
+ * raw_url: patchApiV2AdminResourceHistoriesContainers_RAW_URL
+ * @param body - 削除対象の入力モデル
  */
-export const ApiV2AdminResourceHistoriesContainersPatch = function(parameters = {}) {
+export const patchApiV2AdminResourceHistoriesContainers = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/resource/histories/containers'
   let body
   let queryParameters = {}
   let form = {}
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -7570,13 +7692,13 @@ export const ApiV2AdminResourceHistoriesContainersPatch = function(parameters = 
   }
   return request('patch', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminResourceHistoriesContainersPatch_RAW_URL = function() {
+export const patchApiV2AdminResourceHistoriesContainers_RAW_URL = function() {
   return '/api/v2/admin/resource/histories/containers'
 }
-export const ApiV2AdminResourceHistoriesContainersPatch_TYPE = function() {
+export const patchApiV2AdminResourceHistoriesContainers_TYPE = function() {
   return 'patch'
 }
-export const ApiV2AdminResourceHistoriesContainersPatchURL = function(parameters = {}) {
+export const patchApiV2AdminResourceHistoriesContainersURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/resource/histories/containers'
@@ -7590,12 +7712,12 @@ export const ApiV2AdminResourceHistoriesContainersPatchURL = function(parameters
 }
 /**
  * ジョブ実行履歴のメタデータを取得する
- * request: ApiV2AdminResourceHistoriesJobsMetadataGet
- * url: ApiV2AdminResourceHistoriesJobsMetadataGetURL
- * method: ApiV2AdminResourceHistoriesJobsMetadataGet_TYPE
- * raw_url: ApiV2AdminResourceHistoriesJobsMetadataGet_RAW_URL
+ * request: getApiV2AdminResourceHistoriesJobsMetadata
+ * url: getApiV2AdminResourceHistoriesJobsMetadataURL
+ * method: getApiV2AdminResourceHistoriesJobsMetadata_TYPE
+ * raw_url: getApiV2AdminResourceHistoriesJobsMetadata_RAW_URL
  */
-export const ApiV2AdminResourceHistoriesJobsMetadataGet = function(parameters = {}) {
+export const getApiV2AdminResourceHistoriesJobsMetadata = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/resource/histories/jobs/metadata'
@@ -7609,13 +7731,13 @@ export const ApiV2AdminResourceHistoriesJobsMetadataGet = function(parameters = 
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminResourceHistoriesJobsMetadataGet_RAW_URL = function() {
+export const getApiV2AdminResourceHistoriesJobsMetadata_RAW_URL = function() {
   return '/api/v2/admin/resource/histories/jobs/metadata'
 }
-export const ApiV2AdminResourceHistoriesJobsMetadataGet_TYPE = function() {
+export const getApiV2AdminResourceHistoriesJobsMetadata_TYPE = function() {
   return 'get'
 }
-export const ApiV2AdminResourceHistoriesJobsMetadataGetURL = function(parameters = {}) {
+export const getApiV2AdminResourceHistoriesJobsMetadataURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/resource/histories/jobs/metadata'
@@ -7629,15 +7751,15 @@ export const ApiV2AdminResourceHistoriesJobsMetadataGetURL = function(parameters
 }
 /**
  * ジョブ実行履歴のデータを取得する
- * request: ApiV2AdminResourceHistoriesJobsDataGet
- * url: ApiV2AdminResourceHistoriesJobsDataGetURL
- * method: ApiV2AdminResourceHistoriesJobsDataGet_TYPE
- * raw_url: ApiV2AdminResourceHistoriesJobsDataGet_RAW_URL
+ * request: getApiV2AdminResourceHistoriesJobsData
+ * url: getApiV2AdminResourceHistoriesJobsDataURL
+ * method: getApiV2AdminResourceHistoriesJobsData_TYPE
+ * raw_url: getApiV2AdminResourceHistoriesJobsData_RAW_URL
  * @param startDate - 開始日
  * @param endDate - 終了日
  * @param withHeader - ヘッダ情報を付与するか
  */
-export const ApiV2AdminResourceHistoriesJobsDataGet = function(parameters = {}) {
+export const getApiV2AdminResourceHistoriesJobsData = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/resource/histories/jobs/data'
@@ -7660,13 +7782,13 @@ export const ApiV2AdminResourceHistoriesJobsDataGet = function(parameters = {}) 
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminResourceHistoriesJobsDataGet_RAW_URL = function() {
+export const getApiV2AdminResourceHistoriesJobsData_RAW_URL = function() {
   return '/api/v2/admin/resource/histories/jobs/data'
 }
-export const ApiV2AdminResourceHistoriesJobsDataGet_TYPE = function() {
+export const getApiV2AdminResourceHistoriesJobsData_TYPE = function() {
   return 'get'
 }
-export const ApiV2AdminResourceHistoriesJobsDataGetURL = function(parameters = {}) {
+export const getApiV2AdminResourceHistoriesJobsDataURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/resource/histories/jobs/data'
@@ -7689,21 +7811,21 @@ export const ApiV2AdminResourceHistoriesJobsDataGetURL = function(parameters = {
 }
 /**
  * ジョブ実行履歴を削除する
- * request: ApiV2AdminResourceHistoriesJobsPatch
- * url: ApiV2AdminResourceHistoriesJobsPatchURL
- * method: ApiV2AdminResourceHistoriesJobsPatch_TYPE
- * raw_url: ApiV2AdminResourceHistoriesJobsPatch_RAW_URL
- * @param model - 削除対象の入力モデル
+ * request: patchApiV2AdminResourceHistoriesJobs
+ * url: patchApiV2AdminResourceHistoriesJobsURL
+ * method: patchApiV2AdminResourceHistoriesJobs_TYPE
+ * raw_url: patchApiV2AdminResourceHistoriesJobs_RAW_URL
+ * @param body - 削除対象の入力モデル
  */
-export const ApiV2AdminResourceHistoriesJobsPatch = function(parameters = {}) {
+export const patchApiV2AdminResourceHistoriesJobs = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/resource/histories/jobs'
   let body
   let queryParameters = {}
   let form = {}
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -7712,13 +7834,13 @@ export const ApiV2AdminResourceHistoriesJobsPatch = function(parameters = {}) {
   }
   return request('patch', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminResourceHistoriesJobsPatch_RAW_URL = function() {
+export const patchApiV2AdminResourceHistoriesJobs_RAW_URL = function() {
   return '/api/v2/admin/resource/histories/jobs'
 }
-export const ApiV2AdminResourceHistoriesJobsPatch_TYPE = function() {
+export const patchApiV2AdminResourceHistoriesJobs_TYPE = function() {
   return 'patch'
 }
-export const ApiV2AdminResourceHistoriesJobsPatchURL = function(parameters = {}) {
+export const patchApiV2AdminResourceHistoriesJobsURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/resource/histories/jobs'
@@ -7732,12 +7854,12 @@ export const ApiV2AdminResourceHistoriesJobsPatchURL = function(parameters = {})
 }
 /**
  * 全ロール一覧を取得
- * request: ApiV2AdminRolesGet
- * url: ApiV2AdminRolesGetURL
- * method: ApiV2AdminRolesGet_TYPE
- * raw_url: ApiV2AdminRolesGet_RAW_URL
+ * request: getApiV2AdminRoles
+ * url: getApiV2AdminRolesURL
+ * method: getApiV2AdminRoles_TYPE
+ * raw_url: getApiV2AdminRoles_RAW_URL
  */
-export const ApiV2AdminRolesGet = function(parameters = {}) {
+export const getApiV2AdminRoles = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/roles'
@@ -7751,13 +7873,13 @@ export const ApiV2AdminRolesGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminRolesGet_RAW_URL = function() {
+export const getApiV2AdminRoles_RAW_URL = function() {
   return '/api/v2/admin/roles'
 }
-export const ApiV2AdminRolesGet_TYPE = function() {
+export const getApiV2AdminRoles_TYPE = function() {
   return 'get'
 }
-export const ApiV2AdminRolesGetURL = function(parameters = {}) {
+export const getApiV2AdminRolesURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/roles'
@@ -7771,21 +7893,21 @@ export const ApiV2AdminRolesGetURL = function(parameters = {}) {
 }
 /**
  * 新規にロールを登録する
- * request: ApiV2AdminRolesPost
- * url: ApiV2AdminRolesPostURL
- * method: ApiV2AdminRolesPost_TYPE
- * raw_url: ApiV2AdminRolesPost_RAW_URL
- * @param model - 
+ * request: postApiV2AdminRoles
+ * url: postApiV2AdminRolesURL
+ * method: postApiV2AdminRoles_TYPE
+ * raw_url: postApiV2AdminRoles_RAW_URL
+ * @param body - 
  */
-export const ApiV2AdminRolesPost = function(parameters = {}) {
+export const postApiV2AdminRoles = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/roles'
   let body
   let queryParameters = {}
   let form = {}
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -7794,13 +7916,13 @@ export const ApiV2AdminRolesPost = function(parameters = {}) {
   }
   return request('post', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminRolesPost_RAW_URL = function() {
+export const postApiV2AdminRoles_RAW_URL = function() {
   return '/api/v2/admin/roles'
 }
-export const ApiV2AdminRolesPost_TYPE = function() {
+export const postApiV2AdminRoles_TYPE = function() {
   return 'post'
 }
-export const ApiV2AdminRolesPostURL = function(parameters = {}) {
+export const postApiV2AdminRolesURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/roles'
@@ -7814,13 +7936,13 @@ export const ApiV2AdminRolesPostURL = function(parameters = {}) {
 }
 /**
  * 指定されたIDのロール情報を取得。
- * request: ApiV2AdminRolesByIdGet
- * url: ApiV2AdminRolesByIdGetURL
- * method: ApiV2AdminRolesByIdGet_TYPE
- * raw_url: ApiV2AdminRolesByIdGet_RAW_URL
+ * request: getApiV2AdminRolesById
+ * url: getApiV2AdminRolesByIdURL
+ * method: getApiV2AdminRolesById_TYPE
+ * raw_url: getApiV2AdminRolesById_RAW_URL
  * @param id - ロールID
  */
-export const ApiV2AdminRolesByIdGet = function(parameters = {}) {
+export const getApiV2AdminRolesById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/roles/{id}'
@@ -7838,13 +7960,13 @@ export const ApiV2AdminRolesByIdGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminRolesByIdGet_RAW_URL = function() {
+export const getApiV2AdminRolesById_RAW_URL = function() {
   return '/api/v2/admin/roles/{id}'
 }
-export const ApiV2AdminRolesByIdGet_TYPE = function() {
+export const getApiV2AdminRolesById_TYPE = function() {
   return 'get'
 }
-export const ApiV2AdminRolesByIdGetURL = function(parameters = {}) {
+export const getApiV2AdminRolesByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/roles/{id}'
@@ -7859,14 +7981,14 @@ export const ApiV2AdminRolesByIdGetURL = function(parameters = {}) {
 }
 /**
  * ロール情報の編集
- * request: ApiV2AdminRolesByIdPut
- * url: ApiV2AdminRolesByIdPutURL
- * method: ApiV2AdminRolesByIdPut_TYPE
- * raw_url: ApiV2AdminRolesByIdPut_RAW_URL
+ * request: putApiV2AdminRolesById
+ * url: putApiV2AdminRolesByIdURL
+ * method: putApiV2AdminRolesById_TYPE
+ * raw_url: putApiV2AdminRolesById_RAW_URL
  * @param id - 
- * @param model - 
+ * @param body - 
  */
-export const ApiV2AdminRolesByIdPut = function(parameters = {}) {
+export const putApiV2AdminRolesById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/roles/{id}'
@@ -7877,8 +7999,8 @@ export const ApiV2AdminRolesByIdPut = function(parameters = {}) {
   if (parameters['id'] === undefined) {
     return Promise.reject(new Error('Missing required  parameter: id'))
   }
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -7887,13 +8009,13 @@ export const ApiV2AdminRolesByIdPut = function(parameters = {}) {
   }
   return request('put', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminRolesByIdPut_RAW_URL = function() {
+export const putApiV2AdminRolesById_RAW_URL = function() {
   return '/api/v2/admin/roles/{id}'
 }
-export const ApiV2AdminRolesByIdPut_TYPE = function() {
+export const putApiV2AdminRolesById_TYPE = function() {
   return 'put'
 }
-export const ApiV2AdminRolesByIdPutURL = function(parameters = {}) {
+export const putApiV2AdminRolesByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/roles/{id}'
@@ -7908,13 +8030,13 @@ export const ApiV2AdminRolesByIdPutURL = function(parameters = {}) {
 }
 /**
  * ロールを削除する。
- * request: ApiV2AdminRolesByIdDelete
- * url: ApiV2AdminRolesByIdDeleteURL
- * method: ApiV2AdminRolesByIdDelete_TYPE
- * raw_url: ApiV2AdminRolesByIdDelete_RAW_URL
+ * request: deleteApiV2AdminRolesById
+ * url: deleteApiV2AdminRolesByIdURL
+ * method: deleteApiV2AdminRolesById_TYPE
+ * raw_url: deleteApiV2AdminRolesById_RAW_URL
  * @param id - 
  */
-export const ApiV2AdminRolesByIdDelete = function(parameters = {}) {
+export const deleteApiV2AdminRolesById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/roles/{id}'
@@ -7932,13 +8054,13 @@ export const ApiV2AdminRolesByIdDelete = function(parameters = {}) {
   }
   return request('delete', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminRolesByIdDelete_RAW_URL = function() {
+export const deleteApiV2AdminRolesById_RAW_URL = function() {
   return '/api/v2/admin/roles/{id}'
 }
-export const ApiV2AdminRolesByIdDelete_TYPE = function() {
+export const deleteApiV2AdminRolesById_TYPE = function() {
   return 'delete'
 }
-export const ApiV2AdminRolesByIdDeleteURL = function(parameters = {}) {
+export const deleteApiV2AdminRolesByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/roles/{id}'
@@ -7953,12 +8075,12 @@ export const ApiV2AdminRolesByIdDeleteURL = function(parameters = {}) {
 }
 /**
  * システムロール以外の共通ロールと、テナント用カスタムロールが対象。
- * request: ApiV2TenantRolesGet
- * url: ApiV2TenantRolesGetURL
- * method: ApiV2TenantRolesGet_TYPE
- * raw_url: ApiV2TenantRolesGet_RAW_URL
+ * request: getApiV2TenantRoles
+ * url: getApiV2TenantRolesURL
+ * method: getApiV2TenantRoles_TYPE
+ * raw_url: getApiV2TenantRoles_RAW_URL
  */
-export const ApiV2TenantRolesGet = function(parameters = {}) {
+export const getApiV2TenantRoles = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/tenant/roles'
@@ -7972,13 +8094,13 @@ export const ApiV2TenantRolesGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2TenantRolesGet_RAW_URL = function() {
+export const getApiV2TenantRoles_RAW_URL = function() {
   return '/api/v2/tenant/roles'
 }
-export const ApiV2TenantRolesGet_TYPE = function() {
+export const getApiV2TenantRoles_TYPE = function() {
   return 'get'
 }
-export const ApiV2TenantRolesGetURL = function(parameters = {}) {
+export const getApiV2TenantRolesURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/tenant/roles'
@@ -7992,21 +8114,21 @@ export const ApiV2TenantRolesGetURL = function(parameters = {}) {
 }
 /**
  * 新規にロールを登録する
- * request: ApiV2TenantRolesPost
- * url: ApiV2TenantRolesPostURL
- * method: ApiV2TenantRolesPost_TYPE
- * raw_url: ApiV2TenantRolesPost_RAW_URL
- * @param model - 
+ * request: postApiV2TenantRoles
+ * url: postApiV2TenantRolesURL
+ * method: postApiV2TenantRoles_TYPE
+ * raw_url: postApiV2TenantRoles_RAW_URL
+ * @param body - 
  */
-export const ApiV2TenantRolesPost = function(parameters = {}) {
+export const postApiV2TenantRoles = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/tenant/roles'
   let body
   let queryParameters = {}
   let form = {}
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -8015,13 +8137,13 @@ export const ApiV2TenantRolesPost = function(parameters = {}) {
   }
   return request('post', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2TenantRolesPost_RAW_URL = function() {
+export const postApiV2TenantRoles_RAW_URL = function() {
   return '/api/v2/tenant/roles'
 }
-export const ApiV2TenantRolesPost_TYPE = function() {
+export const postApiV2TenantRoles_TYPE = function() {
   return 'post'
 }
-export const ApiV2TenantRolesPostURL = function(parameters = {}) {
+export const postApiV2TenantRolesURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/tenant/roles'
@@ -8035,13 +8157,13 @@ export const ApiV2TenantRolesPostURL = function(parameters = {}) {
 }
 /**
  * 指定されたIDのテナント用カスタムロール情報を取得。
- * request: ApiV2TenantRolesByIdGet
- * url: ApiV2TenantRolesByIdGetURL
- * method: ApiV2TenantRolesByIdGet_TYPE
- * raw_url: ApiV2TenantRolesByIdGet_RAW_URL
+ * request: getApiV2TenantRolesById
+ * url: getApiV2TenantRolesByIdURL
+ * method: getApiV2TenantRolesById_TYPE
+ * raw_url: getApiV2TenantRolesById_RAW_URL
  * @param id - ロールID
  */
-export const ApiV2TenantRolesByIdGet = function(parameters = {}) {
+export const getApiV2TenantRolesById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/tenant/roles/{id}'
@@ -8059,13 +8181,13 @@ export const ApiV2TenantRolesByIdGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2TenantRolesByIdGet_RAW_URL = function() {
+export const getApiV2TenantRolesById_RAW_URL = function() {
   return '/api/v2/tenant/roles/{id}'
 }
-export const ApiV2TenantRolesByIdGet_TYPE = function() {
+export const getApiV2TenantRolesById_TYPE = function() {
   return 'get'
 }
-export const ApiV2TenantRolesByIdGetURL = function(parameters = {}) {
+export const getApiV2TenantRolesByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/tenant/roles/{id}'
@@ -8080,14 +8202,14 @@ export const ApiV2TenantRolesByIdGetURL = function(parameters = {}) {
 }
 /**
  * テナント用カスタムロール情報の編集
- * request: ApiV2TenantRolesByIdPut
- * url: ApiV2TenantRolesByIdPutURL
- * method: ApiV2TenantRolesByIdPut_TYPE
- * raw_url: ApiV2TenantRolesByIdPut_RAW_URL
+ * request: putApiV2TenantRolesById
+ * url: putApiV2TenantRolesByIdURL
+ * method: putApiV2TenantRolesById_TYPE
+ * raw_url: putApiV2TenantRolesById_RAW_URL
  * @param id - 
- * @param model - 
+ * @param body - 
  */
-export const ApiV2TenantRolesByIdPut = function(parameters = {}) {
+export const putApiV2TenantRolesById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/tenant/roles/{id}'
@@ -8098,8 +8220,8 @@ export const ApiV2TenantRolesByIdPut = function(parameters = {}) {
   if (parameters['id'] === undefined) {
     return Promise.reject(new Error('Missing required  parameter: id'))
   }
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -8108,13 +8230,13 @@ export const ApiV2TenantRolesByIdPut = function(parameters = {}) {
   }
   return request('put', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2TenantRolesByIdPut_RAW_URL = function() {
+export const putApiV2TenantRolesById_RAW_URL = function() {
   return '/api/v2/tenant/roles/{id}'
 }
-export const ApiV2TenantRolesByIdPut_TYPE = function() {
+export const putApiV2TenantRolesById_TYPE = function() {
   return 'put'
 }
-export const ApiV2TenantRolesByIdPutURL = function(parameters = {}) {
+export const putApiV2TenantRolesByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/tenant/roles/{id}'
@@ -8129,13 +8251,13 @@ export const ApiV2TenantRolesByIdPutURL = function(parameters = {}) {
 }
 /**
  * テナント用カスタムロールを削除する。
- * request: ApiV2TenantRolesByIdDelete
- * url: ApiV2TenantRolesByIdDeleteURL
- * method: ApiV2TenantRolesByIdDelete_TYPE
- * raw_url: ApiV2TenantRolesByIdDelete_RAW_URL
+ * request: deleteApiV2TenantRolesById
+ * url: deleteApiV2TenantRolesByIdURL
+ * method: deleteApiV2TenantRolesById_TYPE
+ * raw_url: deleteApiV2TenantRolesById_RAW_URL
  * @param id - 
  */
-export const ApiV2TenantRolesByIdDelete = function(parameters = {}) {
+export const deleteApiV2TenantRolesById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/tenant/roles/{id}'
@@ -8153,13 +8275,13 @@ export const ApiV2TenantRolesByIdDelete = function(parameters = {}) {
   }
   return request('delete', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2TenantRolesByIdDelete_RAW_URL = function() {
+export const deleteApiV2TenantRolesById_RAW_URL = function() {
   return '/api/v2/tenant/roles/{id}'
 }
-export const ApiV2TenantRolesByIdDelete_TYPE = function() {
+export const deleteApiV2TenantRolesById_TYPE = function() {
   return 'delete'
 }
-export const ApiV2TenantRolesByIdDeleteURL = function(parameters = {}) {
+export const deleteApiV2TenantRolesByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/tenant/roles/{id}'
@@ -8174,12 +8296,12 @@ export const ApiV2TenantRolesByIdDeleteURL = function(parameters = {}) {
 }
 /**
  * 登録済みのStorageエンドポイント一覧を取得
- * request: ApiV2AdminStorageEndpointsGet
- * url: ApiV2AdminStorageEndpointsGetURL
- * method: ApiV2AdminStorageEndpointsGet_TYPE
- * raw_url: ApiV2AdminStorageEndpointsGet_RAW_URL
+ * request: getApiV2AdminStorageEndpoints
+ * url: getApiV2AdminStorageEndpointsURL
+ * method: getApiV2AdminStorageEndpoints_TYPE
+ * raw_url: getApiV2AdminStorageEndpoints_RAW_URL
  */
-export const ApiV2AdminStorageEndpointsGet = function(parameters = {}) {
+export const getApiV2AdminStorageEndpoints = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/storage/endpoints'
@@ -8193,13 +8315,13 @@ export const ApiV2AdminStorageEndpointsGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminStorageEndpointsGet_RAW_URL = function() {
+export const getApiV2AdminStorageEndpoints_RAW_URL = function() {
   return '/api/v2/admin/storage/endpoints'
 }
-export const ApiV2AdminStorageEndpointsGet_TYPE = function() {
+export const getApiV2AdminStorageEndpoints_TYPE = function() {
   return 'get'
 }
-export const ApiV2AdminStorageEndpointsGetURL = function(parameters = {}) {
+export const getApiV2AdminStorageEndpointsURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/storage/endpoints'
@@ -8213,21 +8335,21 @@ export const ApiV2AdminStorageEndpointsGetURL = function(parameters = {}) {
 }
 /**
  * 新規にStorageエンドポイントを登録する
- * request: ApiV2AdminStorageEndpointsPost
- * url: ApiV2AdminStorageEndpointsPostURL
- * method: ApiV2AdminStorageEndpointsPost_TYPE
- * raw_url: ApiV2AdminStorageEndpointsPost_RAW_URL
- * @param model - 
+ * request: postApiV2AdminStorageEndpoints
+ * url: postApiV2AdminStorageEndpointsURL
+ * method: postApiV2AdminStorageEndpoints_TYPE
+ * raw_url: postApiV2AdminStorageEndpoints_RAW_URL
+ * @param body - 
  */
-export const ApiV2AdminStorageEndpointsPost = function(parameters = {}) {
+export const postApiV2AdminStorageEndpoints = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/storage/endpoints'
   let body
   let queryParameters = {}
   let form = {}
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -8236,13 +8358,13 @@ export const ApiV2AdminStorageEndpointsPost = function(parameters = {}) {
   }
   return request('post', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminStorageEndpointsPost_RAW_URL = function() {
+export const postApiV2AdminStorageEndpoints_RAW_URL = function() {
   return '/api/v2/admin/storage/endpoints'
 }
-export const ApiV2AdminStorageEndpointsPost_TYPE = function() {
+export const postApiV2AdminStorageEndpoints_TYPE = function() {
   return 'post'
 }
-export const ApiV2AdminStorageEndpointsPostURL = function(parameters = {}) {
+export const postApiV2AdminStorageEndpointsURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/storage/endpoints'
@@ -8256,13 +8378,13 @@ export const ApiV2AdminStorageEndpointsPostURL = function(parameters = {}) {
 }
 /**
  * 指定されたIDのStorageエンドポイント情報を取得。
- * request: ApiV2AdminStorageEndpointsByIdGet
- * url: ApiV2AdminStorageEndpointsByIdGetURL
- * method: ApiV2AdminStorageEndpointsByIdGet_TYPE
- * raw_url: ApiV2AdminStorageEndpointsByIdGet_RAW_URL
+ * request: getApiV2AdminStorageEndpointsById
+ * url: getApiV2AdminStorageEndpointsByIdURL
+ * method: getApiV2AdminStorageEndpointsById_TYPE
+ * raw_url: getApiV2AdminStorageEndpointsById_RAW_URL
  * @param id - StorageエンドポイントID
  */
-export const ApiV2AdminStorageEndpointsByIdGet = function(parameters = {}) {
+export const getApiV2AdminStorageEndpointsById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/storage/endpoints/{id}'
@@ -8280,13 +8402,13 @@ export const ApiV2AdminStorageEndpointsByIdGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminStorageEndpointsByIdGet_RAW_URL = function() {
+export const getApiV2AdminStorageEndpointsById_RAW_URL = function() {
   return '/api/v2/admin/storage/endpoints/{id}'
 }
-export const ApiV2AdminStorageEndpointsByIdGet_TYPE = function() {
+export const getApiV2AdminStorageEndpointsById_TYPE = function() {
   return 'get'
 }
-export const ApiV2AdminStorageEndpointsByIdGetURL = function(parameters = {}) {
+export const getApiV2AdminStorageEndpointsByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/storage/endpoints/{id}'
@@ -8301,14 +8423,14 @@ export const ApiV2AdminStorageEndpointsByIdGetURL = function(parameters = {}) {
 }
 /**
  * Storageエンドポイント情報の編集
- * request: ApiV2AdminStorageEndpointsByIdPut
- * url: ApiV2AdminStorageEndpointsByIdPutURL
- * method: ApiV2AdminStorageEndpointsByIdPut_TYPE
- * raw_url: ApiV2AdminStorageEndpointsByIdPut_RAW_URL
+ * request: putApiV2AdminStorageEndpointsById
+ * url: putApiV2AdminStorageEndpointsByIdURL
+ * method: putApiV2AdminStorageEndpointsById_TYPE
+ * raw_url: putApiV2AdminStorageEndpointsById_RAW_URL
  * @param id - 
- * @param model - 
+ * @param body - 
  */
-export const ApiV2AdminStorageEndpointsByIdPut = function(parameters = {}) {
+export const putApiV2AdminStorageEndpointsById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/storage/endpoints/{id}'
@@ -8319,8 +8441,8 @@ export const ApiV2AdminStorageEndpointsByIdPut = function(parameters = {}) {
   if (parameters['id'] === undefined) {
     return Promise.reject(new Error('Missing required  parameter: id'))
   }
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -8329,13 +8451,13 @@ export const ApiV2AdminStorageEndpointsByIdPut = function(parameters = {}) {
   }
   return request('put', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminStorageEndpointsByIdPut_RAW_URL = function() {
+export const putApiV2AdminStorageEndpointsById_RAW_URL = function() {
   return '/api/v2/admin/storage/endpoints/{id}'
 }
-export const ApiV2AdminStorageEndpointsByIdPut_TYPE = function() {
+export const putApiV2AdminStorageEndpointsById_TYPE = function() {
   return 'put'
 }
-export const ApiV2AdminStorageEndpointsByIdPutURL = function(parameters = {}) {
+export const putApiV2AdminStorageEndpointsByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/storage/endpoints/{id}'
@@ -8350,13 +8472,13 @@ export const ApiV2AdminStorageEndpointsByIdPutURL = function(parameters = {}) {
 }
 /**
  * Storageエンドポイント情報の削除
- * request: ApiV2AdminStorageEndpointsByIdDelete
- * url: ApiV2AdminStorageEndpointsByIdDeleteURL
- * method: ApiV2AdminStorageEndpointsByIdDelete_TYPE
- * raw_url: ApiV2AdminStorageEndpointsByIdDelete_RAW_URL
+ * request: deleteApiV2AdminStorageEndpointsById
+ * url: deleteApiV2AdminStorageEndpointsByIdURL
+ * method: deleteApiV2AdminStorageEndpointsById_TYPE
+ * raw_url: deleteApiV2AdminStorageEndpointsById_RAW_URL
  * @param id - 
  */
-export const ApiV2AdminStorageEndpointsByIdDelete = function(parameters = {}) {
+export const deleteApiV2AdminStorageEndpointsById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/storage/endpoints/{id}'
@@ -8374,13 +8496,13 @@ export const ApiV2AdminStorageEndpointsByIdDelete = function(parameters = {}) {
   }
   return request('delete', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminStorageEndpointsByIdDelete_RAW_URL = function() {
+export const deleteApiV2AdminStorageEndpointsById_RAW_URL = function() {
   return '/api/v2/admin/storage/endpoints/{id}'
 }
-export const ApiV2AdminStorageEndpointsByIdDelete_TYPE = function() {
+export const deleteApiV2AdminStorageEndpointsById_TYPE = function() {
   return 'delete'
 }
-export const ApiV2AdminStorageEndpointsByIdDeleteURL = function(parameters = {}) {
+export const deleteApiV2AdminStorageEndpointsByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/storage/endpoints/{id}'
@@ -8395,15 +8517,15 @@ export const ApiV2AdminStorageEndpointsByIdDeleteURL = function(parameters = {})
 }
 /**
  * 分割アップロードを行うためのパラメータを取得する
- * request: ApiV2UploadParameterGet
- * url: ApiV2UploadParameterGetURL
- * method: ApiV2UploadParameterGet_TYPE
- * raw_url: ApiV2UploadParameterGet_RAW_URL
+ * request: getApiV2UploadParameter
+ * url: getApiV2UploadParameterURL
+ * method: getApiV2UploadParameter_TYPE
+ * raw_url: getApiV2UploadParameter_RAW_URL
  * @param fileName - ファイル名
  * @param partSum - 分割数
  * @param type - リソース名
  */
-export const ApiV2UploadParameterGet = function(parameters = {}) {
+export const getApiV2UploadParameter = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/upload/parameter'
@@ -8435,13 +8557,13 @@ export const ApiV2UploadParameterGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2UploadParameterGet_RAW_URL = function() {
+export const getApiV2UploadParameter_RAW_URL = function() {
   return '/api/v2/upload/parameter'
 }
-export const ApiV2UploadParameterGet_TYPE = function() {
+export const getApiV2UploadParameter_TYPE = function() {
   return 'get'
 }
-export const ApiV2UploadParameterGetURL = function(parameters = {}) {
+export const getApiV2UploadParameterURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/upload/parameter'
@@ -8464,21 +8586,21 @@ export const ApiV2UploadParameterGetURL = function(parameters = {}) {
 }
 /**
  * 分割アップロードの処理を完了する
- * request: ApiV2UploadCompletePost
- * url: ApiV2UploadCompletePostURL
- * method: ApiV2UploadCompletePost_TYPE
- * raw_url: ApiV2UploadCompletePost_RAW_URL
- * @param model - 
+ * request: postApiV2UploadComplete
+ * url: postApiV2UploadCompleteURL
+ * method: postApiV2UploadComplete_TYPE
+ * raw_url: postApiV2UploadComplete_RAW_URL
+ * @param body - 
  */
-export const ApiV2UploadCompletePost = function(parameters = {}) {
+export const postApiV2UploadComplete = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/upload/complete'
   let body
   let queryParameters = {}
   let form = {}
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -8487,13 +8609,13 @@ export const ApiV2UploadCompletePost = function(parameters = {}) {
   }
   return request('post', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2UploadCompletePost_RAW_URL = function() {
+export const postApiV2UploadComplete_RAW_URL = function() {
   return '/api/v2/upload/complete'
 }
-export const ApiV2UploadCompletePost_TYPE = function() {
+export const postApiV2UploadComplete_TYPE = function() {
   return 'post'
 }
-export const ApiV2UploadCompletePostURL = function(parameters = {}) {
+export const postApiV2UploadCompleteURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/upload/complete'
@@ -8507,16 +8629,16 @@ export const ApiV2UploadCompletePostURL = function(parameters = {}) {
 }
 /**
  * ダウンロード用の一時署名URLを取得する
- * request: ApiV2DownloadUrlGet
- * url: ApiV2DownloadUrlGetURL
- * method: ApiV2DownloadUrlGet_TYPE
- * raw_url: ApiV2DownloadUrlGet_RAW_URL
+ * request: getApiV2DownloadUrl
+ * url: getApiV2DownloadUrlURL
+ * method: getApiV2DownloadUrl_TYPE
+ * raw_url: getApiV2DownloadUrl_RAW_URL
  * @param type - リソース種別
  * @param storedPath - 保存先パス
  * @param fileName - ダウンロード時に書き換えるファイル名
  * @param secure - HTTPS化するか
  */
-export const ApiV2DownloadUrlGet = function(parameters = {}) {
+export const getApiV2DownloadUrl = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/download/url'
@@ -8542,13 +8664,13 @@ export const ApiV2DownloadUrlGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2DownloadUrlGet_RAW_URL = function() {
+export const getApiV2DownloadUrl_RAW_URL = function() {
   return '/api/v2/download/url'
 }
-export const ApiV2DownloadUrlGet_TYPE = function() {
+export const getApiV2DownloadUrl_TYPE = function() {
   return 'get'
 }
-export const ApiV2DownloadUrlGetURL = function(parameters = {}) {
+export const getApiV2DownloadUrlURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/download/url'
@@ -8574,13 +8696,13 @@ export const ApiV2DownloadUrlGetURL = function(parameters = {}) {
 }
 /**
  * 接続中のテナントに有効なテンプレート一覧を取得する
- * request: ApiV2TenantTemplatesGet
- * url: ApiV2TenantTemplatesGetURL
- * method: ApiV2TenantTemplatesGet_TYPE
- * raw_url: ApiV2TenantTemplatesGet_RAW_URL
+ * request: getApiV2TenantTemplates
+ * url: getApiV2TenantTemplatesURL
+ * method: getApiV2TenantTemplates_TYPE
+ * raw_url: getApiV2TenantTemplates_RAW_URL
  * @param withTotal - 
  */
-export const ApiV2TenantTemplatesGet = function(parameters = {}) {
+export const getApiV2TenantTemplates = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/tenant/templates'
@@ -8597,13 +8719,13 @@ export const ApiV2TenantTemplatesGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2TenantTemplatesGet_RAW_URL = function() {
+export const getApiV2TenantTemplates_RAW_URL = function() {
   return '/api/v2/tenant/templates'
 }
-export const ApiV2TenantTemplatesGet_TYPE = function() {
+export const getApiV2TenantTemplates_TYPE = function() {
   return 'get'
 }
-export const ApiV2TenantTemplatesGetURL = function(parameters = {}) {
+export const getApiV2TenantTemplatesURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/tenant/templates'
@@ -8620,13 +8742,13 @@ export const ApiV2TenantTemplatesGetURL = function(parameters = {}) {
 }
 /**
  * 接続中のテナントで作成されたテンプレート一覧を取得する
- * request: ApiV2TemplatesGet
- * url: ApiV2TemplatesGetURL
- * method: ApiV2TemplatesGet_TYPE
- * raw_url: ApiV2TemplatesGet_RAW_URL
+ * request: getApiV2Templates
+ * url: getApiV2TemplatesURL
+ * method: getApiV2Templates_TYPE
+ * raw_url: getApiV2Templates_RAW_URL
  * @param withTotal - 
  */
-export const ApiV2TemplatesGet = function(parameters = {}) {
+export const getApiV2Templates = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/templates'
@@ -8643,13 +8765,13 @@ export const ApiV2TemplatesGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2TemplatesGet_RAW_URL = function() {
+export const getApiV2Templates_RAW_URL = function() {
   return '/api/v2/templates'
 }
-export const ApiV2TemplatesGet_TYPE = function() {
+export const getApiV2Templates_TYPE = function() {
   return 'get'
 }
-export const ApiV2TemplatesGetURL = function(parameters = {}) {
+export const getApiV2TemplatesURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/templates'
@@ -8666,21 +8788,21 @@ export const ApiV2TemplatesGetURL = function(parameters = {}) {
 }
 /**
  * テンプレートを作成する
- * request: ApiV2AdminTemplatesPost
- * url: ApiV2AdminTemplatesPostURL
- * method: ApiV2AdminTemplatesPost_TYPE
- * raw_url: ApiV2AdminTemplatesPost_RAW_URL
- * @param model - 
+ * request: postApiV2AdminTemplates
+ * url: postApiV2AdminTemplatesURL
+ * method: postApiV2AdminTemplates_TYPE
+ * raw_url: postApiV2AdminTemplates_RAW_URL
+ * @param body - 
  */
-export const ApiV2AdminTemplatesPost = function(parameters = {}) {
+export const postApiV2AdminTemplates = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/templates'
   let body
   let queryParameters = {}
   let form = {}
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -8689,13 +8811,13 @@ export const ApiV2AdminTemplatesPost = function(parameters = {}) {
   }
   return request('post', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminTemplatesPost_RAW_URL = function() {
+export const postApiV2AdminTemplates_RAW_URL = function() {
   return '/api/v2/admin/templates'
 }
-export const ApiV2AdminTemplatesPost_TYPE = function() {
+export const postApiV2AdminTemplates_TYPE = function() {
   return 'post'
 }
-export const ApiV2AdminTemplatesPostURL = function(parameters = {}) {
+export const postApiV2AdminTemplatesURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/templates'
@@ -8709,13 +8831,13 @@ export const ApiV2AdminTemplatesPostURL = function(parameters = {}) {
 }
 /**
  * テンプレートを取得する
- * request: ApiV2AdminTemplatesByIdGet
- * url: ApiV2AdminTemplatesByIdGetURL
- * method: ApiV2AdminTemplatesByIdGet_TYPE
- * raw_url: ApiV2AdminTemplatesByIdGet_RAW_URL
+ * request: getApiV2AdminTemplatesById
+ * url: getApiV2AdminTemplatesByIdURL
+ * method: getApiV2AdminTemplatesById_TYPE
+ * raw_url: getApiV2AdminTemplatesById_RAW_URL
  * @param id - テンプレートID
  */
-export const ApiV2AdminTemplatesByIdGet = function(parameters = {}) {
+export const getApiV2AdminTemplatesById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/templates/{id}'
@@ -8733,13 +8855,13 @@ export const ApiV2AdminTemplatesByIdGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminTemplatesByIdGet_RAW_URL = function() {
+export const getApiV2AdminTemplatesById_RAW_URL = function() {
   return '/api/v2/admin/templates/{id}'
 }
-export const ApiV2AdminTemplatesByIdGet_TYPE = function() {
+export const getApiV2AdminTemplatesById_TYPE = function() {
   return 'get'
 }
-export const ApiV2AdminTemplatesByIdGetURL = function(parameters = {}) {
+export const getApiV2AdminTemplatesByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/templates/{id}'
@@ -8754,14 +8876,14 @@ export const ApiV2AdminTemplatesByIdGetURL = function(parameters = {}) {
 }
 /**
  * テンプレートを編集する
- * request: ApiV2AdminTemplatesByIdPut
- * url: ApiV2AdminTemplatesByIdPutURL
- * method: ApiV2AdminTemplatesByIdPut_TYPE
- * raw_url: ApiV2AdminTemplatesByIdPut_RAW_URL
+ * request: putApiV2AdminTemplatesById
+ * url: putApiV2AdminTemplatesByIdURL
+ * method: putApiV2AdminTemplatesById_TYPE
+ * raw_url: putApiV2AdminTemplatesById_RAW_URL
  * @param id - テンプレートID
- * @param model - 
+ * @param body - 編集内容
  */
-export const ApiV2AdminTemplatesByIdPut = function(parameters = {}) {
+export const putApiV2AdminTemplatesById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/templates/{id}'
@@ -8772,8 +8894,8 @@ export const ApiV2AdminTemplatesByIdPut = function(parameters = {}) {
   if (parameters['id'] === undefined) {
     return Promise.reject(new Error('Missing required  parameter: id'))
   }
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -8782,13 +8904,13 @@ export const ApiV2AdminTemplatesByIdPut = function(parameters = {}) {
   }
   return request('put', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminTemplatesByIdPut_RAW_URL = function() {
+export const putApiV2AdminTemplatesById_RAW_URL = function() {
   return '/api/v2/admin/templates/{id}'
 }
-export const ApiV2AdminTemplatesByIdPut_TYPE = function() {
+export const putApiV2AdminTemplatesById_TYPE = function() {
   return 'put'
 }
-export const ApiV2AdminTemplatesByIdPutURL = function(parameters = {}) {
+export const putApiV2AdminTemplatesByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/templates/{id}'
@@ -8803,13 +8925,13 @@ export const ApiV2AdminTemplatesByIdPutURL = function(parameters = {}) {
 }
 /**
  * テンプレートを削除する
- * request: ApiV2AdminTemplatesByIdDelete
- * url: ApiV2AdminTemplatesByIdDeleteURL
- * method: ApiV2AdminTemplatesByIdDelete_TYPE
- * raw_url: ApiV2AdminTemplatesByIdDelete_RAW_URL
+ * request: deleteApiV2AdminTemplatesById
+ * url: deleteApiV2AdminTemplatesByIdURL
+ * method: deleteApiV2AdminTemplatesById_TYPE
+ * raw_url: deleteApiV2AdminTemplatesById_RAW_URL
  * @param id - テンプレートID
  */
-export const ApiV2AdminTemplatesByIdDelete = function(parameters = {}) {
+export const deleteApiV2AdminTemplatesById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/templates/{id}'
@@ -8827,13 +8949,13 @@ export const ApiV2AdminTemplatesByIdDelete = function(parameters = {}) {
   }
   return request('delete', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminTemplatesByIdDelete_RAW_URL = function() {
+export const deleteApiV2AdminTemplatesById_RAW_URL = function() {
   return '/api/v2/admin/templates/{id}'
 }
-export const ApiV2AdminTemplatesByIdDelete_TYPE = function() {
+export const deleteApiV2AdminTemplatesById_TYPE = function() {
   return 'delete'
 }
-export const ApiV2AdminTemplatesByIdDeleteURL = function(parameters = {}) {
+export const deleteApiV2AdminTemplatesByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/templates/{id}'
@@ -8847,14 +8969,63 @@ export const ApiV2AdminTemplatesByIdDeleteURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * テンプレートバージョンを作成する
+ * request: postApiV2AdminTemplatesByIdVersions
+ * url: postApiV2AdminTemplatesByIdVersionsURL
+ * method: postApiV2AdminTemplatesByIdVersions_TYPE
+ * raw_url: postApiV2AdminTemplatesByIdVersions_RAW_URL
+ * @param id - テンプレートID
+ * @param body - 作成内容
+ */
+export const postApiV2AdminTemplatesByIdVersions = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/admin/templates/{id}/versions'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('post', domain + path, body, queryParameters, form, config)
+}
+export const postApiV2AdminTemplatesByIdVersions_RAW_URL = function() {
+  return '/api/v2/admin/templates/{id}/versions'
+}
+export const postApiV2AdminTemplatesByIdVersions_TYPE = function() {
+  return 'post'
+}
+export const postApiV2AdminTemplatesByIdVersionsURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/admin/templates/{id}/versions'
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * テンプレートバージョン一覧を取得する
- * request: ApiV2AdminTemplatesByIdVersionsGet
- * url: ApiV2AdminTemplatesByIdVersionsGetURL
- * method: ApiV2AdminTemplatesByIdVersionsGet_TYPE
- * raw_url: ApiV2AdminTemplatesByIdVersionsGet_RAW_URL
+ * request: getApiV2AdminTemplatesByIdVersions
+ * url: getApiV2AdminTemplatesByIdVersionsURL
+ * method: getApiV2AdminTemplatesByIdVersions_TYPE
+ * raw_url: getApiV2AdminTemplatesByIdVersions_RAW_URL
  * @param id - テンプレートID
  */
-export const ApiV2AdminTemplatesByIdVersionsGet = function(parameters = {}) {
+export const getApiV2AdminTemplatesByIdVersions = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/templates/{id}/versions'
@@ -8872,62 +9043,13 @@ export const ApiV2AdminTemplatesByIdVersionsGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminTemplatesByIdVersionsGet_RAW_URL = function() {
+export const getApiV2AdminTemplatesByIdVersions_RAW_URL = function() {
   return '/api/v2/admin/templates/{id}/versions'
 }
-export const ApiV2AdminTemplatesByIdVersionsGet_TYPE = function() {
+export const getApiV2AdminTemplatesByIdVersions_TYPE = function() {
   return 'get'
 }
-export const ApiV2AdminTemplatesByIdVersionsGetURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/api/v2/admin/templates/{id}/versions'
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
- * テンプレートバージョンを作成する
- * request: ApiV2AdminTemplatesByIdVersionsPost
- * url: ApiV2AdminTemplatesByIdVersionsPostURL
- * method: ApiV2AdminTemplatesByIdVersionsPost_TYPE
- * raw_url: ApiV2AdminTemplatesByIdVersionsPost_RAW_URL
- * @param id - テンプレートID
- * @param model - 
- */
-export const ApiV2AdminTemplatesByIdVersionsPost = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/api/v2/admin/templates/{id}/versions'
-  let body
-  let queryParameters = {}
-  let form = {}
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters['id'] === undefined) {
-    return Promise.reject(new Error('Missing required  parameter: id'))
-  }
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('post', domain + path, body, queryParameters, form, config)
-}
-export const ApiV2AdminTemplatesByIdVersionsPost_RAW_URL = function() {
-  return '/api/v2/admin/templates/{id}/versions'
-}
-export const ApiV2AdminTemplatesByIdVersionsPost_TYPE = function() {
-  return 'post'
-}
-export const ApiV2AdminTemplatesByIdVersionsPostURL = function(parameters = {}) {
+export const getApiV2AdminTemplatesByIdVersionsURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/templates/{id}/versions'
@@ -8942,14 +9064,14 @@ export const ApiV2AdminTemplatesByIdVersionsPostURL = function(parameters = {}) 
 }
 /**
  * テンプレートバージョンを取得する
- * request: ApiV2AdminTemplatesByIdVersionsByVersionIdGet
- * url: ApiV2AdminTemplatesByIdVersionsByVersionIdGetURL
- * method: ApiV2AdminTemplatesByIdVersionsByVersionIdGet_TYPE
- * raw_url: ApiV2AdminTemplatesByIdVersionsByVersionIdGet_RAW_URL
+ * request: getApiV2AdminTemplatesByIdVersionsByVersionId
+ * url: getApiV2AdminTemplatesByIdVersionsByVersionIdURL
+ * method: getApiV2AdminTemplatesByIdVersionsByVersionId_TYPE
+ * raw_url: getApiV2AdminTemplatesByIdVersionsByVersionId_RAW_URL
  * @param id - テンプレートID
  * @param versionId - テンプレートバージョンID
  */
-export const ApiV2AdminTemplatesByIdVersionsByVersionIdGet = function(parameters = {}) {
+export const getApiV2AdminTemplatesByIdVersionsByVersionId = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/templates/{id}/versions/{versionId}'
@@ -8971,13 +9093,13 @@ export const ApiV2AdminTemplatesByIdVersionsByVersionIdGet = function(parameters
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminTemplatesByIdVersionsByVersionIdGet_RAW_URL = function() {
+export const getApiV2AdminTemplatesByIdVersionsByVersionId_RAW_URL = function() {
   return '/api/v2/admin/templates/{id}/versions/{versionId}'
 }
-export const ApiV2AdminTemplatesByIdVersionsByVersionIdGet_TYPE = function() {
+export const getApiV2AdminTemplatesByIdVersionsByVersionId_TYPE = function() {
   return 'get'
 }
-export const ApiV2AdminTemplatesByIdVersionsByVersionIdGetURL = function(parameters = {}) {
+export const getApiV2AdminTemplatesByIdVersionsByVersionIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/templates/{id}/versions/{versionId}'
@@ -8993,14 +9115,14 @@ export const ApiV2AdminTemplatesByIdVersionsByVersionIdGetURL = function(paramet
 }
 /**
  * テンプレートバージョンを削除する
- * request: ApiV2AdminTemplatesByIdVersionsByVersionIdDelete
- * url: ApiV2AdminTemplatesByIdVersionsByVersionIdDeleteURL
- * method: ApiV2AdminTemplatesByIdVersionsByVersionIdDelete_TYPE
- * raw_url: ApiV2AdminTemplatesByIdVersionsByVersionIdDelete_RAW_URL
+ * request: deleteApiV2AdminTemplatesByIdVersionsByVersionId
+ * url: deleteApiV2AdminTemplatesByIdVersionsByVersionIdURL
+ * method: deleteApiV2AdminTemplatesByIdVersionsByVersionId_TYPE
+ * raw_url: deleteApiV2AdminTemplatesByIdVersionsByVersionId_RAW_URL
  * @param id - テンプレートID
  * @param versionId - テンプレートバージョンID
  */
-export const ApiV2AdminTemplatesByIdVersionsByVersionIdDelete = function(parameters = {}) {
+export const deleteApiV2AdminTemplatesByIdVersionsByVersionId = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/templates/{id}/versions/{versionId}'
@@ -9022,13 +9144,13 @@ export const ApiV2AdminTemplatesByIdVersionsByVersionIdDelete = function(paramet
   }
   return request('delete', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminTemplatesByIdVersionsByVersionIdDelete_RAW_URL = function() {
+export const deleteApiV2AdminTemplatesByIdVersionsByVersionId_RAW_URL = function() {
   return '/api/v2/admin/templates/{id}/versions/{versionId}'
 }
-export const ApiV2AdminTemplatesByIdVersionsByVersionIdDelete_TYPE = function() {
+export const deleteApiV2AdminTemplatesByIdVersionsByVersionId_TYPE = function() {
   return 'delete'
 }
-export const ApiV2AdminTemplatesByIdVersionsByVersionIdDeleteURL = function(parameters = {}) {
+export const deleteApiV2AdminTemplatesByIdVersionsByVersionIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/templates/{id}/versions/{versionId}'
@@ -9044,12 +9166,12 @@ export const ApiV2AdminTemplatesByIdVersionsByVersionIdDeleteURL = function(para
 }
 /**
  * テナント一覧を取得
- * request: ApiV2AdminTenantsGet
- * url: ApiV2AdminTenantsGetURL
- * method: ApiV2AdminTenantsGet_TYPE
- * raw_url: ApiV2AdminTenantsGet_RAW_URL
+ * request: getApiV2AdminTenants
+ * url: getApiV2AdminTenantsURL
+ * method: getApiV2AdminTenants_TYPE
+ * raw_url: getApiV2AdminTenants_RAW_URL
  */
-export const ApiV2AdminTenantsGet = function(parameters = {}) {
+export const getApiV2AdminTenants = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/tenants'
@@ -9063,13 +9185,13 @@ export const ApiV2AdminTenantsGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminTenantsGet_RAW_URL = function() {
+export const getApiV2AdminTenants_RAW_URL = function() {
   return '/api/v2/admin/tenants'
 }
-export const ApiV2AdminTenantsGet_TYPE = function() {
+export const getApiV2AdminTenants_TYPE = function() {
   return 'get'
 }
-export const ApiV2AdminTenantsGetURL = function(parameters = {}) {
+export const getApiV2AdminTenantsURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/tenants'
@@ -9083,21 +9205,21 @@ export const ApiV2AdminTenantsGetURL = function(parameters = {}) {
 }
 /**
  * 新規にテナントを登録する
- * request: ApiV2AdminTenantsPost
- * url: ApiV2AdminTenantsPostURL
- * method: ApiV2AdminTenantsPost_TYPE
- * raw_url: ApiV2AdminTenantsPost_RAW_URL
- * @param model - 登録内容
+ * request: postApiV2AdminTenants
+ * url: postApiV2AdminTenantsURL
+ * method: postApiV2AdminTenants_TYPE
+ * raw_url: postApiV2AdminTenants_RAW_URL
+ * @param body - 登録内容
  */
-export const ApiV2AdminTenantsPost = function(parameters = {}) {
+export const postApiV2AdminTenants = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/tenants'
   let body
   let queryParameters = {}
   let form = {}
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -9106,13 +9228,13 @@ export const ApiV2AdminTenantsPost = function(parameters = {}) {
   }
   return request('post', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminTenantsPost_RAW_URL = function() {
+export const postApiV2AdminTenants_RAW_URL = function() {
   return '/api/v2/admin/tenants'
 }
-export const ApiV2AdminTenantsPost_TYPE = function() {
+export const postApiV2AdminTenants_TYPE = function() {
   return 'post'
 }
-export const ApiV2AdminTenantsPostURL = function(parameters = {}) {
+export const postApiV2AdminTenantsURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/tenants'
@@ -9126,13 +9248,13 @@ export const ApiV2AdminTenantsPostURL = function(parameters = {}) {
 }
 /**
  * 指定されたIDのテナント情報を取得。
- * request: ApiV2AdminTenantsByIdGet
- * url: ApiV2AdminTenantsByIdGetURL
- * method: ApiV2AdminTenantsByIdGet_TYPE
- * raw_url: ApiV2AdminTenantsByIdGet_RAW_URL
+ * request: getApiV2AdminTenantsById
+ * url: getApiV2AdminTenantsByIdURL
+ * method: getApiV2AdminTenantsById_TYPE
+ * raw_url: getApiV2AdminTenantsById_RAW_URL
  * @param id - テナントID
  */
-export const ApiV2AdminTenantsByIdGet = function(parameters = {}) {
+export const getApiV2AdminTenantsById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/tenants/{id}'
@@ -9150,62 +9272,13 @@ export const ApiV2AdminTenantsByIdGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminTenantsByIdGet_RAW_URL = function() {
+export const getApiV2AdminTenantsById_RAW_URL = function() {
   return '/api/v2/admin/tenants/{id}'
 }
-export const ApiV2AdminTenantsByIdGet_TYPE = function() {
+export const getApiV2AdminTenantsById_TYPE = function() {
   return 'get'
 }
-export const ApiV2AdminTenantsByIdGetURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/api/v2/admin/tenants/{id}'
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
- * テナント情報の編集
- * request: ApiV2AdminTenantsByIdPut
- * url: ApiV2AdminTenantsByIdPutURL
- * method: ApiV2AdminTenantsByIdPut_TYPE
- * raw_url: ApiV2AdminTenantsByIdPut_RAW_URL
- * @param id - テナントID
- * @param model - 変更内容
- */
-export const ApiV2AdminTenantsByIdPut = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/api/v2/admin/tenants/{id}'
-  let body
-  let queryParameters = {}
-  let form = {}
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters['id'] === undefined) {
-    return Promise.reject(new Error('Missing required  parameter: id'))
-  }
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('put', domain + path, body, queryParameters, form, config)
-}
-export const ApiV2AdminTenantsByIdPut_RAW_URL = function() {
-  return '/api/v2/admin/tenants/{id}'
-}
-export const ApiV2AdminTenantsByIdPut_TYPE = function() {
-  return 'put'
-}
-export const ApiV2AdminTenantsByIdPutURL = function(parameters = {}) {
+export const getApiV2AdminTenantsByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/tenants/{id}'
@@ -9220,13 +9293,13 @@ export const ApiV2AdminTenantsByIdPutURL = function(parameters = {}) {
 }
 /**
  * テナントを削除する。(他のユーザが未ログイン状態の時間帯で実施するのが望ましい)
- * request: ApiV2AdminTenantsByIdDelete
- * url: ApiV2AdminTenantsByIdDeleteURL
- * method: ApiV2AdminTenantsByIdDelete_TYPE
- * raw_url: ApiV2AdminTenantsByIdDelete_RAW_URL
+ * request: deleteApiV2AdminTenantsById
+ * url: deleteApiV2AdminTenantsByIdURL
+ * method: deleteApiV2AdminTenantsById_TYPE
+ * raw_url: deleteApiV2AdminTenantsById_RAW_URL
  * @param id - テナントID
  */
-export const ApiV2AdminTenantsByIdDelete = function(parameters = {}) {
+export const deleteApiV2AdminTenantsById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/tenants/{id}'
@@ -9244,13 +9317,62 @@ export const ApiV2AdminTenantsByIdDelete = function(parameters = {}) {
   }
   return request('delete', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminTenantsByIdDelete_RAW_URL = function() {
+export const deleteApiV2AdminTenantsById_RAW_URL = function() {
   return '/api/v2/admin/tenants/{id}'
 }
-export const ApiV2AdminTenantsByIdDelete_TYPE = function() {
+export const deleteApiV2AdminTenantsById_TYPE = function() {
   return 'delete'
 }
-export const ApiV2AdminTenantsByIdDeleteURL = function(parameters = {}) {
+export const deleteApiV2AdminTenantsByIdURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/admin/tenants/{id}'
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * テナント情報の編集
+ * request: putApiV2AdminTenantsById
+ * url: putApiV2AdminTenantsByIdURL
+ * method: putApiV2AdminTenantsById_TYPE
+ * raw_url: putApiV2AdminTenantsById_RAW_URL
+ * @param id - テナントID
+ * @param body - 変更内容
+ */
+export const putApiV2AdminTenantsById = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/admin/tenants/{id}'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('put', domain + path, body, queryParameters, form, config)
+}
+export const putApiV2AdminTenantsById_RAW_URL = function() {
+  return '/api/v2/admin/tenants/{id}'
+}
+export const putApiV2AdminTenantsById_TYPE = function() {
+  return 'put'
+}
+export const putApiV2AdminTenantsByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/tenants/{id}'
@@ -9265,12 +9387,12 @@ export const ApiV2AdminTenantsByIdDeleteURL = function(parameters = {}) {
 }
 /**
  * 接続中のテナントの情報を取得。
- * request: ApiV2TenantGet
- * url: ApiV2TenantGetURL
- * method: ApiV2TenantGet_TYPE
- * raw_url: ApiV2TenantGet_RAW_URL
+ * request: getApiV2Tenant
+ * url: getApiV2TenantURL
+ * method: getApiV2Tenant_TYPE
+ * raw_url: getApiV2Tenant_RAW_URL
  */
-export const ApiV2TenantGet = function(parameters = {}) {
+export const getApiV2Tenant = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/tenant'
@@ -9284,13 +9406,13 @@ export const ApiV2TenantGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2TenantGet_RAW_URL = function() {
+export const getApiV2Tenant_RAW_URL = function() {
   return '/api/v2/tenant'
 }
-export const ApiV2TenantGet_TYPE = function() {
+export const getApiV2Tenant_TYPE = function() {
   return 'get'
 }
-export const ApiV2TenantGetURL = function(parameters = {}) {
+export const getApiV2TenantURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/tenant'
@@ -9304,21 +9426,21 @@ export const ApiV2TenantGetURL = function(parameters = {}) {
 }
 /**
  * 接続中のテナントの情報の編集
- * request: ApiV2TenantPut
- * url: ApiV2TenantPutURL
- * method: ApiV2TenantPut_TYPE
- * raw_url: ApiV2TenantPut_RAW_URL
- * @param model - 変更内容
+ * request: putApiV2Tenant
+ * url: putApiV2TenantURL
+ * method: putApiV2Tenant_TYPE
+ * raw_url: putApiV2Tenant_RAW_URL
+ * @param body - 変更内容
  */
-export const ApiV2TenantPut = function(parameters = {}) {
+export const putApiV2Tenant = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/tenant'
   let body
   let queryParameters = {}
   let form = {}
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -9327,13 +9449,13 @@ export const ApiV2TenantPut = function(parameters = {}) {
   }
   return request('put', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2TenantPut_RAW_URL = function() {
+export const putApiV2Tenant_RAW_URL = function() {
   return '/api/v2/tenant'
 }
-export const ApiV2TenantPut_TYPE = function() {
+export const putApiV2Tenant_TYPE = function() {
   return 'put'
 }
-export const ApiV2TenantPutURL = function(parameters = {}) {
+export const putApiV2TenantURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/tenant'
@@ -9347,12 +9469,12 @@ export const ApiV2TenantPutURL = function(parameters = {}) {
 }
 /**
  * 全学習履歴のIDと名前を取得
- * request: ApiV2TrainingSimpleGet
- * url: ApiV2TrainingSimpleGetURL
- * method: ApiV2TrainingSimpleGet_TYPE
- * raw_url: ApiV2TrainingSimpleGet_RAW_URL
+ * request: getApiV2TrainingSimple
+ * url: getApiV2TrainingSimpleURL
+ * method: getApiV2TrainingSimple_TYPE
+ * raw_url: getApiV2TrainingSimple_RAW_URL
  */
-export const ApiV2TrainingSimpleGet = function(parameters = {}) {
+export const getApiV2TrainingSimple = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/training/simple'
@@ -9366,13 +9488,13 @@ export const ApiV2TrainingSimpleGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2TrainingSimpleGet_RAW_URL = function() {
+export const getApiV2TrainingSimple_RAW_URL = function() {
   return '/api/v2/training/simple'
 }
-export const ApiV2TrainingSimpleGet_TYPE = function() {
+export const getApiV2TrainingSimple_TYPE = function() {
   return 'get'
 }
-export const ApiV2TrainingSimpleGetURL = function(parameters = {}) {
+export const getApiV2TrainingSimpleURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/training/simple'
@@ -9386,10 +9508,10 @@ export const ApiV2TrainingSimpleGetURL = function(parameters = {}) {
 }
 /**
 * 指定された条件でページングされた状態で、全学習履歴を取得
-* request: ApiV2TrainingGet
-* url: ApiV2TrainingGetURL
-* method: ApiV2TrainingGet_TYPE
-* raw_url: ApiV2TrainingGet_RAW_URL
+* request: getApiV2Training
+* url: getApiV2TrainingURL
+* method: getApiV2Training_TYPE
+* raw_url: getApiV2Training_RAW_URL
      * @param id - IDの検索条件。
 比較文字列＋数値の形式。
      * @param name - 名前
@@ -9411,7 +9533,7 @@ e.g.（比較文字列は半角でOK）
      * @param page - ページ番号。デフォルトは1。
      * @param withTotal - 合計件数をレスポンスヘッダ(X-Total-Count)に含めるか。デフォルトはfalse。
 */
-export const ApiV2TrainingGet = function(parameters = {}) {
+export const getApiV2Training = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/training'
@@ -9467,13 +9589,13 @@ export const ApiV2TrainingGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2TrainingGet_RAW_URL = function() {
+export const getApiV2Training_RAW_URL = function() {
   return '/api/v2/training'
 }
-export const ApiV2TrainingGet_TYPE = function() {
+export const getApiV2Training_TYPE = function() {
   return 'get'
 }
-export const ApiV2TrainingGetURL = function(parameters = {}) {
+export const getApiV2TrainingURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/training'
@@ -9529,13 +9651,13 @@ export const ApiV2TrainingGetURL = function(parameters = {}) {
 }
 /**
  * マウントする学習履歴を取得
- * request: ApiV2TrainingMountGet
- * url: ApiV2TrainingMountGetURL
- * method: ApiV2TrainingMountGet_TYPE
- * raw_url: ApiV2TrainingMountGet_RAW_URL
+ * request: getApiV2TrainingMount
+ * url: getApiV2TrainingMountURL
+ * method: getApiV2TrainingMount_TYPE
+ * raw_url: getApiV2TrainingMount_RAW_URL
  * @param status - ステータス
  */
-export const ApiV2TrainingMountGet = function(parameters = {}) {
+export const getApiV2TrainingMount = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/training/mount'
@@ -9552,13 +9674,13 @@ export const ApiV2TrainingMountGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2TrainingMountGet_RAW_URL = function() {
+export const getApiV2TrainingMount_RAW_URL = function() {
   return '/api/v2/training/mount'
 }
-export const ApiV2TrainingMountGet_TYPE = function() {
+export const getApiV2TrainingMount_TYPE = function() {
   return 'get'
 }
-export const ApiV2TrainingMountGetURL = function(parameters = {}) {
+export const getApiV2TrainingMountURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/training/mount'
@@ -9575,13 +9697,13 @@ export const ApiV2TrainingMountGetURL = function(parameters = {}) {
 }
 /**
  * 指定されたIDの学習履歴の詳細情報を取得。
- * request: ApiV2TrainingByIdGet
- * url: ApiV2TrainingByIdGetURL
- * method: ApiV2TrainingByIdGet_TYPE
- * raw_url: ApiV2TrainingByIdGet_RAW_URL
+ * request: getApiV2TrainingById
+ * url: getApiV2TrainingByIdURL
+ * method: getApiV2TrainingById_TYPE
+ * raw_url: getApiV2TrainingById_RAW_URL
  * @param id - 学習履歴ID
  */
-export const ApiV2TrainingByIdGet = function(parameters = {}) {
+export const getApiV2TrainingById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/training/{id}'
@@ -9599,13 +9721,13 @@ export const ApiV2TrainingByIdGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2TrainingByIdGet_RAW_URL = function() {
+export const getApiV2TrainingById_RAW_URL = function() {
   return '/api/v2/training/{id}'
 }
-export const ApiV2TrainingByIdGet_TYPE = function() {
+export const getApiV2TrainingById_TYPE = function() {
   return 'get'
 }
-export const ApiV2TrainingByIdGetURL = function(parameters = {}) {
+export const getApiV2TrainingByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/training/{id}'
@@ -9620,14 +9742,14 @@ export const ApiV2TrainingByIdGetURL = function(parameters = {}) {
 }
 /**
  * 学習履歴の編集
- * request: ApiV2TrainingByIdPut
- * url: ApiV2TrainingByIdPutURL
- * method: ApiV2TrainingByIdPut_TYPE
- * raw_url: ApiV2TrainingByIdPut_RAW_URL
+ * request: putApiV2TrainingById
+ * url: putApiV2TrainingByIdURL
+ * method: putApiV2TrainingById_TYPE
+ * raw_url: putApiV2TrainingById_RAW_URL
  * @param id - 変更対象の学習履歴ID
- * @param model - 変更内容
+ * @param body - 変更内容
  */
-export const ApiV2TrainingByIdPut = function(parameters = {}) {
+export const putApiV2TrainingById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/training/{id}'
@@ -9638,8 +9760,8 @@ export const ApiV2TrainingByIdPut = function(parameters = {}) {
   if (parameters['id'] === undefined) {
     return Promise.reject(new Error('Missing required  parameter: id'))
   }
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -9648,13 +9770,13 @@ export const ApiV2TrainingByIdPut = function(parameters = {}) {
   }
   return request('put', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2TrainingByIdPut_RAW_URL = function() {
+export const putApiV2TrainingById_RAW_URL = function() {
   return '/api/v2/training/{id}'
 }
-export const ApiV2TrainingByIdPut_TYPE = function() {
+export const putApiV2TrainingById_TYPE = function() {
   return 'put'
 }
-export const ApiV2TrainingByIdPutURL = function(parameters = {}) {
+export const putApiV2TrainingByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/training/{id}'
@@ -9669,13 +9791,13 @@ export const ApiV2TrainingByIdPutURL = function(parameters = {}) {
 }
 /**
  * 学習履歴を削除する。
- * request: ApiV2TrainingByIdDelete
- * url: ApiV2TrainingByIdDeleteURL
- * method: ApiV2TrainingByIdDelete_TYPE
- * raw_url: ApiV2TrainingByIdDelete_RAW_URL
+ * request: deleteApiV2TrainingById
+ * url: deleteApiV2TrainingByIdURL
+ * method: deleteApiV2TrainingById_TYPE
+ * raw_url: deleteApiV2TrainingById_RAW_URL
  * @param id - 学習履歴ID
  */
-export const ApiV2TrainingByIdDelete = function(parameters = {}) {
+export const deleteApiV2TrainingById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/training/{id}'
@@ -9693,13 +9815,13 @@ export const ApiV2TrainingByIdDelete = function(parameters = {}) {
   }
   return request('delete', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2TrainingByIdDelete_RAW_URL = function() {
+export const deleteApiV2TrainingById_RAW_URL = function() {
   return '/api/v2/training/{id}'
 }
-export const ApiV2TrainingByIdDelete_TYPE = function() {
+export const deleteApiV2TrainingById_TYPE = function() {
   return 'delete'
 }
-export const ApiV2TrainingByIdDeleteURL = function(parameters = {}) {
+export const deleteApiV2TrainingByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/training/{id}'
@@ -9714,13 +9836,13 @@ export const ApiV2TrainingByIdDeleteURL = function(parameters = {}) {
 }
 /**
  * 指定された学習履歴のエラーイベントを取得します。
- * request: ApiV2TrainingByIdEventsGet
- * url: ApiV2TrainingByIdEventsGetURL
- * method: ApiV2TrainingByIdEventsGet_TYPE
- * raw_url: ApiV2TrainingByIdEventsGet_RAW_URL
+ * request: getApiV2TrainingByIdEvents
+ * url: getApiV2TrainingByIdEventsURL
+ * method: getApiV2TrainingByIdEvents_TYPE
+ * raw_url: getApiV2TrainingByIdEvents_RAW_URL
  * @param id - 学習履歴ID
  */
-export const ApiV2TrainingByIdEventsGet = function(parameters = {}) {
+export const getApiV2TrainingByIdEvents = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/training/{id}/events'
@@ -9738,13 +9860,13 @@ export const ApiV2TrainingByIdEventsGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2TrainingByIdEventsGet_RAW_URL = function() {
+export const getApiV2TrainingByIdEvents_RAW_URL = function() {
   return '/api/v2/training/{id}/events'
 }
-export const ApiV2TrainingByIdEventsGet_TYPE = function() {
+export const getApiV2TrainingByIdEvents_TYPE = function() {
   return 'get'
 }
-export const ApiV2TrainingByIdEventsGetURL = function(parameters = {}) {
+export const getApiV2TrainingByIdEventsURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/training/{id}/events'
@@ -9759,21 +9881,21 @@ export const ApiV2TrainingByIdEventsGetURL = function(parameters = {}) {
 }
 /**
  * 新規に学習を開始する
- * request: ApiV2TrainingRunPost
- * url: ApiV2TrainingRunPostURL
- * method: ApiV2TrainingRunPost_TYPE
- * raw_url: ApiV2TrainingRunPost_RAW_URL
- * @param model - 新規学習実行内容
+ * request: postApiV2TrainingRun
+ * url: postApiV2TrainingRunURL
+ * method: postApiV2TrainingRun_TYPE
+ * raw_url: postApiV2TrainingRun_RAW_URL
+ * @param body - 新規学習実行内容
  */
-export const ApiV2TrainingRunPost = function(parameters = {}) {
+export const postApiV2TrainingRun = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/training/run'
   let body
   let queryParameters = {}
   let form = {}
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -9782,13 +9904,13 @@ export const ApiV2TrainingRunPost = function(parameters = {}) {
   }
   return request('post', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2TrainingRunPost_RAW_URL = function() {
+export const postApiV2TrainingRun_RAW_URL = function() {
   return '/api/v2/training/run'
 }
-export const ApiV2TrainingRunPost_TYPE = function() {
+export const postApiV2TrainingRun_TYPE = function() {
   return 'post'
 }
-export const ApiV2TrainingRunPostURL = function(parameters = {}) {
+export const postApiV2TrainingRunURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/training/run'
@@ -9801,15 +9923,64 @@ export const ApiV2TrainingRunPostURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * 学習履歴添付ファイルを登録する。
+ * request: postApiV2TrainingByIdFiles
+ * url: postApiV2TrainingByIdFilesURL
+ * method: postApiV2TrainingByIdFiles_TYPE
+ * raw_url: postApiV2TrainingByIdFiles_RAW_URL
+ * @param id - 対象の学習履歴ID
+ * @param body - 追加するファイル情報
+ */
+export const postApiV2TrainingByIdFiles = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/training/{id}/files'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('post', domain + path, body, queryParameters, form, config)
+}
+export const postApiV2TrainingByIdFiles_RAW_URL = function() {
+  return '/api/v2/training/{id}/files'
+}
+export const postApiV2TrainingByIdFiles_TYPE = function() {
+  return 'post'
+}
+export const postApiV2TrainingByIdFilesURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/training/{id}/files'
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * 学習履歴添付ファイルの一覧を取得する。
- * request: ApiV2TrainingByIdFilesGet
- * url: ApiV2TrainingByIdFilesGetURL
- * method: ApiV2TrainingByIdFilesGet_TYPE
- * raw_url: ApiV2TrainingByIdFilesGet_RAW_URL
+ * request: getApiV2TrainingByIdFiles
+ * url: getApiV2TrainingByIdFilesURL
+ * method: getApiV2TrainingByIdFiles_TYPE
+ * raw_url: getApiV2TrainingByIdFiles_RAW_URL
  * @param id - 対象の学習履歴ID
  * @param withUrl - 結果にダウンロード用のURLを含めるか
  */
-export const ApiV2TrainingByIdFilesGet = function(parameters = {}) {
+export const getApiV2TrainingByIdFiles = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/training/{id}/files'
@@ -9830,13 +10001,13 @@ export const ApiV2TrainingByIdFilesGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2TrainingByIdFilesGet_RAW_URL = function() {
+export const getApiV2TrainingByIdFiles_RAW_URL = function() {
   return '/api/v2/training/{id}/files'
 }
-export const ApiV2TrainingByIdFilesGet_TYPE = function() {
+export const getApiV2TrainingByIdFiles_TYPE = function() {
   return 'get'
 }
-export const ApiV2TrainingByIdFilesGetURL = function(parameters = {}) {
+export const getApiV2TrainingByIdFilesURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/training/{id}/files'
@@ -9853,66 +10024,17 @@ export const ApiV2TrainingByIdFilesGetURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
- * 学習履歴添付ファイルを登録する。
- * request: ApiV2TrainingByIdFilesPost
- * url: ApiV2TrainingByIdFilesPostURL
- * method: ApiV2TrainingByIdFilesPost_TYPE
- * raw_url: ApiV2TrainingByIdFilesPost_RAW_URL
- * @param id - 対象の学習履歴ID
- * @param model - 追加するファイル情報
- */
-export const ApiV2TrainingByIdFilesPost = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/api/v2/training/{id}/files'
-  let body
-  let queryParameters = {}
-  let form = {}
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters['id'] === undefined) {
-    return Promise.reject(new Error('Missing required  parameter: id'))
-  }
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('post', domain + path, body, queryParameters, form, config)
-}
-export const ApiV2TrainingByIdFilesPost_RAW_URL = function() {
-  return '/api/v2/training/{id}/files'
-}
-export const ApiV2TrainingByIdFilesPost_TYPE = function() {
-  return 'post'
-}
-export const ApiV2TrainingByIdFilesPostURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/api/v2/training/{id}/files'
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
 * コンテナの/output/配下から指定ディレクトリパスの直下を検索する
 検索対象ディレクトリが見つからない場合もファイル・ディレクトリが空の結果を返す
-* request: ApiV2TrainingByIdContainer_filesGet
-* url: ApiV2TrainingByIdContainer_filesGetURL
-* method: ApiV2TrainingByIdContainer_filesGet_TYPE
-* raw_url: ApiV2TrainingByIdContainer_filesGet_RAW_URL
+* request: getApiV2TrainingByIdContainerFiles
+* url: getApiV2TrainingByIdContainerFilesURL
+* method: getApiV2TrainingByIdContainerFiles_TYPE
+* raw_url: getApiV2TrainingByIdContainerFiles_RAW_URL
      * @param id - 対象の学習履歴ID
      * @param path - 検索対象ディレクトリ。使用可能文字は「-_1-9a-zA-Z/」
      * @param withUrl - 結果にダウンロード用のURLを含めるか
 */
-export const ApiV2TrainingByIdContainer_filesGet = function(parameters = {}) {
+export const getApiV2TrainingByIdContainerFiles = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/training/{id}/container-files'
@@ -9936,13 +10058,13 @@ export const ApiV2TrainingByIdContainer_filesGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2TrainingByIdContainer_filesGet_RAW_URL = function() {
+export const getApiV2TrainingByIdContainerFiles_RAW_URL = function() {
   return '/api/v2/training/{id}/container-files'
 }
-export const ApiV2TrainingByIdContainer_filesGet_TYPE = function() {
+export const getApiV2TrainingByIdContainerFiles_TYPE = function() {
   return 'get'
 }
-export const ApiV2TrainingByIdContainer_filesGetURL = function(parameters = {}) {
+export const getApiV2TrainingByIdContainerFilesURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/training/{id}/container-files'
@@ -9963,14 +10085,14 @@ export const ApiV2TrainingByIdContainer_filesGetURL = function(parameters = {}) 
 }
 /**
  * 学習履歴添付ファイルを削除する
- * request: ApiV2TrainingByIdFilesByFileIdDelete
- * url: ApiV2TrainingByIdFilesByFileIdDeleteURL
- * method: ApiV2TrainingByIdFilesByFileIdDelete_TYPE
- * raw_url: ApiV2TrainingByIdFilesByFileIdDelete_RAW_URL
+ * request: deleteApiV2TrainingByIdFilesByFileId
+ * url: deleteApiV2TrainingByIdFilesByFileIdURL
+ * method: deleteApiV2TrainingByIdFilesByFileId_TYPE
+ * raw_url: deleteApiV2TrainingByIdFilesByFileId_RAW_URL
  * @param id - 対象の学習履歴ID
  * @param fileId - 削除するファイルのID
  */
-export const ApiV2TrainingByIdFilesByFileIdDelete = function(parameters = {}) {
+export const deleteApiV2TrainingByIdFilesByFileId = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/training/{id}/files/{fileId}'
@@ -9992,13 +10114,13 @@ export const ApiV2TrainingByIdFilesByFileIdDelete = function(parameters = {}) {
   }
   return request('delete', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2TrainingByIdFilesByFileIdDelete_RAW_URL = function() {
+export const deleteApiV2TrainingByIdFilesByFileId_RAW_URL = function() {
   return '/api/v2/training/{id}/files/{fileId}'
 }
-export const ApiV2TrainingByIdFilesByFileIdDelete_TYPE = function() {
+export const deleteApiV2TrainingByIdFilesByFileId_TYPE = function() {
   return 'delete'
 }
-export const ApiV2TrainingByIdFilesByFileIdDeleteURL = function(parameters = {}) {
+export const deleteApiV2TrainingByIdFilesByFileIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/training/{id}/files/{fileId}'
@@ -10014,14 +10136,14 @@ export const ApiV2TrainingByIdFilesByFileIdDeleteURL = function(parameters = {})
 }
 /**
  * 学習履歴添付ファイルのサイズ(Byte)を取得する
- * request: ApiV2TrainingByIdFilesByNameSizeGet
- * url: ApiV2TrainingByIdFilesByNameSizeGetURL
- * method: ApiV2TrainingByIdFilesByNameSizeGet_TYPE
- * raw_url: ApiV2TrainingByIdFilesByNameSizeGet_RAW_URL
+ * request: getApiV2TrainingByIdFilesByNameSize
+ * url: getApiV2TrainingByIdFilesByNameSizeURL
+ * method: getApiV2TrainingByIdFilesByNameSize_TYPE
+ * raw_url: getApiV2TrainingByIdFilesByNameSize_RAW_URL
  * @param id - 対象の学習履歴ID
  * @param name - 対象ファイル名
  */
-export const ApiV2TrainingByIdFilesByNameSizeGet = function(parameters = {}) {
+export const getApiV2TrainingByIdFilesByNameSize = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/training/{id}/files/{name}/size'
@@ -10043,13 +10165,13 @@ export const ApiV2TrainingByIdFilesByNameSizeGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2TrainingByIdFilesByNameSizeGet_RAW_URL = function() {
+export const getApiV2TrainingByIdFilesByNameSize_RAW_URL = function() {
   return '/api/v2/training/{id}/files/{name}/size'
 }
-export const ApiV2TrainingByIdFilesByNameSizeGet_TYPE = function() {
+export const getApiV2TrainingByIdFilesByNameSize_TYPE = function() {
   return 'get'
 }
-export const ApiV2TrainingByIdFilesByNameSizeGetURL = function(parameters = {}) {
+export const getApiV2TrainingByIdFilesByNameSizeURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/training/{id}/files/{name}/size'
@@ -10065,13 +10187,13 @@ export const ApiV2TrainingByIdFilesByNameSizeGetURL = function(parameters = {}) 
 }
 /**
  * 指定したTensorBoardコンテナ情報を取得する
- * request: ApiV2TrainingByIdTensorboardGet
- * url: ApiV2TrainingByIdTensorboardGetURL
- * method: ApiV2TrainingByIdTensorboardGet_TYPE
- * raw_url: ApiV2TrainingByIdTensorboardGet_RAW_URL
+ * request: getApiV2TrainingByIdTensorboard
+ * url: getApiV2TrainingByIdTensorboardURL
+ * method: getApiV2TrainingByIdTensorboard_TYPE
+ * raw_url: getApiV2TrainingByIdTensorboard_RAW_URL
  * @param id - 対象の学習履歴ID
  */
-export const ApiV2TrainingByIdTensorboardGet = function(parameters = {}) {
+export const getApiV2TrainingByIdTensorboard = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/training/{id}/tensorboard'
@@ -10089,13 +10211,13 @@ export const ApiV2TrainingByIdTensorboardGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2TrainingByIdTensorboardGet_RAW_URL = function() {
+export const getApiV2TrainingByIdTensorboard_RAW_URL = function() {
   return '/api/v2/training/{id}/tensorboard'
 }
-export const ApiV2TrainingByIdTensorboardGet_TYPE = function() {
+export const getApiV2TrainingByIdTensorboard_TYPE = function() {
   return 'get'
 }
-export const ApiV2TrainingByIdTensorboardGetURL = function(parameters = {}) {
+export const getApiV2TrainingByIdTensorboardURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/training/{id}/tensorboard'
@@ -10110,14 +10232,14 @@ export const ApiV2TrainingByIdTensorboardGetURL = function(parameters = {}) {
 }
 /**
  * 指定した学習のTensor Boardを立てる
- * request: ApiV2TrainingByIdTensorboardPut
- * url: ApiV2TrainingByIdTensorboardPutURL
- * method: ApiV2TrainingByIdTensorboardPut_TYPE
- * raw_url: ApiV2TrainingByIdTensorboardPut_RAW_URL
+ * request: putApiV2TrainingByIdTensorboard
+ * url: putApiV2TrainingByIdTensorboardURL
+ * method: putApiV2TrainingByIdTensorboard_TYPE
+ * raw_url: putApiV2TrainingByIdTensorboard_RAW_URL
  * @param id - 対象の学習履歴ID
- * @param model - 起動モデル
+ * @param body - 起動モデル
  */
-export const ApiV2TrainingByIdTensorboardPut = function(parameters = {}) {
+export const putApiV2TrainingByIdTensorboard = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/training/{id}/tensorboard'
@@ -10128,8 +10250,8 @@ export const ApiV2TrainingByIdTensorboardPut = function(parameters = {}) {
   if (parameters['id'] === undefined) {
     return Promise.reject(new Error('Missing required  parameter: id'))
   }
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -10138,13 +10260,13 @@ export const ApiV2TrainingByIdTensorboardPut = function(parameters = {}) {
   }
   return request('put', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2TrainingByIdTensorboardPut_RAW_URL = function() {
+export const putApiV2TrainingByIdTensorboard_RAW_URL = function() {
   return '/api/v2/training/{id}/tensorboard'
 }
-export const ApiV2TrainingByIdTensorboardPut_TYPE = function() {
+export const putApiV2TrainingByIdTensorboard_TYPE = function() {
   return 'put'
 }
-export const ApiV2TrainingByIdTensorboardPutURL = function(parameters = {}) {
+export const putApiV2TrainingByIdTensorboardURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/training/{id}/tensorboard'
@@ -10159,13 +10281,13 @@ export const ApiV2TrainingByIdTensorboardPutURL = function(parameters = {}) {
 }
 /**
  * 指定した学習のTensor Boardを削除する
- * request: ApiV2TrainingByIdTensorboardDelete
- * url: ApiV2TrainingByIdTensorboardDeleteURL
- * method: ApiV2TrainingByIdTensorboardDelete_TYPE
- * raw_url: ApiV2TrainingByIdTensorboardDelete_RAW_URL
+ * request: deleteApiV2TrainingByIdTensorboard
+ * url: deleteApiV2TrainingByIdTensorboardURL
+ * method: deleteApiV2TrainingByIdTensorboard_TYPE
+ * raw_url: deleteApiV2TrainingByIdTensorboard_RAW_URL
  * @param id - 対象の学習履歴ID
  */
-export const ApiV2TrainingByIdTensorboardDelete = function(parameters = {}) {
+export const deleteApiV2TrainingByIdTensorboard = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/training/{id}/tensorboard'
@@ -10183,13 +10305,13 @@ export const ApiV2TrainingByIdTensorboardDelete = function(parameters = {}) {
   }
   return request('delete', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2TrainingByIdTensorboardDelete_RAW_URL = function() {
+export const deleteApiV2TrainingByIdTensorboard_RAW_URL = function() {
   return '/api/v2/training/{id}/tensorboard'
 }
-export const ApiV2TrainingByIdTensorboardDelete_TYPE = function() {
+export const deleteApiV2TrainingByIdTensorboard_TYPE = function() {
   return 'delete'
 }
-export const ApiV2TrainingByIdTensorboardDeleteURL = function(parameters = {}) {
+export const deleteApiV2TrainingByIdTensorboardURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/training/{id}/tensorboard'
@@ -10204,13 +10326,13 @@ export const ApiV2TrainingByIdTensorboardDeleteURL = function(parameters = {}) {
 }
 /**
  * 学習を途中で強制終了させる。
- * request: ApiV2TrainingByIdHaltPost
- * url: ApiV2TrainingByIdHaltPostURL
- * method: ApiV2TrainingByIdHaltPost_TYPE
- * raw_url: ApiV2TrainingByIdHaltPost_RAW_URL
+ * request: postApiV2TrainingByIdHalt
+ * url: postApiV2TrainingByIdHaltURL
+ * method: postApiV2TrainingByIdHalt_TYPE
+ * raw_url: postApiV2TrainingByIdHalt_RAW_URL
  * @param id - 学習履歴ID
  */
-export const ApiV2TrainingByIdHaltPost = function(parameters = {}) {
+export const postApiV2TrainingByIdHalt = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/training/{id}/halt'
@@ -10228,13 +10350,13 @@ export const ApiV2TrainingByIdHaltPost = function(parameters = {}) {
   }
   return request('post', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2TrainingByIdHaltPost_RAW_URL = function() {
+export const postApiV2TrainingByIdHalt_RAW_URL = function() {
   return '/api/v2/training/{id}/halt'
 }
-export const ApiV2TrainingByIdHaltPost_TYPE = function() {
+export const postApiV2TrainingByIdHalt_TYPE = function() {
   return 'post'
 }
-export const ApiV2TrainingByIdHaltPostURL = function(parameters = {}) {
+export const postApiV2TrainingByIdHaltURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/training/{id}/halt'
@@ -10250,13 +10372,13 @@ export const ApiV2TrainingByIdHaltPostURL = function(parameters = {}) {
 /**
 * 学習を途中で強制終了させる。
 ユーザ自身がジョブを停止させた場合。
-* request: ApiV2TrainingByIdUser_cancelPost
-* url: ApiV2TrainingByIdUser_cancelPostURL
-* method: ApiV2TrainingByIdUser_cancelPost_TYPE
-* raw_url: ApiV2TrainingByIdUser_cancelPost_RAW_URL
+* request: postApiV2TrainingByIdUserCancel
+* url: postApiV2TrainingByIdUserCancelURL
+* method: postApiV2TrainingByIdUserCancel_TYPE
+* raw_url: postApiV2TrainingByIdUserCancel_RAW_URL
      * @param id - 学習履歴ID
 */
-export const ApiV2TrainingByIdUser_cancelPost = function(parameters = {}) {
+export const postApiV2TrainingByIdUserCancel = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/training/{id}/user-cancel'
@@ -10274,13 +10396,13 @@ export const ApiV2TrainingByIdUser_cancelPost = function(parameters = {}) {
   }
   return request('post', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2TrainingByIdUser_cancelPost_RAW_URL = function() {
+export const postApiV2TrainingByIdUserCancel_RAW_URL = function() {
   return '/api/v2/training/{id}/user-cancel'
 }
-export const ApiV2TrainingByIdUser_cancelPost_TYPE = function() {
+export const postApiV2TrainingByIdUserCancel_TYPE = function() {
   return 'post'
 }
-export const ApiV2TrainingByIdUser_cancelPostURL = function(parameters = {}) {
+export const postApiV2TrainingByIdUserCancelURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/training/{id}/user-cancel'
@@ -10295,13 +10417,13 @@ export const ApiV2TrainingByIdUser_cancelPostURL = function(parameters = {}) {
 }
 /**
  * 学習を正常終了させる。
- * request: ApiV2TrainingByIdCompletePost
- * url: ApiV2TrainingByIdCompletePostURL
- * method: ApiV2TrainingByIdCompletePost_TYPE
- * raw_url: ApiV2TrainingByIdCompletePost_RAW_URL
+ * request: postApiV2TrainingByIdComplete
+ * url: postApiV2TrainingByIdCompleteURL
+ * method: postApiV2TrainingByIdComplete_TYPE
+ * raw_url: postApiV2TrainingByIdComplete_RAW_URL
  * @param id - 学習履歴ID
  */
-export const ApiV2TrainingByIdCompletePost = function(parameters = {}) {
+export const postApiV2TrainingByIdComplete = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/training/{id}/complete'
@@ -10319,13 +10441,13 @@ export const ApiV2TrainingByIdCompletePost = function(parameters = {}) {
   }
   return request('post', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2TrainingByIdCompletePost_RAW_URL = function() {
+export const postApiV2TrainingByIdComplete_RAW_URL = function() {
   return '/api/v2/training/{id}/complete'
 }
-export const ApiV2TrainingByIdCompletePost_TYPE = function() {
+export const postApiV2TrainingByIdComplete_TYPE = function() {
   return 'post'
 }
-export const ApiV2TrainingByIdCompletePostURL = function(parameters = {}) {
+export const postApiV2TrainingByIdCompleteURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/training/{id}/complete'
@@ -10340,12 +10462,12 @@ export const ApiV2TrainingByIdCompletePostURL = function(parameters = {}) {
 }
 /**
  * 選択中のテナントに登録されている学習管理で使用するタグを表示する
- * request: ApiV2TrainingTagsGet
- * url: ApiV2TrainingTagsGetURL
- * method: ApiV2TrainingTagsGet_TYPE
- * raw_url: ApiV2TrainingTagsGet_RAW_URL
+ * request: getApiV2TrainingTags
+ * url: getApiV2TrainingTagsURL
+ * method: getApiV2TrainingTags_TYPE
+ * raw_url: getApiV2TrainingTags_RAW_URL
  */
-export const ApiV2TrainingTagsGet = function(parameters = {}) {
+export const getApiV2TrainingTags = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/training/tags'
@@ -10359,13 +10481,13 @@ export const ApiV2TrainingTagsGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2TrainingTagsGet_RAW_URL = function() {
+export const getApiV2TrainingTags_RAW_URL = function() {
   return '/api/v2/training/tags'
 }
-export const ApiV2TrainingTagsGet_TYPE = function() {
+export const getApiV2TrainingTags_TYPE = function() {
   return 'get'
 }
-export const ApiV2TrainingTagsGetURL = function(parameters = {}) {
+export const getApiV2TrainingTagsURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/training/tags'
@@ -10379,12 +10501,12 @@ export const ApiV2TrainingTagsGetURL = function(parameters = {}) {
 }
 /**
  * 管理者向けにユーザの一覧を取得する。
- * request: ApiV2AdminUsersGet
- * url: ApiV2AdminUsersGetURL
- * method: ApiV2AdminUsersGet_TYPE
- * raw_url: ApiV2AdminUsersGet_RAW_URL
+ * request: getApiV2AdminUsers
+ * url: getApiV2AdminUsersURL
+ * method: getApiV2AdminUsers_TYPE
+ * raw_url: getApiV2AdminUsers_RAW_URL
  */
-export const ApiV2AdminUsersGet = function(parameters = {}) {
+export const getApiV2AdminUsers = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/users'
@@ -10398,13 +10520,13 @@ export const ApiV2AdminUsersGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminUsersGet_RAW_URL = function() {
+export const getApiV2AdminUsers_RAW_URL = function() {
   return '/api/v2/admin/users'
 }
-export const ApiV2AdminUsersGet_TYPE = function() {
+export const getApiV2AdminUsers_TYPE = function() {
   return 'get'
 }
-export const ApiV2AdminUsersGetURL = function(parameters = {}) {
+export const getApiV2AdminUsersURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/users'
@@ -10418,21 +10540,21 @@ export const ApiV2AdminUsersGetURL = function(parameters = {}) {
 }
 /**
  * ユーザをローカルアカウントとして新規追加する
- * request: ApiV2AdminUsersPost
- * url: ApiV2AdminUsersPostURL
- * method: ApiV2AdminUsersPost_TYPE
- * raw_url: ApiV2AdminUsersPost_RAW_URL
- * @param model - 
+ * request: postApiV2AdminUsers
+ * url: postApiV2AdminUsersURL
+ * method: postApiV2AdminUsers_TYPE
+ * raw_url: postApiV2AdminUsers_RAW_URL
+ * @param body - 
  */
-export const ApiV2AdminUsersPost = function(parameters = {}) {
+export const postApiV2AdminUsers = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/users'
   let body
   let queryParameters = {}
   let form = {}
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -10441,13 +10563,13 @@ export const ApiV2AdminUsersPost = function(parameters = {}) {
   }
   return request('post', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminUsersPost_RAW_URL = function() {
+export const postApiV2AdminUsers_RAW_URL = function() {
   return '/api/v2/admin/users'
 }
-export const ApiV2AdminUsersPost_TYPE = function() {
+export const postApiV2AdminUsers_TYPE = function() {
   return 'post'
 }
-export const ApiV2AdminUsersPostURL = function(parameters = {}) {
+export const postApiV2AdminUsersURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/users'
@@ -10461,13 +10583,13 @@ export const ApiV2AdminUsersPostURL = function(parameters = {}) {
 }
 /**
  * 管理者向けに指定したユーザの情報を取得する。
- * request: ApiV2AdminUsersByIdGet
- * url: ApiV2AdminUsersByIdGetURL
- * method: ApiV2AdminUsersByIdGet_TYPE
- * raw_url: ApiV2AdminUsersByIdGet_RAW_URL
+ * request: getApiV2AdminUsersById
+ * url: getApiV2AdminUsersByIdURL
+ * method: getApiV2AdminUsersById_TYPE
+ * raw_url: getApiV2AdminUsersById_RAW_URL
  * @param id - 
  */
-export const ApiV2AdminUsersByIdGet = function(parameters = {}) {
+export const getApiV2AdminUsersById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/users/{id}'
@@ -10485,62 +10607,13 @@ export const ApiV2AdminUsersByIdGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminUsersByIdGet_RAW_URL = function() {
+export const getApiV2AdminUsersById_RAW_URL = function() {
   return '/api/v2/admin/users/{id}'
 }
-export const ApiV2AdminUsersByIdGet_TYPE = function() {
+export const getApiV2AdminUsersById_TYPE = function() {
   return 'get'
 }
-export const ApiV2AdminUsersByIdGetURL = function(parameters = {}) {
-  let queryParameters = {}
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  let path = '/api/v2/admin/users/{id}'
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    })
-  }
-  let keys = Object.keys(queryParameters)
-  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
-}
-/**
- * 指定したユーザを編集する
- * request: ApiV2AdminUsersByIdPut
- * url: ApiV2AdminUsersByIdPutURL
- * method: ApiV2AdminUsersByIdPut_TYPE
- * raw_url: ApiV2AdminUsersByIdPut_RAW_URL
- * @param id - 
- * @param model - 
- */
-export const ApiV2AdminUsersByIdPut = function(parameters = {}) {
-  const domain = parameters.$domain ? parameters.$domain : getDomain()
-  const config = parameters.$config
-  let path = '/api/v2/admin/users/{id}'
-  let body
-  let queryParameters = {}
-  let form = {}
-  path = path.replace('{id}', `${parameters['id']}`)
-  if (parameters['id'] === undefined) {
-    return Promise.reject(new Error('Missing required  parameter: id'))
-  }
-  if (parameters['model'] !== undefined) {
-    body = parameters['model']
-  }
-  if (parameters.$queryParameters) {
-    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
-      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
-    });
-  }
-  return request('put', domain + path, body, queryParameters, form, config)
-}
-export const ApiV2AdminUsersByIdPut_RAW_URL = function() {
-  return '/api/v2/admin/users/{id}'
-}
-export const ApiV2AdminUsersByIdPut_TYPE = function() {
-  return 'put'
-}
-export const ApiV2AdminUsersByIdPutURL = function(parameters = {}) {
+export const getApiV2AdminUsersByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/users/{id}'
@@ -10555,13 +10628,13 @@ export const ApiV2AdminUsersByIdPutURL = function(parameters = {}) {
 }
 /**
  * 指定したユーザを削除する
- * request: ApiV2AdminUsersByIdDelete
- * url: ApiV2AdminUsersByIdDeleteURL
- * method: ApiV2AdminUsersByIdDelete_TYPE
- * raw_url: ApiV2AdminUsersByIdDelete_RAW_URL
+ * request: deleteApiV2AdminUsersById
+ * url: deleteApiV2AdminUsersByIdURL
+ * method: deleteApiV2AdminUsersById_TYPE
+ * raw_url: deleteApiV2AdminUsersById_RAW_URL
  * @param id - 
  */
-export const ApiV2AdminUsersByIdDelete = function(parameters = {}) {
+export const deleteApiV2AdminUsersById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/users/{id}'
@@ -10579,13 +10652,62 @@ export const ApiV2AdminUsersByIdDelete = function(parameters = {}) {
   }
   return request('delete', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminUsersByIdDelete_RAW_URL = function() {
+export const deleteApiV2AdminUsersById_RAW_URL = function() {
   return '/api/v2/admin/users/{id}'
 }
-export const ApiV2AdminUsersByIdDelete_TYPE = function() {
+export const deleteApiV2AdminUsersById_TYPE = function() {
   return 'delete'
 }
-export const ApiV2AdminUsersByIdDeleteURL = function(parameters = {}) {
+export const deleteApiV2AdminUsersByIdURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/admin/users/{id}'
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 指定したユーザを編集する
+ * request: putApiV2AdminUsersById
+ * url: putApiV2AdminUsersByIdURL
+ * method: putApiV2AdminUsersById_TYPE
+ * raw_url: putApiV2AdminUsersById_RAW_URL
+ * @param id - 
+ * @param body - 
+ */
+export const putApiV2AdminUsersById = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/admin/users/{id}'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('put', domain + path, body, queryParameters, form, config)
+}
+export const putApiV2AdminUsersById_RAW_URL = function() {
+  return '/api/v2/admin/users/{id}'
+}
+export const putApiV2AdminUsersById_TYPE = function() {
+  return 'put'
+}
+export const putApiV2AdminUsersByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/users/{id}'
@@ -10600,14 +10722,14 @@ export const ApiV2AdminUsersByIdDeleteURL = function(parameters = {}) {
 }
 /**
  * 指定したユーザのパスワードを変更する
- * request: ApiV2AdminUsersByIdPasswordPut
- * url: ApiV2AdminUsersByIdPasswordPutURL
- * method: ApiV2AdminUsersByIdPasswordPut_TYPE
- * raw_url: ApiV2AdminUsersByIdPasswordPut_RAW_URL
+ * request: putApiV2AdminUsersByIdPassword
+ * url: putApiV2AdminUsersByIdPasswordURL
+ * method: putApiV2AdminUsersByIdPassword_TYPE
+ * raw_url: putApiV2AdminUsersByIdPassword_RAW_URL
  * @param id - 
- * @param password - 
+ * @param body - 
  */
-export const ApiV2AdminUsersByIdPasswordPut = function(parameters = {}) {
+export const putApiV2AdminUsersByIdPassword = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/admin/users/{id}/password'
@@ -10618,8 +10740,8 @@ export const ApiV2AdminUsersByIdPasswordPut = function(parameters = {}) {
   if (parameters['id'] === undefined) {
     return Promise.reject(new Error('Missing required  parameter: id'))
   }
-  if (parameters['password'] !== undefined) {
-    body = parameters['password']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -10628,13 +10750,13 @@ export const ApiV2AdminUsersByIdPasswordPut = function(parameters = {}) {
   }
   return request('put', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2AdminUsersByIdPasswordPut_RAW_URL = function() {
+export const putApiV2AdminUsersByIdPassword_RAW_URL = function() {
   return '/api/v2/admin/users/{id}/password'
 }
-export const ApiV2AdminUsersByIdPasswordPut_TYPE = function() {
+export const putApiV2AdminUsersByIdPassword_TYPE = function() {
   return 'put'
 }
-export const ApiV2AdminUsersByIdPasswordPutURL = function(parameters = {}) {
+export const putApiV2AdminUsersByIdPasswordURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/users/{id}/password'
@@ -10649,12 +10771,12 @@ export const ApiV2AdminUsersByIdPasswordPutURL = function(parameters = {}) {
 }
 /**
  * テナント向けに、所属しているユーザの一覧を取得する。
- * request: ApiV2TenantUsersGet
- * url: ApiV2TenantUsersGetURL
- * method: ApiV2TenantUsersGet_TYPE
- * raw_url: ApiV2TenantUsersGet_RAW_URL
+ * request: getApiV2TenantUsers
+ * url: getApiV2TenantUsersURL
+ * method: getApiV2TenantUsers_TYPE
+ * raw_url: getApiV2TenantUsers_RAW_URL
  */
-export const ApiV2TenantUsersGet = function(parameters = {}) {
+export const getApiV2TenantUsers = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/tenant/users'
@@ -10668,13 +10790,13 @@ export const ApiV2TenantUsersGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2TenantUsersGet_RAW_URL = function() {
+export const getApiV2TenantUsers_RAW_URL = function() {
   return '/api/v2/tenant/users'
 }
-export const ApiV2TenantUsersGet_TYPE = function() {
+export const getApiV2TenantUsers_TYPE = function() {
   return 'get'
 }
-export const ApiV2TenantUsersGetURL = function(parameters = {}) {
+export const getApiV2TenantUsersURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/tenant/users'
@@ -10688,13 +10810,13 @@ export const ApiV2TenantUsersGetURL = function(parameters = {}) {
 }
 /**
  * テナント向けに指定したユーザの情報を取得する。
- * request: ApiV2TenantUsersByIdGet
- * url: ApiV2TenantUsersByIdGetURL
- * method: ApiV2TenantUsersByIdGet_TYPE
- * raw_url: ApiV2TenantUsersByIdGet_RAW_URL
+ * request: getApiV2TenantUsersById
+ * url: getApiV2TenantUsersByIdURL
+ * method: getApiV2TenantUsersById_TYPE
+ * raw_url: getApiV2TenantUsersById_RAW_URL
  * @param id - 
  */
-export const ApiV2TenantUsersByIdGet = function(parameters = {}) {
+export const getApiV2TenantUsersById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/tenant/users/{id}'
@@ -10712,13 +10834,13 @@ export const ApiV2TenantUsersByIdGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2TenantUsersByIdGet_RAW_URL = function() {
+export const getApiV2TenantUsersById_RAW_URL = function() {
   return '/api/v2/tenant/users/{id}'
 }
-export const ApiV2TenantUsersByIdGet_TYPE = function() {
+export const getApiV2TenantUsersById_TYPE = function() {
   return 'get'
 }
-export const ApiV2TenantUsersByIdGetURL = function(parameters = {}) {
+export const getApiV2TenantUsersByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/tenant/users/{id}'
@@ -10733,13 +10855,13 @@ export const ApiV2TenantUsersByIdGetURL = function(parameters = {}) {
 }
 /**
  * 指定したユーザを接続中のテナントから削除する
- * request: ApiV2TenantUsersByIdDelete
- * url: ApiV2TenantUsersByIdDeleteURL
- * method: ApiV2TenantUsersByIdDelete_TYPE
- * raw_url: ApiV2TenantUsersByIdDelete_RAW_URL
+ * request: deleteApiV2TenantUsersById
+ * url: deleteApiV2TenantUsersByIdURL
+ * method: deleteApiV2TenantUsersById_TYPE
+ * raw_url: deleteApiV2TenantUsersById_RAW_URL
  * @param id - ユーザID
  */
-export const ApiV2TenantUsersByIdDelete = function(parameters = {}) {
+export const deleteApiV2TenantUsersById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/tenant/users/{id}'
@@ -10757,13 +10879,13 @@ export const ApiV2TenantUsersByIdDelete = function(parameters = {}) {
   }
   return request('delete', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2TenantUsersByIdDelete_RAW_URL = function() {
+export const deleteApiV2TenantUsersById_RAW_URL = function() {
   return '/api/v2/tenant/users/{id}'
 }
-export const ApiV2TenantUsersByIdDelete_TYPE = function() {
+export const deleteApiV2TenantUsersById_TYPE = function() {
   return 'delete'
 }
-export const ApiV2TenantUsersByIdDeleteURL = function(parameters = {}) {
+export const deleteApiV2TenantUsersByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/tenant/users/{id}'
@@ -10778,14 +10900,14 @@ export const ApiV2TenantUsersByIdDeleteURL = function(parameters = {}) {
 }
 /**
  * 指定したユーザについての接続中のテナントに対するロール情報を編集する
- * request: ApiV2TenantUsersByIdRolesPut
- * url: ApiV2TenantUsersByIdRolesPutURL
- * method: ApiV2TenantUsersByIdRolesPut_TYPE
- * raw_url: ApiV2TenantUsersByIdRolesPut_RAW_URL
+ * request: putApiV2TenantUsersByIdRoles
+ * url: putApiV2TenantUsersByIdRolesURL
+ * method: putApiV2TenantUsersByIdRoles_TYPE
+ * raw_url: putApiV2TenantUsersByIdRoles_RAW_URL
  * @param id - ユーザID
- * @param roleIds - 登録するロールID
+ * @param body - 登録するロールID
  */
-export const ApiV2TenantUsersByIdRolesPut = function(parameters = {}) {
+export const putApiV2TenantUsersByIdRoles = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/tenant/users/{id}/roles'
@@ -10796,8 +10918,8 @@ export const ApiV2TenantUsersByIdRolesPut = function(parameters = {}) {
   if (parameters['id'] === undefined) {
     return Promise.reject(new Error('Missing required  parameter: id'))
   }
-  if (parameters['roleIds'] !== undefined) {
-    body = parameters['roleIds']
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -10806,13 +10928,13 @@ export const ApiV2TenantUsersByIdRolesPut = function(parameters = {}) {
   }
   return request('put', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2TenantUsersByIdRolesPut_RAW_URL = function() {
+export const putApiV2TenantUsersByIdRoles_RAW_URL = function() {
   return '/api/v2/tenant/users/{id}/roles'
 }
-export const ApiV2TenantUsersByIdRolesPut_TYPE = function() {
+export const putApiV2TenantUsersByIdRoles_TYPE = function() {
   return 'put'
 }
-export const ApiV2TenantUsersByIdRolesPutURL = function(parameters = {}) {
+export const putApiV2TenantUsersByIdRolesURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/tenant/users/{id}/roles'
@@ -10827,12 +10949,12 @@ export const ApiV2TenantUsersByIdRolesPutURL = function(parameters = {}) {
 }
 /**
  * バージョン情報を取得
- * request: ApiV2VersionGet
- * url: ApiV2VersionGetURL
- * method: ApiV2VersionGet_TYPE
- * raw_url: ApiV2VersionGet_RAW_URL
+ * request: getApiV2Version
+ * url: getApiV2VersionURL
+ * method: getApiV2Version_TYPE
+ * raw_url: getApiV2Version_RAW_URL
  */
-export const ApiV2VersionGet = function(parameters = {}) {
+export const getApiV2Version = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
   let path = '/api/v2/version'
@@ -10846,13 +10968,13 @@ export const ApiV2VersionGet = function(parameters = {}) {
   }
   return request('get', domain + path, body, queryParameters, form, config)
 }
-export const ApiV2VersionGet_RAW_URL = function() {
+export const getApiV2Version_RAW_URL = function() {
   return '/api/v2/version'
 }
-export const ApiV2VersionGet_TYPE = function() {
+export const getApiV2Version_TYPE = function() {
   return 'get'
 }
-export const ApiV2VersionGetURL = function(parameters = {}) {
+export const getApiV2VersionURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/version'

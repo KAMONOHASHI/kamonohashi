@@ -17,14 +17,15 @@ namespace Nssol.Platypus.Logic
     {
         private readonly IInferenceHistoryRepository inferenceHistoryRepository;
         private readonly IClusterManagementLogic clusterManagementLogic;
+        private readonly ISlackLogic slackLogic;
         private readonly IResourceMonitorLogic resourceMonitorLogic;
-
         private readonly ITenantRepository tenantRepository;
         private readonly IUnitOfWork unitOfWork;
 
         public InferenceLogic(
             IInferenceHistoryRepository inferenceHistoryRepository,
             IClusterManagementLogic clusterManagementLogic,
+            ISlackLogic slackLogic,
             IResourceMonitorLogic resourceMonitorLogic,
             ITenantRepository tenantRepository,
             IUnitOfWork unitOfWork,
@@ -32,6 +33,7 @@ namespace Nssol.Platypus.Logic
         {
             this.inferenceHistoryRepository = inferenceHistoryRepository;
             this.clusterManagementLogic = clusterManagementLogic;
+            this.slackLogic = slackLogic;
             this.resourceMonitorLogic = resourceMonitorLogic;
             this.tenantRepository = tenantRepository;
             this.unitOfWork = unitOfWork;
@@ -70,6 +72,9 @@ namespace Nssol.Platypus.Logic
                     // 再確認してもまだ存在していたら、コンテナ削除
                     await clusterManagementLogic.DeleteContainerAsync(
                         ContainerType.Inferencing, inferenceHistory.Key, tenant.Name, force);
+
+                    // 通知処理
+                    slackLogic.InformJobResult(inferenceHistory);
                 }
             }
             else

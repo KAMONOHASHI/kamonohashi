@@ -18,6 +18,7 @@ namespace Nssol.Platypus.Logic
         private readonly ITrainingHistoryRepository trainingHistoryRepository;
         private readonly ITensorBoardContainerRepository tensorBoardContainerRepository;
         private readonly IClusterManagementLogic clusterManagementLogic;
+        private readonly ISlackLogic slackLogic;
         private readonly IResourceMonitorLogic resourceMonitorLogic;
         private readonly ITenantRepository tenantRepository;
         private readonly IUnitOfWork unitOfWork;
@@ -26,6 +27,7 @@ namespace Nssol.Platypus.Logic
             ITrainingHistoryRepository trainingHistoryRepository,
             ITensorBoardContainerRepository tensorBoardContainerRepository,
             IClusterManagementLogic clusterManagementLogic,
+            ISlackLogic slackLogic,
             IResourceMonitorLogic resourceMonitorLogic,
             ITenantRepository tenantRepository,
             IUnitOfWork unitOfWork,
@@ -34,6 +36,7 @@ namespace Nssol.Platypus.Logic
             this.trainingHistoryRepository = trainingHistoryRepository;
             this.tensorBoardContainerRepository = tensorBoardContainerRepository;
             this.clusterManagementLogic = clusterManagementLogic;
+            this.slackLogic = slackLogic;
             this.resourceMonitorLogic = resourceMonitorLogic;
             this.tenantRepository = tenantRepository;
             this.unitOfWork = unitOfWork;
@@ -61,7 +64,7 @@ namespace Nssol.Platypus.Logic
                     ? (await clusterManagementLogic.GetAllNodesAsync()).FirstOrDefault(x => x.Name == info.NodeName)
                     : null;
 
-                /// ジョブ実行履歴追加
+                // ジョブ実行履歴追加
                 AddJobHistory(trainingHistory, node, tenant, info, status.Key);
 
                 // 実コンテナ削除の結果は確認せず、DBの更新を先に確定する（コンテナがいないなら、そのまま消しても問題ない想定）
@@ -72,12 +75,15 @@ namespace Nssol.Platypus.Logic
                     // 再確認してもまだ存在していたら、コンテナ削除
                     await clusterManagementLogic.DeleteContainerAsync(
                         ContainerType.Training, trainingHistory.Key, tenant.Name, force);
+
+                    // 通知処理
+                    slackLogic.InformJobResult(trainingHistory);
                 }
             }
             else
             {
                 await trainingHistoryRepository.UpdateStatusAsync(trainingHistory.Id, status, force);
-                
+
                 // DBの更新を確定する
                 unitOfWork.Commit();
             }

@@ -1,6 +1,6 @@
-﻿using System;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using System;
 using System.Linq;
 using System.Security.Claims;
 
@@ -30,8 +30,7 @@ namespace Nssol.Platypus.Infrastructure
                 return -1;
             }
             string idStr = identity.Claims?.FirstOrDefault(c => c.Type == ClaimTypes.GroupSid)?.Value;
-            long result;
-            if (long.TryParse(idStr, out result))
+            if (long.TryParse(idStr, out long result))
             {
                 return result;
             }
@@ -58,8 +57,8 @@ namespace Nssol.Platypus.Infrastructure
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">
         /// </exception>
-        public static IApplicationBuilder UseWhen(IApplicationBuilder app, 
-            Func<HttpContext, bool> condition, 
+        public static IApplicationBuilder UseWhen(IApplicationBuilder app,
+            Func<HttpContext, bool> condition,
             Action<IApplicationBuilder> configuration)
         {
             //引数チェック

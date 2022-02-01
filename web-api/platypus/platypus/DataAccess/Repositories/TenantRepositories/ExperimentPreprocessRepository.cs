@@ -13,8 +13,8 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
     /// </summary>
     public class ExperimentPreprocessRepository : RepositoryForTenantBase<ExperimentPreprocess>, IExperimentPreprocessRepository
     {
-        public ExperimentPreprocessRepository(CommonDbContext context, IHttpContextAccessor accessor) 
-            : base(context, accessor) {}
+        public ExperimentPreprocessRepository(CommonDbContext context, IHttpContextAccessor accessor)
+            : base(context, accessor) { }
         public Task<bool> ExistsAsync(Expression<Func<ExperimentPreprocess, bool>> where, bool force)
             => ExistsModelAsync(where, force);
     }

@@ -70,7 +70,7 @@ namespace Nssol.Platypus.ServiceModels.ClusterManagementModels
         /// Templateによっては実行コマンドが既定されているものがあるので、使われないこともある。
         /// </summary>
         public string EntryPoint { get; set; }
-        
+
         /// <summary>
         /// NFSマウント情報
         /// </summary>

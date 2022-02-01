@@ -89,7 +89,7 @@ def create(name, file, memo, tags):
         name=name,
         tags=list(tags)
     )
-    result = api.create_data(model=model)
+    result = api.create_data(body=model)
     do_upload_files(api, result.id, file)
     print('created', result.id)
 
@@ -103,7 +103,7 @@ def update(id, name, memo, tags):
     """Update data"""
     api = rest.DataApi(configuration.get_api_client())
     model = rest.DataApiModelsEditInputModel(name=name, memo=memo, tags=list(tags))
-    result = api.update_data(id, model=model)
+    result = api.update_data(id, body=model)
     print('updated', result.id)
 
 
@@ -190,4 +190,4 @@ def do_upload_files(api, id, file):
         upload_info = object_storage.upload_file(api.api_client, x, 'Data')
         model.files.append(rest.ComponentsAddFileInputModel(file_name=upload_info.file_name,
                                                             stored_path=upload_info.stored_path))
-    api.add_data_file(id, model=model, _request_timeout=heavy_request_timeout(api.api_client))
+    api.add_data_file(id, body=model, _request_timeout=heavy_request_timeout(api.api_client))

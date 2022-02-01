@@ -123,7 +123,7 @@ namespace Nssol.Platypus.Logic.HostedService
             {
                 return DateTime.Parse(date).ToString("yyyy/MM/dd");
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 LogWarn($"日付変換で例外が発生しました。msg=\"{e.Message}\"");
                 return null;

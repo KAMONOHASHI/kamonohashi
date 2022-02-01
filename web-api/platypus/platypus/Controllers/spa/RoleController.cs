@@ -14,6 +14,10 @@ using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Controllers.spa
 {
+    /// <summary>
+    /// ロール管理を扱うためのAPI集
+    /// </summary>
+    [ApiController]
     [ApiVersion("1"), ApiVersion("2")]
     [Route("api/v{api-version:apiVersion}/tenant/roles")]
     public class RoleController : PlatypusApiControllerBase
@@ -80,7 +84,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPost("/api/v{api-version:apiVersion}/admin/roles")]
         [PermissionFilter(MenuCode.Role)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.Created)]
-        public async Task<IActionResult> CreateForAdmin([FromBody]CreateInputModel model, [FromServices] ITenantRepository tenantRepository)
+        public async Task<IActionResult> CreateForAdmin([FromBody] CreateInputModel model, [FromServices] ITenantRepository tenantRepository)
         {
             // データの入力チェック
             if (!ModelState.IsValid)
@@ -109,7 +113,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPut("/api/v{api-version:apiVersion}/admin/roles/{id}")]
         [PermissionFilter(MenuCode.Role)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> EditForAdmin(long? id, [FromBody]EditInputModel model, [FromServices] ITenantRepository tenantRepository)
+        public async Task<IActionResult> EditForAdmin(long? id, [FromBody] EditInputModel model, [FromServices] ITenantRepository tenantRepository)
         {
             // データの入力チェック
             if (!ModelState.IsValid || !id.HasValue)
@@ -281,7 +285,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPost]
         [PermissionFilter(MenuCode.TenantRole)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.Created)]
-        public async Task<IActionResult> CreateForTenant([FromBody]CreateForTenantInputModel model)
+        public async Task<IActionResult> CreateForTenant([FromBody] CreateForTenantInputModel model)
         {
             // データの入力チェック
             if (!ModelState.IsValid)
@@ -305,7 +309,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPut("{id}")]
         [PermissionFilter(MenuCode.TenantRole)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> EditForTenant(long? id, [FromBody]EditForTenantInputModel model)
+        public async Task<IActionResult> EditForTenant(long? id, [FromBody] EditForTenantInputModel model)
         {
             // データの入力チェック
             if (!ModelState.IsValid || !id.HasValue)

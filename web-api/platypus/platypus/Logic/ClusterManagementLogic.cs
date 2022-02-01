@@ -274,7 +274,8 @@ namespace Nssol.Platypus.Logic
                 { "KQI_TOKEN", loginLogic.GenerateToken().AccessToken },
                 { "PYTHONUNBUFFERED", "true" }, // python実行時の標準出力・エラーのバッファリングをなくす
                 { "LC_ALL", "C.UTF-8"},  // python実行時のエラー回避
-                { "LANG", "C.UTF-8"}  // python実行時のエラー回避
+                { "LANG", "C.UTF-8"},  // python実行時のエラー回避
+                { "KQI_VERSION", versionLogic.GetVersion() }  // KAMONOHASHIのバージョン情報
             };
 
             //コンテナを起動するために必要な設定値をインスタンス化
@@ -400,6 +401,9 @@ namespace Nssol.Platypus.Logic
         /// 新規に画像認識の訓練用コンテナを作成する。
         /// </summary>
         /// <param name="trainHistory">対象の学習履歴</param>
+        /// <param name="scriptType">コンテナ起動時に実行するスクリプトの種類。</param>
+        /// <param name="regisryTokenName">レジストリの認証トークン</param>
+        /// <param name="gitToken">Gitの認証トークン</param>
         /// <returns>作成したコンテナのステータス</returns>
         public async Task<Result<ContainerInfo, string>> RunTrainContainerAsync(TrainingHistory trainHistory, string scriptType,
             string regisryTokenName, string gitToken)
@@ -417,7 +421,8 @@ namespace Nssol.Platypus.Logic
             var registryMap = registryLogic.GetCurrentRegistryMap(trainHistory.ContainerRegistryId.Value);
             var gitEndpointResult = await gitLogic.GetPullUrlAsync(gitId, trainHistory.ModelRepository, trainHistory.ModelRepositoryOwner, gitToken);
 
-            if (! gitEndpointResult.IsSuccess) {
+            if (!gitEndpointResult.IsSuccess)
+            {
                 return Result<ContainerInfo, string>.CreateErrorResult(gitEndpointResult.Error);
             }
 
@@ -464,7 +469,8 @@ namespace Nssol.Platypus.Logic
                 { "LC_ALL", "C.UTF-8"},  // python実行時のエラー回避
                 { "LANG", "C.UTF-8"},  // python実行時のエラー回避
                 { "ZIP_FILE_CREATED", trainHistory.Zip.ToString() },  // 結果をzip圧縮するか否か
-                { "LOCAL_DATASET", trainHistory.LocalDataSet.ToString() }  // ローカルにデータをコピーするか否か
+                { "LOCAL_DATASET", trainHistory.LocalDataSet.ToString() },  // ローカルにデータをコピーするか否か
+                { "KQI_VERSION", versionLogic.GetVersion() }  // KAMONOHASHIのバージョン情報
             };
 
             //コンテナを起動するために必要な設定値をインスタンス化
@@ -686,7 +692,8 @@ namespace Nssol.Platypus.Logic
                 { "LC_ALL", "C.UTF-8"},  // python実行時のエラー回避
                 { "LANG", "C.UTF-8"},  // python実行時のエラー回避
                 { "ZIP_FILE_CREATED", inferenceHistory.Zip.ToString() },  // 結果をzip圧縮するか否か
-                { "LOCAL_DATASET", inferenceHistory.LocalDataSet.ToString() }  // ローカルにデータをコピーするか否か
+                { "LOCAL_DATASET", inferenceHistory.LocalDataSet.ToString() },  // ローカルにデータをコピーするか否か
+                { "KQI_VERSION", versionLogic.GetVersion() }  // KAMONOHASHIのバージョン情報
             };
 
             //コンテナを起動するために必要な設定値をインスタンス化
@@ -980,7 +987,7 @@ namespace Nssol.Platypus.Logic
                 Configuration = outModel.Value.Configuration
             };
         }
-        
+
         /// <summary>
         /// 指定したTensorBoardコンテナのステータスをクラスタ管理サービスに問い合わせ、結果でDBを更新する。
         /// </summary>
@@ -1094,7 +1101,8 @@ namespace Nssol.Platypus.Logic
                 { "LANG", "C.UTF-8"},  // python実行時のエラー回避
                 { "EXPIRES_IN", notebookHistory.ExpiresIn != 0 ? notebookHistory.ExpiresIn.ToString() : "infinity"},  // コンテナ生存期間
                 { "LOCAL_DATASET", notebookHistory.LocalDataSet.ToString() },  // ローカルにデータをコピーするか否か
-                { "JUPYTERLAB_VERSION", notebookHistory.JupyterLabVersion }
+                { "JUPYTERLAB_VERSION", notebookHistory.JupyterLabVersion },
+                { "KQI_VERSION", versionLogic.GetVersion() }  // KAMONOHASHIのバージョン情報
             };
 
             //コンテナを起動するために必要な設定値をインスタンス化
@@ -1222,7 +1230,8 @@ namespace Nssol.Platypus.Logic
 
                 var gitEndpointResult = await gitLogic.GetPullUrlAsync(gitId, notebookHistory.ModelRepository, notebookHistory.ModelRepositoryOwner);
 
-                if (!gitEndpointResult.IsSuccess) {
+                if (!gitEndpointResult.IsSuccess)
+                {
                     return Result<ContainerInfo, string>.CreateErrorResult(gitEndpointResult.Error);
                 }
 

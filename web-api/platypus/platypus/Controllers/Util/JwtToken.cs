@@ -1,13 +1,4 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using Nssol.Platypus.Infrastructure;
-using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace Nssol.Platypus.LogicModels
 {

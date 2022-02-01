@@ -58,7 +58,8 @@ namespace Nssol.Platypus.Services
             {
                 var result = JsonConvert.DeserializeObject<IEnumerable<GetRepositoryModel>>(response.Value);
                 return Result<IEnumerable<RepositoryModel>, string>.CreateResult(
-                        result.Select(e => new RepositoryModel() {
+                        result.Select(e => new RepositoryModel()
+                        {
                             Owner = e.owner.login, //GitHubではAPI実行にそのリポジトリのオーナー名が必要なので、それをKeyに入れる
                             Name = e.name,
                             FullName = e.full_name,
@@ -91,7 +92,8 @@ namespace Nssol.Platypus.Services
             {
                 var result = JsonConvert.DeserializeObject<IEnumerable<GetBranchModel>>(response.Value);
                 return Result<IEnumerable<BranchModel>, string>.CreateResult(
-                        result.Select(e => new BranchModel() {
+                        result.Select(e => new BranchModel()
+                        {
                             BranchName = e.name,
                             CommitId = e.commit?.sha
                         }));
@@ -219,6 +221,11 @@ namespace Nssol.Platypus.Services
             }
         }
 
+        /// <summary>
+        /// 指定したtokenのgitサービス側のユーザー名を取得する
+        /// </summary>
+        /// <param name="gitMap">Git情報</param>
+        /// <returns>コミット詳細</returns>
         public async Task<Result<string, string>> GetUserNameByTokenAsync(UserTenantGitMap gitMap)
         {
             // API呼び出しパラメータ作成

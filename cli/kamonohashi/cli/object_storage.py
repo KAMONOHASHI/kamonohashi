@@ -61,7 +61,7 @@ def upload_file(api_client, file_path, file_type):
         part_e_tags=part_e_tags,
         upload_id=upload_parameter.upload_id,
     )
-    api.complete_upload(model=model)
+    api.complete_upload(body=model)
     return upload_parameter
 
 

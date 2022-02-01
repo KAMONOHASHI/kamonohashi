@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Nssol.Platypus.Infrastructure.Infos
+﻿namespace Nssol.Platypus.Infrastructure.Infos
 {
     public class EndPointInfo
     {
@@ -25,7 +20,9 @@ namespace Nssol.Platypus.Infrastructure.Infos
         /// <summary>
         /// エンドポイントURL
         /// </summary>
-        public string Url { get
+        public string Url
+        {
+            get
             {
                 return $"{Host}:{Port}";
             }

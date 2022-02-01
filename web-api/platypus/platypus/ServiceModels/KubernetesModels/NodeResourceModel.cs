@@ -1,9 +1,5 @@
 ﻿using Newtonsoft.Json;
-using Nssol.Platypus.Infrastructure;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Nssol.Platypus.ServiceModels.KubernetesModels
 {
@@ -22,7 +18,7 @@ namespace Nssol.Platypus.ServiceModels.KubernetesModels
                 return ConvertCpuStrToFloatGB(Cpu);
             }
         }
-        
+
         [JsonProperty("nvidia.com/gpu")]
         //[JsonProperty("alpha.kubernetes.io/nvidia-gpu")] // バージョンアップでラベル名が変わったらしい
         public int Gpu { get; set; }
@@ -56,62 +52,62 @@ namespace Nssol.Platypus.ServiceModels.KubernetesModels
                 return 0;
             }
             string numStr;
-            if (cpuStr.EndsWith("Ei")) //元がEi単位なら、Byte単位にして単位換算する
+            if (cpuStr.EndsWith("Ei", StringComparison.CurrentCulture)) //元がEi単位なら、Byte単位にして単位換算する
             {
                 numStr = cpuStr.Substring(0, cpuStr.Length - 2);
                 return float.Parse(numStr) * 1024 * 1024 * 1024 * 1024 * 1024 * 1024 / 1000 / 1000 / 1000;
             }
-            else if (cpuStr.EndsWith("e") || cpuStr.EndsWith("E")) //元がeまたはE単位なら、1000*1000*1000を掛ける
+            else if (cpuStr.EndsWith("e", StringComparison.CurrentCulture) || cpuStr.EndsWith("E", StringComparison.CurrentCulture)) //元がeまたはE単位なら、1000*1000*1000を掛ける
             {
                 numStr = cpuStr.Substring(0, cpuStr.Length - 1);
                 return float.Parse(numStr) * 1000 * 1000 * 1000;
             }
-            else if (cpuStr.EndsWith("Pi")) //元がPi単位なら、Byte単位にして単位換算する
+            else if (cpuStr.EndsWith("Pi", StringComparison.CurrentCulture)) //元がPi単位なら、Byte単位にして単位換算する
             {
                 numStr = cpuStr.Substring(0, cpuStr.Length - 2);
                 return float.Parse(numStr) * 1024 * 1024 * 1024 * 1024 * 1024 / 1000 / 1000 / 1000;
             }
-            else if (cpuStr.EndsWith("p") || cpuStr.EndsWith("P")) //元がpまたはP単位なら、1000*1000を掛ける
+            else if (cpuStr.EndsWith("p", StringComparison.CurrentCulture) || cpuStr.EndsWith("P", StringComparison.CurrentCulture)) //元がpまたはP単位なら、1000*1000を掛ける
             {
                 numStr = cpuStr.Substring(0, cpuStr.Length - 1);
                 return float.Parse(numStr) * 1000 * 1000;
             }
-            else if (cpuStr.EndsWith("Ti")) //元がTi単位なら、Byte単位にして単位換算する
+            else if (cpuStr.EndsWith("Ti", StringComparison.CurrentCulture)) //元がTi単位なら、Byte単位にして単位換算する
             {
                 numStr = cpuStr.Substring(0, cpuStr.Length - 2);
                 return float.Parse(numStr) * 1024 * 1024 * 1024 * 1024 / 1000 / 1000 / 1000;
             }
-            else if (cpuStr.EndsWith("t") || cpuStr.EndsWith("T")) //元がtまたはT単位なら、1000を掛ける
+            else if (cpuStr.EndsWith("t", StringComparison.CurrentCulture) || cpuStr.EndsWith("T", StringComparison.CurrentCulture)) //元がtまたはT単位なら、1000を掛ける
             {
                 numStr = cpuStr.Substring(0, cpuStr.Length - 1);
                 return float.Parse(numStr) * 1000;
             }
-            else if (cpuStr.EndsWith("Gi")) //元がGi単位なら、Byte単位にして単位換算する
+            else if (cpuStr.EndsWith("Gi", StringComparison.CurrentCulture)) //元がGi単位なら、Byte単位にして単位換算する
             {
                 numStr = cpuStr.Substring(0, cpuStr.Length - 2);
                 return float.Parse(numStr) * 1024 * 1024 * 1024 / 1000 / 1000 / 1000;
             }
-            else if (cpuStr.EndsWith("g") || cpuStr.EndsWith("G")) //元がgまたはG単位なら、そのまま
+            else if (cpuStr.EndsWith("g", StringComparison.CurrentCulture) || cpuStr.EndsWith("G", StringComparison.CurrentCulture)) //元がgまたはG単位なら、そのまま
             {
                 numStr = cpuStr.Substring(0, cpuStr.Length - 1);
                 return float.Parse(numStr);
             }
-            else if (cpuStr.EndsWith("Mi")) //元がMi単位なら、Byte単位にして単位換算する
+            else if (cpuStr.EndsWith("Mi", StringComparison.CurrentCulture)) //元がMi単位なら、Byte単位にして単位換算する
             {
                 numStr = cpuStr.Substring(0, cpuStr.Length - 2);
                 return float.Parse(numStr) * 1024 * 1024 / 1000 / 1000 / 1000;
             }
-            else if (cpuStr.EndsWith("m") || cpuStr.EndsWith("M")) //元がmまたはM単位なら、1000で割る
+            else if (cpuStr.EndsWith("m", StringComparison.CurrentCulture) || cpuStr.EndsWith("M", StringComparison.CurrentCulture)) //元がmまたはM単位なら、1000で割る
             {
                 numStr = cpuStr.Substring(0, cpuStr.Length - 1);
                 return float.Parse(numStr) / 1000;
             }
-            else if (cpuStr.EndsWith("Ki")) //元がKi単位なら、Byte単位にして単位換算する
+            else if (cpuStr.EndsWith("Ki", StringComparison.CurrentCulture)) //元がKi単位なら、Byte単位にして単位換算する
             {
                 numStr = cpuStr.Substring(0, cpuStr.Length - 2);
                 return float.Parse(numStr) * 1024 / 1000 / 1000 / 1000;
             }
-            else if (cpuStr.EndsWith("k") || cpuStr.EndsWith("K")) //元がkまたはK単位なら、1000*1000で割る
+            else if (cpuStr.EndsWith("k", StringComparison.CurrentCulture) || cpuStr.EndsWith("K", StringComparison.CurrentCulture)) //元がkまたはK単位なら、1000*1000で割る
             {
                 numStr = cpuStr.Substring(0, cpuStr.Length - 1);
                 return float.Parse(numStr) / 1000 / 1000; ;
@@ -132,62 +128,62 @@ namespace Nssol.Platypus.ServiceModels.KubernetesModels
                 return 0;
             }
             string numStr;
-            if (memoryStr.EndsWith("Ei")) //元がEi単位なら、Byte単位にして単位換算する
+            if (memoryStr.EndsWith("Ei", StringComparison.CurrentCulture)) //元がEi単位なら、Byte単位にして単位換算する
             {
                 numStr = memoryStr.Substring(0, memoryStr.Length - 2);
                 return float.Parse(numStr) * 1024 * 1024 * 1024 * 1024 * 1024 * 1024 / 1000 / 1000 / 1000;
             }
-            else if (memoryStr.EndsWith("e") || memoryStr.EndsWith("E")) //元がeまたはE単位なら、1000*1000*1000を掛ける
+            else if (memoryStr.EndsWith("e", StringComparison.CurrentCulture) || memoryStr.EndsWith("E", StringComparison.CurrentCulture)) //元がeまたはE単位なら、1000*1000*1000を掛ける
             {
                 numStr = memoryStr.Substring(0, memoryStr.Length - 1);
                 return float.Parse(numStr) * 1000 * 1000 * 1000;
             }
-            else if (memoryStr.EndsWith("Pi")) //元がPi単位なら、Byte単位にして単位換算する
+            else if (memoryStr.EndsWith("Pi", StringComparison.CurrentCulture)) //元がPi単位なら、Byte単位にして単位換算する
             {
                 numStr = memoryStr.Substring(0, memoryStr.Length - 2);
                 return float.Parse(numStr) * 1024 * 1024 * 1024 * 1024 * 1024 / 1000 / 1000 / 1000;
             }
-            else if (memoryStr.EndsWith("p") || memoryStr.EndsWith("P")) //元がpまたはP単位なら、1000*1000を掛ける
+            else if (memoryStr.EndsWith("p", StringComparison.CurrentCulture) || memoryStr.EndsWith("P", StringComparison.CurrentCulture)) //元がpまたはP単位なら、1000*1000を掛ける
             {
                 numStr = memoryStr.Substring(0, memoryStr.Length - 1);
                 return float.Parse(numStr) * 1000 * 1000;
             }
-            else if (memoryStr.EndsWith("Ti")) //元がTi単位なら、Byte単位にして単位換算する
+            else if (memoryStr.EndsWith("Ti", StringComparison.CurrentCulture)) //元がTi単位なら、Byte単位にして単位換算する
             {
                 numStr = memoryStr.Substring(0, memoryStr.Length - 2);
                 return float.Parse(numStr) * 1024 * 1024 * 1024 * 1024 / 1000 / 1000 / 1000;
             }
-            else if (memoryStr.EndsWith("t") || memoryStr.EndsWith("T")) //元がtまたはT単位なら、1000を掛ける
+            else if (memoryStr.EndsWith("t", StringComparison.CurrentCulture) || memoryStr.EndsWith("T", StringComparison.CurrentCulture)) //元がtまたはT単位なら、1000を掛ける
             {
                 numStr = memoryStr.Substring(0, memoryStr.Length - 1);
                 return float.Parse(numStr) * 1000;
             }
-            else if (memoryStr.EndsWith("Gi")) //元がGi単位なら、Byte単位にして単位換算する
+            else if (memoryStr.EndsWith("Gi", StringComparison.CurrentCulture)) //元がGi単位なら、Byte単位にして単位換算する
             {
                 numStr = memoryStr.Substring(0, memoryStr.Length - 2);
                 return float.Parse(numStr) * 1024 * 1024 * 1024 / 1000 / 1000 / 1000;
             }
-            else if (memoryStr.EndsWith("g") || memoryStr.EndsWith("G")) //元がgまたはG単位なら、そのまま
+            else if (memoryStr.EndsWith("g", StringComparison.CurrentCulture) || memoryStr.EndsWith("G", StringComparison.CurrentCulture)) //元がgまたはG単位なら、そのまま
             {
                 numStr = memoryStr.Substring(0, memoryStr.Length - 1);
                 return float.Parse(numStr);
             }
-            else if (memoryStr.EndsWith("Mi")) //元がMi単位なら、Byte単位にして単位換算する
+            else if (memoryStr.EndsWith("Mi", StringComparison.CurrentCulture)) //元がMi単位なら、Byte単位にして単位換算する
             {
                 numStr = memoryStr.Substring(0, memoryStr.Length - 2);
                 return float.Parse(numStr) * 1024 * 1024 / 1000 / 1000 / 1000;
             }
-            else if (memoryStr.EndsWith("m") || memoryStr.EndsWith("M")) //元がmまたはM単位なら、1000で割る
+            else if (memoryStr.EndsWith("m", StringComparison.CurrentCulture) || memoryStr.EndsWith("M", StringComparison.CurrentCulture)) //元がmまたはM単位なら、1000で割る
             {
                 numStr = memoryStr.Substring(0, memoryStr.Length - 1);
                 return float.Parse(numStr) / 1000;
             }
-            else if (memoryStr.EndsWith("Ki")) //元がKi単位なら、Byte単位にして単位換算する
+            else if (memoryStr.EndsWith("Ki", StringComparison.CurrentCulture)) //元がKi単位なら、Byte単位にして単位換算する
             {
                 numStr = memoryStr.Substring(0, memoryStr.Length - 2);
                 return float.Parse(numStr) * 1024 / 1000 / 1000 / 1000;
             }
-            else if (memoryStr.EndsWith("k") || memoryStr.EndsWith("K")) //元がkまたはK単位なら、1000*1000で割る
+            else if (memoryStr.EndsWith("k", StringComparison.CurrentCulture) || memoryStr.EndsWith("K", StringComparison.CurrentCulture)) //元がkまたはK単位なら、1000*1000で割る
             {
                 numStr = memoryStr.Substring(0, memoryStr.Length - 1);
                 return float.Parse(numStr) / 1000 / 1000; ;

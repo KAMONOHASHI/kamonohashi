@@ -133,7 +133,7 @@ namespace Nssol.Platypus.Logic
             if (gitService != null)
             {
                 return await gitService.GetCommitByIdAsync(map, repositoryName, owner, commitId);
-                
+
             }
             return Result<CommitModel, string>.CreateErrorResult("The selected tenant isn't related to proper git service."); ;
         }
@@ -194,6 +194,7 @@ namespace Nssol.Platypus.Logic
         /// <param name="gitId">Git ID</param>
         /// <param name="repositoryName">リポジトリ名</param>
         /// <param name="owner">オーナー名</param>
+        /// <param name="extraToken">Gitの認証トークン</param>
         /// <returns>git pullするためのURL</returns>
         public async Task<Result<GitEndpointModel, string>> GetPullUrlAsync(long gitId, string repositoryName, string owner, string extraToken)
         {
@@ -286,7 +287,7 @@ namespace Nssol.Platypus.Logic
         /// <returns>WebUI URL</returns>
         public string GetTreeUiUrl(long gitId, string repositoryName, string owner, string commitId)
         {
-            if(string.IsNullOrEmpty(repositoryName) || string.IsNullOrEmpty(owner) || string.IsNullOrEmpty(commitId))
+            if (string.IsNullOrEmpty(repositoryName) || string.IsNullOrEmpty(owner) || string.IsNullOrEmpty(commitId))
             {
                 return null;
             }
@@ -338,7 +339,7 @@ namespace Nssol.Platypus.Logic
                 {
                     return CommonDiLogic.DynamicDi<GitLabComService>();
                 }
-                else if (git.ServiceType == GitServiceType.GitBucket) 
+                else if (git.ServiceType == GitServiceType.GitBucket)
                 {
                     return CommonDiLogic.DynamicDi<GitBucketService>();
                 }

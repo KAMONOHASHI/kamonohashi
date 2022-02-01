@@ -15,7 +15,7 @@ namespace Nssol.Platypus.ApiModels.NotebookApiModels
         [Required]
         [MinLength(1)]
         public string Name { get; set; }
-        
+
         /// <summary>
         /// コンテナ情報
         /// </summary>
@@ -56,24 +56,24 @@ namespace Nssol.Platypus.ApiModels.NotebookApiModels
         /// </summary>
         [Required]
         public int? Cpu { get; set; }
-        
+
         /// <summary>
         /// メモリ数(GB)
         /// </summary>
         [Required]
         public int? Memory { get; set; }
-        
+
         /// <summary>
         /// GPU数
         /// </summary>
         [Required]
         public int? Gpu { get; set; }
-        
+
         /// <summary>
         /// パーティション
         /// </summary>
         public string Partition { get; set; }
-        
+
         /// <summary>
         /// メモ
         /// </summary>

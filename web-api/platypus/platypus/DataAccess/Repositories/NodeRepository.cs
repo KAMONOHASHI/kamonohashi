@@ -21,7 +21,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// <param name="context">データにアクセスするためのDBコンテキスト</param>
         public NodeRepository(CommonDbContext context) : base(context)
         {
-            
+
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// <param name="includeDisableNode">Disableなノードも検索対象に含めるか</param>
         public async Task<bool> IsEnablePartitionAsync(string partition, bool includeDisableNode)
         {
-            if(includeDisableNode)
+            if (includeDisableNode)
             {
                 return await ExistsAsync(n => n.Partition == partition);
             }

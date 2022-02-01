@@ -21,6 +21,7 @@ namespace Nssol.Platypus.Controllers.spa
     /// <summary>
     /// Git管理を扱うためのAPI集
     /// </summary>
+    [ApiController]
     [ApiVersion("1"), ApiVersion("2")]
     [Route("api/v{api-version:apiVersion}/git")]
     public class GitController : PlatypusApiControllerBase
@@ -102,7 +103,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPost("/api/v{api-version:apiVersion}/admin/git/endpoints")]
         [Filters.PermissionFilter(MenuCode.Git)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.Created)]
-        public IActionResult Create([FromBody]CreateInputModel model)
+        public IActionResult Create([FromBody] CreateInputModel model)
         {
             // データの入力チェック
             if (!ModelState.IsValid)
@@ -134,7 +135,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPut("/api/v{api-version:apiVersion}/admin/git/endpoints/{id}")]
         [Filters.PermissionFilter(MenuCode.Git)]
         [ProducesResponseType(typeof(IndexOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> Edit(long? id, [FromBody]CreateInputModel model) //EditとCreateで項目が同じなので、入力モデルを使いまわし
+        public async Task<IActionResult> Edit(long? id, [FromBody] CreateInputModel model) //EditとCreateで項目が同じなので、入力モデルを使いまわし
         {
             // データの入力チェック
             if (!ModelState.IsValid || !id.HasValue)
@@ -279,7 +280,7 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             var result = await gitLogic.GetAllRepositoriesAsync(selectedGitId.Value);
-            if(result.IsSuccess == false)
+            if (result.IsSuccess == false)
             {
                 return JsonError(HttpStatusCode.ServiceUnavailable, $"Failed to access a git service: {result.Error}");
             }
@@ -307,7 +308,7 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonError(HttpStatusCode.ServiceUnavailable, $"Failed to access a git service: {result.Error}");
             }
-            if(result.Value == null)
+            if (result.Value == null)
             {
                 return JsonNotFound($"Repository {owner}/{repositoryName} is not found.");
             }
@@ -383,7 +384,7 @@ namespace Nssol.Platypus.Controllers.spa
         {
             string[] segmentsArray = segments.Split('/');
 
-            if(segmentsArray.Length < 3)
+            if (segmentsArray.Length < 3)
             {
                 return JsonNotFound();
             }
@@ -395,7 +396,7 @@ namespace Nssol.Platypus.Controllers.spa
             // それ以外がオーナー
             string owner = string.Join("/", segmentsArray.Take(segmentsArray.Length - 2));
 
-            switch(resource)
+            switch (resource)
             {
                 case "branches":
                     return await GetAllBranchAsync(gitId, owner, repository);

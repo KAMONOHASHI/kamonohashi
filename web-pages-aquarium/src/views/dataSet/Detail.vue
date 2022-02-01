@@ -205,7 +205,7 @@
               <kqi-display-error :error="error" />
               <el-row>
                 <div
-                  style="width:80%;height:250px;padding:20px;border:1px solid #CCC;border-radius:5px;margin-top:5px"
+                  style="width:80%;height:250px;padding:20px;border:1px solid #CCC;border-radius:5px;margin-top:5px;overflow-y:auto;"
                 >
                   <el-checkbox-group v-model="checkList">
                     <div v-for="item in allDatas" :key="item.id">
@@ -479,7 +479,7 @@ export default {
       let version = await this['aquariumDataSet/postByIdVersions']({
         //id: aqDataset.data.id,
         id: this.id,
-        model: { datasetId: dataset.data.id },
+        body: { datasetId: dataset.data.id },
       })
       this.version = null
       this.retrieveData()
@@ -723,7 +723,7 @@ export default {
       await this['aquariumDataSet/postByIdVersions']({
         //id: aqDataset.data.id,
         id: this.id,
-        model: { datasetId: dataset.data.id },
+        body: { datasetId: dataset.data.id },
       })
 
       // アップロード完了後の初期化

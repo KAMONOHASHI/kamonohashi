@@ -13,6 +13,7 @@ using Nssol.Platypus.Models;
 using Nssol.Platypus.Models.TenantModels;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
@@ -23,6 +24,7 @@ namespace Nssol.Platypus.Controllers.spa
     /// <summary>
     /// Notebookを扱うためのAPI集
     /// </summary>
+    [ApiController]
     [ApiVersion("1"), ApiVersion("2")]
     [Route("api/v{api-version:apiVersion}/notebook")]
     public class NotebookController : PlatypusApiControllerBase
@@ -91,9 +93,9 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpGet]
         [Filters.PermissionFilter(MenuCode.Notebook)]
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
-        public IActionResult GetAll([FromQuery]SearchInputModel filter, [FromQuery]int? perPage, [FromQuery] int page = 1, bool withTotal = false)
+        public IActionResult GetAll([FromQuery] SearchInputModel filter, [FromQuery] int? perPage, [FromQuery] int page = 1, bool withTotal = false)
         {
-            var data = notebookHistoryRepository.GetAllWithOrdering();
+            var data = notebookHistoryRepository.GetAllWithOrdering().AsEnumerable();
             data = Search(data, filter);
 
             //未指定、あるいは1000件以上であれば、1000件に指定
@@ -142,8 +144,8 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="filter">検索条件</param>
         private int GetTotalCount(SearchInputModel filter)
         {
-            IQueryable<NotebookHistory> histories;
-            histories = notebookHistoryRepository.GetAll();
+            IEnumerable<NotebookHistory> histories;
+            histories = notebookHistoryRepository.GetAll().AsEnumerable();
             histories = Search(histories, filter);
             return histories.Count();
         }
@@ -153,9 +155,9 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="sourceData">加工前の検索結果</param>
         /// <param name="filter">検索条件</param>
-        private static IQueryable<NotebookHistory> Search(IQueryable<NotebookHistory> sourceData, SearchInputModel filter)
+        private static IEnumerable<NotebookHistory> Search(IEnumerable<NotebookHistory> sourceData, SearchInputModel filter)
         {
-            IQueryable<NotebookHistory> data = sourceData;
+            IEnumerable<NotebookHistory> data = sourceData;
             data = data
                 .SearchLong(d => d.Id, filter.Id)
                 .SearchString(d => d.Name, filter.Name)
@@ -239,7 +241,7 @@ namespace Nssol.Platypus.Controllers.spa
             if (endPoint != null)
             {
                 //ノードポート番号+tokenを返す
-                return endPoint.Port.ToString();
+                return endPoint.Port.ToString(CultureInfo.CurrentCulture);
             }
             return "";
         }
@@ -272,7 +274,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPut("{id}")]
         [Filters.PermissionFilter(MenuCode.Notebook)]
         [ProducesResponseType(typeof(SimpleOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> Edit(long? id, [FromBody]EditInputModel model)
+        public async Task<IActionResult> Edit(long? id, [FromBody] EditInputModel model)
         {
             //データの入力チェック
             if (!ModelState.IsValid || !id.HasValue)
@@ -442,7 +444,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPost("run")]
         [Filters.PermissionFilter(MenuCode.Notebook)]
         [ProducesResponseType(typeof(SimpleOutputModel), (int)HttpStatusCode.Created)]
-        public async Task<IActionResult> Create([FromBody]CreateInputModel model)
+        public async Task<IActionResult> Create([FromBody] CreateInputModel model)
         {
             //データの入力チェック
             if (!ModelState.IsValid)
@@ -619,7 +621,7 @@ namespace Nssol.Platypus.Controllers.spa
                 }
                 notebookHistory.ParentInferenceMaps = maps;
             }
-            
+
             notebookHistoryRepository.Add(notebookHistory);
             unitOfWork.Commit();
 
@@ -678,11 +680,11 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             // 検索path文字列の先頭・末尾が/でない場合はつける
-            if (!path.StartsWith("/"))
+            if (!path.StartsWith("/", StringComparison.CurrentCulture))
             {
                 path = "/" + path;
             }
-            if (!path.EndsWith("/"))
+            if (!path.EndsWith("/", StringComparison.CurrentCulture))
             {
                 path = path + "/";
             }
@@ -748,7 +750,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPost("{id}/rerun")]
         [Filters.PermissionFilter(MenuCode.Notebook)]
         [ProducesResponseType(typeof(SimpleOutputModel), (int)HttpStatusCode.Created)]
-        public async Task<IActionResult> Rerun(long? id, [FromBody]RerunInputModel model)
+        public async Task<IActionResult> Rerun(long? id, [FromBody] RerunInputModel model)
         {
             // データの入力チェック
             if (!ModelState.IsValid)

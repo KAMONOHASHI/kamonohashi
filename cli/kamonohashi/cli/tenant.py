@@ -53,7 +53,7 @@ def create(name, display_name, git_ids, default_git_id, registry_ids, default_re
         default_registry_id=default_registry_id,
         storage_id=storage_id,
     )
-    result = api.create_tenant(model=model)
+    result = api.create_tenant(body=model)
     print('created', result.id)
 
 
@@ -76,7 +76,7 @@ def update(id, display_name, git_ids, default_git_id, registry_ids, default_regi
         default_registry_id=default_registry_id,
         storage_id=storage_id,
     )
-    result = api.update_tenant(id, model=model)
+    result = api.update_tenant(id, body=model)
     print('updated', result.id)
 
 

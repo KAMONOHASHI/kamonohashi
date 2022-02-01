@@ -1,12 +1,8 @@
-﻿using Nssol.Platypus.DataAccess.Core;
-using Nssol.Platypus.Models.TenantModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Nssol.Platypus.DataAccess.Repositories.Interfaces;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Nssol.Platypus.DataAccess.Core;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories;
+using Nssol.Platypus.Models.TenantModels;
+using System.Threading.Tasks;
 
 namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
 {
