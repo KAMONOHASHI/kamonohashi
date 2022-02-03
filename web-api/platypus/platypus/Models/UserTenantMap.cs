@@ -42,9 +42,11 @@ namespace Nssol.Platypus.Models
 
         /// <summary>
         /// 元々KQI上で紐づけあったか。
+        /// </summary>
+        /// <remarks>
         /// true : KQI上での紐づけあり。
         /// false: KQI上での紐づけなし。
-        /// </summary>
+        /// </remarks>
         [Required]
         public bool IsOrigin { get; set; }
 
