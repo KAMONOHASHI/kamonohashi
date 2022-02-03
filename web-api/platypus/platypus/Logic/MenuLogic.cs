@@ -47,6 +47,7 @@ namespace Nssol.Platypus.Logic
                 RoleMenu,
                 QuotaMenu,
                 UserMenu,
+                UserGroupMenu,
                 NodeMenu,
                 MenuAccessMenu,
                 ResourceMenu,
@@ -621,6 +622,16 @@ namespace Nssol.Platypus.Logic
             ShowSideMenu = true,
             MenuType = MenuType.System
         };
+        internal static MenuItemInfo UserGroupMenu = new MenuItemInfo()
+        {
+            Name = "ユーザグループ管理",
+            Description = "ユーザグループの設定管理",
+            Code = MenuCode.UserGroup,
+            Url = "/usergroup",
+            ShowTopMenu = false,
+            ShowSideMenu = true,
+            MenuType = MenuType.System
+        };
         internal static MenuItemInfo NodeMenu = new MenuItemInfo()
         {
             Name = "ノード管理",
@@ -694,6 +705,7 @@ namespace Nssol.Platypus.Logic
                     QuotaMenu,
                     NodeMenu,
                     UserMenu,
+                    UserGroupMenu,
                     MenuAccessMenu,
                     ResourceMenu
                 }
