@@ -20,8 +20,10 @@ namespace Nssol.Platypus.Models
 
         /// <summary>
         /// 対象ユーザグループがグループか、OUか。
-        /// true：グループ false：OU
         /// </summary>
+        /// <remarks>
+        /// true：グループ false：OU
+        /// </remarks>
         [Required]
         public bool IsGroup { get; set; }
 
@@ -33,8 +35,10 @@ namespace Nssol.Platypus.Models
 
         /// <summary>
         /// 対象ユーザグループのDN情報の直接的（直下）が対象か、間接的も許可するか。
-        /// true：直接 false：間接
         /// </summary>
+        /// <remarks>
+        /// true：直接 false：間接
+        /// </remarks>
         [Required]
         public bool IsDirect { get; set; }
 
