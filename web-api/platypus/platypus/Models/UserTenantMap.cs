@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Nssol.Platypus.Models
@@ -37,5 +39,51 @@ namespace Nssol.Platypus.Models
         /// </summary>
         [ForeignKey(nameof(TenantId))]
         public virtual Tenant Tenant { get; set; }
+
+        /// <summary>
+        /// 元々KQI上で紐づけあったか。
+        /// true : KQI上での紐づけあり。
+        /// false: KQI上での紐づけなし。
+        /// </summary>
+        [Required]
+        public bool IsOrigin { get; set; }
+
+        /// <summary>
+        /// ユーザグループテナントマップID
+        /// </summary>
+        /// <remarks>
+        /// どのユーザグループテナントマップに該当するのかをカンマ区切りで列挙する。
+        /// </remarks>
+        public string UserGroupTenantMapIds { get; set; }
+
+        /// <summary>
+        /// ユーザグループテナントマップID(リスト形式)
+        /// </summary>
+        /// <remarks>
+        /// どのユーザグループテナントマップに該当するのかをリストで保持する。
+        /// </remarks>
+        [NotMapped]
+        public List<long> UserGroupTenantMapIdList { get; set; }
+
+        /// <summary>
+        /// <see cref="UserGroupTenantMapIds"/>をリスト形式で取得する。
+        /// </summary>
+        public List<long> GetUserGroupTenantMapIdList()
+        {
+            if (UserGroupTenantMapIds == null)
+            {
+                return new List<long>();
+            }
+            UserGroupTenantMapIdList = JsonConvert.DeserializeObject<List<long>>(UserGroupTenantMapIds);
+            return UserGroupTenantMapIdList;
+        }
+
+        /// <summary>
+        /// リスト形式から文字列に変換して<see cref="UserGroupTenantMapIds"/>にセットする。
+        /// </summary>
+        public void SetUserGroupTenantMapIdList(List<long> list)
+        {
+            UserGroupTenantMapIds = JsonConvert.SerializeObject(list);
+        }
     }
 }
