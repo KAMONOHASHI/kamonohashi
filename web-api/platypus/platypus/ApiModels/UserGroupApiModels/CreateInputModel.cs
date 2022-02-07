@@ -1,35 +1,29 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace Nssol.Platypus.Models
+namespace Nssol.Platypus.ApiModels.UserGroupApiModels
 {
-    /// <summary>
-    /// ユーザグループを管理するテーブル
-    /// </summary>
-    public class UserGroup : ModelBase
+    public class CreateInputModel
     {
         /// <summary>
-        /// ユーザグループを識別するための名称
+        /// ユーザグループ名
         /// </summary>
         [Required]
         public string Name { get; set; }
 
         /// <summary>
-        /// ユーザグループに関する情報をメモとして記述できるようにする。
+        /// メモ
         /// </summary>
         public string Memo { get; set; }
 
         /// <summary>
         /// 対象ユーザグループがグループか、OUか。
         /// </summary>
-        /// <remarks>
-        /// true：グループ false：OU
-        /// </remarks>
         [Required]
         public bool IsGroup { get; set; }
 
         /// <summary>
-        /// 対象ユーザグループのDN(識別名:DistinguishedName)情報
+        /// 対象ユーザグループのDN情報
         /// </summary>
         [Required]
         public string Dn { get; set; }
@@ -37,15 +31,12 @@ namespace Nssol.Platypus.Models
         /// <summary>
         /// 対象ユーザグループのDN情報の直接的（直下）が対象か、間接的も許可するか。
         /// </summary>
-        /// <remarks>
-        /// true：直接 false：間接
-        /// </remarks>
         [Required]
         public bool IsDirect { get; set; }
 
         /// <summary>
-        /// ロールマッピング情報
+        /// テナント参加時に付与するロールID
         /// </summary>
-        public virtual ICollection<UserGroupRoleMap> RoleMaps{ get; set; }
+        public IEnumerable<long> RoleIds { get; set; }
     }
 }

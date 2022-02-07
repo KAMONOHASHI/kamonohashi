@@ -188,6 +188,7 @@ namespace Nssol.Platypus
             services.AddTransient<IRepository<ResourceNode>, RepositoryBase<ResourceNode>>();
             services.AddTransient<IRepository<ResourceContainer>, RepositoryBase<ResourceContainer>>();
             services.AddTransient<IRepository<ResourceJob>, RepositoryBase<ResourceJob>>();
+            services.AddTransient<IUserGroupRepository, UserGroupRepository>();
 
             // その他のDI設定
             services.AddTransient<IUnitOfWork, UnitOfWork>();
