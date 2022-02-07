@@ -330,6 +330,12 @@ namespace Nssol.Platypus.DataAccess
             modelBuilder.Entity<UserTenantRegistryMap>()
                     .HasIndex(e => new { e.UserId, e.TenantRegistryMapId })
                     .IsUnique();
+            modelBuilder.Entity<UserGroupRoleMap>()
+                    .HasIndex(e => new { e.UserGroupId, e.RoleId })
+                    .IsUnique();
+            modelBuilder.Entity<UserGroupTenantMap>()
+                    .HasIndex(e => new { e.UserGroupId, e.TenantId })
+                    .IsUnique();
             modelBuilder.Entity<TrainingHistoryParentMap>()
                     .HasIndex(e => new { e.TenantId, e.TrainingHistoryId, e.ParentId })
                     .IsUnique();
@@ -392,7 +398,6 @@ namespace Nssol.Platypus.DataAccess
             var now = DateTime.Now;
             SetCreated(user, now);
             SetModified(user, now);
-            
             return base.SaveChanges();
         }
 
