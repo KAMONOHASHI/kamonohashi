@@ -72,6 +72,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
                             .Include(t => t.Storage)
                             .Include(t => t.DefaultRegistry)
                             .Include(t => t.RegistryMaps).ThenInclude(map => map.Registry)
+                            .Include(t => t.UserGroupMaps).ThenInclude(map => map.UserGroup)
                             .OrderBy(t => t.Name).ToList();
                     }
                 }

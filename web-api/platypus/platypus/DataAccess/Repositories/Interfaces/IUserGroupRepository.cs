@@ -12,8 +12,23 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces
         IEnumerable<UserGroup> GetUserGroupsAllWithRoles();
 
         /// <summary>
+        /// テナントに紐づく全ユーザグループ情報を取得する。
+        /// </summary>
+        IEnumerable<UserGroup> GetUserGroupsAllFromTenant(long tenantId);
+
+        /// <summary>
         /// ユーザグループにロールマップ情報を紐づける
         /// </summary>
         void AttachRoleMap(UserGroup userGroup, IEnumerable<Role> roles);
+
+        /// <summary>
+        /// テナントとユーザグループを紐づける
+        /// </summary>
+        void AttachUserGroupToTenant(Tenant tenant, UserGroup userGroup);
+
+        /// <summary>
+        /// テナントとユーザグループの紐づけを解除する。
+        /// </summary>
+        void DetachUserGroupFromTenant(Tenant tenant, UserGroup userGroup);
     }
 }

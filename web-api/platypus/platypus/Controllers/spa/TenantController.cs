@@ -30,6 +30,7 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly IRoleRepository roleRepository;
         private readonly IRegistryRepository registryRepository;
         private readonly IGitRepository gitRepository;
+        private readonly IUserGroupRepository userGroupRepository;
         private readonly ICommonDiLogic commonDiLogic;
         private readonly IStorageLogic storageLogic;
         private readonly IClusterManagementLogic clusterManagementLogic;
@@ -42,6 +43,7 @@ namespace Nssol.Platypus.Controllers.spa
             IRoleRepository roleRepository,
             IRegistryRepository registryRepository,
             IGitRepository gitRepository,
+            IUserGroupRepository userGroupRepository,
             ICommonDiLogic commonDiLogic,
             IStorageLogic storageLogic,
             IClusterManagementLogic clusterManagementLogic,
@@ -54,6 +56,7 @@ namespace Nssol.Platypus.Controllers.spa
             this.roleRepository = roleRepository;
             this.registryRepository = registryRepository;
             this.gitRepository = gitRepository;
+            this.userGroupRepository = userGroupRepository;
             this.commonDiLogic = commonDiLogic;
             this.storageLogic = storageLogic;
             this.clusterManagementLogic = clusterManagementLogic;
@@ -186,6 +189,21 @@ namespace Nssol.Platypus.Controllers.spa
                         return JsonNotFound($"The selected registry ID {registryId} is not found.");
                     }
                     await registryRepository.AttachRegistryToTenantAsync(tenant, registry, true);
+                }
+            }
+            UserGroup userGroup = null;
+            if(model.UserGroupIds != null && model.UserGroupIds.Count() > 0)
+            {
+                tenant.UserGroupMaps = new List<UserGroupTenantMap>();
+                foreach (long userGroupId in model.UserGroupIds)
+                {
+                    //データの存在チェック
+                    userGroup = await userGroupRepository.GetByIdAsync(userGroupId);
+                    if (userGroup == null)
+                    {
+                        return JsonNotFound($"The selected userGroup ID {userGroupId} is not found.");
+                    }
+                    userGroupRepository.AttachUserGroupToTenant(tenant, userGroup);
                 }
             }
 
@@ -494,6 +512,38 @@ namespace Nssol.Platypus.Controllers.spa
             foreach (var removedRegistry in currentRegistries)
             {
                 registryRepository.DetachRegistryFromTenant(tenant, removedRegistry);
+            }
+
+            // テナントとユーザグループを紐づけ
+            //まずは現状のレジストリを取得して、そこから増減を判断する
+            var currentUserGroups = userGroupRepository.GetUserGroupsAllFromTenant(tenant.Id).ToList();
+            if (model.UserGroupIds != null && model.UserGroupIds.Count() > 0)
+            {
+                foreach(var userGroupId in model.UserGroupIds)
+                {
+                    var currentUserGroup = currentUserGroups.FirstOrDefault(u => u.Id == userGroupId);
+                    if(currentUserGroup != null)
+                    {
+                        //以前も紐づいていたので、無視。
+                        currentUserGroups.Remove(currentUserGroup);
+                        continue;
+                    }
+
+                    // データの存在チェック
+                    var userGroup = await userGroupRepository.GetByIdAsync(userGroupId);
+                    if (userGroup == null)
+                    {
+                        return JsonNotFound($"The selected userGroup ID {userGroupId} is not found.");
+                    }
+
+                    userGroupRepository.AttachUserGroupToTenant(tenant, userGroup);
+                }
+            }
+            //残っているのは削除された紐づけなので、消す
+            foreach (var removedUserGroup in currentUserGroups)
+            {
+                userGroupRepository.DetachUserGroupFromTenant(tenant, removedUserGroup);
+                // TODO ここでテナント脱退処理をする
             }
 
             // 関連するクラスタトークンをリセット
