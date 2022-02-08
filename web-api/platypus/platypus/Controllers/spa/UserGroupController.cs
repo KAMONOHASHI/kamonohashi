@@ -6,7 +6,6 @@ using Nssol.Platypus.DataAccess.Core;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces;
 using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -65,10 +64,10 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonBadRequest("Invalid inputs.");
             }
             // ロールの入力チェック
-            var error = await ValidateRoles(model.RoleIds);
-            if (error != null)
+            var roles = await ValidateRoles(model.RoleIds);
+            if (!roles.IsSuccess)
             {
-                return JsonBadRequest(error);
+                return JsonBadRequest(roles.Error);
             }
 
             var userGroup = new UserGroup()
@@ -80,7 +79,7 @@ namespace Nssol.Platypus.Controllers.spa
                 IsDirect = model.IsDirect,
             };
 
-            userGroupRepository.AttachRoleMap(userGroup, model.RoleIds);
+            userGroupRepository.AttachRoleMap(userGroup, roles.Value);
             userGroupRepository.Add(userGroup);
             unitOfWork.Commit();
 
@@ -111,10 +110,10 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             // ロールの入力チェック
-            var error = await ValidateRoles(model.RoleIds);
-            if (error != null)
+            var roles = await ValidateRoles(model.RoleIds);
+            if (!roles.IsSuccess)
             {
-                return JsonBadRequest(error);
+                return JsonBadRequest(roles.Error);
             }
 
             userGroup.Name = model.Name;
@@ -123,9 +122,9 @@ namespace Nssol.Platypus.Controllers.spa
             userGroup.Dn = model.Dn;
             userGroup.IsDirect = model.IsDirect;
 
-                userGroupRepository.AttachRoleMap(userGroup, model.RoleIds);
-                userGroupRepository.Update(userGroup);
-                unitOfWork.Commit();
+            userGroupRepository.AttachRoleMap(userGroup, roles.Value);
+            userGroupRepository.Update(userGroup);
+            unitOfWork.Commit();
 
             return JsonOK(new UserGroupOutputModel(userGroup));
         }
@@ -161,27 +160,27 @@ namespace Nssol.Platypus.Controllers.spa
         }
 
         /// <summary>
-        /// ロール情報の入力チェックを行う
+        /// ロールIDの入力チェックを行い、ロール情報をリストで返す
         /// </summary>
-        private async Task<string> ValidateRoles(IEnumerable<long> roleIds)
+        private async Task<Result<IEnumerable<Role>, string>> ValidateRoles(IEnumerable<long> roleIds)
         {
-            //List<Role> roles = new List<Role>();
+            List<Role> roles = new List<Role>();
             foreach(var roleId in roleIds)
             {
                 // ロールの存在チェック
                 var role = await roleRepository.GetRoleAsync(roleId);
                 if (role == null)
                 {
-                    return $"ロールID {roleId}が存在しません。";
+                    return Result<IEnumerable<Role>, string>.CreateErrorResult($"ロールID{roleId}は見つかりませんでした。");
                 }
+                // システムロールは登録できないようにする
                 if (role.IsSystemRole)
                 {
-                    // システムロールは登録できないようにする
-                    return "システムロールは登録できません。";
+                    return Result<IEnumerable<Role>, string>.CreateErrorResult("システムロールは登録できません。");
                 }
-                //roles.Add(role);
+                roles.Add(role);
             }
-            return null;
+            return Result<IEnumerable<Role>, string>.CreateResult(roles);
         }
     }
 }

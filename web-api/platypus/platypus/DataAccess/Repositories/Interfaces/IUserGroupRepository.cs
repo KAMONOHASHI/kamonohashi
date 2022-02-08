@@ -14,6 +14,6 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces
         /// <summary>
         /// ユーザグループにロールマップ情報を紐づける
         /// </summary>
-        void AttachRoleMap(UserGroup userGroup, IEnumerable<long> roles);
+        void AttachRoleMap(UserGroup userGroup, IEnumerable<Role> roles);
     }
 }
