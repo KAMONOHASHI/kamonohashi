@@ -171,12 +171,12 @@ namespace Nssol.Platypus.Controllers.spa
                 var role = await roleRepository.GetRoleAsync(roleId);
                 if (role == null)
                 {
-                    return Result<IEnumerable<Role>, string>.CreateErrorResult($"ロールID{roleId}は見つかりませんでした。");
+                    return Result<IEnumerable<Role>, string>.CreateErrorResult($"Role ID {roleId} is not found.");
                 }
                 // システムロールは登録できないようにする
                 if (role.IsSystemRole)
                 {
-                    return Result<IEnumerable<Role>, string>.CreateErrorResult("システムロールは登録できません。");
+                    return Result<IEnumerable<Role>, string>.CreateErrorResult($"The system role {role.Name} is not assigned as a tenant role.");
                 }
                 roles.Add(role);
             }
