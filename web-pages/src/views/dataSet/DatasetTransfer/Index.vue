@@ -174,11 +174,24 @@ export default {
 
     // データ一覧を取得し、それぞれのデータをentryに割り当てる
     async retrieveData(page, filter, isAllCheckedOld) {
-      let params = Object.assign({}, filter)
+      this.dataViewInfo.filter = filter
+      let params
+      params = Object.assign({}, filter)
       params.page = page
       params.perPage = this.dataViewInfo.currentPageSize
       params.withTotal = true
       await this.fetchData(params)
+      //フィルタの結果、ページ数より少ない結果の場合は存在するページ番号で再取得する
+      if (
+        this.total <= params.perPage &&
+        params.page > this.total / params.perPage
+      ) {
+        params = Object.assign({}, filter)
+        params.page = Math.ceil(this.total / params.perPage)
+        params.perPage = this.dataViewInfo.currentPageSize
+        params.withTotal = true
+        await this.fetchData(params)
+      }
 
       //fetchDataで取得したdataのリストに現在のページのcheck状態をつける
       for (let i in this.data) {
@@ -428,12 +441,12 @@ export default {
     //// alldataで全選択チェックをつけた後に個別にチェックを外してtrainingやtestingに一括移動する時の処理
     async handleAddAllDataOld({ to, datalist }) {
       //すべてのデータを取得する
-      let params = {}
+      let params = Object.assign({}, this.dataViewInfo.filter)
       //全データ取得
-      let maxpage = Math.ceil(this.total / 100)
+      let maxpage = Math.ceil(this.total / this.defaultViewInfo.currentPageSize)
       for (let i = 1; i <= maxpage; i++) {
         params.page = i
-        params.perPage = 100
+        params.perPage = this.defaultViewInfo.currentPageSize
         params.withTotal = true
         await this.fetchData(params)
         for (let j in this.data) {

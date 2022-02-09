@@ -360,13 +360,13 @@ export default {
       let moveDataList = []
       if (this.viewInfo.entryName == 'all　data') {
         if (this.isAllChecked) {
-          let params = {}
+          let params = Object.assign({}, this.searchCondition)
+          params.perPage = this.viewInfo.currentPageSize
+          params.withTotal = true
           //全データとってくるようにする
-          let maxpage = Math.ceil(this.total / 100)
+          let maxpage = Math.ceil(this.total / this.viewInfo.currentPageSize)
           for (let i = 1; i <= maxpage; i++) {
             params.page = i
-            params.perPage = 100
-            params.withTotal = true
             await this.fetchData(params)
             moveDataList = moveDataList.concat(this.data)
           }
