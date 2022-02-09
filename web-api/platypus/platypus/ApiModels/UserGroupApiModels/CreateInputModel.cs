@@ -37,6 +37,7 @@ namespace Nssol.Platypus.ApiModels.UserGroupApiModels
         /// <summary>
         /// テナント参加時に付与するロールID
         /// </summary>
+        [Required]
         public IEnumerable<long> RoleIds { get; set; }
     }
 }

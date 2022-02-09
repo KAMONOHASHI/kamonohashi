@@ -14105,7 +14105,8 @@
         "dn",
         "isDirect",
         "isGroup",
-        "name"
+        "name",
+        "roleIds"
       ],
       "type": "object",
       "properties": {
@@ -14227,6 +14228,10 @@
         "isGroup": {
           "description": "対象ユーザグループがグループか、OUか。",
           "type": "boolean"
+        },
+        "dn": {
+          "description": "対象ユーザグループのDN情報",
+          "type": "string"
         }
       }
     },

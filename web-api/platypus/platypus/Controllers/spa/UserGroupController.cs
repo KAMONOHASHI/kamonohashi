@@ -188,6 +188,12 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         private async Task<Result<IEnumerable<Role>, string>> ValidateRoles(IEnumerable<long> roleIds)
         {
+            // 空チェック
+            if(roleIds.Count() == 0)
+            {
+                return Result<IEnumerable<Role>, string>.CreateErrorResult("The RoleIds field is required.");
+            }
+
             List<Role> roles = new List<Role>();
             foreach(var roleId in roleIds)
             {

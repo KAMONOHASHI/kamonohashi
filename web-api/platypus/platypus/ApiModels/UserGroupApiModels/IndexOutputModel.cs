@@ -10,6 +10,7 @@ namespace Nssol.Platypus.ApiModels.UserGroupApiModels
             Name = userGroup.Name;
             Memo = userGroup.Memo;
             IsGroup = userGroup.IsGroup;
+            Dn = userGroup.Dn;
         }
 
         /// <summary>
@@ -31,5 +32,10 @@ namespace Nssol.Platypus.ApiModels.UserGroupApiModels
         /// 対象ユーザグループがグループか、OUか。
         /// </summary>
         public bool IsGroup { get; set; }
+
+        /// <summary>
+        /// 対象ユーザグループのDN情報
+        /// </summary>
+        public string Dn { get; set; }
     }
 }
