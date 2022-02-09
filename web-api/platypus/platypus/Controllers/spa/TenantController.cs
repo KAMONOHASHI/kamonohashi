@@ -515,7 +515,7 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             // テナントとユーザグループを紐づけ
-            //まずは現状のレジストリを取得して、そこから増減を判断する
+            //まずは現状のユーザグループを取得して、そこから増減を判断する
             var currentUserGroups = userGroupRepository.GetUserGroupsAllFromTenant(tenant.Id).ToList();
             if (model.UserGroupIds != null && model.UserGroupIds.Count() > 0)
             {

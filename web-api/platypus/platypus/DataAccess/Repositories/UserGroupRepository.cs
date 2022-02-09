@@ -32,6 +32,17 @@ namespace Nssol.Platypus.DataAccess.Repositories
         }
 
         /// <summary>
+        /// 指定したIDのユーザグループ情報をロール情報付きで取得する。
+        /// </summary>
+        public UserGroup GetUserGroupById(long id)
+        {
+            return GetAll()
+                .Include(u => u.RoleMaps)
+                .ThenInclude(map => map.Role)
+                .FirstOrDefault(u => u.Id == id);
+        }
+
+        /// <summary>
         /// テナントに紐づく全ユーザグループ情報を取得する。
         /// </summary>
         public IEnumerable<UserGroup> GetUserGroupsAllFromTenant(long tenantId)
@@ -73,8 +84,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
                 Tenant = tenant,
                 UserGroupId = userGroup.Id
             };
-            //tenant.UserGroupMaps.Add(map);
-            AddModel<UserGroupTenantMap>(map);
+            AddModel(map);
         }
 
         /// <summary>

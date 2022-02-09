@@ -37,17 +37,41 @@ namespace Nssol.Platypus.Controllers.spa
         }
 
         /// <summary>
-        /// 登録されているユーザグループ一覧を取得する
+        /// ユーザグループ一覧を取得する
         /// </summary>
         [HttpGet]
         [Filters.PermissionFilter(MenuCode.UserGroup)]
-        [ProducesResponseType(typeof(IEnumerable<UserGroupOutputModel>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetAll()
         {
-            var result = userGroupRepository.GetUserGroupsAllWithRoles();
+            var result = userGroupRepository.GetAll().OrderBy(u => u.Id);
 
-            return JsonOK(result.Select(r => new UserGroupOutputModel(r)));
+            return JsonOK(result.Select(r => new IndexOutputModel(r)));
         }
+
+        /// <summary>
+        /// 指定されたIDのユーザグループ情報を取得する
+        /// </summary>
+        [HttpGet("{id}")]
+        [Filters.PermissionFilter(MenuCode.UserGroup)]
+        [ProducesResponseType(typeof(DetailsOutputModel), (int)HttpStatusCode.OK)]
+        public IActionResult GetDetails(long? id)
+        {
+            // 入力チェック
+            if (!id.HasValue)
+            {
+                return JsonBadRequest("UserGroup ID is required.");
+            }
+            // データの存在チェック
+            var userGroup = userGroupRepository.GetUserGroupById(id.Value);
+            if(userGroup == null)
+            {
+                return JsonNotFound($"UserGroup ID {id.Value} is not found.");
+            }
+
+            return JsonOK(new DetailsOutputModel(userGroup));
+        }
+
 
         /// <summary>
         /// 新規にユーザグループを登録する
@@ -55,7 +79,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="model">ユーザグループ入力モデル</param>
         [HttpPost]
         [Filters.PermissionFilter(MenuCode.UserGroup)]
-        [ProducesResponseType(typeof(UserGroupOutputModel), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(DetailsOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> Create([FromBody] CreateInputModel model)
         {
             // データの入力チェック
@@ -83,7 +107,7 @@ namespace Nssol.Platypus.Controllers.spa
             userGroupRepository.Add(userGroup);
             unitOfWork.Commit();
 
-            return JsonOK(new UserGroupOutputModel(userGroup));
+            return JsonOK(new DetailsOutputModel(userGroup));
         }
 
         /// <summary>
@@ -93,7 +117,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="model">ユーザグループ入力モデル</param>
         [HttpPut("{id}")]
         [Filters.PermissionFilter(MenuCode.UserGroup)]
-        [ProducesResponseType(typeof(UserGroupOutputModel), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(DetailsOutputModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> Edit(long? id, [FromBody] CreateInputModel model)
         {
             // データの入力チェック
@@ -126,7 +150,7 @@ namespace Nssol.Platypus.Controllers.spa
             userGroupRepository.Update(userGroup);
             unitOfWork.Commit();
 
-            return JsonOK(new UserGroupOutputModel(userGroup));
+            return JsonOK(new DetailsOutputModel(userGroup));
         }
 
         /// <summary>
