@@ -10934,6 +10934,227 @@ export const putApiV2TenantUsersByIdRolesURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * ユーザグループ一覧を取得する
+ * request: getApiV2AdminUsergroup
+ * url: getApiV2AdminUsergroupURL
+ * method: getApiV2AdminUsergroup_TYPE
+ * raw_url: getApiV2AdminUsergroup_RAW_URL
+ */
+export const getApiV2AdminUsergroup = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/admin/usergroup'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const getApiV2AdminUsergroup_RAW_URL = function() {
+  return '/api/v2/admin/usergroup'
+}
+export const getApiV2AdminUsergroup_TYPE = function() {
+  return 'get'
+}
+export const getApiV2AdminUsergroupURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/admin/usergroup'
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 新規にユーザグループを登録する
+ * request: postApiV2AdminUsergroup
+ * url: postApiV2AdminUsergroupURL
+ * method: postApiV2AdminUsergroup_TYPE
+ * raw_url: postApiV2AdminUsergroup_RAW_URL
+ * @param body - ユーザグループ入力モデル
+ */
+export const postApiV2AdminUsergroup = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/admin/usergroup'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('post', domain + path, body, queryParameters, form, config)
+}
+export const postApiV2AdminUsergroup_RAW_URL = function() {
+  return '/api/v2/admin/usergroup'
+}
+export const postApiV2AdminUsergroup_TYPE = function() {
+  return 'post'
+}
+export const postApiV2AdminUsergroupURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/admin/usergroup'
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 指定されたIDのユーザグループ情報を取得する
+ * request: getApiV2AdminUsergroupById
+ * url: getApiV2AdminUsergroupByIdURL
+ * method: getApiV2AdminUsergroupById_TYPE
+ * raw_url: getApiV2AdminUsergroupById_RAW_URL
+ * @param id - 
+ */
+export const getApiV2AdminUsergroupById = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/admin/usergroup/{id}'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const getApiV2AdminUsergroupById_RAW_URL = function() {
+  return '/api/v2/admin/usergroup/{id}'
+}
+export const getApiV2AdminUsergroupById_TYPE = function() {
+  return 'get'
+}
+export const getApiV2AdminUsergroupByIdURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/admin/usergroup/{id}'
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 既存のユーザグループを編集する
+ * request: putApiV2AdminUsergroupById
+ * url: putApiV2AdminUsergroupByIdURL
+ * method: putApiV2AdminUsergroupById_TYPE
+ * raw_url: putApiV2AdminUsergroupById_RAW_URL
+ * @param id - ユーザグループID
+ * @param body - ユーザグループ入力モデル
+ */
+export const putApiV2AdminUsergroupById = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/admin/usergroup/{id}'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('put', domain + path, body, queryParameters, form, config)
+}
+export const putApiV2AdminUsergroupById_RAW_URL = function() {
+  return '/api/v2/admin/usergroup/{id}'
+}
+export const putApiV2AdminUsergroupById_TYPE = function() {
+  return 'put'
+}
+export const putApiV2AdminUsergroupByIdURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/admin/usergroup/{id}'
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * ユーザグループを削除する
+ * request: deleteApiV2AdminUsergroupById
+ * url: deleteApiV2AdminUsergroupByIdURL
+ * method: deleteApiV2AdminUsergroupById_TYPE
+ * raw_url: deleteApiV2AdminUsergroupById_RAW_URL
+ * @param id - ユーザグループID
+ */
+export const deleteApiV2AdminUsergroupById = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/admin/usergroup/{id}'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('delete', domain + path, body, queryParameters, form, config)
+}
+export const deleteApiV2AdminUsergroupById_RAW_URL = function() {
+  return '/api/v2/admin/usergroup/{id}'
+}
+export const deleteApiV2AdminUsergroupById_TYPE = function() {
+  return 'delete'
+}
+export const deleteApiV2AdminUsergroupByIdURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/admin/usergroup/{id}'
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * バージョン情報を取得
  * request: getApiV2Version
  * url: getApiV2VersionURL
