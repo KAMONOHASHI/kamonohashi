@@ -374,12 +374,12 @@ export default {
     },
 
     // 'allCheck'がemitされた際の処理
-    handleAllCheck({ entryName }) {
+    handleAllCheck({ entryName, checked }) {
       if (entryName == 'all　data') {
         this.allDataCheckedList = []
       } else {
         for (let i in this.entryList[entryName]) {
-          this.entryList[entryName][i]['checked'] = true
+          this.entryList[entryName][i]['checked'] = checked
         }
       }
     },
@@ -392,7 +392,23 @@ export default {
         this.allDataCheckedList = []
         return
       } else {
-        let fromList = Object.assign({}, this.entryList[from])
+        let filter = this.getViewInfo(from).filter
+        let fromList
+        if (filter && Object.keys(filter).length > 0) {
+          // filterがnullでない＆空Objectでない場合はフィルタ
+          fromList = this.entryList[from].filter(
+            x =>
+              Util.isMatchAsNumber(x.id, filter.id) &&
+              Util.isMatchAsText(x.name, filter.name) &&
+              Util.isMatchAsText(x.memo, filter.memo) &&
+              Util.isMatchAsText(x.createdBy, filter.createdBy) &&
+              Util.isMatchAsDate(x.createdAt, filter.createdAt) &&
+              Util.isMatchAsTextArrayByFilters(x.tags, filter.tag),
+          )
+        } else {
+          fromList = Object.assign({}, this.entryList[from])
+        }
+
         for (let i in fromList) {
           let data = Object.assign({}, fromList[i])
           data.checked = false
@@ -494,7 +510,23 @@ export default {
     ////  trainingやtestingで全選択チェックをつけた後に個別にチェックを外して別のエントリに一括移動する時の処理
     ////  またはtrainingやtestingで個別にチェックを付けて別のエントリに一括移動する時の処理
     handleAddAllOld({ from, to, noChecklist }) {
-      let fromList = Object.assign({}, this.entryList[from])
+      let filter = this.getViewInfo(from).filter
+      let fromList
+      if (filter && Object.keys(filter).length > 0) {
+        // filterがnullでない＆空Objectでない場合はフィルタ
+        fromList = this.entryList[from].filter(
+          x =>
+            Util.isMatchAsNumber(x.id, filter.id) &&
+            Util.isMatchAsText(x.name, filter.name) &&
+            Util.isMatchAsText(x.memo, filter.memo) &&
+            Util.isMatchAsText(x.createdBy, filter.createdBy) &&
+            Util.isMatchAsDate(x.createdAt, filter.createdAt) &&
+            Util.isMatchAsTextArrayByFilters(x.tags, filter.tag),
+        )
+      } else {
+        fromList = Object.assign({}, this.entryList[from])
+      }
+
       for (let i in fromList) {
         let noCheck = false
         for (let j in noChecklist) {

@@ -347,7 +347,10 @@ export default {
     },
 
     handleAllCheck(checked) {
-      this.$emit('allCheck', { entryName: this.viewInfo.entryName })
+      this.$emit('allCheck', {
+        entryName: this.viewInfo.entryName,
+        checked: checked,
+      })
 
       this.dataList.forEach(x => {
         x.checked = checked
