@@ -16,8 +16,9 @@ namespace Nssol.Platypus.Infrastructure.Options
         /// </summary>
         public string ContainerServiceBaseUrl
         {
-            get {
-                    return $"https://{ KubernetesHostName }:{ KubernetesPort }";
+            get
+            {
+                return $"https://{ KubernetesHostName }:{ KubernetesPort }";
             }
         }
         /// <summary>
@@ -27,8 +28,10 @@ namespace Nssol.Platypus.Infrastructure.Options
         /// <summary>
         /// k8sのポート番号
         /// </summary>
-        public string KubernetesPort {
-            get {
+        public string KubernetesPort
+        {
+            get
+            {
                 return Environment.GetEnvironmentVariable("KUBERNETES_SERVICE_PORT");
             }
         }
@@ -51,8 +54,10 @@ namespace Nssol.Platypus.Infrastructure.Options
         /// <summary>
         /// クラスタのリソース管理サービス(e.g. k8s)のアクセスキー
         /// </summary>
-        public string ResourceManageKey {
-            get {
+        public string ResourceManageKey
+        {
+            get
+            {
                 // 開発環境は環境変数からtoken取得。本番はk8sの用意するファイルから読む
                 string k8sApiKeyOfEnv = Environment.GetEnvironmentVariable("ContainerManageOptions__ResourceManageKey");
                 if (string.IsNullOrEmpty(k8sApiKeyOfEnv))
@@ -84,8 +89,9 @@ namespace Nssol.Platypus.Infrastructure.Options
         /// <summary>
         /// KQI管理外で無視すべきnamespaceのリスト
         /// </summary>
-        public List<string> IgnoreNamespacesList { 
-           get
+        public List<string> IgnoreNamespacesList
+        {
+            get
             {
                 return IgnoreNamespaces.Split(",").ToList();
             }
@@ -103,9 +109,9 @@ namespace Nssol.Platypus.Infrastructure.Options
 
         /// <summary>
         /// データを取得するためのREST APIのベースURL。
-        /// TODO: 互換性用。<see cref="WebEndPoint"/>か<see cref="WebServerUrl"/>を使用すること。
+        /// 互換性用。<see cref="WebEndPoint"/>か<see cref="WebServerUrl"/>を使用すること。
         /// </summary>
-        [Obsolete]
+        [Obsolete("互換性用。WebEndPointかWebServerUrlを使用すること。")]
         public string DataSetServerUrl { get; set; }
 
         /// <summary>
@@ -122,7 +128,8 @@ namespace Nssol.Platypus.Infrastructure.Options
         /// </summary>
         public string Proxy
         {
-            get {
+            get
+            {
                 // linuxのプロキシ環境変数を用いる
                 return Environment.GetEnvironmentVariable("http_proxy");
             }
@@ -148,6 +155,7 @@ namespace Nssol.Platypus.Infrastructure.Options
         /// <summary>
         /// データを取得するためのREST APIのベースURL。
         /// </summary>
+        [Obsolete("互換性用")]
         public string WebServerUrl
         {
             get

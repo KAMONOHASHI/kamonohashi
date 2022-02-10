@@ -8,7 +8,6 @@ using Nssol.Platypus.Infrastructure.Options;
 using Nssol.Platypus.Infrastructure.Types;
 using Nssol.Platypus.Logic.Interfaces;
 using Nssol.Platypus.LogicModels;
-using Nssol.Platypus.Models;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -34,7 +33,6 @@ namespace Nssol.Platypus.Logic
         private readonly IUserRepository userRepository;
         private readonly ISettingRepository settingRepository;
         private readonly IUnitOfWork unitOfWork;
-        private readonly ITenantRepository tenantRepository;
         private readonly ActiveDirectoryOptions adOptions;
         private readonly WebSecurityOptions webSecurityOptions;
 
@@ -42,7 +40,6 @@ namespace Nssol.Platypus.Logic
         /// コンストラクタ
         /// </summary>
         public LoginLogic(
-            ITenantRepository tenantRepository,
             IUserRepository userRepository,
             ISettingRepository settingRepository,
             IUnitOfWork unitOfWork,
@@ -50,7 +47,6 @@ namespace Nssol.Platypus.Logic
             IOptions<ActiveDirectoryOptions> adOptions,
             IOptions<WebSecurityOptions> webSecurityOptions) : base(commonDiLogic)
         {
-            this.tenantRepository = tenantRepository;
             this.userRepository = userRepository;
             this.settingRepository = settingRepository;
             this.unitOfWork = unitOfWork;
@@ -95,7 +91,7 @@ namespace Nssol.Platypus.Logic
                     return Result<List<Claim>, string>.CreateErrorResult(result.Error);
                 }
 
-                if(user == null)
+                if (user == null)
                 {
                     //ログインに成功したが、ユーザ存在しない（＝LDAPの新規ログイン＝ユーザを作成する）
                     userRepository.AddLdapUser(userName);
@@ -135,17 +131,17 @@ namespace Nssol.Platypus.Logic
             }
 
             //テナント名が非Nullだった場合、アクセス権を確認
-            if (tenantId.HasValue &&  userInfo.TenantDic.Keys.FirstOrDefault(t => t.Id == tenantId) == null)
+            if (tenantId.HasValue && userInfo.TenantDic.Keys.FirstOrDefault(t => t.Id == tenantId) == null)
             {
                 //指定したテナントに所属していない
                 LogError($"User {userName} does NOT have a permission to tenant {tenantId}");
-                return Result<List<Claim>, string>.CreateErrorResult("Invalid tenant ID.");
+                return Result<List<Claim>, string>.CreateErrorResult($"Invalid tenant ID. Current user does not have a permission to tenant {tenantId}.");
             }
 
             userInfo.SelectTenant(tenantId);
             //テナントIDをクレームに追加
             claims.Add(new Claim(ClaimTypes.GroupSid, userInfo.SelectedTenant.Id.ToString()));
-            
+
             return Result<List<Claim>, string>.CreateResult(claims);
 
         }
@@ -215,7 +211,7 @@ namespace Nssol.Platypus.Logic
         public JwtToken GenerateToken(List<Claim> claims, int? expiresIn = null)
         {
             string userName = claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
-            if(string.IsNullOrEmpty(userName))
+            if (string.IsNullOrEmpty(userName))
             {
                 throw new UnauthorizedAccessException("引数にユーザ名が含まれていません。未認証ユーザからのトークンの発行要求が発生しました。");
             }
@@ -231,7 +227,7 @@ namespace Nssol.Platypus.Logic
             DateTime expireDate;
             //期限が切れるまでの秒数
             long expireSec;
-            if(expiresIn == null)
+            if (expiresIn == null)
             {
                 //期限が指定されていなかったら、設定ファイルの値を使う
                 expireDate = now.AddSeconds(webSecurityOptions.ApiJwtExpirationSec);

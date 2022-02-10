@@ -1,9 +1,4 @@
 ﻿using Nssol.Platypus.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Nssol.Platypus.Infrastructure;
 
 namespace Nssol.Platypus.ApiModels.TenantApiModels
 {
@@ -17,7 +12,7 @@ namespace Nssol.Platypus.ApiModels.TenantApiModels
             Id = tenant.Id;
             Name = tenant.Name;
             DisplayName = tenant.DisplayName;
-            StoragePath = tenant.Storage == null  ? "No Object Storage Setting" : $"{tenant.Storage.ServerAddress}/{tenant.StorageBucket}";
+            StoragePath = tenant.Storage == null ? "No Object Storage Setting" : $"{tenant.Storage.ServerAddress}/{tenant.StorageBucket}";
         }
 
         /// <summary>

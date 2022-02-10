@@ -1,10 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Nssol.Platypus.Infrastructure;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Nssol.Platypus.DataAccess.Core
 {
@@ -18,7 +14,7 @@ namespace Nssol.Platypus.DataAccess.Core
         /// ログ出力を行うためのロガーインスタンス。
         /// </summary>
         private ILogger<UnitOfWork> logger;
-        
+
         private CommonDbContext context;
 
         /// <summary>

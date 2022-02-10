@@ -1,0 +1,70 @@
+{
+  "attachments": [
+    {
+      "fallback": "@Raw(Model.Title)",
+      "color": "@(Model.Color)",
+      "blocks": [
+        {
+          "type": "header",
+          "text": {
+            "type": "plain_text",
+            "text": "@Raw(Model.Title)",
+            "emoji": true
+          }
+        },
+@if (Model.Mention != null) {
+@:       {
+@:          "type": "section",
+@:          "text": {
+@:            "type": "mrkdwn",
+@:            "text": "@@@Raw(Model.Mention)"
+@:          }
+@:        },
+}
+        {
+          "type": "section",
+          "fields": [
+            {
+              "type": "mrkdwn",
+              "text": "*ID:*\n @(Model.Id)"
+            },
+            {
+              "type": "mrkdwn",
+              "text": "*Name:*\n @Raw(Model.Name)"
+            },
+            {
+              "type": "mrkdwn",
+              "text": "*Tenant:*\n @Raw(Model.TenantName)"
+            },
+            {
+              "type": "mrkdwn",
+              "text": "*Created by:*\n @(Model.UserName)"
+            },
+@if (Model.Status != null) {
+@:          {
+@:            "type": "mrkdwn",
+@:            "text": "*Status:*\n @(Model.Status)"
+@:          }
+}
+          ]
+        },
+@if (Model.Status == null) {
+@:      {
+@:        "type": "section",
+@:        "text": {
+@:          "type": "mrkdwn",
+@:          "text": "*Message:*\n @Raw(Model.Message)"
+@:        }
+@:      },
+}
+        {
+          "type": "section",
+          "text": {
+            "type": "mrkdwn",
+            "text": "<@(Model.Url)|More>"
+          }
+        }
+      ]
+    }
+  ]
+}

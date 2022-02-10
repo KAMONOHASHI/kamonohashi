@@ -26,6 +26,7 @@ namespace Nssol.Platypus.Controllers.spa
     /// <summary>
     /// Inferenceを扱うためのAPI集
     /// </summary>
+    [ApiController]
     [ApiVersion("1"), ApiVersion("2")]
     [Route("api/v{api-version:apiVersion}/inferences")]
     public class InferenceController : PlatypusApiControllerBase
@@ -40,6 +41,7 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly IStorageLogic storageLogic;
         private readonly IGitLogic gitLogic;
         private readonly IClusterManagementLogic clusterManagementLogic;
+        private readonly ISlackLogic slackLogic;
         private readonly IUnitOfWork unitOfWork;
 
         /// <summary>
@@ -56,6 +58,7 @@ namespace Nssol.Platypus.Controllers.spa
             IStorageLogic storageLogic,
             IGitLogic gitLogic,
             IClusterManagementLogic clusterManagementLogic,
+            ISlackLogic slackLogic,
             IUnitOfWork unitOfWork,
             IHttpContextAccessor accessor) : base(accessor)
         {
@@ -69,6 +72,7 @@ namespace Nssol.Platypus.Controllers.spa
             this.storageLogic = storageLogic;
             this.gitLogic = gitLogic;
             this.clusterManagementLogic = clusterManagementLogic;
+            this.slackLogic = slackLogic;
             this.unitOfWork = unitOfWork;
         }
 
@@ -96,7 +100,7 @@ namespace Nssol.Platypus.Controllers.spa
         [ProducesResponseType(typeof(IEnumerable<InferenceIndexOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetAll([FromQuery] InferenceSearchInputModel filter, [FromQuery] int? perPage, [FromQuery] int page = 1, bool withTotal = false)
         {
-            var data = inferenceHistoryRepository.GetAllIncludeDataSetAndParentWithOrdering();
+            var data = inferenceHistoryRepository.GetAllIncludeDataSetAndParentWithOrdering().AsEnumerable();
             data = Search(data, filter);
 
             //未指定、あるいは1000件以上であれば、1000件に指定
@@ -154,15 +158,15 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="filter">検索条件</param>
         private int GetTotalCount(InferenceSearchInputModel filter)
         {
-            IQueryable<InferenceHistory> histories;
+            IEnumerable<InferenceHistory> histories;
             if (string.IsNullOrEmpty(filter.DataSet))
             {
-                histories = inferenceHistoryRepository.GetAll();
+                histories = inferenceHistoryRepository.GetAll().AsEnumerable();
             }
             else
             {
                 //データセット名のフィルターがかかっている場合、データセットも併せて取得しないといけない
-                histories = inferenceHistoryRepository.GetAllIncludeDataSet();
+                histories = inferenceHistoryRepository.GetAllIncludeDataSet().AsEnumerable();
             }
 
             histories = Search(histories, filter);
@@ -174,9 +178,9 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="sourceData">加工前の検索結果</param>
         /// <param name="filter">検索条件</param>
-        private static IQueryable<InferenceHistory> Search(IQueryable<InferenceHistory> sourceData, InferenceSearchInputModel filter)
+        private static IEnumerable<InferenceHistory> Search(IEnumerable<InferenceHistory> sourceData, InferenceSearchInputModel filter)
         {
-            IQueryable<InferenceHistory> data = sourceData;
+            IEnumerable<InferenceHistory> data = sourceData;
             data = data
                 .SearchLong(d => d.Id, filter.Id)
                 .SearchString(d => d.Name, filter.Name)
@@ -328,9 +332,9 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpGet("mount")]
         [Filters.PermissionFilter(MenuCode.Notebook, MenuCode.Inference)]
         [ProducesResponseType(typeof(IEnumerable<InferenceIndexOutputModel>), (int)HttpStatusCode.OK)]
-        public IActionResult GetInferenceToMount(ApiModels.InferenceApiModels.MountInputModel filter)
+        public IActionResult GetInferenceToMount([FromQuery] ApiModels.InferenceApiModels.MountInputModel filter)
         {
-            var data = inferenceHistoryRepository.GetAllIncludeDataSetAndParentWithOrdering();
+            var data = inferenceHistoryRepository.GetAllIncludeDataSetAndParentWithOrdering().AsEnumerable();
 
             // ステータスを限定する
             if (filter.Status != null)
@@ -691,17 +695,17 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             // 検索path文字列の先頭・末尾が/でない場合はつける
-            if (!path.StartsWith("/"))
+            if (!path.StartsWith("/", StringComparison.CurrentCulture))
             {
                 path = "/" + path;
             }
-            if (!path.EndsWith("/"))
+            if (!path.EndsWith("/", StringComparison.CurrentCulture))
             {
                 path = path + "/";
             }
 
             // windowsから実行された場合、区切り文字が"\\"として送られてくるので"/"に置換する
-            path = path.Replace("\\", "/");
+            path = path.Replace("\\", "/", StringComparison.CurrentCulture);
 
             var rootDir = $"{id}" + path;
 
@@ -789,11 +793,36 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonNotFound($"File ID {fileId.Value} is not found.");
             }
 
+            // ストレージ上のファイルを削除するために保存先ファイルパスを保持しておく。
+            string storedPath = file.StoredPath;
+
+            // 削除処理
             inferenceHistoryRepository.DeleteAttachedFile(file);
-            await storageLogic.DeleteFileAsync(ResourceType.InferenceHistoryAttachedFiles, file.StoredPath);
+            await storageLogic.DeleteFileAsync(ResourceType.InferenceHistoryAttachedFiles, storedPath);
             unitOfWork.Commit();
 
             return JsonNoContent();
+        }
+
+        /// <summary>
+        /// 推論履歴添付ファイルのサイズ(Byte)を取得する
+        /// </summary>
+        /// <param name="id">対象の推論履歴ID</param>
+        /// <param name="name">対象ファイル名</param>
+        [HttpGet("{id}/files/{name}/size")]
+        [Filters.PermissionFilter(MenuCode.Inference)]
+        [ProducesResponseType(typeof(ApiModels.InferenceApiModels.FileOutputModel), (int)HttpStatusCode.OK)]
+        public IActionResult GetFileSize(long id, string name)
+        {
+            // ファイルの存在チェック
+            var file = inferenceHistoryRepository.GetAttachedFile(id, name);
+            if (file == null)
+            {
+                return JsonNotFound($"Inference ID {id} or file name {name} is not found.");
+            }
+
+            var fileSize = storageLogic.GetFileSize(ResourceType.InferenceHistoryAttachedFiles, file.StoredPath);
+            return JsonOK(new ApiModels.InferenceApiModels.FileOutputModel { Id = id, Key = file.Key, FileId = file.Id, FileName = file.FileName, FileSize = fileSize });
         }
 
         /// <summary>
@@ -886,26 +915,41 @@ namespace Nssol.Platypus.Controllers.spa
 
             //ステータスを確認
 
+            var tenant = CurrentUserInfo.SelectedTenant;
             var status = inferenceHistory.GetStatus();
             if (status.Exist())
             {
                 //推論がまだ進行中の場合、情報を更新する
-                status = await clusterManagementLogic.GetContainerStatusAsync(inferenceHistory.Key, CurrentUserInfo.SelectedTenant.Name, false);
+                status = await clusterManagementLogic.GetContainerStatusAsync(inferenceHistory.Key, tenant.Name, false);
             }
 
             if (status.Exist())
             {
+                // ジョブ実行履歴追加
+                var info = await clusterManagementLogic.GetContainerDetailsInfoAsync(inferenceHistory.Key, tenant.Name, false);
+                var node = info.NodeName != null
+                    ? (await clusterManagementLogic.GetAllNodesAsync()).FirstOrDefault(x => x.Name == info.NodeName)
+                    : null;
+                inferenceLogic.AddJobHistory(inferenceHistory, node, tenant, info, status.Key);
+
                 //実行中であれば、コンテナを削除
                 await clusterManagementLogic.DeleteContainerAsync(
-                    ContainerType.Training, inferenceHistory.Key, CurrentUserInfo.SelectedTenant.Name, false);
+                    ContainerType.Training, inferenceHistory.Key, tenant.Name, false);
+
+                // 通知処理
+                slackLogic.InformJobResult(inferenceHistory);
             }
 
             //添付ファイルがあったらまとめて消す
             var files = await inferenceHistoryRepository.GetAllAttachedFilesAsync(inferenceHistory.Id);
             foreach (var file in files)
             {
+                // ストレージ上のファイルを削除するために保存先ファイルパスを保持しておく。
+                string storedPath = file.StoredPath;
+
+                // 削除処理
                 inferenceHistoryRepository.DeleteAttachedFile(file);
-                await storageLogic.DeleteFileAsync(ResourceType.InferenceHistoryAttachedFiles, file.StoredPath);
+                await storageLogic.DeleteFileAsync(ResourceType.InferenceHistoryAttachedFiles, storedPath);
             }
 
             await dataSetLogic.ReleaseLockAsync(inferenceHistory.DataSetId);

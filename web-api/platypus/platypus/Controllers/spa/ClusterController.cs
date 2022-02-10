@@ -19,6 +19,10 @@ using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Controllers.spa
 {
+    /// <summary>
+    /// クラスタ関連を扱うためのAPI集
+    /// </summary>
+    [ApiController]
     [ApiVersion("1"), ApiVersion("2")]
     [Route("api/v{api-version:apiVersion}")]
     public class ClusterController : PlatypusApiControllerBase
@@ -111,7 +115,7 @@ namespace Nssol.Platypus.Controllers.spa
 
                 //結果に格納
                 result.Add(new QuotaOutputModel(tenant));
-                
+
                 await clusterManagementLogic.SetQuotaAsync(tenant);
             }
 
@@ -131,6 +135,40 @@ namespace Nssol.Platypus.Controllers.spa
         {
             var tenant = tenantRepository.Get(CurrentUserInfo.SelectedTenant.Id);
             return JsonOK(new QuotaOutputModel(tenant));
+        }
+
+
+        /// <summary>
+        /// 接続中のテナントが利用可能なノード一覧（リソース値を含む）を取得する。
+        /// </summary>
+        /// <param name="nodeRepository">DI用</param>
+        [HttpGet("tenant/nodes")]
+        [PermissionFilter(MenuCode.Training, MenuCode.Preprocess, MenuCode.Inference, MenuCode.Notebook, MenuCode.Template)]
+        [ProducesResponseType(typeof(IEnumerable<NodeResourceOutputModel>), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetNodesAsync([FromServices] INodeRepository nodeRepository)
+        {
+            //DBから利用可能なノード情報を取得する。
+            var nodes = nodeRepository.GetAccessibleNodes(CurrentUserInfo.SelectedTenant.Id).OrderBy(n => n.Name);
+
+            //クラスタ側から実ノードのリソース情報を取得する。
+            var nodeInfos = (await clusterManagementLogic.GetAllNodesAsync());
+            if (nodeInfos == null)
+            {
+                return JsonError(HttpStatusCode.ServiceUnavailable, string.Join("\n", "Fetching nodes is failed."));
+            }
+
+            var result = new List<NodeResourceOutputModel>();
+
+            //DBからとクラスタ側をマッチングさせノード一覧を作成する。
+            foreach (var node in nodes)
+            {
+                var info = nodeInfos.FirstOrDefault(i => i.Name == node.Name);
+                if (info != null)
+                {
+                    result.Add(new NodeResourceOutputModel(node, info));
+                }
+            }
+            return JsonOK(result);
         }
 
         /// <summary>
@@ -174,7 +212,7 @@ namespace Nssol.Platypus.Controllers.spa
                 tensorBoardContainerRepository.Delete(container, true);
             }
             unitOfWork.Commit();
-            if(failure)
+            if (failure)
             {
                 //1件以上失敗しているので、エラー扱い
                 return JsonError(HttpStatusCode.ServiceUnavailable, $"failed to delete some tensorboard containers. deleted: {count}");

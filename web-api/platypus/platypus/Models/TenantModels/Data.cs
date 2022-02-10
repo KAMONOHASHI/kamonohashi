@@ -1,13 +1,7 @@
-﻿using Nssol.Platypus.Infrastructure;
-using Nssol.Platypus.Logic;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
-using System.Threading.Tasks;
-
-using Nssol.Platypus.Controllers.Util;
 
 namespace Nssol.Platypus.Models.TenantModels
 {
@@ -60,7 +54,7 @@ namespace Nssol.Platypus.Models.TenantModels
         {
             get
             {
-                if(TagMaps == null)
+                if (TagMaps == null)
                 {
                     return null;
                 }

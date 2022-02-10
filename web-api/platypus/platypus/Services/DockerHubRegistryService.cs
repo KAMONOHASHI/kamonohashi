@@ -1,14 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.WebUtilities;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Nssol.Platypus.Infrastructure;
+﻿using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Models;
 using Nssol.Platypus.Services.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -132,7 +126,7 @@ namespace Nssol.Platypus.Services
             {
                 BaseUrl = "https://auth.docker.io/",
                 ApiPath = $"/token",
-                UserName =  userRegistryMap.RegistryUserName,
+                UserName = userRegistryMap.RegistryUserName,
                 Password = userRegistryMap.RegistryPassword,
                 QueryParams = new Dictionary<string, string>
                 {

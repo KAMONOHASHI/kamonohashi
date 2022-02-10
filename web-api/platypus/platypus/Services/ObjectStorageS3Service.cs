@@ -240,7 +240,7 @@ namespace Nssol.Platypus.Services
                     queryStringInCanonicalizedResourceString.Append($"{key}={value}&");
                 }
                 var str = queryStringInCanonicalizedResourceString.ToString();
-                if (str.EndsWith("&"))
+                if (str.EndsWith("&", StringComparison.CurrentCulture))
                 {
                     str = str.Substring(0, str.Length - 1);
                 }
@@ -449,7 +449,7 @@ namespace Nssol.Platypus.Services
                 Delimiter = "/"
             };
 
-            ListObjectsV2Response res = new ListObjectsV2Response();            
+            ListObjectsV2Response res = new ListObjectsV2Response();
             do
             {
                 // ディレクトリ直下のディレクトリ・オブジェクト一覧を取得する
@@ -496,7 +496,7 @@ namespace Nssol.Platypus.Services
         private async Task CreateDirAsync(string bucketName, AmazonS3Client client, string dirName)
         {
             // 末尾が/でないとディレクトリにならない
-            var key = dirName.EndsWith("/") ? dirName : dirName + "/";
+            var key = dirName.EndsWith("/", StringComparison.CurrentCulture) ? dirName : dirName + "/";
             var putObjectRequestDir = new PutObjectRequest()
             {
                 BucketName = bucketName,
@@ -769,7 +769,7 @@ namespace Nssol.Platypus.Services
 
                     dirs.AddRange(response.CommonPrefixes.Select(x => new StorageDirInfo(x)).ToList());
                     files.AddRange(response.S3Objects.Select(x => new StorageFileInfo(x.Key, x.LastModified, x.Size)).ToList());
-                    
+
                     // 次の一覧取得の開始位置であるオブジェクトを設定する
                     request.ContinuationToken = response.NextContinuationToken;
                     requestCount++;

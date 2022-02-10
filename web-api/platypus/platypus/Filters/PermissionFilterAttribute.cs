@@ -2,10 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Logic.Interfaces;
-using Nssol.Platypus.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Filters
@@ -75,14 +72,14 @@ namespace Nssol.Platypus.Filters
             public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
             {
                 // before the action executes
-                
+
                 // ログイン済みの場合、権限チェックを実施
                 if (context.HttpContext?.User?.Identity?.IsAuthenticated ?? false)
                 {
                     if (this.menus != null && this.menus.Length > 0)
                     {
                         bool accessible = await this.menuLogic.IsAccessibleMenuAsync(this.menus);
-                        if(!accessible)
+                        if (!accessible)
                         {
                             // アクセス許可のないメニューにアクセスしようとした場合、403に飛ばす
                             context.HttpContext.Response.StatusCode = (int)System.Net.HttpStatusCode.Forbidden;

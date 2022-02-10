@@ -13,6 +13,7 @@ using Nssol.Platypus.Models;
 using Nssol.Platypus.Models.TenantModels;
 using Nssol.Platypus.Models.TenantModels.Aquarium;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -22,10 +23,12 @@ namespace Nssol.Platypus.Controllers.spa
     /// <summary>
     /// 実験API
     /// </summary>
+    [ApiController]
     [ApiVersion("1"), ApiVersion("2")]
     [Route("api/v{api-version:apiVersion}/experiment")]
     public class ExperimentController : PlatypusApiControllerBase
     {
+        // for DI
         private readonly IExperimentRepository experimentRepository;
         private readonly IExperimentPreprocessRepository experimentPreprocessRepository;
         private readonly IAquariumEvaluationRepository evaluationRepository;
@@ -36,20 +39,25 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly ITemplateRepository templateRepository;
         private readonly ITemplateVersionRepository templateVersionRepository;
         private readonly ITenantRepository tenantRepository;
-        private readonly ITemplateLogic templateLogic;
-        private readonly ITagLogic tagLogic;
         private readonly INodeRepository nodeRepository;
-        private readonly IGitLogic gitLogic;
-        private readonly IClusterManagementLogic clusterManagementLogic;
-        private readonly IDataSetLogic dataSetLogic;
-        private readonly IRegistryLogic registryLogic;
-        private readonly IUnitOfWork unitOfWork;
         private readonly ITrainingHistoryRepository trainingHistoryRepository;
         private readonly IInferenceHistoryRepository inferenceHistoryRepository;
         private readonly ITensorBoardContainerRepository tensorBoardContainerRepository;
-        private readonly ITagRepository tagRepository;
+        private readonly ITemplateLogic templateLogic;
+        private readonly ITagLogic tagLogic;
+        private readonly IGitLogic gitLogic;
+        private readonly IDataSetLogic dataSetLogic;
+        private readonly IRegistryLogic registryLogic;
         private readonly IStorageLogic storageLogic;
+        private readonly ITrainingLogic trainingLogic;
+        private readonly IClusterManagementLogic clusterManagementLogic;
+        private readonly ISlackLogic slackLogic;
+        private readonly IUnitOfWork unitOfWork;
+        private readonly ITagRepository tagRepository;
 
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
         public ExperimentController(
             IExperimentRepository experimentRepository,
             IExperimentPreprocessRepository experimentPreprocessRepository,
@@ -58,25 +66,26 @@ namespace Nssol.Platypus.Controllers.spa
             IDataSetRepository dataSetRepository,
             IGitRepository gitRepository,
             IRegistryRepository registryRepository,
-            ITrainingHistoryRepository trainingHistoryRepository,
             ITemplateRepository templateRepository,
             ITemplateVersionRepository templateVersionRepository,
             ITenantRepository tenantRepository,
             INodeRepository nodeRepository,
+            ITrainingHistoryRepository trainingHistoryRepository,
+            IInferenceHistoryRepository inferenceHistoryRepository,
+            ITensorBoardContainerRepository tensorBoardContainerRepository,
+            ITagRepository tagRepository,
             ITemplateLogic templateLogic,
             ITagLogic tagLogic,
             IGitLogic gitLogic,
-            IClusterManagementLogic clusterManagementLogic,
             IDataSetLogic dataSetLogic,
             IRegistryLogic registryLogic,
+            ISlackLogic slackLogic,
+            IStorageLogic storageLogic,
+            ITrainingLogic trainingLogic,
+            IClusterManagementLogic clusterManagementLogic,
             IUnitOfWork unitOfWork,
-        IInferenceHistoryRepository inferenceHistoryRepository,
-        ITensorBoardContainerRepository tensorBoardContainerRepository,
-        ITagRepository tagRepository,
-        IStorageLogic storageLogic,
-        IHttpContextAccessor accessor) : base(accessor)
+            IHttpContextAccessor accessor) : base(accessor)
         {
-            this.trainingHistoryRepository = trainingHistoryRepository;
             this.experimentRepository = experimentRepository;
             this.experimentPreprocessRepository = experimentPreprocessRepository;
             this.evaluationRepository = evaluationRepository;
@@ -88,16 +97,19 @@ namespace Nssol.Platypus.Controllers.spa
             this.templateVersionRepository = templateVersionRepository;
             this.tenantRepository = tenantRepository;
             this.nodeRepository = nodeRepository;
-            this.templateLogic = templateLogic;
-            this.tagLogic = tagLogic;
-            this.gitLogic = gitLogic;
-            this.clusterManagementLogic = clusterManagementLogic;
-            this.dataSetLogic = dataSetLogic;
-            this.registryLogic = registryLogic;
+            this.trainingHistoryRepository = trainingHistoryRepository;
             this.inferenceHistoryRepository = inferenceHistoryRepository;
             this.tensorBoardContainerRepository = tensorBoardContainerRepository;
             this.tagRepository = tagRepository;
+            this.templateLogic = templateLogic;
+            this.tagLogic = tagLogic;
+            this.gitLogic = gitLogic;
+            this.dataSetLogic = dataSetLogic;
+            this.registryLogic = registryLogic;
             this.storageLogic = storageLogic;
+            this.trainingLogic = trainingLogic;
+            this.clusterManagementLogic = clusterManagementLogic;
+            this.slackLogic = slackLogic;
             this.unitOfWork = unitOfWork;
         }
 
@@ -107,6 +119,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="page">ページ番号。デフォルトは1。</param>
         /// <param name="perPage">表示件数。指定がない場合は上限(1000件)。</param>
         /// <param name="filter">検索条件</param>
+        /// <param name="withTotal">合計件数をレスポンスヘッダ(X-Total-Count)に含めるか。デフォルトはfalse。</param>
         [HttpGet]
         [Filters.PermissionFilter(MenuCode.Experiment)]
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
@@ -121,9 +134,11 @@ namespace Nssol.Platypus.Controllers.spa
                 .Include(x => x.DataSet)
                 .Include(x => x.ExperimentPreprocess).ThenInclude(x => x.TrainingHistory).ThenInclude(x => x.DataSet)
                 .Include(x => x.TrainingHistory).ThenInclude(x => x.DataSet)
+                .AsEnumerable()
                 .SearchLong(d => d.Id, filter.Id)
                 .SearchString(d => d.Name, filter.Name)
-                .SearchTime(d => d.CreatedAt, filter.StartedAt);
+                .SearchTime(d => d.CreatedAt, filter.StartedAt)
+                .ToList();
 
             if (withTotal)
             {
@@ -182,7 +197,7 @@ namespace Nssol.Platypus.Controllers.spa
                 .Include(x => x.DataSetVersion)
                 .Include(x => x.TrainingHistory).ThenInclude(x => x.DataSet)
                 .Include(x => x.ExperimentPreprocess).ThenInclude(x => x.TrainingHistory).ThenInclude(x => x.DataSet)
-                .SingleOrDefaultAsync(x => x.Id == id); 
+                .SingleOrDefaultAsync(x => x.Id == id);
             if (experiment == null)
             {
                 return JsonNotFound($"Experiment ID {id} is not found.");
@@ -221,7 +236,7 @@ namespace Nssol.Platypus.Controllers.spa
             };
             experimentRepository.Add(experiment);
             unitOfWork.Commit();
-         
+
             // kamonohashi学習に必要な情報を設定
             var trainingCreateInputModel = new ApiModels.TrainingApiModels.CreateInputModel
             {
@@ -328,7 +343,7 @@ namespace Nssol.Platypus.Controllers.spa
                 EntryPoint = templateVersion.PreprocessEntryPoint,
                 Options = new Dictionary<string, string>
                 {
-                    { "EXPERIMENT_ID", experiment.Id.ToString() },
+                    { "EXPERIMENT_ID", experiment.Id.ToString(CultureInfo.CurrentCulture) },
                 },
                 Cpu = templateVersion.PreprocessCpu,
                 Memory = templateVersion.PreprocessMemory,
@@ -340,7 +355,7 @@ namespace Nssol.Platypus.Controllers.spa
                 Zip = false,
                 LocalDataSet = false,
             };
-           
+
             // kamonohashi学習を開始
             (var trainingHistory, var result) = await TrainingController.DoCreate(trainingCreateInputModel,
                 dataSetRepository, nodeRepository, tenantRepository, trainingHistoryRepository,
@@ -675,7 +690,7 @@ namespace Nssol.Platypus.Controllers.spa
             var selectedTenantName = CurrentUserInfo.SelectedTenant.Name;
             var userName = "";
             var password = token ?? registryMap?.RegistryPassword ?? "";
-            
+
             var result = await clusterManagementLogic.RegistRegistryToTenantAsync(tokenKey, url, registry, selectedTenantName,
                 userName, password);
             return result ? tokenKey : null;
@@ -707,7 +722,8 @@ namespace Nssol.Platypus.Controllers.spa
             var evaluations = evaluationRepository
                 .GetAll()
                 .Include(x => x.TrainingHistory)
-                .Where(x => x.ExperimentId == id);
+                .Where(x => x.ExperimentId == id)
+                .ToList();
             foreach (var x in evaluations)
             {
                 evaluationRepository.Delete(x);
@@ -723,9 +739,11 @@ namespace Nssol.Platypus.Controllers.spa
                         CurrentUserInfo,
                         ModelState,
                         storageLogic,
+                        slackLogic,
                         inferenceHistoryRepository,
                         tensorBoardContainerRepository,
                         tagRepository,
+                        trainingLogic,
                         RequestUrl);
                     if (!status)
                     {
@@ -747,9 +765,11 @@ namespace Nssol.Platypus.Controllers.spa
                     CurrentUserInfo,
                     ModelState,
                     storageLogic,
+                    slackLogic,
                     inferenceHistoryRepository,
                     tensorBoardContainerRepository,
                     tagRepository,
+                    trainingLogic,
                     RequestUrl);
                 if (!status)
                 {
@@ -774,9 +794,11 @@ namespace Nssol.Platypus.Controllers.spa
                         CurrentUserInfo,
                         ModelState,
                         storageLogic,
+                        slackLogic,
                         inferenceHistoryRepository,
                         tensorBoardContainerRepository,
                         tagRepository,
+                        trainingLogic,
                         RequestUrl);
                     if (!status)
                     {
@@ -923,7 +945,7 @@ namespace Nssol.Platypus.Controllers.spa
                 evaluation.TrainingHistoryId = trainingHistory.Id;
                 evaluationRepository.Update(evaluation);
                 ((JsonResult)result).Value = new EvaluationSimpleOutputModel(evaluation);
-            } 
+            }
             else
             {
                 evaluationRepository.Delete(evaluation);
@@ -952,9 +974,11 @@ namespace Nssol.Platypus.Controllers.spa
                 .FindAll(x => x.ExperimentId == id)
                 .Include(x => x.TrainingHistory)
                 .Include(x => x.DataSet)
-                .Include(x => x.DataSetVersion);
+                .Include(x => x.DataSetVersion)
+                .OrderByDescending(x => x.Id)
+                .ToList();
             var result = new List<EvaluationIndexOutputModel>();
-            foreach (var x in evaluations.OrderByDescending(x => x.Id))
+            foreach (var x in evaluations)
             {
                 var status = await UpdateStatus(x.TrainingHistory);
                 result.Add(new EvaluationIndexOutputModel(x, status.ToString()));
@@ -999,9 +1023,11 @@ namespace Nssol.Platypus.Controllers.spa
                     CurrentUserInfo,
                     ModelState,
                     storageLogic,
+                    slackLogic,
                     inferenceHistoryRepository,
                     tensorBoardContainerRepository,
                     tagRepository,
+                    trainingLogic,
                     RequestUrl);
                 if (!status)
                 {

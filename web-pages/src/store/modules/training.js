@@ -94,7 +94,7 @@ const actions = {
 
   // eslint-disable-next-line no-unused-vars
   async post({ commit }, params) {
-    return await api.training.post({ model: params })
+    return await api.training.post({ body: params })
   },
 
   // eslint-disable-next-line no-unused-vars
@@ -118,7 +118,7 @@ const actions = {
       fileInfo[i].FileName = fileInfo[i].name
       await api.training.postFilesById({
         id: id,
-        model: fileInfo[i],
+        body: fileInfo[i],
       })
     }
   },
@@ -176,6 +176,11 @@ const actions = {
       }),
     )
     commit('setFileList', newList)
+  },
+
+  // eslint-disable-next-line no-unused-vars
+  async fetchFileSize({ state }, params) {
+    return (await api.training.getFileSize(params)).data.fileSize
   },
 }
 

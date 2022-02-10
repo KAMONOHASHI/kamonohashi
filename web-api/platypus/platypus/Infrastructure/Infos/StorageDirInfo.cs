@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.IO;
-
-namespace Nssol.Platypus.Infrastructure
+﻿namespace Nssol.Platypus.Infrastructure
 {
     /// <summary>
     /// オブジェクトストレージのディレクトリのモデル。
@@ -29,7 +23,7 @@ namespace Nssol.Platypus.Infrastructure
         {
             var splited = dirPath.Split("/");
             DirPath = dirPath;
-            DirName = splited[splited.Length -2]; // 「/a/b/」→ ["", "a", "b", ""] となるので後ろから2番目
+            DirName = splited[splited.Length - 2]; // 「/a/b/」→ ["", "a", "b", ""] となるので後ろから2番目
         }
     }
 }

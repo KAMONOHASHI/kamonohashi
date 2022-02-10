@@ -84,7 +84,7 @@ const actions = {
 
   // eslint-disable-next-line no-unused-vars
   async post({ commit }, params) {
-    return await api.inference.post({ model: params })
+    return await api.inference.post({ body: params })
   },
 
   // eslint-disable-next-line no-unused-vars
@@ -108,7 +108,7 @@ const actions = {
       fileInfo[i].FileName = fileInfo[i].name
       await api.inference.postFilesById({
         id: id,
-        model: fileInfo[i],
+        body: fileInfo[i],
       })
     }
   },
@@ -145,6 +145,11 @@ const actions = {
       }),
     )
     commit('setFileList', newList)
+  },
+
+  // eslint-disable-next-line no-unused-vars
+  async fetchFileSize({ state }, params) {
+    return (await api.inference.getFileSize(params)).data.fileSize
   },
 }
 

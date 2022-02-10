@@ -16,7 +16,7 @@ namespace Nssol.Platypus.Logic
             IInferenceHistoryRepository inferenceHistoryRepository,
             ITrainingHistoryRepository trainingHistoryRepository,
             IAquariumDataSetVersionRepository aquariumDataSetVersionRepository,
-            ICommonDiLogic commonDiLogic) 
+            ICommonDiLogic commonDiLogic)
         : base(commonDiLogic)
         {
             DataSetRepository = dataSetRepository;

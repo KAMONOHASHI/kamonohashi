@@ -43,6 +43,12 @@ namespace Nssol.Platypus.Infrastructure.Options
         public int StartingDueTimeSpanSecond { get; set; }
 
         /// <summary>
+        /// 実行間隔を秒単位で指定する。
+        /// WeeklyTimeScheduleよりも優先される。
+        /// </summary>
+        public int? TimeIntervalInSeconds { get; set; }
+
+        /// <summary>
         /// 設定データを解析して実行時間の情報を格納します。
         /// 解析の成否はメソッド isValid() で判別します。
         /// </summary>
@@ -73,6 +79,20 @@ namespace Nssol.Platypus.Infrastructure.Options
                 }
             }
             LogDebug($"{classMethodName}: タイムゾーン \"{timeZoneInfo.Id}\" に従ってタイマーを起動します。なお、ローカルのタイムゾーンは \"{TimeZoneInfo.Local.Id}\" です。");
+
+            if (TimeIntervalInSeconds.HasValue)
+            {
+                if (TimeIntervalInSeconds.Value <= 0)
+                {
+                    LogDebug($"{classMethodName}: 不正な実行間隔です。{TimeIntervalInSeconds.Value}");
+                    valid = false;
+                    return;
+                }
+            }
+            else
+            {
+                LogDebug($"{classMethodName}: 実行間隔は指定されていません。");
+            }
 
             // 週次設定データの設定有無の判別
             if (IsNoSchedule())
@@ -111,7 +131,7 @@ namespace Nssol.Platypus.Infrastructure.Options
                     valid = false;
                     return;
                 }
-                if (key_val[0].ToLower().StartsWith("every"))
+                if (key_val[0].ToLower().StartsWith("every", StringComparison.CurrentCulture))
                 {
                     // １週間全ての曜日に時間設定
                     for (int weekIndex = 0; weekIndex < 7; weekIndex++)
@@ -119,7 +139,7 @@ namespace Nssol.Platypus.Infrastructure.Options
                         weekTimeArray[weekIndex] = new DateTime(sunday_base.Year, sunday_base.Month, sunday_base.Day + weekIndex, time.Hour, time.Minute, time.Second);
                     }
                 }
-                else if (key_val[0].ToLower().StartsWith("dynamic"))
+                else if (key_val[0].ToLower().StartsWith("dynamic", StringComparison.CurrentCulture))
                 {
                     // 初回サーバ起動の曜日、時間によって動的に時間が設定される
                     DateTime now = TimeZoneInfo.ConvertTime(DateTime.UtcNow, TimeZoneInfo.Utc, timeZoneInfo);
@@ -184,7 +204,21 @@ namespace Nssol.Platypus.Infrastructure.Options
             {
                 return TimeSpan.FromSeconds(StartingDueTimeSpanSecond);
             }
-            return GetDueTime();
+            return GetDueTimeFromInterval() ?? GetDueTime();
+        }
+
+        public TimeSpan? GetDueTimeFromInterval()
+        {
+            var classMethodName = "TimerScheduleOptionsBase#getDueTimeFromInterval()";
+            if (TimeIntervalInSeconds == null)
+            {
+                LogDebug($"{classMethodName}: 実行間隔が設定されていませんので null を返却します。");
+                return null;
+            }
+            var dueTime = new TimeSpan(0, 0, TimeIntervalInSeconds.Value);
+            var nextTime = DateTime.Now + dueTime;
+            LogDebug($"{classMethodName}: 次回実行のスケジュール: 曜日 {nextTime.ToString("dddd")}, 時間 {nextTime.ToString("T")}, それまでの待機時間 {dueTime}");
+            return dueTime;
         }
 
         /// <summary>
@@ -203,7 +237,7 @@ namespace Nssol.Platypus.Infrastructure.Options
             DateTime zoneNowTime = TimeZoneInfo.ConvertTime(DateTime.UtcNow, TimeZoneInfo.Utc, timeZoneInfo);
             LogDebug($"{classMethodName}: タイムゾーン \"{timeZoneInfo.Id}\" での現在日付: 曜日 {zoneNowTime.ToString("dddd")}, 日付時刻 {zoneNowTime.ToString("G")}");
             TimeSpan zoneNowTimeSpan = new TimeSpan(zoneNowTime.Hour, zoneNowTime.Minute, zoneNowTime.Second);
-            int nowWeekIndex = (int) zoneNowTime.DayOfWeek;
+            int nowWeekIndex = (int)zoneNowTime.DayOfWeek;
             if (weekTimeArray[nowWeekIndex] != null)
             {
                 // 当該曜日で現時刻より後のスケジュールが存在するなら、その時刻までの TimeSpan を返却
@@ -271,33 +305,33 @@ namespace Nssol.Platypus.Infrastructure.Options
         /// <returns>曜日番号</returns>
         private int GetWeekIndex(string weekName)
         {
-            if (weekName.ToLower().StartsWith("sun"))
+            if (weekName.ToLower().StartsWith("sun", StringComparison.CurrentCulture))
             {
-                return (int) DayOfWeek.Sunday;
+                return (int)DayOfWeek.Sunday;
             }
-            else if (weekName.ToLower().StartsWith("mon"))
+            else if (weekName.ToLower().StartsWith("mon", StringComparison.CurrentCulture))
             {
-                return (int) DayOfWeek.Monday;
+                return (int)DayOfWeek.Monday;
             }
-            else if (weekName.ToLower().StartsWith("tue"))
+            else if (weekName.ToLower().StartsWith("tue", StringComparison.CurrentCulture))
             {
-                return (int) DayOfWeek.Tuesday;
+                return (int)DayOfWeek.Tuesday;
             }
-            else if (weekName.ToLower().StartsWith("wed"))
+            else if (weekName.ToLower().StartsWith("wed", StringComparison.CurrentCulture))
             {
-                return (int) DayOfWeek.Wednesday;
+                return (int)DayOfWeek.Wednesday;
             }
-            else if (weekName.ToLower().StartsWith("thu"))
+            else if (weekName.ToLower().StartsWith("thu", StringComparison.CurrentCulture))
             {
-                return (int) DayOfWeek.Thursday;
+                return (int)DayOfWeek.Thursday;
             }
-            else if (weekName.ToLower().StartsWith("fri"))
+            else if (weekName.ToLower().StartsWith("fri", StringComparison.CurrentCulture))
             {
-                return (int) DayOfWeek.Friday;
+                return (int)DayOfWeek.Friday;
             }
-            else if (weekName.ToLower().StartsWith("sat"))
+            else if (weekName.ToLower().StartsWith("sat", StringComparison.CurrentCulture))
             {
-                return (int) DayOfWeek.Saturday;
+                return (int)DayOfWeek.Saturday;
             }
             return -1;
         }

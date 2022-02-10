@@ -47,12 +47,12 @@ const actions = {
 
   // eslint-disable-next-line no-unused-vars
   async post({ commit }, params) {
-    return await api.registry.admin.post({ model: params })
+    return await api.registry.admin.post({ body: params })
   },
 
   // eslint-disable-next-line no-unused-vars
   async put({ commit }, { id, params }) {
-    return await api.registry.admin.putById({ id: id, model: params })
+    return await api.registry.admin.putById({ id: id, body: params })
   },
 
   // eslint-disable-next-line no-unused-vars

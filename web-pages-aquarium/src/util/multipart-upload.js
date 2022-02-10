@@ -68,7 +68,7 @@ export default class MultiPartUpload {
       caller.progress = Math.ceil((caller.partCount / caller.totalPart) * 100)
     }
     let completeInfo = {
-      model: {
+      body: {
         key: uploadInfo.key,
         uploadId: uploadInfo.uploadId,
         partETags: etags,

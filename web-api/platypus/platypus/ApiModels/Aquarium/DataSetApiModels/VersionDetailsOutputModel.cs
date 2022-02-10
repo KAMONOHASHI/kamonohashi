@@ -1,5 +1,4 @@
-﻿using Nssol.Platypus.ApiModels.DataApiModels;
-using Nssol.Platypus.Models.TenantModels.Aquarium;
+﻿using Nssol.Platypus.Models.TenantModels.Aquarium;
 using System.Collections.Generic;
 
 namespace Nssol.Platypus.ApiModels.Aquarium.DataSetApiModels
@@ -9,8 +8,8 @@ namespace Nssol.Platypus.ApiModels.Aquarium.DataSetApiModels
     /// </summary>
     public class VersionDetailsOutputModel : VersionIndexOutputModel
     {
-        public VersionDetailsOutputModel(DataSetVersion dataSetVesion) 
-            : base(dataSetVesion) {}
+        public VersionDetailsOutputModel(DataSetVersion dataSetVesion)
+            : base(dataSetVesion) { }
 
         /// <summary>
         /// データエントリ

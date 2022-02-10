@@ -93,7 +93,7 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
             {
                 entity.Options = JsonConvert.SerializeObject(entity.OptionDic);
             }
-            if(entity.PortList != null && entity.PortList.Count > 0)
+            if (entity.PortList != null && entity.PortList.Count > 0)
             {
                 entity.Ports = JsonConvert.SerializeObject(entity.PortList);
             }
@@ -207,6 +207,17 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
         public async Task<TrainingHistoryAttachedFile> GetAttachedFileAsync(long id)
         {
             return await GetModelByIdAsync<TrainingHistoryAttachedFile>(id);
+        }
+
+        /// <summary>
+        /// 指定したIDとファイル名の学習履歴添付ファイルを取得します。
+        /// </summary>
+        /// <param name="id">学習履歴ID</param>
+        /// <param name="fileName">ファイル名</param>
+        /// <returns>添付ファイル</returns>
+        public TrainingHistoryAttachedFile GetAttachedFile(long id, string fileName)
+        {
+            return GetModelAll<TrainingHistoryAttachedFile>().FirstOrDefault(d => d.TrainingHistoryId == id && d.FileName == fileName);
         }
 
         /// <summary>

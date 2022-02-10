@@ -1,19 +1,17 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using Nssol.Platypus.ApiModels.AccountApiModels;
 using Nssol.Platypus.Controllers.Util;
 using Nssol.Platypus.DataAccess.Core;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces;
 using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Infrastructure.Infos;
-using Nssol.Platypus.Infrastructure.Options;
 using Nssol.Platypus.Infrastructure.Types;
 using Nssol.Platypus.Logic.Interfaces;
 using Nssol.Platypus.Models;
-using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
@@ -21,29 +19,33 @@ using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Controllers.spa
 {
+    /// <summary>
+    /// アカウント管理を扱うためのAPI集
+    /// </summary>
+    [ApiController]
     [ApiVersion("1"), ApiVersion("2")]
     [Route("api/v{api-version:apiVersion}/account")]
     public class AccountController : PlatypusApiControllerBase
     {
         private readonly ILoginLogic loginLogic;
+        private readonly ISlackLogic slackLogic;
         private readonly IUserRepository userRepository;
         private readonly IMultiTenancyLogic multiTenancyLogic;
         private readonly IUnitOfWork unitOfWork;
-        private readonly WebSecurityOptions webSecurityOptions;
 
         public AccountController(
             ILoginLogic loginLogic,
+            ISlackLogic slackLogic,
             IUserRepository userRepository,
             IMultiTenancyLogic multiTenancyLogic,
             IUnitOfWork unitOfWork,
-            IOptions<WebSecurityOptions> webSecurityOptions,
             IHttpContextAccessor accessor) : base(accessor)
         {
             this.loginLogic = loginLogic;
+            this.slackLogic = slackLogic;
             this.userRepository = userRepository;
             this.multiTenancyLogic = multiTenancyLogic;
             this.unitOfWork = unitOfWork;
-            this.webSecurityOptions = webSecurityOptions.Value;
         }
 
         /// <summary>
@@ -79,7 +81,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPut]
         [Filters.PermissionFilter(MenuCode.Account)]
         [ProducesResponseType(typeof(AccountOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> EditAccountInfo(AccountInputModel model)
+        public async Task<IActionResult> EditAccountInfo([FromQuery] AccountInputModel model)
         {
             //入力値チェック
             if (!ModelState.IsValid)
@@ -132,12 +134,12 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonNotFound($"User ID {CurrentUserInfo.Id} is not found.");
             }
             //パスワード変更を許可するのは、ローカルアカウントのユーザのみ
-            if(user.ServiceType != AuthServiceType.Local)
+            if (user.ServiceType != AuthServiceType.Local)
             {
                 return JsonBadRequest($"Only local account user can change the password. Your account service type is {user.ServiceType} not Local.");
             }
             string oldHash = Infrastructure.Util.GenerateHash(model.CurrentPassword, user.Name);
-            if(oldHash != user.Password)
+            if (oldHash != user.Password)
             {
                 return JsonBadRequest($"Password mismatch. Please input the current correct password.");
             }
@@ -195,7 +197,7 @@ namespace Nssol.Platypus.Controllers.spa
 
             //Tenant name must not be null. Hence "Single" is intended use here.
             // string tenantName = signInResult.Value.Single(c => c.Type == ApplicationConst.ClaimTypeTenantName).Value;
-            long tenantId = long.Parse(signInResult.Value.FirstOrDefault(c => c.Type == ClaimTypes.GroupSid).Value);
+            long tenantId = long.Parse(signInResult.Value.FirstOrDefault(c => c.Type == ClaimTypes.GroupSid).Value, CultureInfo.CurrentCulture);
 
             //テナント取得（ここまでに存在チェックは行われているハズ）
             var tenant = tenantRepository.Get(tenantId);
@@ -216,12 +218,12 @@ namespace Nssol.Platypus.Controllers.spa
         /// 現在の認証情報を使用し、新規にアクセストークンを取得する
         /// </summary>
         /// <param name="tenantId">テナントID</param>
-        /// <param name="expiresIn">有効期限(秒)。省略時はシステムの既定値。</param>
+        /// <param name="model">テナント切替用入力モデル</param>
         /// <param name="tenantRepository">DI用</param>
         [HttpPost("tenants/{tenantId}/token")]
         [Filters.PermissionFilter(MenuCode.Account)]
         [ProducesResponseType(typeof(LoginOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> SwitchTenantAsync([FromRoute] long tenantId, [FromServices] ITenantRepository tenantRepository, [FromQuery] int? expiresIn)
+        public async Task<IActionResult> SwitchTenantAsync([FromRoute] long tenantId, [FromServices] ITenantRepository tenantRepository, [FromBody] SwitchTenantInputModel model)
         {
             var tenant = tenantRepository.Get(tenantId);
             if (tenant == null)
@@ -230,9 +232,15 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             Result<List<Claim>, string> authResult = await loginLogic.AuthorizeAsync(UserName, null, tenantId);
-            
+
+            // 認証が失敗したらエラーを返す
+            if (!authResult.IsSuccess)
+            {
+                return JsonBadRequest(authResult.Error);
+            }
+
             // 結果からトークンを作成
-            var token = loginLogic.GenerateToken(authResult.Value, expiresIn);
+            var token = loginLogic.GenerateToken(authResult.Value, model.ExpiresIn);
 
             var result = new LoginOutputModel()
             {
@@ -435,5 +443,64 @@ namespace Nssol.Platypus.Controllers.spa
 
             return JsonOK(result);
         }
+
+        #region Webhook
+
+        /// <summary>
+        /// WebHook情報を取得する
+        /// </summary>
+        [Filters.PermissionFilter(MenuCode.Account)]
+        [HttpGet("webhook/slack")]
+        [ProducesResponseType(typeof(WebhookModel), (int)HttpStatusCode.OK)]
+        public IActionResult GetWebHookInfo()
+        {
+            var userInfo = multiTenancyLogic.CurrentUserInfo;
+
+            WebhookModel model = new WebhookModel()
+            {
+                SlackUrl = userInfo.SlackUrl,
+                Mention = userInfo.Mention
+            };
+
+            return JsonOK(model);
+        }
+
+        /// <summary>
+        /// WebHook情報を更新する
+        /// </summary>
+        /// <param name="model">Webhook情報モデル</param>
+        [Filters.PermissionFilter(MenuCode.Account)]
+        [HttpPut("webhook/slack")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        public async Task<IActionResult> EditWebHookInfo(WebhookModel model)
+        {
+            User user = await userRepository.GetByIdAsync(multiTenancyLogic.CurrentUserInfo.Id);
+            user.SlackUrl = model.SlackUrl;
+            user.Mention = string.IsNullOrEmpty(model.Mention) ? null : model.Mention;
+            unitOfWork.Commit();
+
+            return JsonNoContent();
+        }
+
+        /// <summary>
+        /// テスト通知を送信する
+        /// </summary>
+        /// <param name="model">Webhook情報モデル</param>
+        [HttpPost("webhook/slack/test")]
+        [Filters.PermissionFilter(MenuCode.Account)]
+        [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> SendTestNotification(WebhookModel model)
+        {
+            var result = await slackLogic.InformTest(model);
+            if (result.IsSuccess)
+            {
+                return JsonOK(result);
+            }
+            else
+            {
+                return JsonBadRequest(result.Error);
+            }
+        }
+        #endregion
     }
 }

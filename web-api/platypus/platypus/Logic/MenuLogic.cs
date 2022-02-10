@@ -76,7 +76,7 @@ namespace Nssol.Platypus.Logic
             };
 
             MenuMap = new Dictionary<MenuCode, MenuItemInfo>();
-            foreach(var menu in MenuList)
+            foreach (var menu in MenuList)
             {
                 MenuMap.Add(menu.Code, menu);
             }
@@ -109,9 +109,9 @@ namespace Nssol.Platypus.Logic
 
             //本来はLinqで取りたいが、Where句でawaitが使えないので仕方なく手で詰めなおす
             var result = new List<MenuItemInfo>();
-            foreach(var menu in DashboardMenuList)
+            foreach (var menu in DashboardMenuList)
             {
-                if(menu.ShowTopMenu && await IsAccessibleMenuAsync(menu))
+                if (menu.ShowTopMenu && await IsAccessibleMenuAsync(menu))
                 {
                     result.Add(menu);
                 }
@@ -179,7 +179,7 @@ namespace Nssol.Platypus.Logic
 
             foreach (var menu in sourceList)
             {
-                if(menu.Children == null)
+                if (menu.Children == null)
                 {
                     //子供がいない場合（＝メニュー項目）は、サイドメニュー表示が有効で、アクセス許可があるメニューを追加
                     if (menu.ShowSideMenu && await IsAccessibleMenuAsync(menu))
@@ -191,7 +191,7 @@ namespace Nssol.Platypus.Logic
                 {
                     //子供がいる場合（＝グループ項目）は、子供を再帰的に調べて、表示できる子供が一つでもいれば追加
                     var children = await GetAccessibleMenuTreeAsync(menu.Children);
-                    if(children.Count() > 0)
+                    if (children.Count() > 0)
                     {
                         var group = new MenuItemInfo()
                         {
@@ -247,12 +247,12 @@ namespace Nssol.Platypus.Logic
                 //公開済みメニューなら無条件で許可
                 return true;
             }
-            
+
             //現在のロールを取得
             IEnumerable<Role> roles = menu.MenuType == MenuType.System ?
                 CurrentUserInfo.SystemRoles : //システムメニューの場合はシステムロールを確認
                 CurrentUserInfo.SelectedTenantRoles;
-            
+
             foreach (var role in roles)
             {
                 if (await roleRepository.AuthorizeAsync(role.Id, menu.Code))
@@ -314,7 +314,7 @@ namespace Nssol.Platypus.Logic
         }
 
         #region メニュー項目
-        
+
         /// <summary>
         /// メニュー一覧。
         /// 全メニューを並べる。
@@ -518,7 +518,7 @@ namespace Nssol.Platypus.Logic
             ShowTopMenu = false,
             ShowSideMenu = true,
             MenuType = MenuType.Tenant
-        }; 
+        };
         internal static MenuItemInfo TenantUserMenu = new MenuItemInfo()
         {
             Name = "テナントユーザ管理",
@@ -706,37 +706,7 @@ namespace Nssol.Platypus.Logic
             ExperimentMenu,
             ExperimentHistoryMenu,
             TemplateMenu,
-            new MenuItemInfo()
-            {
-                Name = "テナント設定",
-                Category = "pl-tenant-setting",
-                Children = new List<MenuItemInfo>()
-                {
-                    TenantSettingMenu,
-                    //TenantRoleMenu,
-                    TenantUserMenu,
-                    //TenantMenuAccessMenu,
-                    TenantResourceMenu
-                }
-            },
-            new MenuItemInfo()
-            {
-                Name = "システム設定",
-                Category = "pl-system-setting",
-                Children = new List<MenuItemInfo>()
-                {
-                    TenantMenu,
-                    GitMenu,
-                    RegistryMenu,
-                    StorageMenu,
-                    RoleMenu,
-                    QuotaMenu,
-                    NodeMenu,
-                    UserMenu,
-                    MenuAccessMenu,
-                    ResourceMenu
-                }
-            }
+
         };
 
         #endregion

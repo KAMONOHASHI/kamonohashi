@@ -1,10 +1,4 @@
-﻿using Nssol.Platypus.Infrastructure;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Nssol.Platypus.LogicModels
+﻿namespace Nssol.Platypus.LogicModels
 {
     /// <summary>
     /// 評価用コンテナ起動情報一覧
@@ -45,7 +39,7 @@ namespace Nssol.Platypus.LogicModels
         /// <summary>
         /// スクリプトのエントリポイント
         /// </summary>
-        public string EntryPoint { get; set; } 
+        public string EntryPoint { get; set; }
 
         /// <summary>
         /// 取得対象のスクリプトのリポジトリ

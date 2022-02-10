@@ -419,7 +419,7 @@ export default {
     async updateHistory() {
       let params = {
         id: this.detail.id,
-        model: {
+        body: {
           name: this.form.name,
           memo: this.form.memo,
           favorite: this.form.favorite,

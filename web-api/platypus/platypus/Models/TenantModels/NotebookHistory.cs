@@ -122,7 +122,7 @@ namespace Nssol.Platypus.Models.TenantModels
         /// </summary>
         [Required]
         public int Gpu { get; set; }
-        
+
         /// <summary>
         /// パーティション
         /// </summary>
@@ -154,6 +154,11 @@ namespace Nssol.Platypus.Models.TenantModels
         /// エラーなどで中断した際も、その時刻が記録される。
         /// </summary>
         public DateTime? CompletedAt { get; set; }
+
+        /// <summary>
+        /// アサイン日時
+        /// </summary>
+        public DateTime? JobStartedAt { get; set; }
 
         /// <summary>
         /// メモ
@@ -225,7 +230,7 @@ namespace Nssol.Platypus.Models.TenantModels
         /// <returns>環境変数</returns>
         public Dictionary<string, string> GetOptionDic()
         {
-            if(Options == null)
+            if (Options == null)
             {
                 return new Dictionary<string, string>();
             }

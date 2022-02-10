@@ -4,6 +4,7 @@ using Nssol.Platypus.Logic.Interfaces;
 using Nssol.Platypus.ServiceModels;
 using Nssol.Platypus.ServiceModels.GitHubModels;
 using Nssol.Platypus.Services.Interfaces;
+using System;
 using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Services
@@ -16,7 +17,7 @@ namespace Nssol.Platypus.Services
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        public VersionService (ICommonDiLogic commonDiLogic) : base(commonDiLogic)
+        public VersionService(ICommonDiLogic commonDiLogic) : base(commonDiLogic)
         {
         }
 
@@ -32,7 +33,7 @@ namespace Nssol.Platypus.Services
             {
                 // バージョン情報が記載されたJSONを取得
                 BaseUrl = $"https://kamonohashi.ai",
-                ApiPath = $"/version{version.Replace(".", "")}/index.html",
+                ApiPath = $"/version{version.Replace(".", "", StringComparison.CurrentCulture)}/index.html",
                 UserAgent = "C#App"
             };
 
@@ -73,12 +74,12 @@ namespace Nssol.Platypus.Services
                 var result = JsonConvert.DeserializeObject<GetReleasesModel>(response.Value);
                 return Result<ReleaseModel, string>.CreateResult(
                     new ReleaseModel()
-                        {
-                            TagName = result.tag_name,
-                            Name = result.name, // GitHubのリリース一覧取得APIでは、リリース日の取得ができないので、必要とあらばリリース名から取得する
-                            Draft = result.draft,
-                            Prerelease = result.prerelease
-                        });
+                    {
+                        TagName = result.tag_name,
+                        Name = result.name, // GitHubのリリース一覧取得APIでは、リリース日の取得ができないので、必要とあらばリリース名から取得する
+                        Draft = result.draft,
+                        Prerelease = result.prerelease
+                    });
             }
             else
             {

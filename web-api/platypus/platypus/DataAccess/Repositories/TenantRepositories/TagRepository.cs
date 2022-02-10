@@ -91,10 +91,10 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
                 };
                 Add(tag);
             }
-            else if(checkExists)
+            else if (checkExists)
             {
                 bool exists = await ExistsModelAsync<DataTagMap>(map => map.DataId == dataId && map.TagId == tag.Id);
-                if(exists)
+                if (exists)
                 {
                     return false;
                 }

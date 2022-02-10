@@ -43,7 +43,7 @@ namespace Nssol.Platypus.Logic.HostedService
             this.logger = logger;
             this.timerScheduleOptions = timerScheduleOptions;
             doWorkCount = 0;
-            
+
             // timer オブジェクトは StartAsync() 初回実行時に生成
             this.timer = null;
 
@@ -75,7 +75,7 @@ namespace Nssol.Platypus.Logic.HostedService
             // タイマーの実行内容は導出クラスで個別実装すること
             DoWork(state, doWorkCount);
             // Timer のリスケジュール
-            TimeSpan? dueTime = timerScheduleOptions.GetDueTime();
+            TimeSpan? dueTime = timerScheduleOptions.GetDueTimeFromInterval() ?? timerScheduleOptions.GetDueTime();
             if (dueTime == null)
             {
                 LogWarn("次回の待機時間が null なのでタイマーを停止します。");

@@ -4,6 +4,7 @@ import api from '@/api/api'
 const state = {
   partitions: [],
   quota: {},
+  nodes: [],
 }
 
 // getters
@@ -13,6 +14,9 @@ const getters = {
   },
   quota(state) {
     return state.quota
+  },
+  nodes(state) {
+    return state.nodes
   },
 }
 
@@ -27,6 +31,11 @@ const actions = {
     let quota = (await api.cluster.getQuota()).data
     commit('setQuota', { quota })
   },
+
+  async fetchNodes({ commit }) {
+    let nodes = (await api.cluster.getTenantNodes()).data
+    commit('setNodes', { nodes })
+  },
 }
 
 // mutations
@@ -36,6 +45,9 @@ const mutations = {
   },
   setQuota(state, { quota }) {
     state.quota = quota
+  },
+  setNodes(state, { nodes }) {
+    state.nodes = nodes
   },
 }
 

@@ -1,6 +1,4 @@
-﻿using Nssol.Platypus.Infrastructure;
-using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Nssol.Platypus.Models.TenantModels

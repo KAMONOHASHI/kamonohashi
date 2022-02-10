@@ -46,56 +46,38 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex'
-const { mapGetters, mapActions } = createNamespacedHelpers('account')
+const { mapGetters } = createNamespacedHelpers('account')
 
 export default {
   title: 'ダッシュボード',
   data() {
     return {
       iconname: 'pl-arrow-right',
-      unwatchLogin: undefined,
-      allMenues: [
-        { description: 'データの準備を行う', menus: [] },
-        { description: '実験を行う', menus: [] },
-        { description: 'テンプレートを管理する', menus: [] },
-      ],
     }
   },
   computed: {
     ...mapGetters(['menuList']),
-  },
-  async created() {
-    this.unwatchLogin = this.$store.watch(
-      this.$store.getters.getLoginTenant,
-      this.watchLogin,
-    )
-    await this.fetchMenuList()
-    await this.setSubMenues()
-  },
-
-  async beforeDestroy() {
-    this.unwatchLogin()
-  },
-
-  methods: {
-    ...mapActions(['fetchMenuList']),
-    async watchLogin(tenant) {
-      if (tenant) {
-        await this.fetchMenuList()
-      }
-    },
-    async setSubMenues() {
-      this.allMenues[0].menus = this.menuList.filter(menu => {
-        return menu.category === 'aq-dataset'
-      })
-
-      this.allMenues[1].menus = this.menuList.filter(menu => {
-        return menu.category.startsWith('aq-experiment')
-      })
-
-      this.allMenues[2].menus = this.menuList.filter(menu => {
-        return menu.category === 'aq-template'
-      })
+    allMenues() {
+      return [
+        {
+          description: 'データの準備を行う',
+          menus: this.menuList.filter(menu => {
+            return menu.category === 'aq-dataset'
+          }),
+        },
+        {
+          description: '実験を行う',
+          menus: this.menuList.filter(menu => {
+            return menu.category.startsWith('aq-experiment')
+          }),
+        },
+        {
+          description: 'テンプレートを管理する',
+          menus: this.menuList.filter(menu => {
+            return menu.category === 'aq-template'
+          }),
+        },
+      ]
     },
   },
 }

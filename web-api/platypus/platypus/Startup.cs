@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Nssol.Platypus.ApiModels;
 using Nssol.Platypus.Controllers.Util;
 using Nssol.Platypus.DataAccess;
@@ -22,10 +23,11 @@ using Nssol.Platypus.Infrastructure.Options;
 using Nssol.Platypus.Logic;
 using Nssol.Platypus.Logic.HostedService;
 using Nssol.Platypus.Logic.Interfaces;
+using Nssol.Platypus.Models;
 using Nssol.Platypus.Services;
 using Nssol.Platypus.Services.Interfaces;
 using Nssol.Platypus.Swagger;
-using Swashbuckle.AspNetCore.Swagger;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Threading.Tasks;
 
@@ -48,7 +50,7 @@ namespace Nssol.Platypus
         public static string DefaultConnectionString { get; set; }
 
         /// <summary>
-        /// <see cref="Configure(IApplicationBuilder, IHostingEnvironment, ILoggerFactory, IOptions{WebSecurityOptions}, ICommonDiLogic, IApiVersionDescriptionProvider)"/> 内処理用のロガー
+        /// <see cref="Configure(IApplicationBuilder, IWebHostEnvironment, ILoggerFactory, IOptions{WebSecurityOptions}, ICommonDiLogic, IApiVersionDescriptionProvider)"/> 内処理用のロガー
         /// </summary>
         private ILogger logger;
 
@@ -56,6 +58,32 @@ namespace Nssol.Platypus
         /// パイプラインのデバッグがあまりに辛いので、デバッグ用のログを出せるようにした。
         /// </summary>
         private bool isDebug;
+
+        /// <summary>
+        /// XMLドキュメントのファイルパスを取得する
+        /// </summary>
+        static string XmlCommentsFilePath
+        {
+            get
+            {
+                // SwaggerにXMLコメントの内容を反映させるために、サーバ上での XML Document のパスを渡す
+                var location = System.Reflection.Assembly.GetEntryAssembly().Location;
+                var xmlPath = location.Replace("dll", "xml", StringComparison.CurrentCulture);
+                return xmlPath;
+            }
+        }
+
+        /// <summary>
+        /// 認証キーを取得する
+        /// </summary>
+        /// <param name="services">サービスコンテナ</param>
+        /// <returns>認証キー</returns>
+        private SymmetricSecurityKey GetSymmetricSecurityKey(IServiceCollection services)
+        {
+            var sp = services.BuildServiceProvider();
+            var settingRepository = sp.GetService<ISettingRepository>();
+            return settingRepository.GetApiJwtSigningKey();
+        }
 
         /// <summary>
         /// コンストラクタ
@@ -84,6 +112,8 @@ namespace Nssol.Platypus
             services.Configure<BackupPostgresTimerOptions>(Configuration.GetSection("BackupPostgresTimerOptions"));
             services.Configure<DBInitRetryOptions>(Configuration.GetSection("DBInitRetryOptions"));
             services.Configure<GetKQIReleaseVersionTimerOptions>(Configuration.GetSection("GetKQIReleaseVersionTimerOptions"));
+            services.Configure<ResourceMonitorOptions>(Configuration.GetSection("ResourceMonitorOptions"));
+            services.Configure<ResourceMonitorTimerOptions>(Configuration.GetSection("ResourceMonitorTimerOptions"));
 
             services.Configure<SyncClusterFromDBOptions>(Configuration.GetSection("SyncClusterFromDBOptions"));
             services.Configure<DeployOptions>(Configuration.GetSection("DeployOptions"));
@@ -109,11 +139,14 @@ namespace Nssol.Platypus
             services.AddTransient<IMenuLogic, MenuLogic>();
             services.AddTransient<IVersionLogic, VersionLogic>();
             services.AddTransient<ITemplateLogic, TemplateLogic>();
+            services.AddTransient<ISlackLogic, SlackLogic>();
+            services.AddTransient<IResourceMonitorLogic, ResourceMonitorLogic>();
 
             // ServiceのDI設定
             services.AddTransient<IClusterManagementService, KubernetesService>();
             services.AddTransient<IObjectStorageService, ObjectStorageS3Service>();
             services.AddTransient<IVersionService, VersionService>();
+            services.AddTransient<ISlackService, SlackService>();
             // 切替のため型指定でDI設定
             services.AddTransient<GitHubService>();
             services.AddTransient<GitLabService>();
@@ -151,6 +184,10 @@ namespace Nssol.Platypus
             services.AddTransient<IAquariumEvaluationRepository, AquariumEvaluationRepository>();
             services.AddTransient<IAquariumDataSetRepository, AquariumDataSetRepository>();
             services.AddTransient<IAquariumDataSetVersionRepository, AquariumDataSetVersionRepository>();
+            services.AddTransient<IRepository<ResourceSample>, RepositoryBase<ResourceSample>>();
+            services.AddTransient<IRepository<ResourceNode>, RepositoryBase<ResourceNode>>();
+            services.AddTransient<IRepository<ResourceContainer>, RepositoryBase<ResourceContainer>>();
+            services.AddTransient<IRepository<ResourceJob>, RepositoryBase<ResourceJob>>();
 
             // その他のDI設定
             services.AddTransient<IUnitOfWork, UnitOfWork>();
@@ -169,6 +206,7 @@ namespace Nssol.Platypus
             services.AddSingleton<BackupPostgresTimer>();
             services.AddSingleton<SyncClusterFromDBTimer>();
             services.AddSingleton<GetKQIReleaseVersionTimer>();
+            services.AddSingleton<ResourceMonitorTimer>();
 
             //ASP.NET Core MVCの追加
             WebSecurityOptions wsops = new WebSecurityOptions();
@@ -179,159 +217,134 @@ namespace Nssol.Platypus
 
             #region services.AddAuthentication
 
-            var sp = services.BuildServiceProvider();
-            var settingRepository = sp.GetService<ISettingRepository>();
-            var key = settingRepository.GetApiJwtSigningKey();
+            // 認証キーを取得
+            var key = GetSymmetricSecurityKey(services);
 
             services.AddAuthentication(
                 //既定の認証スキーマ。
                 JwtBearerDefaults.AuthenticationScheme
             )
-                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
-                options =>
+            .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
+            options =>
+            {
+                options.RequireHttpsMetadata = false;
+                options.SaveToken = true;
+                options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
                 {
-                    options.RequireHttpsMetadata = false;
-                    options.SaveToken = true;
-                    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                    // 署名キー検証
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = key,
+                    // iss（issuer）クレーム
+                    ValidateIssuer = true,
+                    ValidIssuer = wsops.ApiJwtIssuer,
+                    // aud（audience）クレーム
+                    ValidateAudience = true,
+                    ValidAudience = wsops.ApiJwtAudience,
+                    // トークンの有効期限の検証
+                    ValidateLifetime = true,
+                    // クライアントとサーバーの間の時刻の設定で許容される最大の時刻のずれ
+                    ClockSkew = TimeSpan.Zero
+                };
+                options.Events = new JwtBearerEvents
+                {
+                    OnTokenValidated = context =>
                     {
-                        // 署名キー検証
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = key,
-                        // iss（issuer）クレーム
-                        ValidateIssuer = true,
-                        ValidIssuer = wsops.ApiJwtIssuer,
-                        // aud（audience）クレーム
-                        ValidateAudience = true,
-                        ValidAudience = wsops.ApiJwtAudience,
-                        // トークンの有効期限の検証
-                        ValidateLifetime = true,
-                        // クライアントとサーバーの間の時刻の設定で許容される最大の時刻のずれ
-                        ClockSkew = TimeSpan.Zero
-                    };
-                    options.Events = new JwtBearerEvents
+                        var token = context.SecurityToken as System.IdentityModel.Tokens.Jwt.JwtSecurityToken;
+                        if (token != null && isDebug)
+                        {
+                            //アクセスログ出力
+                            LogUtil.WritePLog(logger.LogInformation, context.HttpContext, $"Receive authorized api request with token {token.Id} as {token.Subject}");
+                        }
+                        return Task.FromResult(0);
+                    },
+                    OnChallenge = context =>
                     {
-                        OnTokenValidated = context =>
+                        // 失敗した際のメッセージをレスポンスに格納する
+                        if (context.AuthenticateFailure != null)
                         {
-                            var token = context.SecurityToken as System.IdentityModel.Tokens.Jwt.JwtSecurityToken;
-                            if (token != null && isDebug)
+                            context.Response.OnStarting(async state =>
                             {
-                                //アクセスログ出力
-                                LogUtil.WritePLog(logger.LogInformation, context.HttpContext, $"Receive authorized api request with token {token.Id} as {token.Subject}");
-                            }
-                            return Task.FromResult(0);
-                        },
-                        OnChallenge = context =>
+                                // アクセスコードが不正な文字列で復元できない場合や、アクセスコードの期限が切れているときにこちらに入る
+
+                                //期限切れはInfo扱いで出力する
+                                LogUtil.WritePLog(logger.LogInformation, context.HttpContext, $"The Access code is expired or invalid：{context.AuthenticateFailure.Message}");
+
+                                await new CustomJsonResult(StatusCodes.Status401Unauthorized,
+                                    new JsonErrorResponse()
+                                    {
+                                        Type = this.GetType().FullName,
+                                        Title = "The Access code is expired or invalid.",
+                                        Instance = context.Request?.Path.Value
+                                    }
+                                    ).SerializeJsonAsync(((JwtBearerChallengeContext)state).Response);
+                                return;
+                            }, context);
+                        }
+                        else
                         {
-                            // 失敗した際のメッセージをレスポンスに格納する
-                            if (context.AuthenticateFailure != null)
+                            context.Response.OnStarting(async state =>
                             {
-                                context.Response.OnStarting(async state =>
-                                {
-                                    // アクセスコードが不正な文字列で復元できない場合や、アクセスコードの期限が切れているときにこちらに入る
+                                // アクセスコードがヘッダに設定されていない場合はこちらに入る
 
-                                    //期限切れはInfo扱いで出力する
-                                    LogUtil.WritePLog(logger.LogInformation, context.HttpContext, $"The Access code is expired or invalid：{context.AuthenticateFailure.Message}");
+                                //WebAPIは常にplatypus cliから実行されるので、ヘッダが設定されていない場合はありえない。
+                                //なのでここに到達したら不正アクセスと見なして、警告を出力する
+                                LogUtil.WritePLog(logger.LogWarning, context.HttpContext, $"The access code is required. status = {state}");
 
-                                    await new CustomJsonResult(StatusCodes.Status401Unauthorized,
-                                        new JsonErrorResponse()
-                                        {
-                                            Type = this.GetType().FullName,
-                                            Title = "The Access code is expired or invalid.",
-                                            Instance = context.Request?.Path.Value
-                                        }
-                                        ).SerializeJsonAsync(((JwtBearerChallengeContext)state).Response);
-                                    return;
-                                }, context);
-                            }
-                            else
-                            {
-                                context.Response.OnStarting(async state =>
-                                {
-                                    // アクセスコードがヘッダに設定されていない場合はこちらに入る
-
-                                    //WebAPIは常にplatypus cliから実行されるので、ヘッダが設定されていない場合はありえない。
-                                    //なのでここに到達したら不正アクセスと見なして、警告を出力する
-                                    LogUtil.WritePLog(logger.LogWarning, context.HttpContext, $"The access code is required. status = {state}");
-
-                                    await new CustomJsonResult(StatusCodes.Status401Unauthorized,
-                                        new JsonErrorResponse()
-                                        {
-                                            Type = this.GetType().FullName,
-                                            Title = "The access code is required.",
-                                            Instance = context.Request?.Path.Value
-                                        }
-                                        ).SerializeJsonAsync(((JwtBearerChallengeContext)state).Response);
-                                    return;
-                                }, context);
-                            }
-                            return Task.FromResult(0);
-                        },
-                    };
-                });
+                                await new CustomJsonResult(StatusCodes.Status401Unauthorized,
+                                    new JsonErrorResponse()
+                                    {
+                                        Type = this.GetType().FullName,
+                                        Title = "The access code is required.",
+                                        Instance = context.Request?.Path.Value
+                                    }
+                                    ).SerializeJsonAsync(((JwtBearerChallengeContext)state).Response);
+                                return;
+                            }, context);
+                        }
+                        return Task.FromResult(0);
+                    },
+                };
+            });
             #endregion
 
             services.AddCors();
-            services.AddMvc(cfg =>
+            services.AddControllersWithViews(cfg =>
             {
                 // 集約エラー用フィルター
                 cfg.Filters.Add(typeof(GlobalExceptionHandlerAttribute));
             });
+            // Newtonsoft.Jsonを使用
+            services.AddRazorPages()
+                .AddNewtonsoftJson();
 
             // API Versioning
+            services.AddApiVersioning(options =>
+            {
+                options.ApiVersionReader = new UrlSegmentApiVersionReader();
+            });
             services.AddVersionedApiExplorer(options =>
             {
+                // add the versioned api explorer, which also adds IApiVersionDescriptionProvider service
+                // note: the specified format code will format the version as "'v'major[.minor][-status]"
                 options.GroupNameFormat = "'v'VVV";
+                // note: this option is only necessary when versioning by url segment. the SubstitutionFormat
+                // can also be used to control the format of the API version in route templates
                 options.SubstituteApiVersionInUrl = true;
             });
-            services.AddApiVersioning(options => 
-                options.ApiVersionReader = new UrlSegmentApiVersionReader());
 
+            // swaggerが有効か
             if (wsops.EnableSwagger)
             {
-                // SwaggerにXMLコメントの内容を反映させるために、サーバ上での XML Document のパスを渡す
-                var location = System.Reflection.Assembly.GetEntryAssembly().Location;
-                var xmlPath = location.Replace("dll", "xml");
-                //// SwaggerGen を追加
-                services.AddSwaggerGen(options =>
-                {
-                    // APIの署名を記載
-                    using (var serviceProvider = services.BuildServiceProvider())
+                services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
+                services.AddSwaggerGen(
+                    options =>
                     {
-                        var provider = serviceProvider.GetRequiredService<IApiVersionDescriptionProvider>();
-                        foreach (var description in provider.ApiVersionDescriptions)
-                        {
-                            options.SwaggerDoc(description.GroupName, new Info
-                            {
-                                Title = "KAMONOHASHI API",
-                                Version = description.GroupName,
-                                Description = "A platform for deep learning",
-                                Contact = new Contact()
-                                {
-                                    Email = "kamonohashi-support@jp.nssol.nipponsteel.com",
-                                    Name = "KAMONOHASHI Support"
-                                },
-                                TermsOfService = ApplicationConst.Copyright,
-                            });
-                        }
-                    }
+                        // add a custom operation filter which sets default values
+                        options.OperationFilter<SwaggerDefaultValues>();
 
-                    // デフォルトだと同じクラス名の入出力モデルを使えないので、識別に名前空間名も含める
-                    // https://stackoverflow.com/questions/46071513/swagger-error-conflicting-schemaids-duplicate-schemaids-detected-for-types-a-a
-                    options.CustomSchemaIds(x => x.FullName);
-
-                    // XML Document Comment を読込む
-                    options.IncludeXmlComments(xmlPath);
-                    //トークン認証用のUIを追加する
-                    options.AddSecurityDefinition("api_key", new ApiKeyScheme()
-                    {
-                        Name = "Authorization",
-                        In = "header",
-                        Type = "apiKey", //この指定が必須。https://github.com/domaindrivendev/Swashbuckle.AspNetCore/issues/124
-                        Description = "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\""
+                        // integrate xml comments
+                        options.IncludeXmlComments(XmlCommentsFilePath);
                     });
-
-                    options.OperationFilter<AssignJwtSecurityRequirements>();
-                });
             }
 
             services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
@@ -346,6 +359,7 @@ namespace Nssol.Platypus
             services.AddHostedService<BackupPostgresTimer>();
             services.AddHostedService<SyncClusterFromDBTimer>();
             services.AddHostedService<GetKQIReleaseVersionTimer>();
+            services.AddHostedService<ResourceMonitorTimer>();
         }
 
         /// <summary>
@@ -358,15 +372,10 @@ namespace Nssol.Platypus
         /// <param name="securityOptions">appsettings.jsonから読み込んだセキュリティ設定情報</param>
         /// <param name="commonDiLogic">DI用</param>
         /// <param name="provider">API Versioning</param>
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IOptions<WebSecurityOptions> securityOptions, ICommonDiLogic commonDiLogic, IApiVersionDescriptionProvider provider)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory, IOptions<WebSecurityOptions> securityOptions, ICommonDiLogic commonDiLogic, IApiVersionDescriptionProvider provider)
         {
             WebSecurityOptions options = securityOptions.Value;
             isDebug = options.EnableRequestPiplineDebugLog;
-
-            //ログ設定（ここで一回やれば、各クラスでの設定は不要）
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-            loggerFactory.AddDebug();
-            loggerFactory.AddProvider(new Log4NetProvider());
 
             logger = loggerFactory.CreateLogger<Startup>();
             LogUtil.WriteSystemLog(logger.LogDebug, "Start to configure Platypus WebUI application");
@@ -422,34 +431,44 @@ namespace Nssol.Platypus
                 if (options.EnableSwagger)
                 {
                     // UseSwagger と UseSwaggerUi を追加
-                    app.UseSwagger();
-                    app.UseSwaggerUI(c =>
+                    app.UseSwagger(options =>
                     {
+                        // 2.0系への下位互換をサポートする
+                        options.SerializeAsV2 = true;
+                    });
+
+                    app.UseSwaggerUI(options =>
+                    {
+                        // build a swagger endpoint for each discovered API version
                         foreach (var description in provider.ApiVersionDescriptions)
                         {
-                            c.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", description.GroupName);
+                            options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json",
+                                description.GroupName.ToUpperInvariant());
                         }
                     });
                 }
 
                 AddMiddlewareForLogging(app, "Move to authentication", "Back from authentication");
 
+                app.UseRouting();
+
+                app.UseCors(builder => builder
+                    .AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader());
+
                 app.UseAuthentication();
+                app.UseAuthorization();
 
                 //ASP.NET Core MVCからのレスポンスは常にデバッグログを残す
                 AddMiddlewareForLogging(app, "Execute Request in ASP.NET Core MVC", null);
                 AddMiddlewareForLogging(app, null, "Return Response from ASP.NET Core MVC", true);
 
-                app.UseCors(builder => builder
-                    .AllowAnyOrigin()
-                    .AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .AllowCredentials());
-                app.UseMvc(routes =>
+                app.UseEndpoints(endpoints =>
                 {
-                    routes.MapRoute(
+                    endpoints.MapControllerRoute(
                         name: "default",
-                        template: "{controller=Account}/{action=Index}/{id?}");
+                        pattern: "{controller=Account}/{action=Index}/{id?}");
                 });
 
                 // /wsにアクセスされた際、kubernetes podのshell実行用のwebsocket通信を確立する
@@ -501,7 +520,7 @@ namespace Nssol.Platypus
         /// <param name="context">コンテキスト</param>
         private bool IsWebSocket(HttpContext context)
         {
-            bool result = context.Request.Path.StartsWithSegments(new PathString("/ws"));
+            bool result = context.Request.Path.StartsWithSegments(new PathString("/ws"), StringComparison.CurrentCulture);
             return result;
         }
 

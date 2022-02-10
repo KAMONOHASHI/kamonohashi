@@ -1,19 +1,14 @@
-﻿using Nssol.Platypus.Infrastructure;
-using Nssol.Platypus.Infrastructure.Types;
-using System;
+﻿using Nssol.Platypus.Infrastructure.Types;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Security.Principal;
-using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Models
 {
     /// <summary>
     /// ユーザー情報
     /// </summary>
-    public class User:ModelBase
+    public class User : ModelBase
     {
         /// <summary>
         /// ユーザ名
@@ -52,5 +47,15 @@ namespace Nssol.Platypus.Models
         /// </summary>
         [ForeignKey(nameof(DefaultTenantId))]
         public virtual Tenant DefaultTenant { get; set; }
+
+        /// <summary>
+        /// Slackの送信先URL
+        /// </summary>
+        public string SlackUrl { get; set; }
+
+        /// <summary>
+        /// Slackメッセージのメンション
+        /// </summary>
+        public string Mention { get; set; }
     }
 }

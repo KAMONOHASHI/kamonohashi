@@ -1,6 +1,4 @@
-﻿using Nssol.Platypus.Logic.HostedService;
-
-namespace Nssol.Platypus.Infrastructure.Options
+﻿namespace Nssol.Platypus.Infrastructure.Options
 {
     public class DeployOptions : TimerScheduleOptionsBase
     {

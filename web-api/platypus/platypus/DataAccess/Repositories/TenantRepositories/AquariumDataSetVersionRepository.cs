@@ -11,6 +11,6 @@ namespace Nssol.Platypus.DataAccess.Repositories.TenantRepositories
     public class AquariumDataSetVersionRepository : RepositoryForTenantBase<DataSetVersion>, IAquariumDataSetVersionRepository
     {
         public AquariumDataSetVersionRepository(CommonDbContext context, IHttpContextAccessor accessor)
-        : base(context, accessor) {}
+        : base(context, accessor) { }
     }
 }

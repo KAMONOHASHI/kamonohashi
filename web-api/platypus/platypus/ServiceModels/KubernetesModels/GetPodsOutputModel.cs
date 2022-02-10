@@ -1,9 +1,5 @@
-﻿using Newtonsoft.Json;
-using Nssol.Platypus.Infrastructure;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Nssol.Platypus.ServiceModels.KubernetesModels
 {
@@ -81,7 +77,7 @@ namespace Nssol.Platypus.ServiceModels.KubernetesModels
                                 return true;
                             }
                         }
-                        
+
                     }
                     return false;
                 }

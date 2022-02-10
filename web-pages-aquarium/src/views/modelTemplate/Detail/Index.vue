@@ -347,7 +347,7 @@ export default {
         this.detail.accessLevel != baseParam.accessLevel
       ) {
         //基本情報更新
-        await this['put']({ id: this.id, model: baseParam })
+        await this['put']({ id: this.id, body: baseParam })
         return true
       } else {
         return false
@@ -546,7 +546,7 @@ export default {
       }
 
       //新規バージョン作成
-      await this['postByIdVersions']({ id: this.id, model: params })
+      await this['postByIdVersions']({ id: this.id, body: params })
 
       await this.$notify.success({
         type: 'Success',

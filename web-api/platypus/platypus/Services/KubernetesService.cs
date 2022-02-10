@@ -151,6 +151,10 @@ namespace Nssol.Platypus.Services
                     hasService = true;
                     hasConfigMap = true;
                     break;
+                case ContainerType.Inferencing:
+                    hasService = true;
+                    hasConfigMap = true;
+                    break;
                 case ContainerType.Preprocessing:
                     hasService = false;
                     hasConfigMap = true;
@@ -164,10 +168,6 @@ namespace Nssol.Platypus.Services
                     hasConfigMap = true;
                     break;
                 case ContainerType.DeleteTenant:
-                    hasService = false;
-                    hasConfigMap = true;
-                    break;
-                case ContainerType.Experiment:
                     hasService = false;
                     hasConfigMap = true;
                     break;
@@ -221,13 +221,13 @@ namespace Nssol.Platypus.Services
             if (deleteConfigMap)
             {
                 //ConfigMapを消す
-                var delteConfigMapResult = await DeleteConfigMapAsync(containerName+"-common-scripts", tenantName, token);
+                var delteConfigMapResult = await DeleteConfigMapAsync(containerName + "-common-scripts", tenantName, token);
                 if (delteConfigMapResult.IsSuccess == false)
                 {
                     LogError("ConfigMap削除に失敗: " + delteConfigMapResult.Error);
                     success = false;
                 }
-                delteConfigMapResult = await DeleteConfigMapAsync(containerName+"-scripts", tenantName, token);
+                delteConfigMapResult = await DeleteConfigMapAsync(containerName + "-scripts", tenantName, token);
                 if (delteConfigMapResult.IsSuccess == false)
                 {
                     LogError("ConfigMap削除に失敗: " + delteConfigMapResult.Error);
@@ -286,7 +286,8 @@ namespace Nssol.Platypus.Services
             {
                 var result = ConvertResult<GetEventsOutputModel>(response);
 
-                var events = result.Items.Where(i => i.InvolvedObject.Kind == "Pod" || i.InvolvedObject.Kind == "Job").Select(i => new ContainerEventInfo() {
+                var events = result.Items.Where(i => i.InvolvedObject.Kind == "Pod" || i.InvolvedObject.Kind == "Job").Select(i => new ContainerEventInfo()
+                {
                     TenantId = tenant.Id,
                     TenantName = i.Metadata.Namespace,
                     ContainerName = i.InvolvedObject.ContainerName,
@@ -387,7 +388,7 @@ namespace Nssol.Platypus.Services
                 Body = body,
                 MediaType = RequestParam.MediaTypeYaml
             });
-            
+
             //成否判定
             if (response.IsSuccess)
             {
@@ -473,7 +474,7 @@ namespace Nssol.Platypus.Services
         /// <returns></returns>
         private bool IsIgnoreNamespace(string namespaceName)
         {
-            if (namespaceName.StartsWith(containerOptions.KubernetesNamespacePrefix))
+            if (namespaceName.StartsWith(containerOptions.KubernetesNamespacePrefix, StringComparison.CurrentCulture))
             {
                 return true;
             }
@@ -543,7 +544,8 @@ namespace Nssol.Platypus.Services
 
             if (item.Spec.Containers != null && item.Spec.Containers.Count > 0)
             {
-                foreach (var container in item.Spec.Containers) {
+                foreach (var container in item.Spec.Containers)
+                {
                     info.Image += container.Image;
                     if (container.Resources?.Requests == null)
                     {
@@ -598,7 +600,7 @@ namespace Nssol.Platypus.Services
 
             //Serviceを取得して、エンドポイント情報を揃える
             var serviceResult = await GetServiceAsync(tenantName, containerName, token);
-            if(serviceResult.IsSuccess)
+            if (serviceResult.IsSuccess)
             {
                 containerInfo.EndPoints = serviceResult.Value.Spec.Ports.Select(p => new EndPointInfo()
                 {
@@ -646,7 +648,7 @@ namespace Nssol.Platypus.Services
                 //Podのステータス確認
                 var result = await GetPodForJobAsync(jobName, tenantName, token);
 
-                if(result.IsSuccess)
+                if (result.IsSuccess)
                 {
                     containerInfo.Host = result.Value.Status.HostIP;
                     containerInfo.Status = new ContainerStatus(result.Value.Status.Phase);
@@ -754,7 +756,7 @@ namespace Nssol.Platypus.Services
                     LogWarning($"Pod 名を取得する Kuerbernetes API を実行しましたが結果が複数件でした。url=\"{url}\", count={model.Items.Count}");
                     return Result<string, ContainerStatus>.CreateErrorResult(ContainerStatus.Multiple);
                 }
-                else if(model.Items.Count == 0)
+                else if (model.Items.Count == 0)
                 {
                     LogWarning($"Pod 名を取得する Kuerbernetes API を実行しましたが結果が 0 件でした。url=\"{url}\"");
                     return Result<string, ContainerStatus>.CreateErrorResult(ContainerStatus.None);
@@ -809,7 +811,7 @@ namespace Nssol.Platypus.Services
                 //
                 // コマンド実行
                 //
-               
+
                 // Kubernetesとのwebsocketを確立してコマンド実行
                 Uri url = new Uri(kubernetesUri + apiUri);
                 var webSocket = kubernetesWebSocket.ConnectAsync(url, CancellationToken.None);
@@ -841,7 +843,7 @@ namespace Nssol.Platypus.Services
                         var receivedBytes = new List<byte>(buff);
                         receivedBytes.RemoveAt(0);
                         receivedBytes.RemoveAll(b => b == 0);
-                          // TODO: 改行コードが存在するので、何らかの文字に置換すること(現状、debugログが改行込みで出力されてしまう)
+                        // TODO: 改行コードが存在するので、何らかの文字に置換すること(現状、debugログが改行込みで出力されてしまう)
                         if (receivedBytes.Count > 0)
                         {
                             // データを受信
@@ -1051,9 +1053,9 @@ namespace Nssol.Platypus.Services
             //\nの後ろをインデントしてしまえば、\r\nの場合も対応可能
             // tensorboardの場合はentryPointはnull
             string cmd = entryPoint ?? "";
-            if (cmd.Contains("\n"))
+            if (cmd.Contains("\n", StringComparison.CurrentCulture))
             {
-                cmd = cmd.Replace("\n", "\n    ");
+                cmd = cmd.Replace("\n", "\n    ", StringComparison.CurrentCulture);
             }
 
             string body = await RenderEngine.CompileRenderAsync($"ConfigMap/{scriptType}_scripts.yaml", new
@@ -1096,7 +1098,7 @@ namespace Nssol.Platypus.Services
             string token = containerOptions.ResourceManageKey;
 
             //名前空間を作成する
-            if(await CreateNameSpaceAsync(tenantName, token) == false)
+            if (await CreateNameSpaceAsync(tenantName, token) == false)
             {
                 return false;
             }
@@ -1206,7 +1208,7 @@ namespace Nssol.Platypus.Services
         public async Task<bool> RegistRegistryTokenyAsync(RegistRegistryTokenInputModel model)
         {
             string secretName = model.RegistryTokenKey;
-            if(secretName == null)
+            if (secretName == null)
             {
                 //認証情報が未設定の場合はシークレットが作れないので、失敗扱いにする
                 return false;
@@ -1529,7 +1531,7 @@ namespace Nssol.Platypus.Services
                 var result = await GetServiceAccountAsync(tenantName, userName, token);
 
                 //そもそもアカウントが作られていない場合はエラー
-                if(result.IsSuccess == false)
+                if (result.IsSuccess == false)
                 {
                     LogError($"{userName}@{tenantName} のサービスアカウント取得に失敗: " + result.Error);
                     return null;
@@ -1580,16 +1582,16 @@ namespace Nssol.Platypus.Services
         public async Task<Result<Dictionary<string, string>, string>> GetNodeLabelMapAsync(string labelKey, List<string> registeredNodeNames)
         {
             var nodes = await GetAllNodesAsync(true, registeredNodeNames);
-            if(nodes == null)
+            if (nodes == null)
             {
                 return Result<Dictionary<string, string>, string>.CreateErrorResult("Failed to get node list.");
             }
 
             var labelMap = new Dictionary<string, string>();
-            foreach(var node in nodes)
+            foreach (var node in nodes)
             {
                 //ラベルがある場合のみ、結果に追加
-                if(node.Metadata.Labels != null && node.Metadata.Labels.ContainsKey(labelKey))
+                if (node.Metadata.Labels != null && node.Metadata.Labels.ContainsKey(labelKey))
                 {
                     labelMap.Add(node.Metadata.Name, node.Metadata.Labels[labelKey]);
                 }
@@ -1604,11 +1606,12 @@ namespace Nssol.Platypus.Services
         public async Task<IEnumerable<NodeInfo>> GetAllNodesAsync(List<string> registeredNodeNames)
         {
             var nodes = await GetAllNodesAsync(true, registeredNodeNames);
-            if(nodes == null)
+            if (nodes == null)
             {
                 return null;
             }
-            return nodes.Select(n => new NodeInfo() {
+            return nodes.Select(n => new NodeInfo()
+            {
                 Name = n.Metadata.Name,
                 Labels = n.Metadata.Labels,
                 Memory = n.Status.Capacity.MemoryGB,
@@ -1623,7 +1626,7 @@ namespace Nssol.Platypus.Services
         /// </summary>
         /// <param name="excludeManagementNode">管理ノードを除外するか</param>
         /// <param name="registeredNodeNames">登録しているノード名のリスト</param>
-        private async Task<IEnumerable<GetNodeOutputModel.ItemModel>> GetAllNodesAsync(bool excludeManagementNode, List<string>registeredNodeNames)
+        private async Task<IEnumerable<GetNodeOutputModel.ItemModel>> GetAllNodesAsync(bool excludeManagementNode, List<string> registeredNodeNames)
         {
             var nodeResponse = await SendGetRequestAsync(new RequestParam()
             {
@@ -1631,13 +1634,13 @@ namespace Nssol.Platypus.Services
                 ApiPath = "/api/v1/nodes",
                 Token = containerOptions.ResourceManageKey
             });
-            if(nodeResponse.IsSuccess == false)
+            if (nodeResponse.IsSuccess == false)
             {
                 LogError("Nodeの取得失敗: " + nodeResponse.Error);
                 return null;
             }
             var nodes = base.ConvertResult<GetNodeOutputModel>(nodeResponse);
-            if(excludeManagementNode)
+            if (excludeManagementNode)
             {
                 // 登録されているノードのみに絞り込み、システム管理用のノードを除外する                
                 return nodes.Items.Where(i => registeredNodeNames.Contains(i.Metadata.Name));
@@ -1683,8 +1686,8 @@ namespace Nssol.Platypus.Services
             string baseUrl = this.containerOptions.ContainerServiceBaseUrl;
 
             // まず存在チェック
-            var node= await GetNodeAsync(nodeName);
-            if(node == null)
+            var node = await GetNodeAsync(nodeName);
+            if (node == null)
             {
                 return false;
             }
@@ -1825,7 +1828,7 @@ namespace Nssol.Platypus.Services
         protected override string GetErrorMessageFromResponse(string content)
         {
             string msg = string.Empty;
-            if (!string.IsNullOrEmpty(content) && content.StartsWith("{"))
+            if (!string.IsNullOrEmpty(content) && content.StartsWith("{", StringComparison.CurrentCulture))
             {
                 var json = (JObject)JsonConvert.DeserializeObject(content);
                 msg = (string)json?["message"];
@@ -1847,7 +1850,7 @@ namespace Nssol.Platypus.Services
             string podName = result.Value.Metadata.Name;
             string k8sHost = containerOptions.KubernetesHostName;
             string k8sPort = containerOptions.KubernetesPort;
-            string kubernetesUri = "wss://" + k8sHost + ":" + k8sPort; 
+            string kubernetesUri = "wss://" + k8sHost + ":" + k8sPort;
             string apiUri = "/api/v1/namespaces/" + tenantName + "/pods/" + podName + "/exec?command=/bin/bash&stdin=true&stderr=true&stdout=true&tty=true&container=main";
 
             ClientWebSocket kubernetesWebSocket = new ClientWebSocket();

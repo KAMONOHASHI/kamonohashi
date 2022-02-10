@@ -46,12 +46,12 @@ const actions = {
 
   // eslint-disable-next-line no-unused-vars
   async post({ commit }, params) {
-    return await api.git.admin.postEndpoint({ model: params })
+    return await api.git.admin.postEndpoint({ body: params })
   },
 
   // eslint-disable-next-line no-unused-vars
   async put({ commit }, { id, params }) {
-    return await api.git.admin.putEndpoint({ id: id, model: params })
+    return await api.git.admin.putEndpoint({ id: id, body: params })
   },
 
   // eslint-disable-next-line no-unused-vars

@@ -187,9 +187,9 @@ namespace Nssol.Platypus.DataAccess.Core
                 Name = ApplicationConst.DefaultFirstTenantName,
                 DisplayName = ApplicationConst.DefaultFirstTenantDisplayName,
                 DefaultGit = git,
-                DefaultRegistryId = registry.Id,
+                DefaultRegistry = registry,
                 StorageBucket = ApplicationConst.DefaultFirstTenantName,
-                StorageId = storage.Id
+                Storage = storage
             });
             //GitとTenantの対応付け
             TenantGitMap tenantGitMap = AddNewRecordForInit(new TenantGitMap() { Tenant = tenant, Git = git });
@@ -214,7 +214,7 @@ namespace Nssol.Platypus.DataAccess.Core
             Role researcherRole = roleRepository.GetCommonTenantRolesAsync().Result.First(r => r.Name == "researchers");
             Role managerRole = roleRepository.GetCommonTenantRolesAsync().Result.First(r => r.Name == "managers");
             Role adminRole = roleRepository.GetCommonTenantRolesAsync().Result.First(r => r.Name == "admins");
-            
+
             // ロール明細の登録
             AddNewRecordForInit(new UserRoleMap() { Role = researcherRole, User = user, TenantMap = userTenantMap });
             AddNewRecordForInit(new UserRoleMap() { Role = managerRole, User = user, TenantMap = userTenantMap });

@@ -27,10 +27,12 @@ namespace Nssol.Platypus.Controllers.spa
     /// <summary>
     /// Trainを扱うためのAPI集
     /// </summary>
+    [ApiController]
     [ApiVersion("1"), ApiVersion("2")]
     [Route("api/v{api-version:apiVersion}/training")]
     public class TrainingController : PlatypusApiControllerBase
     {
+        // for DI
         private readonly ITrainingHistoryRepository trainingHistoryRepository;
         private readonly IInferenceHistoryRepository inferenceHistoryRepository;
         private readonly ITensorBoardContainerRepository tensorBoardContainerRepository;
@@ -44,6 +46,7 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly IStorageLogic storageLogic;
         private readonly IGitLogic gitLogic;
         private readonly IClusterManagementLogic clusterManagementLogic;
+        private readonly ISlackLogic slackLogic;
         private readonly ContainerManageOptions containerOptions;
         private readonly IUnitOfWork unitOfWork;
 
@@ -64,6 +67,7 @@ namespace Nssol.Platypus.Controllers.spa
             IStorageLogic storageLogic,
             IGitLogic gitLogic,
             IClusterManagementLogic clusterManagementLogic,
+            ISlackLogic slackLogic,
             IOptions<ContainerManageOptions> containerOptions,
             IUnitOfWork unitOfWork,
             IHttpContextAccessor accessor) : base(accessor)
@@ -81,6 +85,7 @@ namespace Nssol.Platypus.Controllers.spa
             this.storageLogic = storageLogic;
             this.gitLogic = gitLogic;
             this.clusterManagementLogic = clusterManagementLogic;
+            this.slackLogic = slackLogic;
             this.containerOptions = containerOptions.Value;
             this.unitOfWork = unitOfWork;
         }
@@ -109,7 +114,7 @@ namespace Nssol.Platypus.Controllers.spa
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetAll([FromQuery] SearchInputModel filter, [FromQuery] int? perPage, [FromQuery] int page = 1, bool withTotal = false)
         {
-            var data = trainingHistoryRepository.GetAllIncludeDataSetAndParentWithOrdering();
+            var data = trainingHistoryRepository.GetAllIncludeDataSetAndParentWithOrdering().AsEnumerable();
             data = Search(data, filter);
 
             //未指定、あるいは1000件以上であれば、1000件に指定
@@ -159,22 +164,21 @@ namespace Nssol.Platypus.Controllers.spa
             return status;
         }
 
-
         /// <summary>
         /// データ件数を取得する
         /// </summary>
         /// <param name="filter">検索条件</param>
         private int GetTotalCount(SearchInputModel filter)
         {
-            IQueryable<TrainingHistory> histories;
+            IEnumerable<TrainingHistory> histories;
             if (string.IsNullOrEmpty(filter.DataSet))
             {
-                histories = trainingHistoryRepository.GetAll();
+                histories = trainingHistoryRepository.GetAll().AsEnumerable();
             }
             else
             {
                 //データセット名のフィルターがかかっている場合、データセットも併せて取得しないといけない
-                histories = trainingHistoryRepository.GetAllIncludeDataSet();
+                histories = trainingHistoryRepository.GetAllIncludeDataSet().AsEnumerable();
             }
 
             histories = Search(histories, filter);
@@ -186,9 +190,9 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         /// <param name="sourceData">加工前の検索結果</param>
         /// <param name="filter">検索条件</param>
-        private static IQueryable<TrainingHistory> Search(IQueryable<TrainingHistory> sourceData, SearchInputModel filter)
+        private static IEnumerable<TrainingHistory> Search(IEnumerable<TrainingHistory> sourceData, SearchInputModel filter)
         {
-            IQueryable<TrainingHistory> data = sourceData;
+            IEnumerable<TrainingHistory> data = sourceData;
             data = data
                 .SearchLong(d => d.Id, filter.Id)
                 .SearchString(d => d.Name, filter.Name)
@@ -278,13 +282,34 @@ namespace Nssol.Platypus.Controllers.spa
                 {
                     if (string.IsNullOrEmpty(tag) == false)
                     {
-                        if (tag.StartsWith("!", StringComparison.CurrentCulture))
+                        if (tag.Contains(",", StringComparison.CurrentCulture))
                         {
-                            data = data.Where(d => d.TagMaps == null || d.TagMaps.Count == 0 || d.TagMaps.All(m => m.Tag.Name.Contains(tag.Substring(1), StringComparison.CurrentCulture) == false));
+                            // tagにカンマ(',')が含まれていたら、分割して一つ一つの文字列で検索する
+                            foreach (var t in tag.Split(","))
+                            {
+                                if (string.IsNullOrEmpty(t) == false)
+                                {
+                                    if (t.StartsWith("!", StringComparison.CurrentCulture))
+                                    {
+                                        data = data.Where(d => d.TagMaps == null || d.TagMaps.Count == 0 || d.TagMaps.All(m => m.Tag.Name.Contains(t.Substring(1), StringComparison.CurrentCulture) == false));
+                                    }
+                                    else
+                                    {
+                                        data = data.Where(d => d.TagMaps != null && d.TagMaps.Any(m => m.Tag.Name.Contains(t, StringComparison.CurrentCulture)));
+                                    }
+                                }
+                            }
                         }
                         else
                         {
-                            data = data.Where(d => d.TagMaps != null && d.TagMaps.Any(m => m.Tag.Name.Contains(tag, StringComparison.CurrentCulture)));
+                            if (tag.StartsWith("!", StringComparison.CurrentCulture))
+                            {
+                                data = data.Where(d => d.TagMaps == null || d.TagMaps.Count == 0 || d.TagMaps.All(m => m.Tag.Name.Contains(tag.Substring(1), StringComparison.CurrentCulture) == false));
+                            }
+                            else
+                            {
+                                data = data.Where(d => d.TagMaps != null && d.TagMaps.Any(m => m.Tag.Name.Contains(tag, StringComparison.CurrentCulture)));
+                            }
                         }
                     }
                 }
@@ -299,9 +324,9 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpGet("mount")]
         [Filters.PermissionFilter(MenuCode.Training, MenuCode.Inference, MenuCode.Notebook)]
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
-        public IActionResult GetTrainingToMount(MountInputModel filter)
+        public IActionResult GetTrainingToMount([FromQuery] MountInputModel filter)
         {
-            var data = trainingHistoryRepository.GetAllIncludeDataSetAndParentWithOrdering();
+            var data = trainingHistoryRepository.GetAllIncludeDataSetAndParentWithOrdering().AsEnumerable();
 
             // ステータスを限定する
             if (filter.Status != null)
@@ -605,10 +630,10 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPut("{id}")]
         [Filters.PermissionFilter(MenuCode.Training)]
         [ProducesResponseType(typeof(SimpleOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> Edit(long? id, [FromBody]EditInputModel model)
+        public async Task<IActionResult> Edit(long? id, [FromBody] EditInputModel model)
         {
             //データの入力チェック
-            if (!ModelState.IsValid || ! id.HasValue)
+            if (!ModelState.IsValid || !id.HasValue)
             {
                 return JsonBadRequest("Invalid inputs.");
             }
@@ -622,7 +647,7 @@ namespace Nssol.Platypus.Controllers.spa
             history.Name = EditColumnNotEmpty(model.Name, history.Name);
             history.Memo = EditColumn(model.Memo, history.Memo);
             history.Favorite = EditColumn(model.Favorite, history.Favorite);
-            
+
             //タグの編集。指定がない場合は変更なしと見なして何もしない。
             if (model.Tags != null)
             {
@@ -657,7 +682,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPost("{id}/files")]
         [Filters.PermissionFilter(MenuCode.Training)]
         [ProducesResponseType(typeof(AttachedFileOutputModel), (int)HttpStatusCode.Created)]
-        public async Task<IActionResult> RegistAttachedFile(long id, [FromBody]AddFileInputModel model)
+        public async Task<IActionResult> RegistAttachedFile(long id, [FromBody] AddFileInputModel model)
         {
             //データの入力チェック
             if (!ModelState.IsValid)
@@ -673,7 +698,7 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             //同じ名前のファイルは登録できない
-            if(await trainingHistoryRepository.ExistsAttachedFileAsync(id, model.FileName))
+            if (await trainingHistoryRepository.ExistsAttachedFileAsync(id, model.FileName))
             {
                 return JsonConflict($"Training {id} has already a file named {model.FileName}.");
             }
@@ -714,15 +739,17 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             // 検索path文字列の先頭・末尾が/でない場合はつける
-            if (!path.StartsWith("/", StringComparison.CurrentCulture)) {
+            if (!path.StartsWith("/", StringComparison.CurrentCulture))
+            {
                 path = "/" + path;
             }
-            if (!path.EndsWith("/", StringComparison.CurrentCulture)) {
+            if (!path.EndsWith("/", StringComparison.CurrentCulture))
+            {
                 path = path + "/";
             }
 
             // windowsから実行された場合、区切り文字が"\\"として送られてくるので"/"に置換する
-            path = path.Replace("\\", "/");
+            path = path.Replace("\\", "/", StringComparison.CurrentCulture);
 
             var rootDir = $"{id}" + path;
 
@@ -732,7 +759,7 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 result.Value.Files.ForEach(x => x.Url = storageLogic.GetPreSignedUriForGetFromKey(x.Key, x.FileName, true).ToString());
             }
-             
+
 
             return JsonOK(result.Value);
         }
@@ -755,7 +782,8 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             var underDir = await storageLogic.GetUnderDirAsync(ResourceType.TrainingContainerAttachedFiles, $"{id}/");
-            if(underDir.IsSuccess == false) {
+            if (underDir.IsSuccess == false)
+            {
                 return JsonError(HttpStatusCode.ServiceUnavailable, "Failed to access the storage service. Please contact to system administrators.");
             }
 
@@ -809,11 +837,36 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonNotFound($"File ID {fileId.Value} is not found.");
             }
 
+            // ストレージ上のファイルを削除するために保存先ファイルパスを保持しておく。
+            string storedPath = file.StoredPath;
+
+            // 削除処理
             trainingHistoryRepository.DeleteAttachedFile(file);
-            await storageLogic.DeleteFileAsync(ResourceType.TrainingHistoryAttachedFiles, file.StoredPath);
+            await storageLogic.DeleteFileAsync(ResourceType.TrainingHistoryAttachedFiles, storedPath);
             unitOfWork.Commit();
 
             return JsonNoContent();
+        }
+
+        /// <summary>
+        ///学習履歴添付ファイルのサイズ(Byte)を取得する
+        /// </summary>
+        /// <param name="id">対象の学習履歴ID</param>
+        /// <param name="name">対象ファイル名</param>
+        [HttpGet("{id}/files/{name}/size")]
+        [Filters.PermissionFilter(MenuCode.Training)]
+        [ProducesResponseType(typeof(FileOutputModel), (int)HttpStatusCode.OK)]
+        public IActionResult GetFileSize(long id, string name)
+        {
+            // ファイルの存在チェック
+            var file = trainingHistoryRepository.GetAttachedFile(id, name);
+            if (file == null)
+            {
+                return JsonNotFound($"Training ID {id} or file name {name} is not found.");
+            }
+
+            var fileSize = storageLogic.GetFileSize(ResourceType.TrainingHistoryAttachedFiles, file.StoredPath);
+            return JsonOK(new FileOutputModel { Id = id, Key = file.Key, FileId = file.Id, FileName = file.FileName, FileSize = fileSize });
         }
 
         /// <summary>
@@ -858,7 +911,7 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpPut("{id}/tensorboard")] //TensorBoardはIDをユーザに通知するわけではないので、POSTではなくPUTで扱う
         [Filters.PermissionFilter(MenuCode.Training, MenuCode.Experiment)]
         [ProducesResponseType(typeof(TensorBoardOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> RunTensorBoard(long id, [FromBody]TensorBoardInputModel model)
+        public async Task<IActionResult> RunTensorBoard(long id, [FromBody] TensorBoardInputModel model)
         {
             //データの存在チェック
             var trainingHistory = await trainingHistoryRepository.GetByIdAsync(id);
@@ -907,7 +960,7 @@ namespace Nssol.Platypus.Controllers.spa
 
             // コンテナテーブルにInsertする
             tensorBoardContainerRepository.Add(container);
-            
+
             unitOfWork.Commit();
 
             return JsonOK(new TensorBoardOutputModel(container, result.Status, containerOptions.WebEndPoint));
@@ -1028,9 +1081,11 @@ namespace Nssol.Platypus.Controllers.spa
                 CurrentUserInfo,
                 ModelState,
                 storageLogic,
+                slackLogic,
                 inferenceHistoryRepository,
                 tensorBoardContainerRepository,
                 tagRepository,
+                trainingLogic,
                 RequestUrl);
             return result;
         }
@@ -1045,9 +1100,11 @@ namespace Nssol.Platypus.Controllers.spa
             UserInfo currentUserInfo,
             ModelStateDictionary modelState,
             IStorageLogic storageLogic,
+            ISlackLogic slackLogic,
             IInferenceHistoryRepository inferenceHistoryRepository,
             ITensorBoardContainerRepository tensorBoardContainerRepository,
             ITagRepository tagRepository,
+            ITrainingLogic trainingLogic,
             string requestUrl
             )
         {
@@ -1059,13 +1116,14 @@ namespace Nssol.Platypus.Controllers.spa
                     $"Training ID {id} is not found."));
             }
 
-            //ステータスを確認
+            // ステータスを確認
 
+            var tenant = currentUserInfo.SelectedTenant;
             var status = trainingHistory.GetStatus();
             if (status.Exist())
             {
                 //学習がまだ進行中の場合、情報を更新する
-                status = await clusterManagementLogic.GetContainerStatusAsync(trainingHistory.Key, currentUserInfo.SelectedTenant.Name, false);
+                status = await clusterManagementLogic.GetContainerStatusAsync(trainingHistory.Key, tenant.Name, false);
             }
 
             //派生した学習履歴があったら消せない
@@ -1080,15 +1138,27 @@ namespace Nssol.Platypus.Controllers.spa
             var inferenceHistory = (await inferenceHistoryRepository.GetMountedTrainingAsync(trainingHistory.Id)).FirstOrDefault();
             if (inferenceHistory != null)
             {
-                return (false, DoJsonConflict(typeof(TrainingController), requestUrl, modelState, 
+                return (false, DoJsonConflict(typeof(TrainingController), requestUrl, modelState,
                     $"Training {trainingHistory.Id} has been used by inference."));
             }
 
             if (status.Exist())
             {
+                var info = await clusterManagementLogic.GetContainerDetailsInfoAsync(trainingHistory.Key, tenant.Name, false);
+                // ノード情報の取得
+                var node = info.NodeName != null
+                    ? (await clusterManagementLogic.GetAllNodesAsync()).FirstOrDefault(x => x.Name == info.NodeName)
+                    : null;
+
+                // ジョブ実行履歴追加
+                trainingLogic.AddJobHistory(trainingHistory, node, tenant, info, status.Key);
+
                 //実行中であれば、コンテナを削除
                 await clusterManagementLogic.DeleteContainerAsync(
-                    ContainerType.Training, trainingHistory.Key, currentUserInfo.SelectedTenant.Name, false);
+                    ContainerType.Training, trainingHistory.Key, tenant.Name, false);
+
+                // 通知処理
+                slackLogic.InformJobResult(trainingHistory);
             }
 
             //TensorBoardを起動中だった場合は、そっちも消す
@@ -1096,7 +1166,7 @@ namespace Nssol.Platypus.Controllers.spa
             if (container != null)
             {
                 await clusterManagementLogic.DeleteContainerAsync(
-                    ContainerType.TensorBoard, container.Name, currentUserInfo.SelectedTenant.Name, false);
+                    ContainerType.TensorBoard, container.Name, tenant.Name, false);
                 tensorBoardContainerRepository.Delete(container, true);
             }
 
@@ -1104,8 +1174,12 @@ namespace Nssol.Platypus.Controllers.spa
             var files = await trainingHistoryRepository.GetAllAttachedFilesAsync(trainingHistory.Id);
             foreach (var file in files)
             {
+                // ストレージ上のファイルを削除するために保存先ファイルパスを保持しておく。
+                string storedPath = file.StoredPath;
+
+                // 削除処理
                 trainingHistoryRepository.DeleteAttachedFile(file);
-                await storageLogic.DeleteFileAsync(ResourceType.TrainingHistoryAttachedFiles, file.StoredPath);
+                await storageLogic.DeleteFileAsync(ResourceType.TrainingHistoryAttachedFiles, storedPath);
             }
 
             // タグマップを削除

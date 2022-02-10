@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Nssol.Platypus.ApiModels.ResourceApiModels;
 using Nssol.Platypus.Controllers.Util;
+using Nssol.Platypus.DataAccess.Core;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories;
 using Nssol.Platypus.Filters;
@@ -15,8 +17,10 @@ using Nssol.Platypus.Models;
 using Nssol.Platypus.Models.TenantModels;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Controllers.spa
@@ -24,6 +28,7 @@ namespace Nssol.Platypus.Controllers.spa
     /// <summary>
     /// リソース管理を扱うためのAPI集
     /// </summary>
+    [ApiController]
     [ApiVersion("1"), ApiVersion("2")]
     [Route("api/v{api-version:apiVersion}/admin/resource")]
     public class ResourceController : PlatypusApiControllerBase
@@ -31,22 +36,34 @@ namespace Nssol.Platypus.Controllers.spa
         // for DI
         private readonly ITenantRepository tenantRepository;
         private readonly IUserRepository userRepository;
+        private readonly IRepository<ResourceSample> resourceSampleRepository;
+        private readonly IRepository<ResourceContainer> resourceContainerRepository;
+        private readonly IRepository<ResourceJob> resourceJobRepository;
         private readonly ICommonDiLogic commonDiLogic;
         private readonly IClusterManagementLogic clusterManagementLogic;
+        private readonly IUnitOfWork unitOfWork;
         private readonly ContainerManageOptions containerManageOptions;
 
         public ResourceController(
             ITenantRepository tenantRepository,
             IUserRepository userRepository,
+            IRepository<ResourceSample> resourceSampleRepository,
+            IRepository<ResourceContainer> resourceContainerRepository,
+            IRepository<ResourceJob> resourceJobRepository,
             ICommonDiLogic commonDiLogic,
             IClusterManagementLogic clusterManagementLogic,
+            IUnitOfWork unitOfWork,
             IOptions<ContainerManageOptions> containerManageOptions,
             IHttpContextAccessor accessor) : base(accessor)
         {
             this.tenantRepository = tenantRepository;
             this.userRepository = userRepository;
+            this.resourceSampleRepository = resourceSampleRepository;
+            this.resourceContainerRepository = resourceContainerRepository;
+            this.resourceJobRepository = resourceJobRepository;
             this.commonDiLogic = commonDiLogic;
             this.clusterManagementLogic = clusterManagementLogic;
+            this.unitOfWork = unitOfWork;
             this.containerManageOptions = containerManageOptions.Value;
         }
 
@@ -62,17 +79,17 @@ namespace Nssol.Platypus.Controllers.spa
         {
             var nodes = nodeRepository.GetAll().OrderBy(n => n.Name);
             var nodeInfos = (await clusterManagementLogic.GetAllNodesAsync())?.ToList(); //Removeできるように、Listにしておく
-            if(nodeInfos == null)
+            if (nodeInfos == null)
             {
                 return JsonError(HttpStatusCode.ServiceUnavailable, string.Join("\n", "Fetching nodes is failed."));
             }
             var result = new Dictionary<string, NodeResourceOutputModel>();
 
             //DBから探索
-            foreach(var node in nodes)
+            foreach (var node in nodes)
             {
                 var info = nodeInfos.FirstOrDefault(i => i.Name == node.Name);
-                if(info == null)
+                if (info == null)
                 {
                     result.Add(node.Name, new NodeResourceOutputModel(node));
                 }
@@ -83,7 +100,7 @@ namespace Nssol.Platypus.Controllers.spa
                 }
             }
             //k8sにしかないノードを追加
-            foreach(var info in nodeInfos)
+            foreach (var info in nodeInfos)
             {
                 result.Add(info.Name, new NodeResourceOutputModel(info));
             }
@@ -91,9 +108,9 @@ namespace Nssol.Platypus.Controllers.spa
             var response = await clusterManagementLogic.GetAllContainerDetailsInfosAsync();
             if (response.IsSuccess)
             {
-                foreach(var container in response.Value)
+                foreach (var container in response.Value)
                 {
-                    if(string.IsNullOrEmpty(container.NodeName))
+                    if (string.IsNullOrEmpty(container.NodeName))
                     {
                         //ノード名がNULL＝まだ未割当
                         if (result.ContainsKey("*Unassigned*") == false)
@@ -102,7 +119,7 @@ namespace Nssol.Platypus.Controllers.spa
                         }
                         result["*Unassigned*"].Add(CreateContainerDetailsOutputModel(container));
                     }
-                    else if(result.ContainsKey(container.NodeName))
+                    else if (result.ContainsKey(container.NodeName))
                     {
                         result[container.NodeName].Add(CreateContainerDetailsOutputModel(container));
                     }
@@ -110,7 +127,7 @@ namespace Nssol.Platypus.Controllers.spa
                     {
                         //nodeInfoから必要な情報を取って、結果に含める
                         var nodeInfo = nodeInfos.Find(n => n.Name == container.NodeName);
-                        if(nodeInfo == null)
+                        if (nodeInfo == null)
                         {
                             //登録ノードに所属していないコンテナは無視
                             continue;
@@ -148,7 +165,7 @@ namespace Nssol.Platypus.Controllers.spa
         {
             var nodes = nodeRepository.GetAll().OrderBy(n => n.Name);
             var result = tenantRepository.GetAllTenants().OrderBy(t => t.DisplayName).ToDictionary(t => t.Name, t => new TenantResourceOutputModel(t));
-            
+
             var response = await clusterManagementLogic.GetAllContainerDetailsInfosAsync();
             if (response.IsSuccess)
             {
@@ -182,7 +199,7 @@ namespace Nssol.Platypus.Controllers.spa
                         result.Add(container.TenantName, unknownModel);
                     }
                 }
-                
+
                 foreach (var tenant in result.Values)
                 {
                     // ノード名の昇順に並び替える
@@ -231,14 +248,15 @@ namespace Nssol.Platypus.Controllers.spa
                 CreatedBy = userRepository.GetUserName(info.CreatedBy)
             };
             var tenant = tenantRepository.GetFromTenantName(info.TenantName);
-            if(tenant == null)
+            if (tenant == null)
             {
                 if (info.TenantName == containerManageOptions.KqiAdminNamespace)
                 {
                     // KqiAdminNamespace の場合、KQI管理者用とする。
                     model.TenantName = containerManageOptions.KqiAdminNamespace;
                     model.TenantId = 0;
-                }else if (info.TenantName.StartsWith(containerManageOptions.KqiNamespacePrefix))
+                }
+                else if (info.TenantName.StartsWith(containerManageOptions.KqiNamespacePrefix, StringComparison.CurrentCulture))
                 {
                     // KqiNamespacePrefix で始まるテナント名の場合、kqi-systemとする
                     model.TenantName = "kqi-system";
@@ -298,16 +316,18 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             var info = await clusterManagementLogic.GetContainerDetailsInfoAsync(name, tenant.Name, true);
-            if(info.Status == ContainerStatus.None)
+            if (info.Status == ContainerStatus.None)
             {
                 return JsonNotFound($"Container named {name} is not found.");
             }
+            // コンテナの種別を確認
+            ContainerType containerType = CheckContainerType(name, true).Item1;
             var result = new ContainerDetailsOutputModel(info)
             {
                 TenantId = tenant.Id,
                 TenantName = tenant.Name,
                 DisplayName = tenant.DisplayName,
-                ContainerType = CheckContainerType(name, true).Item1, //コンテナの種別を確認
+                ContainerType = containerType, //コンテナの種別を確認
                 CreatedBy = userRepository.GetUserName(info.CreatedBy)
             };
 
@@ -437,9 +457,9 @@ namespace Nssol.Platypus.Controllers.spa
         private Tuple<ContainerType, TenantModelBase> CheckContainerType(string containerName, bool force)
         {
             //今はprefixだけで判断する
-            if (containerName.StartsWith("tensorboard"))
+            if (containerName.StartsWith("tensorboard", StringComparison.CurrentCulture))
             {
-                //TensorBoardコンテナ
+                // TensorBoardコンテナ
                 var container = commonDiLogic.DynamicDi<ITensorBoardContainerRepository>().Find(t => t.Name == containerName, force);
                 if (container == null)
                 {
@@ -452,15 +472,15 @@ namespace Nssol.Platypus.Controllers.spa
                     return new Tuple<ContainerType, TenantModelBase>(ContainerType.TensorBoard, container);
                 }
             }
-            else if (containerName.StartsWith("preproc"))
+            else if (containerName.StartsWith("preproc", StringComparison.CurrentCulture))
             {
                 //前処理は preproc-{ID} というルールになってるので、そこからIDを取得する
-                long id = int.Parse(containerName.Substring(containerName.IndexOf('-') + 1));
+                long id = int.Parse(containerName.Substring(containerName.IndexOf('-', StringComparison.CurrentCulture) + 1));
 
                 //前処理コンテナ
                 var container = commonDiLogic.DynamicDi<IPreprocessHistoryRepository>().GetPreprocessHistoryIncludeDataAndPreprocess(id, force);
 
-                if(container == null)
+                if (container == null)
                 {
                     //前処理が存在しない＝DB上では前処理削除に成功したんだけど、コンテナの削除には何かの原因で失敗した状態
                     // 存在しないハズのコンテナが生き残っている
@@ -470,10 +490,12 @@ namespace Nssol.Platypus.Controllers.spa
 
                 return new Tuple<ContainerType, TenantModelBase>(ContainerType.Preprocessing, container);
             }
-            else if (containerName.StartsWith("notebook"))
+            else if (containerName.StartsWith("notebook", StringComparison.CurrentCulture))
             {
-                //ノートブックコンテナ
-                var container = commonDiLogic.DynamicDi<INotebookHistoryRepository>().Find(t => t.Key == containerName, force);
+                // ノートブックコンテナ
+                // notebook-{ID} というルールになってるので、そこからIDを取得する
+                long id = int.Parse(containerName.Substring(containerName.IndexOf('-', StringComparison.CurrentCulture) + 1));
+                var container = commonDiLogic.DynamicDi<INotebookHistoryRepository>().Find(t => t.Id == id, force);
                 if (container == null)
                 {
                     // 存在しないハズのコンテナが生き残っている
@@ -492,10 +514,13 @@ namespace Nssol.Platypus.Controllers.spa
                     return new Tuple<ContainerType, TenantModelBase>(ContainerType.Notebook, container);
                 }
             }
-            else if (containerName.StartsWith("inference"))
+            else if (containerName.StartsWith("inference", StringComparison.CurrentCulture))
             {
-                //推論コンテナ
-                var container = commonDiLogic.DynamicDi<IInferenceHistoryRepository>().Find(t => t.Key == containerName, force);
+                // 推論コンテナ
+                // inference-{ID} というルールになってるので、そこからIDを取得する
+                long id = int.Parse(containerName.Substring(containerName.IndexOf('-', StringComparison.CurrentCulture) + 1));
+
+                var container = commonDiLogic.DynamicDi<IInferenceHistoryRepository>().Find(t => t.Id == id, force);
                 if (container == null)
                 {
                     // 存在しないハズのコンテナが生き残っている
@@ -514,17 +539,20 @@ namespace Nssol.Platypus.Controllers.spa
                     return new Tuple<ContainerType, TenantModelBase>(ContainerType.Inferencing, container);
                 }
             }
-            else if (containerName.StartsWith("training"))
+            else if (containerName.StartsWith("training", StringComparison.CurrentCulture))
             {
-                //学習コンテナ
-                var container = commonDiLogic.DynamicDi<ITrainingHistoryRepository>().Find(t => t.Key == containerName, force);
+                // 学習コンテナ
+                // training-{ID} というルールになってるので、そこからIDを取得する
+                long id = int.Parse(containerName.Substring(containerName.IndexOf('-', StringComparison.CurrentCulture) + 1));
+
+                var container = commonDiLogic.DynamicDi<ITrainingHistoryRepository>().Find(t => t.Id == id, force);
                 if (container == null)
                 {
                     // 存在しないハズのコンテナが生き残っている
                     LogWarning($"Find unknown container: {containerName}");
                     return new Tuple<ContainerType, TenantModelBase>(ContainerType.Unknown, null);
                 }
-                else if(container.GetStatus().Exist() == false)
+                else if (container.GetStatus().Exist() == false)
                 {
                     // 既に終了しているハズのジョブのコンテナ＝何かの理由でコンテナだけ消せなかった
                     // ジョブ側には何の影響も与えたくないので、未知のコンテナとして削除する
@@ -539,7 +567,7 @@ namespace Nssol.Platypus.Controllers.spa
             else
             {
                 // DBに登録していないテナントデータ削除用（管理者用）コンテナ
-                if (containerName.StartsWith("delete-tenant"))
+                if (containerName.StartsWith("delete-tenant", StringComparison.CurrentCulture))
                 {
                     return new Tuple<ContainerType, TenantModelBase>(ContainerType.DeleteTenant, null);
                 }
@@ -707,7 +735,7 @@ namespace Nssol.Platypus.Controllers.spa
                 }
 
                 // テナント名の照合 (container に ID が無いので名前で照合)
-                if (container.TenantName.Equals(CurrentUserInfo.SelectedTenant.Name))
+                if (container.TenantName.Equals(CurrentUserInfo.SelectedTenant.Name, StringComparison.CurrentCulture))
                 {
                     // 現テナントと同じならリソース情報詳細を追加
                     result[container.NodeName].Add(CreateContainerDetailsOutputModel(container));
@@ -744,10 +772,12 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonNotFound($"Container named {name} is not found.");
             }
+            // コンテナの種別を確認
+            ContainerType containerType = CheckContainerType(name, false).Item1;
             var result = new ContainerDetailsForTenantOutputModel(info)
             {
                 CreatedBy = userRepository.GetUserName(info.CreatedBy),
-                ContainerType = CheckContainerType(name, false).Item1 //コンテナの種別を確認
+                ContainerType = containerType
             };
 
             return JsonOK(result);
@@ -795,5 +825,209 @@ namespace Nssol.Platypus.Controllers.spa
 
             return await DeleteContainerAsync(tenant, name, false);
         }
+
+        #region history
+        /// <summary>
+        /// コンテナリソース履歴のメタデータを取得する
+        /// </summary>
+        [HttpGet("histories/containers/metadata")]
+        [PermissionFilter(MenuCode.Resource)]
+        [ProducesResponseType(typeof(HistoryMetadataOutputModel), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetHistoriesContainersMetadata()
+        {
+            var result = new HistoryMetadataOutputModel
+            {
+                Count = await resourceContainerRepository.Count(),
+            };
+            if (0 < result.Count)
+            {
+                var resourceSamples = resourceSampleRepository.GetAll();
+                result.StartDate = resourceSamples.Min(x => x.SampledAt).ToFormattedDateString();
+                result.EndDate = resourceSamples.Max(x => x.SampledAt).ToFormattedDateString();
+            }
+            return JsonOK(result);
+        }
+
+        /// <summary>
+        /// コンテナリソース履歴のデータを取得する
+        /// </summary>
+        /// <param name="startDate">開始日</param>
+        /// <param name="endDate">終了日</param>
+        /// <param name="withHeader">ヘッダ情報を付与するか</param>
+        [HttpGet("histories/containers/data")]
+        [PermissionFilter(MenuCode.Resource)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetHistoriesContainersData(string startDate, string endDate, bool withHeader)
+        {
+            // excelで直接オープン可能なcsvを作成するため、encodingはasciiとする
+            // bufferSizeはbufferSizeを省略できるコンストラクタのデフォルト値と同じにする
+            // streamはasp.net側でdisposeするのでleaveOpenはtrueにする
+            using (var sw = new StreamWriter(new MemoryStream(), Encoding.ASCII, 1024, true))
+            {
+                var resourceSamples = resourceSampleRepository.GetAll();
+                if (!string.IsNullOrEmpty(startDate))
+                {
+                    if (!DateTime.TryParse(startDate, out DateTime lower))
+                    {
+                        return JsonBadRequest("Invalid start date.");
+                    }
+                    resourceSamples = resourceSamples.Where(x => lower.Date <= x.SampledAt);
+                }
+                if (!string.IsNullOrEmpty(endDate))
+                {
+                    if (!DateTime.TryParse(endDate, out DateTime upper))
+                    {
+                        return JsonBadRequest("Invalid end date.");
+                    }
+                    resourceSamples = resourceSamples.Where(x => x.SampledAt < upper.Date + new TimeSpan(1, 0, 0, 0));
+                }
+
+                if (withHeader)
+                {
+                    await sw.WriteLineAsync("SampledAt,NodeName,NodeCpu,NodeMemory,NodeGpu,TenantId,TenantName"
+                        + ",ContainerName,Cpu,Memory,Gpu,Status");
+                }
+                resourceSamples = resourceSamples.Include(x => x.ResourceNodes).ThenInclude(y => y.ResourceContainers);
+                foreach (var x in resourceSamples.OrderBy(x => x.SampledAt))
+                {
+                    foreach (var y in x.ResourceNodes.OrderBy(y => y.Name))
+                    {
+                        foreach (var z in y.ResourceContainers.OrderBy(z => z.TenantId).ThenBy(z => z.Name))
+                        {
+                            await sw.WriteLineAsync($"{x.SampledAt},{y.Name},{y.Cpu},{y.Memory},{y.Gpu}"
+                                + $",{z.TenantId},{z.TenantName},{z.Name},{z.Cpu},{z.Memory},{z.Gpu},{z.Status}");
+                        }
+                    }
+                }
+
+                await sw.FlushAsync();
+                sw.BaseStream.Seek(0, SeekOrigin.Begin);
+                return File(sw.BaseStream, "text/csv", $"{DateTime.Now:yyyyMMddHHmmss}_container.csv", false);
+            }
+        }
+
+        /// <summary>
+        /// コンテナリソース履歴を削除する
+        /// </summary>
+        /// <param name="model">削除対象の入力モデル</param>
+        [HttpPatch("histories/containers")]
+        [PermissionFilter(MenuCode.Resource)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        public IActionResult PatchHistoriesContainers([FromBody] HistoryDeleteInputModel model)
+        {
+            if (string.IsNullOrEmpty(model.EndDate))
+            {
+                resourceSampleRepository.DeleteAll(x => true);
+            }
+            else
+            {
+                if (!DateTime.TryParse(model.EndDate, out DateTime upper))
+                {
+                    return JsonBadRequest("Invalid end date.");
+                }
+                resourceSampleRepository.DeleteAll(x => x.SampledAt < upper.Date + new TimeSpan(1, 0, 0, 0));
+            }
+            unitOfWork.Commit();
+            return JsonOK(null);
+        }
+
+        /// <summary>
+        /// ジョブ実行履歴のメタデータを取得する
+        /// </summary>
+        [HttpGet("histories/jobs/metadata")]
+        [PermissionFilter(MenuCode.Resource)]
+        [ProducesResponseType(typeof(HistoryMetadataOutputModel), (int)HttpStatusCode.OK)]
+        public IActionResult GetHistoriesJobsMetadata()
+        {
+            var resourceJobs = resourceJobRepository.GetAll();
+            var result = new HistoryMetadataOutputModel
+            {
+                Count = resourceJobs.Count(),
+            };
+            if (0 < result.Count)
+            {
+                result.StartDate = resourceJobs.Min(x => x.JobCreatedAt).ToFormattedDateString();
+                result.EndDate = resourceJobs.Max(x => x.JobCreatedAt).ToFormattedDateString();
+            }
+            return JsonOK(result);
+        }
+
+        /// <summary>
+        /// ジョブ実行履歴のデータを取得する
+        /// </summary>
+        /// <param name="startDate">開始日</param>
+        /// <param name="endDate">終了日</param>
+        /// <param name="withHeader">ヘッダ情報を付与するか</param>
+        [HttpGet("histories/jobs/data")]
+        [PermissionFilter(MenuCode.Resource)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetHistoriesJobsData(string startDate, string endDate, bool withHeader)
+        {
+            // excelで直接オープン可能なcsvを作成するため、encodingはasciiとする
+            // bufferSizeはbufferSizeを省略できるコンストラクタのデフォルト値と同じにする
+            // streamはasp.net側でdisposeするのでleaveOpenはtrueにする
+            using (var sw = new StreamWriter(new MemoryStream(), Encoding.ASCII, 1024, true))
+            {
+                var resourceJobs = resourceJobRepository.GetAll();
+                if (!string.IsNullOrEmpty(startDate))
+                {
+                    if (!DateTime.TryParse(startDate, out DateTime lower))
+                    {
+                        return JsonBadRequest("Invalid start date.");
+                    }
+                    resourceJobs = resourceJobs.Where(x => lower.Date <= x.JobCreatedAt);
+                }
+                if (!string.IsNullOrEmpty(endDate))
+                {
+                    if (!DateTime.TryParse(endDate, out DateTime upper))
+                    {
+                        return JsonBadRequest("Invalid end date.");
+                    }
+                    resourceJobs = resourceJobs.Where(x => x.JobCreatedAt < upper.Date + new TimeSpan(1, 0, 0, 0));
+                }
+
+                if (withHeader)
+                {
+                    await sw.WriteLineAsync("NodeName,NodeCpu,NodeMemory,NodeGpu,TenantId,TenantName"
+                        + ",JobCreatedAt,JobStartedAt,JobCompletedAt,ContainerName,Cpu,Memory,Gpu,Status");
+                }
+                foreach (var x in resourceJobs.OrderBy(x => x.JobCreatedAt))
+                {
+                    await sw.WriteLineAsync($"{x.NodeName},{x.NodeCpu},{x.NodeMemory},{x.NodeGpu},{x.TenantId},{x.TenantName}"
+                        + $",{x.JobCreatedAt.ToFormatedString()},{x.JobStartedAt?.ToFormatedString() ?? ""},{x.JobCompletedAt.ToFormatedString()}"
+                        + $",{x.ContainerName},{x.Cpu},{x.Memory},{x.Gpu},{x.Status}");
+                }
+
+                await sw.FlushAsync();
+                sw.BaseStream.Seek(0, SeekOrigin.Begin);
+                return File(sw.BaseStream, "text/csv", $"{DateTime.Now:yyyyMMddHHmmss}_job.csv", false);
+            }
+        }
+
+        /// <summary>
+        /// ジョブ実行履歴を削除する
+        /// </summary>
+        /// <param name="model">削除対象の入力モデル</param>
+        [HttpPatch("histories/jobs")]
+        [PermissionFilter(MenuCode.Resource)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        public IActionResult PatchHistoriesJobs([FromBody] HistoryDeleteInputModel model)
+        {
+            if (string.IsNullOrEmpty(model.EndDate))
+            {
+                resourceJobRepository.DeleteAll(x => true);
+            }
+            else
+            {
+                if (!DateTime.TryParse(model.EndDate, out DateTime upper))
+                {
+                    return JsonBadRequest("Invalid end date.");
+                }
+                resourceJobRepository.DeleteAll(x => x.JobCreatedAt < upper.Date + new TimeSpan(1, 0, 0, 0));
+            }
+            unitOfWork.Commit();
+            return JsonOK(null);
+        }
+        #endregion
     }
 }

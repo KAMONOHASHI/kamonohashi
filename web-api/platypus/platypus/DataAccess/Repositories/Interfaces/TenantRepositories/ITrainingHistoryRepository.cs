@@ -98,6 +98,14 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories
         Task<TrainingHistoryAttachedFile> GetAttachedFileAsync(long id);
 
         /// <summary>
+        /// 指定したIDとファイル名の学習履歴添付ファイルを取得します。
+        /// </summary>
+        /// <param name="id">学習履歴ID</param>
+        /// <param name="fileName">ファイル名</param>
+        /// <returns>添付ファイル</returns>
+        TrainingHistoryAttachedFile GetAttachedFile(long id, string fileName);
+
+        /// <summary>
         /// 指定したIDの学習履歴に、指定した名前の添付ファイルが登録済みか。
         /// </summary>
         /// <param name="id">学習履歴ID</param>

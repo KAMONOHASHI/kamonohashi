@@ -24,7 +24,7 @@
               v-model="scope.row.cpu"
               size="small"
               :min="0"
-              :max="200"
+              :max="250"
               controls-position="right"
             />
           </template>
@@ -34,7 +34,7 @@
             <el-input-number
               v-model="scope.row.memory"
               :min="0"
-              :max="200"
+              :max="500"
               size="small"
               controls-position="right"
             />
@@ -84,7 +84,7 @@ export default {
     ...mapActions(['fetchQuotas', 'post']),
     async update() {
       try {
-        let model = this.quotasData.map(function(quota) {
+        let body = this.quotasData.map(function(quota) {
           return {
             tenantId: quota.tenantId,
             cpu: quota.cpu,
@@ -92,7 +92,7 @@ export default {
             gpu: quota.gpu,
           }
         })
-        await this.post({ models: model })
+        await this.post({ body: body })
         this.showSuccessMessage()
         this.error = null
       } catch (e) {
