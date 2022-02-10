@@ -50,6 +50,11 @@
         v-model="form.registry"
         :registries="registryEndpoints"
       />
+
+      <kqi-user-group-selector
+        v-model="form.userGroupIds"
+        :user-groups="userGroups"
+      />
     </el-form>
   </kqi-dialog>
 </template>
@@ -61,6 +66,7 @@ import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
 import KqiStorageEndpointSelector from '@/components/selector/KqiStorageEndpointSelector'
 import KqiGitEndpointSelector from '@/components/selector/KqiGitEndpointSelector'
 import KqiRegistryEndpointSelector from '@/components/selector/KqiRegistryEndpointSelector'
+import KqiUserGroupSelector from '@/components/selector/KqiUserGroupSelector'
 import { mapGetters, mapActions } from 'vuex'
 import validator from '@/util/validator'
 
@@ -78,6 +84,7 @@ export default {
     KqiStorageEndpointSelector,
     KqiGitEndpointSelector,
     KqiRegistryEndpointSelector,
+    KqiUserGroupSelector,
   },
   props: {
     id: {
@@ -104,6 +111,7 @@ export default {
         },
         storageId: null,
         availableInfiniteTimeNotebook: false,
+        userGroupIds: [],
       },
 
       rules: {
@@ -129,12 +137,14 @@ export default {
       gitEndpoints: ['git/endpoints'],
       registryEndpoints: ['registry/registries'],
       storageEndpoints: ['storage/storages'],
+      userGroups: ['userGroup/userGroups'],
     }),
   },
   async created() {
     await this['storage/fetchStorages']()
     await this['git/fetchEndpoints']()
     await this['registry/fetchRegistries']()
+    await this['userGroup/fetchUserGroups']()
     if (this.id === null) {
       this.title = 'テナント作成'
     } else {
@@ -149,6 +159,7 @@ export default {
         this.form.registry.selectedIds = this.detail.registryIds
         this.form.registry.defaultId = this.detail.defaultRegistryId
         this.form.availableInfiniteTimeNotebook = this.detail.availableInfiniteTimeNotebook
+        this.form.userGroupIds = this.detail.userGroupIds
         this.error = null
         this.deleteButtonParams = {
           isDanger: true,
@@ -166,6 +177,7 @@ export default {
       'storage/fetchStorages',
       'git/fetchEndpoints',
       'registry/fetchRegistries',
+      'userGroup/fetchUserGroups',
       'tenant/fetchDetail',
       'tenant/post',
       'tenant/put',
@@ -186,6 +198,7 @@ export default {
               defaultRegistryId: this.form.registry.defaultId,
               availableInfiniteTimeNotebook: this.form
                 .availableInfiniteTimeNotebook,
+              userGroupIds: this.form.userGroupIds,
             }
             if (this.id === null) {
               await this['tenant/post'](params)
