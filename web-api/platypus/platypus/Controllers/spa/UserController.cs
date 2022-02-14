@@ -159,7 +159,7 @@ namespace Nssol.Platypus.Controllers.spa
                     return JsonNotFound($"Tenant ID {tenantInput.Id} is not found.");
                 }
                 // 関連 map の作成
-                var addTenantErrorResult = await AddTenantAsync(user, tenant, tenantInput.Roles);
+                var addTenantErrorResult = await AddTenantAsync(user, tenant, tenantInput.Roles, true);
                 if (addTenantErrorResult != null)
                 {
                     return addTenantErrorResult;
@@ -271,7 +271,7 @@ namespace Nssol.Platypus.Controllers.spa
                     currentTenants.Remove(currentTenant);
                 }
 
-                var addTenantErrorResult = await AddTenantAsync(user, tenant, tenantInput.Roles);
+                var addTenantErrorResult = await AddTenantAsync(user, tenant, tenantInput.Roles, true);
                 if (addTenantErrorResult != null)
                 {
                     //ロールバックされるので、不整合は起こらない
@@ -360,7 +360,11 @@ namespace Nssol.Platypus.Controllers.spa
         /// 指定したユーザをテナントに新規登録する。
         /// 途中でエラーが発生した場合、そのエラー結果が返る。NULLなら成功。
         /// </summary>
-        private async Task<IActionResult> AddTenantAsync(User user, Tenant tenant, IEnumerable<long> tenantRoleIds)
+        /// <param name="user">対象ユーザ</param>
+        /// <param name="tenant">対象テナント</param>
+        /// <param name="tenantRoleIds">テナントロールID</param>
+        /// <param name="isOrigin">KQI上での紐づけか</param>
+        private async Task<IActionResult> AddTenantAsync(User user, Tenant tenant, IEnumerable<long> tenantRoleIds, bool isOrigin)
         {
             //ロールについての存在＆入力チェック
             var roles = new List<Role>();
@@ -383,7 +387,7 @@ namespace Nssol.Platypus.Controllers.spa
                 }
             }
 
-            var maps = userRepository.AttachTenant(user, tenant.Id, roles);
+            var maps = userRepository.AttachTenant(user, tenant.Id, roles, isOrigin);
             if (maps != null)
             {
                 foreach (var map in maps)
