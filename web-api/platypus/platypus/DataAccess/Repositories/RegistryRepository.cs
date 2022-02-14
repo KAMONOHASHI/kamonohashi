@@ -79,6 +79,8 @@ namespace Nssol.Platypus.DataAccess.Repositories
                     {
                         TenantRegistryMap = map,
                         UserId = userMap.UserId,
+                        IsOrigin = userMap.IsOrigin,
+                        UserGroupTenantMapIds = userMap.UserGroupTenantMapIds
                     };
 
                     //認証情報が空欄のものをはじく

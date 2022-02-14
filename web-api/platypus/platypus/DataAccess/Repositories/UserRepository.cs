@@ -216,7 +216,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
                 attachedRoles.Add(roles.First());
             }
 
-            AttachTenant(user, tenant.Id, attachedRoles);
+            AttachTenant(user, tenant.Id, attachedRoles, true);
             user.DefaultTenantId = tenant.Id;
         }
 
@@ -263,13 +263,15 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// <param name="user">対象ユーザ</param>
         /// <param name="tenantId">対象テナントID</param>
         /// <param name="roles">テナントロール</param>
+        /// <param name="isOrigin">KQI上での紐づけか</param>
         /// <exception cref="ArgumentException"><paramref name="roles"/>にシステムロールが含まれていたり、別テナント用のロールが含まれていた場合</exception>
-        public IEnumerable<UserTenantRegistryMap> AttachTenant(User user, long tenantId, IEnumerable<Role> roles)
+        public IEnumerable<UserTenantRegistryMap> AttachTenant(User user, long tenantId, IEnumerable<Role> roles, bool isOrigin)
         {
             var tenantMap = new UserTenantMap()
             {
                 TenantId = tenantId,
-                User = user
+                User = user,
+                IsOrigin = isOrigin
             };
             AddModel<UserTenantMap>(tenantMap);
             if (roles != null)
@@ -289,7 +291,8 @@ namespace Nssol.Platypus.DataAccess.Repositories
                     {
                         RoleId = role.Id,
                         TenantMap = tenantMap,
-                        User = user
+                        User = user,
+                        IsOrigin = isOrigin
                     };
                     AddModel<UserRoleMap>(roleMap);
                 }
@@ -303,7 +306,8 @@ namespace Nssol.Platypus.DataAccess.Repositories
                 UserTenantGitMap utrMap = new UserTenantGitMap()
                 {
                     TenantGitMap = GitMap,
-                    User = user
+                    User = user,
+                    IsOrigin = isOrigin
                 };
 
                 // 既存の認証情報存在チェック
@@ -335,7 +339,8 @@ namespace Nssol.Platypus.DataAccess.Repositories
                 UserTenantRegistryMap utrMap = new UserTenantRegistryMap()
                 {
                     TenantRegistryMap = registryMap,
-                    User = user
+                    User = user,
+                    IsOrigin = isOrigin
                 };
 
                 // 既存の認証情報存在チェック
