@@ -187,28 +187,30 @@ export default {
       let form = this.$refs.createForm
       await form.validate(async valid => {
         if (valid) {
-          try {
-            let params = {
-              tenantName: this.form.tenantName,
-              displayName: this.form.displayName,
-              storageId: this.form.storageId,
-              gitIds: this.form.gitEndpoint.selectedIds,
-              defaultGitId: this.form.gitEndpoint.defaultId,
-              registryIds: this.form.registry.selectedIds,
-              defaultRegistryId: this.form.registry.defaultId,
-              availableInfiniteTimeNotebook: this.form
-                .availableInfiniteTimeNotebook,
-              userGroupIds: this.form.userGroupIds,
+          if (await this.showConfirm()) {
+            try {
+              let params = {
+                tenantName: this.form.tenantName,
+                displayName: this.form.displayName,
+                storageId: this.form.storageId,
+                gitIds: this.form.gitEndpoint.selectedIds,
+                defaultGitId: this.form.gitEndpoint.defaultId,
+                registryIds: this.form.registry.selectedIds,
+                defaultRegistryId: this.form.registry.defaultId,
+                availableInfiniteTimeNotebook: this.form
+                  .availableInfiniteTimeNotebook,
+                userGroupIds: this.form.userGroupIds,
+              }
+              if (this.id === null) {
+                await this['tenant/post'](params)
+              } else {
+                await this['tenant/put']({ id: this.id, params: params })
+              }
+              this.error = null
+              this.emitDone()
+            } catch (e) {
+              this.error = e
             }
-            if (this.id === null) {
-              await this['tenant/post'](params)
-            } else {
-              await this['tenant/put']({ id: this.id, params: params })
-            }
-            this.error = null
-            this.emitDone()
-          } catch (e) {
-            this.error = e
           }
         }
       })
@@ -221,6 +223,31 @@ export default {
       } catch (e) {
         this.error = e
       }
+    },
+    async showConfirm() {
+      if (this.checkUserGroupsChange()) {
+        return true
+      }
+      let confirmMessage =
+        '紐づけが解除されたユーザグループに属するユーザはこのテナントに参加できなくなります。変更を保存しますか？'
+      try {
+        await this.$confirm(confirmMessage, 'Warning', {
+          confirmButtonText: 'はい',
+          cancelButtonText: 'キャンセル',
+          type: 'warning',
+        })
+        return true
+      } catch (e) {
+        return false
+      }
+    },
+    // ユーザグループの紐づけが解除されているか判定する
+    checkUserGroupsChange() {
+      let count = 0
+      this.detail.userGroupIds.forEach(id => {
+        if (this.form.userGroupIds.includes(id)) count++
+      })
+      return this.detail.userGroupIds.length == count
     },
     closeDialog() {
       this.emitCancel()
