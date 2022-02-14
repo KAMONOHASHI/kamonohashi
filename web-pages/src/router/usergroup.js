@@ -3,7 +3,7 @@ import Edit from '@/views/system-setting/userGroup/Edit'
 
 export default [
   {
-    path: '/userGroup',
+    path: '/usergroup',
     component: Index,
     children: [
       {

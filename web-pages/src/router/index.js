@@ -20,7 +20,7 @@ import role from '@/router/role'
 import quota from '@/router/quota'
 import node from '@/router/node'
 import user from '@/router/user'
-import userGroup from '@/router/userGroup'
+import usergroup from '@/router/usergroup'
 import menu from '@/router/menu'
 import clusterResource from '@/router/cluster-resource'
 import version from '@/router/version'
@@ -49,7 +49,7 @@ let router = new Router({
     ...quota,
     ...node,
     ...user,
-    ...userGroup,
+    ...usergroup,
     ...menu,
     ...clusterResource,
     ...version,
