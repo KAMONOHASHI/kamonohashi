@@ -243,6 +243,9 @@ export default {
     },
     // ユーザグループの紐づけが解除されているか判定する
     checkUserGroupsChange() {
+      if (!this.detail.userGroupIds) {
+        return true
+      }
       let count = 0
       this.detail.userGroupIds.forEach(id => {
         if (this.form.userGroupIds.includes(id)) count++
