@@ -165,6 +165,50 @@ namespace Nssol.Platypus.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            // KQI上でユーザとテナントとの紐づけがされていないレコードは削除する。
+            migrationBuilder.Sql($"DELETE FROM \"UserTenantRegistryMaps\" WHERE \"IsOrigin\" = false;");
+            migrationBuilder.Sql($"DELETE FROM \"UserTenantGitMaps\" WHERE \"IsOrigin\" = false;");
+            migrationBuilder.Sql($"DELETE FROM \"UserRoleMaps\" WHERE \"IsOrigin\" = false;");
+            migrationBuilder.Sql($"DELETE FROM \"UserTenantMaps\" WHERE \"IsOrigin\" = false;");
+
+            // どのテナントにも所属していないユーザを削除する。
+            migrationBuilder.Sql($"DELETE FROM \"Users\" AS U WHERE NOT EXISTS (SELECT 1 FROM \"UserTenantMaps\" AS UTM WHERE UTM.\"UserId\" = U.\"Id\");");
+
+            // MenuRoleMapsからユーザグループ管理のアクセス権を削除する。
+            migrationBuilder.Sql($"DELETE FROM \"MenuRoleMaps\" WHERE \"MenuCode\" = '{Logic.MenuLogic.UserGroupMenu.Code.ToString()}';");
+
+            migrationBuilder.DropColumn(
+                name: "IsOrigin",
+                table: "UserTenantRegistryMaps");
+
+            migrationBuilder.DropColumn(
+                name: "UserGroupTenantMapIds",
+                table: "UserTenantRegistryMaps");
+
+            migrationBuilder.DropColumn(
+                name: "IsOrigin",
+                table: "UserTenantMaps");
+
+            migrationBuilder.DropColumn(
+                name: "UserGroupTenantMapIds",
+                table: "UserTenantMaps");
+
+            migrationBuilder.DropColumn(
+                name: "IsOrigin",
+                table: "UserTenantGitMaps");
+
+            migrationBuilder.DropColumn(
+                name: "UserGroupTenantMapIds",
+                table: "UserTenantGitMaps");
+
+            migrationBuilder.DropColumn(
+                name: "IsOrigin",
+                table: "UserRoleMaps");
+
+            migrationBuilder.DropColumn(
+                name: "UserGroupTenantMapIds",
+                table: "UserRoleMaps");
+
             migrationBuilder.DropTable(
                 name: "UserGroupRoleMaps");
 
@@ -173,41 +217,6 @@ namespace Nssol.Platypus.Migrations
 
             migrationBuilder.DropTable(
                 name: "UserGroups");
-
-            migrationBuilder.DropColumn(
-                name: "IsOrigin",
-                table: "UserTenantRegistryMaps");
-
-            migrationBuilder.DropColumn(
-                name: "UserGroupTenantMapIds",
-                table: "UserTenantRegistryMaps");
-
-            migrationBuilder.DropColumn(
-                name: "IsOrigin",
-                table: "UserTenantMaps");
-
-            migrationBuilder.DropColumn(
-                name: "UserGroupTenantMapIds",
-                table: "UserTenantMaps");
-
-            migrationBuilder.DropColumn(
-                name: "IsOrigin",
-                table: "UserTenantGitMaps");
-
-            migrationBuilder.DropColumn(
-                name: "UserGroupTenantMapIds",
-                table: "UserTenantGitMaps");
-
-            migrationBuilder.DropColumn(
-                name: "IsOrigin",
-                table: "UserRoleMaps");
-
-            migrationBuilder.DropColumn(
-                name: "UserGroupTenantMapIds",
-                table: "UserRoleMaps");
-
-            // MenuRoleMapsからユーザグループ管理のアクセス権を削除する
-            migrationBuilder.Sql($"DELETE FROM \"MenuRoleMaps\" WHERE \"MenuCode\" = '{Logic.MenuLogic.UserGroupMenu.Code.ToString()}';");
         }
     }
 }
