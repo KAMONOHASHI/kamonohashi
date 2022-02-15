@@ -263,7 +263,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// <param name="user">対象ユーザ</param>
         /// <param name="tenantId">対象テナントID</param>
         /// <param name="roles">テナントロール</param>
-        /// <param name="isOrigin">KQI上での紐づけか</param>
+        /// <param name="isOrigin">KQI上での紐づけならtrue</param>
         /// <exception cref="ArgumentException"><paramref name="roles"/>にシステムロールが含まれていたり、別テナント用のロールが含まれていた場合</exception>
         public IEnumerable<UserTenantRegistryMap> AttachTenant(User user, long tenantId, IEnumerable<Role> roles, bool isOrigin)
         {
@@ -392,8 +392,9 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// <param name="userId">対象ユーザID</param>
         /// <param name="tenantId">対象テナントID</param>
         /// <param name="roles">テナントロール</param>
+        /// <param name="isOrigin">KQI上での紐づけならtrue</param>
         /// <exception cref="ArgumentException"><paramref name="roles"/>にシステムロールが含まれていたり、別テナント用のロールが含まれていた場合</exception>
-        public void ChangeTenantRole(long userId, long tenantId, IEnumerable<Role> roles)
+        public void ChangeTenantRole(long userId, long tenantId, IEnumerable<Role> roles, bool isOrigin)
         {
             UserTenantMap tenantMap = FindModel<UserTenantMap>(map => map.UserId == userId && map.TenantId == tenantId);
 
@@ -411,7 +412,8 @@ namespace Nssol.Platypus.DataAccess.Repositories
                 {
                     RoleId = role.Id,
                     TenantMapId = tenantMap.Id,
-                    UserId = userId
+                    UserId = userId,
+                    IsOrigin = isOrigin
                 };
                 AddModel<UserRoleMap>(roleMap);
             }

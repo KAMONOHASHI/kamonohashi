@@ -589,7 +589,7 @@ namespace Nssol.Platypus.Controllers.spa
                 }
             }
 
-            userRepository.ChangeTenantRole(id, tenant.Id, roles);
+            userRepository.ChangeTenantRole(id, tenant.Id, roles, true);
             unitOfWork.Commit();
 
             var result = new IndexForTenantOutputModel(user);
