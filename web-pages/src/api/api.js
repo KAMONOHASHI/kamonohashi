@@ -113,6 +113,7 @@ let api = {
   role: {
     admin: {
       get: gen.getApiV2AdminRoles,
+      getTenantCommonRoles: gen.getApiV2AdminTenantCommonRoles,
       post: gen.postApiV2AdminRoles,
       getById: gen.getApiV2AdminRolesById,
       put: gen.putApiV2AdminRolesById,

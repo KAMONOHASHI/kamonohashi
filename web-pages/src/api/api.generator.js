@@ -7921,6 +7921,45 @@ export const postApiV2AdminRolesURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * テナント共通ロールが対象。（テナント用カスタムロールは対象外）
+ * request: getApiV2AdminTenantCommonRoles
+ * url: getApiV2AdminTenantCommonRolesURL
+ * method: getApiV2AdminTenantCommonRoles_TYPE
+ * raw_url: getApiV2AdminTenantCommonRoles_RAW_URL
+ */
+export const getApiV2AdminTenantCommonRoles = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/admin/tenant-common-roles'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const getApiV2AdminTenantCommonRoles_RAW_URL = function() {
+  return '/api/v2/admin/tenant-common-roles'
+}
+export const getApiV2AdminTenantCommonRoles_TYPE = function() {
+  return 'get'
+}
+export const getApiV2AdminTenantCommonRolesURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/admin/tenant-common-roles'
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * 指定されたIDのロール情報を取得。
  * request: getApiV2AdminRolesById
  * url: getApiV2AdminRolesByIdURL

@@ -120,7 +120,7 @@ export default {
         this.error = e
       }
     }
-    this['role/fetchTenantRoles']()
+    this['role/fetchTenantCommonRoles']()
   },
   methods: {
     ...mapActions([
@@ -128,7 +128,7 @@ export default {
       'userGroup/delete',
       'userGroup/put',
       'userGroup/post',
-      'role/fetchTenantRoles',
+      'role/fetchTenantCommonRoles',
     ]),
     async submit() {
       let form = this.$refs.createForm
