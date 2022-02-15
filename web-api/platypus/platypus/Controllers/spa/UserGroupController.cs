@@ -40,7 +40,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// ユーザグループ一覧を取得する
         /// </summary>
         [HttpGet]
-        [Filters.PermissionFilter(MenuCode.UserGroup)]
+        [Filters.PermissionFilter(MenuCode.UserGroup, MenuCode.Tenant)]
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
         public IActionResult GetAll()
         {
