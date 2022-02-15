@@ -143,7 +143,7 @@ namespace Nssol.Platypus.Controllers.spa
             };
 
             //システムロールの登録
-            var addSystemRoleErrorResult = await AddSystemRolesAsync(user, model.SystemRoles, true);
+            var addSystemRoleErrorResult = await AddSystemRolesAsync(user, model.SystemRoles, true, true);
             if (addSystemRoleErrorResult != null)
             {
                 return addSystemRoleErrorResult;
@@ -240,7 +240,7 @@ namespace Nssol.Platypus.Controllers.spa
 
             //とりあえずすべてのシステムロールを一度外す
             roleRepository.DetachSystemRole(user.Id);
-            var addSystemRoleErrorResult = await AddSystemRolesAsync(user, model.SystemRoles, false);
+            var addSystemRoleErrorResult = await AddSystemRolesAsync(user, model.SystemRoles, false, true);
             if (addSystemRoleErrorResult != null)
             {
                 return addSystemRoleErrorResult;
@@ -334,7 +334,11 @@ namespace Nssol.Platypus.Controllers.spa
         /// 途中でエラーが発生した場合、そのエラー結果が返る。NULLなら成功。
         /// 編集の場合、事前に削除処理を行っておくこと。
         /// </summary>
-        private async Task<IActionResult> AddSystemRolesAsync(User user, IEnumerable<long> systemRoleIds, bool isCreate)
+        /// <param name="user">対象ユーザ</param>
+        /// <param name="systemRoleIds">システムロールID</param>
+        /// <param name="isCreate">ユーザが新規作成の状態(=ID未割当)ならtrue</param>
+        /// <param name="isOrigin">KQI上での紐づけならtrue</param>
+        private async Task<IActionResult> AddSystemRolesAsync(User user, IEnumerable<long> systemRoleIds, bool isCreate, bool isOrigin)
         {
             if (systemRoleIds != null && systemRoleIds.Count() > 0)
             {
@@ -350,7 +354,7 @@ namespace Nssol.Platypus.Controllers.spa
                         return JsonNotFound($"Role ID {roleId} is not a system role.");
                     }
                     //ロールを一つずつ追加
-                    roleRepository.AttachRole(user, role, null, isCreate);
+                    roleRepository.AttachRole(user, role, null, isCreate, isOrigin);
                 }
             }
             return null;
@@ -363,7 +367,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="user">対象ユーザ</param>
         /// <param name="tenant">対象テナント</param>
         /// <param name="tenantRoleIds">テナントロールID</param>
-        /// <param name="isOrigin">KQI上での紐づけか</param>
+        /// <param name="isOrigin">KQI上での紐づけならtrue</param>
         private async Task<IActionResult> AddTenantAsync(User user, Tenant tenant, IEnumerable<long> tenantRoleIds, bool isOrigin)
         {
             //ロールについての存在＆入力チェック

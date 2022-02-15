@@ -235,7 +235,8 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// <param name="role">対象ロール</param>
         /// <param name="userTenantMap">テナントマップ</param>
         /// <param name="isCreate">ユーザが新規作成の状態(=ID未割当)ならtrue</param>
-        public void AttachRole(User user, Role role, UserTenantMap userTenantMap, bool isCreate)
+        /// <param name="isOrigin">KQI上での紐づけならtrue</param>
+        public void AttachRole(User user, Role role, UserTenantMap userTenantMap, bool isCreate, bool isOrigin)
         {
             if (role.IsSystemRole)
             {
@@ -272,7 +273,8 @@ namespace Nssol.Platypus.DataAccess.Repositories
             var model = new UserRoleMap()
             {
                 RoleId = role.Id,
-                TenantMapId = userTenantMap?.Id
+                TenantMapId = userTenantMap?.Id,
+                IsOrigin = isOrigin
             };
             if (isCreate)
             {

@@ -96,7 +96,8 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces
         /// <param name="role">対象ロール</param>
         /// <param name="userTenantMap">テナントマップ</param>
         /// <param name="isCreate">ユーザが新規作成の状態(=ID未割当)ならtrue</param>
-        void AttachRole(User user, Role role, UserTenantMap userTenantMap, bool isCreate);
+        /// <param name="isOrigin">KQI上での紐づけならtrue</param>
+        void AttachRole(User user, Role role, UserTenantMap userTenantMap, bool isCreate, bool isOrigin);
 
         /// <summary>
         /// 指定したユーザから、すべてのシステムロールを外す。
