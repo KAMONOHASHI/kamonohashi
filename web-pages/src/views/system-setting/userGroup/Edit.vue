@@ -41,7 +41,7 @@
         />
       </el-form-item>
       <el-form-item label="メモ" prop="memo">
-        <el-input v-model="form.memo" />
+        <el-input v-model="form.memo" type="textarea" />
       </el-form-item>
     </el-form>
   </kqi-dialog>
