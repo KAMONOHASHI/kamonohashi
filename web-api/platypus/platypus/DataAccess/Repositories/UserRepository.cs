@@ -248,6 +248,14 @@ namespace Nssol.Platypus.DataAccess.Repositories
         }
 
         /// <summary>
+        /// 指定したユーザが所属しているLDAPで参加したテナントを取得する。
+        /// </summary>
+        public IEnumerable<Tenant> GetTenantByUser(long userId)
+        {
+            return GetModelAll<UserTenantMap>().Where(map => map.UserId == userId && !map.IsOrigin).Include(map => map.Tenant).Select(map => map.Tenant);
+        }
+
+        /// <summary>
         /// 指定したユーザが当該テナントに所属しているか
         /// </summary>
         public async Task<bool> IsMemberAsync(long userId, long tenantId)

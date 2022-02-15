@@ -8,11 +8,13 @@ using Nssol.Platypus.Infrastructure.Options;
 using Nssol.Platypus.Infrastructure.Types;
 using Nssol.Platypus.Logic.Interfaces;
 using Nssol.Platypus.LogicModels;
+using Nssol.Platypus.Models;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Nssol.Platypus.Logic
@@ -32,6 +34,11 @@ namespace Nssol.Platypus.Logic
     {
         private readonly IUserRepository userRepository;
         private readonly ISettingRepository settingRepository;
+        private readonly ITenantRepository tenantRepository;
+        private readonly IRoleRepository roleRepository;
+        private readonly IUserGroupRepository userGroupRepository;
+        //private readonly IRepository<UserGroupTenantMap> userGroupTenantMapRepository;
+        //private readonly IClusterManagementLogic clusterManagementLogic;
         private readonly IUnitOfWork unitOfWork;
         private readonly ActiveDirectoryOptions adOptions;
         private readonly WebSecurityOptions webSecurityOptions;
@@ -42,6 +49,11 @@ namespace Nssol.Platypus.Logic
         public LoginLogic(
             IUserRepository userRepository,
             ISettingRepository settingRepository,
+            ITenantRepository tenantRepository,
+            IRoleRepository roleRepository,
+            IUserGroupRepository userGroupRepository,
+            //IRepository<UserGroupTenantMap> userGroupTenantMapRepository,
+            //IClusterManagementLogic clusterManagementLogic,
             IUnitOfWork unitOfWork,
             ICommonDiLogic commonDiLogic,
             IOptions<ActiveDirectoryOptions> adOptions,
@@ -49,6 +61,11 @@ namespace Nssol.Platypus.Logic
         {
             this.userRepository = userRepository;
             this.settingRepository = settingRepository;
+            this.tenantRepository = tenantRepository;
+            this.roleRepository = roleRepository;
+            this.userGroupRepository = userGroupRepository;
+            //this.userGroupTenantMapRepository = userGroupTenantMapRepository;
+            //this.clusterManagementLogic = clusterManagementLogic;
             this.unitOfWork = unitOfWork;
             this.adOptions = adOptions.Value;
             this.webSecurityOptions = webSecurityOptions.Value;
@@ -83,7 +100,7 @@ namespace Nssol.Platypus.Logic
             else
             {
                 //ローカルアカウントがない場合、LDAP認証と判断して、ユーザ自身の権限で、ユーザ情報を取得する
-                Result<List<Claim>, string> result = Authenticate(userName, password);
+                Result<LdapEntry, string> result = Authenticate(userName, password);
                 if (!result.IsSuccess)
                 {
                     //ログインに失敗した
@@ -98,7 +115,12 @@ namespace Nssol.Platypus.Logic
                     unitOfWork.Commit(userName);
                 }
 
-                claims = result.Value;
+                //テナントに参加・脱退する
+                await AddTenantFromGroup(result.Value, user);
+                unitOfWork.Commit(userName);
+
+                //TODO クレームに値を詰める必要あり？
+                //claims = result.Value;
             }
             return await AuthorizeAsync(userName, claims, tenantId);
         }
@@ -150,11 +172,10 @@ namespace Nssol.Platypus.Logic
         /// LDAP認証。併せて、ADから取得可能な情報をクレームに詰めて返す。
         /// </summary>
         /// <remarks>原因に寄らず、認証に失敗したらfalseが返る。システムエラー、ユーザの入力ミスが区別されない</remarks>
-        private Result<List<Claim>, string> Authenticate(string userName, string password)
+        private Result<LdapEntry, string> Authenticate(string userName, string password)
         {
             try
             {
-                List<Claim> claims = new List<Claim>();
                 using (var conn = new LdapConnection())
                 {
                     conn.Connect(adOptions.Server, adOptions.Port);
@@ -166,19 +187,31 @@ namespace Nssol.Platypus.Logic
                             this.adOptions.BaseDn,
                             LdapConnection.SCOPE_SUB,
                             searchFilter,
-                            Array.Empty<string>(), //特に追加で情報は取らない
+                            new[]
+                            {
+                                "memberOf",
+                                "distinguishedName"
+                            },
                             false
                     );
                     LogDebug($"Login succeeded - {userName}");
+                    if(result.hasMore())
+                    {
+                        return Result<LdapEntry, string>.CreateResult(result.next());
+                    }
+                    else
+                    {
+                        // ログインには成功したが値の取得に失敗した場合
+                        return Result<LdapEntry, string>.CreateErrorResult("ユーザ情報の取得に失敗しました。");
+                    }
                 }
-                return Result<List<Claim>, string>.CreateResult(claims);
             }
             catch (LdapException e)
             {
                 //サーバへ接続失敗したときも、パスワードが間違っていた時もここに到達してしまう
                 string errorMessage = "Invalid user name or password.";
                 LogError(errorMessage, e);
-                return Result<List<Claim>, string>.CreateErrorResult(errorMessage);
+                return Result<LdapEntry, string>.CreateErrorResult(errorMessage);
             }
         }
         #endregion
@@ -274,5 +307,100 @@ namespace Nssol.Platypus.Logic
             return (long)Math.Round((date.ToUniversalTime() - new DateTimeOffset(1970, 1, 1, 0, 0, 0, TimeSpan.Zero)).TotalSeconds);
         }
         #endregion
+
+        /// <summary>
+        /// 所属しているLdapグループから所属テナントを更新する
+        /// </summary>
+        private async Task AddTenantFromGroup(LdapEntry result, User user)
+        {
+            // グループ経由で参加したテナントを一旦脱退させる
+            var deleteTenants = userRepository.GetTenantByUser(user.Id).ToList();
+            foreach(var deleteTenant in deleteTenants)
+            {
+                userRepository.DetachTenant(user.Id, deleteTenant.Id, true);
+            }
+
+            // ユーザ情報の取得
+            var ldapGroups = result.getAttribute("memberOf").StringValueArray;
+            var dn = result.getAttribute("distinguishedName").StringValue;
+
+            // DNから先頭の"CN= ,"を排除
+            var ou = Regex.Replace(dn, @"CN=.*?,", "");
+
+            // ユーザグループが紐づいている全テナント取得
+            var tenants = userGroupRepository.GetTenantAllWithUserGroups();
+
+            foreach (var tenant in tenants)
+            {
+                var roleIds = new List<long>();
+                foreach (var userGroupMap in tenant.UserGroupMaps)
+                {
+                    if (userGroupMap.UserGroup.IsGroup)
+                    {
+                        // グループの時の判定処理
+                        foreach (var ldapGroup in ldapGroups)
+                        {
+                            // ldapから取得したグループのDnとユーザグループのDnを比較
+                            if (ldapGroup == userGroupMap.UserGroup.Dn)
+                            {
+                                // ロール情報取得
+                                roleIds.AddRange(userGroupMap.UserGroup.RoleMaps.Select(map => map.RoleId).ToList());
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // OUの時の判定処理
+                        if(ou == userGroupMap.UserGroup.Dn)
+                        {
+                            // ロール情報取得
+                            roleIds.AddRange(userGroupMap.UserGroup.RoleMaps.Select(map => map.RoleId).ToList());
+                        }
+                    }
+                }
+                // ロール配列が空ではないとき、テナントに参加する
+                if(roleIds.Count != 0)
+                {
+                    // ロールの重複削除
+                    roleIds = roleIds.Distinct().ToList();
+
+                    // テナント参加
+                    await AddTenantAsync(user, tenant, roleIds);
+                }
+            }
+        }
+        /// <summary>
+        /// 指定したユーザをテナントに新規登録する。
+        /// 途中でエラーが発生した場合、そのエラー結果が返る。NULLなら成功。
+        /// TODO UserControllerに同じメソッドがあるので統一した方がよさそう？
+        /// </summary>
+        private async Task<Result<string,string>> AddTenantAsync(User user, Tenant tenant, IEnumerable<long> tenantRoleIds)
+        {
+            //ロールについての存在＆入力チェック
+            var roles = new List<Role>();
+            if (tenantRoleIds != null)
+            {
+                foreach (long roleId in tenantRoleIds)
+                {
+                    var role = await roleRepository.GetRoleAsync(roleId);
+                    if (role == null)
+                    {
+                        //ロールがない
+                        return Result<string, string>.CreateErrorResult($"Role ID {roleId} is not found.");
+                    }
+                    if (role.IsSystemRole)
+                    {
+                        //システムロールをテナントロールとして追加しようとしている
+                        return Result<string, string>.CreateErrorResult($"The system role {role.Name} is not assigned to a user as a tenant role.");
+                    }
+                    roles.Add(role);
+                }
+            }
+
+            // TODO KQI側で既に紐づけがあった場合はエラーになってしまう
+            userRepository.AttachTenant(user, tenant.Id, roles, false);
+
+            return Result<string, string>.CreateResult("");
+        }
     }
 }

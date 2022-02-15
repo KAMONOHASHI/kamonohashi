@@ -32,14 +32,16 @@ namespace Nssol.Platypus.DataAccess.Repositories
         }
 
         /// <summary>
-        /// 全ユーザグループ情報をロール情報付きで取得する。
+        /// ユーザグループが紐づいている全テナント情報を取得する。
         /// </summary>
-        public IEnumerable<UserGroup> GetUserGroupsAllWithRoles()
+        public IEnumerable<Tenant> GetTenantAllWithUserGroups()
         {
-            return GetAll()
-                .Include(u => u.RoleMaps)
-                .ThenInclude(ur => ur.Role)
-                .OrderBy(u => u.Id);
+            return GetModelAll<Tenant>()
+                .Include(t => t.UserGroupMaps)
+                .ThenInclude(map => map.UserGroup)
+                .ThenInclude(map => map.RoleMaps)
+                .Where(t => t.UserGroupMaps.Count > 0)
+                .ToList();
         }
 
         /// <summary>

@@ -73,6 +73,11 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces
         IEnumerable<User> GetUsers(long tenantId);
 
         /// <summary>
+        /// 指定したユーザが所属しているLDAPで参加したテナントを取得する。
+        /// </summary>
+        IEnumerable<Tenant> GetTenantByUser(long userId);
+
+        /// <summary>
         /// 指定したユーザが当該テナントに所属しているか
         /// </summary>
         Task<bool> IsMemberAsync(long userId, long tenantId);
