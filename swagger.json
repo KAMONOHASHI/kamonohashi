@@ -6121,6 +6121,34 @@
         ]
       }
     },
+    "/api/v2/admin/tenant-common-roles": {
+      "get": {
+        "tags": [
+          "Role"
+        ],
+        "summary": "テナント共通ロール一覧を取得。",
+        "description": "テナント共通ロールが対象。（テナント用カスタムロールは対象外）",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Nssol.Platypus.ApiModels.RoleApiModels.IndexOutputModel"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": [ ]
+          }
+        ]
+      }
+    },
     "/api/v2/admin/roles/{id}": {
       "get": {
         "tags": [
