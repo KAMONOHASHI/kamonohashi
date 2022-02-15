@@ -49,13 +49,13 @@ export default {
   methods: {
     ...mapActions(['fetchUserGroups']),
     openCreateDialog() {
-      this.$router.push('/userGroup/edit')
+      this.$router.push('/usergroup/edit')
     },
     openEditDialog(selectedRow) {
-      this.$router.push('/userGroup/edit/' + selectedRow.id)
+      this.$router.push('/usergroup/edit/' + selectedRow.id)
     },
     closeDialog() {
-      this.$router.push('/userGroup')
+      this.$router.push('/usergroup')
     },
     async done() {
       await this.fetchUserGroups()
