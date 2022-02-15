@@ -24,12 +24,12 @@
       <el-form-item label="DN" prop="dn">
         <el-input v-model="form.dn" />
       </el-form-item>
-      <el-form-item label="直接か間接か" prop="isDirect">
+      <el-form-item label="DN直下のユーザのみ許可するか" prop="isDirect">
         <el-switch
           v-model="form.isDirect"
           style="width: 100%;"
-          inactive-text="間接"
-          active-text="直接"
+          inactive-text="No"
+          active-text="Yes"
           class="left-margin"
         />
       </el-form-item>
