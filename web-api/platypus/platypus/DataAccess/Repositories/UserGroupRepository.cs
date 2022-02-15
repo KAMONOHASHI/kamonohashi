@@ -8,10 +8,21 @@ using System.Linq;
 
 namespace Nssol.Platypus.DataAccess.Repositories
 {
+    /// <summary>
+    /// UserGroup関連テーブルにアクセスするためのリポジトリ。
+    /// </summary>
     public class UserGroupRepository : RepositoryBase<UserGroup>, IUserGroupRepository
     {
+        /// <summary>
+        /// ロガー
+        /// </summary>
         private ILogger<UserRepository> logger;
 
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="dataContext">DBコンテキスト</param>
+        /// <param name="logger">ロガー</param>
         public UserGroupRepository(
             CommonDbContext dataContext,
             ILogger<UserRepository> logger
@@ -34,6 +45,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// <summary>
         /// 指定したIDのユーザグループ情報をロール情報付きで取得する。
         /// </summary>
+        /// <param name="id">ユーザグループID</param>
         public UserGroup GetUserGroupById(long id)
         {
             return GetAll()
@@ -45,6 +57,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// <summary>
         /// テナントに紐づく全ユーザグループ情報を取得する。
         /// </summary>
+        /// <param name="tenantId">テナントID</param>
         public IEnumerable<UserGroup> GetUserGroupsAllFromTenant(long tenantId)
         {
             return GetModelAll<UserGroupTenantMap>()
@@ -56,6 +69,8 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// <summary>
         /// ユーザグループにロールマップ情報を紐づける
         /// </summary>
+        /// <param name="userGroup">ユーザグループ</param>
+        /// <param name="roles">ロール</param>
         public void AttachRoleMap(UserGroup userGroup, IEnumerable<Role> roles)
         {
             userGroup.RoleMaps = new List<UserGroupRoleMap>();
@@ -77,6 +92,8 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// <summary>
         /// テナントとユーザグループを紐づける
         /// </summary>
+        /// <param name="tenant">テナント</param>
+        /// <param name="userGroup">ユーザグループ</param>
         public void AttachUserGroupToTenant(Tenant tenant, UserGroup userGroup)
         {
             var map = new UserGroupTenantMap()
@@ -90,6 +107,8 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// <summary>
         /// テナントとユーザグループの紐づけを解除する。
         /// </summary>
+        /// <param name="tenant">テナント</param>
+        /// <param name="userGroup">ユーザグループ</param>
         public void DetachUserGroupFromTenant(Tenant tenant, UserGroup userGroup)
         {
             DeleteModelAll<UserGroupTenantMap>(map => map.TenantId == tenant.Id && map.UserGroupId == userGroup.Id);
