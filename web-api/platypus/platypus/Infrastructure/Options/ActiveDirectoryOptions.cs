@@ -35,6 +35,11 @@
         /// </summary>
         public string LdapFilter { get; set; }
 
+        /// <summary>
+        /// Ldapグループ検索用のフィルタ（ユーザ検索）
+        /// </summary>
+        public string LdapGroupFilter { get; set; }
+
         public string AuthBaseDn
         {
             get

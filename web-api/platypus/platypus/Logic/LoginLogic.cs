@@ -107,7 +107,7 @@ namespace Nssol.Platypus.Logic
                 }
 
                 //テナントに参加・脱退する
-                await AddTenantFromGroup(result.Value, user);
+                await AddTenantFromGroup(result.Value, user, password);
                 unitOfWork.Commit(userName);
 
             }
@@ -300,7 +300,7 @@ namespace Nssol.Platypus.Logic
         /// <summary>
         /// 所属しているLdapグループから所属テナントを更新する
         /// </summary>
-        private async Task AddTenantFromGroup(LdapEntry result, User user)
+        private async Task AddTenantFromGroup(LdapEntry entry, User user, string password)
         {
             // グループ経由で参加したテナントを一旦脱退させる
             var deleteTenants = userRepository.GetTenantByUser(user.Id).ToList();
@@ -312,14 +312,20 @@ namespace Nssol.Platypus.Logic
             unitOfWork.Commit(user.Name);
 
             // ユーザ情報の取得
-            var ldapGroups = result.getAttribute("memberOf").StringValueArray;
-            var dn = result.getAttribute("distinguishedName").StringValue;
+            var ldapGroups = entry.getAttribute("memberOf").StringValueArray;
+            var dn = entry.getAttribute("distinguishedName").StringValue;
 
             // DNから先頭の"CN= ,"を排除
             var ou = Regex.Replace(dn, @"CN=.*?,", "");
 
             // ユーザグループが紐づいている全テナント取得
             var tenants = userGroupRepository.GetTenantAllWithUserGroups();
+
+            // Ldap接続
+            var conn = new LdapConnection();
+            conn.Connect(adOptions.Server, adOptions.Port);
+            var loginDN = $"{user.Name}@{adOptions.Domain}";
+            conn.Bind(loginDN, password);
 
             foreach (var tenant in tenants)
             {
@@ -330,16 +336,48 @@ namespace Nssol.Platypus.Logic
                     if (userGroupMap.UserGroup.IsGroup)
                     {
                         // グループの時の判定処理
-                        foreach (var ldapGroup in ldapGroups)
+                        if (userGroupMap.UserGroup.IsDirect)
                         {
-                            // ldapから取得したグループのDnとユーザグループのDnを比較
-                            if (ldapGroup == userGroupMap.UserGroup.Dn)
+                            // 直接検索のとき
+                            foreach (var ldapGroup in ldapGroups)
                             {
+                                // ldapから取得したグループのDnとユーザグループのDnを比較
+                                if (ldapGroup == userGroupMap.UserGroup.Dn)
+                                {
+                                    // ロール情報取得
+                                    roleIds.AddRange(userGroupMap.UserGroup.RoleMaps.Select(map => map.RoleId).ToList());
+                                    userGroupTenantMapIds.Add(userGroupMap.Id);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            try
+                            {
+                                // 間接検索のとき
+                                string searchFilter = string.Format(adOptions.LdapGroupFilter, user.Name, userGroupMap.UserGroup.Dn);
+                                var result = conn.Search(
+                                    this.adOptions.BaseDn,
+                                    LdapConnection.SCOPE_SUB,
+                                    searchFilter,
+                                    Array.Empty<string>(),
+                                    false
+                                );
+
+                                // ちゃんと値が取れていない場合はここで例外が吐かれる
+                                result.next();
+
                                 // ロール情報取得
                                 roleIds.AddRange(userGroupMap.UserGroup.RoleMaps.Select(map => map.RoleId).ToList());
                                 userGroupTenantMapIds.Add(userGroupMap.Id);
+
+                            }
+                            catch (LdapException e)
+                            {
+
                             }
                         }
+
                     }
                     else
                     {
@@ -353,7 +391,7 @@ namespace Nssol.Platypus.Logic
                     }
                 }
                 // 配列が空ではないとき、テナントに参加する
-                if(roleIds.Count != 0)
+                if (roleIds.Count != 0)
                 {
                     // ロールの重複削除
                     roleIds = roleIds.Distinct().ToList();
@@ -375,6 +413,7 @@ namespace Nssol.Platypus.Logic
                     }
                 }
             }
+            conn.Disconnect();
         }
 
         /// <summary>
