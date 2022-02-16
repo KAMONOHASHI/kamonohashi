@@ -74,7 +74,7 @@ namespace Nssol.Platypus.Models
         /// どのユーザグループテナントマップに該当するのかをリストで保持する。
         /// </remarks>
         [NotMapped]
-        public List<long> UserGroupTenantMapIdList { get; set; }
+        public List<long> UserGroupTenantMapIdList { get { return GetUserGroupTenantMapIdList(); } }
 
         /// <summary>
         /// <see cref="UserGroupTenantMapIds"/>をリスト形式で取得する。
@@ -85,16 +85,7 @@ namespace Nssol.Platypus.Models
             {
                 return new List<long>();
             }
-            UserGroupTenantMapIdList = JsonConvert.DeserializeObject<List<long>>(UserGroupTenantMapIds);
-            return UserGroupTenantMapIdList;
-        }
-
-        /// <summary>
-        /// リスト形式から文字列に変換して<see cref="UserGroupTenantMapIds"/>にセットする。
-        /// </summary>
-        public void SetUserGroupTenantMapIdList(List<long> list)
-        {
-            UserGroupTenantMapIds = JsonConvert.SerializeObject(list);
+            return JsonConvert.DeserializeObject<List<long>>(UserGroupTenantMapIds);
         }
     }
 }

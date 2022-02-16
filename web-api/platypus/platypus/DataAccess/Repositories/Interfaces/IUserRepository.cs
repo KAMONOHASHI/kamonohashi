@@ -91,8 +91,9 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces
         /// <param name="tenantId">対象テナントID</param>
         /// <param name="roles">テナントロール</param>
         /// <param name="isOrigin">KQI上での紐づけならtrue</param>
+        /// <param name="userGroupIds">ユーザグループIDs</param>
         /// <exception cref="ArgumentException"><paramref name="roles"/>にシステムロールが含まれていたり、別テナント用のロールが含まれていた場合</exception>
-        IEnumerable<UserTenantRegistryMap> AttachTenant(User user, long tenantId, IEnumerable<Role> roles, bool isOrigin);
+        IEnumerable<UserTenantRegistryMap> AttachTenant(User user, long tenantId, IEnumerable<Role> roles, bool isOrigin, List<long> userGroupIds);
 
         /// <summary>
         /// ユーザをテナントから外す。

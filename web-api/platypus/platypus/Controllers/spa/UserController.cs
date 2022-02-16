@@ -391,7 +391,7 @@ namespace Nssol.Platypus.Controllers.spa
                 }
             }
 
-            var maps = userRepository.AttachTenant(user, tenant.Id, roles, isOrigin);
+            var maps = userRepository.AttachTenant(user, tenant.Id, roles, isOrigin, null);
             if (maps != null)
             {
                 foreach (var map in maps)

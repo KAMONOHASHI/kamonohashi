@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Nssol.Platypus.DataAccess.Core;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces;
 using Nssol.Platypus.Infrastructure;
@@ -216,7 +217,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
                 attachedRoles.Add(roles.First());
             }
 
-            AttachTenant(user, tenant.Id, attachedRoles, true);
+            AttachTenant(user, tenant.Id, attachedRoles, true, null);
             user.DefaultTenantId = tenant.Id;
         }
 
@@ -272,14 +273,16 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// <param name="tenantId">対象テナントID</param>
         /// <param name="roles">テナントロール</param>
         /// <param name="isOrigin">KQI上での紐づけならtrue</param>
+        /// <param name="userGroupIds">ユーザグループIDs</param>
         /// <exception cref="ArgumentException"><paramref name="roles"/>にシステムロールが含まれていたり、別テナント用のロールが含まれていた場合</exception>
-        public IEnumerable<UserTenantRegistryMap> AttachTenant(User user, long tenantId, IEnumerable<Role> roles, bool isOrigin)
+        public IEnumerable<UserTenantRegistryMap> AttachTenant(User user, long tenantId, IEnumerable<Role> roles, bool isOrigin, List<long> userGroupIds)
         {
             var tenantMap = new UserTenantMap()
             {
                 TenantId = tenantId,
                 User = user,
-                IsOrigin = isOrigin
+                IsOrigin = isOrigin,
+                UserGroupTenantMapIds = userGroupIds == null ? null : JsonConvert.SerializeObject(userGroupIds)
             };
             AddModel<UserTenantMap>(tenantMap);
             if (roles != null)
@@ -300,7 +303,8 @@ namespace Nssol.Platypus.DataAccess.Repositories
                         RoleId = role.Id,
                         TenantMap = tenantMap,
                         User = user,
-                        IsOrigin = isOrigin
+                        IsOrigin = isOrigin,
+                        UserGroupTenantMapIds = userGroupIds == null ? null : JsonConvert.SerializeObject(userGroupIds)
                     };
                     AddModel<UserRoleMap>(roleMap);
                 }
@@ -315,7 +319,8 @@ namespace Nssol.Platypus.DataAccess.Repositories
                 {
                     TenantGitMap = GitMap,
                     User = user,
-                    IsOrigin = isOrigin
+                    IsOrigin = isOrigin,
+                    UserGroupTenantMapIds = userGroupIds == null ? null : JsonConvert.SerializeObject(userGroupIds)
                 };
 
                 // 既存の認証情報存在チェック
@@ -348,7 +353,8 @@ namespace Nssol.Platypus.DataAccess.Repositories
                 {
                     TenantRegistryMap = registryMap,
                     User = user,
-                    IsOrigin = isOrigin
+                    IsOrigin = isOrigin,
+                    UserGroupTenantMapIds = userGroupIds == null ? null : JsonConvert.SerializeObject(userGroupIds)
                 };
 
                 // 既存の認証情報存在チェック

@@ -34,11 +34,8 @@ namespace Nssol.Platypus.Logic
     {
         private readonly IUserRepository userRepository;
         private readonly ISettingRepository settingRepository;
-        private readonly ITenantRepository tenantRepository;
         private readonly IRoleRepository roleRepository;
         private readonly IUserGroupRepository userGroupRepository;
-        //private readonly IRepository<UserGroupTenantMap> userGroupTenantMapRepository;
-        //private readonly IClusterManagementLogic clusterManagementLogic;
         private readonly IUnitOfWork unitOfWork;
         private readonly ActiveDirectoryOptions adOptions;
         private readonly WebSecurityOptions webSecurityOptions;
@@ -49,11 +46,8 @@ namespace Nssol.Platypus.Logic
         public LoginLogic(
             IUserRepository userRepository,
             ISettingRepository settingRepository,
-            ITenantRepository tenantRepository,
             IRoleRepository roleRepository,
             IUserGroupRepository userGroupRepository,
-            //IRepository<UserGroupTenantMap> userGroupTenantMapRepository,
-            //IClusterManagementLogic clusterManagementLogic,
             IUnitOfWork unitOfWork,
             ICommonDiLogic commonDiLogic,
             IOptions<ActiveDirectoryOptions> adOptions,
@@ -61,11 +55,8 @@ namespace Nssol.Platypus.Logic
         {
             this.userRepository = userRepository;
             this.settingRepository = settingRepository;
-            this.tenantRepository = tenantRepository;
             this.roleRepository = roleRepository;
             this.userGroupRepository = userGroupRepository;
-            //this.userGroupTenantMapRepository = userGroupTenantMapRepository;
-            //this.clusterManagementLogic = clusterManagementLogic;
             this.unitOfWork = unitOfWork;
             this.adOptions = adOptions.Value;
             this.webSecurityOptions = webSecurityOptions.Value;
@@ -119,8 +110,6 @@ namespace Nssol.Platypus.Logic
                 await AddTenantFromGroup(result.Value, user);
                 unitOfWork.Commit(userName);
 
-                //TODO クレームに値を詰める必要あり？
-                //claims = result.Value;
             }
             return await AuthorizeAsync(userName, claims, tenantId);
         }
@@ -319,6 +308,8 @@ namespace Nssol.Platypus.Logic
             {
                 userRepository.DetachTenant(user.Id, deleteTenant.Id, true);
             }
+            // グループ経由で参加したテナントの脱退を確定させる
+            unitOfWork.Commit(user.Name);
 
             // ユーザ情報の取得
             var ldapGroups = result.getAttribute("memberOf").StringValueArray;
@@ -333,6 +324,7 @@ namespace Nssol.Platypus.Logic
             foreach (var tenant in tenants)
             {
                 var roleIds = new List<long>();
+                var userGroupTenantMapIds = new List<long>();
                 foreach (var userGroupMap in tenant.UserGroupMaps)
                 {
                     if (userGroupMap.UserGroup.IsGroup)
@@ -345,6 +337,7 @@ namespace Nssol.Platypus.Logic
                             {
                                 // ロール情報取得
                                 roleIds.AddRange(userGroupMap.UserGroup.RoleMaps.Select(map => map.RoleId).ToList());
+                                userGroupTenantMapIds.Add(userGroupMap.Id);
                             }
                         }
                     }
@@ -355,26 +348,39 @@ namespace Nssol.Platypus.Logic
                         {
                             // ロール情報取得
                             roleIds.AddRange(userGroupMap.UserGroup.RoleMaps.Select(map => map.RoleId).ToList());
+                            userGroupTenantMapIds.Add(userGroupMap.Id);
                         }
                     }
                 }
-                // ロール配列が空ではないとき、テナントに参加する
+                // 配列が空ではないとき、テナントに参加する
                 if(roleIds.Count != 0)
                 {
                     // ロールの重複削除
                     roleIds = roleIds.Distinct().ToList();
 
-                    // テナント参加
-                    await AddTenantAsync(user, tenant, roleIds);
+                    // 既にテナントに参加しているかチェック
+                    if (!await userRepository.IsMemberAsync(user.Id, tenant.Id))
+                    {
+                        // テナント参加
+                        await AddTenantAsync(user, tenant, roleIds, userGroupTenantMapIds);
+                    }
+                    else
+                    {
+                        //TODO 既にテナントに参加している場合はロールを追加で付与する必要がある
+                        // 一旦テナント脱退
+                        //userRepository.DetachTenant(user.Id, tenant.Id, true);
+
+                        //// テナントに参加
+                        //userRepository.AttachTenant(user, tenant.Id, roles, false, userGroupTenantMapIds);
+                    }
                 }
             }
         }
+
         /// <summary>
         /// 指定したユーザをテナントに新規登録する。
-        /// 途中でエラーが発生した場合、そのエラー結果が返る。NULLなら成功。
-        /// TODO UserControllerに同じメソッドがあるので統一した方がよさそう？
         /// </summary>
-        private async Task<Result<string,string>> AddTenantAsync(User user, Tenant tenant, IEnumerable<long> tenantRoleIds)
+        private async Task AddTenantAsync(User user, Tenant tenant, List<long> tenantRoleIds, List<long> userGroupTenantMapIds)
         {
             //ロールについての存在＆入力チェック
             var roles = new List<Role>();
@@ -386,21 +392,22 @@ namespace Nssol.Platypus.Logic
                     if (role == null)
                     {
                         //ロールがない
-                        return Result<string, string>.CreateErrorResult($"Role ID {roleId} is not found.");
+                        continue;
                     }
                     if (role.IsSystemRole)
                     {
                         //システムロールをテナントロールとして追加しようとしている
-                        return Result<string, string>.CreateErrorResult($"The system role {role.Name} is not assigned to a user as a tenant role.");
+                        continue;
                     }
                     roles.Add(role);
                 }
             }
 
-            // TODO KQI側で既に紐づけがあった場合はエラーになってしまう
-            userRepository.AttachTenant(user, tenant.Id, roles, false);
+            // テナントに参加
+            userRepository.AttachTenant(user, tenant.Id, roles, false, userGroupTenantMapIds);
 
-            return Result<string, string>.CreateResult("");
+            // ログ出力
+            LogInformation($"ユーザ{user.Name}をテナント{tenant.Name}へ紐づけました。");
         }
     }
 }
