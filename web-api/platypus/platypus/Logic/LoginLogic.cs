@@ -321,12 +321,6 @@ namespace Nssol.Platypus.Logic
             // ユーザグループが紐づいている全テナント取得
             var tenants = userGroupRepository.GetTenantAllWithUserGroups();
 
-            // Ldap接続
-            var conn = new LdapConnection();
-            conn.Connect(adOptions.Server, adOptions.Port);
-            var loginDN = $"{user.Name}@{adOptions.Domain}";
-            conn.Bind(loginDN, password);
-
             foreach (var tenant in tenants)
             {
                 var roleIds = new List<long>();
@@ -347,46 +341,82 @@ namespace Nssol.Platypus.Logic
                                     // ロール情報取得
                                     roleIds.AddRange(userGroupMap.UserGroup.RoleMaps.Select(map => map.RoleId).ToList());
                                     userGroupTenantMapIds.Add(userGroupMap.Id);
+                                    break;
                                 }
                             }
                         }
                         else
                         {
+                            // 間接検索のとき
                             try
                             {
-                                // 間接検索のとき
-                                string searchFilter = string.Format(adOptions.LdapGroupFilter, user.Name, userGroupMap.UserGroup.Dn);
-                                var result = conn.Search(
-                                    this.adOptions.BaseDn,
-                                    LdapConnection.SCOPE_SUB,
-                                    searchFilter,
-                                    Array.Empty<string>(),
-                                    false
-                                );
+                                // Ldap接続
+                                using (var conn = new LdapConnection())
+                                {
+                                    conn.Connect(adOptions.Server, adOptions.Port);
+                                    var loginDN = $"{user.Name}@{adOptions.Domain}";
+                                    conn.Bind(loginDN, password);
 
-                                // ちゃんと値が取れていない場合はここで例外が吐かれる
-                                result.next();
+                                    string searchFilter = string.Format(adOptions.LdapGroupFilter, user.Name, userGroupMap.UserGroup.Dn);
+                                    var result = conn.Search(
+                                        this.adOptions.BaseDn,
+                                        LdapConnection.SCOPE_SUB,
+                                        searchFilter,
+                                        Array.Empty<string>(),
+                                        false
+                                    );
 
-                                // ロール情報取得
-                                roleIds.AddRange(userGroupMap.UserGroup.RoleMaps.Select(map => map.RoleId).ToList());
-                                userGroupTenantMapIds.Add(userGroupMap.Id);
+                                    // 検索でヒットしなかったときはここで例外が吐かれる
+                                    result.next();
 
+                                    // ロール情報取得
+                                    roleIds.AddRange(userGroupMap.UserGroup.RoleMaps.Select(map => map.RoleId).ToList());
+                                    userGroupTenantMapIds.Add(userGroupMap.Id);
+                                }
                             }
                             catch (LdapException e)
                             {
-
+                                // ここは何もしない
                             }
                         }
-
                     }
                     else
                     {
                         // OUの時の判定処理
-                        if(ou == userGroupMap.UserGroup.Dn)
+                        if (userGroupMap.UserGroup.IsDirect)
                         {
-                            // ロール情報取得
-                            roleIds.AddRange(userGroupMap.UserGroup.RoleMaps.Select(map => map.RoleId).ToList());
-                            userGroupTenantMapIds.Add(userGroupMap.Id);
+                            // 直接のとき
+                            if (ou == userGroupMap.UserGroup.Dn)
+                            {
+                                // ロール情報取得
+                                roleIds.AddRange(userGroupMap.UserGroup.RoleMaps.Select(map => map.RoleId).ToList());
+                                userGroupTenantMapIds.Add(userGroupMap.Id);
+                            }
+                        }
+                        else
+                        {
+                            // 間接のとき
+                            // ユーザのDNとOUのDNを部分一致で比較する
+                            if (Regex.IsMatch(dn, $@".*{userGroupMap.UserGroup.Dn}$"))
+                            {
+                                // ロール情報取得
+                                roleIds.AddRange(userGroupMap.UserGroup.RoleMaps.Select(map => map.RoleId).ToList());
+                                userGroupTenantMapIds.Add(userGroupMap.Id);
+                            }
+                            else
+                            {
+                                // memberOfのDNとOUのDNを部分一致で比較する
+                                foreach(var ldapGroup in ldapGroups)
+                                {
+                                    if (Regex.IsMatch(ldapGroup, $@".*{userGroupMap.UserGroup.Dn}$"))
+                                    {
+                                        // ロール情報取得
+                                        roleIds.AddRange(userGroupMap.UserGroup.RoleMaps.Select(map => map.RoleId).ToList());
+                                        userGroupTenantMapIds.Add(userGroupMap.Id);
+                                        break;
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -413,7 +443,6 @@ namespace Nssol.Platypus.Logic
                     }
                 }
             }
-            conn.Disconnect();
         }
 
         /// <summary>
