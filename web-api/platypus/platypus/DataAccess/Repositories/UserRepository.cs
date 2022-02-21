@@ -462,7 +462,14 @@ namespace Nssol.Platypus.DataAccess.Repositories
                 // 残ったものは不要なロールのため削除する
                 if (currentRoleMaps != null && currentRoleMaps.Count() > 0)
                 {
-                    DeleteModelRange<UserRoleMap>(currentRoleMaps);
+                    foreach (var roleMap in currentRoleMaps)
+                    {
+                        // KQI上の紐づけの場合削除する。（= ユーザグループ経由での紐づけは残す。）
+                        if (roleMap.IsOrigin)
+                        {
+                            DeleteModel<UserRoleMap>(roleMap);
+                        }
+                    }
                 }
             }
 
@@ -514,7 +521,14 @@ namespace Nssol.Platypus.DataAccess.Repositories
             // 残ったものは不要なUserTenantGitMapのため削除する
             if (currentUserTenantGitMaps != null && currentUserTenantGitMaps.Count() > 0)
             {
-                DeleteModelRange<UserTenantGitMap>(currentUserTenantGitMaps);
+                foreach (var gitMap in currentUserTenantGitMaps)
+                {
+                    // KQI上の紐づけの場合削除する。（= ユーザグループ経由での紐づけは残す。）
+                    if (gitMap.IsOrigin)
+                    {
+                        DeleteModel<UserTenantGitMap>(gitMap);
+                    }
+                }
             }
 
             // 続いてレジストリの更新
@@ -573,7 +587,14 @@ namespace Nssol.Platypus.DataAccess.Repositories
             // 残ったものは不要なUserTenantRegistryMapのため削除する
             if (currentUserTenantRegistryMaps != null && currentUserTenantRegistryMaps.Count() > 0)
             {
-                DeleteModelRange<UserTenantRegistryMap>(currentUserTenantRegistryMaps);
+                foreach (var registryMap in currentUserTenantRegistryMaps)
+                {
+                    // KQI上の紐づけの場合削除する。（= ユーザグループ経由での紐づけは残す。）
+                    if (registryMap.IsOrigin)
+                    {
+                        DeleteModel<UserTenantRegistryMap>(registryMap);
+                    }
+                }
             }
 
             return maps;
