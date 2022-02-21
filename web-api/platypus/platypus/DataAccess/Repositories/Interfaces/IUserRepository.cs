@@ -96,6 +96,19 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces
         IEnumerable<UserTenantRegistryMap> AttachTenant(User user, long tenantId, IEnumerable<Role> roles, bool isOrigin, List<long> userGroupIds);
 
         /// <summary>
+        /// すでにユーザがテナントに所属しているときテナント所属情報を更新する。
+        /// ユーザIDやテナントIDの存在チェックは行わない。
+        /// 結果として、作成したすべての<see cref="UserTenantRegistryMap"/>を返す。
+        /// </summary>
+        /// <param name="user">対象ユーザ</param>
+        /// <param name="tenantId">対象テナントID</param>
+        /// <param name="roles">テナントロール</param>
+        /// <param name="isOrigin">KQI上での紐づけならtrue</param>
+        /// <param name="userGroupIds">ユーザグループIDs</param>
+        /// <exception cref="ArgumentException"><paramref name="roles"/>にシステムロールが含まれていたり、別テナント用のロールが含まれていた場合</exception>
+        IEnumerable<UserTenantRegistryMap> UpdateTenant(User user, long tenantId, IEnumerable<Role> roles, bool isOrigin, List<long> userGroupIds);
+
+        /// <summary>
         /// ユーザをテナントから外す。
         /// ユーザIDやテナントIDの存在チェック、および所属済みかのチェックは行わない。
         /// </summary>

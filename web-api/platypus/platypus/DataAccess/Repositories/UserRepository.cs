@@ -374,6 +374,182 @@ namespace Nssol.Platypus.DataAccess.Repositories
         }
 
         /// <summary>
+        /// すでにユーザがテナントに所属しているときテナント所属情報を更新する。
+        /// ユーザIDやテナントIDの存在チェックは行わない。
+        /// 結果として、作成したすべての<see cref="UserTenantRegistryMap"/>を返す。
+        /// </summary>
+        /// <param name="user">対象ユーザ</param>
+        /// <param name="tenantId">対象テナントID</param>
+        /// <param name="roles">テナントロール</param>
+        /// <param name="isOrigin">KQI上での紐づけならtrue</param>
+        /// <param name="userGroupIds">ユーザグループIDs</param>
+        /// <exception cref="ArgumentException"><paramref name="roles"/>にシステムロールが含まれていたり、別テナント用のロールが含まれていた場合</exception>
+        public IEnumerable<UserTenantRegistryMap> UpdateTenant(User user, long tenantId, IEnumerable<Role> roles, bool isOrigin, List<long> userGroupIds)
+        {
+            // 引数のユーザグループを加工して準備
+            List<long> groupIds = new List<long>();
+            if (userGroupIds != null && userGroupIds.Count() > 0)
+            {
+                groupIds.AddRange(userGroupIds);
+                groupIds = groupIds.Distinct().ToList();
+            }
+
+            // ユーザとテナントの紐づけを更新
+            var userTenantMap = GetModelAll<UserTenantMap>().Where(m => m.UserId == user.Id && m.TenantId == tenantId).FirstOrDefault();
+            userTenantMap.IsOrigin = isOrigin;
+            // ユーザグループ経由での紐づけ情報を更新
+            List<long> usrTenantMapTmpGroupIds = groupIds;
+            if (userTenantMap.UserGroupTenantMapIdList != null && userTenantMap.UserGroupTenantMapIdList.Count() > 0)
+            {
+                usrTenantMapTmpGroupIds.AddRange(userTenantMap.UserGroupTenantMapIdList);
+                usrTenantMapTmpGroupIds = usrTenantMapTmpGroupIds.Distinct().ToList();
+            }
+            userTenantMap.UserGroupTenantMapIds =
+                usrTenantMapTmpGroupIds != null && usrTenantMapTmpGroupIds.Count() > 0 
+                ? JsonConvert.SerializeObject(usrTenantMapTmpGroupIds) 
+                : null;
+
+            // ロールについての処理
+            if (roles != null)
+            {
+                foreach (var role in roles)
+                {
+                    if (role == null)
+                    {
+                        continue;
+                    }
+                    if (role.IsSystemRole)
+                    {
+                        //Adminロールを特定テナントに所属させようとしている
+                        throw new UnauthorizedAccessException($"The tenant role {role.Name} is not assigned to a user as a system role.");
+                    }
+                    // ユーザとロールの紐づけを更新
+                    var userRoleMap = GetModelAll<UserRoleMap>().Where(m => m.TenantMapId == userTenantMap.Id && m.RoleId == role.Id).FirstOrDefault();
+                    if (userRoleMap != null)
+                    {
+                        // 紐づけ情報が存在する場合更新する
+                        userRoleMap.IsOrigin = isOrigin;
+                        List<long> usrRoleMapTmpGroupIds = groupIds;
+                        if (userRoleMap.UserGroupTenantMapIdList != null && userRoleMap.UserGroupTenantMapIdList.Count() > 0)
+                        {
+                            usrRoleMapTmpGroupIds.AddRange(userRoleMap.UserGroupTenantMapIdList);
+                            usrRoleMapTmpGroupIds = usrRoleMapTmpGroupIds.Distinct().ToList();
+                        }
+                        userRoleMap.UserGroupTenantMapIds = usrRoleMapTmpGroupIds != null && usrRoleMapTmpGroupIds.Count() > 0 ? JsonConvert.SerializeObject(usrRoleMapTmpGroupIds) : null;
+                    }
+                    else
+                    {
+                        // 紐づけ情報が存在しない場合新規登録する
+                        var roleMap = new UserRoleMap()
+                        {
+                            RoleId = role.Id,
+                            TenantMap = userTenantMap,
+                            User = user,
+                            IsOrigin = isOrigin,
+                            UserGroupTenantMapIds = 
+                                groupIds != null && groupIds.Count() > 0 
+                                ? JsonConvert.SerializeObject(groupIds) 
+                                : null
+                        };
+                        AddModel<UserRoleMap>(roleMap);
+                    }
+                }
+            }
+
+            // Gitの更新
+            // テナントに紐づいているすべてのGitを取得
+            var GitMaps = FindModelAll<TenantGitMap>(m => m.TenantId == tenantId).Include(m => m.Git).ToList();
+            foreach (var GitMap in GitMaps)
+            {
+                // ユーザとGitの紐づけを更新
+                var userTenantGitMap = GetModelAll<UserTenantGitMap>().Where(m => m.TenantGitMapId == GitMap.Id && m.UserId == user.Id).FirstOrDefault();
+                if (userTenantGitMap != null)
+                {
+                    // 紐づけ情報が存在する場合更新する
+                    userTenantGitMap.IsOrigin = isOrigin;
+                    List<long> userTenantGitMapTmpGroupIds = groupIds;
+                    if (userTenantGitMap.UserGroupTenantMapIdList != null 
+                        && userTenantGitMap.UserGroupTenantMapIdList.Count() > 0)
+                    {
+                        userTenantGitMapTmpGroupIds.AddRange(userTenantGitMap.UserGroupTenantMapIdList);
+                        userTenantGitMapTmpGroupIds = userTenantGitMapTmpGroupIds.Distinct().ToList();
+                    }
+                    userTenantGitMap.UserGroupTenantMapIds = 
+                        userTenantGitMapTmpGroupIds != null && userTenantGitMapTmpGroupIds.Count() > 0 
+                        ? JsonConvert.SerializeObject(userTenantGitMapTmpGroupIds) 
+                        : null;
+                }
+                else
+                {
+                    // 紐づけ情報が存在しない場合新規登録する
+                    UserTenantGitMap utrMap = new UserTenantGitMap()
+                    {
+                        TenantGitMap = GitMap,
+                        User = user,
+                        IsOrigin = isOrigin,
+                        UserGroupTenantMapIds =
+                            groupIds != null && groupIds.Count() > 0 
+                            ? JsonConvert.SerializeObject(groupIds) 
+                            : null
+                    };
+                    // UserTenantGitMap において userId と TenantGitMapId のペアが存在しなければ、エントリ新規追加のためログに出力する
+                    LogDebug($"UserTenantGitMap エントリの新規追加 : UserId={user.Id}, TenantGitMapId={GitMap.Id}, TenantId={tenantId}, GitId={GitMap.GitId}");
+                    AddModel<UserTenantGitMap>(utrMap);
+                }
+            }
+
+            // 続いてレジストリの更新
+            // レジストリはクラスタ管理サービスへも影響するので、作成したMapを全て返す
+
+            List<UserTenantRegistryMap> maps = new List<UserTenantRegistryMap>();
+
+            // テナントに紐づいているすべてのレジストリを取得
+            var registryMaps = FindModelAll<TenantRegistryMap>(m => m.TenantId == tenantId).Include(m => m.Registry).ToList();
+            foreach (var registryMap in registryMaps)
+            {
+                // ユーザとレジストリの紐づけを更新
+                var userTenantRegistryMap = GetModelAll<UserTenantRegistryMap>().Where(m => m.TenantRegistryMapId == registryMap.Id && m.UserId == user.Id).FirstOrDefault();
+                if (userTenantRegistryMap != null)
+                {
+                    // 紐づけ情報が存在する場合更新する
+                    userTenantRegistryMap.IsOrigin = isOrigin;
+                    List<long> userTenantRegistryMapTmpGroupIds = groupIds;
+                    if (userTenantRegistryMap.UserGroupTenantMapIdList != null 
+                        && userTenantRegistryMap.UserGroupTenantMapIdList.Count() > 0)
+                    {
+                        userTenantRegistryMapTmpGroupIds.AddRange(userTenantRegistryMap.UserGroupTenantMapIdList);
+                        userTenantRegistryMapTmpGroupIds = userTenantRegistryMapTmpGroupIds.Distinct().ToList();
+                    }
+                    userTenantRegistryMap.UserGroupTenantMapIds = 
+                        userTenantRegistryMapTmpGroupIds != null && userTenantRegistryMapTmpGroupIds.Count() > 0 
+                        ? JsonConvert.SerializeObject(userTenantRegistryMapTmpGroupIds) 
+                        : null;
+                    maps.Add(userTenantRegistryMap);
+                }
+                else
+                {
+                    // 紐づけ情報が存在しない場合新規登録する
+                    UserTenantRegistryMap utrMap = new UserTenantRegistryMap()
+                    {
+                        TenantRegistryMap = registryMap,
+                        User = user,
+                        IsOrigin = isOrigin,
+                        UserGroupTenantMapIds = 
+                            groupIds != null && groupIds.Count() > 0 
+                            ? JsonConvert.SerializeObject(groupIds) 
+                            : null
+                    };
+
+                    // UserTenantRegistryMap において userId と TenantRegistryMapId のペアが存在しなければ、エントリ新規追加のためログに出力する
+                    LogDebug($"UserTenantRegistryMap エントリの新規追加 : UserId={user.Id}, TenantRegistryMapId={registryMap.Id}, TenantId={tenantId}, RegistryId={registryMap.RegistryId}");
+                    AddModel<UserTenantRegistryMap>(utrMap);
+                    maps.Add(utrMap);
+                }
+            }
+            return maps;
+        }
+
+        /// <summary>
         /// ユーザをテナントから外す。
         /// ユーザIDやテナントIDの存在チェック、および所属済みかのチェックは行わない。
         /// </summary>

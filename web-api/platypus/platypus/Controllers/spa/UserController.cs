@@ -264,18 +264,21 @@ namespace Nssol.Platypus.Controllers.spa
                 Tenant currentTenant = currentTenants.FirstOrDefault(t => t.Id == tenantInput.Id);
                 if (currentTenant != null)
                 {
-                    //ロールが変更されている可能性があるので、更新処理を行う
-                    //一度テナントから外す
-                    userRepository.DetachTenant(id.Value, tenantInput.Id.Value, true);
+                    // すでに紐づけられている場合、ロールが変更されている可能性があるので、更新処理を行う
+                    await UpdateTenantAsync(user, tenant, tenantInput.Roles, true);
                     //候補から外す
                     currentTenants.Remove(currentTenant);
                 }
 
-                var addTenantErrorResult = await AddTenantAsync(user, tenant, tenantInput.Roles, true);
-                if (addTenantErrorResult != null)
+                // 新規の紐づけの場合はこちら。
+                else
                 {
-                    //ロールバックされるので、不整合は起こらない
-                    return addTenantErrorResult;
+                    var addTenantErrorResult = await AddTenantAsync(user, tenant, tenantInput.Roles, true);
+                    if (addTenantErrorResult != null)
+                    {
+                        //ロールバックされるので、不整合は起こらない
+                        return addTenantErrorResult;
+                    }
                 }
             }
             //残っているのは削除対象
@@ -392,6 +395,50 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             var maps = userRepository.AttachTenant(user, tenant.Id, roles, isOrigin, null);
+            if (maps != null)
+            {
+                foreach (var map in maps)
+                {
+                    //レジストリを登録
+                    await clusterManagementLogic.RegistRegistryToTenantAsync(tenant.Name, map);
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// 指定したユーザとテナントの紐づけを更新する。
+        /// 途中でエラーが発生した場合、そのエラー結果が返る。NULLなら成功。
+        /// </summary>
+        /// <param name="user">対象ユーザ</param>
+        /// <param name="tenant">対象テナント</param>
+        /// <param name="tenantRoleIds">テナントロールID</param>
+        /// <param name="isOrigin">KQI上での紐づけならtrue</param>
+        private async Task<IActionResult> UpdateTenantAsync(User user, Tenant tenant, IEnumerable<long> tenantRoleIds, bool isOrigin)
+        {
+            //ロールについての存在＆入力チェック
+            var roles = new List<Role>();
+            if (tenantRoleIds != null)
+            {
+                foreach (long roleId in tenantRoleIds)
+                {
+                    var role = await roleRepository.GetRoleAsync(roleId);
+                    if (role == null)
+                    {
+                        //ロールがない
+                        return JsonNotFound($"Role ID {roleId} is not found.");
+                    }
+                    if (role.IsSystemRole)
+                    {
+                        //システムロールをテナントロールとして追加しようとしている
+                        return JsonBadRequest($"The system role {role.Name} is not assigned to a user as a tenant role.");
+                    }
+                    roles.Add(role);
+                }
+            }
+
+            var maps = userRepository.UpdateTenant(user, tenant.Id, roles, isOrigin, null);
             if (maps != null)
             {
                 foreach (var map in maps)
