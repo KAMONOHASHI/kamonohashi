@@ -412,6 +412,9 @@ namespace Nssol.Platypus.DataAccess.Repositories
             // ロールについての処理
             if (roles != null)
             {
+                // 更新前のユーザとロールの紐づけ一覧を取得しておく。
+                var currentRoleMaps = GetModelAll<UserRoleMap>().Where(m => m.TenantMapId == userTenantMap.Id);
+
                 foreach (var role in roles)
                 {
                     if (role == null)
@@ -436,6 +439,8 @@ namespace Nssol.Platypus.DataAccess.Repositories
                             usrRoleMapTmpGroupIds = usrRoleMapTmpGroupIds.Distinct().ToList();
                         }
                         userRoleMap.UserGroupTenantMapIds = usrRoleMapTmpGroupIds != null && usrRoleMapTmpGroupIds.Count() > 0 ? JsonConvert.SerializeObject(usrRoleMapTmpGroupIds) : null;
+                        // 編集前の情報から対象を除く。
+                        currentRoleMaps = currentRoleMaps.Where(m => m.Id != userRoleMap.Id);
                     }
                     else
                     {
@@ -454,11 +459,18 @@ namespace Nssol.Platypus.DataAccess.Repositories
                         AddModel<UserRoleMap>(roleMap);
                     }
                 }
+                // 残ったものは不要なロールのため削除する
+                if (currentRoleMaps != null && currentRoleMaps.Count() > 0)
+                {
+                    DeleteModelRange<UserRoleMap>(currentRoleMaps);
+                }
             }
 
             // Gitの更新
             // テナントに紐づいているすべてのGitを取得
             var GitMaps = FindModelAll<TenantGitMap>(m => m.TenantId == tenantId).Include(m => m.Git).ToList();
+            // 更新前のユーザとテナントGitの紐づけ一覧を取得しておく。
+            var currentUserTenantGitMaps = GetModelAll<UserTenantGitMap>().Where(m => m.UserId == user.Id);
             foreach (var GitMap in GitMaps)
             {
                 // ユーザとGitの紐づけを更新
@@ -478,6 +490,8 @@ namespace Nssol.Platypus.DataAccess.Repositories
                         userTenantGitMapTmpGroupIds != null && userTenantGitMapTmpGroupIds.Count() > 0 
                         ? JsonConvert.SerializeObject(userTenantGitMapTmpGroupIds) 
                         : null;
+                    // 編集前の情報から対象を除く。
+                    currentUserTenantGitMaps = currentUserTenantGitMaps.Where(m => m.Id != userTenantGitMap.Id);
                 }
                 else
                 {
@@ -497,6 +511,11 @@ namespace Nssol.Platypus.DataAccess.Repositories
                     AddModel<UserTenantGitMap>(utrMap);
                 }
             }
+            // 残ったものは不要なUserTenantGitMapのため削除する
+            if (currentUserTenantGitMaps != null && currentUserTenantGitMaps.Count() > 0)
+            {
+                DeleteModelRange<UserTenantGitMap>(currentUserTenantGitMaps);
+            }
 
             // 続いてレジストリの更新
             // レジストリはクラスタ管理サービスへも影響するので、作成したMapを全て返す
@@ -505,6 +524,8 @@ namespace Nssol.Platypus.DataAccess.Repositories
 
             // テナントに紐づいているすべてのレジストリを取得
             var registryMaps = FindModelAll<TenantRegistryMap>(m => m.TenantId == tenantId).Include(m => m.Registry).ToList();
+            // 更新前のユーザとテナントレジストリの紐づけ一覧を取得しておく。
+            var currentUserTenantRegistryMaps = GetModelAll<UserTenantRegistryMap>().Where(m => m.UserId == user.Id);
             foreach (var registryMap in registryMaps)
             {
                 // ユーザとレジストリの紐づけを更新
@@ -524,6 +545,9 @@ namespace Nssol.Platypus.DataAccess.Repositories
                         userTenantRegistryMapTmpGroupIds != null && userTenantRegistryMapTmpGroupIds.Count() > 0 
                         ? JsonConvert.SerializeObject(userTenantRegistryMapTmpGroupIds) 
                         : null;
+                    // 編集前の情報から対象を除く。
+                    currentUserTenantRegistryMaps = currentUserTenantRegistryMaps.Where(m => m.Id != userTenantRegistryMap.Id);
+
                     maps.Add(userTenantRegistryMap);
                 }
                 else
@@ -546,6 +570,12 @@ namespace Nssol.Platypus.DataAccess.Repositories
                     maps.Add(utrMap);
                 }
             }
+            // 残ったものは不要なUserTenantRegistryMapのため削除する
+            if (currentUserTenantRegistryMaps != null && currentUserTenantRegistryMaps.Count() > 0)
+            {
+                DeleteModelRange<UserTenantRegistryMap>(currentUserTenantRegistryMaps);
+            }
+
             return maps;
         }
 
