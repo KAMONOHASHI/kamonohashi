@@ -398,8 +398,8 @@ namespace Nssol.Platypus.DataAccess.Repositories
             var userTenantMap = GetModelAll<UserTenantMap>().Where(m => m.UserId == user.Id && m.TenantId == tenantId).FirstOrDefault();
             if (isOrigin)
             {
-                // KQI上での紐づけとする場合、trueとする。
-                userTenantMap.IsOrigin = isOrigin;
+                // KQI上での紐づけとする場合、trueを設定する。
+                userTenantMap.IsOrigin = true;
             }
             // ユーザグループ経由での紐づけ情報を更新
             List<long> usrTenantMapTmpGroupIds = groupIds;
