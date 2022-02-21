@@ -396,7 +396,11 @@ namespace Nssol.Platypus.DataAccess.Repositories
 
             // ユーザとテナントの紐づけを更新
             var userTenantMap = GetModelAll<UserTenantMap>().Where(m => m.UserId == user.Id && m.TenantId == tenantId).FirstOrDefault();
-            userTenantMap.IsOrigin = isOrigin;
+            if (isOrigin)
+            {
+                // KQI上での紐づけとする場合、trueとする。
+                userTenantMap.IsOrigin = isOrigin;
+            }
             // ユーザグループ経由での紐づけ情報を更新
             List<long> usrTenantMapTmpGroupIds = groupIds;
             if (userTenantMap.UserGroupTenantMapIdList != null && userTenantMap.UserGroupTenantMapIdList.Count() > 0)
@@ -431,7 +435,11 @@ namespace Nssol.Platypus.DataAccess.Repositories
                     if (userRoleMap != null)
                     {
                         // 紐づけ情報が存在する場合更新する
-                        userRoleMap.IsOrigin = isOrigin;
+                        if (isOrigin)
+                        {
+                            // KQI上での紐づけとする場合、trueを設定する。
+                            userRoleMap.IsOrigin = true;
+                        }
                         List<long> usrRoleMapTmpGroupIds = groupIds;
                         if (userRoleMap.UserGroupTenantMapIdList != null && userRoleMap.UserGroupTenantMapIdList.Count() > 0)
                         {
@@ -464,10 +472,14 @@ namespace Nssol.Platypus.DataAccess.Repositories
                 {
                     foreach (var roleMap in currentRoleMaps)
                     {
-                        // KQI上の紐づけの場合削除する。（= ユーザグループ経由での紐づけは残す。）
-                        if (roleMap.IsOrigin)
+                        // KQI上だけの紐づけの場合削除する。（ユーザグループ経由での紐づけがあれば残すためfalseを設定する。）
+                        if (string.IsNullOrEmpty(roleMap.UserGroupTenantMapIds))
                         {
                             DeleteModel<UserRoleMap>(roleMap);
+                        }
+                        else
+                        {
+                            roleMap.IsOrigin = false;
                         }
                     }
                 }
@@ -485,7 +497,11 @@ namespace Nssol.Platypus.DataAccess.Repositories
                 if (userTenantGitMap != null)
                 {
                     // 紐づけ情報が存在する場合更新する
-                    userTenantGitMap.IsOrigin = isOrigin;
+                    if (isOrigin)
+                    {
+                        // KQI上での紐づけとする場合、trueを設定する。
+                        userTenantGitMap.IsOrigin = true;
+                    }
                     List<long> userTenantGitMapTmpGroupIds = groupIds;
                     if (userTenantGitMap.UserGroupTenantMapIdList != null 
                         && userTenantGitMap.UserGroupTenantMapIdList.Count() > 0)
@@ -523,10 +539,14 @@ namespace Nssol.Platypus.DataAccess.Repositories
             {
                 foreach (var gitMap in currentUserTenantGitMaps)
                 {
-                    // KQI上の紐づけの場合削除する。（= ユーザグループ経由での紐づけは残す。）
-                    if (gitMap.IsOrigin)
+                    // KQI上だけの紐づけの場合削除する。（ユーザグループ経由での紐づけがあれば残すためfalseを設定する。）
+                    if (string.IsNullOrEmpty(gitMap.UserGroupTenantMapIds))
                     {
                         DeleteModel<UserTenantGitMap>(gitMap);
+                    }
+                    else
+                    {
+                        gitMap.IsOrigin = false;
                     }
                 }
             }
@@ -547,7 +567,11 @@ namespace Nssol.Platypus.DataAccess.Repositories
                 if (userTenantRegistryMap != null)
                 {
                     // 紐づけ情報が存在する場合更新する
-                    userTenantRegistryMap.IsOrigin = isOrigin;
+                    if (isOrigin)
+                    {
+                        // KQI上での紐づけとする場合、trueを設定する。
+                        userTenantRegistryMap.IsOrigin = true;
+                    }
                     List<long> userTenantRegistryMapTmpGroupIds = groupIds;
                     if (userTenantRegistryMap.UserGroupTenantMapIdList != null 
                         && userTenantRegistryMap.UserGroupTenantMapIdList.Count() > 0)
@@ -589,10 +613,14 @@ namespace Nssol.Platypus.DataAccess.Repositories
             {
                 foreach (var registryMap in currentUserTenantRegistryMaps)
                 {
-                    // KQI上の紐づけの場合削除する。（= ユーザグループ経由での紐づけは残す。）
-                    if (registryMap.IsOrigin)
+                    // KQI上だけの紐づけの場合削除する。（ユーザグループ経由での紐づけがあれば残すためfalseを設定する。）
+                    if (string.IsNullOrEmpty(registryMap.UserGroupTenantMapIds))
                     {
                         DeleteModel<UserTenantRegistryMap>(registryMap);
+                    }
+                    else
+                    {
+                        registryMap.IsOrigin = false;
                     }
                 }
             }
