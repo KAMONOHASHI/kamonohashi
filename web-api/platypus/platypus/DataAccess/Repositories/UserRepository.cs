@@ -265,6 +265,14 @@ namespace Nssol.Platypus.DataAccess.Repositories
         }
 
         /// <summary>
+        /// 指定したユーザが当該テナントにKQI経由で所属しているか
+        /// </summary>
+        public bool IsOriginMember(long userId, long tenantId)
+        {
+            return GetModelAll<UserTenantMap>().FirstOrDefault(map => map.UserId == userId && map.TenantId == tenantId).IsOrigin;
+        }
+
+        /// <summary>
         /// ユーザをテナントに所属させる。
         /// ユーザIDやテナントIDの存在チェックは行わない。
         /// 結果として、作成したすべての<see cref="UserTenantRegistryMap"/>を返す。

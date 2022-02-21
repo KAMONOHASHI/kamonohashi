@@ -90,7 +90,7 @@ namespace Nssol.Platypus.Controllers.spa
 
             //ユーザのテナント情報（ロール含む）を取得
             var info = userRepository.GetUserInfo(user);
-            userModel.Tenants = info.TenantDic.Select(x => new TenantInfo(x.Key, x.Value, user.DefaultTenantId)).OrderBy(t => t.DisplayName).ToList();
+            userModel.Tenants = info.TenantDic.Select(x => new TenantInfo(x.Key, x.Value, user.DefaultTenantId) { IsOrigin = userRepository.IsOriginMember(user.Id,x.Key.Id)}).OrderBy(t => t.DisplayName).ToList();
 
             //このユーザのシステムロールを取得
             userModel.SystemRoles = roleRepository.GetSystemRoles(user.Id).Select(r => new RoleInfo(r));
@@ -288,6 +288,12 @@ namespace Nssol.Platypus.Controllers.spa
                 if (CurrentUserInfo.Id == user.Id && CurrentUserInfo.SelectedTenant.Id == removedTenant.Id)
                 {
                     return JsonConflict($"You are NOT allowed removing yourself from the currently connected tenant.");
+                }
+
+                // Ldap経由で参加したものは削除対象外
+                if( !userRepository.IsOriginMember(user.Id, removedTenant.Id))
+                {
+                    continue;
                 }
 
                 userRepository.DetachTenant(id.Value, removedTenant.Id, false);

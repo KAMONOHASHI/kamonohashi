@@ -83,6 +83,11 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces
         Task<bool> IsMemberAsync(long userId, long tenantId);
 
         /// <summary>
+        /// 指定したユーザが当該テナントにKQI経由で所属しているか
+        /// </summary>
+        bool IsOriginMember(long userId, long tenantId);
+
+        /// <summary>
         /// ユーザをテナントに所属させる。
         /// ユーザIDやテナントIDの存在チェックは行わない。
         /// 結果として、作成したすべての<see cref="UserTenantRegistryMap"/>を返す。

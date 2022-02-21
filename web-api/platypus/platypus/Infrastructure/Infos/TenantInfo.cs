@@ -57,5 +57,9 @@ namespace Nssol.Platypus.Infrastructure.Infos
         /// テナントの全ロール名
         /// </summary>
         public List<RoleInfo> Roles { get; set; }
+        /// <summary>
+        /// 元々KQI上で紐づけあったか。
+        /// </summary>
+        public Boolean IsOrigin { get; set; }
     }
 }

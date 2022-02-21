@@ -181,17 +181,22 @@ export default {
           tenant.roles.forEach(role => {
             selectedRoleIds.push(role.id)
           })
-          this.form.tenants.selectedTenants.push({
-            tenantId: tenant.id,
-            tenantName: tenant.name,
-            selectedRoleIds: selectedRoleIds,
-            default: tenant.default,
-          })
+          if (tenant.isOrigin) {
+            this.form.tenants.selectedTenants.push({
+              tenantId: tenant.id,
+              tenantName: tenant.name,
+              selectedRoleIds: selectedRoleIds,
+              default: tenant.default,
+            })
+          }
         })
 
         this.detail.tenants.forEach(s => {
-          this.form.tenants.selectedTenantIds.push(s.id)
+          if (s.isOrigin) {
+            this.form.tenants.selectedTenantIds.push(s.id)
+          }
         })
+
         this.form.error = null
         this.deleteButtonParams = {
           isDanger: true,
