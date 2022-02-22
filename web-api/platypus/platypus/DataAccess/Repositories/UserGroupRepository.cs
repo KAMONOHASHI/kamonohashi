@@ -45,6 +45,18 @@ namespace Nssol.Platypus.DataAccess.Repositories
         }
 
         /// <summary>
+        /// 指定したIDに紐づくテナント情報を取得する。
+        /// </summary>
+        /// <param name="userGroupId">ユーザグループID</param>
+        public IEnumerable<Tenant> GetTenantsByUserGroup(long userGroupId)
+        {
+            return GetModelAll<UserGroupTenantMap>()
+                .Where(map => map.UserGroupId == userGroupId)
+                .Include(map => map.Tenant)
+                .Select(map => map.Tenant);
+        }
+
+        /// <summary>
         /// 指定したIDのユーザグループ情報をロール情報付きで取得する。
         /// </summary>
         /// <param name="id">ユーザグループID</param>

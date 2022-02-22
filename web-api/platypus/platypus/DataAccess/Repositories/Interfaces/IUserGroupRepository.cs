@@ -15,6 +15,12 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces
         IEnumerable<Tenant> GetTenantAllWithUserGroups();
 
         /// <summary>
+        /// 指定したIDに紐づくテナント情報を取得する。
+        /// </summary>
+        /// <param name="userGroupId">ユーザグループID</param>
+        IEnumerable<Tenant> GetTenantsByUserGroup(long userGroupId);
+
+        /// <summary>
         /// 指定したIDのユーザグループ情報をロール情報付きで取得する。
         /// </summary>
         /// <param name="id">ユーザグループID</param>
