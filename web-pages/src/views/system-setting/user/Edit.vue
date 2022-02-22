@@ -52,6 +52,7 @@
           v-model="form.tenants"
           :tenants="tenants"
           :roles="roles"
+          :not-origin-tenants="notOriginTenants"
         />
       </el-form-item>
     </el-form>
@@ -139,6 +140,10 @@ export default {
       deleteButtonParams: {},
       passwordLabel: '',
       isCreateDialog: false,
+      notOriginTenants: {
+        selectedTenantIds: [],
+        selectedTenants: [],
+      },
     }
   },
   computed: {
@@ -175,12 +180,16 @@ export default {
           this.form.selectedSystemRoleIds.push(s.id)
         })
         this.form.tenants.selectedTenants = []
+        this.form.tenants.selectedNotOriginTenants = []
 
         this.detail.tenants.forEach(tenant => {
           let selectedRoleIds = []
+          let selectedNotOriginTenants = []
           tenant.roles.forEach(role => {
             if (role.isOrigin) {
               selectedRoleIds.push(role.id)
+            } else {
+              selectedNotOriginTenants.push(role.id)
             }
           })
           if (tenant.isOrigin) {
@@ -190,12 +199,21 @@ export default {
               selectedRoleIds: selectedRoleIds,
               default: tenant.default,
             })
+          } else {
+            this.notOriginTenants.selectedTenants.push({
+              tenantId: tenant.id,
+              tenantName: tenant.name,
+              selectedRoleIds: selectedNotOriginTenants,
+              default: tenant.default,
+            })
           }
         })
 
         this.detail.tenants.forEach(s => {
           if (s.isOrigin) {
             this.form.tenants.selectedTenantIds.push(s.id)
+          } else {
+            this.notOriginTenants.selectedTenantIds.push(s.id)
           }
         })
 

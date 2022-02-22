@@ -48,6 +48,35 @@
         </el-table-column>
       </el-table>
     </div>
+
+    <br />
+    <span>ユーザグループ経由でのテナント</span>
+    <div>
+      <el-table
+        v-if="noOriginRolesOfTenant.length !== 0"
+        :data="noOriginRolesOfTenant"
+      >
+        <el-table-column prop="displayName" label="テナント名" width="200px">
+          <template slot-scope="prop">
+            {{ prop.row.tenantName }}
+          </template>
+        </el-table-column>
+        <el-table-column label="ロール" width="auto">
+          <template slot-scope="prop">
+            <el-checkbox-group
+              v-model="prop.row.selectedRoleIds"
+              style="white-space: nowrap;"
+            >
+              <template v-for="role in prop.row.roles">
+                <el-checkbox-button :key="role.id" :label="role.id" disabled>
+                  {{ role.displayName }}
+                </el-checkbox-button>
+              </template>
+            </el-checkbox-group>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
   </span>
 </template>
 
@@ -75,6 +104,15 @@ export default {
       type: Array,
       default: () => {
         return []
+      },
+    },
+    notOriginTenants: {
+      type: Object,
+      default: () => {
+        return {
+          selectedTenantIds: [],
+          selectedTenants: [],
+        }
       },
     },
   },
@@ -125,6 +163,40 @@ export default {
         }
       })
       return rolesOfTenant
+    },
+    noOriginRolesOfTenant() {
+      let noOriginRolesOfTenant = []
+      this.tenants.forEach(tenant => {
+        // 選択済みのテナントについて、それぞれ設定
+        if (this.notOriginTenants.selectedTenantIds.includes(tenant.id)) {
+          // システムロール以外のロールの抽出
+          let tmpRoles = []
+          this.roles.forEach(role => {
+            if (!role.isSystemRole) {
+              tmpRoles.push(role)
+            }
+          })
+
+          // 選択済みのロールの設定
+          let selectedRoleIds = []
+          this.notOriginTenants.selectedTenants.forEach(selectedTenant => {
+            if (selectedTenant.tenantId === tenant.id) {
+              selectedTenant.selectedRoleIds.forEach(id => {
+                selectedRoleIds.push(id)
+              })
+            }
+          })
+
+          let element = {
+            tenantId: tenant.id,
+            tenantName: tenant.displayName,
+            roles: tmpRoles,
+            selectedRoleIds: selectedRoleIds,
+          }
+          noOriginRolesOfTenant.push(element)
+        }
+      })
+      return noOriginRolesOfTenant
     },
   },
   methods: {
@@ -209,5 +281,11 @@ export default {
   text-overflow: ellipsis;
   display: inline-block;
   vertical-align: middle;
+}
+
+:disabled-checkbox {
+  color: #fff;
+  background-color: #409eff;
+  border-color: #409eff;
 }
 </style>
