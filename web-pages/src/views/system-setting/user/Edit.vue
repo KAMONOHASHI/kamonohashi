@@ -179,7 +179,9 @@ export default {
         this.detail.tenants.forEach(tenant => {
           let selectedRoleIds = []
           tenant.roles.forEach(role => {
-            selectedRoleIds.push(role.id)
+            if (role.isOrigin) {
+              selectedRoleIds.push(role.id)
+            }
           })
           if (tenant.isOrigin) {
             this.form.tenants.selectedTenants.push({

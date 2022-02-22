@@ -67,7 +67,13 @@
           <template slot-scope="scope">
             <div v-if="showTenants[scope.row.id]">
               <span v-for="(t, index) in scope.row.tenants" :key="index">
-                <span class="tenant" :class="{ 'tenant-default': t.default }">
+                <span
+                  class="tenant"
+                  :class="{
+                    'tenant-default': t.default,
+                    'not-origin-tenant': !t.isOrigin,
+                  }"
+                >
                   {{ t.displayName }}
                 </span>
               </span>
@@ -168,5 +174,8 @@ export default {
 .tenant-default {
   font-weight: bold !important;
   color: #409eff;
+}
+.not-origin-tenant {
+  color: #40ff79c4;
 }
 </style>

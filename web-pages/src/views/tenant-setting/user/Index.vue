@@ -19,7 +19,12 @@
         <el-table-column prop="roles" label="ロール" width="auto">
           <template slot-scope="scope">
             <span v-for="role in scope.row.roles" :key="role.id">
-              <el-tag class="role-tag">{{ role.displayName }}</el-tag>
+              <el-tag
+                class="role-tag"
+                :class="{ 'not-origin-role': !role.isOrigin }"
+              >
+                {{ role.displayName }}
+              </el-tag>
             </span>
           </template>
         </el-table-column>
@@ -69,5 +74,8 @@ export default {
 <style lang="scss" scoped>
 .role-tag {
   margin-right: 8px;
+}
+.not-origin-role {
+  color: #40ff79c4;
 }
 </style>

@@ -88,7 +88,9 @@ export default {
       }
       // ロール一覧からIDを抽出
       this.detail.roles.forEach(s => {
-        this.form.tenantRoleIds.push(s.id)
+        if (s.isOrigin) {
+          this.form.tenantRoleIds.push(s.id)
+        }
       })
       // dangerButtonのパラメータを設定
       this.deleteButtonParams = {
