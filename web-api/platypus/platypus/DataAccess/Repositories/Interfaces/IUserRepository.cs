@@ -88,6 +88,13 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces
         bool IsOriginMember(long userId, long tenantId);
 
         /// <summary>
+        /// 指定したユーザが所属しているテナントを取得する。
+        /// </summary>
+        /// <param name="userId">ユーザID</param>
+        /// <param name="tenantId">テナントID</param>
+        public UserTenantMap FindUserTenantMap(long userId, long tenantId);
+
+        /// <summary>
         /// ユーザをテナントに所属させる。
         /// ユーザIDやテナントIDの存在チェックは行わない。
         /// 結果として、作成したすべての<see cref="UserTenantRegistryMap"/>を返す。

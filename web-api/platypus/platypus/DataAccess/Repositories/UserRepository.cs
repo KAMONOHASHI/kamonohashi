@@ -272,6 +272,14 @@ namespace Nssol.Platypus.DataAccess.Repositories
         {
             return GetModelAll<UserTenantMap>().FirstOrDefault(map => map.UserId == userId && map.TenantId == tenantId).IsOrigin;
         }
+        
+        /// <summary>
+        /// 指定したユーザIDとテナントIDのマップを取得する。
+        /// </summary>
+        public UserTenantMap FindUserTenantMap(long userId, long tenantId)
+        {
+            return FindModel<UserTenantMap>(map => map.UserId == userId && map.TenantId == tenantId);
+        }
 
         /// <summary>
         /// ユーザをテナントに所属させる。
@@ -404,7 +412,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
             }
 
             // ユーザとテナントの紐づけを更新
-            var userTenantMap = FindModel<UserTenantMap>(m => m.UserId == user.Id && m.TenantId == tenantId);
+            var userTenantMap = FindUserTenantMap(user.Id, tenantId);
             if (isOrigin)
             {
                 // KQI上での紐づけとする場合、trueを設定する。
@@ -654,7 +662,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
             var gitMapIds = FindModelAll<TenantGitMap>(map => map.TenantId == tenantId).Select(map => map.Id);
             DeleteModelAll<UserTenantGitMap>(map => map.UserId == userId && gitMapIds.Contains(map.TenantGitMapId));
 
-            UserTenantMap tenantMap = FindModel<UserTenantMap>(map => map.UserId == userId && map.TenantId == tenantId);
+            UserTenantMap tenantMap = FindUserTenantMap(userId, tenantId);
 
             //まずは既存のロールをすべて削除する
             DeleteModelAll<UserRoleMap>(map => map.TenantMapId == tenantMap.Id);
@@ -674,7 +682,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// <exception cref="ArgumentException"><paramref name="roles"/>にシステムロールが含まれていたり、別テナント用のロールが含まれていた場合</exception>
         public void ChangeTenantRole(long userId, long tenantId, IEnumerable<Role> roles, bool isOrigin)
         {
-            UserTenantMap tenantMap = FindModel<UserTenantMap>(map => map.UserId == userId && map.TenantId == tenantId);
+            UserTenantMap tenantMap = FindUserTenantMap(userId, tenantId);
 
             if (isOrigin)
             {
@@ -748,7 +756,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// </summary>
         public string GetClusterToken(long userId, long tenantId)
         {
-            var userTenantMap = FindModel<UserTenantMap>(map => map.UserId == userId && map.TenantId == tenantId);
+            var userTenantMap = FindUserTenantMap(userId, tenantId);
             return userTenantMap.ClusterToken;
         }
 
@@ -757,7 +765,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// </summary>
         public void SetClusterToken(long userId, long tenantId, string token)
         {
-            var userTenantMap = FindModel<UserTenantMap>(map => map.UserId == userId && map.TenantId == tenantId);
+            var userTenantMap = FindUserTenantMap(userId, tenantId);
             userTenantMap.ClusterToken = token;
         }
 
