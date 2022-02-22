@@ -675,8 +675,8 @@ namespace Nssol.Platypus.DataAccess.Repositories
         {
             UserTenantMap tenantMap = FindModel<UserTenantMap>(map => map.UserId == userId && map.TenantId == tenantId);
 
-            //まずは既存のロールをすべて削除する
-            DeleteModelAll<UserRoleMap>(map => map.TenantMapId == tenantMap.Id);
+            // 更新前のユーザとロールの紐づけ一覧を取得しておく。
+            var currentRoleMaps = GetModelAll<UserRoleMap>().Where(m => m.TenantMapId == tenantMap.Id);
 
             foreach (var role in roles)
             {
@@ -685,14 +685,55 @@ namespace Nssol.Platypus.DataAccess.Repositories
                     //Adminロールを特定テナントに所属させようとしている
                     throw new UnauthorizedAccessException($"The tenant role {role.Name} is not assigned to user {userId} as a system role.");
                 }
-                var roleMap = new UserRoleMap()
+                // ユーザとロールの紐づけを更新
+                var userRoleMap = FindModel<UserRoleMap>(m => m.TenantMapId == tenantMap.Id && m.RoleId == role.Id);
+                if (userRoleMap != null)
                 {
-                    RoleId = role.Id,
-                    TenantMapId = tenantMap.Id,
-                    UserId = userId,
-                    IsOrigin = isOrigin
-                };
-                AddModel<UserRoleMap>(roleMap);
+                    // 紐づけ情報が存在する場合更新する
+                    if (isOrigin)
+                    {
+                        // KQI上での紐づけとする場合、trueを設定する。
+                        userRoleMap.IsOrigin = true;
+                    }
+                    List<long> usrRoleMapTmpGroupIds = new List<long>();
+                    if (userRoleMap.UserGroupTenantMapIdList != null && userRoleMap.UserGroupTenantMapIdList.Count() > 0)
+                    {
+                        usrRoleMapTmpGroupIds.AddRange(userRoleMap.UserGroupTenantMapIdList);
+                        usrRoleMapTmpGroupIds = usrRoleMapTmpGroupIds.Distinct().ToList();
+                    }
+                    userRoleMap.UserGroupTenantMapIds = usrRoleMapTmpGroupIds != null && usrRoleMapTmpGroupIds.Count() > 0 ? JsonConvert.SerializeObject(usrRoleMapTmpGroupIds) : null;
+                    // 編集前の情報から対象を除く。
+                    currentRoleMaps = currentRoleMaps.Where(m => m.Id != userRoleMap.Id);
+                }
+                else
+                {
+                    // 紐づけ情報が存在しない場合新規登録する
+                    var roleMap = new UserRoleMap()
+                    {
+                        RoleId = role.Id,
+                        TenantMap = tenantMap,
+                        UserId = userId,
+                        IsOrigin = isOrigin,
+                        UserGroupTenantMapIds = null
+                    };
+                    AddModel<UserRoleMap>(roleMap);
+                }
+            }
+            // 残ったものは不要なロールのため削除する
+            if (currentRoleMaps != null && currentRoleMaps.Count() > 0)
+            {
+                foreach (var roleMap in currentRoleMaps)
+                {
+                    // KQI上だけの紐づけの場合削除する。（ユーザグループ経由での紐づけがあれば残すためfalseを設定する。）
+                    if (string.IsNullOrEmpty(roleMap.UserGroupTenantMapIds))
+                    {
+                        DeleteModel<UserRoleMap>(roleMap);
+                    }
+                    else
+                    {
+                        roleMap.IsOrigin = false;
+                    }
+                }
             }
         }
 
