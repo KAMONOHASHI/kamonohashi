@@ -79,7 +79,7 @@ namespace Nssol.Platypus.Models
         /// <summary>
         /// <see cref="UserGroupTenantMapIds"/>をリスト形式で取得する。
         /// </summary>
-        public List<long> GetUserGroupTenantMapIdList()
+        private List<long> GetUserGroupTenantMapIdList()
         {
             if (UserGroupTenantMapIds == null)
             {
