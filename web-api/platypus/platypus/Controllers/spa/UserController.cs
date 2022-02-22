@@ -93,7 +93,7 @@ namespace Nssol.Platypus.Controllers.spa
             userModel.Tenants = info.TenantDic.Select(x => new TenantInfo(x.Key, x.Value, user.DefaultTenantId) { IsOrigin = userRepository.IsOriginMember(user.Id,x.Key.Id)}).OrderBy(t => t.DisplayName).ToList();
 
             //このユーザのシステムロールを取得
-            userModel.SystemRoles = roleRepository.GetSystemRoles(user.Id).Select(r => new RoleInfo(r));
+            userModel.SystemRoles = roleRepository.GetSystemRoles(user.Id);
 
             return userModel;
         }
@@ -305,7 +305,7 @@ namespace Nssol.Platypus.Controllers.spa
             unitOfWork.Commit();
 
             var userModel = new IndexForAdminOutputModel(user);
-            userModel.SystemRoles = roleRepository.GetSystemRoles(user.Id).Select(r => new RoleInfo(r));
+            userModel.SystemRoles = roleRepository.GetSystemRoles(user.Id);
             return JsonOK(userModel);
         }
 
@@ -506,7 +506,7 @@ namespace Nssol.Platypus.Controllers.spa
             return JsonOK(users.Select(u =>
             {
                 var result = new IndexForTenantOutputModel(u);
-                result.Roles = roleRepository.GetTenantRoles(u.Id, tenantId).OrderBy(r => r.SortOrder).Select(r => new RoleInfo(r));
+                result.Roles = roleRepository.GetTenantRoles(u.Id, tenantId).OrderBy(r => r.SortOrder);
                 return result;
             }));
         }
@@ -539,7 +539,7 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             var result = new IndexForTenantOutputModel(user);
-            result.Roles = roleRepository.GetTenantRoles(user.Id, tenantId).Select(r => new RoleInfo(r));
+            result.Roles = roleRepository.GetTenantRoles(user.Id, tenantId);
 
             //ロール情報・テナント情報と紐づけて、返す
             return JsonOK(result);
@@ -646,7 +646,7 @@ namespace Nssol.Platypus.Controllers.spa
             unitOfWork.Commit();
 
             var result = new IndexForTenantOutputModel(user);
-            result.Roles = roleRepository.GetTenantRoles(user.Id, tenant.Id).Select(r => new RoleInfo(r));
+            result.Roles = roleRepository.GetTenantRoles(user.Id, tenant.Id);
 
             //ロール情報・テナント情報と紐づけて、返す
             return JsonOK(result);

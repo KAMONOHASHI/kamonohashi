@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using Nssol.Platypus.DataAccess.Core;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces;
 using Nssol.Platypus.Infrastructure;
+using Nssol.Platypus.Infrastructure.Infos;
 using Nssol.Platypus.Infrastructure.Types;
 using Nssol.Platypus.Models;
 using System;
@@ -134,9 +135,9 @@ namespace Nssol.Platypus.DataAccess.Repositories
 
             userInfo.SystemRoles = roleRepository.GetSystemRoles(user.Id);
 
-            var tenantDic = new Dictionary<Tenant, List<Role>>();
+            var tenantDic = new Dictionary<Tenant, List<RoleInfo>>();
 
-            Dictionary<long, List<Role>> roles = roleRepository.GetTenantRolesDictionary(user.Id);
+            Dictionary<long, List<RoleInfo>> roles = roleRepository.GetTenantRolesDictionary(user.Id);
 
             // マッピング情報を一件ずつ参照して、引数のuserを更新していく
             foreach (UserTenantMap mapping in user.TenantMaps)
@@ -156,7 +157,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
                 else
                 {
                     //所属しているけどロールが一つもない状態
-                    tenantDic.Add(tenant, new List<Role>());
+                    tenantDic.Add(tenant, new List<RoleInfo>());
                 }
 
                 //デフォルトテナントと一致していたら、userInfoに登録
@@ -674,6 +675,11 @@ namespace Nssol.Platypus.DataAccess.Repositories
         public void ChangeTenantRole(long userId, long tenantId, IEnumerable<Role> roles, bool isOrigin)
         {
             UserTenantMap tenantMap = FindModel<UserTenantMap>(map => map.UserId == userId && map.TenantId == tenantId);
+
+            if (isOrigin)
+            {
+                tenantMap.IsOrigin = true;
+            }
 
             // 更新前のユーザとロールの紐づけ一覧を取得しておく。
             var currentRoleMaps = GetModelAll<UserRoleMap>().Where(m => m.TenantMapId == tenantMap.Id);

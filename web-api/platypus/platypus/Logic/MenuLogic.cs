@@ -250,7 +250,7 @@ namespace Nssol.Platypus.Logic
             }
 
             //現在のロールを取得
-            IEnumerable<Role> roles = menu.MenuType == MenuType.System ?
+            IEnumerable<RoleInfo> roles = menu.MenuType == MenuType.System ?
                 CurrentUserInfo.SystemRoles : //システムメニューの場合はシステムロールを確認
                 CurrentUserInfo.SelectedTenantRoles;
 

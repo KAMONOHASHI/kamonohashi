@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Nssol.Platypus.DataAccess.Core;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces;
 using Nssol.Platypus.Infrastructure;
+using Nssol.Platypus.Infrastructure.Infos;
 using Nssol.Platypus.Models;
 using System;
 using System.Collections.Generic;
@@ -162,13 +163,13 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// ユーザIDの存在チェックは行わない。
         /// </summary>
         /// <param name="userId">ユーザID</param>
-        public IEnumerable<Role> GetSystemRoles(long userId)
+        public IEnumerable<RoleInfo> GetSystemRoles(long userId)
         {
             var roles = GetModelAll<UserRoleMap>().Include(map => map.Role)
                 // ここでToList()をすることでDBからの取得テーブルを確定させる。
                 .ToList()
                 .Where(map => map.Role.IsSystemRole == true && map.UserId == userId)
-                .Select(map => map.Role);
+                .Select(map => new RoleInfo(map));
             return roles;
         }
 
@@ -177,23 +178,23 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// ユーザIDの存在チェックは行わない。
         /// </summary>
         /// <param name="userId">ユーザID</param>
-        public Dictionary<long, List<Role>> GetTenantRolesDictionary(long userId)
+        public Dictionary<long, List<RoleInfo>> GetTenantRolesDictionary(long userId)
         {
             var maps = GetModelAll<UserRoleMap>().Include(map => map.Role).Include(map => map.TenantMap)
                 .Where(map => map.Role.IsSystemRole == false && map.UserId == userId && map.TenantMap != null);
 
-            var tenantDic = new Dictionary<long, List<Role>>();
+            var tenantDic = new Dictionary<long, List<RoleInfo>>();
             foreach (var map in maps)
             {
                 if (tenantDic.ContainsKey(map.TenantMap.TenantId))
                 {
-                    tenantDic[map.TenantMap.TenantId].Add(map.Role);
+                    tenantDic[map.TenantMap.TenantId].Add(new RoleInfo(map));
                 }
                 else
                 {
-                    var list = new List<Role>
+                    var list = new List<RoleInfo>
                     {
-                        map.Role
+                        new RoleInfo(map)
                     };
                     tenantDic.Add(map.TenantMap.TenantId, list);
                 }
@@ -216,11 +217,11 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// </summary>
         /// <param name="userId">ユーザID</param>
         /// <param name="tenantId">テナントID</param>
-        public IEnumerable<Role> GetTenantRoles(long userId, long tenantId)
+        public IEnumerable<RoleInfo> GetTenantRoles(long userId, long tenantId)
         {
             var roles = GetModelAll<UserRoleMap>().Include(map => map.Role).Include(map => map.TenantMap)
                 .Where(map => map.Role.IsSystemRole == false && map.UserId == userId && map.TenantMap != null && map.TenantMap.TenantId == tenantId)
-                .Select(map => map.Role);
+                .Select(map => new RoleInfo(map));
             return roles;
         }
 
