@@ -6127,7 +6127,7 @@
           "Role"
         ],
         "summary": "テナント共通ロール一覧を取得。",
-        "description": "テナント共通ロールが対象。（テナント用カスタムロールは対象外）",
+        "description": "ユーザグループ管理画面から参照する。\r\nテナント共通ロールが対象。（テナント用カスタムロールは対象外）",
         "produces": [
           "application/json"
         ],
@@ -14352,6 +14352,19 @@
         "isCustomed": {
           "description": "カスタムロールか",
           "type": "boolean"
+        },
+        "sortOrder": {
+          "format": "int32",
+          "description": "並び順。小さいほど前に来る。",
+          "type": "integer"
+        },
+        "isOrigin": {
+          "description": "KQI上での紐づけか",
+          "type": "boolean"
+        },
+        "userGroupIds": {
+          "description": "ユーザグループIDリスト",
+          "type": "string"
         }
       }
     },
@@ -14412,6 +14425,10 @@
           "items": {
             "$ref": "#/definitions/Nssol.Platypus.Infrastructure.Infos.RoleInfo"
           }
+        },
+        "isOrigin": {
+          "description": "元々KQI上で紐づけあったか。",
+          "type": "boolean"
         }
       }
     },

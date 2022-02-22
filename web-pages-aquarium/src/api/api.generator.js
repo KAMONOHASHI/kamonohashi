@@ -7921,12 +7921,13 @@ export const postApiV2AdminRolesURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
- * テナント共通ロールが対象。（テナント用カスタムロールは対象外）
- * request: getApiV2AdminTenantCommonRoles
- * url: getApiV2AdminTenantCommonRolesURL
- * method: getApiV2AdminTenantCommonRoles_TYPE
- * raw_url: getApiV2AdminTenantCommonRoles_RAW_URL
- */
+* ユーザグループ管理画面から参照する。
+テナント共通ロールが対象。（テナント用カスタムロールは対象外）
+* request: getApiV2AdminTenantCommonRoles
+* url: getApiV2AdminTenantCommonRolesURL
+* method: getApiV2AdminTenantCommonRoles_TYPE
+* raw_url: getApiV2AdminTenantCommonRoles_RAW_URL
+*/
 export const getApiV2AdminTenantCommonRoles = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   const config = parameters.$config
