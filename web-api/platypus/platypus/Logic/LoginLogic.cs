@@ -302,14 +302,8 @@ namespace Nssol.Platypus.Logic
         /// </summary>
         private async Task AddTenantFromGroup(LdapEntry entry, User user, string password)
         {
-            // グループ経由で参加したテナントを一旦脱退させる
+            // 削除用にグループ経由で参加したテナントを取得する
             var deleteTenants = userRepository.GetTenantByUser(user.Id).ToList();
-            foreach(var deleteTenant in deleteTenants)
-            {
-                userRepository.DetachTenant(user.Id, deleteTenant.Id, true);
-            }
-            // グループ経由で参加したテナントの脱退を確定させる
-            unitOfWork.Commit(user.Name);
 
             // ユーザ情報の取得
             var ldapGroups = entry.getAttribute("memberOf").StringValueArray;
@@ -421,61 +415,58 @@ namespace Nssol.Platypus.Logic
                     }
                 }
                 // 配列が空ではないとき、テナントに参加する
-                if (roleIds.Count != 0)
+                if (roleIds.Count > 0)
                 {
-                    // ロールの重複削除
-                    roleIds = roleIds.Distinct().ToList();
-
                     // 既にテナントに参加しているかチェック
                     if (!await userRepository.IsMemberAsync(user.Id, tenant.Id))
                     {
+                        // 既に登録されているロールを取得
+                        roleIds.AddRange(roleRepository.GetRoles(user.Id).Select(r => r.Id));
+                        // ロールの重複削除
+                        roleIds = roleIds.Distinct().ToList();
+
+                        //ロールについての存在＆入力チェック
+                        var roles = new List<Role>();
+
+                        foreach (long roleId in roleIds)
+                        {
+                            var role = await roleRepository.GetRoleAsync(roleId);
+                            if (role == null)
+                            {
+                                //ロールがない
+                                continue;
+                            }
+                            if (role.IsSystemRole)
+                            {
+                                //システムロールをテナントロールとして追加しようとしている
+                                continue;
+                            }
+                            roles.Add(role);
+                        }
                         // テナント参加
-                        await AddTenantAsync(user, tenant, roleIds, userGroupTenantMapIds);
+                        userRepository.AttachTenant(user, tenant.Id, roles, false, userGroupTenantMapIds);
+                        // ログ出力
+                        LogInformation($"ユーザ{user.Name}をテナント{tenant.Name}へ紐づけました。");
+
+                        // ロールの更新
+                        userRepository.UpdateLdapRole(user.Id, tenant.Id);
                     }
                     else
                     {
-                        //TODO 既にテナントに参加している場合はロールを追加で付与する必要がある
-                        // 一旦テナント脱退
-                        //userRepository.DetachTenant(user.Id, tenant.Id, true);
+                        // UserGroupTenantMapIdsカラムの更新
+                        userRepository.UpdateTenant(user, tenant.Id, null, false, userGroupTenantMapIds);
+                        // ロールの更新
+                        userRepository.UpdateLdapRole(user.Id, tenant.Id);
 
-                        //// テナントに参加
-                        //userRepository.AttachTenant(user, tenant.Id, roles, false, userGroupTenantMapIds);
+                        deleteTenants.Remove(tenant);
                     }
                 }
             }
-        }
-
-        /// <summary>
-        /// 指定したユーザをテナントに新規登録する。
-        /// </summary>
-        private async Task AddTenantAsync(User user, Tenant tenant, List<long> tenantRoleIds, List<long> userGroupTenantMapIds)
-        {
-            //ロールについての存在＆入力チェック
-            var roles = new List<Role>();
-            if (tenantRoleIds != null)
+            // 残ったものは削除
+            foreach (var deleteTenant in deleteTenants)
             {
-                foreach (long roleId in tenantRoleIds)
-                {
-                    var role = await roleRepository.GetRoleAsync(roleId);
-                    if (role == null)
-                    {
-                        //ロールがない
-                        continue;
-                    }
-                    if (role.IsSystemRole)
-                    {
-                        //システムロールをテナントロールとして追加しようとしている
-                        continue;
-                    }
-                    roles.Add(role);
-                }
+                userRepository.DetachTenant(user.Id, deleteTenant.Id, false);
             }
-
-            // テナントに参加
-            userRepository.AttachTenant(user, tenant.Id, roles, false, userGroupTenantMapIds);
-
-            // ログ出力
-            LogInformation($"ユーザ{user.Name}をテナント{tenant.Name}へ紐づけました。");
         }
     }
 }

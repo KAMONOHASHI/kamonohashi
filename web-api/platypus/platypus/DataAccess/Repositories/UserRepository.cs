@@ -250,6 +250,15 @@ namespace Nssol.Platypus.DataAccess.Repositories
         }
 
         /// <summary>
+        /// 指定したテナントにLdap経由で所属しているユーザを取得する。
+        /// テナントIDの存在チェックは行わない。
+        /// </summary>
+        public IEnumerable<User> GetLdapUsers(long tenantId)
+        {
+            return GetModelAll<UserTenantMap>().Where(map => map.TenantId == tenantId && map.UserGroupTenantMapIds != null).Select(map => map.User);
+        }
+
+        /// <summary>
         /// 指定したユーザが所属しているLDAPで参加したテナントを取得する。
         /// </summary>
         public IEnumerable<Tenant> GetTenantByUser(long userId)
@@ -457,30 +466,49 @@ namespace Nssol.Platypus.DataAccess.Repositories
                             // KQI上での紐づけとする場合、trueを設定する。
                             userRoleMap.IsOrigin = true;
                         }
-                        List<long> usrRoleMapTmpGroupIds = groupIds;
-                        if (userRoleMap.UserGroupTenantMapIdList != null && userRoleMap.UserGroupTenantMapIdList.Count() > 0)
+                        else
                         {
-                            usrRoleMapTmpGroupIds.AddRange(userRoleMap.UserGroupTenantMapIdList);
-                            usrRoleMapTmpGroupIds = usrRoleMapTmpGroupIds.Distinct().ToList();
+                            List<long> usrRoleMapTmpGroupIds = groupIds;
+                            if (userRoleMap.UserGroupTenantMapIdList != null && userRoleMap.UserGroupTenantMapIdList.Count() > 0)
+                            {
+                                usrRoleMapTmpGroupIds.AddRange(userRoleMap.UserGroupTenantMapIdList);
+                                usrRoleMapTmpGroupIds = usrRoleMapTmpGroupIds.Distinct().ToList();
+                            }
+                            userRoleMap.UserGroupTenantMapIds = usrRoleMapTmpGroupIds != null && usrRoleMapTmpGroupIds.Count() > 0 ? JsonConvert.SerializeObject(usrRoleMapTmpGroupIds) : null;
                         }
-                        userRoleMap.UserGroupTenantMapIds = usrRoleMapTmpGroupIds != null && usrRoleMapTmpGroupIds.Count() > 0 ? JsonConvert.SerializeObject(usrRoleMapTmpGroupIds) : null;
+
                         // 編集前の情報から対象を除く。
                         currentRoleMaps = currentRoleMaps.Where(m => m.Id != userRoleMap.Id);
                     }
                     else
                     {
                         // 紐づけ情報が存在しない場合新規登録する
-                        var roleMap = new UserRoleMap()
+                        UserRoleMap roleMap;
+                        if (isOrigin)
                         {
-                            RoleId = role.Id,
-                            TenantMap = userTenantMap,
-                            User = user,
-                            IsOrigin = isOrigin,
-                            UserGroupTenantMapIds = 
-                                groupIds != null && groupIds.Count() > 0 
-                                ? JsonConvert.SerializeObject(groupIds) 
-                                : null
-                        };
+                            roleMap = new UserRoleMap()
+                            {
+                                RoleId = role.Id,
+                                TenantMap = userTenantMap,
+                                User = user,
+                                IsOrigin = isOrigin,
+                            };
+                        }
+                        else
+                        {
+                            roleMap = new UserRoleMap()
+                            {
+                                RoleId = role.Id,
+                                TenantMap = userTenantMap,
+                                User = user,
+                                IsOrigin = isOrigin,
+                                UserGroupTenantMapIds =
+                                    groupIds != null && groupIds.Count() > 0
+                                    ? JsonConvert.SerializeObject(groupIds)
+                                    : null
+                            };
+                        }
+
                         AddModel<UserRoleMap>(roleMap);
                     }
                 }
@@ -747,6 +775,79 @@ namespace Nssol.Platypus.DataAccess.Repositories
                     {
                         roleMap.IsOrigin = false;
                     }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 指定したテナントについて、ユーザのLdap経由で付与されたロール情報を更新する。
+        /// </summary>
+        /// <param name="userId">>対象ユーザID</param>
+        /// <param name="tenantId">対象テナントID</param>
+        public void UpdateLdapRole(long userId, long tenantId)
+        {
+            UserTenantMap tenantMap = FindUserTenantMap(userId, tenantId);
+            var currentroleMaps = GetModelAll<UserRoleMap>().Where(map => map.TenantMapId == tenantMap.Id).ToList();
+
+            // ユーザグループからロールを取得
+            var userGroupRoleDictionary = new Dictionary<long, List<long>>();
+            foreach (var userGroupTenantMapId in tenantMap.UserGroupTenantMapIdList)
+            {
+                // ユーザグループの取得
+                var userGroup = GetModelAll<UserGroupTenantMap>().Include(map => map.UserGroup).ThenInclude(u => u.RoleMaps).FirstOrDefault(map => map.Id == userGroupTenantMapId).UserGroup;
+
+                if (userGroup == null)
+                {
+                    continue;
+                }
+
+                foreach (var roleId in userGroup.RoleMaps.Select(map => map.RoleId))
+                {
+                    // 既に紐づいているかチェック
+                    if (userGroupRoleDictionary.ContainsKey(roleId))
+                    {
+                        userGroupRoleDictionary[roleId].Add(userGroupTenantMapId);
+                    }
+                    else
+                    {
+                        userGroupRoleDictionary.Add(roleId, new List<long> { userGroupTenantMapId });
+                    }
+                }
+            }
+
+            // ロールマップに登録
+            foreach (var roleId in userGroupRoleDictionary.Keys)
+            {
+                // ユーザとロールの紐づけを更新
+                var userRoleMap = currentroleMaps.Find(map => map.TenantMapId == tenantMap.Id && map.RoleId == roleId);
+                if (userRoleMap != null)
+                {
+                    // UserGroupTenantMapIdsの更新
+                    userRoleMap.UserGroupTenantMapIds = JsonConvert.SerializeObject(userGroupRoleDictionary[roleId]);
+
+                    currentroleMaps.Remove(userRoleMap);
+                }
+                else
+                {
+                    // 紐づけ情報が存在しない場合新規登録する
+                    var roleMap = new UserRoleMap()
+                    {
+                        RoleId = roleId,
+                        TenantMap = tenantMap,
+                        UserId = userId,
+                        IsOrigin = false,
+                        UserGroupTenantMapIds = JsonConvert.SerializeObject(userGroupRoleDictionary[roleId])
+                    };
+                    AddModel<UserRoleMap>(roleMap);
+                }
+            }
+
+            // 削除対象のロールを削除
+            foreach (var roleMap in currentroleMaps)
+            {
+                if (!roleMap.IsOrigin)
+                {
+                    DeleteModel<UserRoleMap>(roleMap);
                 }
             }
         }

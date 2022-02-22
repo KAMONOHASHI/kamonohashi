@@ -73,6 +73,12 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces
         IEnumerable<User> GetUsers(long tenantId);
 
         /// <summary>
+        /// 指定したテナントにLdap経由で所属しているユーザを取得する。
+        /// テナントIDの存在チェックは行わない。
+        /// </summary>
+        IEnumerable<User> GetLdapUsers(long tenantId);
+
+        /// <summary>
         /// 指定したユーザが所属しているLDAPで参加したテナントを取得する。
         /// </summary>
         IEnumerable<Tenant> GetTenantByUser(long userId);
@@ -139,6 +145,13 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces
         /// <param name="isOrigin">KQI上での紐づけならtrue</param>
         /// <exception cref="ArgumentException"><paramref name="roles"/>にシステムロールが含まれていたり、別テナント用のロールが含まれていた場合</exception>
         void ChangeTenantRole(long userId, long tenantId, IEnumerable<Role> roles, bool isOrigin);
+
+        /// <summary>
+        /// 指定したテナントについて、ユーザのLdap経由で付与されたロール情報を更新する。
+        /// </summary>
+        /// <param name="userId">>対象ユーザID</param>
+        /// <param name="tenantId">対象テナントID</param>
+        void UpdateLdapRole(long userId, long tenantId);
 
         /// <summary>
         /// 指定したユーザ、テナントに対するクラスタトークンを取得する
