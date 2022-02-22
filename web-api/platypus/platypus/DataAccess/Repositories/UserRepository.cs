@@ -403,7 +403,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
             }
 
             // ユーザとテナントの紐づけを更新
-            var userTenantMap = GetModelAll<UserTenantMap>().Where(m => m.UserId == user.Id && m.TenantId == tenantId).FirstOrDefault();
+            var userTenantMap = FindModel<UserTenantMap>(m => m.UserId == user.Id && m.TenantId == tenantId);
             if (isOrigin)
             {
                 // KQI上での紐づけとする場合、trueを設定する。
@@ -439,7 +439,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
                         throw new UnauthorizedAccessException($"The tenant role {role.Name} is not assigned to a user as a system role.");
                     }
                     // ユーザとロールの紐づけを更新
-                    var userRoleMap = GetModelAll<UserRoleMap>().Where(m => m.TenantMapId == userTenantMap.Id && m.RoleId == role.Id).FirstOrDefault();
+                    var userRoleMap = FindModel<UserRoleMap>(m => m.TenantMapId == userTenantMap.Id && m.RoleId == role.Id);
                     if (userRoleMap != null)
                     {
                         // 紐づけ情報が存在する場合更新する
@@ -501,7 +501,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
             foreach (var GitMap in GitMaps)
             {
                 // ユーザとGitの紐づけを更新
-                var userTenantGitMap = GetModelAll<UserTenantGitMap>().Where(m => m.TenantGitMapId == GitMap.Id && m.UserId == user.Id).FirstOrDefault();
+                var userTenantGitMap = FindModel<UserTenantGitMap>(m => m.TenantGitMapId == GitMap.Id && m.UserId == user.Id);
                 if (userTenantGitMap != null)
                 {
                     // 紐づけ情報が存在する場合更新する
@@ -571,7 +571,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
             foreach (var registryMap in registryMaps)
             {
                 // ユーザとレジストリの紐づけを更新
-                var userTenantRegistryMap = GetModelAll<UserTenantRegistryMap>().Where(m => m.TenantRegistryMapId == registryMap.Id && m.UserId == user.Id).FirstOrDefault();
+                var userTenantRegistryMap = FindModel<UserTenantRegistryMap>(m => m.TenantRegistryMapId == registryMap.Id && m.UserId == user.Id);
                 if (userTenantRegistryMap != null)
                 {
                     // 紐づけ情報が存在する場合更新する
