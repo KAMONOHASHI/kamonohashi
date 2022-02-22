@@ -65,7 +65,7 @@
               <kqi-display-error :error="tenantError" />
               <default-tenant-setting
                 v-model="defaultTenantName"
-                :tenants="account.tenants"
+                :tenants="originTenantList"
                 @defaultTenantUpdate="defaultTenantUpdate"
               />
             </div>
@@ -187,6 +187,7 @@ export default {
         slackUrl: '',
         mention: '',
       },
+      originTenantList: [],
     }
   },
   computed: {
@@ -205,6 +206,12 @@ export default {
     await this['account/fetchAccount']()
     this.defaultTenantName = this.account.defaultTenant.name
     this.passwordChangeEnabled = this.account.passwordChangeEnabled
+    // KQI上で紐づけされているテナントのみ対象とする。
+    this.account.tenants.forEach(t => {
+      if (t.isOrigin) {
+        this.originTenantList.push(t)
+      }
+    })
 
     // 選択中のテナントにおけるGit情報を取得する
     await this['gitSelector/fetchGits']()
