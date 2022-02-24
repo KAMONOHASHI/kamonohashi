@@ -24,7 +24,6 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// ロールリポジトリ
         /// </summary>
         private IRoleRepository roleRepository;
-
         private ILogger<UserRepository> logger;
 
         /// <summary>
@@ -263,7 +262,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// </summary>
         public IEnumerable<Tenant> GetTenantByUser(long userId)
         {
-            return GetModelAll<UserTenantMap>().Where(map => map.UserId == userId && !map.IsOrigin).Include(map => map.Tenant).Select(map => map.Tenant);
+            return GetModelAll<UserTenantMap>().Where(map => map.UserId == userId && map.UserGroupTenantMapIds != null).Include(map => map.Tenant).Select(map => map.Tenant);
         }
 
         /// <summary>
@@ -413,11 +412,9 @@ namespace Nssol.Platypus.DataAccess.Repositories
         public IEnumerable<UserTenantRegistryMap> UpdateTenant(User user, long tenantId, IEnumerable<Role> roles, bool isOrigin, List<long> userGroupIds)
         {
             // 引数のユーザグループを加工して準備
-            List<long> groupIds = new List<long>();
             if (userGroupIds != null && userGroupIds.Count() > 0)
             {
-                groupIds.AddRange(userGroupIds);
-                groupIds = groupIds.Distinct().ToList();
+                userGroupIds = userGroupIds.Distinct().ToList();
             }
 
             // ユーザとテナントの紐づけを更新
@@ -427,17 +424,14 @@ namespace Nssol.Platypus.DataAccess.Repositories
                 // KQI上での紐づけとする場合、trueを設定する。
                 userTenantMap.IsOrigin = true;
             }
-            // ユーザグループ経由での紐づけ情報を更新
-            List<long> usrTenantMapTmpGroupIds = groupIds;
-            if (userTenantMap.UserGroupTenantMapIdList != null && userTenantMap.UserGroupTenantMapIdList.Count() > 0)
+            else
             {
-                usrTenantMapTmpGroupIds.AddRange(userTenantMap.UserGroupTenantMapIdList);
-                usrTenantMapTmpGroupIds = usrTenantMapTmpGroupIds.Distinct().ToList();
+                // ユーザグループ経由での紐づけ情報を更新
+                userTenantMap.UserGroupTenantMapIds =
+                    userGroupIds != null && userGroupIds.Count() > 0
+                    ? JsonConvert.SerializeObject(userGroupIds)
+                    : null;
             }
-            userTenantMap.UserGroupTenantMapIds =
-                usrTenantMapTmpGroupIds != null && usrTenantMapTmpGroupIds.Count() > 0 
-                ? JsonConvert.SerializeObject(usrTenantMapTmpGroupIds) 
-                : null;
 
             // ロールについての処理
             if (roles != null)
@@ -460,6 +454,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
                     var userRoleMap = FindModel<UserRoleMap>(m => m.TenantMapId == userTenantMap.Id && m.RoleId == role.Id);
                     if (userRoleMap != null)
                     {
+                        // TODO 現状isOriginがfalseのときここを通ることはない
                         // 紐づけ情報が存在する場合更新する
                         if (isOrigin)
                         {
@@ -468,13 +463,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
                         }
                         else
                         {
-                            List<long> usrRoleMapTmpGroupIds = groupIds;
-                            if (userRoleMap.UserGroupTenantMapIdList != null && userRoleMap.UserGroupTenantMapIdList.Count() > 0)
-                            {
-                                usrRoleMapTmpGroupIds.AddRange(userRoleMap.UserGroupTenantMapIdList);
-                                usrRoleMapTmpGroupIds = usrRoleMapTmpGroupIds.Distinct().ToList();
-                            }
-                            userRoleMap.UserGroupTenantMapIds = usrRoleMapTmpGroupIds != null && usrRoleMapTmpGroupIds.Count() > 0 ? JsonConvert.SerializeObject(usrRoleMapTmpGroupIds) : null;
+                            userRoleMap.UserGroupTenantMapIds = userGroupIds != null && userGroupIds.Count() > 0 ? JsonConvert.SerializeObject(userGroupIds) : null;
                         }
 
                         // 編集前の情報から対象を除く。
@@ -503,8 +492,8 @@ namespace Nssol.Platypus.DataAccess.Repositories
                                 User = user,
                                 IsOrigin = isOrigin,
                                 UserGroupTenantMapIds =
-                                    groupIds != null && groupIds.Count() > 0
-                                    ? JsonConvert.SerializeObject(groupIds)
+                                    userGroupIds != null && userGroupIds.Count() > 0
+                                    ? JsonConvert.SerializeObject(userGroupIds)
                                     : null
                             };
                         }
@@ -547,17 +536,14 @@ namespace Nssol.Platypus.DataAccess.Repositories
                         // KQI上での紐づけとする場合、trueを設定する。
                         userTenantGitMap.IsOrigin = true;
                     }
-                    List<long> userTenantGitMapTmpGroupIds = groupIds;
-                    if (userTenantGitMap.UserGroupTenantMapIdList != null 
-                        && userTenantGitMap.UserGroupTenantMapIdList.Count() > 0)
+                    else
                     {
-                        userTenantGitMapTmpGroupIds.AddRange(userTenantGitMap.UserGroupTenantMapIdList);
-                        userTenantGitMapTmpGroupIds = userTenantGitMapTmpGroupIds.Distinct().ToList();
+                        userTenantGitMap.UserGroupTenantMapIds =
+                            userGroupIds != null && userGroupIds.Count() > 0
+                            ? JsonConvert.SerializeObject(userGroupIds)
+                            : null;
                     }
-                    userTenantGitMap.UserGroupTenantMapIds = 
-                        userTenantGitMapTmpGroupIds != null && userTenantGitMapTmpGroupIds.Count() > 0 
-                        ? JsonConvert.SerializeObject(userTenantGitMapTmpGroupIds) 
-                        : null;
+
                     // 編集前の情報から対象を除く。
                     currentUserTenantGitMaps = currentUserTenantGitMaps.Where(m => m.Id != userTenantGitMap.Id);
                 }
@@ -570,8 +556,8 @@ namespace Nssol.Platypus.DataAccess.Repositories
                         User = user,
                         IsOrigin = isOrigin,
                         UserGroupTenantMapIds =
-                            groupIds != null && groupIds.Count() > 0 
-                            ? JsonConvert.SerializeObject(groupIds) 
+                            userGroupIds != null && userGroupIds.Count() > 0 
+                            ? JsonConvert.SerializeObject(userGroupIds) 
                             : null
                     };
                     // UserTenantGitMap において userId と TenantGitMapId のペアが存在しなければ、エントリ新規追加のためログに出力する
@@ -617,17 +603,14 @@ namespace Nssol.Platypus.DataAccess.Repositories
                         // KQI上での紐づけとする場合、trueを設定する。
                         userTenantRegistryMap.IsOrigin = true;
                     }
-                    List<long> userTenantRegistryMapTmpGroupIds = groupIds;
-                    if (userTenantRegistryMap.UserGroupTenantMapIdList != null 
-                        && userTenantRegistryMap.UserGroupTenantMapIdList.Count() > 0)
+                    else
                     {
-                        userTenantRegistryMapTmpGroupIds.AddRange(userTenantRegistryMap.UserGroupTenantMapIdList);
-                        userTenantRegistryMapTmpGroupIds = userTenantRegistryMapTmpGroupIds.Distinct().ToList();
+                        userTenantRegistryMap.UserGroupTenantMapIds =
+                            userGroupIds != null && userGroupIds.Count() > 0
+                            ? JsonConvert.SerializeObject(userGroupIds)
+                            : null;
                     }
-                    userTenantRegistryMap.UserGroupTenantMapIds = 
-                        userTenantRegistryMapTmpGroupIds != null && userTenantRegistryMapTmpGroupIds.Count() > 0 
-                        ? JsonConvert.SerializeObject(userTenantRegistryMapTmpGroupIds) 
-                        : null;
+
                     // 編集前の情報から対象を除く。
                     currentUserTenantRegistryMaps = currentUserTenantRegistryMaps.Where(m => m.Id != userTenantRegistryMap.Id);
 
@@ -641,9 +624,9 @@ namespace Nssol.Platypus.DataAccess.Repositories
                         TenantRegistryMap = registryMap,
                         User = user,
                         IsOrigin = isOrigin,
-                        UserGroupTenantMapIds = 
-                            groupIds != null && groupIds.Count() > 0 
-                            ? JsonConvert.SerializeObject(groupIds) 
+                        UserGroupTenantMapIds =
+                            userGroupIds != null && userGroupIds.Count() > 0 
+                            ? JsonConvert.SerializeObject(userGroupIds) 
                             : null
                     };
 
@@ -700,6 +683,39 @@ namespace Nssol.Platypus.DataAccess.Repositories
         }
 
         /// <summary>
+        /// 指定したユーザとテナントのマップから指定したユーザグループとの紐づけを解除する。
+        /// ユーザグループとの紐づけがなくなった場合はテナントから脱退する。
+        /// </summary>
+        /// <param name="user">対象ユーザ</param>
+        /// <param name="tenantId">対象テナントID</param>
+        /// <param name="userGroupId">対象ユーザーグループID</param>
+        public void DetachUserGroup(User user, long tenantId, long userGroupId)
+        {
+            // マップを取得
+            var tenantMap = FindUserTenantMap(user.Id, tenantId);
+
+            // ユーザグループテナントマップIDを取得
+            var deleteId = GetModelAll<UserGroupTenantMap>().FirstOrDefault(map => map.UserGroupId == userGroupId && map.TenantId == tenantId).Id;
+
+            // ユーザグループとの紐づけを解除
+            var userGroupTenantMapList = tenantMap.UserGroupTenantMapIdList;
+            userGroupTenantMapList.Remove(deleteId);
+
+            if(!tenantMap.IsOrigin && userGroupTenantMapList.Count == 0)
+            {
+                // KQIとの紐づけがなく、ユーザグループとの紐づけもなくなった場合はテナントから脱退する
+                DetachTenant(user.Id, tenantId, false);
+            }
+            else
+            {
+                // ユーザグループとの紐づけ情報を更新
+                UpdateTenant(user, tenantId, null, false, userGroupTenantMapList);
+                // ロール情報を更新
+                UpdateLdapRole(user.Id, tenantId);
+            }
+        }
+
+        /// <summary>
         /// 指定したテナントについて、ユーザのロールを変更する。
         /// ユーザIDやテナントIDの存在チェック、および所属済みかのチェックは行わない。
         /// </summary>
@@ -710,7 +726,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// <exception cref="ArgumentException"><paramref name="roles"/>にシステムロールが含まれていたり、別テナント用のロールが含まれていた場合</exception>
         public void ChangeTenantRole(long userId, long tenantId, IEnumerable<Role> roles, bool isOrigin)
         {
-            UserTenantMap tenantMap = FindUserTenantMap(userId, tenantId);
+            var tenantMap = FindUserTenantMap(userId, tenantId);
 
             if (isOrigin)
             {
@@ -784,7 +800,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// </summary>
         /// <param name="userId">>対象ユーザID</param>
         /// <param name="tenantId">対象テナントID</param>
-        public void UpdateLdapRole(long userId, long tenantId)
+        public async void UpdateLdapRole(long userId, long tenantId)
         {
             UserTenantMap tenantMap = FindUserTenantMap(userId, tenantId);
             var currentroleMaps = GetModelAll<UserRoleMap>().Where(map => map.TenantMapId == tenantMap.Id).ToList();
@@ -794,14 +810,18 @@ namespace Nssol.Platypus.DataAccess.Repositories
             foreach (var userGroupTenantMapId in tenantMap.UserGroupTenantMapIdList)
             {
                 // ユーザグループの取得
-                var userGroup = GetModelAll<UserGroupTenantMap>().Include(map => map.UserGroup).ThenInclude(u => u.RoleMaps).FirstOrDefault(map => map.Id == userGroupTenantMapId).UserGroup;
+                var userGroupMap = GetModelAll<UserGroupTenantMap>().Include(map => map.UserGroup).ThenInclude(u => u.RoleMaps).FirstOrDefault(map => map.Id == userGroupTenantMapId);
 
-                if (userGroup == null)
+                if (userGroupMap == null)
                 {
+                    var userGroupTenantMapIdList = tenantMap.UserGroupTenantMapIdList;
+                    userGroupTenantMapIdList.Remove(userGroupTenantMapId);
+                    // マップ情報が取れない場合は各テーブルのユーザグループテナントマップ情報を更新する
+                    UpdateTenant(await GetByIdAsync(userId), tenantId, null, false, userGroupTenantMapIdList);
                     continue;
                 }
 
-                foreach (var roleId in userGroup.RoleMaps.Select(map => map.RoleId))
+                foreach (var roleId in userGroupMap.UserGroup.RoleMaps.Select(map => map.RoleId))
                 {
                     // 既に紐づいているかチェック
                     if (userGroupRoleDictionary.ContainsKey(roleId))
@@ -848,6 +868,11 @@ namespace Nssol.Platypus.DataAccess.Repositories
                 if (!roleMap.IsOrigin)
                 {
                     DeleteModel<UserRoleMap>(roleMap);
+                }
+                else
+                {
+                    // KQIの紐づけが残っているときはカラムをnullに更新する
+                    roleMap.UserGroupTenantMapIds = null;
                 }
             }
         }

@@ -543,7 +543,12 @@ namespace Nssol.Platypus.Controllers.spa
             foreach (var removedUserGroup in currentUserGroups)
             {
                 userGroupRepository.DetachUserGroupFromTenant(tenant, removedUserGroup);
-                // TODO ここでテナント脱退処理をする
+                // ユーザグループとユーザテナントの紐づけを外す
+                var users = userRepository.GetLdapUsers(tenant.Id).ToList();
+                foreach (var user in users)
+                {
+                    userRepository.DetachUserGroup(user, tenant.Id, removedUserGroup.Id);
+                }
             }
 
             // 関連するクラスタトークンをリセット

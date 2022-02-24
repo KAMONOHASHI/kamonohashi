@@ -197,11 +197,19 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonNotFound($"UserGroup ID {id.Value} is not found.");
             }
 
-            // TODO このグループ紐づいているテナントに参加しているLDPAユーザをテナントから脱退させる
-            // await DetachTenant(userGroup);
+            // 影響のあるテナントに所属するLdapユーザーの紐づけを解除する
+            var tenants = userGroupRepository.GetTenantsByUserGroup(id.Value).ToList();
+            foreach (var tenant in tenants)
+            {
+                var users = userRepository.GetLdapUsers(tenant.Id).ToList();
+                foreach (var user in users)
+                {
+                    userRepository.DetachUserGroup(user, tenant.Id, userGroup.Id);
+                }
+            }
+
             userGroupRepository.Delete(userGroup);
             unitOfWork.Commit();
-
             // テナントで持っているユーザグループ情報を更新するため
             tenantRepository.Refresh();
 
@@ -236,43 +244,6 @@ namespace Nssol.Platypus.Controllers.spa
                 roles.Add(role);
             }
             return Result<IEnumerable<Role>, string>.CreateResult(roles);
-        }
-
-        /// <summary>
-        /// 指定されたグループからテナントに参加しているLDPAユーザをテナントから脱退させる
-        /// </summary>
-        private async Task DetachTenant(UserGroup userGroup)
-        {
-            //userRepository.DetachTenant(user.Id, tenant.Id, true);
-            // ユーザグループに紐づくテナントを取得
-            var tenants = userGroupRepository.GetTenantsByUserGroup(userGroup.Id).ToList();
-
-            foreach(var tenant in tenants)
-            {
-                //// テナントに参加しているLDAPユーザを取得
-                //var users = userRepository.GetLdapUsers(tenants.First().Id).ToList();
-                //foreach(var user in users)
-                //{
-                //    // 紐づいているユーザグループ情報を取得
-                //    var userGroupIds = userRepository.GetUserGroupIds(user.Id, tenant.Id);
-                    
-                //    if (userGroupIds.Count() == 1)
-                //    {
-                //        // ユーザグループが一つときはテナントから脱退
-                //        userRepository.DetachTenant(user.Id, tenant.Id, false);
-                //    }
-                //    else
-                //    {
-                //        // ユーザグループが２つ以上のときはテナントに入りなおす？
-                //        // ロール情報を更新する必要がある？
-                //        // ロールを削除するだけでよい？
-                        
-
-                //        userRepository.DetachTenant(user.Id, tenant.Id, true);
-                //    }
-                    
-                //}
-            }
         }
     }
 }

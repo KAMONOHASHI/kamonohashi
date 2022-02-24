@@ -136,6 +136,15 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces
         void DetachTenant(long userId, long tenantId, bool temporary);
 
         /// <summary>
+        /// 指定したユーザとテナントのマップから指定したユーザグループとの紐づけを解除する。
+        /// ユーザグループとの紐づけがなくなった場合はテナントから脱退する。
+        /// </summary>
+        /// <param name="user">対象ユーザ</param>
+        /// <param name="tenantId">対象テナントID</param>
+        /// <param name="userGroupId">対象ユーザーグループID</param>
+        void DetachUserGroup(User user, long tenantId, long userGroupId);
+
+        /// <summary>
         /// 指定したテナントについて、ユーザのロールを変更する。
         /// ユーザIDやテナントIDの存在チェック、および所属済みかのチェックは行わない。
         /// </summary>
