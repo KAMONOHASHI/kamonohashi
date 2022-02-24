@@ -420,8 +420,6 @@ namespace Nssol.Platypus.Logic
                     // 既にテナントに参加しているかチェック
                     if (!await userRepository.IsMemberAsync(user.Id, tenant.Id))
                     {
-                        // 既に登録されているロールを取得
-                        roleIds.AddRange(roleRepository.GetRoles(user.Id).Select(r => r.Id));
                         // ロールの重複削除
                         roleIds = roleIds.Distinct().ToList();
 
@@ -447,9 +445,6 @@ namespace Nssol.Platypus.Logic
                         userRepository.AttachTenant(user, tenant.Id, roles, false, userGroupTenantMapIds);
                         // ログ出力
                         LogInformation($"ユーザ{user.Name}をテナント{tenant.Name}へ紐づけました。");
-
-                        // ロールの更新
-                        userRepository.UpdateLdapRole(user.Id, tenant.Id);
                     }
                     else
                     {
@@ -465,6 +460,15 @@ namespace Nssol.Platypus.Logic
             // 残ったものは削除
             foreach (var deleteTenant in deleteTenants)
             {
+                // KQI経由で参加している場合はテナント脱退しない
+                if(userRepository.IsOriginMember(user.Id, deleteTenant.Id))
+                {
+                    // UserGroupTenantMapIdsカラムをnullにする
+                    userRepository.UpdateTenant(user, deleteTenant.Id, null, false, null);
+                    // ロールの更新
+                    userRepository.UpdateLdapRole(user.Id, deleteTenant.Id);
+                    continue;
+                }
                 userRepository.DetachTenant(user.Id, deleteTenant.Id, false);
             }
         }
