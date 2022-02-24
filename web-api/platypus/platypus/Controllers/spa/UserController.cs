@@ -296,6 +296,7 @@ namespace Nssol.Platypus.Controllers.spa
                     if (!string.IsNullOrEmpty(map.UserGroupTenantMapIds))
                     {
                         // KQI上での紐づけを外し、LDAP経由での所属は保持する。
+                        roleRepository.DetachOriginRole(map);
                         map.IsOrigin = false;
                     }
                     else

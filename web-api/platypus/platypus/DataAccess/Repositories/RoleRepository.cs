@@ -299,6 +299,29 @@ namespace Nssol.Platypus.DataAccess.Repositories
         }
 
         /// <summary>
+        /// 指定したユーザのKQI由来のロールの紐づけを全て外す
+        /// </summary>
+        /// <param name="userTenantMap">ユーザテナントマップ</param>
+        public void DetachOriginRole(UserTenantMap userTenantMap)
+        {
+            var roleMaps = GetModelAll<UserRoleMap>().Where(map => map.TenantMapId == userTenantMap.Id && map.IsOrigin);
+
+            foreach(var roleMap in roleMaps)
+            {
+                if(roleMap.UserGroupTenantMapIds == null)
+                {
+                    // ユーザグループの紐づけがないロールは削除する
+                    DeleteModel<UserRoleMap>(roleMap);
+                }
+                else
+                {
+                    // ユーザグループの紐づけがあるロールを更新
+                    roleMap.IsOrigin = false;
+                }
+            }
+        }
+
+        /// <summary>
         /// メニューとロールの対応表を取得する
         /// </summary>
         private async Task<IEnumerable<MenuRoleMap>> GetMenuRolesMapsAsync()

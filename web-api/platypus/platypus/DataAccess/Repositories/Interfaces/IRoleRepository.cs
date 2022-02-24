@@ -106,6 +106,11 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces
         /// </summary>
         void DetachSystemRole(long userId);
 
+        /// <summary>
+        /// 指定したユーザのKQI由来のロールの紐づけを全て外す
+        /// </summary>
+        /// <param name="userTenantMap">ユーザテナントマップ</param>
+        void DetachOriginRole(UserTenantMap userTenantMap);
 
         /// <summary>
         /// 指定したロールに、指定したメニューへのアクセス権限があるか、確認する
