@@ -141,7 +141,7 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces
         /// </summary>
         /// <param name="user">対象ユーザ</param>
         /// <param name="tenantId">対象テナントID</param>
-        /// <param name="userGroupId">対象ユーザーグループID</param>
+        /// <param name="userGroupId">対象ユーザグループID</param>
         void DetachUserGroup(User user, long tenantId, long userGroupId);
 
         /// <summary>

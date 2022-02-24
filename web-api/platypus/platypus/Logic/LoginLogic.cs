@@ -467,9 +467,11 @@ namespace Nssol.Platypus.Logic
                     userRepository.UpdateTenant(user, deleteTenant.Id, null, false, null);
                     // ロールの更新
                     userRepository.UpdateLdapRole(user.Id, deleteTenant.Id);
-                    continue;
                 }
-                userRepository.DetachTenant(user.Id, deleteTenant.Id, false);
+                else
+                {
+                    userRepository.DetachTenant(user.Id, deleteTenant.Id, false);
+                }
             }
         }
     }
