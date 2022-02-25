@@ -64,6 +64,7 @@
             :create-template="true"
             :required-form="false"
             :form-type="'前処理'"
+            @copy="copyAqContainer"
           />
           <!-- step 3 -->
           <training
@@ -73,6 +74,7 @@
             :create-template="true"
             :required-form="true"
             :form-type="'学習'"
+            @copy="copyAqContainer"
           />
           <!-- step 4 : 推論 -->
           <evaluation
@@ -82,6 +84,7 @@
             :create-template="true"
             :required-form="false"
             :form-type="'推論'"
+            @copy="copyAqContainer"
           />
         </el-form>
       </el-col>
@@ -234,6 +237,25 @@ export default {
       'template/post',
       'template/put',
     ]),
+    copyAqContainer(info) {
+      let from = info.from
+      let to = info.to
+      let fromData = null
+      if (from == 'preprocessing') {
+        fromData = this.form.preprocForm
+      } else if (from == 'train') {
+        fromData = this.form.trainingForm
+      } else if (from == 'evaluation') {
+        fromData = this.form.evaluationForm
+      }
+      if (to == 'preprocessing') {
+        this.form.preprocForm = Object.assign({}, fromData)
+      } else if (to == 'train') {
+        this.form.trainingForm = Object.assign({}, fromData)
+      } else if (to == 'evaluation') {
+        this.form.evaluationForm = Object.assign({}, fromData)
+      }
+    },
     async initialize() {
       let url = this.$route.path
       let type = url.split('/')[3] // ["", "preprocessing", "{type}", "{id}"]

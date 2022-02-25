@@ -32,6 +32,7 @@
           :create-teplate="false"
           :required-form="false"
           :form-type="'前処理'"
+          @copy="copyAqContainer"
         />
       </el-tab-pane>
       <el-tab-pane label="学習" name="train">
@@ -42,6 +43,7 @@
           :create-teplate="false"
           :required-form="true"
           :form-type="'学習'"
+          @copy="copyAqContainer"
         />
       </el-tab-pane>
       <el-tab-pane label="推論" name="evaluation">
@@ -52,6 +54,7 @@
           :create-teplate="false"
           :required-form="false"
           :form-type="'推論'"
+          @copy="copyAqContainer"
         />
       </el-tab-pane>
     </el-tabs>
@@ -186,6 +189,28 @@ export default {
       'delete',
       'deleteVersion',
     ]),
+    copyAqContainer(info) {
+      let from = info.from
+      let to = info.to
+      let fromData = null
+      if (from == 'preprocessing') {
+        fromData = this.preprocForm
+      } else if (from == 'train') {
+        fromData = this.trainingForm
+      } else if (from == 'evaluation') {
+        fromData = this.evaluationForm
+      }
+      if (to == 'preprocessing') {
+        this.preprocForm = Object.assign({}, fromData)
+        this.trainingForm.name = 'preprocForm'
+      } else if (to == 'train') {
+        this.trainingForm = Object.assign({}, fromData)
+        this.trainingForm.name = 'trainingForm'
+      } else if (to == 'evaluation') {
+        this.evaluationForm = Object.assign({}, fromData)
+        this.trainingForm.name = 'evaluationForm'
+      }
+    },
 
     tabChange() {
       let version = this.$route.query.version

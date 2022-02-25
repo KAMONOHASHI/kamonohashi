@@ -10,6 +10,64 @@
 <template>
   <div>
     <el-form :model="form">
+      <el-row type="flex" style="padding-bottom:10px">
+        <el-col>
+          <div v-if="formType == '前処理'">
+            <el-button
+              icon="el-icon-document-copy"
+              type="info"
+              plain
+              size="mini"
+              @click="copy('train')"
+              >入力内容を学習からコピー</el-button
+            >
+            <el-button
+              icon="el-icon-document-copy"
+              type="info"
+              plain
+              size="mini"
+              @click="copy('evaluation')"
+              >入力内容を推論からコピー</el-button
+            >
+          </div>
+          <div v-if="formType == '学習'">
+            <el-button
+              icon="el-icon-document-copy"
+              type="info"
+              plain
+              size="mini"
+              @click="copy('preprocessing')"
+              >入力内容を前処理からコピー</el-button
+            >
+            <el-button
+              icon="el-icon-document-copy"
+              type="info"
+              plain
+              size="mini"
+              @click="copy('evaluation')"
+              >入力内容を推論からコピー</el-button
+            >
+          </div>
+          <div v-if="formType == '推論'">
+            <el-button
+              icon="el-icon-document-copy"
+              type="info"
+              plain
+              size="mini"
+              @click="copy('preprocessing')"
+              >入力内容を前処理からコピー</el-button
+            >
+            <el-button
+              icon="el-icon-document-copy"
+              type="info"
+              plain
+              size="mini"
+              @click="copy('train')"
+              >入力内容を学習からコピー</el-button
+            >
+          </div>
+        </el-col>
+      </el-row>
       <el-row :gutter="20">
         <el-col :span="12">
           <kqi-container-selector
@@ -145,6 +203,7 @@ export default {
       branches: [],
       commits: [],
       commitDetail: null,
+      updateValue: false,
     }
   },
   computed: {
@@ -166,36 +225,61 @@ export default {
       },
     },
   },
+  watch: {
+    async value() {
+      this.updateValue = true
+      this.retrieveData()
+    },
+  },
 
   async created() {
-    // クォータ情報、レジストリサーバー一覧、gitサーバー一覧を取得
-    await this['cluster/fetchQuota']()
-    await this['registrySelector/fetchRegistries']()
-    await this['gitSelector/fetchGits']()
-
-    // 新規作成の場合レジストリサーバーとgitサーバーのみ設定されたデフォルトを使用し、
-    // 残りの項目はnullのままにする
-    if (this.createTemplate) {
-      this.form.containerImage.registry = this.registries.find(registry => {
-        return registry.id === this.defaultRegistryId
-      })
-      this.form.gitModel.git = this.gits.find(git => {
-        return git.id === this.defaultGitId
-      })
-      return
-    }
-
-    // 以下はテンプレート詳細画面で開かれた場合
-    const gitModel = { ...this.value.gitModel }
-    const containerImage = { ...this.value.containerImage }
-
-    await this.setupFromContainerImage(containerImage)
-    await this.setupFormGitModel(gitModel)
-
-    this.form.entryPoint = this.value.entryPoint
-    this.form.resource = { ...this.value.resource }
+    this.retrieveData()
   },
   methods: {
+    async retrieveData() {
+      // クォータ情報、レジストリサーバー一覧、gitサーバー一覧を取得
+      await this['cluster/fetchQuota']()
+      await this['registrySelector/fetchRegistries']()
+      await this['gitSelector/fetchGits']()
+
+      // 新規作成の場合レジストリサーバーとgitサーバーのみ設定されたデフォルトを使用し、
+      // 残りの項目はnullのままにする
+      if (this.createTemplate) {
+        this.form.containerImage.registry = this.registries.find(registry => {
+          return registry.id === this.defaultRegistryId
+        })
+        this.form.gitModel.git = this.gits.find(git => {
+          return git.id === this.defaultGitId
+        })
+        XMLHttpRequestEventTarget
+        if (this.updateValue == false) {
+          return
+        }
+      }
+
+      // 以下はテンプレート詳細画面で開かれた場合
+      const gitModel = { ...this.value.gitModel }
+      const containerImage = { ...this.value.containerImage }
+
+      await this.setupFromContainerImage(containerImage)
+      await this.setupFormGitModel(gitModel)
+
+      this.form.entryPoint = this.value.entryPoint
+      this.form.resource = { ...this.value.resource }
+      this.updateValue = false
+    },
+    copy(from) {
+      let formtype = ''
+      if (this.formType == '前処理') {
+        formtype = 'preprocessing'
+      } else if (this.formType == '学習') {
+        formtype = 'train'
+      } else if (this.formType == '推論') {
+        formtype = 'evaluation'
+      }
+
+      this.$emit('copy', { from: from, to: formtype })
+    },
     // テンプレート詳細画面の場合にコンテナイメージの初期情報を設定する
     async setupFromContainerImage(containerImage) {
       this.form.containerImage = {
@@ -218,7 +302,11 @@ export default {
       }
 
       // レジストリの初期値を選択
-      await this.selectRegistry(containerImage.registryId)
+      if (containerImage.registryId != null) {
+        await this.selectRegistry(containerImage.registryId)
+      } else {
+        await this.selectRegistry(containerImage.registry.id)
+      }
       await this.selectImage(containerImage.image)
       // タグ一覧に該当のタグがない場合、タグを追加して選択
       if (!this.tags.includes(containerImage.tag)) {
@@ -247,16 +335,26 @@ export default {
         })
         return
       }
-
-      await this.selectGit(gitModel.gitId)
-      await this.selectRepository(gitModel.owner + '/' + gitModel.repository)
-      await this.selectBranch(gitModel.branch)
+      let commitId = null
+      if (gitModel.gitId != null) {
+        await this.selectGit(gitModel.gitId)
+        await this.selectRepository(gitModel.owner + '/' + gitModel.repository)
+        await this.selectBranch(gitModel.branch)
+        commitId = gitModel.commitId
+      } else {
+        await this.selectGit(gitModel.git.id)
+        await this.selectRepository(
+          gitModel.repository.owner + '/' + gitModel.repository.name,
+        )
+        await this.selectBranch(gitModel.branch.branchName)
+        commitId = gitModel.commit.commitId
+      }
 
       // commitを抽出
       let commit = null
       if (this.commits != null) {
         commit = this.commits.find(commit => {
-          return commit.commitId === gitModel.commitId
+          return commit.commitId === commitId
         })
       }
 
@@ -268,7 +366,7 @@ export default {
           gitId: this.form.gitModel.git.id,
           owner: this.form.gitModel.repository.owner,
           repositoryName: this.form.gitModel.repository.name,
-          commitId: gitModel.commitId,
+          commitId: commitId,
         }
         let commitDetail = (await api.git.getCommit(params)).data
         this.form.gitModel.commit = commitDetail
