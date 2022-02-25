@@ -188,7 +188,8 @@ export default {
           tenant.roles.forEach(role => {
             if (role.isOrigin) {
               selectedRoleIds.push(role.id)
-            } else {
+            }
+            if (role.userGroupTanantMapIdLists.length > 0) {
               selectedNotOriginTenants.push(role.id)
             }
           })
@@ -199,21 +200,16 @@ export default {
               selectedRoleIds: selectedRoleIds,
               default: tenant.default,
             })
-          } else {
+            this.form.tenants.selectedTenantIds.push(tenant.id)
+          }
+          if (selectedNotOriginTenants.length > 0) {
             this.notOriginTenants.selectedTenants.push({
               tenantId: tenant.id,
               tenantName: tenant.name,
               selectedRoleIds: selectedNotOriginTenants,
               default: tenant.default,
             })
-          }
-        })
-
-        this.detail.tenants.forEach(s => {
-          if (s.isOrigin) {
-            this.form.tenants.selectedTenantIds.push(s.id)
-          } else {
-            this.notOriginTenants.selectedTenantIds.push(s.id)
+            this.notOriginTenants.selectedTenantIds.push(tenant.id)
           }
         })
 
