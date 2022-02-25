@@ -50,7 +50,7 @@
     </div>
 
     <br />
-    <span>ユーザグループ経由でのテナント</span>
+    <label>ユーザグループ経由でのテナント</label>
     <div>
       <el-table
         v-if="noOriginRolesOfTenant.length !== 0"
@@ -58,7 +58,9 @@
       >
         <el-table-column prop="displayName" label="テナント名" width="200px">
           <template slot-scope="prop">
-            {{ prop.row.tenantName }}
+            <el-radio :label="true" disabled>
+              {{ prop.row.tenantName }}
+            </el-radio>
           </template>
         </el-table-column>
         <el-table-column label="ロール" width="auto">
@@ -68,7 +70,11 @@
               style="white-space: nowrap;"
             >
               <template v-for="role in prop.row.roles">
-                <el-checkbox-button :key="role.id" :label="role.id" disabled>
+                <el-checkbox-button
+                  :key="role.id"
+                  :label="role.id"
+                  style="pointer-events: none; opacity: 0.7;"
+                >
                   {{ role.displayName }}
                 </el-checkbox-button>
               </template>
