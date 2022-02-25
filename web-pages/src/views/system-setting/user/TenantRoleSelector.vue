@@ -67,11 +67,12 @@
           <template slot-scope="prop">
             <el-checkbox-group
               v-model="prop.row.selectedRoleIds"
-              style="white-space: nowrap;"
+              style="white-space: nowrap; cursor: not-allowed;"
             >
               <template v-for="role in prop.row.roles">
                 <el-checkbox-button
                   :key="role.id"
+                  class="checkbox-role"
                   :label="role.id"
                   style="pointer-events: none; opacity: 0.7;"
                 >
@@ -287,6 +288,12 @@ export default {
   text-overflow: ellipsis;
   display: inline-block;
   vertical-align: middle;
+}
+
+.checkbox-role.is-checked::v-deep .el-checkbox-button__inner {
+  background-color: #40ff79c4;
+  border-color: #40ff79c4;
+  box-shadow: -1px 0 0 0 #ffffff;
 }
 
 :disabled-checkbox {

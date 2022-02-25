@@ -33,7 +33,10 @@
                 <template slot-scope="scope">
                   <span
                     class="tenant"
-                    :class="{ 'tenant-default': scope.row.default }"
+                    :class="{
+                      'tenant-default': scope.row.default,
+                      'not-origin': !scope.row.isOrigin,
+                    }"
                   >
                     {{ scope.row.displayName }}
                   </span>
@@ -45,7 +48,13 @@
                     <el-tag v-if="role.isCustomed" type="info" class="role-tag">
                       {{ role.displayName }}
                     </el-tag>
-                    <el-tag v-else class="role-tag">
+                    <el-tag
+                      v-else
+                      class="role-tag"
+                      :class="{
+                        'not-origin': !role.isOrigin,
+                      }"
+                    >
                       {{ role.displayName }}
                     </el-tag>
                   </span>
@@ -71,7 +80,7 @@
                   class="tenant"
                   :class="{
                     'tenant-default': t.default,
-                    'not-origin-tenant': !t.isOrigin,
+                    'not-origin': !t.isOrigin,
                   }"
                 >
                   {{ t.displayName }}
@@ -175,7 +184,7 @@ export default {
   font-weight: bold !important;
   color: #409eff;
 }
-.not-origin-tenant {
+.not-origin {
   color: #40ff79c4;
 }
 </style>
