@@ -22,6 +22,7 @@
               <el-tag
                 class="role-tag"
                 :class="{ 'not-origin-role': !role.isOrigin }"
+                :type="role.isOrigin ? '' : 'success'"
               >
                 {{ role.displayName }}
               </el-tag>

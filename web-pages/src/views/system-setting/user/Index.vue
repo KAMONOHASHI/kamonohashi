@@ -54,6 +54,7 @@
                       :class="{
                         'not-origin': !role.isOrigin,
                       }"
+                      :type="role.isOrigin ? '' : 'success'"
                     >
                       {{ role.displayName }}
                     </el-tag>
