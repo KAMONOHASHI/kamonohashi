@@ -17,13 +17,15 @@
           :roles="roles"
           :show-system-role="false"
         />
-        <label>ユーザグループ経由でのテナントロール</label>
-        <kqi-role-selector
-          v-model="tenantNotOriginRoleIds"
-          :roles="roles"
-          :show-system-role="false"
-          :is-disabled="true"
-        />
+        <div v-if="tenantNotOriginRoleIds.length > 0">
+          <label>ユーザグループ経由でのテナントロール</label>
+          <kqi-role-selector
+            v-model="tenantNotOriginRoleIds"
+            :roles="roles"
+            :show-system-role="false"
+            :is-disabled="true"
+          />
+        </div>
       </el-form-item>
     </el-form>
   </kqi-dialog>
