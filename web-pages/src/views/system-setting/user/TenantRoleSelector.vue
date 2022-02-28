@@ -49,13 +49,10 @@
       </el-table>
     </div>
 
-    <br />
-    <label>ユーザグループ経由でのテナント</label>
-    <div>
-      <el-table
-        v-if="noOriginRolesOfTenant.length !== 0"
-        :data="noOriginRolesOfTenant"
-      >
+    <div v-if="noOriginRolesOfTenant.length > 0">
+      <br />
+      <label>ユーザグループ経由での所属しているテナント</label>
+      <el-table :data="noOriginRolesOfTenant">
         <el-table-column prop="displayName" label="テナント名" width="200px">
           <template slot-scope="prop">
             <el-radio :label="true" disabled>
@@ -113,6 +110,7 @@ export default {
         return []
       },
     },
+    // LDAP経由で所属しているテナント情報
     notOriginTenants: {
       type: Object,
       default: () => {
@@ -171,6 +169,7 @@ export default {
       })
       return rolesOfTenant
     },
+    // LDAP経由で所属しているテナントのロール情報
     noOriginRolesOfTenant() {
       let noOriginRolesOfTenant = []
       this.tenants.forEach(tenant => {
