@@ -5,6 +5,7 @@
       :value="value"
       multiple
       placeholder="Select"
+      :disabled="isDisabled"
       @change="handleChange"
     >
       <template v-for="item in roles">
@@ -42,6 +43,13 @@ export default {
     showSystemRole: {
       type: Boolean,
       default: true,
+    },
+    // 非活性かどうか
+    isDisabled: {
+      type: Boolean,
+      default: () => {
+        return false
+      },
     },
   },
   methods: {

@@ -17,6 +17,13 @@
           :roles="roles"
           :show-system-role="false"
         />
+        <label>ユーザグループ経由でのテナントロール</label>
+        <kqi-role-selector
+          v-model="tenantNotOriginRoleIds"
+          :roles="roles"
+          :show-system-role="false"
+          :is-disabled="true"
+        />
       </el-form-item>
     </el-form>
   </kqi-dialog>
@@ -60,6 +67,7 @@ export default {
       rules: {
         tenantRoleIds: [formRule],
       },
+      tenantNotOriginRoleIds: [],
     }
   },
   computed: {
@@ -91,7 +99,14 @@ export default {
         if (s.isOrigin) {
           this.form.tenantRoleIds.push(s.id)
         }
+        if (s.userGroupTanantMapIdLists.length > 0) {
+          this.tenantNotOriginRoleIds.push(s.id)
+        }
       })
+      // ユーザグループ由来のロールがある時は必須チェックしない
+      if (this.tenantNotOriginRoleIds.length > 0) {
+        this.rules.tenantRoleIds = null
+      }
       // dangerButtonのパラメータを設定
       this.deleteButtonParams = {
         isDanger: true,
