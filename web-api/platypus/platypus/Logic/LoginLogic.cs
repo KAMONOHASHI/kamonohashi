@@ -308,7 +308,7 @@ namespace Nssol.Platypus.Logic
             var deleteTenants = userRepository.GetTenantByUser(user.Id).ToList();
 
             // ユーザ情報の取得
-            var ldapGroups = entry.getAttribute("memberOf").StringValueArray;
+            var ldapGroups = entry.getAttribute("memberOf") != null ? entry.getAttribute("memberOf").StringValueArray : Array.Empty<string>();
             var dn = entry.getAttribute("distinguishedName").StringValue;
 
             // DNから先頭の"CN= ,"を排除
