@@ -291,8 +291,8 @@ export default {
 }
 
 .checkbox-role.is-checked::v-deep .el-checkbox-button__inner {
-  background-color: #40ff79c4;
-  border-color: #40ff79c4;
+  background-color: #67c23a;
+  border-color: #67c23a;
   box-shadow: -1px 0 0 0 #ffffff;
 }
 

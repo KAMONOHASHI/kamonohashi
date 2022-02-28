@@ -186,6 +186,6 @@ export default {
   color: #409eff;
 }
 .not-origin {
-  color: #40ff79c4;
+  color: #67c23a;
 }
 </style>

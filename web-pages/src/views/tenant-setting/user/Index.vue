@@ -77,6 +77,6 @@ export default {
   margin-right: 8px;
 }
 .not-origin-role {
-  color: #40ff79c4;
+  color: #67c23a;
 }
 </style>
