@@ -5,7 +5,7 @@ using Nssol.Platypus.Infrastructure;
 
 namespace Nssol.Platypus.Migrations
 {
-    public partial class v340 : Migration
+    public partial class v400 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -140,9 +140,10 @@ namespace Nssol.Platypus.Migrations
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserGroupRoleMaps_UserGroupId",
+                name: "IX_UserGroupRoleMaps_UserGroupId_RoleId",
                 table: "UserGroupRoleMaps",
-                column: "UserGroupId");
+                columns: new[] { "UserGroupId", "RoleId" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserGroupTenantMaps_TenantId",
@@ -150,9 +151,10 @@ namespace Nssol.Platypus.Migrations
                 column: "TenantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserGroupTenantMaps_UserGroupId",
+                name: "IX_UserGroupTenantMaps_UserGroupId_TenantId",
                 table: "UserGroupTenantMaps",
-                column: "UserGroupId");
+                columns: new[] { "UserGroupId", "TenantId" },
+                unique: true);
 
             // 共通変数
             string adminUser = ApplicationConst.DefaultFirstAdminUserName;

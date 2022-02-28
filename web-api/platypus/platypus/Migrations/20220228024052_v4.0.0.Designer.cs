@@ -10,8 +10,8 @@ using Nssol.Platypus.DataAccess;
 namespace Nssol.Platypus.Migrations
 {
     [DbContext(typeof(CommonDbContext))]
-    [Migration("20220202082534_v3.4.0")]
-    partial class v340
+    [Migration("20220228024052_v4.0.0")]
+    partial class v400
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -2659,7 +2659,8 @@ namespace Nssol.Platypus.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.HasIndex("UserGroupId");
+                    b.HasIndex("UserGroupId", "RoleId")
+                        .IsUnique();
 
                     b.ToTable("UserGroupRoleMaps");
                 });
@@ -2695,7 +2696,8 @@ namespace Nssol.Platypus.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.HasIndex("UserGroupId");
+                    b.HasIndex("UserGroupId", "TenantId")
+                        .IsUnique();
 
                     b.ToTable("UserGroupTenantMaps");
                 });
@@ -3598,7 +3600,7 @@ namespace Nssol.Platypus.Migrations
                         .IsRequired();
 
                     b.HasOne("Nssol.Platypus.Models.UserGroup", "UserGroup")
-                        .WithMany()
+                        .WithMany("RoleMaps")
                         .HasForeignKey("UserGroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -3607,7 +3609,7 @@ namespace Nssol.Platypus.Migrations
             modelBuilder.Entity("Nssol.Platypus.Models.UserGroupTenantMap", b =>
                 {
                     b.HasOne("Nssol.Platypus.Models.Tenant", "Tenant")
-                        .WithMany()
+                        .WithMany("UserGroupMaps")
                         .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
