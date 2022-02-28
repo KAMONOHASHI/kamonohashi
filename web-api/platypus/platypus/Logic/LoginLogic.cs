@@ -104,6 +104,8 @@ namespace Nssol.Platypus.Logic
                     //ログインに成功したが、ユーザ存在しない（＝LDAPの新規ログイン＝ユーザを作成する）
                     userRepository.AddLdapUser(userName);
                     unitOfWork.Commit(userName);
+                    //ユーザ情報を取得
+                    user = userRepository.GetUser(userName);
                 }
 
                 //テナントに参加・脱退する
