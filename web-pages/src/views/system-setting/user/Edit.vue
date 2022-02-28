@@ -46,15 +46,14 @@
           show-system-role
         />
       </el-form-item>
-      <el-form-item label="テナント" prop="tenants">
-        <tenant-role-selector
-          ref="tenantsForm"
-          v-model="form.tenants"
-          :tenants="tenants"
-          :roles="roles"
-          :not-origin-tenants="notOriginTenants"
-        />
-      </el-form-item>
+
+      <tenant-role-selector
+        ref="tenantsForm"
+        v-model="form.tenants"
+        :tenants="tenants"
+        :roles="roles"
+        :not-origin-tenants="notOriginTenants"
+      />
     </el-form>
   </kqi-dialog>
 </template>

@@ -1,53 +1,55 @@
 <template>
   <span>
-    <el-select
-      :value="value.selectedTenantIds"
-      class="selectTenant"
-      multiple
-      placeholder="Select"
-      @change="handleTenantChange"
-    >
-      <el-option
-        v-for="item in tenants"
-        :key="item.id"
-        :label="item.displayName"
-        :value="item.id"
-      />
-    </el-select>
-    <div>
-      <el-table v-if="rolesOfTenant.length !== 0" :data="rolesOfTenant">
-        <el-table-column prop="displayName" label="テナント名" width="200px">
-          <template slot-scope="prop">
-            <el-radio
-              v-model="prop.row.default"
-              :label="true"
-              style="display: block;"
-              @change="handleDefaultChange(prop.row)"
-            >
-              {{ prop.row.tenantName }}
-              <span v-if="prop.row.default" style="font-size: 0.7rem;">
-                (デフォルト)
-              </span>
-            </el-radio>
-          </template>
-        </el-table-column>
-        <el-table-column label="ロール" width="auto">
-          <template slot-scope="prop">
-            <el-checkbox-group
-              v-model="prop.row.selectedRoleIds"
-              style="white-space: nowrap;"
-              @change="handleRoleChange(prop.row)"
-            >
-              <template v-for="role in prop.row.roles">
-                <el-checkbox-button :key="role.id" :label="role.id">
-                  {{ role.displayName }}
-                </el-checkbox-button>
-              </template>
-            </el-checkbox-group>
-          </template>
-        </el-table-column>
-      </el-table>
-    </div>
+    <el-form-item label="テナント" prop="tenants">
+      <el-select
+        :value="value.selectedTenantIds"
+        class="selectTenant"
+        multiple
+        placeholder="Select"
+        @change="handleTenantChange"
+      >
+        <el-option
+          v-for="item in tenants"
+          :key="item.id"
+          :label="item.displayName"
+          :value="item.id"
+        />
+      </el-select>
+      <div>
+        <el-table v-if="rolesOfTenant.length !== 0" :data="rolesOfTenant">
+          <el-table-column prop="displayName" label="テナント名" width="200px">
+            <template slot-scope="prop">
+              <el-radio
+                v-model="prop.row.default"
+                :label="true"
+                style="display: block;"
+                @change="handleDefaultChange(prop.row)"
+              >
+                {{ prop.row.tenantName }}
+                <span v-if="prop.row.default" style="font-size: 0.7rem;">
+                  (デフォルト)
+                </span>
+              </el-radio>
+            </template>
+          </el-table-column>
+          <el-table-column label="ロール" width="auto">
+            <template slot-scope="prop">
+              <el-checkbox-group
+                v-model="prop.row.selectedRoleIds"
+                style="white-space: nowrap;"
+                @change="handleRoleChange(prop.row)"
+              >
+                <template v-for="role in prop.row.roles">
+                  <el-checkbox-button :key="role.id" :label="role.id">
+                    {{ role.displayName }}
+                  </el-checkbox-button>
+                </template>
+              </el-checkbox-group>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+    </el-form-item>
 
     <div v-if="noOriginRolesOfTenant.length > 0">
       <br />
