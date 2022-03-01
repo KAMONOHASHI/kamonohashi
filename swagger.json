@@ -14334,6 +14334,7 @@
       }
     },
     "Nssol.Platypus.Infrastructure.Infos.RoleInfo": {
+      "description": "ロール情報",
       "type": "object",
       "properties": {
         "id": {
@@ -14359,12 +14360,16 @@
           "type": "integer"
         },
         "isOrigin": {
-          "description": "KQI上での紐づけか",
+          "description": "KQI上での紐づけであればtrue",
           "type": "boolean"
         },
-        "userGroupIds": {
+        "userGroupTanantMapIdLists": {
           "description": "ユーザグループIDリスト",
-          "type": "string"
+          "type": "array",
+          "items": {
+            "format": "int64",
+            "type": "integer"
+          }
         }
       }
     },
@@ -14400,6 +14405,7 @@
       }
     },
     "Nssol.Platypus.Infrastructure.Infos.TenantInfo": {
+      "description": "テナント情報",
       "type": "object",
       "properties": {
         "id": {
