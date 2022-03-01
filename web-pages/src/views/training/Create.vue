@@ -32,13 +32,60 @@
               />
             </el-form-item>
 
-            <el-form-item label="実行コマンド" prop="entryPoint">
+            <el-form-item
+              label="実行コマンド"
+              prop="entryPoint"
+              style="margin-bottom:5px"
+            >
               <el-input
                 v-model="form.entryPoint"
                 type="textarea"
                 :autosize="{ minRows: 10 }"
               />
             </el-form-item>
+            <el-row
+              style="margin-bottom:5px;padding-left:15px;font-size:0.8em;"
+            >
+              参考：選択したデータセット【{{
+                dataSetDetail.name
+              }}】のデータパス、データ名一覧
+            </el-row>
+            <el-row class="data-list">
+              <el-col
+                v-if="
+                  dataSetDetail.flatEntries == null ||
+                    dataSetDetail.flatEntries.length == 0
+                "
+                :span="24"
+              >
+                <ul
+                  v-for="(datalist, index) in dataSetDetail.entries"
+                  :key="index"
+                >
+                  <li style="padding-top:5px;list-style-type: none">
+                    {{ index }}:
+                  </li>
+                  <li
+                    v-for="data in datalist"
+                    :key="data.id"
+                    style="padding-top:5px;padding-left:15px;  list-style-type: none"
+                  >
+                    /kqi/input/{{ index }}/{{ data.id }} 【{{ data.name }}】
+                  </li>
+                </ul>
+              </el-col>
+              <el-col v-else :span="24">
+                <ul>
+                  <li
+                    v-for="data in dataSetDetail.flatEntries"
+                    :key="data.id"
+                    style="padding-top:5px; list-style-type: none"
+                  >
+                    /kqi/input/{{ data.id }} 【{{ data.name }}】
+                  </li>
+                </ul>
+              </el-col>
+            </el-row>
             <kqi-container-selector
               v-model="form.containerImage"
               :registries="registries"
@@ -182,10 +229,16 @@
               >
                 参考：選択したデータセット【{{
                   dataSetDetail.name
-                }}】のデータパス一覧
+                }}】のデータパス、データ名一覧
               </el-row>
               <el-row class="data-list">
-                <el-col v-if="dataSetDetail.flatEntries.length == 0" :span="24">
+                <el-col
+                  v-if="
+                    dataSetDetail.flatEntries == null ||
+                      dataSetDetail.flatEntries.length == 0
+                  "
+                  :span="24"
+                >
                   <ul
                     v-for="(datalist, index) in dataSetDetail.entries"
                     :key="index"
@@ -198,7 +251,7 @@
                       :key="data.id"
                       style="padding-top:5px;padding-left:15px;  list-style-type: none"
                     >
-                      /kqi/input/{{ index }}/{{ data.id }}
+                      /kqi/input/{{ index }}/{{ data.id }} 【{{ data.name }}】
                     </li>
                   </ul>
                 </el-col>
@@ -209,7 +262,7 @@
                       :key="data.id"
                       style="padding-top:5px; list-style-type: none"
                     >
-                      /kqi/input/{{ data.id }}
+                      /kqi/input/{{ data.id }} 【{{ data.name }}】
                     </li>
                   </ul>
                 </el-col>
@@ -450,6 +503,7 @@ export default {
     // コピー実行時はコピー元情報を各項目を設定
     if (this.isCopyCreation) {
       await this['training/fetchDetail'](this.originId)
+      await this['dataSet/fetchDetail'](String(this.detail.dataSet.id))
 
       this.form.name = this.detail.name
       this.form.dataSetId = String(this.detail.dataSet.id)
