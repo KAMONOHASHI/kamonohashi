@@ -136,6 +136,13 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces
         void DetachTenant(long userId, long tenantId, bool temporary);
 
         /// <summary>
+        /// 指定したユーザとテナントのマップからKQIとの紐づけを解除する。
+        /// </summary>
+        /// <param name="user">>対象ユーザ</param>
+        /// <param name="tenantId">対象テナントID</param>
+        void DetachOriginTenant(User user, long tenantId);
+
+        /// <summary>
         /// 指定したユーザとテナントのマップから指定したユーザグループとの紐づけを解除する。
         /// ユーザグループとの紐づけがなくなった場合はテナントから脱退する。
         /// </summary>

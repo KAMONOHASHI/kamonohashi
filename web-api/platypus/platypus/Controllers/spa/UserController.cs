@@ -289,22 +289,8 @@ namespace Nssol.Platypus.Controllers.spa
                 {
                     return JsonConflict($"You are NOT allowed removing yourself from the currently connected tenant.");
                 }
-                // Ldap経由で参加したものは削除対象外のため、所属情報を取得する。
-                var map = userRepository.FindUserTenantMap(user.Id, removedTenant.Id);
-                if (map.IsOrigin)
-                {
-                    if (!string.IsNullOrEmpty(map.UserGroupTenantMapIds))
-                    {
-                        // KQI上での紐づけを外し、LDAP経由での所属は保持する。
-                        roleRepository.DetachOriginRole(map);
-                        map.IsOrigin = false;
-                    }
-                    else
-                    {
-                        // 完全に紐づけを外す（削除する）
-                        userRepository.DetachTenant(id.Value, removedTenant.Id, false);
-                    }
-                }
+                // KQI上の紐づけを外す
+                userRepository.DetachOriginTenant(user, removedTenant.Id);
             }
 
             // デフォルトテナントの変更
@@ -587,7 +573,8 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonNotFound($"User ID {id} is not found.");
             }
 
-            userRepository.DetachTenant(user.Id, tenant.Id, true);
+            // KQI上の紐づけを外す
+            userRepository.DetachOriginTenant(user, tenant.Id);
 
             if (user.DefaultTenantId == tenant.Id)
             {

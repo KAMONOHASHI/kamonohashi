@@ -454,7 +454,6 @@ namespace Nssol.Platypus.DataAccess.Repositories
                     var userRoleMap = FindModel<UserRoleMap>(m => m.TenantMapId == userTenantMap.Id && m.RoleId == role.Id);
                     if (userRoleMap != null)
                     {
-                        // TODO 現状isOriginがfalseのときここを通ることはない
                         // 紐づけ情報が存在する場合更新する
                         if (isOrigin)
                         {
@@ -680,6 +679,58 @@ namespace Nssol.Platypus.DataAccess.Repositories
 
             //その後、テナントから外す
             DeleteModel<UserTenantMap>(tenantMap);
+        }
+
+        /// <summary>
+        /// 指定したユーザテナントマップからKQIとの紐づけを解除する。
+        /// </summary>
+        /// <param name="user">>対象ユーザ</param>
+        /// <param name="tenantId">対象テナントID</param>
+        public void DetachOriginTenant(User user, long tenantId)
+        {
+            // マップを取得
+            var userTenantMap = FindUserTenantMap(user.Id, tenantId);
+            var userRoleMaps = GetModelAll<UserRoleMap>().Where(map => map.TenantMapId == userTenantMap.Id && map.IsOrigin);
+            var userTenantGitMaps = GetModelAll<UserTenantGitMap>().Include(m => m.TenantGitMap).Where(m => m.UserId == user.Id && m.TenantGitMap.TenantId == tenantId);
+            var userTenantRegistryMaps = GetModelAll<UserTenantRegistryMap>().Where(m => m.UserId == user.Id).Include(m => m.TenantRegistryMap).Where(m => m.UserId == user.Id && m.TenantRegistryMap.TenantId == tenantId);
+
+            // KQI上での紐づけがないときは何もしない
+            if (!userTenantMap.IsOrigin)
+            {
+                return;
+            }
+            // ユーザグループの紐づけがないときはテナントから脱退する
+            if(userTenantMap.UserGroupTenantMapIds == null)
+            {
+                DetachTenant(user.Id, tenantId, false);
+                return;
+            }
+
+            // それぞれのマップのisOriginをfalseに更新
+            userTenantMap.IsOrigin = false;
+            foreach (var userTenantGitMap in userTenantGitMaps)
+            {
+                userTenantGitMap.IsOrigin = false;
+            }
+            foreach (var userTenantRegistryMap in userTenantRegistryMaps)
+            {
+                userTenantRegistryMap.IsOrigin = false;
+            }
+
+            // ロールの更新
+            foreach (var userRoleMap in userRoleMaps)
+            {
+                if (userRoleMap.UserGroupTenantMapIds == null)
+                {
+                    // ユーザグループの紐づけがないロールは削除する
+                    DeleteModel<UserRoleMap>(userRoleMap);
+                }
+                else
+                {
+                    // ユーザグループの紐づけがあるロールを更新
+                    userRoleMap.IsOrigin = false;
+                }
+            }
         }
 
         /// <summary>
