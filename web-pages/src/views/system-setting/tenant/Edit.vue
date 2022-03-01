@@ -225,6 +225,10 @@ export default {
       }
     },
     async showConfirm() {
+      // 新規作成時は確認ダイアログを表示しない
+      if (this.id === null) {
+        return true
+      }
       if (this.checkUserGroupsChange()) {
         return true
       }
