@@ -727,15 +727,22 @@ namespace Nssol.Platypus.DataAccess.Repositories
         public void ChangeTenantRole(long userId, long tenantId, IEnumerable<Role> roles, bool isOrigin)
         {
             var tenantMap = FindUserTenantMap(userId, tenantId);
-
+            
             if (isOrigin)
             {
-                tenantMap.IsOrigin = true;
+                // 付与するロールがないとき、KQI上での紐づけがないと判断する。
+                if (roles == null || roles.Count() < 1)
+                {
+                    tenantMap.IsOrigin = false;
+                }
+                else
+                {
+                    tenantMap.IsOrigin = true;
+                }
             }
 
             // 更新前のユーザとロールの紐づけ一覧を取得しておく。
             var currentRoleMaps = GetModelAll<UserRoleMap>().Where(m => m.TenantMapId == tenantMap.Id);
-
             foreach (var role in roles)
             {
                 if (role.IsSystemRole)
@@ -791,6 +798,31 @@ namespace Nssol.Platypus.DataAccess.Repositories
                     {
                         roleMap.IsOrigin = false;
                     }
+                }
+            }
+
+            // テナントに紐づいているすべてのGitを取得
+            var GitMaps = FindModelAll<TenantGitMap>(m => m.TenantId == tenantId).ToList();
+            foreach (var GitMap in GitMaps)
+            {
+                // ユーザとGitの紐づけを更新
+                var userTenantGitMap = FindModel<UserTenantGitMap>(m => m.TenantGitMapId == GitMap.Id && m.UserId == userId);
+                if (userTenantGitMap != null)
+                {
+                    // ユーザとテナントの紐づけの値で更新する。
+                    userTenantGitMap.IsOrigin = tenantMap.IsOrigin;
+                }
+            }
+            // テナントに紐づいているすべてのレジストリを取得
+            var registryMaps = FindModelAll<TenantRegistryMap>(m => m.TenantId == tenantId).ToList();
+            foreach (var registryMap in registryMaps)
+            {
+                // ユーザとレジストリの紐づけを更新
+                var userTenantRegistryMap = FindModel<UserTenantRegistryMap>(m => m.TenantRegistryMapId == registryMap.Id && m.UserId == userId);
+                if (userTenantRegistryMap != null)
+                {
+                    // ユーザとテナントの紐づけの値で更新する。
+                    userTenantRegistryMap.IsOrigin = tenantMap.IsOrigin;
                 }
             }
         }
