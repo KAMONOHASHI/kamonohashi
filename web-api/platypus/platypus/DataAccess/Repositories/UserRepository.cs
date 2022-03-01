@@ -523,7 +523,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
             // テナントに紐づいているすべてのGitを取得
             var GitMaps = FindModelAll<TenantGitMap>(m => m.TenantId == tenantId).Include(m => m.Git).ToList();
             // 更新前のユーザとテナントGitの紐づけ一覧を取得しておく。
-            var currentUserTenantGitMaps = GetModelAll<UserTenantGitMap>().Where(m => m.UserId == user.Id);
+            var currentUserTenantGitMaps = GetModelAll<UserTenantGitMap>().Include(m => m.TenantGitMap).Where(m => m.UserId == user.Id && m.TenantGitMap.TenantId == tenantId);
             foreach (var GitMap in GitMaps)
             {
                 // ユーザとGitの紐づけを更新
@@ -590,7 +590,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
             // テナントに紐づいているすべてのレジストリを取得
             var registryMaps = FindModelAll<TenantRegistryMap>(m => m.TenantId == tenantId).Include(m => m.Registry).ToList();
             // 更新前のユーザとテナントレジストリの紐づけ一覧を取得しておく。
-            var currentUserTenantRegistryMaps = GetModelAll<UserTenantRegistryMap>().Where(m => m.UserId == user.Id);
+            var currentUserTenantRegistryMaps = GetModelAll<UserTenantRegistryMap>().Where(m => m.UserId == user.Id).Include(m => m.TenantRegistryMap).Where(m => m.UserId == user.Id && m.TenantRegistryMap.TenantId == tenantId);
             foreach (var registryMap in registryMaps)
             {
                 // ユーザとレジストリの紐づけを更新
