@@ -936,6 +936,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
                 // ユーザグループの取得
                 var userGroupMap = GetModelAll<UserGroupTenantMap>().Include(map => map.UserGroup).ThenInclude(u => u.RoleMaps).FirstOrDefault(map => map.Id == userGroupTenantMapId);
 
+                // ここで存在しないUserGroupTenantMapIdがあった場合は削除・更新する。
                 if (userGroupMap == null)
                 {
                     var userGroupTenantMapIdList = tenantMap.UserGroupTenantMapIdList;
