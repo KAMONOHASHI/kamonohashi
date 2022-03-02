@@ -63,7 +63,6 @@ namespace Nssol.Platypus.Logic
 
             foreach (var tenant in tenants)
             {
-                var roleIds = new List<long>();
                 var userGroupTenantMapIds = new List<long>();
                 foreach (var userGroupMap in tenant.UserGroupMaps)
                 {
@@ -78,8 +77,6 @@ namespace Nssol.Platypus.Logic
                                 // ldapから取得したグループのDnとユーザグループのDnを比較
                                 if (ldapGroup == userGroupMap.UserGroup.Dn)
                                 {
-                                    // ロール情報取得
-                                    roleIds.AddRange(userGroupMap.UserGroup.RoleMaps.Select(map => map.RoleId).ToList());
                                     userGroupTenantMapIds.Add(userGroupMap.Id);
                                     break;
                                 }
@@ -109,8 +106,6 @@ namespace Nssol.Platypus.Logic
                                     // 検索でヒットしなかったときはここで例外が吐かれる
                                     result.next();
 
-                                    // ロール情報取得
-                                    roleIds.AddRange(userGroupMap.UserGroup.RoleMaps.Select(map => map.RoleId).ToList());
                                     userGroupTenantMapIds.Add(userGroupMap.Id);
                                 }
                             }
@@ -128,8 +123,6 @@ namespace Nssol.Platypus.Logic
                             // 直接のとき
                             if (ou == userGroupMap.UserGroup.Dn)
                             {
-                                // ロール情報取得
-                                roleIds.AddRange(userGroupMap.UserGroup.RoleMaps.Select(map => map.RoleId).ToList());
                                 userGroupTenantMapIds.Add(userGroupMap.Id);
                             }
                         }
@@ -139,8 +132,6 @@ namespace Nssol.Platypus.Logic
                             // ユーザのDNとOUのDNを部分一致で比較する
                             if (Regex.IsMatch(dn, $@".*{userGroupMap.UserGroup.Dn}$"))
                             {
-                                // ロール情報取得
-                                roleIds.AddRange(userGroupMap.UserGroup.RoleMaps.Select(map => map.RoleId).ToList());
                                 userGroupTenantMapIds.Add(userGroupMap.Id);
                             }
                             else
@@ -150,8 +141,6 @@ namespace Nssol.Platypus.Logic
                                 {
                                     if (Regex.IsMatch(ldapGroup, $@".*{userGroupMap.UserGroup.Dn}$"))
                                     {
-                                        // ロール情報取得
-                                        roleIds.AddRange(userGroupMap.UserGroup.RoleMaps.Select(map => map.RoleId).ToList());
                                         userGroupTenantMapIds.Add(userGroupMap.Id);
                                         break;
                                     }
@@ -161,34 +150,13 @@ namespace Nssol.Platypus.Logic
                     }
                 }
                 // 配列が空ではないとき、テナントに参加する
-                if (roleIds.Count > 0)
+                if (userGroupTenantMapIds.Count > 0)
                 {
                     // 既にテナントに参加しているかチェック
                     if (!await userRepository.IsMemberAsync(user.Id, tenant.Id))
                     {
-                        // ロールの重複削除
-                        roleIds = roleIds.Distinct().ToList();
-
-                        //ロールについての存在＆入力チェック
-                        var roles = new List<Role>();
-
-                        foreach (long roleId in roleIds)
-                        {
-                            var role = await roleRepository.GetRoleAsync(roleId);
-                            if (role == null)
-                            {
-                                //ロールがない
-                                continue;
-                            }
-                            if (role.IsSystemRole)
-                            {
-                                //システムロールをテナントロールとして追加しようとしている
-                                continue;
-                            }
-                            roles.Add(role);
-                        }
                         // テナント参加
-                        userRepository.AttachTenant(user, tenant.Id, roles, false, userGroupTenantMapIds);
+                        userRepository.AttachTenant(user, tenant.Id, Array.Empty<Role>(), false, userGroupTenantMapIds);
                         // ログ出力
                         LogInformation($"ユーザ{user.Name}をテナント{tenant.Name}へ紐づけました。");
                     }

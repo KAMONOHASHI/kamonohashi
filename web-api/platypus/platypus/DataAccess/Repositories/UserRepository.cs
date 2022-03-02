@@ -312,26 +312,67 @@ namespace Nssol.Platypus.DataAccess.Repositories
             AddModel<UserTenantMap>(tenantMap);
             if (roles != null)
             {
-                foreach (var role in roles)
+                if (isOrigin)
                 {
-                    if (role == null)
+                    foreach (var role in roles)
                     {
-                        continue;
+                        if (role == null)
+                        {
+                            continue;
+                        }
+                        if (role.IsSystemRole)
+                        {
+                            //Adminロールを特定テナントに所属させようとしている
+                            throw new UnauthorizedAccessException($"The tenant role {role.Name} is not assigned to a user as a system role.");
+                        }
+
+                        var roleMap = new UserRoleMap()
+                        {
+                            RoleId = role.Id,
+                            TenantMap = tenantMap,
+                            User = user,
+                            IsOrigin = isOrigin,
+                            UserGroupTenantMapIds = null,
+                        };
+
+                        AddModel<UserRoleMap>(roleMap);
                     }
-                    if (role.IsSystemRole)
+                }
+                else
+                {
+                    // ユーザグループからロールを取得
+                    var userGroupRoleDictionary = new Dictionary<long, List<long>>();
+                    foreach (var userGroupId in userGroupIds)
                     {
-                        //Adminロールを特定テナントに所属させようとしている
-                        throw new UnauthorizedAccessException($"The tenant role {role.Name} is not assigned to a user as a system role.");
+                        // ユーザグループの取得
+                        var userGroupMap = GetModelAll<UserGroupTenantMap>().Include(map => map.UserGroup).ThenInclude(u => u.RoleMaps).FirstOrDefault(map => map.Id == userGroupId);
+
+                        foreach (var roleId in userGroupMap.UserGroup.RoleMaps.Select(map => map.RoleId))
+                        {
+                            // 既に紐づいているかチェック
+                            if (userGroupRoleDictionary.ContainsKey(roleId))
+                            {
+                                userGroupRoleDictionary[roleId].Add(userGroupId);
+                            }
+                            else
+                            {
+                                userGroupRoleDictionary.Add(roleId, new List<long> { userGroupId });
+                            }
+                        }
                     }
-                    var roleMap = new UserRoleMap()
+                    // ロールマップに登録
+                    foreach (var ldapRoleId in userGroupRoleDictionary.Keys)
                     {
-                        RoleId = role.Id,
-                        TenantMap = tenantMap,
-                        User = user,
-                        IsOrigin = isOrigin,
-                        UserGroupTenantMapIds = userGroupIds == null ? null : JsonConvert.SerializeObject(userGroupIds)
-                    };
-                    AddModel<UserRoleMap>(roleMap);
+                        var roleMap = new UserRoleMap()
+                        {
+                            RoleId = ldapRoleId,
+                            TenantMap = tenantMap,
+                            User = user,
+                            IsOrigin = isOrigin,
+                            UserGroupTenantMapIds = JsonConvert.SerializeObject(userGroupRoleDictionary[ldapRoleId])
+                        };
+                        AddModel<UserRoleMap>(roleMap);
+                    }
                 }
             }
 
