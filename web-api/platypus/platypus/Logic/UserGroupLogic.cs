@@ -14,13 +14,6 @@ namespace Nssol.Platypus.Logic
 {
     /// <summary>
     /// ユーザグループロジッククラス。
-    /// <para>
-    /// ADアクセスは以下理由からサービス層には切り出さず、ロジック層内で行う。
-    /// <list type="bullet">
-    /// <item>認証系をAD以外に変更する予定がない</item>
-    /// <item>処理が少ない</item>
-    /// </list>
-    /// </para>
     /// </summary>
     /// <seealso cref="Nssol.Platypus.Logic.Interfaces.IUserGroupLogic" />
     public class UserGroupLogic : PlatypusLogicBase, IUserGroupLogic
