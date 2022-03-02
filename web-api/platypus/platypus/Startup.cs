@@ -141,6 +141,7 @@ namespace Nssol.Platypus
             services.AddTransient<ITemplateLogic, TemplateLogic>();
             services.AddTransient<ISlackLogic, SlackLogic>();
             services.AddTransient<IResourceMonitorLogic, ResourceMonitorLogic>();
+            services.AddTransient<IUserGroupLogic, UserGroupLogic>();
 
             // ServiceのDI設定
             services.AddTransient<IClusterManagementService, KubernetesService>();
