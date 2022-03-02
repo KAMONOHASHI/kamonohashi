@@ -3,6 +3,7 @@
     title="テナントユーザ編集"
     :type="'EDIT'"
     :delete-button-params="deleteButtonParams"
+    :disabled-params="disabledParams"
     @submit="submit"
     @delete="deleteUser"
     @close="emitCancel"
@@ -63,6 +64,7 @@ export default {
         tenantRoleIds: [],
       },
       displayServiceType: '',
+      disabledParams: {},
       deleteButtonParams: {},
       dialogVisible: true,
       error: null,
@@ -108,13 +110,19 @@ export default {
       // ユーザグループ由来のロールがある時は必須チェックしない
       if (this.tenantNotOriginRoleIds.length > 0) {
         this.rules.tenantRoleIds = null
-      }
-      // dangerButtonのパラメータを設定
-      this.deleteButtonParams = {
-        isDanger: true,
-        warningText:
-          'ユーザを除外すると、対象ユーザは現在のテナントに入れなくなります。処理を続けるにはユーザ名を入力してください。',
-        confirmText: this.detail.name,
+        // deleteButtonのパラメータを設定
+        this.disabledParams = {
+          deleteButton: true,
+          submitButton: false,
+        }
+      } else {
+        // dangerButtonのパラメータを設定
+        this.deleteButtonParams = {
+          isDanger: true,
+          warningText:
+            'ユーザを除外すると、対象ユーザは現在のテナントに入れなくなります。処理を続けるにはユーザ名を入力してください。',
+          confirmText: this.detail.name,
+        }
       }
       this.error = null
     } catch (e) {
