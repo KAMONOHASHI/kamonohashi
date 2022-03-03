@@ -268,6 +268,8 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// <summary>
         /// 指定したユーザが当該テナントに所属しているか
         /// </summary>
+        /// <param name="userId">ユーザID</param>
+        /// <param name="tenantId">テナントID</param>
         public async Task<bool> IsMemberAsync(long userId, long tenantId)
         {
             return await ExistsModelAsync<UserTenantMap>(map => map.UserId == userId && map.TenantId == tenantId);
@@ -276,6 +278,8 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// <summary>
         /// 指定したユーザが当該テナントにKQI経由で所属しているか
         /// </summary>
+        /// <param name="userId">ユーザID</param>
+        /// <param name="tenantId">テナントID</param>
         public bool IsOriginMember(long userId, long tenantId)
         {
             return GetModelAll<UserTenantMap>().FirstOrDefault(map => map.UserId == userId && map.TenantId == tenantId).IsOrigin;

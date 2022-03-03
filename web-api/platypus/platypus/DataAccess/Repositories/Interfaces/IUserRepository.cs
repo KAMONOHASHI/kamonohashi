@@ -86,11 +86,15 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces
         /// <summary>
         /// 指定したユーザが当該テナントに所属しているか
         /// </summary>
+        /// <param name="userId">ユーザID</param>
+        /// <param name="tenantId">テナントID</param>
         Task<bool> IsMemberAsync(long userId, long tenantId);
 
         /// <summary>
         /// 指定したユーザが当該テナントにKQI経由で所属しているか
         /// </summary>
+        /// <param name="userId">ユーザID</param>
+        /// <param name="tenantId">テナントID</param>
         bool IsOriginMember(long userId, long tenantId);
 
         /// <summary>
