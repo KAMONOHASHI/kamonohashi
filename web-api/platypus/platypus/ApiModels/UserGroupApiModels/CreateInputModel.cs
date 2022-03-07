@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Nssol.Platypus.ApiModels.UserGroupApiModels
 {
+    /// <summary>
+    /// ユーザグループ作成入力モデル
+    /// </summary>
     public class CreateInputModel
     {
         /// <summary>
@@ -19,6 +22,9 @@ namespace Nssol.Platypus.ApiModels.UserGroupApiModels
         /// <summary>
         /// 対象ユーザグループがグループか、OUか。
         /// </summary>
+        /// <remarks>
+        /// True：グループ、False：OU
+        /// </remarks>
         [Required]
         public bool IsGroup { get; set; }
 
@@ -31,11 +37,14 @@ namespace Nssol.Platypus.ApiModels.UserGroupApiModels
         /// <summary>
         /// 対象ユーザグループのDN情報の直接的（直下）が対象か、間接的も許可するか。
         /// </summary>
+        /// <remarks>
+        /// True：直接、False：間接
+        /// </remarks>
         [Required]
         public bool IsDirect { get; set; }
 
         /// <summary>
-        /// テナント参加時に付与するロールID
+        /// テナント参加時に付与するロールIDリスト
         /// </summary>
         [Required]
         public IEnumerable<long> RoleIds { get; set; }

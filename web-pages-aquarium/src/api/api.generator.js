@@ -11104,7 +11104,7 @@ export const postApiV2AdminUsergroupURL = function(parameters = {}) {
  * url: getApiV2AdminUsergroupByIdURL
  * method: getApiV2AdminUsergroupById_TYPE
  * raw_url: getApiV2AdminUsergroupById_RAW_URL
- * @param id - 
+ * @param id - ユーザグループID
  */
 export const getApiV2AdminUsergroupById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()

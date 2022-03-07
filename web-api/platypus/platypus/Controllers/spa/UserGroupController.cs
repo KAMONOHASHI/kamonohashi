@@ -27,6 +27,9 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly IRoleRepository roleRepository;
         private readonly IUnitOfWork unitOfWork;
 
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
         public UserGroupController(
             IUserRepository userRepository,
             IUserGroupRepository userGroupRepository,
@@ -58,6 +61,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 指定されたIDのユーザグループ情報を取得する
         /// </summary>
+        /// <param name="id">ユーザグループID</param>
         [HttpGet("{id}")]
         [Filters.PermissionFilter(MenuCode.UserGroup)]
         [ProducesResponseType(typeof(DetailsOutputModel), (int)HttpStatusCode.OK)]
@@ -77,7 +81,6 @@ namespace Nssol.Platypus.Controllers.spa
 
             return JsonOK(new DetailsOutputModel(userGroup));
         }
-
 
         /// <summary>
         /// 新規にユーザグループを登録する
@@ -156,7 +159,7 @@ namespace Nssol.Platypus.Controllers.spa
             userGroupRepository.AttachRoleMap(userGroup, roles.Value);
             userGroupRepository.Update(userGroup);
 
-            // 更新内容を一旦コミット
+            // ユーザグループ自体の更新を確定させるため、更新内容を一旦コミットする
             unitOfWork.Commit();
 
             // 影響のあるテナントに所属するLdapユーザのロール情報を更新する
@@ -219,6 +222,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// ロールIDの入力チェックを行い、ロール情報をリストで返す
         /// </summary>
+        /// <param name="roleIds">ロールIDリスト</param>
         private async Task<Result<IEnumerable<Role>, string>> ValidateRoles(IEnumerable<long> roleIds)
         {
             // 空チェック
