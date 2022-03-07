@@ -1,12 +1,14 @@
 <template>
   <el-dialog
     class="dialog"
-    title="LDAP認証画面"
+    title="LDAPサーバ同期実行"
     :visible.sync="dialogVisible"
     :before-close="emitCancel"
     :close-on-click-modal="false"
   >
-    <p>LDAPサーバに問い合わせを行い、全ユーザの権限を更新します。</p>
+    <p>
+      LDAPサーバに問い合わせを行い、全ユーザのテナント所属と権限情報の更新を行います。
+    </p>
     <p>同期処理には時間がかかる場合があります。</p>
     <el-row class="footer">
       <el-form ref="createForm" :model="form" :rules="rules">
@@ -81,7 +83,7 @@ export default {
     },
     async showConfirm() {
       let confirmMessage =
-        '同期処理には時間がかかる場合があります。同期処理を開始しますか？'
+        '同期処理を開始しますか？ユーザ数が多い場合、処理完了までに時間がかかる場合があります。'
       try {
         await this.$confirm(confirmMessage, 'Warning', {
           confirmButtonText: 'はい',

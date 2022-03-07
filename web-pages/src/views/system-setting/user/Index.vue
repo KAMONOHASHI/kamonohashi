@@ -3,7 +3,9 @@
     <h2>ユーザ管理</h2>
     <el-row :gutter="20">
       <el-col class="right-top-button">
-        <el-button type="primary" @click="openSyncLdapDialog">同期 </el-button>
+        <el-button type="primary" @click="openSyncLdapDialog">
+          LDAP同期
+        </el-button>
         <el-button
           icon="el-icon-edit-outline"
           type="primary"
