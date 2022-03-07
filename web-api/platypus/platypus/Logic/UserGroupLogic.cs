@@ -78,7 +78,7 @@ namespace Nssol.Platypus.Logic
                     }
                 }
             }
-            catch (LdapReferralException e)
+            catch (LdapReferralException)
             {
                 // ユーザ情報が存在しなかったとき
                 return Result<LdapEntry, string>.CreateErrorResult("");
@@ -164,7 +164,7 @@ namespace Nssol.Platypus.Logic
                                     userGroupTenantMapIds.Add(userGroupMap.Id);
                                 }
                             }
-                            catch (LdapException e)
+                            catch (LdapException)
                             {
                                 // ここは何もしない
                             }
