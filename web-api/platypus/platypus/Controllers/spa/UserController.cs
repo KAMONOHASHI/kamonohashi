@@ -359,7 +359,7 @@ namespace Nssol.Platypus.Controllers.spa
                         return JsonBadRequest(result.Error);
                     }
                     // ユーザ情報が取得できなかったとき、LDAP由来のテナントから脱退する
-                    LogInformation($"ユーザ:{user.Name}は見つかりませんでした。");
+                    LogInformation($"LDAPサーバにユーザ: {user.Name} は見つかりませんでした。");
                     var tenants = userRepository.GetTenantByUser(user.Id).ToList();
                     if (tenants != null && tenants.Count > 0)
                     {
@@ -379,7 +379,7 @@ namespace Nssol.Platypus.Controllers.spa
                                 userRepository.DetachTenant(user.Id, tenant.Id, false);
                             }
                         }
-                        LogInformation($"ユーザ:{user.Name}からLDAP経由で参加したテナントの紐づけを解除しました。");
+                        LogInformation($"ユーザ: {user.Name} がLDAP経由で参加したテナントの紐づけを解除しました。");
                     }
                 }
                 else
