@@ -68,7 +68,7 @@ namespace Nssol.Platypus.Logic
                             },
                             false
                     );
-                    LogDebug($"Login succeeded - {LdapUserName} - get {user.Name}");
+                    LogDebug($"Login succeeded - {LdapUserName}, got LDAP user: {user.Name}");
                     if (result.hasMore())
                     {
                         // ユーザ情報が取得できたとき
@@ -216,7 +216,7 @@ namespace Nssol.Platypus.Logic
                         // テナント参加
                         userRepository.AttachTenant(user, tenant.Id, Array.Empty<Role>(), false, userGroupTenantMapIds);
                         // ログ出力
-                        LogInformation($"ユーザ{user.Name}をテナント{tenant.Name}へ紐づけました。");
+                        LogInformation($"ユーザ {user.Name} をテナント {tenant.Name} へ紐づけました。");
                     }
                     else
                     {
