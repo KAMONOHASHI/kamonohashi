@@ -267,9 +267,11 @@ export default {
 
 .box {
   display: table;
-  padding: 5px;
+  padding: 0px;
+  padding-right: 5px;
+  padding-left: 5px;
   float: right;
-  height: 100%;
+  margin: 3px;
 }
 
 .box > span {
