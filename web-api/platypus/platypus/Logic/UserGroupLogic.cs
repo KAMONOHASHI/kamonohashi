@@ -20,7 +20,6 @@ namespace Nssol.Platypus.Logic
     public class UserGroupLogic : PlatypusLogicBase, IUserGroupLogic
     {
         private readonly IUserRepository userRepository;
-        private readonly IRoleRepository roleRepository;
         private readonly IUserGroupRepository userGroupRepository;
         private readonly ActiveDirectoryOptions adOptions;
 
@@ -29,13 +28,11 @@ namespace Nssol.Platypus.Logic
         /// </summary>
         public UserGroupLogic(
             IUserRepository userRepository,
-            IRoleRepository roleRepository,
             IUserGroupRepository userGroupRepository,
             ICommonDiLogic commonDiLogic,
             IOptions<ActiveDirectoryOptions> adOptions) : base(commonDiLogic)
         {
             this.userRepository = userRepository;
-            this.roleRepository = roleRepository;
             this.userGroupRepository = userGroupRepository;
             this.adOptions = adOptions.Value;
         }
