@@ -185,13 +185,16 @@ export default {
           let selectedRoleIds = []
           let selectedNotOriginTenants = []
           tenant.roles.forEach(role => {
+            // KQI上で付与されたロールかどうか
             if (role.isOrigin) {
               selectedRoleIds.push(role.id)
             }
+            // LDAP経由で付与されたロールかどうか
             if (role.userGroupTanantMapIdLists.length > 0) {
               selectedNotOriginTenants.push(role.id)
             }
           })
+          // KQI上で参加したテナントかどうか
           if (tenant.isOrigin) {
             this.form.tenants.selectedTenants.push({
               tenantId: tenant.id,
@@ -201,6 +204,7 @@ export default {
             })
             this.form.tenants.selectedTenantIds.push(tenant.id)
           }
+          // LDAP経由で参加したテナントかどうか
           if (selectedNotOriginTenants.length > 0) {
             this.notOriginTenants.selectedTenants.push({
               tenantId: tenant.id,

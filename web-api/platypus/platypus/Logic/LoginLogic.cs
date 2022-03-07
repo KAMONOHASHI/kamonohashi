@@ -158,6 +158,8 @@ namespace Nssol.Platypus.Logic
         /// LDAP認証。併せて、ADから取得可能な情報をクレームに詰めて返す。
         /// </summary>
         /// <remarks>原因に寄らず、認証に失敗したらfalseが返る。システムエラー、ユーザの入力ミスが区別されない</remarks>
+        /// <param name="userName">アカウント名</param>
+        /// <param name="password">パスワード</param>
         private Result<LdapEntry, string> Authenticate(string userName, string password)
         {
             try
@@ -183,11 +185,13 @@ namespace Nssol.Platypus.Logic
                     LogDebug($"Login succeeded - {userName}");
                     if(result.hasMore())
                     {
+                        // ログインに成功し、ユーザ情報が取得できたとき
                         return Result<LdapEntry, string>.CreateResult(result.next());
                     }
                     else
                     {
-                        // ログインには成功したが値の取得に失敗した場合
+                        // ログインに成功したが、ユーザ情報が取得できなかったとき
+
                         return Result<LdapEntry, string>.CreateErrorResult("ユーザ情報の取得に失敗しました。");
                     }
                 }

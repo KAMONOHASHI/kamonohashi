@@ -71,6 +71,7 @@ namespace Nssol.Platypus.Logic
                     LogDebug($"Login succeeded - {LdapUserName} - get {user.Name}");
                     if (result.hasMore())
                     {
+                        // ユーザ情報が取得できたとき
                         return Result<LdapEntry, string>.CreateResult(result.next());
                     }
                     else
@@ -118,7 +119,9 @@ namespace Nssol.Platypus.Logic
 
             foreach (var tenant in tenants)
             {
+                // テナントへの参加資格がある場合、ユーザグループテナントマップIDを格納していく
                 var userGroupTenantMapIds = new List<long>();
+
                 foreach (var userGroupMap in tenant.UserGroupMaps)
                 {
                     if (userGroupMap.UserGroup.IsGroup)
