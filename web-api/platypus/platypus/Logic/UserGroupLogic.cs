@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
 using Novell.Directory.Ldap;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces;
+using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Infrastructure.Options;
 using Nssol.Platypus.Logic.Interfaces;
 using Nssol.Platypus.Models;
@@ -37,6 +38,60 @@ namespace Nssol.Platypus.Logic
             this.roleRepository = roleRepository;
             this.userGroupRepository = userGroupRepository;
             this.adOptions = adOptions.Value;
+        }
+
+        /// <summary>
+        /// LDAPサーバに問い合わせを行い、認証情報を取得する。
+        /// </summary>
+        /// <param name="user">ユーザ</param>
+        /// <param name="LdapUserName">LDAPサーバ認証用ユーザ名</param>
+        /// <param name="password">LDAPサーバ認証用パスワード</param>
+        public Result<LdapEntry, string> Authenticate(User user, string LdapUserName, string password)
+        {
+            try
+            {
+                using (var conn = new LdapConnection())
+                {
+                    conn.Connect(adOptions.Server, adOptions.Port);
+                    var loginDN = $"{LdapUserName}@{adOptions.Domain}";
+                    conn.Bind(loginDN, password);
+
+                    string searchFilter = string.Format(adOptions.LdapFilter, user.Name);
+                    var result = conn.Search(
+                            this.adOptions.BaseDn,
+                            LdapConnection.SCOPE_SUB,
+                            searchFilter,
+                            new[]
+                            {
+                                "memberOf",
+                                "distinguishedName"
+                            },
+                            false
+                    );
+                    LogDebug($"Login succeeded - {LdapUserName} - get {user.Name}");
+                    if (result.hasMore())
+                    {
+                        return Result<LdapEntry, string>.CreateResult(result.next());
+                    }
+                    else
+                    {
+                        // ユーザ情報が取得できなかったとき
+                        return Result<LdapEntry, string>.CreateErrorResult("");
+                    }
+                }
+            }
+            catch (LdapReferralException e)
+            {
+                // ユーザ情報が存在しなかったとき
+                return Result<LdapEntry, string>.CreateErrorResult("");
+            }
+            catch (LdapException e)
+            {
+                //サーバへ接続失敗したときも、パスワードが間違っていた時もここに到達してしまう
+                string errorMessage = "Invalid user name or password.";
+                LogError(errorMessage, e);
+                return Result<LdapEntry, string>.CreateErrorResult(errorMessage);
+            }
         }
 
         /// <summary>

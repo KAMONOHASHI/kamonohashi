@@ -29,18 +29,21 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly IRoleRepository roleRepository;
         private readonly IUnitOfWork unitOfWork;
         private readonly IClusterManagementLogic clusterManagementLogic;
+        private readonly IUserGroupLogic userGroupLogic;
 
         public UserController(
             IUserRepository userRepository,
             IRoleRepository roleRepository,
             IUnitOfWork unitOfWork,
             IClusterManagementLogic clusterManagementLogic,
+            IUserGroupLogic userGroupLogic,
             IHttpContextAccessor accessor) : base(accessor)
         {
             this.userRepository = userRepository;
             this.roleRepository = roleRepository;
             this.unitOfWork = unitOfWork;
             this.clusterManagementLogic = clusterManagementLogic;
+            this.userGroupLogic = userGroupLogic;
         }
 
         #region ユーザ管理
@@ -327,6 +330,63 @@ namespace Nssol.Platypus.Controllers.spa
             string hash = Infrastructure.Util.GenerateHash(password, user.Name);
             user.Password = hash;
 
+            unitOfWork.Commit();
+
+            return JsonNoContent();
+        }
+
+        /// <summary>
+        /// LDAPサーバに問い合わせを行い、各ユーザの権限を更新する
+        /// </summary>
+        /// <param name="model">LDAP認証情報入力モデル</param>
+        [HttpPost("sync-ldap")]
+        [Filters.PermissionFilter(MenuCode.User)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        public async Task<IActionResult> SyncLdapUser([FromBody] LdapAuthenticationInputModel model)
+        {
+            // 全LDAPユーザの取得
+            var users = userRepository.GetAllUsersWithTenant().Where(user => user.ServiceType == AuthServiceType.Ldap).ToList();
+
+            foreach (var user in users)
+            {
+                // LDAPサーバ上のユーザ情報を取得
+                var result = userGroupLogic.Authenticate(user, model.UserName, model.Password);
+                if (!result.IsSuccess)
+                {
+                    if (!string.IsNullOrEmpty(result.Error))
+                    {
+                        // 認証情報に誤りがあったときにエラーを返す
+                        return JsonBadRequest(result.Error);
+                    }
+                    // ユーザ情報が取得できなかったとき、LDAP由来のテナントから脱退する
+                    LogInformation($"ユーザ:{user.Name}は見つかりませんでした。");
+                    var tenants = userRepository.GetTenantByUser(user.Id).ToList();
+                    if (tenants != null && tenants.Count > 0)
+                    {
+                        foreach (var tenant in tenants)
+                        {
+                            if (userRepository.IsOriginMember(user.Id, tenant.Id))
+                            {
+                                // KQIの紐づけがあるとき
+                                // 関連テーブルのUserGroupTenantMapIdsをnullにする
+                                userRepository.UpdateTenant(user, tenant.Id, null, false, null);
+                                // ロールの更新
+                                userRepository.UpdateLdapRole(user.Id, tenant.Id);
+                            }
+                            else
+                            {
+                                // KQIの紐づけがないとき
+                                userRepository.DetachTenant(user.Id, tenant.Id, false);
+                            }
+                        }
+                        LogInformation($"ユーザ:{user.Name}からLDAP経由で参加したテナントの紐づけを解除しました。");
+                    }
+                }
+                else
+                {
+                    await userGroupLogic.AddTenantFromGroup(result.Value, user, model.UserName, model.Password);
+                }
+            }
             unitOfWork.Commit();
 
             return JsonNoContent();
