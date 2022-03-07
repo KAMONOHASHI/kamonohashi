@@ -206,7 +206,7 @@ export default {
     await this['account/fetchAccount']()
     this.defaultTenantName = this.account.defaultTenant.name
     this.passwordChangeEnabled = this.account.passwordChangeEnabled
-    // KQI上で紐づけされているテナントのみ対象とする。
+    // KQI上で紐づけされているテナントのみを取得する。
     this.account.tenants.forEach(t => {
       if (t.isOrigin) {
         this.originTenantList.push(t)
