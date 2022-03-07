@@ -61,21 +61,37 @@ export default {
       let form = this.$refs.createForm
       await form.validate(async valid => {
         if (valid) {
-          try {
-            let params = {
-              body: {
-                userName: this.form.name,
-                password: this.form.password,
-              },
+          if (await this.showConfirm()) {
+            try {
+              let params = {
+                body: {
+                  userName: this.form.name,
+                  password: this.form.password,
+                },
+              }
+              await this.syncLdapUsers(params)
+              this.emitDone()
+              this.error = null
+            } catch (e) {
+              this.error = e
             }
-            await this.syncLdapUsers(params)
-            this.emitDone()
-            this.error = null
-          } catch (e) {
-            this.error = e
           }
         }
       })
+    },
+    async showConfirm() {
+      let confirmMessage =
+        '同期処理には時間がかかる場合があります。同期処理を開始しますか？'
+      try {
+        await this.$confirm(confirmMessage, 'Warning', {
+          confirmButtonText: 'はい',
+          cancelButtonText: 'キャンセル',
+          type: 'warning',
+        })
+        return true
+      } catch (e) {
+        return false
+      }
     },
     emitDone() {
       this.$emit('done')
