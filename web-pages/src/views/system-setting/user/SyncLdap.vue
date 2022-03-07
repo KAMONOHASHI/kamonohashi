@@ -14,10 +14,10 @@
       <el-form ref="createForm" :model="form" :rules="rules">
         <kqi-display-error :error="error" />
 
-        <el-form-item label="ユーザ名" prop="name">
+        <el-form-item label="LDAPユーザID" prop="name">
           <el-input v-model="form.name" />
         </el-form-item>
-        <el-form-item label="パスワード" prop="password">
+        <el-form-item label="LDAPパスワード" prop="password">
           <el-input v-model="form.password" type="password" />
         </el-form-item>
       </el-form>
