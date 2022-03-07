@@ -78,6 +78,11 @@ const actions = {
   async tenantUserDelete({ commit }, id) {
     return await api.user.tenant.delete({ id: id })
   },
+
+  // eslint-disable-next-line no-unused-vars
+  async syncLdapUsers({ commit }, params) {
+    return (await api.user.admin.postSyncLdap(params)).data
+  },
 }
 
 // mutations

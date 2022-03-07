@@ -3,6 +3,7 @@
     <h2>ユーザ管理</h2>
     <el-row :gutter="20">
       <el-col class="right-top-button">
+        <el-button type="primary" @click="openSyncLdapDialog">同期 </el-button>
         <el-button
           icon="el-icon-edit-outline"
           type="primary"
@@ -140,6 +141,9 @@ export default {
       if (row) {
         this.$router.push('/user/edit/' + row.id)
       }
+    },
+    openSyncLdapDialog() {
+      this.$router.push('/user/sync-ldap')
     },
     async done() {
       await this.initialize()

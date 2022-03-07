@@ -10796,6 +10796,49 @@ export const putApiV2AdminUsersByIdPasswordURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * LDAPサーバに問い合わせを行い、各ユーザの権限を更新する
+ * request: postApiV2AdminUsersSyncLdap
+ * url: postApiV2AdminUsersSyncLdapURL
+ * method: postApiV2AdminUsersSyncLdap_TYPE
+ * raw_url: postApiV2AdminUsersSyncLdap_RAW_URL
+ * @param body - LDAP認証情報入力モデル
+ */
+export const postApiV2AdminUsersSyncLdap = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/admin/users/sync-ldap'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('post', domain + path, body, queryParameters, form, config)
+}
+export const postApiV2AdminUsersSyncLdap_RAW_URL = function() {
+  return '/api/v2/admin/users/sync-ldap'
+}
+export const postApiV2AdminUsersSyncLdap_TYPE = function() {
+  return 'post'
+}
+export const postApiV2AdminUsersSyncLdapURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/admin/users/sync-ldap'
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * テナント向けに、所属しているユーザの一覧を取得する。
  * request: getApiV2TenantUsers
  * url: getApiV2TenantUsersURL

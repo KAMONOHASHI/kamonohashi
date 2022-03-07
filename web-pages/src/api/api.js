@@ -309,6 +309,7 @@ let api = {
       delete: gen.deleteApiV2AdminUsersById,
       put: gen.putApiV2AdminUsersById,
       putPassword: simpleStringBody(gen.putApiV2AdminUsersByIdPassword, 'body'),
+      postSyncLdap: gen.postApiV2AdminUsersSyncLdap,
     },
 
     tenant: {

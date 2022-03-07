@@ -8359,6 +8359,40 @@
         ]
       }
     },
+    "/api/v2/admin/users/sync-ldap": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "LDAPサーバに問い合わせを行い、各ユーザの権限を更新する",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "LDAP認証情報入力モデル",
+            "schema": {
+              "$ref": "#/definitions/Nssol.Platypus.ApiModels.UserApiModels.LdapAuthenticationInputModel"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {
+            "api_key": [ ]
+          }
+        ]
+      }
+    },
     "/api/v2/tenant/users": {
       "get": {
         "tags": [
@@ -14125,6 +14159,19 @@
           "items": {
             "$ref": "#/definitions/Nssol.Platypus.Infrastructure.Infos.RoleInfo"
           }
+        }
+      }
+    },
+    "Nssol.Platypus.ApiModels.UserApiModels.LdapAuthenticationInputModel": {
+      "type": "object",
+      "properties": {
+        "userName": {
+          "description": "LDAP接続用ユーザ名",
+          "type": "string"
+        },
+        "password": {
+          "description": "LDAP接続用パスワード",
+          "type": "string"
         }
       }
     },
