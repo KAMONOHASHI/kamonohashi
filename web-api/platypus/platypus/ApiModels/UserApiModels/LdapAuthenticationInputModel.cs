@@ -1,5 +1,8 @@
 ﻿namespace Nssol.Platypus.ApiModels.UserApiModels
 {
+    /// <summary>
+    /// LDAP認証情報入力モデル
+    /// </summary>
     public class LdapAuthenticationInputModel
     {
         /// <summary>

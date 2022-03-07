@@ -8609,6 +8609,7 @@
           {
             "in": "path",
             "name": "id",
+            "description": "ユーザグループID",
             "required": true,
             "type": "integer",
             "format": "int64"
@@ -14163,6 +14164,7 @@
       }
     },
     "Nssol.Platypus.ApiModels.UserApiModels.LdapAuthenticationInputModel": {
+      "description": "LDAP認証情報入力モデル",
       "type": "object",
       "properties": {
         "userName": {
@@ -14176,6 +14178,7 @@
       }
     },
     "Nssol.Platypus.ApiModels.UserGroupApiModels.CreateInputModel": {
+      "description": "ユーザグループ作成入力モデル",
       "required": [
         "dn",
         "isDirect",
@@ -14206,7 +14209,7 @@
           "type": "boolean"
         },
         "roleIds": {
-          "description": "テナント参加時に付与するロールID",
+          "description": "テナント参加時に付与するロールIDリスト",
           "type": "array",
           "items": {
             "format": "int64",
@@ -14216,6 +14219,7 @@
       }
     },
     "Nssol.Platypus.ApiModels.UserGroupApiModels.DetailsOutputModel": {
+      "description": "ユーザグループ詳細出力モデル",
       "type": "object",
       "properties": {
         "createdBy": {
@@ -14260,7 +14264,7 @@
           "type": "boolean"
         },
         "roles": {
-          "description": "テナント参加時に付与するロール",
+          "description": "テナント参加時に付与するロール情報",
           "type": "array",
           "items": {
             "$ref": "#/definitions/Nssol.Platypus.Infrastructure.Infos.RoleInfo"
@@ -14269,6 +14273,7 @@
       }
     },
     "Nssol.Platypus.ApiModels.UserGroupApiModels.IndexOutputModel": {
+      "description": "ユーザグループ一覧出力モデル",
       "type": "object",
       "properties": {
         "createdBy": {

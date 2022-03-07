@@ -76,11 +76,13 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces
         /// 指定したテナントにLdap経由で所属しているユーザを取得する。
         /// テナントIDの存在チェックは行わない。
         /// </summary>
+        /// <param name="tenantId">テナントID</param>
         IEnumerable<User> GetLdapUsers(long tenantId);
 
         /// <summary>
         /// 指定したユーザが所属しているLDAPで参加したテナントを取得する。
         /// </summary>
+        /// <param name="userId">ユーザID</param>
         IEnumerable<Tenant> GetTenantByUser(long userId);
 
         /// <summary>

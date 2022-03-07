@@ -67,12 +67,14 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces
         /// 指定したユーザが持つシステムロールを取得する。
         /// ユーザIDの存在チェックは行わない。
         /// </summary>
+        /// <param name="userId">ユーザID</param>
         IEnumerable<RoleInfo> GetSystemRoles(long userId);
 
         /// <summary>
         /// 指定したユーザ持つテナントロールを、(テナントID、ロールのリスト）のディクショナリ形式で 取得する。
         /// ユーザIDの存在チェックは行わない。
         /// </summary>
+        /// <param name="userId">ユーザID</param>
         Dictionary<long, List<RoleInfo>> GetTenantRolesDictionary(long userId);
 
         /// <summary>
@@ -84,6 +86,8 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces
         /// 指定したユーザが特定のテナントで持つテナントロールを取得する。
         /// ユーザID, テナントIDの存在チェックは行わない。
         /// </summary>
+        /// <param name="userId">ユーザID</param>
+        /// <param name="tenantId">テナントID</param>
         IEnumerable<RoleInfo> GetTenantRoles(long userId, long tenantId);
 
         /// <summary>

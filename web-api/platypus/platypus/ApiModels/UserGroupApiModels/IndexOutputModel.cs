@@ -1,9 +1,17 @@
-﻿using Nssol.Platypus.Models;
+﻿using Nssol.Platypus.ApiModels.Components;
+using Nssol.Platypus.Models;
 
 namespace Nssol.Platypus.ApiModels.UserGroupApiModels
 {
-    public class IndexOutputModel : Components.OutputModelBase
+    /// <summary>
+    /// ユーザグループ一覧出力モデル
+    /// </summary>
+    public class IndexOutputModel : OutputModelBase
     {
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="userGroup">ユーザグループ</param>
         public IndexOutputModel(UserGroup userGroup) : base(userGroup)
         {
             Id = userGroup.Id;
@@ -31,6 +39,9 @@ namespace Nssol.Platypus.ApiModels.UserGroupApiModels
         /// <summary>
         /// 対象ユーザグループがグループか、OUか。
         /// </summary>
+        /// <remarks>
+        /// True：グループ、False：OU
+        /// </remarks>
         public bool IsGroup { get; set; }
 
         /// <summary>
