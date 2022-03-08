@@ -47,6 +47,14 @@ namespace Nssol.Platypus.Logic
         {
             try
             {
+                if (string.IsNullOrEmpty(adOptions.Server) || string.IsNullOrEmpty(adOptions.Domain))
+                {
+                    // LDAPサーバの接続設定がされていないときはエラーを返す。
+                    string errorMessage = "LDAP connection settings have not been made.";
+                    LogError(errorMessage);
+                    return Result<LdapEntry, string>.CreateErrorResult(errorMessage);
+                }
+
                 using (var conn = new LdapConnection())
                 {
                     conn.Connect(adOptions.Server, adOptions.Port);
