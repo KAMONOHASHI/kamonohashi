@@ -124,6 +124,11 @@ namespace Nssol.Platypus.Logic
 
                 foreach (var userGroupMap in tenant.UserGroupMaps)
                 {
+                    // ユーザグループのドメインとオプション設定のドメインが一致しているかチェック
+                    if(!Regex.IsMatch(userGroupMap.UserGroup.Dn, $@".*{adOptions.BaseDn}$"))
+                    {
+                        continue;
+                    }
                     if (userGroupMap.UserGroup.IsGroup)
                     {
                         // グループの時の判定処理
