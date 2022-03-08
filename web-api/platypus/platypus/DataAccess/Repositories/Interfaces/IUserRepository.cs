@@ -73,7 +73,7 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces
         IEnumerable<User> GetUsers(long tenantId);
 
         /// <summary>
-        /// 指定したテナントにLdap経由で所属しているユーザを取得する。
+        /// 指定したテナントにLDAP経由で所属しているユーザを取得する。
         /// テナントIDの存在チェックは行わない。
         /// </summary>
         /// <param name="tenantId">テナントID</param>
@@ -169,7 +169,7 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces
         void ChangeTenantRole(long userId, long tenantId, IEnumerable<Role> roles, bool isOrigin);
 
         /// <summary>
-        /// 指定したテナントについて、ユーザのLdap経由で付与されたロール情報を更新する。
+        /// 指定したテナントについて、ユーザのLDAP経由で付与されたロール情報を更新する。
         /// </summary>
         /// <param name="userId">>対象ユーザID</param>
         /// <param name="tenantId">対象テナントID</param>

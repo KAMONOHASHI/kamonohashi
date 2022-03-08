@@ -19,7 +19,7 @@ namespace Nssol.Platypus.Logic.Interfaces
         Result<LdapEntry, string> Authenticate(User user, string LdapUserName, string password);
 
         /// <summary>
-        /// 所属しているLdapグループから所属テナントを更新する
+        /// 所属しているLDAPグループから所属テナントを更新する
         /// </summary>
         /// <param name="entry">LDAPエントリ</param>
         /// <param name="user">ユーザ</param>

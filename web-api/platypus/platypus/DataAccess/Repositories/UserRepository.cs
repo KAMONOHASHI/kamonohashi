@@ -249,7 +249,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
         }
 
         /// <summary>
-        /// 指定したテナントにLdap経由で所属しているユーザを取得する。
+        /// 指定したテナントにLDAP経由で所属しているユーザを取得する。
         /// テナントIDの存在チェックは行わない。
         /// </summary>
         public IEnumerable<User> GetLdapUsers(long tenantId)
@@ -924,7 +924,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
         }
 
         /// <summary>
-        /// 指定したテナントについて、ユーザのLdap経由で付与されたロール情報を更新する。
+        /// 指定したテナントについて、ユーザのLDAP経由で付与されたロール情報を更新する。
         /// </summary>
         /// <param name="userId">>対象ユーザID</param>
         /// <param name="tenantId">対象テナントID</param>

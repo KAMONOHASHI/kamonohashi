@@ -162,7 +162,7 @@ namespace Nssol.Platypus.Controllers.spa
             // ユーザグループ自体の更新を確定させるため、更新内容を一旦コミットする
             unitOfWork.Commit();
 
-            // 影響のあるテナントに所属するLdapユーザのロール情報を更新する
+            // 影響のあるテナントに所属するLDAPユーザのロール情報を更新する
             var tenants = userGroupRepository.GetTenantsByUserGroup(id.Value).ToList();
             foreach(var tenant in tenants)
             {
@@ -200,7 +200,7 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonNotFound($"UserGroup ID {id.Value} is not found.");
             }
 
-            // 影響のあるテナントに所属するLdapユーザの紐づけを解除する
+            // 影響のあるテナントに所属するLDAPユーザの紐づけを解除する
             var tenants = userGroupRepository.GetTenantsByUserGroup(id.Value).ToList();
             foreach (var tenant in tenants)
             {

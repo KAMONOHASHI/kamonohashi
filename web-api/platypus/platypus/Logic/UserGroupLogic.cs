@@ -101,7 +101,7 @@ namespace Nssol.Platypus.Logic
         }
 
         /// <summary>
-        /// 所属しているLdapグループから所属テナントを更新する
+        /// 所属しているLDAPグループから所属テナントを更新する
         /// </summary>
         /// <param name="entry">LDAPエントリ</param>
         /// <param name="user">ユーザ</param>
@@ -142,7 +142,7 @@ namespace Nssol.Platypus.Logic
                             // 直接検索のとき
                             foreach (var ldapGroup in ldapGroups)
                             {
-                                // ldapから取得したグループのDnとユーザグループのDnを比較
+                                // LDAPから取得したグループのDnとユーザグループのDnを比較
                                 if (ldapGroup == userGroupMap.UserGroup.Dn)
                                 {
                                     userGroupTenantMapIds.Add(userGroupMap.Id);
@@ -155,7 +155,7 @@ namespace Nssol.Platypus.Logic
                             // 間接検索のとき
                             try
                             {
-                                // Ldap接続
+                                // LDAP接続
                                 using (var conn = new LdapConnection())
                                 {
                                     conn.Connect(adOptions.Server, adOptions.Port);

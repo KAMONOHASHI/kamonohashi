@@ -31,12 +31,12 @@
         public string BaseDn { get; set; }
 
         /// <summary>
-        /// Ldap検索用のフィルタ（ユーザ検索）
+        /// LDAP検索用のフィルタ（ユーザ検索）
         /// </summary>
         public string LdapFilter { get; set; }
 
         /// <summary>
-        /// Ldapグループ検索用のフィルタ（ユーザ検索）
+        /// LDAPグループ検索用のフィルタ（ユーザ検索）
         /// </summary>
         public string LdapGroupFilter { get; set; }
 
