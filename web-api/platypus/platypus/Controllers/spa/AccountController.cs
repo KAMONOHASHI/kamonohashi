@@ -100,6 +100,11 @@ namespace Nssol.Platypus.Controllers.spa
             {
                 return JsonBadRequest("Invalid tenant name");
             }
+            else if (!userRepository.IsOriginMember(userInfo.Id, defaultTenant.Id))
+            {
+                // KQI上で紐づいていないテナントの場合はエラーとする。
+                return JsonBadRequest("Invalid tenant name");
+            }
 
             //アップデート処理
             User user = await userRepository.GetByIdAsync(userInfo.Id);

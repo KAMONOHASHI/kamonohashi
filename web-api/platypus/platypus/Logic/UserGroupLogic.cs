@@ -20,7 +20,6 @@ namespace Nssol.Platypus.Logic
     public class UserGroupLogic : PlatypusLogicBase, IUserGroupLogic
     {
         private readonly IUserRepository userRepository;
-        private readonly IRoleRepository roleRepository;
         private readonly IUserGroupRepository userGroupRepository;
         private readonly ActiveDirectoryOptions adOptions;
 
@@ -29,13 +28,11 @@ namespace Nssol.Platypus.Logic
         /// </summary>
         public UserGroupLogic(
             IUserRepository userRepository,
-            IRoleRepository roleRepository,
             IUserGroupRepository userGroupRepository,
             ICommonDiLogic commonDiLogic,
             IOptions<ActiveDirectoryOptions> adOptions) : base(commonDiLogic)
         {
             this.userRepository = userRepository;
-            this.roleRepository = roleRepository;
             this.userGroupRepository = userGroupRepository;
             this.adOptions = adOptions.Value;
         }
@@ -68,7 +65,7 @@ namespace Nssol.Platypus.Logic
                             },
                             false
                     );
-                    LogDebug($"Login succeeded - {LdapUserName} - get {user.Name}");
+                    LogDebug($"Login succeeded - {LdapUserName}, got LDAP user: {user.Name}");
                     if (result.hasMore())
                     {
                         // ユーザ情報が取得できたとき
@@ -81,7 +78,7 @@ namespace Nssol.Platypus.Logic
                     }
                 }
             }
-            catch (LdapReferralException e)
+            catch (LdapReferralException)
             {
                 // ユーザ情報が存在しなかったとき
                 return Result<LdapEntry, string>.CreateErrorResult("");
@@ -172,7 +169,7 @@ namespace Nssol.Platypus.Logic
                                     userGroupTenantMapIds.Add(userGroupMap.Id);
                                 }
                             }
-                            catch (LdapException e)
+                            catch (LdapException)
                             {
                                 // ここは何もしない
                             }
@@ -221,7 +218,7 @@ namespace Nssol.Platypus.Logic
                         // テナント参加
                         userRepository.AttachTenant(user, tenant.Id, Array.Empty<Role>(), false, userGroupTenantMapIds);
                         // ログ出力
-                        LogInformation($"ユーザ{user.Name}をテナント{tenant.Name}へ紐づけました。");
+                        LogInformation($"ユーザ {user.Name} をテナント {tenant.Name} へ紐づけました。");
                     }
                     else
                     {
