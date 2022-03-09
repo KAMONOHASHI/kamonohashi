@@ -9,7 +9,7 @@
           plain
           @click="openCreateDialog"
         >
-          新規作成
+          新規登録
         </el-button>
       </el-col>
     </el-row>
