@@ -504,6 +504,7 @@ export default {
       this.$router.replace({
         query: { version: this.viewVersion.version },
       })
+      this.selectImageList = []
     },
     async retrieveData() {
       //アクアリウムデータセットバージョン情報を取得
