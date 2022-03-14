@@ -183,6 +183,10 @@ namespace Nssol.Platypus.DataAccess
         /// </summary>
         public virtual DbSet<TrainingHistoryAttachedFile> TrainingHistoryAttachedFiles { get; set; }
         /// <summary>
+        /// 学習検索履歴
+        /// </summary>
+        public virtual DbSet<TrainingSearchHistories> TrainingSearchHistories { get; set; }
+        /// <summary>
         /// 推論履歴
         /// </summary>
         public virtual DbSet<InferenceHistory> InferenceHistories { get; set; }

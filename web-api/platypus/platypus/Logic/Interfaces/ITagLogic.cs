@@ -73,6 +73,13 @@ namespace Nssol.Platypus.Logic.Interfaces
 
         /// <summary>
         /// 指定した既存データIDとタグを関連付ける。
+        /// </summary>
+        /// <param name="trainingHistoryId">学習履歴ID</param>
+        /// <param name="inputTags">関連付けるタグ</param>
+        Task AddTrainingHistoryTagsAsync(long trainingHistoryId, IEnumerable<string> inputTags);
+
+        /// <summary>
+        /// 指定した既存データIDとタグを関連付ける。
         /// 既存の関連付け状況に関わらず、指定されたタグのみが紐づいている状況にする（他の紐づけはすべて削除する）
         /// </summary>
         /// <remarks>
