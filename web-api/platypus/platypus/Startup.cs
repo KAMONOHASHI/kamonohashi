@@ -169,6 +169,7 @@ namespace Nssol.Platypus
             services.AddTransient<IGitRepository, GitRepository>();
             services.AddTransient<ITensorBoardContainerRepository, TensorBoardContainerRepository>();
             services.AddTransient<ITrainingHistoryRepository, TrainingHistoryRepository>();
+            services.AddTransient<ITrainingSearchHistoryRepository, TrainingSearchHistoryRepository>();
             services.AddTransient<IInferenceHistoryRepository, InferenceHistoryRepository>();
             services.AddTransient<INotebookHistoryRepository, NotebookHistoryRepository>();
             services.AddTransient<IRoleRepository, RoleRepository>();
