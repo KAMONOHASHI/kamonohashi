@@ -254,14 +254,11 @@ export default {
         )
         if (index === 0) {
           msg = `最新のコミットです。`
-        } else if (
-          this.containsPastCommit &&
-          index === this.commits.length - 1
-        ) {
-          // コミット一覧にコミットを追加しており、末尾にあるもの
-          msg = `最新から${this.commits.length - 1}コミットより前のIDです。`
         } else if (index > 0) {
           msg = `最新から${index}コミット前のIDです。`
+        } else if (this.containsPastCommit && index < 0) {
+          // コミット一覧にコミットが含まれていない場合
+          msg = `最新から${this.commits.length - 1}コミットより前のIDです。`
         }
       }
       return msg
