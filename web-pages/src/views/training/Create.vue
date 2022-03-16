@@ -694,6 +694,8 @@ export default {
     },
     async selectBranch(branchName) {
       this.commitsPage = 1
+      // 過去の選択状態をリセット
+      this.form.gitModel.commit = null
       await gitSelectorUtil.selectBranch(
         this.form,
         this['gitSelector/fetchCommits'],

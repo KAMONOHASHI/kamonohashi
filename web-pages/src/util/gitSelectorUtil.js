@@ -70,9 +70,6 @@ export default class GitSelectorUtil {
   // branchName: 選択したブランチ名
   // page: ページ番号
   static async selectBranch(form, fetchCommits, branchName, page) {
-    // 過去の選択状態をリセット
-    form.gitModel.commit = null
-
     // clearの場合リセット、ブランチが選択された場合はコミット取得
     if (branchName !== null) {
       await fetchCommits({
