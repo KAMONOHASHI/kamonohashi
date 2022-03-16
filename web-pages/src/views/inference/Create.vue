@@ -697,6 +697,11 @@ export default {
     },
     async getMoreCommits() {
       this.commitsPage++
+      // コピー実行時、パラメータに格納する際の形を統一するため整形を行う
+      if (typeof this.form.gitModel.branch.branchName === 'undefined') {
+        let branch = { branchName: this.form.gitModel.branch }
+        this.form.gitModel.branch = branch
+      }
       await gitSelectorUtil.selectBranch(
         this.form,
         this['gitSelector/fetchCommits'],
