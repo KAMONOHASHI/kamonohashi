@@ -83,7 +83,7 @@
     <el-row>
       <!-- コミットIDの選択。ブランチで選択する場合は表示されない。 -->
       <el-col :span="6" :offset="1">コミットID</el-col>
-      <el-col v-if="enableCommitIdSelecter || value.commit" :span="12">
+      <el-col :span="12">
         <el-popover
           ref="commitDetail"
           :disabled="value.commit === null"
@@ -147,18 +147,6 @@
             </el-button>
           </el-option-group>
         </el-select>
-      </el-col>
-      <el-col v-else :span="12">
-        <span>
-          HEAD
-        </span>
-        <el-button
-          size="mini"
-          :disabled="!value.branch || disabled"
-          @click="enableCommitIdSelecter = true"
-        >
-          コミットIDを指定
-        </el-button>
       </el-col>
       <el-col :span="16" :offset="7" style="line-height: normal;">
         {{ commitIdMsg }}
@@ -254,14 +242,11 @@ export default {
         )
         if (index === 0) {
           msg = `最新のコミットです。`
-        } else if (
-          this.containsPastCommit &&
-          index === this.commits.length - 1
-        ) {
-          // コミット一覧にコミットを追加しており、末尾にあるもの
-          msg = `最新から${this.commits.length - 1}コミットより前のIDです。`
         } else if (index > 0) {
           msg = `最新から${index}コミット前のIDです。`
+        } else if (this.containsPastCommit && index < 0) {
+          // コミット一覧にコミットが含まれていない場合
+          msg = `最新から${this.commits.length - 1}コミットより前のIDです。`
         }
       }
       return msg
@@ -285,19 +270,18 @@ export default {
             this.containsPastCommit = true
           }
         }
-        if (this.value.commit != null) {
-          let commitId = this.$refs.commitId
-          commitId.$el.childNodes[1].childNodes[1].placeholder = this.createCommitIdAndComment(
-            this.value.commit.commitId,
-            this.value.commit.committerName,
-            this.value.commit.comment,
-          )
-          commitId.$el.childNodes[1].childNodes[1].value = this.createCommitIdAndComment(
-            this.value.commit.commitId,
-            this.value.commit.committerName,
-            this.value.commit.comment,
-          )
-        }
+
+        let commitId = this.$refs.commitId
+        commitId.$el.childNodes[1].childNodes[1].placeholder = this.createCommitIdAndComment(
+          this.value.commit.commitId,
+          this.value.commit.committerName,
+          this.value.commit.comment,
+        )
+        commitId.$el.childNodes[1].childNodes[1].value = this.createCommitIdAndComment(
+          this.value.commit.commitId,
+          this.value.commit.committerName,
+          this.value.commit.comment,
+        )
 
         this.$refs.commitId.$forceUpdate()
       }

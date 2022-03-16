@@ -83,7 +83,7 @@
     <el-row>
       <!-- コミットIDの選択。ブランチで選択する場合は表示されない。 -->
       <el-col :span="6" :offset="1">コミットID</el-col>
-      <el-col v-show="enableCommitIdSelecter || value.commit" :span="12">
+      <el-col :span="12">
         <el-popover
           ref="commitDetail"
           :disabled="value.commit === null"
@@ -147,18 +147,6 @@
             </el-button>
           </el-option-group>
         </el-select>
-      </el-col>
-      <el-col v-show="!(enableCommitIdSelecter || value.commit)" :span="12">
-        <span>
-          HEAD
-        </span>
-        <el-button
-          size="mini"
-          :disabled="!value.branch || disabled"
-          @click="enableCommitIdSelecter = true"
-        >
-          コミットIDを指定
-        </el-button>
       </el-col>
       <el-col :span="16" :offset="7" style="line-height: normal;">
         {{ commitIdMsg }}
