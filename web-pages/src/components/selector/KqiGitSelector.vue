@@ -237,7 +237,7 @@ export default {
       let msg = ''
       if (this.commits.length > 0 && this.value.commit) {
         let index = this.commits.findIndex(
-          commit => commit === this.value.commit,
+          commit => commit.commitId === this.value.commit.commitId,
         )
         if (index === 0) {
           msg = `最新のコミットです。`
