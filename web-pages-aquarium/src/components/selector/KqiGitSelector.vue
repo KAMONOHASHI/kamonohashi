@@ -223,7 +223,6 @@ export default {
     return {
       // popover（コミットID一覧等）の「ローディング中」 文字列の表示制御
       listLoading: false,
-      enableCommitIdSelecter: false,
       // リポジトリ名が手入力されたかどうかを表すフラグ
       repositoryCreated: false,
       repositoryValueKey: 'fullName',

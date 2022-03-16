@@ -223,7 +223,6 @@ export default {
     return {
       // popover（コミットID一覧等）の「ローディング中」 文字列の表示制御
       listLoading: false,
-      enableCommitIdSelecter: false,
       // リポジトリ名が手入力されたかどうかを表すフラグ
       repositoryCreated: false,
       repositoryValueKey: 'fullName',
@@ -386,7 +385,7 @@ export default {
         this.filteredOptions = ret
       }
       if (ret.length == 0) {
-        //一つも一致しない場合は
+        //一つも一致しない場合
         this.$emit('searchCommitId', query)
         this.filteredOptions = [...this.commits]
       }
