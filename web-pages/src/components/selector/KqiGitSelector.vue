@@ -83,7 +83,7 @@
     <el-row>
       <!-- コミットIDの選択。ブランチで選択する場合は表示されない。 -->
       <el-col :span="6" :offset="1">コミットID</el-col>
-      <el-col v-if="enableCommitIdSelecter || value.commit" :span="12">
+      <el-col v-show="enableCommitIdSelecter || value.commit" :span="12">
         <el-popover
           ref="commitDetail"
           :disabled="value.commit === null"
@@ -148,7 +148,7 @@
           </el-option-group>
         </el-select>
       </el-col>
-      <el-col v-else :span="12">
+      <el-col v-show="!(enableCommitIdSelecter || value.commit)" :span="12">
         <span>
           HEAD
         </span>
@@ -285,19 +285,18 @@ export default {
             this.containsPastCommit = true
           }
         }
-        if (this.value.commit != null) {
-          let commitId = this.$refs.commitId
-          commitId.$el.childNodes[1].childNodes[1].placeholder = this.createCommitIdAndComment(
-            this.value.commit.commitId,
-            this.value.commit.committerName,
-            this.value.commit.comment,
-          )
-          commitId.$el.childNodes[1].childNodes[1].value = this.createCommitIdAndComment(
-            this.value.commit.commitId,
-            this.value.commit.committerName,
-            this.value.commit.comment,
-          )
-        }
+
+        let commitId = this.$refs.commitId
+        commitId.$el.childNodes[1].childNodes[1].placeholder = this.createCommitIdAndComment(
+          this.value.commit.commitId,
+          this.value.commit.committerName,
+          this.value.commit.comment,
+        )
+        commitId.$el.childNodes[1].childNodes[1].value = this.createCommitIdAndComment(
+          this.value.commit.commitId,
+          this.value.commit.committerName,
+          this.value.commit.comment,
+        )
 
         this.$refs.commitId.$forceUpdate()
       }
