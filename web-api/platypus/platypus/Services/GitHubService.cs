@@ -114,7 +114,7 @@ namespace Nssol.Platypus.Services
         /// <param name="branchName">ブランチ名</param>
         /// <param name="page">ページ番号</param>
         /// <returns>コミット一覧</returns>
-        public async Task<Result<IEnumerable<CommitModel>, string>> GetAllCommitsAsync(UserTenantGitMap gitMap, string repositoryName, string owner, string branchName,string page)
+        public async Task<Result<IEnumerable<CommitModel>, string>> GetAllCommitsAsync(UserTenantGitMap gitMap, string repositoryName, string owner, string branchName, string page)
         {
             // API呼び出しパラメータ作成
             RequestParam param = CreateRequestParam(gitMap);
