@@ -568,7 +568,7 @@ export default {
             if (this.form.gitModel.branch) {
               commitId = this.form.gitModel.commit
                 ? this.form.gitModel.commit.commitId
-                : this.commits[0].commitId
+                : this.commitsList[0].commitId
             }
             // コピー時ブランチを切り替えずに実行
             // パラメータに格納する際の形を統一するため整形を行う

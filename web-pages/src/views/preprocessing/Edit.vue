@@ -323,7 +323,7 @@ export default {
                   branch: this.form.gitModel.branch.branchName,
                   commitId: this.form.gitModel.commit
                     ? this.form.gitModel.commit.commitId
-                    : this.commits[0].commitId,
+                    : this.commitsList[0].commitId,
                 }
               }
               let params = {

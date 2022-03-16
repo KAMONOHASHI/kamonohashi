@@ -482,7 +482,7 @@ export default {
           branch: this.form.gitModel.branch.branchName,
           commitId:
             this.form.gitModel.commit === null
-              ? this.commits[0].commitId
+              ? this.commitsList[0].commitId
               : this.form.gitModel.commit.commitId,
         },
         cpu: this.form.resource.cpu,
