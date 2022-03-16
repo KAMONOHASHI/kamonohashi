@@ -142,9 +142,9 @@
               "
               :value="item"
             />
-            <el-button style="margin-left:10px" @click="selectMore"
-              >more</el-button
-            >
+            <el-button style="margin-left:10px" @click="selectMore">
+              more
+            </el-button>
           </el-option-group>
         </el-select>
       </el-col>
