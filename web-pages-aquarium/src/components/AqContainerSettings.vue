@@ -19,16 +19,18 @@
               plain
               size="mini"
               @click="copy('train')"
-              >入力内容を学習からコピー</el-button
             >
+              入力内容を学習からコピー
+            </el-button>
             <el-button
               icon="el-icon-document-copy"
               type="info"
               plain
               size="mini"
               @click="copy('evaluation')"
-              >入力内容を推論からコピー</el-button
             >
+              入力内容を推論からコピー
+            </el-button>
           </div>
           <div v-if="formType == '学習'">
             <el-button
@@ -37,16 +39,18 @@
               plain
               size="mini"
               @click="copy('preprocessing')"
-              >入力内容を前処理からコピー</el-button
             >
+              入力内容を前処理からコピー
+            </el-button>
             <el-button
               icon="el-icon-document-copy"
               type="info"
               plain
               size="mini"
               @click="copy('evaluation')"
-              >入力内容を推論からコピー</el-button
             >
+              入力内容を推論からコピー
+            </el-button>
           </div>
           <div v-if="formType == '推論'">
             <el-button
@@ -55,16 +59,18 @@
               plain
               size="mini"
               @click="copy('preprocessing')"
-              >入力内容を前処理からコピー</el-button
             >
+              入力内容を前処理からコピー
+            </el-button>
             <el-button
               icon="el-icon-document-copy"
               type="info"
               plain
               size="mini"
               @click="copy('train')"
-              >入力内容を学習からコピー</el-button
             >
+              入力内容を学習からコピー
+            </el-button>
           </div>
         </el-col>
       </el-row>
