@@ -2684,6 +2684,12 @@
             "name": "branch",
             "description": "ブランチ名",
             "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "description": "ページ番号",
+            "type": "string"
           }
         ],
         "responses": {
@@ -2782,6 +2788,11 @@
           {
             "in": "query",
             "name": "branch",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "page",
             "type": "string"
           }
         ],

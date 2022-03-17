@@ -30,13 +30,8 @@
           :move-list="moveList"
           :disabled="disabled"
           :width="dataViewInfo.width"
-          @removeAll="handleRemoveAll"
           @showData="handleShowData"
           @add="handleAdd"
-          @addAll="handleAddAll"
-          @addAllData="handleAddAllData"
-          @addAllDataOld="handleAddAllDataOld"
-          @allCheck="handleAllCheck"
           @remove="handleRemove"
           @paging="handleDataViewPaging"
           @filter="x => retrieveData(dataViewInfo.currentPage, x.filter)"
@@ -55,9 +50,6 @@
             :width="viewInfo.width"
             @showData="handleShowData"
             @add="handleAdd"
-            @addAll="handleAddAll"
-            @addAllOld="handleAddAllOld"
-            @allCheck="handleAllCheck"
             @remove="handleRemove"
             @paging="handlePaging"
             @filter="handleFilter"
@@ -112,7 +104,6 @@ export default {
       },
       // 表示の性能問題が出たため、子に直接データをpropで渡さずに親側で表示分を取り出して渡す
       dataViewInfo: {}, // all dataのpaging情報やentry自体の表示情報。createdで初期化
-      allDataCheckedList: [], // all dataの過去のページのcheck状態などを保持。検索や移動などで初期化
       entryViewInfo: [], // 各entry(training, testing, ...)のpaging情報やentry自体の表示情報
 
       selectedList: [], // checkListの内選択されたもの
@@ -173,31 +164,15 @@ export default {
     ...mapActions(['fetchData']),
 
     // データ一覧を取得し、それぞれのデータをentryに割り当てる
-    async retrieveData(page, filter, isAllCheckedOld) {
+    async retrieveData(page, filter) {
       let params = Object.assign({}, filter)
       params.page = page
       params.perPage = this.dataViewInfo.currentPageSize
       params.withTotal = true
       await this.fetchData(params)
-
-      //fetchDataで取得したdataのリストに現在のページのcheck状態をつける
-      for (let i in this.data) {
-        let checkflg = true
-        for (let j in this.allDataCheckedList) {
-          if (this.data[i].id == this.allDataCheckedList[j].id) {
-            this.data[i].checked = this.allDataCheckedList[j].checked
-            checkflg = false
-          }
-        }
-        if (isAllCheckedOld && checkflg) {
-          this.data[i].checked = true
-        }
-      }
-
       this.dataViewInfo.dataList = this.data
       this.dataViewInfo.filteredTotal = this.total
       this.dataViewInfo.currentPage = page
-
       this.refreshAssign()
     },
 
@@ -254,21 +229,7 @@ export default {
 
     // all dataのページング処理
     handleDataViewPaging(x) {
-      //過去ページのチェック状態を保存させる
-      //allDataCheckedListに追加
-      for (let i in x.dataList) {
-        let addFlg = true
-        for (let j in this.allDataCheckedList) {
-          if (x.dataList[i].id == this.allDataCheckedList[j].id) {
-            addFlg = false
-            this.allDataCheckedList[j].checked = x.dataList[i].checked
-          }
-        }
-        if (addFlg) {
-          this.allDataCheckedList.push(x.dataList[i])
-        }
-      }
-      this.retrieveData(x.page, x.searchCondition, x.isAllCheckedOld)
+      this.retrieveData(x.page, x.searchCondition)
     },
 
     // training, testingのページング処理
@@ -286,25 +247,6 @@ export default {
         entry.length,
       )
       let dataList = entry.slice(pageStartIndex, pageEndIndex)
-      if (pagingInfo.isAllChecked) {
-        for (let i in dataList) {
-          dataList[i].checked = true
-        }
-      } else {
-        //前のページでチェックがついているものがあれば残しておく
-        for (let i in pagingInfo.dataList) {
-          for (let j in entry) {
-            if (entry[j].id == pagingInfo.dataList[i].id) {
-              if (pagingInfo.dataList[i].checked == true) {
-                entry[j].checked = true
-              } else {
-                entry[j].checked = false
-              }
-            }
-          }
-        }
-      }
-
       viewInfo.currentPage = nextPage
       viewInfo.dataList = dataList
       viewInfo.filteredTotal = entry.length
@@ -325,16 +267,7 @@ export default {
         let neighborOriginalIndex = this.entryList[entryName].indexOf(
           neighborData,
         )
-        //重複チェック
-        let duplicate = false
-        for (let i in this.entryList[entryName]) {
-          if (this.entryList[entryName][i]['id'] == data.id) {
-            duplicate = true
-          }
-        }
-        if (!duplicate) {
-          this.entryList[entryName].splice(neighborOriginalIndex, 0, data)
-        }
+        this.entryList[entryName].splice(neighborOriginalIndex, 0, data)
       } else {
         // 末尾への追加のため、下隣りが存在しない。現在の末尾要素を上隣りに挿入する
         let neighborData = this.filteredEntryList[entryName][
@@ -343,16 +276,7 @@ export default {
         let neighborOriginalIndex = this.entryList[entryName].indexOf(
           neighborData,
         )
-        //重複チェック
-        let duplicate = false
-        for (let i in this.entryList[entryName]) {
-          if (this.entryList[entryName][i]['id'] == data.id) {
-            duplicate = true
-          }
-        }
-        if (!duplicate) {
-          this.entryList[entryName].splice(neighborOriginalIndex + 1, 0, data)
-        }
+        this.entryList[entryName].splice(neighborOriginalIndex + 1, 0, data)
       }
     },
 
@@ -360,147 +284,6 @@ export default {
       this.$emit('showData', id)
     },
 
-    // 'allCheck'がemitされた際の処理
-    handleAllCheck({ entryName }) {
-      if (entryName == 'all　data') {
-        this.allDataCheckedList = []
-      } else {
-        for (let i in this.entryList[entryName]) {
-          this.entryList[entryName][i]['checked'] = true
-        }
-      }
-    },
-
-    // 'addAll'がemitされた際の処理
-    //// 全選択チェックをつけた後に一括移動する時の処理
-    handleAddAll({ from, to }) {
-      if (from == 'all　data') {
-        //allDataの場合はDataList.vueの方で移動の処理を行っているのでここでは過去のリストを空にするのみ
-        this.allDataCheckedList = []
-        return
-      } else {
-        let fromList = Object.assign({}, this.entryList[from])
-        for (let i in fromList) {
-          let data = Object.assign({}, fromList[i])
-          data.checked = false
-          this.handleAdd({ data, addedIndex: 0, entryName: to })
-          this.handleRemove({ data, entryName: from })
-        }
-      }
-    },
-
-    // 'addAllData'がemitされた際の処理
-    //// 'all data'でチェックしたものをtrainingやtestingに一括移動する時の処理
-    handleAddAllData({ to, datalist }) {
-      //現在のページでチェックが外れてないことを確認
-      let list = []
-      for (let i in this.allDataCheckedList) {
-        let addflg = true
-        for (let j in datalist) {
-          if (this.allDataCheckedList[i].id == datalist[j].id) {
-            addflg = false
-            if (datalist[j].checked == true) {
-              list.push(this.allDataCheckedList[i])
-            }
-          }
-        }
-        if (addflg && this.allDataCheckedList[i].checked == true) {
-          list.push(this.allDataCheckedList[i])
-        }
-      }
-      for (let i in list) {
-        let data = Object.assign({}, list[i])
-        data.checked = false
-        this.handleAdd({
-          data: data,
-          addedIndex: 0,
-          entryName: to,
-        })
-        //古いエントリーから削除
-        this.handleRemoveAll({
-          data: data,
-          entryName: to,
-        })
-      }
-      this.allDataCheckedList = []
-    },
-    // 'addAllDataOld'がemitされた際の処理
-    //// alldataで全選択チェックをつけた後に個別にチェックを外してtrainingやtestingに一括移動する時の処理
-    async handleAddAllDataOld({ to, datalist }) {
-      //すべてのデータを取得する
-      let params = {}
-      //全データ取得
-      let maxpage = Math.ceil(this.total / 100)
-      for (let i = 1; i <= maxpage; i++) {
-        params.page = i
-        params.perPage = 100
-        params.withTotal = true
-        await this.fetchData(params)
-        for (let j in this.data) {
-          let addFlg = true
-          //過去のページでチェックが外れていないことを確認
-          for (let k in this.allDataCheckedList) {
-            if (
-              this.allDataCheckedList[k].id == this.data[j].id &&
-              (this.allDataCheckedList[k].checked == null ||
-                this.allDataCheckedList[k].checked == false)
-            ) {
-              addFlg = false
-              break
-            }
-          }
-          //現在のページでチェックが外れてないことを確認
-          for (let k in datalist) {
-            if (datalist[k].id == this.data[j].id) {
-              if (datalist[k].checked == null || datalist[k].checked == false) {
-                addFlg = false
-                break
-              } else {
-                addFlg = true
-              }
-            }
-          }
-          if (addFlg) {
-            //移動先のエントリへ追加
-            this.handleAdd({ data: this.data[j], addedIndex: 0, entryName: to })
-            //古いエントリーから削除
-            for (let i in this.entryViewInfo) {
-              if (this.entryViewInfo[i].entryName != to) {
-                this.handleRemove({
-                  data: this.data[j],
-                  entryName: this.entryViewInfo[i].entryName,
-                })
-              }
-            }
-          }
-        }
-      }
-      this.allDataCheckedList = []
-    },
-    // 'addAllOld'がemitされた際の処理
-    ////  trainingやtestingで全選択チェックをつけた後に個別にチェックを外して別のエントリに一括移動する時の処理
-    ////  またはtrainingやtestingで個別にチェックを付けて別のエントリに一括移動する時の処理
-    handleAddAllOld({ from, to, noChecklist }) {
-      let fromList = Object.assign({}, this.entryList[from])
-      for (let i in fromList) {
-        let noCheck = false
-        for (let j in noChecklist) {
-          if (fromList[i].id == noChecklist[j].id) {
-            noCheck = true
-          }
-        }
-        if (noCheck) {
-          continue
-        }
-        if (fromList[i].checked == false) {
-          continue
-        }
-        let data = Object.assign({}, fromList[i])
-        data.checked = false
-        this.handleAdd({ data, addedIndex: 0, entryName: to })
-        this.handleRemove({ data, entryName: from })
-      }
-    },
     // 'add'がemitされた際の処理
     handleAdd({ data, addedIndex, entryName }) {
       if (entryName !== this.dataViewInfo.entryName) {
@@ -516,25 +299,6 @@ export default {
       }
       this.refreshAssign()
       this.emitInput()
-    },
-
-    //'removeAll'がemitされた際の処理
-    handleRemoveAll({ data, entryName }) {
-      for (let name in this.entryList) {
-        if (name != entryName) {
-          let viewInfo = this.getViewInfo(name)
-          this.entryList[name] = this.entryList[name].filter(
-            x => x.id !== data.id,
-          )
-          this.handleFilter({
-            filter: viewInfo.filter,
-            entryName: name,
-          })
-          this.refreshAssign()
-          this.emitInput()
-        }
-      }
-      this.allDataCheckedList = []
     },
 
     // 'remove'がemitされた際の処理

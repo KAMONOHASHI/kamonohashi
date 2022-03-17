@@ -3466,6 +3466,7 @@ export const getApiV2GitByGitIdReposByOwnerByRepositoryNameBranchesURL = functio
  * @param owner - オーナー名
  * @param repositoryName - リポジトリ名
  * @param branch - ブランチ名
+ * @param page - ページ番号
  */
 export const getApiV2GitByGitIdReposByOwnerByRepositoryNameCommits = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -3489,6 +3490,9 @@ export const getApiV2GitByGitIdReposByOwnerByRepositoryNameCommits = function(pa
   if (parameters['branch'] !== undefined) {
     queryParameters['branch'] = parameters['branch']
   }
+  if (parameters['page'] !== undefined) {
+    queryParameters['page'] = parameters['page']
+  }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]
@@ -3511,6 +3515,9 @@ export const getApiV2GitByGitIdReposByOwnerByRepositoryNameCommitsURL = function
   path = path.replace('{repositoryName}', `${parameters['repositoryName']}`)
   if (parameters['branch'] !== undefined) {
     queryParameters['branch'] = parameters['branch']
+  }
+  if (parameters['page'] !== undefined) {
+    queryParameters['page'] = parameters['page']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -3593,6 +3600,7 @@ export const getApiV2GitByGitIdReposByOwnerByRepositoryNameCommitsByCommitIdURL 
      * @param gitId - 
      * @param segments - 
      * @param branch - 
+     * @param page - 
 */
 export const getApiV2GitByGitIdReposBySegments = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -3611,6 +3619,9 @@ export const getApiV2GitByGitIdReposBySegments = function(parameters = {}) {
   }
   if (parameters['branch'] !== undefined) {
     queryParameters['branch'] = parameters['branch']
+  }
+  if (parameters['page'] !== undefined) {
+    queryParameters['page'] = parameters['page']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
@@ -3633,6 +3644,9 @@ export const getApiV2GitByGitIdReposBySegmentsURL = function(parameters = {}) {
   path = path.replace('{segments}', `${parameters['segments']}`)
   if (parameters['branch'] !== undefined) {
     queryParameters['branch'] = parameters['branch']
+  }
+  if (parameters['page'] !== undefined) {
+    queryParameters['page'] = parameters['page']
   }
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
