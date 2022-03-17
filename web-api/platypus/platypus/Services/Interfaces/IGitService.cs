@@ -37,8 +37,9 @@ namespace Nssol.Platypus.Services.Interfaces
         /// <param name="repositoryName">リポジトリ名</param>
         /// <param name="owner">リポジトリの識別子。サービスごとにフォーマットが異なる。</param>
         /// <param name="branchName">ブランチ名</param>
+        /// <param name="page">ページ番号</param>
         /// <returns>コミット一覧</returns>
-        Task<Result<IEnumerable<CommitModel>, string>> GetAllCommitsAsync(UserTenantGitMap gitMap, string repositoryName, string owner, string branchName);
+        Task<Result<IEnumerable<CommitModel>, string>> GetAllCommitsAsync(UserTenantGitMap gitMap, string repositoryName, string owner, string branchName, string page);
 
         /// <summary>
         /// 指定したブランチのHEADコミットを取得する
