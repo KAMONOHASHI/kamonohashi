@@ -241,14 +241,6 @@ export default {
       this.updateValue = true
       this.retrieveData()
     },
-    'value.gitModel': async function() {
-      await this.selectRepository(
-        this.value.gitModelrepository.owner +
-          '/' +
-          this.value.gitModel.repository,
-      )
-      await this.selectBranch(this.value.gitModel.branch.branchName)
-    },
   },
 
   async created() {
