@@ -11,10 +11,10 @@
       <el-col :span="4">
         <div style="height: 400px;">
           <el-steps direction="vertical" :active="active">
-            <el-step title="Step 1" description="基本設定"></el-step>
-            <el-step title="Step 2" description="前処理"></el-step>
-            <el-step title="Step 3" description="学習"></el-step>
-            <el-step title="Step 4" description="推論"></el-step>
+            <el-step title="Step 1" description="基本設定" />
+            <el-step title="Step 2" description="前処理" />
+            <el-step title="Step 3" description="学習" />
+            <el-step title="Step 4" description="推論" />
           </el-steps>
         </div>
       </el-col>
@@ -45,14 +45,16 @@
               label="公開設定 "
               prop="accessLevel"
               style="display:block"
-              ><br />
+            >
+              <br />
               <el-radio-group v-model="form.accessLevel">
-                <el-radio :label="1" style="margin:10px"
-                  >現在のテナント </el-radio
-                ><br />
-                <el-radio :label="2" style="margin:10px"
-                  >全テナントに公開</el-radio
-                >
+                <el-radio :label="1" style="margin:10px">
+                  現在のテナント
+                </el-radio>
+                <br />
+                <el-radio :label="2" style="margin:10px">
+                  全テナントに公開
+                </el-radio>
               </el-radio-group>
             </el-form-item>
           </el-form>
