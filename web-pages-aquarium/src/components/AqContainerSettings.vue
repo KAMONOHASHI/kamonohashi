@@ -474,7 +474,10 @@ export default {
             name: repositoryName.substring(index + 1),
             fullName: repositoryName,
           }
-          this.repositories.push(argRepository)
+          // リポジトリ一覧に該当のリポジトリがない場合、リポジトリのリストに追加されたリポジトリを追加
+          if (!this.repositories.find(r => r.fullName == repositoryName)) {
+            this.repositories.push(argRepository)
+          }
         } else {
           // 構文エラー
           this.$notify.error({
