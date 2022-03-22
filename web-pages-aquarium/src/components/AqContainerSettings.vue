@@ -505,7 +505,8 @@ export default {
     },
     // ブランチを選択
     async selectBranch(branchName) {
-      this.pacommitsPagege = 1
+      // コミットページを元に戻す
+      this.commitsPage = 1
       // 過去の選択をリセット
       this.form.gitModel.branch = null
       this.form.gitModel.commit = null
