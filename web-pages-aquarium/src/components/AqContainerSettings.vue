@@ -265,10 +265,8 @@ export default {
             return git.id === this.defaultGitId
           })
           XMLHttpRequestEventTarget
-          if (this.updateValue == false) {
-            return
-          }
         }
+        return
       }
 
       // 以下はテンプレート詳細画面で開かれた場合
