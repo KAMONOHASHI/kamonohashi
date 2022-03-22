@@ -1,9 +1,9 @@
 <template>
   <div>
     <el-row>
-      <el-col :span="12"
-        ><h2>テンプレート詳細＞ {{ detail.name }}</h2></el-col
-      >
+      <el-col :span="12">
+        <h2>テンプレート詳細＞ {{ detail.name }}</h2>
+      </el-col>
       <el-col :span="12" style="padding-top:15px">
         <el-select
           v-model="versionValue"
@@ -29,7 +29,7 @@
           v-if="preprocForm"
           ref="preprocessing"
           v-model="preprocForm"
-          :create-teplate="false"
+          :create-template="false"
           :required-form="false"
           :form-type="'前処理'"
           @copy="copyAqContainer"
@@ -40,7 +40,7 @@
           v-if="trainingForm"
           ref="training"
           v-model="trainingForm"
-          :create-teplate="false"
+          :create-template="false"
           :required-form="true"
           :form-type="'学習'"
           @copy="copyAqContainer"
@@ -51,7 +51,7 @@
           v-if="evaluationForm"
           ref="evaluation"
           v-model="evaluationForm"
-          :create-teplate="false"
+          :create-template="false"
           :required-form="false"
           :form-type="'推論'"
           @copy="copyAqContainer"
@@ -202,13 +202,10 @@ export default {
       }
       if (to == 'preprocessing') {
         this.preprocForm = Object.assign({}, fromData)
-        this.trainingForm.name = 'preprocForm'
       } else if (to == 'train') {
         this.trainingForm = Object.assign({}, fromData)
-        this.trainingForm.name = 'trainingForm'
       } else if (to == 'evaluation') {
         this.evaluationForm = Object.assign({}, fromData)
-        this.trainingForm.name = 'evaluationForm'
       }
     },
 
