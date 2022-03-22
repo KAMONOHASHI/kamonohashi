@@ -256,15 +256,18 @@ export default {
       // 新規作成の場合レジストリサーバーとgitサーバーのみ設定されたデフォルトを使用し、
       // 残りの項目はnullのままにする
       if (this.createTemplate) {
-        this.form.containerImage.registry = this.registries.find(registry => {
-          return registry.id === this.defaultRegistryId
-        })
-        this.form.gitModel.git = this.gits.find(git => {
-          return git.id === this.defaultGitId
-        })
-        XMLHttpRequestEventTarget
-        if (this.updateValue == false) {
-          return
+        // 更新フラグがfalseの時、新規作成と判断する。（formのコピーは実行されていない）
+        if (!this.updateValue) {
+          this.form.containerImage.registry = this.registries.find(registry => {
+            return registry.id === this.defaultRegistryId
+          })
+          this.form.gitModel.git = this.gits.find(git => {
+            return git.id === this.defaultGitId
+          })
+          XMLHttpRequestEventTarget
+          if (this.updateValue == false) {
+            return
+          }
         }
       }
 
@@ -288,7 +291,8 @@ export default {
       } else if (this.formType == '推論') {
         formtype = 'evaluation'
       }
-
+      // 更新フラグをtrueにする
+      this.updateValue = true
       // コミットページを元に戻す
       this.commitsPage = 1
       this.$emit('copy', { from: from, to: formtype })
