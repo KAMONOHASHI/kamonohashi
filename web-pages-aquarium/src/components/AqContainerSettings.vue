@@ -289,6 +289,8 @@ export default {
         formtype = 'evaluation'
       }
 
+      // コミットページを元に戻す
+      this.commitsPage = 1
       this.$emit('copy', { from: from, to: formtype })
     },
     // テンプレート詳細画面の場合にコンテナイメージの初期情報を設定する
