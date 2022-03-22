@@ -310,7 +310,7 @@ export default {
       if (
         containerImage === null ||
         Object.keys(containerImage).length == 0 ||
-        containerImage.image === null
+        containerImage.registry === null
       ) {
         this.form.containerImage.registry = this.registries.find(registry => {
           return registry.id == this.defaultRegistryId
@@ -345,7 +345,7 @@ export default {
       if (
         gitModel === null ||
         Object.keys(gitModel).length == 0 ||
-        gitModel.repository === null
+        gitModel.git === null
       ) {
         this.form.gitModel.git = this.gits.find(git => {
           return git.id == this.defaultGitId
