@@ -35,8 +35,9 @@ namespace Nssol.Platypus.Logic.Interfaces
         /// <param name="repositoryName">リポジトリ名</param>
         /// <param name="owner">オーナー名</param>
         /// <param name="branchName">ブランチ名</param>
+        /// <param name="page">ページ番号</param>
         /// <returns>コミット一覧</returns>
-        Task<Result<IEnumerable<CommitModel>, string>> GetAllCommitsAsync(long gitId, string repositoryName, string owner, string branchName);
+        Task<Result<IEnumerable<CommitModel>, string>> GetAllCommitsAsync(long gitId, string repositoryName, string owner, string branchName, string page);
 
         /// <summary>
         /// 指定したブランチ名のHEADリビジョンに一致するコミットIDを取得する。

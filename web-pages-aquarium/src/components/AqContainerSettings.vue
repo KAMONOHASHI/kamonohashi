@@ -37,12 +37,14 @@
             :gits="gits"
             :repositories="repositories"
             :branches="branches"
-            :commits="commits"
+            :commits="commitsList"
             :loading-repositories="loadingRepositories"
             heading="Gitサービス"
             @selectGit="selectGit"
             @selectRepository="selectRepository"
             @selectBranch="selectBranch"
+            @searchCommitId="searchCommitId"
+            @getMoreCommits="getMoreCommits"
           />
 
           <el-row>
@@ -132,6 +134,8 @@ export default {
   },
   data() {
     return {
+      commitsList: [],
+      commitsPage: 1,
       rules: {
         containerImage: [
           { required: true, trigger: 'blur', message: '必須項目です' },
@@ -156,6 +160,7 @@ export default {
       defaultGitId: ['gitSelector/defaultGitId'],
       quota: ['cluster/quota'],
       loadingRepositories: ['gitSelector/loadingRepositories'],
+      searchCommitDetail: ['gitSelector/commitDetail'],
     }),
     form: {
       get() {
@@ -387,6 +392,7 @@ export default {
     },
     // ブランチを選択
     async selectBranch(branchName) {
+      this.pacommitsPagege = 1
       // 過去の選択をリセット
       this.form.gitModel.branch = null
       this.form.gitModel.commit = null
@@ -402,9 +408,36 @@ export default {
           owner: this.form.gitModel.repository.owner,
           repositoryName: this.form.gitModel.repository.name,
           branch: branchName,
+          page: this.commitsPage,
         }
         this.commits = (await api.git.getCommits(params)).data
+        this.commitsList = [...this.commits]
       }
+    },
+    async searchCommitId(commitId) {
+      await this['gitSelector/fetchCommitDetail']({
+        gitId: this.form.gitModel.git.id,
+        repository: this.form.gitModel.repository,
+        commitId: commitId,
+      })
+
+      if (this.searchCommitDetail != null) {
+        this.form.gitModel.commit = this.searchCommitDetail
+      }
+    },
+
+    async getMoreCommits() {
+      this.commitsPage++
+      let params = {
+        gitId: this.form.gitModel.git.id,
+        owner: this.form.gitModel.repository.owner,
+        repositoryName: this.form.gitModel.repository.name,
+        branch: this.form.gitModel.branch.branchName,
+        page: this.commitsPage,
+      }
+      this.commits = (await api.git.getCommits(params)).data
+
+      this.commitsList = this.commitsList.concat(this.commits)
     },
     // apiでテンプレートを登録するための入力値チェックを行い、formの中身を成形する
     async prepareSubmit() {
@@ -449,7 +482,7 @@ export default {
           branch: this.form.gitModel.branch.branchName,
           commitId:
             this.form.gitModel.commit === null
-              ? this.commits[0].commitId
+              ? this.commitsList[0].commitId
               : this.form.gitModel.commit.commitId,
         },
         cpu: this.form.resource.cpu,
@@ -507,6 +540,7 @@ export default {
       'registrySelector/fetchRegistries',
       'gitSelector/fetchGits',
       'cluster/fetchQuota',
+      'gitSelector/fetchCommitDetail',
     ]),
   },
 }

@@ -99,11 +99,13 @@
               :gits="gits"
               :repositories="repositories"
               :branches="branches"
-              :commits="commits"
+              :commits="commitsList"
               :loading-repositories="loadingRepositories"
               @selectGit="selectGit"
               @selectRepository="selectRepository"
               @selectBranch="selectBranch"
+              @searchCommitId="searchCommitId"
+              @getMoreCommits="getMoreCommits"
             />
           </el-col>
           <el-col :span="12">
@@ -209,11 +211,13 @@
                 :gits="gits"
                 :repositories="repositories"
                 :branches="branches"
-                :commits="commits"
+                :commits="commitsList"
                 :loading-repositories="loadingRepositories"
                 @selectGit="selectGit"
                 @selectRepository="selectRepository"
                 @selectBranch="selectBranch"
+                @searchCommitId="searchCommitId"
+                @getMoreCommits="getMoreCommits"
               />
             </el-col>
             <el-col :span="12">
@@ -396,6 +400,8 @@ export default {
   },
   data() {
     return {
+      commitsList: [],
+      commitsPage: 1,
       form: {
         name: null,
         dataSetId: null,
@@ -616,7 +622,7 @@ export default {
             if (this.form.gitModel.branch) {
               commitId = this.form.gitModel.commit
                 ? this.form.gitModel.commit.commitId
-                : this.commits[0].commitId
+                : this.commitsList[0].commitId
             }
             // コピー時ブランチを切り替えずに実行
             // パラメータに格納する際の形を統一するため整形を行う
@@ -741,11 +747,41 @@ export default {
       }
     },
     async selectBranch(branchName) {
+      this.commitsPage = 1
+      // 過去の選択状態をリセット
+      this.form.gitModel.commit = null
       await gitSelectorUtil.selectBranch(
         this.form,
         this['gitSelector/fetchCommits'],
         branchName,
+        this.commitsPage,
       )
+      this.commitsList = [...this.commits]
+    },
+    async searchCommitId(commitId) {
+      await this['gitSelector/fetchCommitDetail']({
+        gitId: this.form.gitModel.git.id,
+        repository: this.form.gitModel.repository,
+        commitId: commitId,
+      })
+      if (this.commitDetail != null) {
+        this.form.gitModel.commit = this.commitDetail
+      }
+    },
+    async getMoreCommits() {
+      this.commitsPage++
+      // コピー実行時、パラメータに格納する際の形を統一するため整形を行う
+      if (typeof this.form.gitModel.branch.branchName === 'undefined') {
+        let branch = { branchName: this.form.gitModel.branch }
+        this.form.gitModel.branch = branch
+      }
+      await gitSelectorUtil.selectBranch(
+        this.form,
+        this['gitSelector/fetchCommits'],
+        this.form.gitModel.branch.branchName,
+        this.commitsPage,
+      )
+      this.commitsList = this.commitsList.concat(this.commits)
     },
   },
 }

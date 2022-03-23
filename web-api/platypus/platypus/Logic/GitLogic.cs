@@ -77,14 +77,15 @@ namespace Nssol.Platypus.Logic
         /// <param name="repositoryName">リポジトリ名</param>
         /// <param name="owner">オーナー名</param>
         /// <param name="branchName">ブランチ名</param>
+        /// <param name="page">ページ番号</param>
         /// <returns>コミット一覧</returns>
-        public async Task<Result<IEnumerable<CommitModel>, string>> GetAllCommitsAsync(long gitId, string repositoryName, string owner, string branchName)
+        public async Task<Result<IEnumerable<CommitModel>, string>> GetAllCommitsAsync(long gitId, string repositoryName, string owner, string branchName, string page)
         {
             UserTenantGitMap map = GetCurrentGitMap(gitId);
             IGitService gitService = GetGitService(map?.Git);
             if (gitService != null)
             {
-                return await gitService.GetAllCommitsAsync(map, repositoryName, owner, branchName);
+                return await gitService.GetAllCommitsAsync(map, repositoryName, owner, branchName, page);
             }
             else
             {

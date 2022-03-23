@@ -141,8 +141,9 @@ namespace Nssol.Platypus.Services
         /// <param name="repositoryName">リポジトリ名</param>
         /// <param name="owner">オーナー名</param>
         /// <param name="branchName">ブランチ名</param>
+        /// <param name="page">ページ番号</param>
         /// <returns>コミット一覧</returns>
-        public async Task<Result<IEnumerable<CommitModel>, string>> GetAllCommitsAsync(UserTenantGitMap gitMap, string repositoryName, string owner, string branchName)
+        public async Task<Result<IEnumerable<CommitModel>, string>> GetAllCommitsAsync(UserTenantGitMap gitMap, string repositoryName, string owner, string branchName, string page)
         {
             var projectId = await GetProjectIdAsync(gitMap, repositoryName, owner);
             if (projectId.IsSuccess == false)
@@ -158,7 +159,8 @@ namespace Nssol.Platypus.Services
                 param.QueryParams = new Dictionary<string, string>
                 {
                     { "ref_name", branchName },
-                    { "per_page", "100" } //指定しない場合は20件になるので、100件まで拡張
+                    { "per_page", "100" }, //指定しない場合は20件になるので、100件まで拡張
+                    {"page",page }
                 };
             }
 
