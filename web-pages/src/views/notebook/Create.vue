@@ -46,6 +46,7 @@
               <kqi-data-set-selector
                 v-model="form.dataSetId"
                 :data-sets="dataSets"
+                @input="selectDataset"
               />
               <el-form-item
                 v-show="form.dataSetId"
@@ -65,6 +66,7 @@
                   :autosize="{ minRows: 2 }"
                 />
               </el-form-item>
+              <kqi-path-info :data-set="dataSetDetail" />
               <kqi-container-selector
                 v-model="form.containerImage"
                 :registries="registries"
@@ -162,6 +164,7 @@
               <kqi-data-set-selector
                 v-model="form.dataSetId"
                 :data-sets="dataSets"
+                @input="selectDataset"
               />
               <el-form-item
                 v-show="form.dataSetId"
@@ -181,6 +184,7 @@
                   :autosize="{ minRows: 2 }"
                 />
               </el-form-item>
+              <kqi-path-info :data-set="dataSetDetail" />
               <kqi-container-selector
                 v-model="form.containerImage"
                 :registries="registries"
@@ -344,6 +348,7 @@
               <kqi-data-set-selector
                 v-model="form.dataSetId"
                 :data-sets="dataSets"
+                @input="selectDataset"
               />
               <el-form-item
                 v-show="form.dataSetId"
@@ -369,6 +374,7 @@
                   :autosize="{ minRows: 2 }"
                 />
               </el-form-item>
+              <kqi-path-info :data-set="dataSetDetail" />
               <kqi-environment-variables v-model="form.variables" />
               <kqi-partition-selector
                 v-model="form.partition"
@@ -430,6 +436,7 @@ import KqiInferenceHistorySelector from '@/components/selector/KqiInferenceHisto
 import KqiContainerSelector from '@/components/selector/KqiContainerSelector'
 import KqiGitSelector from '@/components/selector/KqiGitSelector'
 import KqiResourceSelector from '@/components/selector/KqiResourceSelector'
+import KqiPathInfo from '@/components/KqiPathInfo'
 import KqiEnvironmentVariables from '@/components/KqiEnvironmentVariables'
 import KqiPartitionSelector from '@/components/selector/KqiPartitionSelector'
 import registrySelectorUtil from '@/util/registrySelectorUtil'
@@ -445,6 +452,7 @@ export default {
     KqiResourceSelector,
     KqiContainerSelector,
     KqiGitSelector,
+    KqiPathInfo,
     KqiEnvironmentVariables,
     KqiPartitionSelector,
   },
@@ -514,6 +522,7 @@ export default {
       trainingHistories: ['training/historiesToMount'],
       inferenceHistories: ['inference/historiesToMount'],
       dataSets: ['dataSet/dataSets'],
+      dataSetDetail: ['dataSet/detail'],
       registries: ['registrySelector/registries'],
       defaultRegistryId: ['registrySelector/defaultRegistryId'],
       images: ['registrySelector/images'],
@@ -550,6 +559,8 @@ export default {
     await this['cluster/fetchPartitions']()
     await this['cluster/fetchQuota']()
     await this['dataSet/fetchDataSets']()
+    // データセット詳細を初期化
+    await this['dataSet/fetchDetail'](null)
 
     // レジストリ一覧を取得し、デフォルトレジストリを設定
     await this['registrySelector/fetchRegistries']()
@@ -621,6 +632,7 @@ export default {
 
       if (this.detail.dataSet) {
         this.form.dataSetId = String(this.detail.dataSet.id)
+        await this['dataSet/fetchDetail'](String(this.detail.dataSet.id))
       }
 
       // レジストリの設定
@@ -676,6 +688,7 @@ export default {
       'cluster/fetchPartitions',
       'cluster/fetchQuota',
       'dataSet/fetchDataSets',
+      'dataSet/fetchDetail',
       'registrySelector/fetchRegistries',
       'registrySelector/fetchImages',
       'registrySelector/fetchTags',
@@ -685,6 +698,10 @@ export default {
       'gitSelector/fetchCommits',
       'gitSelector/fetchCommitDetail',
     ]),
+    async selectDataset() {
+      //データセットを選択後、データセット詳細を取得する
+      await this['dataSet/fetchDetail'](this.form.dataSetId)
+    },
     async runNotebook() {
       if (this.isReRunCreation) {
         // 再実行
