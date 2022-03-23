@@ -413,6 +413,8 @@ export default {
     await this['cluster/fetchQuota']()
     await this['dataSet/fetchDataSets']()
     await this['training/fetchTenantTags']()
+    // データセット詳細を初期化
+    await this['dataSet/fetchDetail'](null)
 
     // レジストリ一覧を取得し、デフォルトレジストリを設定
     await this['registrySelector/fetchRegistries']()
