@@ -120,15 +120,15 @@ namespace Nssol.Platypus.Controllers.spa
             var data = trainingHistoryRepository.GetAllIncludeDataSetAndParentWithOrdering().AsEnumerable();
             data = Search(data, filter);
 
+            if (withTotal)
+            {
+                int total = data.Count();
+                SetTotalCountToHeader(total);
+            }
+
             //未指定、あるいは1000件以上であれば、1000件に指定
             int pageCount = (perPage.HasValue && perPage.Value < 1000) ? perPage.Value : 1000;
             data = data.Paging(page, pageCount);
-
-            if (withTotal)
-            {
-                int total = GetTotalCount(filter);
-                SetTotalCountToHeader(total);
-            }
 
             //SQLが多重実行されることを防ぐため、ToListで即時発行させたうえで、結果を生成
             return JsonOK(data.ToList().Select(history => GetUpdatedIndexOutputModelAsync(history).Result));
@@ -149,35 +149,35 @@ namespace Nssol.Platypus.Controllers.spa
             // 入力値チェック (or検索を利用するかどうかの変数がnullの場合、falseを入れておく)
             if (filter.DataSetOr.HasValue == false)
             {
-                filter.DataSetOr = false;
+                filter.DataSetOr = true;
             }
             if (filter.EntryPointOr.HasValue == false)
             {
-                filter.EntryPointOr = false;
+                filter.EntryPointOr = true;
             }
             if (filter.MemoOr.HasValue == false)
             {
-                filter.MemoOr = false;
+                filter.MemoOr = true;
             }
             if (filter.NameOr.HasValue == false)
             {
-                filter.NameOr = false;
+                filter.NameOr = true;
             }
             if (filter.ParentNameOr.HasValue == false)
             {
-                filter.ParentNameOr = false;
+                filter.ParentNameOr = true;
             }
             if (filter.StartedByOr.HasValue == false)
             {
-                filter.StartedByOr = false;
+                filter.StartedByOr = true;
             }
             if (filter.StatusOr.HasValue == false)
             {
-                filter.StatusOr = false;
+                filter.StatusOr = true;
             }
             if (filter.TagsOr.HasValue == false)
             {
-                filter.TagsOr = false;
+                filter.TagsOr = true;
             }
 
             var data = trainingHistoryRepository.GetAllIncludeDataSetAndParentWithOrdering().AsEnumerable();
@@ -416,7 +416,7 @@ namespace Nssol.Platypus.Controllers.spa
 
             data = data
                 .Where(d => PartialMuchKeywords(d.Name, filter.Name, filter.NameOr))
-                .Where(d => ExactMuchKeywords(d.CreatedBy, filter.StartedBy, filter.StartedByOr))
+                .Where(d => PartialMuchKeywords(d.CreatedBy, filter.StartedBy, filter.StartedByOr))
                 .Where(d => PartialMuchKeywords(d.EntryPoint, filter.EntryPoint, filter.EntryPointOr))
                 .Where(d => PartialMuchKeywords(d.Memo, filter.Memo, filter.MemoOr))
                 .Where(d => PartialMuchKeywords(d.Status, filter.Status, filter.StatusOr))
@@ -442,22 +442,48 @@ namespace Nssol.Platypus.Controllers.spa
                 data = data.SearchTime(d => d.CreatedAt, ">" + filter.StartedAtLower);
             }
 
-            // マウントした学習名での検索 (ToDo 修正)
-            if (filter.ParentName != null && filter.ParentName.Count() > 0 && filter.ParentNameOr.HasValue && (bool)filter.ParentNameOr)
+            // マウントした学習名での検索
+            if (filter.ParentName != null && filter.ParentName.Count() > 0 && filter.ParentNameOr.HasValue)
             {
-                //OR検索
-                data = data
-                    .Where(d => d.ParentMaps != null && d.ParentMaps.Count > 0 && d.ParentMaps.All(m => ExactMuchKeywords(m.Parent.Name, filter.ParentName, true)));
-            }
-            else if (filter.ParentName != null || filter.ParentName.Count() > 0 || filter.ParentNameOr.HasValue || (bool)filter.ParentNameOr == false)
-            {
-                //AND検索
-                data = data
-                    .Where(d => d.ParentMaps != null && d.ParentMaps.Count > 0 && d.ParentMaps.All(m => ExactMuchKeywords(m.Parent.Name, filter.ParentName, false)));
+                // まずマウントされた学習があるdataのみに絞る
+                data = data.Where(d => d.ParentMaps != null && d.ParentMaps.Count > 0);
+
+                if ((bool)filter.ParentNameOr)
+                {
+                    // OR検索
+                    data = data.Where(d => d.ParentMaps.Any(m => PartialMuchKeywords(m.Parent.Name, filter.ParentName, true)));
+                }
+                else
+                {
+                    // AND検索
+                    foreach (var parentName in filter.ParentName)
+                    {
+                        data = data.Where(d => d.ParentMaps.Any(m => m.Parent.Name.Contains(parentName, StringComparison.CurrentCulture)));
+                    }
+                }
             }
 
-            // タグによる検索
+            // タグ検索
+            if (filter.Tags != null && filter.Tags.Count() > 0 && (bool)filter.TagsOr)
+            {
+                // まずタグが存在するdataのみに絞る
+                data = data.Where(d => d.TagMaps != null && d.TagMaps.Count > 0);
 
+                if ((bool)filter.TagsOr)
+                {
+                    // OR検索
+                    data = data.Where(d => d.TagMaps.Any(m => PartialMuchKeywords(m.Tag.Name, filter.Tags, true)));
+                }
+                else
+                {
+                    // AND検索
+                    foreach (var tag in filter.Tags)
+                    {
+                        data = data.Where(d => d.TagMaps.Any(m => m.Tag.Name.Contains(tag, StringComparison.CurrentCulture)));
+                    }
+                }
+
+            }
 
             return data;
         }
@@ -493,42 +519,6 @@ namespace Nssol.Platypus.Controllers.spa
                 foreach (string keyword in keywords)
                 {
                     if (target.Contains(keyword, StringComparison.CurrentCulture) == false) return false;
-                }
-                return true;
-            }
-        }
-
-        /// <summary>
-        /// 指定された条件に応じて検索の条件に合うか判定を行う
-        /// 完全一致の場合
-        /// </summary>
-        private static bool ExactMuchKeywords(string target, IEnumerable<string> keywords, bool? or)
-        {
-            // 検索条件が指定されていない(orがNull または keywords が空)なら条件を満たす。
-            if (or.HasValue == false || keywords != null || keywords.Count() == 0)
-            {
-                return true;
-            }
-            // 検索条件が指定されているが対象フィールドが空の場合は条件を満たさない。
-            else if (string.IsNullOrEmpty(target) == false)
-            {
-                return false;
-            }
-            // OR検索の場合、一つでも条件に合うものがあればTrueを返す。
-            else if ((bool)or)
-            {
-                foreach (string keyword in keywords)
-                {
-                    if (target.Equals(keyword, StringComparison.CurrentCulture)) return true;
-                }
-                return false;
-            }
-            // AND検索の場合、全ての条件を満たせばTrueを返す。
-            else
-            {
-                foreach (string keyword in keywords)
-                {
-                    if (target.Equals(keyword, StringComparison.CurrentCulture) == false) return false;
                 }
                 return true;
             }
