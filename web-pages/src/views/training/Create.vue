@@ -22,6 +22,7 @@
             <kqi-data-set-selector
               v-model="form.dataSetId"
               :data-sets="dataSets"
+              @input="selectDataset"
             />
             <el-form-item label="データセット作成方式">
               <el-switch
@@ -43,49 +44,9 @@
                 :autosize="{ minRows: 10 }"
               />
             </el-form-item>
-            <el-row
-              style="margin-bottom:5px;padding-left:15px;font-size:0.8em;"
-            >
-              参考：選択したデータセット【{{
-                dataSetDetail.name
-              }}】のデータパス、データ名一覧
-            </el-row>
-            <el-row class="data-list">
-              <el-col
-                v-if="
-                  dataSetDetail.flatEntries == null ||
-                    dataSetDetail.flatEntries.length == 0
-                "
-                :span="24"
-              >
-                <ul
-                  v-for="(datalist, index) in dataSetDetail.entries"
-                  :key="index"
-                >
-                  <li style="padding-top:5px;list-style-type: none">
-                    {{ index }}:
-                  </li>
-                  <li
-                    v-for="data in datalist"
-                    :key="data.id"
-                    style="padding-top:5px;padding-left:15px;  list-style-type: none"
-                  >
-                    /kqi/input/{{ index }}/{{ data.id }} 【{{ data.name }}】
-                  </li>
-                </ul>
-              </el-col>
-              <el-col v-else :span="24">
-                <ul>
-                  <li
-                    v-for="data in dataSetDetail.flatEntries"
-                    :key="data.id"
-                    style="padding-top:5px; list-style-type: none"
-                  >
-                    /kqi/input/{{ data.id }} 【{{ data.name }}】
-                  </li>
-                </ul>
-              </el-col>
-            </el-row>
+
+            <kqi-path-info :data-set="dataSetDetail" />
+
             <kqi-container-selector
               v-model="form.containerImage"
               :registries="registries"
@@ -228,49 +189,8 @@
                   :autosize="{ minRows: 10 }"
                 />
               </el-form-item>
-              <el-row
-                style="margin-bottom:5px;padding-left:15px;font-size:0.8em;"
-              >
-                参考：選択したデータセット【{{
-                  dataSetDetail.name
-                }}】のデータパス、データ名一覧
-              </el-row>
-              <el-row class="data-list">
-                <el-col
-                  v-if="
-                    dataSetDetail.flatEntries == null ||
-                      dataSetDetail.flatEntries.length == 0
-                  "
-                  :span="24"
-                >
-                  <ul
-                    v-for="(datalist, index) in dataSetDetail.entries"
-                    :key="index"
-                  >
-                    <li style="padding-top:5px;list-style-type: none">
-                      {{ index }}:
-                    </li>
-                    <li
-                      v-for="data in datalist"
-                      :key="data.id"
-                      style="padding-top:5px;padding-left:15px;  list-style-type: none"
-                    >
-                      /kqi/input/{{ index }}/{{ data.id }} 【{{ data.name }}】
-                    </li>
-                  </ul>
-                </el-col>
-                <el-col v-else :span="24">
-                  <ul>
-                    <li
-                      v-for="data in dataSetDetail.flatEntries"
-                      :key="data.id"
-                      style="padding-top:5px; list-style-type: none"
-                    >
-                      /kqi/input/{{ data.id }} 【{{ data.name }}】
-                    </li>
-                  </ul>
-                </el-col>
-              </el-row>
+
+              <kqi-path-info :data-set="dataSetDetail" />
             </el-col>
           </el-form>
 
@@ -364,6 +284,7 @@ import KqiTrainingHistorySelector from '@/components/selector/KqiTrainingHistory
 import KqiContainerSelector from '@/components/selector/KqiContainerSelector'
 import KqiGitSelector from '@/components/selector/KqiGitSelector'
 import KqiResourceSelector from '@/components/selector/KqiResourceSelector'
+import KqiPathInfo from '@/components/KqiPathInfo'
 import KqiEnvironmentVariables from '@/components/KqiEnvironmentVariables'
 import KqiExposePorts from '@/components/KqiExposePorts'
 import KqiTagEditor from '@/components/KqiTagEditor'
@@ -387,6 +308,7 @@ export default {
     KqiContainerSelector,
     KqiGitSelector,
     KqiResourceSelector,
+    KqiPathInfo,
     KqiEnvironmentVariables,
     KqiExposePorts,
     KqiTagEditor,
@@ -830,15 +752,5 @@ export default {
 
 .element {
   padding-top: 40px;
-}
-.data-list {
-  overflow: auto;
-  height: 120px;
-  padding: 3px 15px 8px 15px;
-  border: 1px solid #e4e7ed;
-  border-radius: 5px;
-  background-color: #f5f7fa;
-  color: #999;
-  margin-left: 10px;
 }
 </style>
