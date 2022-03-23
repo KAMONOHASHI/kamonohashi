@@ -323,7 +323,10 @@ export default {
       }
       await this.selectImage(containerImage.image)
       // タグ一覧に該当のタグがない場合、タグを追加して選択
-      if (!this.tags.includes(containerImage.tag)) {
+      if (
+        !this.tags.includes(containerImage.tag) &&
+        containerImage.tag !== null
+      ) {
         this.tags.push(containerImage.tag)
       }
       this.form.containerImage.tag = containerImage.tag
