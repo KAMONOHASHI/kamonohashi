@@ -201,11 +201,20 @@ export default {
         fromData = this.evaluationForm
       }
       if (to == 'preprocessing') {
-        this.preprocForm = Object.assign({}, fromData)
+        this.preprocForm = Object.assign(
+          {},
+          JSON.parse(JSON.stringify(fromData)),
+        )
       } else if (to == 'train') {
-        this.trainingForm = Object.assign({}, fromData)
+        this.trainingForm = Object.assign(
+          {},
+          JSON.parse(JSON.stringify(fromData)),
+        )
       } else if (to == 'evaluation') {
-        this.evaluationForm = Object.assign({}, fromData)
+        this.evaluationForm = Object.assign(
+          {},
+          JSON.parse(JSON.stringify(fromData)),
+        )
       }
     },
 
