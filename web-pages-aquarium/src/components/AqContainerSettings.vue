@@ -266,7 +266,6 @@ export default {
           })
           XMLHttpRequestEventTarget
         }
-        return
       }
 
       // 以下はテンプレート詳細画面で開かれた場合
