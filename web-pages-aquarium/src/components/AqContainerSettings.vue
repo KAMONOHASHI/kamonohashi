@@ -264,7 +264,6 @@ export default {
           this.form.gitModel.git = this.gits.find(git => {
             return git.id === this.defaultGitId
           })
-          XMLHttpRequestEventTarget
         }
       }
 
