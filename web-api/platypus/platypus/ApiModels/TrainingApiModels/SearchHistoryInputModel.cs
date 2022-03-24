@@ -12,7 +12,7 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         /// 検索履歴の名前
         /// </summary>
         [Required]
-        [MinLength(1)]
+        [MinLength(4)]
         public string Name { set; get; }
 
         public SearchDetailInputModel searchDetailInputModel { set; get; }

@@ -120,15 +120,15 @@ namespace Nssol.Platypus.Controllers.spa
             var data = trainingHistoryRepository.GetAllIncludeDataSetAndParentWithOrdering().AsEnumerable();
             data = Search(data, filter);
 
+            if (withTotal)
+            {
+                int total = data.Count();
+                SetTotalCountToHeader(total);
+            }
+
             //未指定、あるいは1000件以上であれば、1000件に指定
             int pageCount = (perPage.HasValue && perPage.Value < 1000) ? perPage.Value : 1000;
             data = data.Paging(page, pageCount);
-
-            if (withTotal)
-            {
-                int total = GetTotalCount(filter);
-                SetTotalCountToHeader(total);
-            }
 
             //SQLが多重実行されることを防ぐため、ToListで即時発行させたうえで、結果を生成
             return JsonOK(data.ToList().Select(history => GetUpdatedIndexOutputModelAsync(history).Result));
@@ -149,49 +149,49 @@ namespace Nssol.Platypus.Controllers.spa
             // 入力値チェック (or検索を利用するかどうかの変数がnullの場合、falseを入れておく)
             if (filter.DataSetOr.HasValue == false)
             {
-                filter.DataSetOr = false;
+                filter.DataSetOr = true;
             }
             if (filter.EntryPointOr.HasValue == false)
             {
-                filter.EntryPointOr = false;
+                filter.EntryPointOr = true;
             }
             if (filter.MemoOr.HasValue == false)
             {
-                filter.MemoOr = false;
+                filter.MemoOr = true;
             }
             if (filter.NameOr.HasValue == false)
             {
-                filter.NameOr = false;
+                filter.NameOr = true;
             }
             if (filter.ParentNameOr.HasValue == false)
             {
-                filter.ParentNameOr = false;
+                filter.ParentNameOr = true;
             }
             if (filter.StartedByOr.HasValue == false)
             {
-                filter.StartedByOr = false;
+                filter.StartedByOr = true;
             }
             if (filter.StatusOr.HasValue == false)
             {
-                filter.StatusOr = false;
+                filter.StatusOr = true;
             }
             if (filter.TagsOr.HasValue == false)
             {
-                filter.TagsOr = false;
+                filter.TagsOr = true;
             }
 
             var data = trainingHistoryRepository.GetAllIncludeDataSetAndParentWithOrdering().AsEnumerable();
             data = Search(data, filter);
 
+            if (withTotal)
+            {
+                int total = data.Count();
+                SetTotalCountToHeader(total);
+            }
+
             //未指定、あるいは1000件以上であれば、1000件に指定
             int pageCount = (perPage.HasValue && perPage.Value < 1000) ? perPage.Value : 1000;
             data = data.Paging(page, pageCount);
-
-            if (withTotal)
-            {
-                int total = GetTotalCount(filter);
-                SetTotalCountToHeader(total);
-            }
 
             //SQLが多重実行されることを防ぐため、ToListで即時発行させたうえで、結果を生成
             return JsonOK(data.ToList().Select(history => GetUpdatedIndexOutputModelAsync(history).Result));
@@ -416,7 +416,7 @@ namespace Nssol.Platypus.Controllers.spa
 
             data = data
                 .Where(d => PartialMuchKeywords(d.Name, filter.Name, filter.NameOr))
-                .Where(d => ExactMuchKeywords(d.CreatedBy, filter.StartedBy, filter.StartedByOr))
+                .Where(d => PartialMuchKeywords(d.CreatedBy, filter.StartedBy, filter.StartedByOr))
                 .Where(d => PartialMuchKeywords(d.EntryPoint, filter.EntryPoint, filter.EntryPointOr))
                 .Where(d => PartialMuchKeywords(d.Memo, filter.Memo, filter.MemoOr))
                 .Where(d => PartialMuchKeywords(d.Status, filter.Status, filter.StatusOr))
@@ -442,22 +442,50 @@ namespace Nssol.Platypus.Controllers.spa
                 data = data.SearchTime(d => d.CreatedAt, ">" + filter.StartedAtLower);
             }
 
-            // マウントした学習名での検索 (ToDo 修正)
-            if (filter.ParentName != null && filter.ParentName.Count() > 0 && filter.ParentNameOr.HasValue && (bool)filter.ParentNameOr)
+            // マウントした学習名での検索
+            if (string.IsNullOrEmpty(filter.ParentName) == false && filter.ParentNameOr.HasValue)
             {
-                //OR検索
-                data = data
-                    .Where(d => d.ParentMaps != null && d.ParentMaps.Count > 0 && d.ParentMaps.All(m => ExactMuchKeywords(m.Parent.Name, filter.ParentName, true)));
-            }
-            else if (filter.ParentName != null || filter.ParentName.Count() > 0 || filter.ParentNameOr.HasValue || (bool)filter.ParentNameOr == false)
-            {
-                //AND検索
-                data = data
-                    .Where(d => d.ParentMaps != null && d.ParentMaps.Count > 0 && d.ParentMaps.All(m => ExactMuchKeywords(m.Parent.Name, filter.ParentName, false)));
+                // まずマウントされた学習があるdataのみに絞る
+                data = data.Where(d => d.ParentMaps != null && d.ParentMaps.Count > 0);
+
+                if ((bool)filter.ParentNameOr)
+                {
+                    // OR検索
+                    data = data.Where(d => d.ParentMaps.Any(m => PartialMuchKeywords(m.Parent.Name, filter.ParentName, true)));
+                }
+                else
+                {
+                    // AND検索
+                    var parentNames = filter.ParentName.Split(",");
+                    foreach (var parentName in parentNames)
+                    {
+                        data = data.Where(d => d.ParentMaps.Any(m => m.Parent.Name.Contains(parentName, StringComparison.CurrentCulture)));
+                    }
+                }
             }
 
-            // タグによる検索
+            // タグ検索
+            if (string.IsNullOrEmpty(filter.Tags) == false && (bool)filter.TagsOr.HasValue)
+            {
+                // まずタグが存在するdataのみに絞る
+                data = data.Where(d => d.TagMaps != null && d.TagMaps.Count > 0);
 
+                if ((bool)filter.TagsOr)
+                {
+                    // OR検索
+                    data = data.Where(d => d.TagMaps.Any(m => PartialMuchKeywords(m.Tag.Name, filter.Tags, true)));
+                }
+                else
+                {
+                    // AND検索
+                    var tags = filter.Tags.Split(",");
+                    foreach (var tag in tags)
+                    {
+                        data = data.Where(d => d.TagMaps.Any(m => m.Tag.Name.Contains(tag, StringComparison.CurrentCulture)));
+                    }
+                }
+
+            }
 
             return data;
         }
@@ -466,22 +494,23 @@ namespace Nssol.Platypus.Controllers.spa
         /// 指定された条件に応じて検索の条件に合うか判定を行う
         /// 部分一致の場合
         /// </summary>
-        private static bool PartialMuchKeywords(string target, IEnumerable<string> keywords, bool? or)
+        private static bool PartialMuchKeywords(string target, string keywords, bool? or)
         {
             // 検索条件が指定されていない(orがNull または keywords が空)なら条件を満たす。
-            if (or.HasValue == false || keywords != null || keywords.Count() == 0)
+            if (or.HasValue == false || string.IsNullOrEmpty(keywords))
             {
                 return true;
             }
             // 検索条件が指定されているが対象フィールドが空の場合は条件を満たさない。
-            else if (string.IsNullOrEmpty(target) == false)
+            else if (string.IsNullOrEmpty(target))
             {
                 return false;
             }
             // OR検索の場合、一つでも条件に合うものがあればTrueを返す。
             else if ((bool)or)
             {
-                foreach (string keyword in keywords)
+                var splitKeywords = keywords.Split(",");
+                foreach (string keyword in splitKeywords)
                 {
                     if (target.Contains(keyword, StringComparison.CurrentCulture)) return true;
                 }
@@ -490,45 +519,10 @@ namespace Nssol.Platypus.Controllers.spa
             // AND検索の場合、全ての条件を満たせばTrueを返す。
             else
             {
-                foreach (string keyword in keywords)
+                var splitKeywords = keywords.Split(",");
+                foreach (string keyword in splitKeywords)
                 {
                     if (target.Contains(keyword, StringComparison.CurrentCulture) == false) return false;
-                }
-                return true;
-            }
-        }
-
-        /// <summary>
-        /// 指定された条件に応じて検索の条件に合うか判定を行う
-        /// 完全一致の場合
-        /// </summary>
-        private static bool ExactMuchKeywords(string target, IEnumerable<string> keywords, bool? or)
-        {
-            // 検索条件が指定されていない(orがNull または keywords が空)なら条件を満たす。
-            if (or.HasValue == false || keywords != null || keywords.Count() == 0)
-            {
-                return true;
-            }
-            // 検索条件が指定されているが対象フィールドが空の場合は条件を満たさない。
-            else if (string.IsNullOrEmpty(target) == false)
-            {
-                return false;
-            }
-            // OR検索の場合、一つでも条件に合うものがあればTrueを返す。
-            else if ((bool)or)
-            {
-                foreach (string keyword in keywords)
-                {
-                    if (target.Equals(keyword, StringComparison.CurrentCulture)) return true;
-                }
-                return false;
-            }
-            // AND検索の場合、全ての条件を満たせばTrueを返す。
-            else
-            {
-                foreach (string keyword in keywords)
-                {
-                    if (target.Equals(keyword, StringComparison.CurrentCulture) == false) return false;
                 }
                 return true;
             }
@@ -1552,44 +1546,44 @@ namespace Nssol.Platypus.Controllers.spa
             history.IdUpper = searchDetailInputModel.IdUpper;
             if (searchDetailInputModel.Name != null)
             {
-                history.TrainingName = string.Join(",", searchDetailInputModel.Name);
+                history.TrainingName = searchDetailInputModel.Name;
                 history.NameOr = searchDetailInputModel.NameOr;
             }
             if (searchDetailInputModel.ParentName != null)
             {
-                history.ParentName = string.Join(",", searchDetailInputModel.ParentName);
+                history.ParentName = searchDetailInputModel.ParentName;
                 history.ParentNameOr = searchDetailInputModel.ParentNameOr;
             }
             history.StartedAtLower = searchDetailInputModel.StartedAtLower;
             history.StartedAtUpper = searchDetailInputModel.StartedAtUpper;
             if (searchDetailInputModel.StartedBy != null)
             {
-                history.StartedBy = string.Join(",", searchDetailInputModel.StartedBy);
+                history.StartedBy =searchDetailInputModel.StartedBy;
                 history.StartedByOr = searchDetailInputModel.StartedByOr;
             }
             if (searchDetailInputModel.DataSet != null)
             {
-                history.DataSet = string.Join(",", searchDetailInputModel.DataSet);
+                history.DataSet = searchDetailInputModel.DataSet;
                 history.DataSetOr = searchDetailInputModel.DataSetOr;
             }
             if (searchDetailInputModel.EntryPoint != null)
             {
-                history.EntryPoint = string.Join(",", searchDetailInputModel.EntryPoint);
+                history.EntryPoint = searchDetailInputModel.EntryPoint;
                 history.EntryPointOr = searchDetailInputModel.EntryPointOr;
             }
             if (searchDetailInputModel.Memo != null)
             {
-                history.Memo = string.Join(",", searchDetailInputModel.Memo);
+                history.Memo = searchDetailInputModel.Memo;
                 history.MemoOr = searchDetailInputModel.MemoOr;
             }
             if (searchDetailInputModel.Tags != null)
             {
-                history.Tags = string.Join(",", searchDetailInputModel.Tags);
+                history.Tags = searchDetailInputModel.Tags;
                 history.TagsOr = searchDetailInputModel.TagsOr;
             }
             if (searchDetailInputModel.Status != null)
             {
-                history.Status = string.Join(",", searchDetailInputModel.Status);
+                history.Status = searchDetailInputModel.Status;
                 history.StatusOr = searchDetailInputModel.StatusOr;
             }
             trainingSearchHistoryRepository.Add(history);

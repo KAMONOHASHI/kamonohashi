@@ -20,7 +20,7 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
             SearchDetail.StartedAtUpper = history.StartedAtUpper;
             if (string.IsNullOrEmpty(history.TrainingName) == false)
             {
-                SearchDetail.Name = history.TrainingName.Split(",").ToList();
+                SearchDetail.Name = history.TrainingName;
                 SearchDetail.NameOr = history.NameOr;
             }
             else
@@ -29,7 +29,7 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
             }
             if (string.IsNullOrEmpty(history.ParentName) == false)
             {
-                SearchDetail.ParentName = history.ParentName.Split(",").ToList();
+                SearchDetail.ParentName = history.ParentName;
                 SearchDetail.ParentNameOr = history.ParentNameOr;
             }
             else
@@ -38,7 +38,7 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
             }
             if (string.IsNullOrEmpty(history.StartedBy) == false)
             {
-                SearchDetail.StartedBy = history.StartedBy.Split(",").ToList();
+                SearchDetail.StartedBy = history.StartedBy;
                 SearchDetail.StartedByOr = history.StartedByOr;
             }
             else
@@ -47,7 +47,7 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
             }
             if (string.IsNullOrEmpty(history.DataSet) == false)
             {
-                SearchDetail.DataSet = history.DataSet.Split(",").ToList();
+                SearchDetail.DataSet = history.DataSet;
                 SearchDetail.DataSetOr = history.DataSetOr;
             }
             else
@@ -56,7 +56,7 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
             }
             if (string.IsNullOrEmpty(history.EntryPoint) == false)
             {
-                SearchDetail.EntryPoint = history.EntryPoint.Split(",").ToList();
+                SearchDetail.EntryPoint = history.EntryPoint;
                 SearchDetail.EntryPointOr = history.EntryPointOr;
             }
             else
@@ -65,7 +65,7 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
             }
             if (string.IsNullOrEmpty(history.Memo) == false)
             {
-                SearchDetail.Memo = history.Memo.Split(",").ToList();
+                SearchDetail.Memo = history.Memo;
                 SearchDetail.MemoOr = history.MemoOr;
             }
             else
@@ -74,7 +74,7 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
             }
             if (string.IsNullOrEmpty(history.Tags) == false)
             {
-                SearchDetail.Tags = history.Tags.Split(",").ToList();
+                SearchDetail.Tags = history.Tags;
                 SearchDetail.TagsOr = history.TagsOr;
             }
             else
@@ -83,7 +83,7 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
             }
             if (string.IsNullOrEmpty(history.Status) == false)
             {
-                SearchDetail.Status = history.Status.Split(",").ToList();
+                SearchDetail.Status = history.Status;
                 SearchDetail.StatusOr = history.StatusOr;
             }
             else
