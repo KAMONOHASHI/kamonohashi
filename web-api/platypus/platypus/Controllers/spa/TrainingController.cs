@@ -120,16 +120,15 @@ namespace Nssol.Platypus.Controllers.spa
             var data = trainingHistoryRepository.GetAllIncludeDataSetAndParentWithOrdering().AsEnumerable();
             data = Search(data, filter);
 
-            //未指定、あるいは1000件以上であれば、1000件に指定
-            int pageCount = (perPage.HasValue && perPage.Value < 1000) ? perPage.Value : 1000;
-            data = data.Paging(page, pageCount);
-
             if (withTotal)
             {
-                int total = GetTotalCount(filter);
+                int total = data.Count();
                 SetTotalCountToHeader(total);
             }
 
+            //未指定、あるいは1000件以上であれば、1000件に指定
+            int pageCount = (perPage.HasValue && perPage.Value < 1000) ? perPage.Value : 1000;
+            data = data.Paging(page, pageCount);
 
             //SQLが多重実行されることを防ぐため、ToListで即時発行させたうえで、結果を生成
             return JsonOK(data.ToList().Select(history => GetUpdatedIndexOutputModelAsync(history).Result));
