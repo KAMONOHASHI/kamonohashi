@@ -22,18 +22,20 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
 
         /// <summary>
         /// 名前
+        /// 複数のワードが含まれる場合は","区切り
         /// </summary>
-        public IEnumerable<string> Name { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// 名前がor検索かand検索か
         /// </summary>
         public bool? NameOr { get; set; }
-            
+
         /// <summary>
         /// 親学習名
+        /// 複数のワードが含まれる場合は","区切り
         /// </summary>
-        public IEnumerable<string> ParentName { get; set; }
+        public string ParentName { get; set; }
 
         /// <summary>
         /// 親学習名がor検索かand検索か
@@ -51,11 +53,12 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         /// "2018/01/01" → 2018/01/01 23:59:59 以前が検索される。
         /// </summary>
         public string StartedAtUpper { get; set; }
-        
+
         /// <summary>
         /// 実行者
+        /// 複数のワードが含まれる場合は","区切り
         /// </summary>
-        public IEnumerable<string> StartedBy { get; set; }
+        public string StartedBy { get; set; }
 
         /// <summary>
         /// 実行者の検索がor検索かand検索か
@@ -64,8 +67,9 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
 
         /// <summary>
         /// データセット名
+        /// 複数のワードが含まれる場合は","区切り
         /// </summary>
-        public IEnumerable<string> DataSet { get; set; }
+        public string DataSet { get; set; }
 
         /// <summary>
         /// データセット名がor検索かand検索か
@@ -74,8 +78,9 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
 
         /// <summary>
         /// メモ
+        /// 複数のワードが含まれる場合は","区切り
         /// </summary>
-        public IEnumerable<string>  Memo { get; set; }
+        public string  Memo { get; set; }
 
         /// <summary>
         /// メモがor検索かand検索か
@@ -84,8 +89,9 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
 
         /// <summary>
         /// ステータス
+        /// 複数のワードが含まれる場合は","区切り
         /// </summary>
-        public IEnumerable<string> Status { get; set; }
+        public string Status { get; set; }
 
         /// <summary>
         /// ステータスがor検索かand検索か
@@ -94,8 +100,9 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
 
         /// <summary>
         /// 実行コマンド
+        /// 複数のワードが含まれる場合は","区切り
         /// </summary>
-        public IEnumerable<string> EntryPoint { get; set; }
+        public string EntryPoint { get; set; }
 
         /// <summary>
         /// 実行コマンドがor検索かand検索か
@@ -104,9 +111,10 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
 
         /// <summary>
         /// タグ
+        /// 複数のワードが含まれる場合は","区切り
         /// </summary>
         [FromQuery(Name = "tag")]
-        public IEnumerable<string> Tags { get; set; }
+        public string Tags { get; set; }
 
         /// <summary>
         /// タグがor検索かand検索か

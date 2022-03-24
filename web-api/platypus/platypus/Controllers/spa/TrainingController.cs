@@ -443,7 +443,7 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             // マウントした学習名での検索
-            if (filter.ParentName != null && filter.ParentName.Count() > 0 && filter.ParentNameOr.HasValue)
+            if (string.IsNullOrEmpty(filter.ParentName) == false && filter.ParentNameOr.HasValue)
             {
                 // まずマウントされた学習があるdataのみに絞る
                 data = data.Where(d => d.ParentMaps != null && d.ParentMaps.Count > 0);
@@ -456,7 +456,8 @@ namespace Nssol.Platypus.Controllers.spa
                 else
                 {
                     // AND検索
-                    foreach (var parentName in filter.ParentName)
+                    var parentNames = filter.ParentName.Split(",");
+                    foreach (var parentName in parentNames)
                     {
                         data = data.Where(d => d.ParentMaps.Any(m => m.Parent.Name.Contains(parentName, StringComparison.CurrentCulture)));
                     }
@@ -464,7 +465,7 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             // タグ検索
-            if (filter.Tags != null && filter.Tags.Count() > 0 && (bool)filter.TagsOr)
+            if (string.IsNullOrEmpty(filter.Tags) == false && (bool)filter.TagsOr.HasValue)
             {
                 // まずタグが存在するdataのみに絞る
                 data = data.Where(d => d.TagMaps != null && d.TagMaps.Count > 0);
@@ -477,7 +478,8 @@ namespace Nssol.Platypus.Controllers.spa
                 else
                 {
                     // AND検索
-                    foreach (var tag in filter.Tags)
+                    var tags = filter.Tags.Split(",");
+                    foreach (var tag in tags)
                     {
                         data = data.Where(d => d.TagMaps.Any(m => m.Tag.Name.Contains(tag, StringComparison.CurrentCulture)));
                     }
@@ -492,22 +494,23 @@ namespace Nssol.Platypus.Controllers.spa
         /// 指定された条件に応じて検索の条件に合うか判定を行う
         /// 部分一致の場合
         /// </summary>
-        private static bool PartialMuchKeywords(string target, IEnumerable<string> keywords, bool? or)
+        private static bool PartialMuchKeywords(string target, string keywords, bool? or)
         {
             // 検索条件が指定されていない(orがNull または keywords が空)なら条件を満たす。
-            if (or.HasValue == false || keywords != null || keywords.Count() == 0)
+            if (or.HasValue == false || string.IsNullOrEmpty(keywords))
             {
                 return true;
             }
             // 検索条件が指定されているが対象フィールドが空の場合は条件を満たさない。
-            else if (string.IsNullOrEmpty(target) == false)
+            else if (string.IsNullOrEmpty(target))
             {
                 return false;
             }
             // OR検索の場合、一つでも条件に合うものがあればTrueを返す。
             else if ((bool)or)
             {
-                foreach (string keyword in keywords)
+                var splitKeywords = keywords.Split(",");
+                foreach (string keyword in splitKeywords)
                 {
                     if (target.Contains(keyword, StringComparison.CurrentCulture)) return true;
                 }
@@ -516,7 +519,8 @@ namespace Nssol.Platypus.Controllers.spa
             // AND検索の場合、全ての条件を満たせばTrueを返す。
             else
             {
-                foreach (string keyword in keywords)
+                var splitKeywords = keywords.Split(",");
+                foreach (string keyword in splitKeywords)
                 {
                     if (target.Contains(keyword, StringComparison.CurrentCulture) == false) return false;
                 }
@@ -1542,44 +1546,44 @@ namespace Nssol.Platypus.Controllers.spa
             history.IdUpper = searchDetailInputModel.IdUpper;
             if (searchDetailInputModel.Name != null)
             {
-                history.TrainingName = string.Join(",", searchDetailInputModel.Name);
+                history.TrainingName = searchDetailInputModel.Name;
                 history.NameOr = searchDetailInputModel.NameOr;
             }
             if (searchDetailInputModel.ParentName != null)
             {
-                history.ParentName = string.Join(",", searchDetailInputModel.ParentName);
+                history.ParentName = searchDetailInputModel.ParentName;
                 history.ParentNameOr = searchDetailInputModel.ParentNameOr;
             }
             history.StartedAtLower = searchDetailInputModel.StartedAtLower;
             history.StartedAtUpper = searchDetailInputModel.StartedAtUpper;
             if (searchDetailInputModel.StartedBy != null)
             {
-                history.StartedBy = string.Join(",", searchDetailInputModel.StartedBy);
+                history.StartedBy =searchDetailInputModel.StartedBy;
                 history.StartedByOr = searchDetailInputModel.StartedByOr;
             }
             if (searchDetailInputModel.DataSet != null)
             {
-                history.DataSet = string.Join(",", searchDetailInputModel.DataSet);
+                history.DataSet = searchDetailInputModel.DataSet;
                 history.DataSetOr = searchDetailInputModel.DataSetOr;
             }
             if (searchDetailInputModel.EntryPoint != null)
             {
-                history.EntryPoint = string.Join(",", searchDetailInputModel.EntryPoint);
+                history.EntryPoint = searchDetailInputModel.EntryPoint;
                 history.EntryPointOr = searchDetailInputModel.EntryPointOr;
             }
             if (searchDetailInputModel.Memo != null)
             {
-                history.Memo = string.Join(",", searchDetailInputModel.Memo);
+                history.Memo = searchDetailInputModel.Memo;
                 history.MemoOr = searchDetailInputModel.MemoOr;
             }
             if (searchDetailInputModel.Tags != null)
             {
-                history.Tags = string.Join(",", searchDetailInputModel.Tags);
+                history.Tags = searchDetailInputModel.Tags;
                 history.TagsOr = searchDetailInputModel.TagsOr;
             }
             if (searchDetailInputModel.Status != null)
             {
-                history.Status = string.Join(",", searchDetailInputModel.Status);
+                history.Status = searchDetailInputModel.Status;
                 history.StatusOr = searchDetailInputModel.StatusOr;
             }
             trainingSearchHistoryRepository.Add(history);
