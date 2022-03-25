@@ -207,7 +207,7 @@ const actions = {
 
   // eslint-disable-next-line no-unused-vars
   async postTags({ commit }, params) {
-    return await api.training.postTags({ body: params })
+    await api.training.postTags({ body: params })
   },
 
   // eslint-disable-next-line no-unused-vars

@@ -79,9 +79,9 @@
           @clear="clear"
         >
           <el-option
-            v-if="flg"
+            v-if="searchingFlg"
             key="search"
-            label="詳細検索中"
+            label="(詳細検索中)"
             value="search"
           ></el-option>
           <el-option
@@ -89,10 +89,11 @@
             :key="item.id"
             :label="item.name"
             :value="item.id"
-            ><span style="float: left">{{ item.name }}</span>
+            ><span style="float: left">{{ item.id }}:{{ item.name }}</span>
             <el-button
               style="float: right; color: #8492a6; font-size: 13px"
-              @click="clickDeleteSearchHistory(item)"
+              size="mini"
+              @click.stop="clickDeleteSearchHistory(item)"
               >x</el-button
             >
           </el-option>
@@ -238,7 +239,7 @@ export default {
         { key: 'aa', val: 1 },
         { key: 'bb', val: 2 },
       ],
-      flg: false,
+      searchingFlg: false,
       updateTagDialogVisible: false,
       searchDialogVisible: false,
       saveSearchFormDialogVisible: false,
@@ -345,10 +346,9 @@ export default {
 
     clear() {
       this.searchConditionId = null
-      this.searchCondition = {}
       this.searchForm = {
-        idLower: null,
-        idUpper: null,
+        idLower: '',
+        idUpper: '',
         name: [],
         nameOr: true,
         parentName: [],
@@ -368,19 +368,22 @@ export default {
         tags: [],
         tagsOr: true,
       }
-      this.flg = false
+      this.searchCondition = {
+        searchDetail: this.changeSearchFormListToString(),
+      }
+      this.searchingFlg = false
     },
+
     async search() {
       this.pageStatus.currentPage = 1
       this.searchDialogVisible = false
       this.searchCondition = {
         searchDetail: this.changeSearchFormListToString(),
       }
-
       await this.retrieveData()
       this.searchConditionId = 'search'
 
-      this.flg = true
+      this.searchingFlg = true
     },
 
     changeSearchFormStringToList(item) {
@@ -489,26 +492,30 @@ export default {
       this.searchForm = this.changeSearchFormStringToList(
         this.searchCondition.searchDetail,
       )
-      this.flg = false
+      this.searchingFlg = false
     },
 
     async clickDeleteSearchHistory(item) {
       await this.deleteSearchHistory(item.id)
       await this.fetchSearchHistories()
     },
+
     async updateTags(type) {
       let ids = []
       for (let i in this.selections) {
         ids.push(this.selections[i].id)
       }
       let params = { id: ids, tags: this.tags }
+
       if (type == 'post') {
-        this.selections = await this.postTags(params).data
+        await this.postTags(params)
       } else if (type == 'delete') {
-        await this.deleteTags(params)
+        await this.deleteTags({ data: params })
       }
 
       this.tags = []
+      this.retrieveData()
+      this.updateTagDialogVisible = false
     },
 
     handleSelectionChange(val) {

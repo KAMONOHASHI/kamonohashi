@@ -47,6 +47,8 @@
               v-model="searchForm.startedAtLower"
               type="date"
               placeholder="Pick a day"
+              format="yyyy/MM/dd"
+              value-format="yyyy/MM/dd"
             >
             </el-date-picker>
           </el-col>
@@ -56,6 +58,8 @@
               v-model="searchForm.startedAtUpper"
               type="date"
               placeholder="Pick a day"
+              format="yyyy/MM/dd"
+              value-format="yyyy/MM/dd"
             >
             </el-date-picker>
           </el-col>
@@ -153,6 +157,7 @@
       <el-form>
         <el-form-item label="登録名">
           <el-col :span="18">
+            <kqi-display-error :error="error" />
             <el-input v-model="searchConditionName"></el-input>
           </el-col>
           <el-col :span="4">
@@ -168,6 +173,7 @@
 
 <script>
 import MultiInput from './MultiInput'
+import KqiDisplayError from '@/components/KqiDisplayError'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('training')
 
@@ -175,6 +181,7 @@ export default {
   title: '詳細検索',
   components: {
     MultiInput,
+    KqiDisplayError,
   },
   props: {
     searchDialogVisible: {
@@ -186,12 +193,37 @@ export default {
     searchForm: {
       type: Object,
       default: () => {
-        return {}
+        return {
+          idLower: '',
+          idUpper: '',
+          name: [],
+          nameOr: true,
+          parentName: [],
+          parentNameOr: true,
+          startedAtLower: '',
+          startedAtUpper: '',
+          startedBy: [],
+          startedByOr: true,
+          dataSet: [],
+          dataSetOr: true,
+          memo: [],
+          memoOr: true,
+          status: [],
+          statusOr: true,
+          entryPoint: [],
+          entryPointOr: true,
+          tags: [],
+          tagsOr: true,
+        }
       },
     },
   },
   data() {
-    return { saveSearchFormDialogVisible: false, searchConditionName: null }
+    return {
+      saveSearchFormDialogVisible: false,
+      searchConditionName: null,
+      error: null,
+    }
   },
   computed: {
     ...mapGetters(['searchHistories']),
@@ -213,8 +245,8 @@ export default {
 
     changeSearchFormListToString() {
       let form = {
-        idLower: Number(this.searchForm.idLower),
-        idUpper: Number(this.searchForm.idUpper),
+        idLower: parseInt(this.searchForm.idLower),
+        idUpper: parseInt(this.searchForm.idUpper),
         name: this.changeListToString(this.searchForm.name),
         nameOr: this.searchForm.nameOr,
         parentName: this.changeListToString(this.searchForm.parentName),
@@ -252,13 +284,25 @@ export default {
       return str
     },
     async saveSearchCondition() {
+      console.log(this.searchForm.startedAtLower)
+      console.log(this.searchForm.startedAtUpper)
+      if (
+        this.searchConditionName == null ||
+        this.searchConditionName.length < 4
+      ) {
+        this.error = new Error('4文字以上で入力してください')
+        return
+      }
       let params = {}
       params.name = this.searchConditionName
       params.searchDetailInputModel = this.changeSearchFormListToString()
-
-      await this.postSearchHistory(params)
-      this.saveSearchFormDialogVisible = false
-      this.$emit('save')
+      try {
+        await this.postSearchHistory(params)
+        this.saveSearchFormDialogVisible = false
+        this.$emit('save')
+      } catch (e) {
+        this.error = e
+      }
     },
   },
 }
