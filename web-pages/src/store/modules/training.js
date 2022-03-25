@@ -13,6 +13,7 @@ const state = {
   tenantTags: [],
   tensorboard: {},
   fileList: [],
+  searchHistories: [],
 }
 
 // getters
@@ -47,12 +48,27 @@ const getters = {
   fileList(state) {
     return state.fileList
   },
+  searchHistories(state) {
+    return state.searchHistories
+  },
 }
 
 // actions
 const actions = {
   async fetchHistories({ commit }, params) {
     let response = await api.training.get(params)
+    let histories = response.data
+    let total = response.headers['x-total-count']
+    commit('setHistories', { histories })
+    // params.withTotal=trueの時は件数が取れているため設定
+    if (total !== undefined) {
+      commit('setTotal', parseInt(total))
+    }
+  },
+
+  //新しい検索で取得
+  async fetchTrainHistories({ commit }, params) {
+    let response = await api.training.getSearch(params)
     let histories = response.data
     let total = response.headers['x-total-count']
     commit('setHistories', { histories })
@@ -182,6 +198,38 @@ const actions = {
   async fetchFileSize({ state }, params) {
     return (await api.training.getFileSize(params)).data.fileSize
   },
+
+  async fetchSearchHistories({ commit }, params) {
+    let response = await api.training.getSearchHistory(params)
+    let searchHistories = response.data
+    commit('setSearchHistories', searchHistories)
+  },
+
+  // eslint-disable-next-line no-unused-vars
+  async postTags({ commit }, params) {
+    return await api.training.postTags({ body: params })
+  },
+
+  // eslint-disable-next-line no-unused-vars
+  async deleteTags({ commit }, params) {
+    await api.training.deleteTags({ body: params })
+  },
+
+  // eslint-disable-next-line no-unused-vars
+  async postSearchHistory({ commit }, params) {
+    return await api.training.postSearchHistory({ body: params })
+  },
+
+  // eslint-disable-next-line no-unused-vars
+  async deleteSearchHistory({ commit }, id) {
+    await api.training.deleteSearchHistoryById({ id: id })
+  },
+
+  async fetchSearchFill({ commit }) {
+    let response = await api.training.getSearchFill()
+    let searchFill = response.data
+    commit('setSearchFill', { searchFill })
+  },
 }
 
 // mutations
@@ -228,6 +276,14 @@ const mutations = {
 
   setFileList(state, fileList) {
     state.fileList = fileList
+  },
+
+  setSearchHistories(state, searchHistories) {
+    state.searchHistories = searchHistories
+  },
+
+  setSearchFill(state, searchFill) {
+    state.searchFill = searchFill
   },
 }
 
