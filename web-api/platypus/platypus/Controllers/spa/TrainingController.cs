@@ -232,49 +232,6 @@ namespace Nssol.Platypus.Controllers.spa
         }
 
         /// <summary>
-        /// データ件数を取得する
-        /// </summary>
-        /// <param name="filter">検索条件</param>
-        private int GetTotalCount(SearchInputModel filter)
-        {
-            IEnumerable<TrainingHistory> histories;
-            if (string.IsNullOrEmpty(filter.DataSet))
-            {
-                histories = trainingHistoryRepository.GetAll().AsEnumerable();
-            }
-            else
-            {
-                //データセット名のフィルターがかかっている場合、データセットも併せて取得しないといけない
-                histories = trainingHistoryRepository.GetAllIncludeDataSet().AsEnumerable();
-            }
-
-            histories = Search(histories, filter);
-            return histories.Count();
-        }
-
-        /// <summary>
-        /// データ件数を取得する
-        /// </summary>
-        /// <param name="filter">検索条件</param>
-        private int GetTotalCount(SearchDetailInputModel filter)
-        {
-            IEnumerable<TrainingHistory> histories;
-            if (filter.DataSet == null || filter.DataSet.Count() == 0)
-            {
-                histories = trainingHistoryRepository.GetAll().AsEnumerable();
-            }
-            else
-            {
-                //データセット名のフィルターがかかっている場合、データセットも併せて取得しないといけない
-                histories = trainingHistoryRepository.GetAllIncludeDataSet().AsEnumerable();
-            }
-
-            histories = Search(histories, filter);
-            return histories.Count();
-        }
-
-
-        /// <summary>
         /// 検索条件の追加
         /// </summary>
         /// <param name="sourceData">加工前の検索結果</param>
