@@ -704,26 +704,44 @@ namespace Nssol.Platypus.DataAccess.Repositories
         /// ユーザをテナントから外す。
         /// ユーザIDやテナントIDの存在チェック、および所属済みかのチェックは行わない。
         /// </summary>
-        /// <param name="userId">対象ユーザID</param>
+        /// <remarks>デフォルトテナントを外す場合は、デフォルトテナントの付け替えを行う。</remarks>
+        /// <param name="user">対象ユーザ</param>
         /// <param name="tenantId">対象テナントID</param>
         /// <param name="temporary">一時的な削除で再度紐づけなおす場合はtrue</param>
-        public void DetachTenant(long userId, long tenantId, bool temporary)
+        public void DetachTenant(User user, long tenantId, bool temporary)
         {
             //レジストリとの紐づけ情報を削除
             var registryMapIds = FindModelAll<TenantRegistryMap>(map => map.TenantId == tenantId).Select(map => map.Id);
-            DeleteModelAll<UserTenantRegistryMap>(map => map.UserId == userId && registryMapIds.Contains(map.TenantRegistryMapId));
+            DeleteModelAll<UserTenantRegistryMap>(map => map.UserId == user.Id && registryMapIds.Contains(map.TenantRegistryMapId));
 
             //Gitとの紐づけ情報を削除
             var gitMapIds = FindModelAll<TenantGitMap>(map => map.TenantId == tenantId).Select(map => map.Id);
-            DeleteModelAll<UserTenantGitMap>(map => map.UserId == userId && gitMapIds.Contains(map.TenantGitMapId));
+            DeleteModelAll<UserTenantGitMap>(map => map.UserId == user.Id && gitMapIds.Contains(map.TenantGitMapId));
 
-            UserTenantMap tenantMap = FindUserTenantMap(userId, tenantId);
+            UserTenantMap tenantMap = FindUserTenantMap(user.Id, tenantId);
 
             //まずは既存のロールをすべて削除する
             DeleteModelAll<UserRoleMap>(map => map.TenantMapId == tenantMap.Id);
 
             //その後、テナントから外す
             DeleteModel<UserTenantMap>(tenantMap);
+
+            //デフォルトテナントを外した場合、デフォルトを他に付け替える
+            if (user.DefaultTenantId == tenantId)
+            {
+                //他のテナント情報を取得
+                var userInfo = GetUserInfo(user); //DBへの反映は遅延実行なので、まだこの時点では当該テナントに所属している状態になる
+                var newDefaultTenant = userInfo.TenantDic.Keys.FirstOrDefault(d => d.Id != tenantId);
+                if (newDefaultTenant == null)
+                {
+                    //付け替え先がないので、止む無くSandboxに新規紐づけする
+                    AttachSandbox(user);
+                }
+                else
+                {
+                    user.DefaultTenantId = newDefaultTenant.Id;
+                }
+            }
         }
 
         /// <summary>
@@ -747,7 +765,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
             // ユーザグループの紐づけがないときはテナントから脱退する
             if(userTenantMap.UserGroupTenantMapIds == null)
             {
-                DetachTenant(user.Id, tenantId, false);
+                DetachTenant(user, tenantId, false);
                 return;
             }
 
@@ -800,7 +818,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
             if(!tenantMap.IsOrigin && userGroupTenantMapList.Count == 0)
             {
                 // KQIとの紐づけがなく、ユーザグループとの紐づけもなくなった場合はテナントから脱退する
-                DetachTenant(user.Id, tenantId, false);
+                DetachTenant(user, tenantId, false);
             }
             else
             {
