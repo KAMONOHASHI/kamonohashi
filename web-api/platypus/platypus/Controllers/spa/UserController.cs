@@ -263,6 +263,12 @@ namespace Nssol.Platypus.Controllers.spa
                     return JsonNotFound($"Tenant ID {tenantInput.Id} is not found.");
                 }
 
+                // ロールの空チェック(Ldap経由で紐づいているテナントはロールが空になっている)
+                if(tenantInput.Roles.Count() <= 0)
+                {
+                    continue;
+                }
+
                 // このテナントが既に紐づけられているか確認
                 Tenant currentTenant = currentTenants.FirstOrDefault(t => t.Id == tenantInput.Id);
                 if (currentTenant != null)

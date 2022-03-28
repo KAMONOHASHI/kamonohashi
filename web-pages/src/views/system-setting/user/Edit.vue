@@ -53,6 +53,7 @@
         :tenants="tenants"
         :roles="roles"
         :not-origin-tenants="notOriginTenants"
+        @default="setNotOriginTenants"
       />
     </el-form>
   </kqi-dialog>
@@ -252,6 +253,15 @@ export default {
               }
               postTenants.push(postTenant)
             })
+            // Ldap経由のテナントはロールを空にして追加
+            this.notOriginTenants.selectedTenants.forEach(tenant => {
+              let postTenant = {
+                id: tenant.tenantId,
+                default: tenant.default,
+                roles: [],
+              }
+              postTenants.push(postTenant)
+            })
             let params = {
               name: this.form.name,
               password: this.form.password[0],
@@ -280,6 +290,9 @@ export default {
       } catch (e) {
         this.error = e
       }
+    },
+    setNotOriginTenants(tenants) {
+      this.notOriginTenants = tenants
     },
     emitDone() {
       this.$emit('done')

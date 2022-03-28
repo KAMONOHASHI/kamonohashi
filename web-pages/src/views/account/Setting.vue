@@ -65,7 +65,7 @@
               <kqi-display-error :error="tenantError" />
               <default-tenant-setting
                 v-model="defaultTenantName"
-                :tenants="originTenantList"
+                :tenants="account.tenants"
                 @defaultTenantUpdate="defaultTenantUpdate"
               />
             </div>
