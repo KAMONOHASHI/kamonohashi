@@ -262,6 +262,11 @@ export default {
       selectNotOrigin.selectedTenants.forEach(tenant => {
         if (tenant.default) {
           isDefaultSelected = true
+          select.selectedTenants.forEach(originTenant => {
+            if (originTenant.tenantId === tenant.tenantId) {
+              originTenant.default = true
+            }
+          })
         }
       })
       if (!isDefaultSelected && select.selectedTenants.length > 0) {
