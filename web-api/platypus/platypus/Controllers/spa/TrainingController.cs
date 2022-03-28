@@ -433,11 +433,11 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             // 開始日時による検索
-            if (string.IsNullOrEmpty(filter.StartedAtUpper))
+            if (string.IsNullOrEmpty(filter.StartedAtUpper) == false)
             {
                 data = data.SearchTime(d => d.CreatedAt, "<" + filter.StartedAtUpper);
             }
-            if (string.IsNullOrEmpty(filter.StartedAtLower))
+            if (string.IsNullOrEmpty(filter.StartedAtLower) == false)
             {
                 data = data.SearchTime(d => d.CreatedAt, ">" + filter.StartedAtLower);
             }
