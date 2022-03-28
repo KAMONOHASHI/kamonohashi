@@ -33,14 +33,14 @@ namespace Nssol.Platypus.Models.TenantModels
         public long? IdUpper { get; set; }
 
         /// <summary>
-        /// 名前
+        /// 学習名
         /// </summary>
         public string TrainingName { get; set; }
 
         /// <summary>
-        /// 名前がor検索かand検索か
+        /// 学習名がor検索かand検索か
         /// </summary>
-        public bool? NameOr { get; set; }
+        public bool? TrainingNameOr { get; set; }
 
         /// <summary>
         /// 親学習名

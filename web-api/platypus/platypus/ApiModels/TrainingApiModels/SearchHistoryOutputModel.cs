@@ -21,7 +21,7 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
             if (string.IsNullOrEmpty(history.TrainingName) == false)
             {
                 SearchDetail.Name = history.TrainingName;
-                SearchDetail.NameOr = history.NameOr;
+                SearchDetail.NameOr = history.TrainingNameOr;
             }
             else
             {

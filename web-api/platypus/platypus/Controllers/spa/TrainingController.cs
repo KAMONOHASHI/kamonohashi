@@ -1504,7 +1504,7 @@ namespace Nssol.Platypus.Controllers.spa
             if (searchDetailInputModel.Name != null)
             {
                 history.TrainingName = searchDetailInputModel.Name;
-                history.NameOr = searchDetailInputModel.NameOr;
+                history.TrainingNameOr = searchDetailInputModel.NameOr;
             }
             if (searchDetailInputModel.ParentName != null)
             {
