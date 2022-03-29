@@ -9670,7 +9670,7 @@ export const getApiV2TrainingURL = function(parameters = {}) {
      * @param entryPoint - 実行コマンド
 複数のワードが含まれる場合は","区切り
      * @param entryPointOr - 実行コマンドがor検索かand検索か
-     * @param tag - タグ
+     * @param tags - タグ
 複数のワードが含まれる場合は","区切り
      * @param tagsOr - タグがor検索かand検索か
      * @param perPage - 表示件数。指定がない場合は上限(1000件)。
@@ -9738,8 +9738,8 @@ export const getApiV2TrainingSearch = function(parameters = {}) {
   if (parameters['entryPointOr'] !== undefined) {
     queryParameters['EntryPointOr'] = parameters['entryPointOr']
   }
-  if (parameters['tag'] !== undefined) {
-    queryParameters['tag'] = parameters['tag']
+  if (parameters['tags'] !== undefined) {
+    queryParameters['Tags'] = parameters['tags']
   }
   if (parameters['tagsOr'] !== undefined) {
     queryParameters['TagsOr'] = parameters['tagsOr']
@@ -9824,8 +9824,8 @@ export const getApiV2TrainingSearchURL = function(parameters = {}) {
   if (parameters['entryPointOr'] !== undefined) {
     queryParameters['EntryPointOr'] = parameters['entryPointOr']
   }
-  if (parameters['tag'] !== undefined) {
-    queryParameters['tag'] = parameters['tag']
+  if (parameters['tags'] !== undefined) {
+    queryParameters['Tags'] = parameters['tags']
   }
   if (parameters['tagsOr'] !== undefined) {
     queryParameters['TagsOr'] = parameters['tagsOr']
