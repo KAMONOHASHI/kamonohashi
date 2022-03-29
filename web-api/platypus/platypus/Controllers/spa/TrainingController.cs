@@ -366,7 +366,8 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 詳細検索時に履歴の絞り込みを行うメソッド
         /// </summary>
-        /// <returns></returns>
+        /// <param name="sourceData">加工前の検索結果</param>
+        /// <param name="filter">検索条件</param>
         private static IEnumerable<TrainingHistory> Search(IEnumerable<TrainingHistory> sourceData, SearchDetailInputModel filter)
         {
             IEnumerable<TrainingHistory> data = sourceData;
@@ -449,6 +450,9 @@ namespace Nssol.Platypus.Controllers.spa
         /// 指定された条件に応じて検索の条件に合うか判定を行う
         /// 部分一致の場合
         /// </summary>
+        /// <param name="target">対象フィールド</param>
+        /// <param name="keywords">検索条件</param>
+        /// <param name="or">OR検索か</param>
         private static bool PartialMuchKeywords(string target, string keywords, bool? or)
         {
             // 検索条件が指定されていない(orがNull または keywords が空)なら条件を満たす。
@@ -1486,6 +1490,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 検索履歴を保存する
         /// </summary>
+        /// <param name="searchHistoryInputModel">保存対象の検索履歴入力モデル</param>
         [HttpPost("search-history")]
         [Filters.PermissionFilter(MenuCode.Training)]
         [ProducesResponseType(typeof(SearchHistoryOutputModel), (int)HttpStatusCode.Created)]
@@ -1555,7 +1560,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="id">削除対象の検索履歴ID</param>
         [HttpDelete("search-history/{id}")]
         [Filters.PermissionFilter(MenuCode.Training)]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
         public async Task<IActionResult> DeleteSearchHistory(long id)
         {
             // データの存在チェック

@@ -1,9 +1,10 @@
 ﻿using Nssol.Platypus.Models.TenantModels;
-using System.Linq;
-
 
 namespace Nssol.Platypus.ApiModels.TrainingApiModels
 {
+    /// <summary>
+    /// 検索履歴出力モデル
+    /// </summary>
     public class SearchHistoryOutputModel : Components.OutputModelBase
     {
         /// <summary>

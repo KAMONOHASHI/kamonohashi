@@ -1,11 +1,10 @@
-﻿using Nssol.Platypus.ApiModels.Components;
-using Nssol.Platypus.Controllers.Util;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Nssol.Platypus.ApiModels.TrainingApiModels
 {
+    /// <summary>
+    /// 検索履歴入力モデル
+    /// </summary>
     public class SearchHistoryInputModel
     {
         /// <summary>

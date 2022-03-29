@@ -2,6 +2,9 @@
 
 namespace Nssol.Platypus.ApiModels.TrainingApiModels
 {
+    /// <summary>
+    /// 学習検索項目補完出力モデル
+    /// </summary>
     public class TrainingSearchFillOutputModel
     {
         /// <summary>

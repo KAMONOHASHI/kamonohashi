@@ -2,6 +2,9 @@
 
 namespace Nssol.Platypus.Models.TenantModels
 {
+    /// <summary>
+    /// 学習検索履歴モデル
+    /// </summary>
     public class TrainingSearchHistories : TenantModelBase
     {
         /// <summary>
