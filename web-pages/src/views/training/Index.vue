@@ -195,22 +195,6 @@
         @change="retrieveData"
       />
     </el-row>
-    <el-select v-model="test">
-      <el-option
-        v-for="item in testop"
-        :key="item.val"
-        :label="item.key"
-        :value="item"
-      >
-        <span style="float: left">{{ item.key }}</span>
-        <el-button
-          style="float: right; color: #8492a6; font-size: 13px"
-          @click="clickDeleteSearchHistory(item)"
-        >
-          x
-        </el-button>
-      </el-option>
-    </el-select>
     <router-view
       @cancel="closeDialog"
       @cancelShell="closeDialog"
@@ -240,11 +224,6 @@ export default {
   },
   data() {
     return {
-      test: null,
-      testop: [
-        { key: 'aa', val: 1 },
-        { key: 'bb', val: 2 },
-      ],
       searchingFlg: false,
       updateTagDialogVisible: false,
       searchDialogVisible: false,
@@ -332,7 +311,6 @@ export default {
       'fetchSearchHistories',
       'postSearchHistory',
       'deleteSearchHistory',
-      'fetchSearchFill',
       'postTags',
       'deleteTags',
     ]),

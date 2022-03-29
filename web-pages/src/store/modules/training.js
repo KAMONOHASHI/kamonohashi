@@ -14,6 +14,7 @@ const state = {
   tensorboard: {},
   fileList: [],
   searchHistories: [],
+  searchFill: {},
 }
 
 // getters
@@ -50,6 +51,9 @@ const getters = {
   },
   searchHistories(state) {
     return state.searchHistories
+  },
+  searchFill(state) {
+    return state.searchFill
   },
 }
 
@@ -228,7 +232,7 @@ const actions = {
   async fetchSearchFill({ commit }) {
     let response = await api.training.getSearchFill()
     let searchFill = response.data
-    commit('setSearchFill', { searchFill })
+    commit('setSearchFill', searchFill)
   },
 }
 
