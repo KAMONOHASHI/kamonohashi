@@ -68,7 +68,10 @@
         </el-form-item>
         <el-form-item label="実行者">
           <el-col :span="20">
-            <multi-input v-model="searchForm.startedBy" />
+            <multi-input
+              v-model="searchForm.startedBy"
+              :registered-items="searchFill.createdBy"
+            />
           </el-col>
           <el-col :span="4">
             <el-switch
@@ -81,7 +84,10 @@
         </el-form-item>
         <el-form-item label="データセット名">
           <el-col :span="20">
-            <multi-input v-model="searchForm.dataSet" />
+            <multi-input
+              v-model="searchForm.dataSet"
+              :registered-items="searchFill.datasets"
+            />
           </el-col>
           <el-col :span="4">
             <el-switch
@@ -107,7 +113,10 @@
         </el-form-item>
         <el-form-item label="ステータス">
           <el-col :span="20">
-            <multi-input v-model="searchForm.status" />
+            <multi-input
+              v-model="searchForm.status"
+              :registered-items="searchFill.status"
+            />
           </el-col>
           <el-col :span="4">
             <el-switch
@@ -133,7 +142,10 @@
         </el-form-item>
         <el-form-item label="タグ">
           <el-col :span="20">
-            <multi-input v-model="searchForm.tags" />
+            <multi-input
+              v-model="searchForm.tags"
+              :registered-items="searchFill.tags"
+            />
           </el-col>
           <el-col :span="4">
             <el-switch
@@ -192,6 +204,7 @@ export default {
         return false
       },
     },
+
     searchForm: {
       type: Object,
       default: () => {
@@ -228,9 +241,18 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['searchHistories']),
+    ...mapGetters(['searchHistories', 'searchFill']),
   },
-  created() {},
+  watch: {
+    async searchDialogVisible(data) {
+      if (data) {
+        await this.fetchSearchFill()
+      }
+    },
+  },
+  async created() {
+    await this.fetchSearchFill()
+  },
   methods: {
     ...mapActions([
       'postSearchHistory',
@@ -286,8 +308,6 @@ export default {
       return str
     },
     async saveSearchCondition() {
-      console.log(this.searchForm.startedAtLower)
-      console.log(this.searchForm.startedAtUpper)
       if (
         this.searchConditionName == null ||
         this.searchConditionName.length < 4

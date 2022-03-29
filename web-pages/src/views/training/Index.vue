@@ -328,7 +328,6 @@ export default {
       'fetchSearchHistories',
       'postSearchHistory',
       'deleteSearchHistory',
-      'fetchSearchFill',
       'postTags',
       'deleteTags',
     ]),
