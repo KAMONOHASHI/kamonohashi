@@ -28,8 +28,10 @@
       </el-col>
       <el-dialog :visible.sync="updateTagDialogVisible" title="タグ変更">
         <el-form>
-          <el-form-item label="タグ">
-            <multi-input v-model="tags" />
+          <el-form-item>
+            <el-col :span="24">
+              <multi-input v-model="tags" />
+            </el-col>
           </el-form-item>
         </el-form>
         <div class="right-top-button">
