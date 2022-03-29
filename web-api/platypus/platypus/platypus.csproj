@@ -22,8 +22,6 @@
     <PreserveCompilationContext>true</PreserveCompilationContext>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Remove="ApiModels\TrainingApiModels\Class.cs" />
-    <Compile Remove="DataAccess\Repositories\TenantRepositories\TrainingSearchHistory.cs" />
     <Compile Remove="Migrations\20210314021855_v2.3.0e.cs" />
     <Compile Remove="Migrations\20210314021855_v2.3.0e.Designer.cs" />
     <Compile Remove="Migrations\20210314041152_v2.3.0e.cs" />
