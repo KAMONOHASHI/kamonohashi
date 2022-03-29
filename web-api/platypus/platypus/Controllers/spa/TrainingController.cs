@@ -376,7 +376,7 @@ namespace Nssol.Platypus.Controllers.spa
                 .Where(d => PartialMuchKeywords(d.CreatedBy, filter.StartedBy, filter.StartedByOr))
                 .Where(d => PartialMuchKeywords(d.EntryPoint, filter.EntryPoint, filter.EntryPointOr))
                 .Where(d => PartialMuchKeywords(d.Memo, filter.Memo, filter.MemoOr))
-                .Where(d => PartialMuchKeywords(d.Status, filter.Status, filter.StatusOr))
+                .Where(d => PartialMuchKeywords(d.GetStatus().ToString(), filter.Status, filter.StatusOr))
                 .Where(d => PartialMuchKeywords(d.DataSet.Name, filter.DataSet, filter.DataSetOr));
 
             // IDによる検索
@@ -441,9 +441,7 @@ namespace Nssol.Platypus.Controllers.spa
                         data = data.Where(d => d.TagMaps.Any(m => m.Tag.Name.Contains(tag, StringComparison.CurrentCulture)));
                     }
                 }
-
             }
-
             return data;
         }
 
@@ -1387,6 +1385,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 指定したIdに対応したTagをつける。
         /// </summary>
+        /// <param name="tagsInput">付与タグの入力モデル</param>
         [HttpPost("tags")]
         [Filters.PermissionFilter(MenuCode.Training)]
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.Created)]
@@ -1424,6 +1423,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 指定したIdに対応したTagを消去する。
         /// </summary>
+        /// <param name="tagsInput">削除タグの入力モデル</param>
         [HttpDelete("tags")]
         [Filters.PermissionFilter(MenuCode.Training)]
         [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
@@ -1471,7 +1471,7 @@ namespace Nssol.Platypus.Controllers.spa
         }
 
         /// <summary>
-        /// 検索履歴の一覧をソートした状態で取得する
+        /// 検索履歴の一覧を取得する
         /// </summary>
         [HttpGet("search-history")]
         [Filters.PermissionFilter(MenuCode.Training)]
@@ -1552,6 +1552,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// <summary>
         /// 検索履歴を削除する
         /// </summary>
+        /// <param name="id">削除対象の検索履歴ID</param>
         [HttpDelete("search-history/{id}")]
         [Filters.PermissionFilter(MenuCode.Training)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
@@ -1561,13 +1562,13 @@ namespace Nssol.Platypus.Controllers.spa
             var searchHistory = await trainingSearchHistoryRepository.GetByIdAsync(id);
             if (searchHistory == null)
             {
-                return JsonBadRequest("id " + id + "is not found");
+                return JsonBadRequest($"SearchHistory id {id} is not found");
             }
 
             await trainingSearchHistoryRepository.DeleteByIdAsync(id);
             unitOfWork.Commit();
 
-            return JsonOK("success");
+            return JsonNoContent();
         }
 
         /// <summary>
@@ -1576,16 +1577,17 @@ namespace Nssol.Platypus.Controllers.spa
         [HttpGet("search/fill")]
         [Filters.PermissionFilter(MenuCode.Training)]
         [ProducesResponseType(typeof(TrainingSearchFillOutputModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetFillSerch()
+        public IActionResult GetFillSerch()
         {
             var fillOutput = new TrainingSearchFillOutputModel();
 
             // タグ種別が学習のものに限定する
             fillOutput.Tags = tagLogic.GetAllTags().Where(t => t.Type == TagType.Training).Select(t => t.Name).Distinct();
+            
             // ステータス、実行者名、データセットについては学習履歴から取得する
             var data = trainingHistoryRepository.GetAllIncludeDataSetAndParentWithOrdering().AsEnumerable();
             fillOutput.CreatedBy = data.Select(d => d.CreatedBy).Distinct();
-            fillOutput.Status = data.Select(d => d.Status).Distinct();
+            fillOutput.Status = data.Select(d => d.GetStatus().ToString()).Distinct();
             fillOutput.Datasets = data.Select(d => d.DataSet.Name).Distinct();
 
             return JsonOK(fillOutput);
