@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-
 namespace Nssol.Platypus.ApiModels.TrainingApiModels
 {
+    /// <summary>
+    /// 付与または削除するタグ入力モデル
+    /// </summary>
     public class TagsInputModel
     {
         /// <summary>
