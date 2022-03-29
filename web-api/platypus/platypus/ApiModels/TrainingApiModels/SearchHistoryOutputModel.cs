@@ -53,7 +53,7 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
             }
             else
             {
-                SearchDetail.StartedByOr = true;
+                SearchDetail.DataSetOr = true;
             }
             if (string.IsNullOrEmpty(history.EntryPoint) == false)
             {
