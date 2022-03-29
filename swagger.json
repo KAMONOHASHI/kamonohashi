@@ -8315,6 +8315,7 @@
           {
             "in": "body",
             "name": "body",
+            "description": "付与タグの入力モデル",
             "schema": {
               "$ref": "#/definitions/Nssol.Platypus.ApiModels.TrainingApiModels.TagsInputModel"
             }
@@ -8355,6 +8356,7 @@
           {
             "in": "body",
             "name": "body",
+            "description": "削除タグの入力モデル",
             "schema": {
               "$ref": "#/definitions/Nssol.Platypus.ApiModels.TrainingApiModels.TagsInputModel"
             }
@@ -8383,7 +8385,7 @@
         "tags": [
           "Training"
         ],
-        "summary": "検索履歴の一覧をソートした状態で取得する",
+        "summary": "検索履歴の一覧を取得する",
         "produces": [
           "application/json"
         ],
@@ -8422,6 +8424,7 @@
           {
             "in": "body",
             "name": "body",
+            "description": "保存対象の検索履歴入力モデル",
             "schema": {
               "$ref": "#/definitions/Nssol.Platypus.ApiModels.TrainingApiModels.SearchHistoryInputModel"
             }
@@ -8452,13 +8455,14 @@
           {
             "in": "path",
             "name": "id",
+            "description": "削除対象の検索履歴ID",
             "required": true,
             "type": "integer",
             "format": "int64"
           }
         ],
         "responses": {
-          "200": {
+          "204": {
             "description": "Success"
           }
         },
@@ -14070,6 +14074,7 @@
       }
     },
     "Nssol.Platypus.ApiModels.TrainingApiModels.SearchHistoryInputModel": {
+      "description": "検索履歴入力モデル",
       "required": [
         "name"
       ],
@@ -14086,6 +14091,7 @@
       }
     },
     "Nssol.Platypus.ApiModels.TrainingApiModels.SearchHistoryOutputModel": {
+      "description": "検索履歴出力モデル",
       "type": "object",
       "properties": {
         "createdBy": {
@@ -14171,6 +14177,7 @@
       }
     },
     "Nssol.Platypus.ApiModels.TrainingApiModels.TagsInputModel": {
+      "description": "付与または削除するタグ入力モデル",
       "required": [
         "id",
         "tags"
@@ -14248,6 +14255,7 @@
       }
     },
     "Nssol.Platypus.ApiModels.TrainingApiModels.TrainingSearchFillOutputModel": {
+      "description": "学習検索項目補完出力モデル",
       "type": "object",
       "properties": {
         "createdBy": {

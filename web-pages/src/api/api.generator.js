@@ -10703,7 +10703,7 @@ export const getApiV2TrainingTagsURL = function(parameters = {}) {
  * url: postApiV2TrainingTagsURL
  * method: postApiV2TrainingTags_TYPE
  * raw_url: postApiV2TrainingTags_RAW_URL
- * @param body - 
+ * @param body - 付与タグの入力モデル
  */
 export const postApiV2TrainingTags = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -10746,7 +10746,7 @@ export const postApiV2TrainingTagsURL = function(parameters = {}) {
  * url: deleteApiV2TrainingTagsURL
  * method: deleteApiV2TrainingTags_TYPE
  * raw_url: deleteApiV2TrainingTags_RAW_URL
- * @param body - 
+ * @param body - 削除タグの入力モデル
  */
 export const deleteApiV2TrainingTags = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -10784,7 +10784,7 @@ export const deleteApiV2TrainingTagsURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
- * 検索履歴の一覧をソートした状態で取得する
+ * 検索履歴の一覧を取得する
  * request: getApiV2TrainingSearchHistory
  * url: getApiV2TrainingSearchHistoryURL
  * method: getApiV2TrainingSearchHistory_TYPE
@@ -10828,7 +10828,7 @@ export const getApiV2TrainingSearchHistoryURL = function(parameters = {}) {
  * url: postApiV2TrainingSearchHistoryURL
  * method: postApiV2TrainingSearchHistory_TYPE
  * raw_url: postApiV2TrainingSearchHistory_RAW_URL
- * @param body - 
+ * @param body - 保存対象の検索履歴入力モデル
  */
 export const postApiV2TrainingSearchHistory = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
@@ -10871,7 +10871,7 @@ export const postApiV2TrainingSearchHistoryURL = function(parameters = {}) {
  * url: deleteApiV2TrainingSearchHistoryByIdURL
  * method: deleteApiV2TrainingSearchHistoryById_TYPE
  * raw_url: deleteApiV2TrainingSearchHistoryById_RAW_URL
- * @param id - 
+ * @param id - 削除対象の検索履歴ID
  */
 export const deleteApiV2TrainingSearchHistoryById = function(parameters = {}) {
   const domain = parameters.$domain ? parameters.$domain : getDomain()
