@@ -19,7 +19,6 @@ namespace Nssol.Platypus.Migrations
                     ModifiedBy = table.Column<string>(nullable: false),
                     ModifiedAt = table.Column<DateTime>(nullable: false),
                     TenantId = table.Column<long>(nullable: false),
-                    DisplayId = table.Column<long>(nullable: true),
                     Name = table.Column<string>(nullable: false),
                     IdLower = table.Column<long>(nullable: true),
                     IdUpper = table.Column<long>(nullable: true),

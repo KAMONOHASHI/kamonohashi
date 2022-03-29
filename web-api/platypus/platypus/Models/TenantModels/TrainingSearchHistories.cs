@@ -8,11 +8,6 @@ namespace Nssol.Platypus.Models.TenantModels
     public class TrainingSearchHistories : TenantModelBase
     {
         /// <summary>
-        /// 表示用ID
-        /// </summary>
-        public long? DisplayId { get; set; }
-
-        /// <summary>
         /// 名前
         /// </summary>
         [Required]

@@ -2515,9 +2515,6 @@ namespace Nssol.Platypus.Migrations
                     b.Property<bool?>("DataSetOr")
                         .HasColumnType("boolean");
 
-                    b.Property<long?>("DisplayId")
-                        .HasColumnType("bigint");
-
                     b.Property<string>("EntryPoint")
                         .HasColumnType("text");
 
@@ -2546,9 +2543,6 @@ namespace Nssol.Platypus.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<bool?>("TrainingNameOr")
-                        .HasColumnType("boolean");
 
                     b.Property<string>("ParentName")
                         .HasColumnType("text");
@@ -2585,6 +2579,9 @@ namespace Nssol.Platypus.Migrations
 
                     b.Property<string>("TrainingName")
                         .HasColumnType("text");
+
+                    b.Property<bool?>("TrainingNameOr")
+                        .HasColumnType("boolean");
 
                     b.HasKey("Id");
 
