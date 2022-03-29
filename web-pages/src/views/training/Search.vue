@@ -10,16 +10,16 @@
           <el-col :span="11">
             <el-input v-model="searchForm.idLower"></el-input>
           </el-col>
-          <el-col class="line" :span="2">-</el-col>
+          <el-col class="line" :span="2" style="text-align:center">-</el-col>
           <el-col :span="11">
             <el-input v-model="searchForm.idUpper"></el-input>
           </el-col>
         </el-form-item>
         <el-form-item label="学習名">
-          <el-col :span="18">
+          <el-col :span="20">
             <multi-input v-model="searchForm.name" />
           </el-col>
-          <el-col :span="6">
+          <el-col :span="4">
             <el-switch
               v-model="searchForm.nameOr"
               active-text="or"
@@ -29,10 +29,10 @@
           </el-col>
         </el-form-item>
         <el-form-item label="親学習名">
-          <el-col :span="18">
+          <el-col :span="20">
             <multi-input v-model="searchForm.parentName" />
           </el-col>
-          <el-col :span="6">
+          <el-col :span="4">
             <el-switch
               v-model="searchForm.parentNameOr"
               active-text="or"
@@ -49,10 +49,11 @@
               placeholder="Pick a day"
               format="yyyy/MM/dd"
               value-format="yyyy/MM/dd"
+              style="width:100%"
             >
             </el-date-picker>
           </el-col>
-          <el-col class="line" :span="2">-</el-col>
+          <el-col class="line" :span="2" style="text-align:center">-</el-col>
           <el-col :span="11">
             <el-date-picker
               v-model="searchForm.startedAtUpper"
@@ -60,15 +61,16 @@
               placeholder="Pick a day"
               format="yyyy/MM/dd"
               value-format="yyyy/MM/dd"
+              style="width:100%"
             >
             </el-date-picker>
           </el-col>
         </el-form-item>
         <el-form-item label="実行者">
-          <el-col :span="18">
+          <el-col :span="20">
             <multi-input v-model="searchForm.startedBy" />
           </el-col>
-          <el-col :span="6">
+          <el-col :span="4">
             <el-switch
               v-model="searchForm.startedByOr"
               active-text="or"
@@ -78,10 +80,10 @@
           </el-col>
         </el-form-item>
         <el-form-item label="データセット名">
-          <el-col :span="18">
+          <el-col :span="20">
             <multi-input v-model="searchForm.dataSet" />
           </el-col>
-          <el-col :span="6">
+          <el-col :span="4">
             <el-switch
               v-model="searchForm.dataSetOr"
               active-text="or"
@@ -91,10 +93,10 @@
           </el-col>
         </el-form-item>
         <el-form-item label="メモ">
-          <el-col :span="18">
+          <el-col :span="20">
             <multi-input v-model="searchForm.memo" />
           </el-col>
-          <el-col :span="6">
+          <el-col :span="4">
             <el-switch
               v-model="searchForm.memoOr"
               active-text="or"
@@ -104,10 +106,10 @@
           </el-col>
         </el-form-item>
         <el-form-item label="ステータス">
-          <el-col :span="18">
+          <el-col :span="20">
             <multi-input v-model="searchForm.status" />
           </el-col>
-          <el-col :span="6">
+          <el-col :span="4">
             <el-switch
               v-model="searchForm.statusOr"
               active-text="or"
@@ -117,10 +119,10 @@
           </el-col>
         </el-form-item>
         <el-form-item label="実行コマンド">
-          <el-col :span="18">
+          <el-col :span="20">
             <multi-input v-model="searchForm.entryPoint" />
           </el-col>
-          <el-col :span="6">
+          <el-col :span="4">
             <el-switch
               v-model="searchForm.entryPointOr"
               active-text="or"
@@ -130,10 +132,10 @@
           </el-col>
         </el-form-item>
         <el-form-item label="タグ">
-          <el-col :span="18">
+          <el-col :span="20">
             <multi-input v-model="searchForm.tags" />
           </el-col>
-          <el-col :span="6">
+          <el-col :span="4">
             <el-switch
               v-model="searchForm.tagsOr"
               active-text="or"
