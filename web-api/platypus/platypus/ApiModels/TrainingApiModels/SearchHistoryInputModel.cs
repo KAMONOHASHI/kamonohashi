@@ -14,6 +14,9 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         [MinLength(4)]
         public string Name { set; get; }
 
-        public SearchDetailInputModel searchDetailInputModel { set; get; }
+        /// <summary>
+        /// 詳細検索入力モデル
+        /// </summary>
+        public SearchDetailInputModel SearchDetailInputModel { set; get; }
     }
 }

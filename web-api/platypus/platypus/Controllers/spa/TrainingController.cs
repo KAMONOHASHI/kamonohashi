@@ -1497,7 +1497,7 @@ namespace Nssol.Platypus.Controllers.spa
         public IActionResult PostSearchHistoryAsync([FromBody] SearchHistoryInputModel searchHistoryInputModel)
         {
             TrainingSearchHistories history = new TrainingSearchHistories();
-            var searchDetailInputModel = searchHistoryInputModel.searchDetailInputModel;
+            var searchDetailInputModel = searchHistoryInputModel.SearchDetailInputModel;
             history.Name = searchHistoryInputModel.Name;
             history.TenantId = CurrentUserInfo.SelectedTenant.Id;
             history.CreatedBy = CurrentUserInfo.Name;
