@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-
-namespace Nssol.Platypus.ApiModels.TrainingApiModels
+﻿namespace Nssol.Platypus.ApiModels.TrainingApiModels
 {
     /// <summary>
     /// 詳細検索の入力モデル。
