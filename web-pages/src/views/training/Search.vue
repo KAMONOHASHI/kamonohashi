@@ -8,11 +8,11 @@
       <el-form ref="form" :model="searchForm" label-width="120px">
         <el-form-item label="ID">
           <el-col :span="11">
-            <el-input v-model="searchForm.idLower"></el-input>
+            <el-input v-model="searchForm.idLower" />
           </el-col>
           <el-col class="line" :span="2" style="text-align:center">-</el-col>
           <el-col :span="11">
-            <el-input v-model="searchForm.idUpper"></el-input>
+            <el-input v-model="searchForm.idUpper" />
           </el-col>
         </el-form-item>
         <el-form-item label="学習名">
@@ -24,8 +24,7 @@
               v-model="searchForm.nameOr"
               active-text="or"
               inactive-text="and"
-            >
-            </el-switch>
+            />
           </el-col>
         </el-form-item>
         <el-form-item label="親学習名">
@@ -37,8 +36,7 @@
               v-model="searchForm.parentNameOr"
               active-text="or"
               inactive-text="and"
-            >
-            </el-switch>
+            />
           </el-col>
         </el-form-item>
         <el-form-item label="開始日時">
@@ -50,8 +48,7 @@
               format="yyyy/MM/dd"
               value-format="yyyy/MM/dd"
               style="width:100%"
-            >
-            </el-date-picker>
+            />
           </el-col>
           <el-col class="line" :span="2" style="text-align:center">-</el-col>
           <el-col :span="11">
@@ -62,8 +59,7 @@
               format="yyyy/MM/dd"
               value-format="yyyy/MM/dd"
               style="width:100%"
-            >
-            </el-date-picker>
+            />
           </el-col>
         </el-form-item>
         <el-form-item label="実行者">
@@ -75,8 +71,7 @@
               v-model="searchForm.startedByOr"
               active-text="or"
               inactive-text="and"
-            >
-            </el-switch>
+            />
           </el-col>
         </el-form-item>
         <el-form-item label="データセット名">
@@ -88,8 +83,7 @@
               v-model="searchForm.dataSetOr"
               active-text="or"
               inactive-text="and"
-            >
-            </el-switch>
+            />
           </el-col>
         </el-form-item>
         <el-form-item label="メモ">
@@ -101,8 +95,7 @@
               v-model="searchForm.memoOr"
               active-text="or"
               inactive-text="and"
-            >
-            </el-switch>
+            />
           </el-col>
         </el-form-item>
         <el-form-item label="ステータス">
@@ -114,8 +107,7 @@
               v-model="searchForm.statusOr"
               active-text="or"
               inactive-text="and"
-            >
-            </el-switch>
+            />
           </el-col>
         </el-form-item>
         <el-form-item label="実行コマンド">
@@ -127,8 +119,7 @@
               v-model="searchForm.entryPointOr"
               active-text="or"
               inactive-text="and"
-            >
-            </el-switch>
+            />
           </el-col>
         </el-form-item>
         <el-form-item label="タグ">
@@ -140,15 +131,14 @@
               v-model="searchForm.tagsOr"
               active-text="or"
               inactive-text="and"
-            >
-            </el-switch>
+            />
           </el-col>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="saveSearchFormDialogVisible = true"
-          >検索条件を保存</el-button
-        >
+        <el-button @click="saveSearchFormDialogVisible = true">
+          検索条件を保存
+        </el-button>
         <el-button type="primary" @click="search">検索</el-button>
       </span>
     </el-dialog>
@@ -160,11 +150,11 @@
         <el-form-item label="登録名">
           <el-col :span="18">
             <kqi-display-error :error="error" />
-            <el-input v-model="searchConditionName"></el-input>
+            <el-input v-model="searchConditionName" />
           </el-col>
           <el-col :span="4">
-            <el-button type="primary" @click="saveSearchCondition"
-              >登録
+            <el-button type="primary" @click="saveSearchCondition">
+              登録
             </el-button>
           </el-col>
         </el-form-item>
@@ -286,8 +276,6 @@ export default {
       return str
     },
     async saveSearchCondition() {
-      console.log(this.searchForm.startedAtLower)
-      console.log(this.searchForm.startedAtUpper)
       if (
         this.searchConditionName == null ||
         this.searchConditionName.length < 4

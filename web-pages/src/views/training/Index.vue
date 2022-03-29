@@ -35,12 +35,12 @@
           </el-form-item>
         </el-form>
         <div class="right-top-button">
-          <el-button type="primary" @click="updateTags('post')"
-            >一括追加</el-button
-          >
-          <el-button type="primary" @click="updateTags('delete')"
-            >一括削除</el-button
-          >
+          <el-button type="primary" @click="updateTags('post')">
+            一括追加
+          </el-button>
+          <el-button type="primary" @click="updateTags('delete')">
+            一括削除
+          </el-button>
         </div>
         <el-table :data="selections">
           <el-table-column prop="id" label="ID" width="120px" />
@@ -70,9 +70,9 @@
     </el-row>
     <el-row :gutter="20">
       <el-col class="search">
-        <el-button type="button" @click="searchDialogVisible = true"
-          >詳細検索</el-button
-        >
+        <el-button type="button" @click="searchDialogVisible = true">
+          詳細検索
+        </el-button>
         <el-select
           v-model="searchConditionId"
           clearable
@@ -85,19 +85,21 @@
             key="search"
             label="(詳細検索中)"
             value="search"
-          ></el-option>
+          />
           <el-option
             v-for="item in searchHistories"
             :key="item.id"
             :label="item.name"
             :value="item.id"
-            ><span style="float: left">{{ item.id }}:{{ item.name }}</span>
+          >
+            <span style="float: left">{{ item.id }}:{{ item.name }}</span>
             <el-button
               style="float: right; color: #8492a6; font-size: 13px"
               size="mini"
               @click.stop="clickDeleteSearchHistory(item)"
-              >x</el-button
             >
+              x
+            </el-button>
           </el-option>
         </el-select>
       </el-col>
@@ -199,14 +201,16 @@
         :key="item.val"
         :label="item.key"
         :value="item"
-        ><span style="float: left">{{ item.key }}</span>
+      >
+        <span style="float: left">{{ item.key }}</span>
         <el-button
           style="float: right; color: #8492a6; font-size: 13px"
           @click="clickDeleteSearchHistory(item)"
-          >x</el-button
         >
-      </el-option></el-select
-    >
+          x
+        </el-button>
+      </el-option>
+    </el-select>
     <router-view
       @cancel="closeDialog"
       @cancelShell="closeDialog"
