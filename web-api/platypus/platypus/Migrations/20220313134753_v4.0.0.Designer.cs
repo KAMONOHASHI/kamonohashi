@@ -2547,7 +2547,7 @@ namespace Nssol.Platypus.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<bool?>("NameOr")
+                    b.Property<bool?>("TrainingNameOr")
                         .HasColumnType("boolean");
 
                     b.Property<string>("ParentName")

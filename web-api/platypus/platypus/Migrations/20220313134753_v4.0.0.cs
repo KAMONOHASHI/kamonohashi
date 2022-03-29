@@ -24,7 +24,7 @@ namespace Nssol.Platypus.Migrations
                     IdLower = table.Column<long>(nullable: true),
                     IdUpper = table.Column<long>(nullable: true),
                     TrainingName = table.Column<string>(nullable: true),
-                    NameOr = table.Column<bool>(nullable: true),
+                    TrainingNameOr = table.Column<bool>(nullable: true),
                     ParentName = table.Column<string>(nullable: true),
                     ParentNameOr = table.Column<bool>(nullable: true),
                     StartedAtLower = table.Column<string>(nullable: true),

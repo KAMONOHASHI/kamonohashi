@@ -113,7 +113,6 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         /// タグ
         /// 複数のワードが含まれる場合は","区切り
         /// </summary>
-        [FromQuery(Name = "tag")]
         public string Tags { get; set; }
 
         /// <summary>
