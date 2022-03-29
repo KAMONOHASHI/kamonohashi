@@ -252,7 +252,7 @@ namespace Nssol.Platypus.Logic
                 }
                 else
                 {
-                    userRepository.DetachTenant(user.Id, deleteTenant.Id, false);
+                    userRepository.DetachTenant(user, deleteTenant.Id, false);
                 }
             }
         }

@@ -263,6 +263,12 @@ namespace Nssol.Platypus.Controllers.spa
                     return JsonNotFound($"Tenant ID {tenantInput.Id} is not found.");
                 }
 
+                // ロールの空チェック(Ldap経由で紐づいているテナントはロールが空になっている)
+                if(tenantInput.Roles.Count() <= 0)
+                {
+                    continue;
+                }
+
                 // このテナントが既に紐づけられているか確認
                 Tenant currentTenant = currentTenants.FirstOrDefault(t => t.Id == tenantInput.Id);
                 if (currentTenant != null)
@@ -376,7 +382,7 @@ namespace Nssol.Platypus.Controllers.spa
                             else
                             {
                                 // KQIの紐づけがないとき
-                                userRepository.DetachTenant(user.Id, tenant.Id, false);
+                                userRepository.DetachTenant(user, tenant.Id, false);
                             }
                         }
                         LogInformation($"ユーザ: {user.Name} がLDAP経由で参加したテナントの紐づけを解除しました。");
@@ -636,23 +642,6 @@ namespace Nssol.Platypus.Controllers.spa
             // KQI上の紐づけを外す
             userRepository.DetachOriginTenant(user, tenant.Id);
 
-            if (user.DefaultTenantId == tenant.Id)
-            {
-                //デフォルトテナントを外した場合、デフォルトを他に付け替える
-
-                //他のテナント情報を取得
-                var userInfo = userRepository.GetUserInfo(user); //DBへの反映は遅延実行なので、まだこの時点では当該テナントに所属している状態になる
-                var newDefaultTenant = userInfo.TenantDic.Keys.FirstOrDefault(d => d.Id != tenant.Id);
-                if (newDefaultTenant == null)
-                {
-                    //付け替え先がないので、止む無くSandboxに新規紐づけする
-                    userRepository.AttachSandbox(user);
-                }
-                else
-                {
-                    user.DefaultTenantId = newDefaultTenant.Id;
-                }
-            }
             unitOfWork.Commit();
 
             return JsonNoContent();
@@ -698,27 +687,6 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             userRepository.ChangeTenantRole(id, tenant.Id, roles, true);
-
-            if (user.DefaultTenantId == tenant.Id)
-            {
-                //デフォルトテナントのロールをすべて外した場合、デフォルトを他に付け替える
-
-                if (!userRepository.IsOriginMember(user.Id, tenant.Id))
-                {
-                    //他のテナント情報を取得
-                    var userInfo = userRepository.GetUserInfo(user); //DBへの反映は遅延実行なので、まだこの時点では当該テナントに所属している状態になる
-                    var newDefaultTenant = userInfo.TenantDic.Keys.FirstOrDefault(d => d.Id != tenant.Id);
-                    if (newDefaultTenant == null)
-                    {
-                        //付け替え先がないので、止む無くSandboxに新規紐づけする
-                        userRepository.AttachSandbox(user);
-                    }
-                    else
-                    {
-                        user.DefaultTenantId = newDefaultTenant.Id;
-                    }
-                }
-            }
 
             unitOfWork.Commit();
 

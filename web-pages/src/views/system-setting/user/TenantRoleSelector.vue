@@ -57,8 +57,16 @@
       <el-table :data="noOriginRolesOfTenant">
         <el-table-column prop="displayName" label="テナント名" width="200px">
           <template slot-scope="prop">
-            <el-radio :label="true" disabled>
+            <el-radio
+              v-model="prop.row.default"
+              :label="true"
+              style="display: block;"
+              @change="handleDefaultChange(prop.row)"
+            >
               {{ prop.row.tenantName }}
+              <span v-if="prop.row.default" style="font-size: 0.7rem;">
+                (デフォルト)
+              </span>
             </el-radio>
           </template>
         </el-table-column>
@@ -187,11 +195,13 @@ export default {
 
           // 選択済みのロールの設定
           let selectedRoleIds = []
+          let isDefaultTenant = false
           this.notOriginTenants.selectedTenants.forEach(selectedTenant => {
             if (selectedTenant.tenantId === tenant.id) {
               selectedTenant.selectedRoleIds.forEach(id => {
                 selectedRoleIds.push(id)
               })
+              isDefaultTenant = selectedTenant.default
             }
           })
 
@@ -200,6 +210,7 @@ export default {
             tenantName: tenant.displayName,
             roles: tmpRoles,
             selectedRoleIds: selectedRoleIds,
+            default: isDefaultTenant,
           }
           noOriginRolesOfTenant.push(element)
         }
@@ -241,16 +252,33 @@ export default {
       })
 
       // デフォルトが指定されていなければ、先頭をデフォルトに指定
+      let selectNotOrigin = Object.assign({}, this.notOriginTenants)
       let isDefaultSelected = false
       select.selectedTenants.forEach(tenant => {
         if (tenant.default) {
           isDefaultSelected = true
         }
       })
+      selectNotOrigin.selectedTenants.forEach(tenant => {
+        if (tenant.default) {
+          isDefaultSelected = true
+          select.selectedTenants.forEach(originTenant => {
+            if (originTenant.tenantId === tenant.tenantId) {
+              originTenant.default = true
+            }
+          })
+        }
+      })
       if (!isDefaultSelected && select.selectedTenants.length > 0) {
         select.selectedTenants[0].default = true
+        selectNotOrigin.selectedTenants.forEach(tenant => {
+          if (tenant.tenantId === select.selectedTenants[0].tenantId) {
+            tenant.default = true
+          }
+        })
       }
       this.$emit('input', select)
+      this.$emit('default', selectNotOrigin)
     },
 
     handleRoleChange(row) {
@@ -273,6 +301,16 @@ export default {
         }
       })
       this.$emit('input', select)
+
+      // defaultの変更をemit(Ldap経由のテナント)
+      let selectNotOrigin = Object.assign({}, this.notOriginTenants)
+      selectNotOrigin.selectedTenants.forEach(tenant => {
+        tenant.default = false
+        if (tenant.tenantId === row.tenantId) {
+          tenant.default = true
+        }
+      })
+      this.$emit('default', selectNotOrigin)
     },
   },
 }

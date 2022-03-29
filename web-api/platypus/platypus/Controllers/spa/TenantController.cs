@@ -319,22 +319,7 @@ namespace Nssol.Platypus.Controllers.spa
                 // 削除対象のテナントを、アクセス中のユーザが利用している場合がありうるが、判別できないので無視する
 
                 // ユーザにおいて削除対象のテナントを detach
-                userRepository.DetachTenant(user.Id, id, false);    // 第３引数は true/false どちらでもよい
-                // DefaultTenant が削除対象のテナントなら変更
-                if (user.DefaultTenantId == id)
-                {
-                    if (userInfo.TenantDic.Count() > 1)
-                    {
-                        // 他の登録テナントを DefaultTenant とする
-                        Tenant anotherTenant = userInfo.TenantDic.Keys.FirstOrDefault(t => t.Id != id);
-                        user.DefaultTenantId = anotherTenant.Id;
-                    }
-                    else
-                    {
-                        // サンドボックステナントを DefaultTenant とする
-                        userRepository.AttachSandbox(user);
-                    }
-                }
+                userRepository.DetachTenant(user, id, false);    // 第３引数は true/false どちらでもよい
             }
 
             // k8s の名前空間の抹消(削除)

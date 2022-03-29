@@ -136,10 +136,11 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces
         /// ユーザをテナントから外す。
         /// ユーザIDやテナントIDの存在チェック、および所属済みかのチェックは行わない。
         /// </summary>
-        /// <param name="userId">対象ユーザID</param>
+        /// <remarks>デフォルトテナントを外す場合は、デフォルトテナントの付け替えを行う。</remarks>
+        /// <param name="user">対象ユーザ</param>
         /// <param name="tenantId">対象テナントID</param>
         /// <param name="temporary">一時的な削除で再度紐づけなおす場合はtrue</param>
-        void DetachTenant(long userId, long tenantId, bool temporary);
+        void DetachTenant(User user, long tenantId, bool temporary);
 
         /// <summary>
         /// 指定したユーザとテナントのマップからKQIとの紐づけを解除する。
