@@ -400,7 +400,7 @@ namespace Nssol.Platypus.Controllers.spa
             }
             if (string.IsNullOrEmpty(filter.StartedAtLower) == false)
             {
-                data = data.SearchTime(d => d.CreatedAt, ">" +(filter.StartedAtLower));
+                data = data.SearchTime(d => d.CreatedAt, ">" + filter.StartedAtLower);
             }
 
             // マウントした学習名での検索
