@@ -393,11 +393,14 @@ namespace Nssol.Platypus.Controllers.spa
             // 開始日時による検索
             if (string.IsNullOrEmpty(filter.StartedAtUpper) == false)
             {
-                data = data.SearchTime(d => d.CreatedAt, "<" + filter.StartedAtUpper);
+                if (DateTime.TryParse(filter.StartedAtUpper, out DateTime upper))
+                {
+                    data = data.SearchTime(d => d.CreatedAt, "<" + (upper.Date + new TimeSpan(1, 0, 0, 0)));
+                }
             }
             if (string.IsNullOrEmpty(filter.StartedAtLower) == false)
             {
-                data = data.SearchTime(d => d.CreatedAt, ">" + filter.StartedAtLower);
+                data = data.SearchTime(d => d.CreatedAt, ">" +(filter.StartedAtLower));
             }
 
             // マウントした学習名での検索
