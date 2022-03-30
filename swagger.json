@@ -6132,6 +6132,34 @@
         ]
       }
     },
+    "/api/v2/admin/tenant-common-roles": {
+      "get": {
+        "tags": [
+          "Role"
+        ],
+        "summary": "テナント共通ロール一覧を取得。",
+        "description": "ユーザグループ管理画面から参照する。\r\nテナント共通ロールが対象。（テナント用カスタムロールは対象外）",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Nssol.Platypus.ApiModels.RoleApiModels.IndexOutputModel"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": [ ]
+          }
+        ]
+      }
+    },
     "/api/v2/admin/roles/{id}": {
       "get": {
         "tags": [
@@ -8342,6 +8370,40 @@
         ]
       }
     },
+    "/api/v2/admin/users/sync-ldap": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "LDAPサーバに問い合わせを行い、各ユーザの権限を更新する",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "LDAP認証情報入力モデル",
+            "schema": {
+              "$ref": "#/definitions/Nssol.Platypus.ApiModels.UserApiModels.LdapAuthenticationInputModel"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {
+            "api_key": [ ]
+          }
+        ]
+      }
+    },
     "/api/v2/tenant/users": {
       "get": {
         "tags": [
@@ -8471,6 +8533,177 @@
             "schema": {
               "$ref": "#/definitions/Nssol.Platypus.ApiModels.UserApiModels.IndexForAdminOutputModel"
             }
+          }
+        },
+        "security": [
+          {
+            "api_key": [ ]
+          }
+        ]
+      }
+    },
+    "/api/v2/admin/usergroup": {
+      "get": {
+        "tags": [
+          "UserGroup"
+        ],
+        "summary": "ユーザグループ一覧を取得する",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Nssol.Platypus.ApiModels.UserGroupApiModels.IndexOutputModel"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": [ ]
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "UserGroup"
+        ],
+        "summary": "新規にユーザグループを登録する",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "ユーザグループ入力モデル",
+            "schema": {
+              "$ref": "#/definitions/Nssol.Platypus.ApiModels.UserGroupApiModels.CreateInputModel"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Nssol.Platypus.ApiModels.UserGroupApiModels.DetailsOutputModel"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": [ ]
+          }
+        ]
+      }
+    },
+    "/api/v2/admin/usergroup/{id}": {
+      "get": {
+        "tags": [
+          "UserGroup"
+        ],
+        "summary": "指定されたIDのユーザグループ情報を取得する",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "ユーザグループID",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Nssol.Platypus.ApiModels.UserGroupApiModels.DetailsOutputModel"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": [ ]
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "UserGroup"
+        ],
+        "summary": "既存のユーザグループを編集する",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "ユーザグループID",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "ユーザグループ入力モデル",
+            "schema": {
+              "$ref": "#/definitions/Nssol.Platypus.ApiModels.UserGroupApiModels.CreateInputModel"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Nssol.Platypus.ApiModels.UserGroupApiModels.DetailsOutputModel"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": [ ]
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "UserGroup"
+        ],
+        "summary": "ユーザグループを削除する",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "ユーザグループID",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Success"
           }
         },
         "security": [
@@ -13017,6 +13250,14 @@
           "description": "ノートブック無期限利用可否フラグ",
           "type": "boolean"
         },
+        "userGroupIds": {
+          "description": "UserGroup IDs。",
+          "type": "array",
+          "items": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
         "tenantName": {
           "description": "テナント名",
           "pattern": "^[a-z]([-a-z0-9]*[a-z0-9])?$",
@@ -13103,6 +13344,14 @@
         "availableInfiniteTimeNotebook": {
           "description": "ノートブック無期限利用可否フラグ",
           "type": "boolean"
+        },
+        "userGroupIds": {
+          "description": "UserGroup IDs。",
+          "type": "array",
+          "items": {
+            "format": "int64",
+            "type": "integer"
+          }
         }
       }
     },
@@ -13153,6 +13402,14 @@
         "availableInfiniteTimeNotebook": {
           "description": "ノートブック無期限利用可否フラグ",
           "type": "boolean"
+        },
+        "userGroupIds": {
+          "description": "UserGroup IDs。",
+          "type": "array",
+          "items": {
+            "format": "int64",
+            "type": "integer"
+          }
         }
       }
     },
@@ -13917,6 +14174,158 @@
         }
       }
     },
+    "Nssol.Platypus.ApiModels.UserApiModels.LdapAuthenticationInputModel": {
+      "description": "LDAP認証情報入力モデル",
+      "type": "object",
+      "properties": {
+        "userName": {
+          "description": "LDAP接続用ユーザ名",
+          "type": "string"
+        },
+        "password": {
+          "description": "LDAP接続用パスワード",
+          "type": "string"
+        }
+      }
+    },
+    "Nssol.Platypus.ApiModels.UserGroupApiModels.CreateInputModel": {
+      "description": "ユーザグループ作成入力モデル",
+      "required": [
+        "dn",
+        "isDirect",
+        "isGroup",
+        "name",
+        "roleIds"
+      ],
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "ユーザグループ名",
+          "type": "string"
+        },
+        "memo": {
+          "description": "メモ",
+          "type": "string"
+        },
+        "isGroup": {
+          "description": "対象ユーザグループがグループか、OUか。",
+          "type": "boolean"
+        },
+        "dn": {
+          "description": "対象ユーザグループのDN情報",
+          "type": "string"
+        },
+        "isDirect": {
+          "description": "対象ユーザグループのDN情報の直接的（直下）が対象か、間接的も許可するか。",
+          "type": "boolean"
+        },
+        "roleIds": {
+          "description": "テナント参加時に付与するロールIDリスト",
+          "type": "array",
+          "items": {
+            "format": "int64",
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "Nssol.Platypus.ApiModels.UserGroupApiModels.DetailsOutputModel": {
+      "description": "ユーザグループ詳細出力モデル",
+      "type": "object",
+      "properties": {
+        "createdBy": {
+          "description": "登録者",
+          "type": "string"
+        },
+        "createdAt": {
+          "description": "登録日",
+          "type": "string"
+        },
+        "modifiedBy": {
+          "description": "更新者",
+          "type": "string"
+        },
+        "modifiedAt": {
+          "description": "更新日",
+          "type": "string"
+        },
+        "id": {
+          "format": "int64",
+          "description": "ユーザグループID",
+          "type": "integer"
+        },
+        "name": {
+          "description": "ユーザグループ名",
+          "type": "string"
+        },
+        "memo": {
+          "description": "メモ",
+          "type": "string"
+        },
+        "isGroup": {
+          "description": "対象ユーザグループがグループか、OUか。",
+          "type": "boolean"
+        },
+        "dn": {
+          "description": "対象ユーザグループのDN情報",
+          "type": "string"
+        },
+        "isDirect": {
+          "description": "対象ユーザグループのDN情報の直接的（直下）が対象か、間接的も許可するか。",
+          "type": "boolean"
+        },
+        "roles": {
+          "description": "テナント参加時に付与するロール情報",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Nssol.Platypus.Infrastructure.Infos.RoleInfo"
+          }
+        }
+      }
+    },
+    "Nssol.Platypus.ApiModels.UserGroupApiModels.IndexOutputModel": {
+      "description": "ユーザグループ一覧出力モデル",
+      "type": "object",
+      "properties": {
+        "createdBy": {
+          "description": "登録者",
+          "type": "string"
+        },
+        "createdAt": {
+          "description": "登録日",
+          "type": "string"
+        },
+        "modifiedBy": {
+          "description": "更新者",
+          "type": "string"
+        },
+        "modifiedAt": {
+          "description": "更新日",
+          "type": "string"
+        },
+        "id": {
+          "format": "int64",
+          "description": "ユーザグループID",
+          "type": "integer"
+        },
+        "name": {
+          "description": "ユーザグループ名",
+          "type": "string"
+        },
+        "memo": {
+          "description": "メモ",
+          "type": "string"
+        },
+        "isGroup": {
+          "description": "対象ユーザグループがグループか、OUか。",
+          "type": "boolean"
+        },
+        "dn": {
+          "description": "対象ユーザグループのDN情報",
+          "type": "string"
+        }
+      }
+    },
     "Nssol.Platypus.ApiModels.VersionApiModels.VersionOutputModel": {
       "description": "バージョン情報出力モデル",
       "type": "object",
@@ -13988,6 +14397,7 @@
       }
     },
     "Nssol.Platypus.Infrastructure.Infos.RoleInfo": {
+      "description": "ロール情報",
       "type": "object",
       "properties": {
         "id": {
@@ -14006,6 +14416,23 @@
         "isCustomed": {
           "description": "カスタムロールか",
           "type": "boolean"
+        },
+        "sortOrder": {
+          "format": "int32",
+          "description": "並び順。小さいほど前に来る。",
+          "type": "integer"
+        },
+        "isOrigin": {
+          "description": "KQI上での紐づけであればtrue",
+          "type": "boolean"
+        },
+        "userGroupTanantMapIdLists": {
+          "description": "ユーザグループIDリスト",
+          "type": "array",
+          "items": {
+            "format": "int64",
+            "type": "integer"
+          }
         }
       }
     },
@@ -14041,6 +14468,7 @@
       }
     },
     "Nssol.Platypus.Infrastructure.Infos.TenantInfo": {
+      "description": "テナント情報",
       "type": "object",
       "properties": {
         "id": {
@@ -14066,6 +14494,10 @@
           "items": {
             "$ref": "#/definitions/Nssol.Platypus.Infrastructure.Infos.RoleInfo"
           }
+        },
+        "isOrigin": {
+          "description": "元々KQI上で紐づけあったか。",
+          "type": "boolean"
         }
       }
     },
@@ -14102,7 +14534,8 @@
         26,
         27,
         28,
-        29
+        29,
+        30
       ],
       "type": "integer"
     },

@@ -19,7 +19,9 @@
         <el-table-column prop="roles" label="ロール" width="auto">
           <template slot-scope="scope">
             <span v-for="role in scope.row.roles" :key="role.id">
-              <el-tag class="role-tag">{{ role.displayName }}</el-tag>
+              <el-tag class="role-tag" :type="role.isOrigin ? '' : 'success'">
+                {{ role.displayName }}
+              </el-tag>
             </span>
           </template>
         </el-table-column>

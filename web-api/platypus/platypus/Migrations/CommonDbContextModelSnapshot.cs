@@ -2583,7 +2583,50 @@ namespace Nssol.Platypus.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Nssol.Platypus.Models.UserRoleMap", b =>
+            modelBuilder.Entity("Nssol.Platypus.Models.UserGroup", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Dn")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDirect")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsGroup")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Memo")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserGroups");
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.UserGroupRoleMap", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -2607,8 +2650,88 @@ namespace Nssol.Platypus.Migrations
                     b.Property<long>("RoleId")
                         .HasColumnType("bigint");
 
+                    b.Property<long>("UserGroupId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.HasIndex("UserGroupId", "RoleId")
+                        .IsUnique();
+
+                    b.ToTable("UserGroupRoleMaps");
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.UserGroupTenantMap", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<long>("TenantId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("UserGroupId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("UserGroupId", "TenantId")
+                        .IsUnique();
+
+                    b.ToTable("UserGroupTenantMaps");
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.UserRoleMap", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsOrigin")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<long>("RoleId")
+                        .HasColumnType("bigint");
+
                     b.Property<long?>("TenantMapId")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("UserGroupTenantMapIds")
+                        .HasColumnType("text");
 
                     b.Property<long>("UserId")
                         .HasColumnType("bigint");
@@ -2642,6 +2765,9 @@ namespace Nssol.Platypus.Migrations
                     b.Property<string>("GitToken")
                         .HasColumnType("text");
 
+                    b.Property<bool>("IsOrigin")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTime>("ModifiedAt")
                         .HasColumnType("timestamp without time zone");
 
@@ -2651,6 +2777,9 @@ namespace Nssol.Platypus.Migrations
 
                     b.Property<long>("TenantGitMapId")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("UserGroupTenantMapIds")
+                        .HasColumnType("text");
 
                     b.Property<long>("UserId")
                         .HasColumnType("bigint");
@@ -2682,6 +2811,9 @@ namespace Nssol.Platypus.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<bool>("IsOrigin")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTime>("ModifiedAt")
                         .HasColumnType("timestamp without time zone");
 
@@ -2691,6 +2823,9 @@ namespace Nssol.Platypus.Migrations
 
                     b.Property<long>("TenantId")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("UserGroupTenantMapIds")
+                        .HasColumnType("text");
 
                     b.Property<long>("UserId")
                         .HasColumnType("bigint");
@@ -2719,6 +2854,9 @@ namespace Nssol.Platypus.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<bool>("IsOrigin")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTime>("ModifiedAt")
                         .HasColumnType("timestamp without time zone");
 
@@ -2734,6 +2872,9 @@ namespace Nssol.Platypus.Migrations
 
                     b.Property<long>("TenantRegistryMapId")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("UserGroupTenantMapIds")
+                        .HasColumnType("text");
 
                     b.Property<long>("UserId")
                         .HasColumnType("bigint");
@@ -3445,6 +3586,36 @@ namespace Nssol.Platypus.Migrations
                         .WithMany()
                         .HasForeignKey("DefaultTenantId")
                         .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.UserGroupRoleMap", b =>
+                {
+                    b.HasOne("Nssol.Platypus.Models.Role", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Nssol.Platypus.Models.UserGroup", "UserGroup")
+                        .WithMany("RoleMaps")
+                        .HasForeignKey("UserGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.UserGroupTenantMap", b =>
+                {
+                    b.HasOne("Nssol.Platypus.Models.Tenant", "Tenant")
+                        .WithMany("UserGroupMaps")
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Nssol.Platypus.Models.UserGroup", "UserGroup")
+                        .WithMany()
+                        .HasForeignKey("UserGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 

@@ -4,6 +4,14 @@
     <el-row :gutter="20">
       <el-col class="right-top-button">
         <el-button
+          type="primary"
+          icon="el-icon-refresh"
+          plain
+          @click="openSyncLdapDialog"
+        >
+          LDAP同期
+        </el-button>
+        <el-button
           icon="el-icon-edit-outline"
           type="primary"
           plain
@@ -33,7 +41,10 @@
                 <template slot-scope="scope">
                   <span
                     class="tenant"
-                    :class="{ 'tenant-default': scope.row.default }"
+                    :class="{
+                      'tenant-default': scope.row.default,
+                      'not-origin': !scope.row.isOrigin,
+                    }"
                   >
                     {{ scope.row.displayName }}
                   </span>
@@ -45,7 +56,14 @@
                     <el-tag v-if="role.isCustomed" type="info" class="role-tag">
                       {{ role.displayName }}
                     </el-tag>
-                    <el-tag v-else class="role-tag">
+                    <el-tag
+                      v-else
+                      class="role-tag"
+                      :class="{
+                        'not-origin': !role.isOrigin,
+                      }"
+                      :type="role.isOrigin ? '' : 'success'"
+                    >
                       {{ role.displayName }}
                     </el-tag>
                   </span>
@@ -67,7 +85,13 @@
           <template slot-scope="scope">
             <div v-if="showTenants[scope.row.id]">
               <span v-for="(t, index) in scope.row.tenants" :key="index">
-                <span class="tenant" :class="{ 'tenant-default': t.default }">
+                <span
+                  class="tenant"
+                  :class="{
+                    'tenant-default': t.default,
+                    'not-origin': !t.isOrigin,
+                  }"
+                >
                   {{ t.displayName }}
                 </span>
               </span>
@@ -125,6 +149,9 @@ export default {
         this.$router.push('/user/edit/' + row.id)
       }
     },
+    openSyncLdapDialog() {
+      this.$router.push('/user/sync-ldap')
+    },
     async done() {
       await this.initialize()
       this.closeDialog()
@@ -168,5 +195,8 @@ export default {
 .tenant-default {
   font-weight: bold !important;
   color: #409eff;
+}
+.not-origin {
+  color: #67c23a;
 }
 </style>

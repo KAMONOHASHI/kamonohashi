@@ -37,7 +37,8 @@ class TenantApiModelsEditInputModel(object):
         'display_name': 'str',
         'git_ids': 'list[int]',
         'registry_ids': 'list[int]',
-        'storage_id': 'int'
+        'storage_id': 'int',
+        'user_group_ids': 'list[int]'
     }
 
     attribute_map = {
@@ -47,10 +48,11 @@ class TenantApiModelsEditInputModel(object):
         'display_name': 'displayName',
         'git_ids': 'gitIds',
         'registry_ids': 'registryIds',
-        'storage_id': 'storageId'
+        'storage_id': 'storageId',
+        'user_group_ids': 'userGroupIds'
     }
 
-    def __init__(self, available_infinite_time_notebook=None, default_git_id=None, default_registry_id=None, display_name=None, git_ids=None, registry_ids=None, storage_id=None):  # noqa: E501
+    def __init__(self, available_infinite_time_notebook=None, default_git_id=None, default_registry_id=None, display_name=None, git_ids=None, registry_ids=None, storage_id=None, user_group_ids=None):  # noqa: E501
         """TenantApiModelsEditInputModel - a model defined in Swagger"""  # noqa: E501
 
         self._available_infinite_time_notebook = None
@@ -60,6 +62,7 @@ class TenantApiModelsEditInputModel(object):
         self._git_ids = None
         self._registry_ids = None
         self._storage_id = None
+        self._user_group_ids = None
         self.discriminator = None
 
         if available_infinite_time_notebook is not None:
@@ -72,6 +75,8 @@ class TenantApiModelsEditInputModel(object):
         self.git_ids = git_ids
         self.registry_ids = registry_ids
         self.storage_id = storage_id
+        if user_group_ids is not None:
+            self.user_group_ids = user_group_ids
 
     @property
     def available_infinite_time_notebook(self):
@@ -227,6 +232,27 @@ class TenantApiModelsEditInputModel(object):
             raise ValueError("Invalid value for `storage_id`, must not be `None`")  # noqa: E501
 
         self._storage_id = storage_id
+
+    @property
+    def user_group_ids(self):
+        """Gets the user_group_ids of this TenantApiModelsEditInputModel.  # noqa: E501
+
+
+        :return: The user_group_ids of this TenantApiModelsEditInputModel.  # noqa: E501
+        :rtype: list[int]
+        """
+        return self._user_group_ids
+
+    @user_group_ids.setter
+    def user_group_ids(self, user_group_ids):
+        """Sets the user_group_ids of this TenantApiModelsEditInputModel.
+
+
+        :param user_group_ids: The user_group_ids of this TenantApiModelsEditInputModel.  # noqa: E501
+        :type: list[int]
+        """
+
+        self._user_group_ids = user_group_ids
 
     def to_dict(self):
         """Returns the model properties as a dict"""

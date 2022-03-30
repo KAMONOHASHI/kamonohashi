@@ -30,6 +30,7 @@ namespace Nssol.Platypus.Logic
     /// <seealso cref="Nssol.Platypus.Logic.Interfaces.ILoginLogic" />
     public class LoginLogic : PlatypusLogicBase, ILoginLogic
     {
+        private readonly IUserGroupLogic userGroupLogic;
         private readonly IUserRepository userRepository;
         private readonly ISettingRepository settingRepository;
         private readonly IUnitOfWork unitOfWork;
@@ -40,6 +41,7 @@ namespace Nssol.Platypus.Logic
         /// コンストラクタ
         /// </summary>
         public LoginLogic(
+            IUserGroupLogic userGroupLogic,
             IUserRepository userRepository,
             ISettingRepository settingRepository,
             IUnitOfWork unitOfWork,
@@ -47,6 +49,7 @@ namespace Nssol.Platypus.Logic
             IOptions<ActiveDirectoryOptions> adOptions,
             IOptions<WebSecurityOptions> webSecurityOptions) : base(commonDiLogic)
         {
+            this.userGroupLogic = userGroupLogic;
             this.userRepository = userRepository;
             this.settingRepository = settingRepository;
             this.unitOfWork = unitOfWork;
@@ -83,7 +86,7 @@ namespace Nssol.Platypus.Logic
             else
             {
                 //ローカルアカウントがない場合、LDAP認証と判断して、ユーザ自身の権限で、ユーザ情報を取得する
-                Result<List<Claim>, string> result = Authenticate(userName, password);
+                Result<LdapEntry, string> result = Authenticate(userName, password);
                 if (!result.IsSuccess)
                 {
                     //ログインに失敗した
@@ -96,9 +99,14 @@ namespace Nssol.Platypus.Logic
                     //ログインに成功したが、ユーザ存在しない（＝LDAPの新規ログイン＝ユーザを作成する）
                     userRepository.AddLdapUser(userName);
                     unitOfWork.Commit(userName);
+                    //ユーザ情報を取得
+                    user = userRepository.GetUser(userName);
                 }
 
-                claims = result.Value;
+                //テナントに参加・脱退する
+                await userGroupLogic.AddTenantFromGroup(result.Value, user, user.Name, password);
+                unitOfWork.Commit(userName);
+
             }
             return await AuthorizeAsync(userName, claims, tenantId);
         }
@@ -150,11 +158,12 @@ namespace Nssol.Platypus.Logic
         /// LDAP認証。併せて、ADから取得可能な情報をクレームに詰めて返す。
         /// </summary>
         /// <remarks>原因に寄らず、認証に失敗したらfalseが返る。システムエラー、ユーザの入力ミスが区別されない</remarks>
-        private Result<List<Claim>, string> Authenticate(string userName, string password)
+        /// <param name="userName">アカウント名</param>
+        /// <param name="password">パスワード</param>
+        private Result<LdapEntry, string> Authenticate(string userName, string password)
         {
             try
             {
-                List<Claim> claims = new List<Claim>();
                 using (var conn = new LdapConnection())
                 {
                     conn.Connect(adOptions.Server, adOptions.Port);
@@ -166,19 +175,33 @@ namespace Nssol.Platypus.Logic
                             this.adOptions.BaseDn,
                             LdapConnection.SCOPE_SUB,
                             searchFilter,
-                            Array.Empty<string>(), //特に追加で情報は取らない
+                            new[]
+                            {
+                                "memberOf",
+                                "distinguishedName"
+                            },
                             false
                     );
                     LogDebug($"Login succeeded - {userName}");
+                    if(result.hasMore())
+                    {
+                        // ログインに成功し、ユーザ情報が取得できたとき
+                        return Result<LdapEntry, string>.CreateResult(result.next());
+                    }
+                    else
+                    {
+                        // ログインに成功したが、ユーザ情報が取得できなかったとき
+
+                        return Result<LdapEntry, string>.CreateErrorResult("ユーザ情報の取得に失敗しました。");
+                    }
                 }
-                return Result<List<Claim>, string>.CreateResult(claims);
             }
             catch (LdapException e)
             {
                 //サーバへ接続失敗したときも、パスワードが間違っていた時もここに到達してしまう
                 string errorMessage = "Invalid user name or password.";
                 LogError(errorMessage, e);
-                return Result<List<Claim>, string>.CreateErrorResult(errorMessage);
+                return Result<LdapEntry, string>.CreateErrorResult(errorMessage);
             }
         }
         #endregion

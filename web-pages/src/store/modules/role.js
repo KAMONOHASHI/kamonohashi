@@ -49,6 +49,11 @@ const actions = {
     return await api.role.admin.delete({ id: id })
   },
 
+  async fetchTenantCommonRoles({ commit }) {
+    let tenantRoles = (await api.role.admin.getTenantCommonRoles()).data
+    commit('setTenantRoles', { tenantRoles })
+  },
+
   async fetchTenantRoles({ commit }) {
     let tenantRoles = (await api.role.tenant.get()).data
     commit('setTenantRoles', { tenantRoles })

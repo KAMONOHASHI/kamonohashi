@@ -131,6 +131,21 @@ namespace Nssol.Platypus.DataAccess
         /// </summary>
         public virtual DbSet<ResourceJob> ResourceJobs { get; set; }
 
+        /// <summary>
+        /// ユーザグループテーブル
+        /// </summary>
+        public virtual DbSet<UserGroup> UserGroups { get; set; }
+
+        /// <summary>
+        /// ユーザグループとロールの中間テーブル
+        /// </summary>
+        public virtual DbSet<UserGroupRoleMap> UserGroupRoleMaps { get; set; }
+
+        /// <summary>
+        /// ユーザグループとテナントの中間テーブル
+        /// </summary>
+        public virtual DbSet<UserGroupTenantMap> UserGroupTenantMaps { get; set; }
+
         #endregion
 
         #region テナント用DbSet
@@ -314,6 +329,12 @@ namespace Nssol.Platypus.DataAccess
                     .IsUnique();
             modelBuilder.Entity<UserTenantRegistryMap>()
                     .HasIndex(e => new { e.UserId, e.TenantRegistryMapId })
+                    .IsUnique();
+            modelBuilder.Entity<UserGroupRoleMap>()
+                    .HasIndex(e => new { e.UserGroupId, e.RoleId })
+                    .IsUnique();
+            modelBuilder.Entity<UserGroupTenantMap>()
+                    .HasIndex(e => new { e.UserGroupId, e.TenantId })
                     .IsUnique();
             modelBuilder.Entity<TrainingHistoryParentMap>()
                     .HasIndex(e => new { e.TenantId, e.TrainingHistoryId, e.ParentId })

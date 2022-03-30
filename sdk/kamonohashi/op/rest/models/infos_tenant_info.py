@@ -34,6 +34,7 @@ class InfosTenantInfo(object):
         'default': 'bool',
         'display_name': 'str',
         'id': 'int',
+        'is_origin': 'bool',
         'name': 'str',
         'roles': 'list[InfosRoleInfo]'
     }
@@ -42,16 +43,18 @@ class InfosTenantInfo(object):
         'default': 'default',
         'display_name': 'displayName',
         'id': 'id',
+        'is_origin': 'isOrigin',
         'name': 'name',
         'roles': 'roles'
     }
 
-    def __init__(self, default=None, display_name=None, id=None, name=None, roles=None):  # noqa: E501
+    def __init__(self, default=None, display_name=None, id=None, is_origin=None, name=None, roles=None):  # noqa: E501
         """InfosTenantInfo - a model defined in Swagger"""  # noqa: E501
 
         self._default = None
         self._display_name = None
         self._id = None
+        self._is_origin = None
         self._name = None
         self._roles = None
         self.discriminator = None
@@ -62,6 +65,8 @@ class InfosTenantInfo(object):
             self.display_name = display_name
         if id is not None:
             self.id = id
+        if is_origin is not None:
+            self.is_origin = is_origin
         if name is not None:
             self.name = name
         if roles is not None:
@@ -129,6 +134,27 @@ class InfosTenantInfo(object):
         """
 
         self._id = id
+
+    @property
+    def is_origin(self):
+        """Gets the is_origin of this InfosTenantInfo.  # noqa: E501
+
+
+        :return: The is_origin of this InfosTenantInfo.  # noqa: E501
+        :rtype: bool
+        """
+        return self._is_origin
+
+    @is_origin.setter
+    def is_origin(self, is_origin):
+        """Sets the is_origin of this InfosTenantInfo.
+
+
+        :param is_origin: The is_origin of this InfosTenantInfo.  # noqa: E501
+        :type: bool
+        """
+
+        self._is_origin = is_origin
 
     @property
     def name(self):

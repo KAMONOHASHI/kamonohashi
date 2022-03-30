@@ -1,5 +1,6 @@
 ﻿using Nssol.Platypus.DataAccess.Core;
 using Nssol.Platypus.Infrastructure;
+using Nssol.Platypus.Infrastructure.Infos;
 using Nssol.Platypus.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -66,13 +67,15 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces
         /// 指定したユーザが持つシステムロールを取得する。
         /// ユーザIDの存在チェックは行わない。
         /// </summary>
-        IEnumerable<Role> GetSystemRoles(long userId);
+        /// <param name="userId">ユーザID</param>
+        IEnumerable<RoleInfo> GetSystemRoles(long userId);
 
         /// <summary>
         /// 指定したユーザ持つテナントロールを、(テナントID、ロールのリスト）のディクショナリ形式で 取得する。
         /// ユーザIDの存在チェックは行わない。
         /// </summary>
-        Dictionary<long, List<Role>> GetTenantRolesDictionary(long userId);
+        /// <param name="userId">ユーザID</param>
+        Dictionary<long, List<RoleInfo>> GetTenantRolesDictionary(long userId);
 
         /// <summary>
         /// テナント横断で使用可能なテナントロールを取得する。
@@ -83,7 +86,9 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces
         /// 指定したユーザが特定のテナントで持つテナントロールを取得する。
         /// ユーザID, テナントIDの存在チェックは行わない。
         /// </summary>
-        IEnumerable<Role> GetTenantRoles(long userId, long tenantId);
+        /// <param name="userId">ユーザID</param>
+        /// <param name="tenantId">テナントID</param>
+        IEnumerable<RoleInfo> GetTenantRoles(long userId, long tenantId);
 
         /// <summary>
         /// 指定したユーザにロールを付与する。
@@ -96,14 +101,14 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces
         /// <param name="role">対象ロール</param>
         /// <param name="userTenantMap">テナントマップ</param>
         /// <param name="isCreate">ユーザが新規作成の状態(=ID未割当)ならtrue</param>
-        void AttachRole(User user, Role role, UserTenantMap userTenantMap, bool isCreate);
+        /// <param name="isOrigin">KQI上での紐づけならtrue</param>
+        void AttachRole(User user, Role role, UserTenantMap userTenantMap, bool isCreate, bool isOrigin);
 
         /// <summary>
         /// 指定したユーザから、すべてのシステムロールを外す。
         /// ユーザIDの存在チェックは行わない。
         /// </summary>
         void DetachSystemRole(long userId);
-
 
         /// <summary>
         /// 指定したロールに、指定したメニューへのアクセス権限があるか、確認する

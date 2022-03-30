@@ -50,6 +50,30 @@ namespace Nssol.Platypus.Controllers.spa
         }
 
         /// <summary>
+        /// テナント共通ロール一覧を取得。
+        /// </summary>
+        /// <remarks>
+        /// ユーザグループ管理画面から参照する。
+        /// テナント共通ロールが対象。（テナント用カスタムロールは対象外）
+        /// </remarks>
+        [HttpGet("/api/v{api-version:apiVersion}/admin/tenant-common-roles")]
+        [PermissionFilter(MenuCode.UserGroup)]
+        [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetAllForTenantCommonRole()
+        {
+            var roles = await roleRepository.GetAllRolesAsync();
+
+            // テナント共通ロールの条件
+            //  - Adminロールでない
+            //  - TenantIdがNULL
+            var rolesForCurrentTenant = roles.Where(
+                r => r.IsSystemRole == false &&
+                r.TenantId == null);
+
+            return JsonOK(rolesForCurrentTenant.Select(r => new IndexOutputModel(r)));
+        }
+
+        /// <summary>
         /// 指定されたIDのロール情報を取得。
         /// </summary>
         /// <param name="id">ロールID</param>

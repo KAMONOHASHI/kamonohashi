@@ -227,5 +227,10 @@ namespace Nssol.Platypus.Models
         /// レジストリとのマッピング情報
         /// </summary>
         public virtual ICollection<TenantGitMap> GitMaps { get; set; }
+
+        /// <summary>
+        /// ユーザグループとのマッピング情報
+        /// </summary>
+        public virtual ICollection<UserGroupTenantMap> UserGroupMaps { get; set; }
     }
 }
