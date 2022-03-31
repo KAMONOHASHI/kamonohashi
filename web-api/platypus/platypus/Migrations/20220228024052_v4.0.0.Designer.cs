@@ -2495,6 +2495,101 @@ namespace Nssol.Platypus.Migrations
                     b.ToTable("TrainingHistoryTagMaps");
                 });
 
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.TrainingSearchHistories", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("DataSet")
+                        .HasColumnType("text");
+
+                    b.Property<bool?>("DataSetOr")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("EntryPoint")
+                        .HasColumnType("text");
+
+                    b.Property<bool?>("EntryPointOr")
+                        .HasColumnType("boolean");
+
+                    b.Property<long?>("IdLower")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("IdUpper")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Memo")
+                        .HasColumnType("text");
+
+                    b.Property<bool?>("MemoOr")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ParentName")
+                        .HasColumnType("text");
+
+                    b.Property<bool?>("ParentNameOr")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("StartedAtLower")
+                        .HasColumnType("text");
+
+                    b.Property<string>("StartedAtUpper")
+                        .HasColumnType("text");
+
+                    b.Property<string>("StartedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool?>("StartedByOr")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("text");
+
+                    b.Property<bool?>("StatusOr")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Tags")
+                        .HasColumnType("text");
+
+                    b.Property<bool?>("TagsOr")
+                        .HasColumnType("boolean");
+
+                    b.Property<long>("TenantId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("TrainingName")
+                        .HasColumnType("text");
+
+                    b.Property<bool?>("TrainingNameOr")
+                        .HasColumnType("boolean");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("TrainingSearchHistories");
+                });
+
             modelBuilder.Entity("Nssol.Platypus.Models.TenantRegistryMap", b =>
                 {
                     b.Property<long>("Id")
@@ -3563,6 +3658,15 @@ namespace Nssol.Platypus.Migrations
                     b.HasOne("Nssol.Platypus.Models.TenantModels.TrainingHistory", "TrainingHistory")
                         .WithMany("TagMaps")
                         .HasForeignKey("TrainingHistoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Nssol.Platypus.Models.TenantModels.TrainingSearchHistories", b =>
+                {
+                    b.HasOne("Nssol.Platypus.Models.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
