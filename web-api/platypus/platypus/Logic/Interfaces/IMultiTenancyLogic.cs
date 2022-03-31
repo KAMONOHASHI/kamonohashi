@@ -39,6 +39,12 @@ namespace Nssol.Platypus.Logic.Interfaces
         string UserName { get; }
 
         /// <summary>
+        /// ユーザ表示名を取得します。
+        /// 未ログインの場合は ハイフン(-) を返します。 
+        /// </summary>
+        string UserDisplayName { get; }
+
+        /// <summary>
         /// リクエストID
         /// </summary>
         string RequestId { get; }

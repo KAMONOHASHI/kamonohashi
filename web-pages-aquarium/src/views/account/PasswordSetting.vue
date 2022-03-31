@@ -3,14 +3,21 @@
   <div>
     <el-form ref="passForm" :rules="passRules" :model="passForm">
       <el-form-item
-        label="現在のパスワード"
+        label="ユーザ表示名"
+        prop="displayName"
+        :label-width="labelwidth"
+      >
+        <el-input v-model="passForm.displayName" type="text" />
+      </el-form-item>
+      <el-form-item
+        label="現在のパスワード(変更する場合のみ入力)"
         prop="currentPassword"
         :label-width="labelwidth"
       >
         <el-input v-model="passForm.currentPassword" type="password" />
       </el-form-item>
       <el-form-item
-        label="新しいパスワード"
+        label="新しいパスワード(変更する場合のみ入力)"
         prop="password"
         :label-width="labelwidth"
       >
@@ -49,7 +56,8 @@ export default {
   },
   data() {
     return {
-      labelwidth: '220px',
+      oldDisplayName: '',
+      labelwidth: '320px',
 
       passRules: {
         currentPassword: {
@@ -72,6 +80,9 @@ export default {
       return this.value === undefined || this.value === null ? {} : this.value
     },
   },
+  created() {
+    this.oldDisplayName = this.passForm.displayName
+  },
   methods: {
     passwordValidator(rule, value, callback) {
       if (!(value[0] && value[1])) {
@@ -84,11 +95,19 @@ export default {
     },
 
     handlePassword() {
-      this.$refs['passForm'].validate(async valid => {
-        if (valid) {
-          this.$emit('updatePassword')
-        }
-      })
+      if (this.passForm.displayName != this.oldDisplayName) {
+        this.$emit('updateDisplayName')
+      }
+      if (
+        this.passForm.password[0] != null &&
+        this.passForm.password[0] != ''
+      ) {
+        this.$refs['passForm'].validate(async valid => {
+          if (valid) {
+            this.$emit('updatePassword')
+          }
+        })
+      }
     },
   },
 }

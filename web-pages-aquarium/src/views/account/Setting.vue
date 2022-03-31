@@ -56,7 +56,7 @@
             aria-controls="sixth_tab01"
           />
           <label v-if="passwordChangeEnabled" for="tab1_6">
-            Password
+            User Settings
           </label>
 
           <div class="cp_tabpanels">
@@ -119,6 +119,7 @@
               <kqi-display-error :error="passwordError" />
               <Password-Setting
                 v-model="passForm"
+                @updateDisplayName="updateDisplayName"
                 @updatePassword="updatePassword"
               />
             </div>
@@ -180,6 +181,7 @@ export default {
       },
       passwordChangeEnabled: true,
       passForm: {
+        displayName: '',
         currentPassword: '',
         password: ['', ''],
       },
@@ -205,6 +207,7 @@ export default {
     await this['account/fetchAccount']()
     this.defaultTenantName = this.account.defaultTenant.name
     this.passwordChangeEnabled = this.account.passwordChangeEnabled
+    this.passForm.displayName = this.account.userDisplayName
 
     // 選択中のテナントにおけるGit情報を取得する
     await this['gitSelector/fetchGits']()
@@ -229,6 +232,7 @@ export default {
       'account/fetchAccount',
       'account/fetchWebhook',
       'account/put',
+      'account/putDisplayName',
       'account/putPassword',
       'account/postTokenTenants',
       'account/putGitToken',
@@ -303,6 +307,17 @@ export default {
       } catch (error) {
         this.registryTokenError = error
       }
+    },
+
+    async updateDisplayName() {
+      let params = {
+        body: {
+          displayName: this.passForm.displayName,
+        },
+      }
+      await this['account/putDisplayName'](params)
+      this.showSuccessMessage()
+      await this['account/fetchAccount']()
     },
 
     async updatePassword() {

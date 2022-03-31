@@ -16,6 +16,9 @@
           <el-input v-model="form.name" />
         </el-form-item>
         <kqi-display-text-form v-else label="ユーザ名" :value="form.name" />
+        <el-form-item label="ユーザ表示名" prop="displayName">
+          <el-input v-model="form.displayName" />
+        </el-form-item>
         <kqi-display-text-form
           v-if="id !== null"
           label="認証タイプ"
@@ -30,6 +33,7 @@
       </span>
       <span v-else-if="form.serviceType === 2">
         <kqi-display-text-form label="ユーザ名" :value="form.name" />
+        <kqi-display-text-form label="ユーザ表示名" :value="form.displayName" />
         <kqi-display-text-form
           label="認証タイプ"
           :value="form.displayServiceType"
@@ -116,6 +120,7 @@ export default {
     return {
       form: {
         name: '',
+        displayName: '',
         serviceType: 1,
         displayServiceType: '',
         password: ['', ''],
@@ -166,6 +171,7 @@ export default {
       await this['user/fetchDetail'](this.id)
       try {
         this.form.name = this.detail.name
+        this.form.displayName = this.detail.displayName
         this.form.serviceType = this.detail.serviceType
         this.form.displayServiceType = this.form.serviceType
         if (this.form.serviceType === 1)
@@ -230,6 +236,7 @@ export default {
             })
             let params = {
               name: this.form.name,
+              displayName: this.form.displayName,
               password: this.form.password[0],
               systemRoles: this.form.selectedSystemRoleIds,
               tenants: postTenants,

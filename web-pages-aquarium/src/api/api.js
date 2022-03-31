@@ -70,6 +70,7 @@ let api = {
   account: {
     get: gen.getApiV2Account,
     put: gen.putApiV2Account,
+    putDisplayName: gen.putApiV2AccountDisplayName,
     putPassword: gen.putApiV2AccountPassword,
     postLogin: gen.postApiV2AccountLogin,
     postTokenTenants: gen.postApiV2AccountTenantsByTenantIdToken,

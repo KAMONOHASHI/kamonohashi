@@ -14,6 +14,11 @@ namespace Nssol.Platypus.ApiModels.UserApiModels
         public string Name { get; set; }
 
         /// <summary>
+        /// 表示名
+        /// </summary>
+        public string DisplayName { get; set; }
+
+        /// <summary>
         /// パスワード
         /// </summary>
         [Required]

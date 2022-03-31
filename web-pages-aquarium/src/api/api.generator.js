@@ -125,6 +125,49 @@ export const putApiV2AccountURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+ * ログインユーザの表示名を変更する
+ * request: putApiV2AccountDisplayName
+ * url: putApiV2AccountDisplayNameURL
+ * method: putApiV2AccountDisplayName_TYPE
+ * raw_url: putApiV2AccountDisplayName_RAW_URL
+ * @param body - 
+ */
+export const putApiV2AccountDisplayName = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/account/displayName'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('put', domain + path, body, queryParameters, form, config)
+}
+export const putApiV2AccountDisplayName_RAW_URL = function() {
+  return '/api/v2/account/displayName'
+}
+export const putApiV2AccountDisplayName_TYPE = function() {
+  return 'put'
+}
+export const putApiV2AccountDisplayNameURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/account/displayName'
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * ログインユーザのパスワードを変更する
  * request: putApiV2AccountPassword
  * url: putApiV2AccountPasswordURL
@@ -10697,6 +10740,55 @@ export const putApiV2AdminUsersByIdURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/admin/users/{id}'
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 指定したユーザの表示名を変更する
+ * request: putApiV2AdminUsersByIdDisplayName
+ * url: putApiV2AdminUsersByIdDisplayNameURL
+ * method: putApiV2AdminUsersByIdDisplayName_TYPE
+ * raw_url: putApiV2AdminUsersByIdDisplayName_RAW_URL
+ * @param id - 
+ * @param body - 
+ */
+export const putApiV2AdminUsersByIdDisplayName = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/admin/users/{id}/displayName'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('put', domain + path, body, queryParameters, form, config)
+}
+export const putApiV2AdminUsersByIdDisplayName_RAW_URL = function() {
+  return '/api/v2/admin/users/{id}/displayName'
+}
+export const putApiV2AdminUsersByIdDisplayName_TYPE = function() {
+  return 'put'
+}
+export const putApiV2AdminUsersByIdDisplayNameURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/admin/users/{id}/displayName'
   path = path.replace('{id}', `${parameters['id']}`)
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {

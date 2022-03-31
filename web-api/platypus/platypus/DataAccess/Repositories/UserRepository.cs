@@ -125,6 +125,7 @@ namespace Nssol.Platypus.DataAccess.Repositories
             {
                 Id = user.Id,
                 Name = user.Name,
+                DisplayName = user.DisplayName,
                 Alias = user.Alias,
                 ServiceType = user.ServiceType,
                 SlackUrl = user.SlackUrl,

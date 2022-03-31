@@ -95,6 +95,18 @@ namespace Nssol.Platypus.Logic
         }
 
         /// <summary>
+        /// ユーザ表示名を取得します。
+        /// 未ログインの場合は ハイフン(-) を返します。 
+        /// </summary>
+        public string UserDisplayName
+        {
+            get
+            {
+                return CurrentUserInfo?.DisplayName ?? "-";
+            }
+        }
+
+        /// <summary>
         /// リクエストID
         /// </summary>
         public string RequestId

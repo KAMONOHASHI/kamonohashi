@@ -23,7 +23,9 @@ title
               class="user-label"
               style="position: relative; top: 7px; left: -8px;"
             />
-            {{ omitIfLong(account.userName) }} /
+            {{ omitIfLong(account.userName) }}【{{
+              omitIfLong(account.userDisplayName)
+            }}】 /
             {{ omitIfLong(account.selectedTenant.displayName) }}
             <i class="el-icon-caret-bottom" />
           </span>

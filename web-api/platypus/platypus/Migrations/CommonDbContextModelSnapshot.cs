@@ -2553,6 +2553,9 @@ namespace Nssol.Platypus.Migrations
                     b.Property<long>("DefaultTenantId")
                         .HasColumnType("bigint");
 
+                    b.Property<string>("DisplayName")
+                        .HasColumnType("text");
+
                     b.Property<string>("Mention")
                         .HasColumnType("text");
 
