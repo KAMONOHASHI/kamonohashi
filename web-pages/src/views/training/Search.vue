@@ -161,9 +161,14 @@
       <el-form>
         <el-form-item label="登録名">
           <el-col :span="18">
-            <kqi-display-error :error="error" />
-            <el-input v-model="searchConditionName" />
+            <el-row>
+              <el-input v-model="searchConditionName" />
+            </el-row>
+            <el-row>
+              <kqi-display-error :error="error" />
+            </el-row>
           </el-col>
+
           <el-col :span="4">
             <el-button type="primary" @click="saveSearchCondition">
               登録
@@ -312,6 +317,9 @@ export default {
         await this.postSearchHistory(params)
         this.saveSearchFormDialogVisible = false
         this.$emit('save')
+        this.searchConditionName = null
+        this.error = null
+        this.showSuccessMessage()
       } catch (e) {
         this.error = e
       }
