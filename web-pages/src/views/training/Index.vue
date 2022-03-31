@@ -481,7 +481,7 @@ export default {
 
     async clickDeleteSearchHistory(item) {
       // 選択中の検索履歴を削除したとき
-      if (this.searchConditionId === item.id) {
+      if (this.searchConditionId == item.id) {
         this.searchConditionId = 'search'
         this.searchingFlg = true
       }
@@ -496,9 +496,9 @@ export default {
       }
       let params = { id: ids, tags: this.tags }
 
-      if (type == 'post') {
+      if (type === 'post') {
         await this.postTags(params)
-      } else if (type == 'delete') {
+      } else if (type === 'delete') {
         await this.deleteTags({ data: params })
       }
 
