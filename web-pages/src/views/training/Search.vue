@@ -8,11 +8,11 @@
       <el-form ref="form" :model="searchForm" label-width="120px">
         <el-form-item label="ID">
           <el-col :span="11">
-            <el-input v-model="searchForm.idLower" />
+            <el-input v-model="searchForm.idLower" placeholder="From" />
           </el-col>
           <el-col class="line" :span="2" style="text-align:center">-</el-col>
           <el-col :span="11">
-            <el-input v-model="searchForm.idUpper" />
+            <el-input v-model="searchForm.idUpper" placeholder="To" />
           </el-col>
         </el-form-item>
         <el-form-item label="学習名">
@@ -44,7 +44,7 @@
             <el-date-picker
               v-model="searchForm.startedAtLower"
               type="date"
-              placeholder="Pick a day"
+              placeholder="From"
               format="yyyy/MM/dd"
               value-format="yyyy/MM/dd"
               style="width:100%"
@@ -55,7 +55,7 @@
             <el-date-picker
               v-model="searchForm.startedAtUpper"
               type="date"
-              placeholder="Pick a day"
+              placeholder="To"
               format="yyyy/MM/dd"
               value-format="yyyy/MM/dd"
               style="width:100%"
