@@ -14,7 +14,11 @@
         >
           タグ変更
         </el-button>
-        <el-button v-if="selections.length !== 0" @click="showDeleteConfirm">
+        <el-button
+          v-if="selections.length !== 0"
+          type="danger"
+          @click="showDeleteConfirm"
+        >
           一括削除
         </el-button>
         <el-button
@@ -38,7 +42,7 @@
           <el-button type="primary" @click="updateTags('post')">
             一括追加
           </el-button>
-          <el-button type="primary" @click="updateTags('delete')">
+          <el-button type="danger" @click="updateTags('delete')">
             一括削除
           </el-button>
         </div>
@@ -309,6 +313,7 @@ export default {
       'delete',
       'fetchTrainHistories',
       'fetchSearchHistories',
+      'fetchSearchFill',
       'postSearchHistory',
       'deleteSearchHistory',
       'postTags',
@@ -326,6 +331,7 @@ export default {
       params.withTotal = true
       await this.fetchTrainHistories(params)
       await this.fetchSearchHistories()
+      await this.fetchSearchFill()
     },
 
     clear() {
