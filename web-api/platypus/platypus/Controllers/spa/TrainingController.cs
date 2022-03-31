@@ -1471,6 +1471,10 @@ namespace Nssol.Platypus.Controllers.spa
                 unitOfWork.Commit();
             }
 
+            // 未使用タグ削除
+            tagRepository.DeleteUnUsedTrainingHistoryTags();
+            unitOfWork.Commit();
+
             var changedHistory = trainingHistoryRepository.GetAllIncludeDataSetAndParentWithOrdering();
             changedHistory = changedHistory.Where(d => tagsInput.Id.Contains(d.Id));
 
