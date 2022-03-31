@@ -141,6 +141,23 @@ namespace Nssol.Platypus.Logic
 
         /// <summary>
         /// 指定した既存学習履歴IDとタグを関連付ける。
+        /// </summary>
+        /// <param name="trainingHistoryId">学習履歴ID</param>
+        /// <param name="inputTags">関連付けるタグ</param>
+        public async Task AddTrainingHistoryTagsAsync(long trainingHistoryId, IEnumerable<string> inputTags)
+        {
+            foreach (var inputTag in inputTags.Distinct())
+            {
+                if (string.IsNullOrEmpty(inputTag) == false)
+                {
+                    //タグを付与する。
+                    await tagRepository.AddTrainingHistoryTagAsync(trainingHistoryId, inputTag, true);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 指定した既存学習履歴IDとタグを関連付ける。
         /// 既存の関連付け状況に関わらず、指定されたタグのみが紐づいている状況にする（他の紐づけはすべて削除する）
         /// </summary>
         /// <remarks>

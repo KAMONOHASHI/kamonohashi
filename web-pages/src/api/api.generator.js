@@ -9690,6 +9690,218 @@ export const getApiV2TrainingURL = function(parameters = {}) {
   return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
 }
 /**
+* 指定された条件でページングされた状態で、全学習履歴を取得。詳細検索で使用。
+* request: getApiV2TrainingSearch
+* url: getApiV2TrainingSearchURL
+* method: getApiV2TrainingSearch_TYPE
+* raw_url: getApiV2TrainingSearch_RAW_URL
+     * @param idLower - IDの検索条件。
+この数値以上のIDが検索される。
+     * @param idUpper - IDの検索条件。
+この数値以下のIDが検索される。
+     * @param name - 名前
+複数のワードが含まれる場合は","区切り
+     * @param nameOr - 名前がor検索かand検索か
+     * @param parentName - 親学習名
+複数のワードが含まれる場合は","区切り
+     * @param parentNameOr - 親学習名がor検索かand検索か
+     * @param startedAtLower - 実行時刻の検索の期間の開始の条件。日付の形式。
+"2018/01/01" → 2018/01/01 00:00:00 以降が検索される。
+     * @param startedAtUpper - 実行時刻の検索の期間の終了の条件。日付の形式。
+"2018/01/01" → 2018/01/01 23:59:59 以前が検索される。
+     * @param startedBy - 実行者
+複数のワードが含まれる場合は","区切り
+     * @param startedByOr - 実行者の検索がor検索かand検索か
+     * @param dataSet - データセット名
+複数のワードが含まれる場合は","区切り
+     * @param dataSetOr - データセット名がor検索かand検索か
+     * @param memo - メモ
+複数のワードが含まれる場合は","区切り
+     * @param memoOr - メモがor検索かand検索か
+     * @param status - ステータス
+複数のワードが含まれる場合は","区切り
+     * @param statusOr - ステータスがor検索かand検索か
+     * @param entryPoint - 実行コマンド
+複数のワードが含まれる場合は","区切り
+     * @param entryPointOr - 実行コマンドがor検索かand検索か
+     * @param tags - タグ
+複数のワードが含まれる場合は","区切り
+     * @param tagsOr - タグがor検索かand検索か
+     * @param perPage - 表示件数。指定がない場合は上限(1000件)。
+     * @param page - ページ番号。デフォルトは1。
+     * @param withTotal - 合計件数をレスポンスヘッダ(X-Total-Count)に含めるか。デフォルトはfalse。
+*/
+export const getApiV2TrainingSearch = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/training/search'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['idLower'] !== undefined) {
+    queryParameters['IdLower'] = parameters['idLower']
+  }
+  if (parameters['idUpper'] !== undefined) {
+    queryParameters['IdUpper'] = parameters['idUpper']
+  }
+  if (parameters['name'] !== undefined) {
+    queryParameters['Name'] = parameters['name']
+  }
+  if (parameters['nameOr'] !== undefined) {
+    queryParameters['NameOr'] = parameters['nameOr']
+  }
+  if (parameters['parentName'] !== undefined) {
+    queryParameters['ParentName'] = parameters['parentName']
+  }
+  if (parameters['parentNameOr'] !== undefined) {
+    queryParameters['ParentNameOr'] = parameters['parentNameOr']
+  }
+  if (parameters['startedAtLower'] !== undefined) {
+    queryParameters['StartedAtLower'] = parameters['startedAtLower']
+  }
+  if (parameters['startedAtUpper'] !== undefined) {
+    queryParameters['StartedAtUpper'] = parameters['startedAtUpper']
+  }
+  if (parameters['startedBy'] !== undefined) {
+    queryParameters['StartedBy'] = parameters['startedBy']
+  }
+  if (parameters['startedByOr'] !== undefined) {
+    queryParameters['StartedByOr'] = parameters['startedByOr']
+  }
+  if (parameters['dataSet'] !== undefined) {
+    queryParameters['DataSet'] = parameters['dataSet']
+  }
+  if (parameters['dataSetOr'] !== undefined) {
+    queryParameters['DataSetOr'] = parameters['dataSetOr']
+  }
+  if (parameters['memo'] !== undefined) {
+    queryParameters['Memo'] = parameters['memo']
+  }
+  if (parameters['memoOr'] !== undefined) {
+    queryParameters['MemoOr'] = parameters['memoOr']
+  }
+  if (parameters['status'] !== undefined) {
+    queryParameters['Status'] = parameters['status']
+  }
+  if (parameters['statusOr'] !== undefined) {
+    queryParameters['StatusOr'] = parameters['statusOr']
+  }
+  if (parameters['entryPoint'] !== undefined) {
+    queryParameters['EntryPoint'] = parameters['entryPoint']
+  }
+  if (parameters['entryPointOr'] !== undefined) {
+    queryParameters['EntryPointOr'] = parameters['entryPointOr']
+  }
+  if (parameters['tags'] !== undefined) {
+    queryParameters['Tags'] = parameters['tags']
+  }
+  if (parameters['tagsOr'] !== undefined) {
+    queryParameters['TagsOr'] = parameters['tagsOr']
+  }
+  if (parameters['perPage'] !== undefined) {
+    queryParameters['perPage'] = parameters['perPage']
+  }
+  if (parameters['page'] !== undefined) {
+    queryParameters['page'] = parameters['page']
+  }
+  if (parameters['withTotal'] !== undefined) {
+    queryParameters['withTotal'] = parameters['withTotal']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const getApiV2TrainingSearch_RAW_URL = function() {
+  return '/api/v2/training/search'
+}
+export const getApiV2TrainingSearch_TYPE = function() {
+  return 'get'
+}
+export const getApiV2TrainingSearchURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/training/search'
+  if (parameters['idLower'] !== undefined) {
+    queryParameters['IdLower'] = parameters['idLower']
+  }
+  if (parameters['idUpper'] !== undefined) {
+    queryParameters['IdUpper'] = parameters['idUpper']
+  }
+  if (parameters['name'] !== undefined) {
+    queryParameters['Name'] = parameters['name']
+  }
+  if (parameters['nameOr'] !== undefined) {
+    queryParameters['NameOr'] = parameters['nameOr']
+  }
+  if (parameters['parentName'] !== undefined) {
+    queryParameters['ParentName'] = parameters['parentName']
+  }
+  if (parameters['parentNameOr'] !== undefined) {
+    queryParameters['ParentNameOr'] = parameters['parentNameOr']
+  }
+  if (parameters['startedAtLower'] !== undefined) {
+    queryParameters['StartedAtLower'] = parameters['startedAtLower']
+  }
+  if (parameters['startedAtUpper'] !== undefined) {
+    queryParameters['StartedAtUpper'] = parameters['startedAtUpper']
+  }
+  if (parameters['startedBy'] !== undefined) {
+    queryParameters['StartedBy'] = parameters['startedBy']
+  }
+  if (parameters['startedByOr'] !== undefined) {
+    queryParameters['StartedByOr'] = parameters['startedByOr']
+  }
+  if (parameters['dataSet'] !== undefined) {
+    queryParameters['DataSet'] = parameters['dataSet']
+  }
+  if (parameters['dataSetOr'] !== undefined) {
+    queryParameters['DataSetOr'] = parameters['dataSetOr']
+  }
+  if (parameters['memo'] !== undefined) {
+    queryParameters['Memo'] = parameters['memo']
+  }
+  if (parameters['memoOr'] !== undefined) {
+    queryParameters['MemoOr'] = parameters['memoOr']
+  }
+  if (parameters['status'] !== undefined) {
+    queryParameters['Status'] = parameters['status']
+  }
+  if (parameters['statusOr'] !== undefined) {
+    queryParameters['StatusOr'] = parameters['statusOr']
+  }
+  if (parameters['entryPoint'] !== undefined) {
+    queryParameters['EntryPoint'] = parameters['entryPoint']
+  }
+  if (parameters['entryPointOr'] !== undefined) {
+    queryParameters['EntryPointOr'] = parameters['entryPointOr']
+  }
+  if (parameters['tags'] !== undefined) {
+    queryParameters['Tags'] = parameters['tags']
+  }
+  if (parameters['tagsOr'] !== undefined) {
+    queryParameters['TagsOr'] = parameters['tagsOr']
+  }
+  if (parameters['perPage'] !== undefined) {
+    queryParameters['perPage'] = parameters['perPage']
+  }
+  if (parameters['page'] !== undefined) {
+    queryParameters['page'] = parameters['page']
+  }
+  if (parameters['withTotal'] !== undefined) {
+    queryParameters['withTotal'] = parameters['withTotal']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
  * マウントする学習履歴を取得
  * request: getApiV2TrainingMount
  * url: getApiV2TrainingMountURL
@@ -10531,6 +10743,258 @@ export const getApiV2TrainingTagsURL = function(parameters = {}) {
   let queryParameters = {}
   const domain = parameters.$domain ? parameters.$domain : getDomain()
   let path = '/api/v2/training/tags'
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 指定したIdに対応したTagをつける。
+ * request: postApiV2TrainingTags
+ * url: postApiV2TrainingTagsURL
+ * method: postApiV2TrainingTags_TYPE
+ * raw_url: postApiV2TrainingTags_RAW_URL
+ * @param body - 付与タグの入力モデル
+ */
+export const postApiV2TrainingTags = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/training/tags'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('post', domain + path, body, queryParameters, form, config)
+}
+export const postApiV2TrainingTags_RAW_URL = function() {
+  return '/api/v2/training/tags'
+}
+export const postApiV2TrainingTags_TYPE = function() {
+  return 'post'
+}
+export const postApiV2TrainingTagsURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/training/tags'
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 指定したIdに対応したTagを消去する。
+ * request: deleteApiV2TrainingTags
+ * url: deleteApiV2TrainingTagsURL
+ * method: deleteApiV2TrainingTags_TYPE
+ * raw_url: deleteApiV2TrainingTags_RAW_URL
+ * @param body - 削除タグの入力モデル
+ */
+export const deleteApiV2TrainingTags = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/training/tags'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('delete', domain + path, body, queryParameters, form, config)
+}
+export const deleteApiV2TrainingTags_RAW_URL = function() {
+  return '/api/v2/training/tags'
+}
+export const deleteApiV2TrainingTags_TYPE = function() {
+  return 'delete'
+}
+export const deleteApiV2TrainingTagsURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/training/tags'
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 検索履歴の一覧を取得する
+ * request: getApiV2TrainingSearchHistory
+ * url: getApiV2TrainingSearchHistoryURL
+ * method: getApiV2TrainingSearchHistory_TYPE
+ * raw_url: getApiV2TrainingSearchHistory_RAW_URL
+ */
+export const getApiV2TrainingSearchHistory = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/training/search-history'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const getApiV2TrainingSearchHistory_RAW_URL = function() {
+  return '/api/v2/training/search-history'
+}
+export const getApiV2TrainingSearchHistory_TYPE = function() {
+  return 'get'
+}
+export const getApiV2TrainingSearchHistoryURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/training/search-history'
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 検索履歴を保存する
+ * request: postApiV2TrainingSearchHistory
+ * url: postApiV2TrainingSearchHistoryURL
+ * method: postApiV2TrainingSearchHistory_TYPE
+ * raw_url: postApiV2TrainingSearchHistory_RAW_URL
+ * @param body - 保存対象の検索履歴入力モデル
+ */
+export const postApiV2TrainingSearchHistory = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/training/search-history'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters['body'] !== undefined) {
+    body = parameters['body']
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('post', domain + path, body, queryParameters, form, config)
+}
+export const postApiV2TrainingSearchHistory_RAW_URL = function() {
+  return '/api/v2/training/search-history'
+}
+export const postApiV2TrainingSearchHistory_TYPE = function() {
+  return 'post'
+}
+export const postApiV2TrainingSearchHistoryURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/training/search-history'
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 検索履歴を削除する
+ * request: deleteApiV2TrainingSearchHistoryById
+ * url: deleteApiV2TrainingSearchHistoryByIdURL
+ * method: deleteApiV2TrainingSearchHistoryById_TYPE
+ * raw_url: deleteApiV2TrainingSearchHistoryById_RAW_URL
+ * @param id - 削除対象の検索履歴ID
+ */
+export const deleteApiV2TrainingSearchHistoryById = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/training/search-history/{id}'
+  let body
+  let queryParameters = {}
+  let form = {}
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters['id'] === undefined) {
+    return Promise.reject(new Error('Missing required  parameter: id'))
+  }
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('delete', domain + path, body, queryParameters, form, config)
+}
+export const deleteApiV2TrainingSearchHistoryById_RAW_URL = function() {
+  return '/api/v2/training/search-history/{id}'
+}
+export const deleteApiV2TrainingSearchHistoryById_TYPE = function() {
+  return 'delete'
+}
+export const deleteApiV2TrainingSearchHistoryByIdURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/training/search-history/{id}'
+  path = path.replace('{id}', `${parameters['id']}`)
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    })
+  }
+  let keys = Object.keys(queryParameters)
+  return domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '')
+}
+/**
+ * 検索時の補完に使用する項目を出力する
+ * request: getApiV2TrainingSearchFill
+ * url: getApiV2TrainingSearchFillURL
+ * method: getApiV2TrainingSearchFill_TYPE
+ * raw_url: getApiV2TrainingSearchFill_RAW_URL
+ */
+export const getApiV2TrainingSearchFill = function(parameters = {}) {
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  const config = parameters.$config
+  let path = '/api/v2/training/search/fill'
+  let body
+  let queryParameters = {}
+  let form = {}
+  if (parameters.$queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+      queryParameters[parameterName] = parameters.$queryParameters[parameterName]
+    });
+  }
+  return request('get', domain + path, body, queryParameters, form, config)
+}
+export const getApiV2TrainingSearchFill_RAW_URL = function() {
+  return '/api/v2/training/search/fill'
+}
+export const getApiV2TrainingSearchFill_TYPE = function() {
+  return 'get'
+}
+export const getApiV2TrainingSearchFillURL = function(parameters = {}) {
+  let queryParameters = {}
+  const domain = parameters.$domain ? parameters.$domain : getDomain()
+  let path = '/api/v2/training/search/fill'
   if (parameters.$queryParameters) {
     Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
       queryParameters[parameterName] = parameters.$queryParameters[parameterName]

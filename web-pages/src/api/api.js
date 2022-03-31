@@ -221,6 +221,7 @@ let api = {
   training: {
     getSimple: gen.getApiV2TrainingSimple,
     get: gen.getApiV2Training,
+    getSearch: gen.getApiV2TrainingSearch,
     post: gen.postApiV2TrainingRun,
     getById: gen.getApiV2TrainingById,
     deleteById: gen.deleteApiV2TrainingById,
@@ -239,6 +240,12 @@ let api = {
     getEventsById: gen.getApiV2TrainingByIdEvents,
     getMount: gen.getApiV2TrainingMount,
     getTags: gen.getApiV2TrainingTags,
+    postTags: gen.postApiV2TrainingTags,
+    deleteTags: gen.deleteApiV2TrainingTags,
+    getSearchHistory: gen.getApiV2TrainingSearchHistory,
+    postSearchHistory: gen.postApiV2TrainingSearchHistory,
+    deleteSearchHistoryById: gen.deleteApiV2TrainingSearchHistoryById,
+    getSearchFill: gen.getApiV2TrainingSearchFill,
   },
 
   notebook: {

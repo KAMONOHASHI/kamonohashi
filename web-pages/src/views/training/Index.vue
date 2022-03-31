@@ -8,7 +8,17 @@
         @change="retrieveData"
       />
       <el-col class="right-top-button" :span="8">
-        <el-button v-if="selections.length !== 0" @click="showDeleteConfirm">
+        <el-button
+          v-if="selections.length !== 0"
+          @click="updateTagDialogVisible = true"
+        >
+          タグ変更
+        </el-button>
+        <el-button
+          v-if="selections.length !== 0"
+          type="danger"
+          @click="showDeleteConfirm"
+        >
           一括削除
         </el-button>
         <el-button
@@ -20,15 +30,90 @@
           新規実行
         </el-button>
       </el-col>
+      <el-dialog :visible.sync="updateTagDialogVisible" title="タグ変更">
+        <el-form>
+          <el-form-item>
+            <el-col :span="24">
+              <multi-input v-model="tags" :registered-items="searchFill.tags" />
+            </el-col>
+          </el-form-item>
+        </el-form>
+        <div class="right-top-button">
+          <el-button type="primary" @click="updateTags('post')">
+            一括追加
+          </el-button>
+          <el-button type="danger" @click="updateTags('delete')">
+            一括削除
+          </el-button>
+        </div>
+        <el-table :data="selections">
+          <el-table-column prop="id" label="ID" width="120px" />
+          <el-table-column prop="name" label="学習名" width="120px" />
+          <el-table-column prop="createdAt" label="開始日時" width="200px" />
+          <el-table-column
+            prop="memo"
+            label="メモ"
+            width="auto"
+            class-name="memo-column"
+          />
+          <el-table-column prop="tag" label="タグ" width="120px">
+            <template slot-scope="scope">
+              <span
+                v-for="(tag, index) in scope.row.tags"
+                :key="index"
+                style="padding-left: 10px;"
+              >
+                <el-tag size="mini">
+                  {{ tag }}
+                </el-tag>
+              </span>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-dialog>
     </el-row>
     <el-row :gutter="20">
       <el-col class="search">
-        <kqi-smart-search-input
-          v-model="searchCondition"
-          :configs="searchConfigs"
-          @search="search"
-        />
+        <el-button type="button" @click="searchDialogVisible = true">
+          詳細検索
+        </el-button>
+        <el-select
+          v-model="searchConditionId"
+          clearable
+          placeholder="Select"
+          @change="selectSearchCondition"
+          @clear="clear"
+        >
+          <el-option
+            v-if="searchingFlg"
+            key="search"
+            label="(詳細検索中)"
+            value="search"
+          />
+          <el-option
+            v-for="item in searchHistories"
+            :key="item.id"
+            :label="`${item.id}:${item.name}`"
+            :value="item.id"
+          >
+            <span style="float: left">{{ item.id }}:{{ item.name }}</span>
+            <el-button
+              style="float: right; color: #8492a6; font-size: 13px"
+              size="mini"
+              @click.stop="clickDeleteSearchHistory(item)"
+            >
+              x
+            </el-button>
+          </el-option>
+        </el-select>
       </el-col>
+      <search
+        :search-dialog-visible="searchDialogVisible"
+        :search-form="searchForm"
+        @save="saveSearchCondition"
+        @search="search"
+        @close="searchDialogVisible = false"
+      />
     </el-row>
     <el-row>
       <el-table
@@ -129,7 +214,8 @@
 
 <script>
 import KqiPagination from '@/components/KqiPagination'
-import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index'
+import Search from './Search'
+import MultiInput from './MultiInput'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('training')
 
@@ -137,16 +223,48 @@ export default {
   title: '学習管理',
   components: {
     KqiPagination,
-    KqiSmartSearchInput,
+    Search,
+    MultiInput,
   },
   data() {
     return {
+      searchingFlg: false,
+      updateTagDialogVisible: false,
+      searchDialogVisible: false,
+      saveSearchFormDialogVisible: false,
+      selectBoxVisible: false, // 新規タグの入力エリアの表示有無
+      tagValue: '', // 新規タグの入力値
+      searchForm: {
+        idLower: '',
+        idUpper: '',
+        name: [],
+        nameOr: true,
+        parentName: [],
+        parentNameOr: true,
+        startedAtLower: '',
+        startedAtUpper: '',
+        startedBy: [],
+        startedByOr: true,
+        dataSet: [],
+        dataSetOr: true,
+        memo: [],
+        memoOr: true,
+        status: [],
+        statusOr: true,
+        entryPoint: [],
+        entryPointOr: true,
+        tags: [],
+        tagsOr: true,
+      },
+      tags: [],
+      options: [],
       pageStatus: {
         currentPage: 1,
         currentPageSize: 10,
       },
       selections: [],
-      searchCondition: {},
+      searchConditionId: null,
+      searchCondition: null,
       searchConfigs: [
         { prop: 'id', name: 'ID', type: 'number' },
         { prop: 'name', name: '学習名', type: 'text' },
@@ -184,23 +302,216 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['histories', 'total']),
+    ...mapGetters(['histories', 'total', 'searchHistories', 'searchFill']),
   },
   async created() {
     await this.retrieveData()
   },
   methods: {
-    ...mapActions(['fetchHistories', 'delete']),
+    ...mapActions([
+      'fetchHistories',
+      'delete',
+      'fetchTrainHistories',
+      'fetchSearchHistories',
+      'fetchSearchFill',
+      'postSearchHistory',
+      'deleteSearchHistory',
+      'postTags',
+      'deleteTags',
+    ]),
     async retrieveData() {
-      let params = this.searchCondition
+      let params
+      if (this.searchCondition == null) {
+        params = {}
+      } else {
+        params = this.searchCondition.searchDetail
+      }
       params.page = this.pageStatus.currentPage
       params.perPage = this.pageStatus.currentPageSize
       params.withTotal = true
-      await this.fetchHistories(params)
+      await this.fetchTrainHistories(params)
+      await this.fetchSearchHistories()
+      await this.fetchSearchFill()
     },
+
+    clear() {
+      this.searchConditionId = null
+      this.searchForm = {
+        idLower: '',
+        idUpper: '',
+        name: [],
+        nameOr: true,
+        parentName: [],
+        parentNameOr: true,
+        startedAtLower: '',
+        startedAtUpper: '',
+        startedBy: [],
+        startedByOr: true,
+        dataSet: [],
+        dataSetOr: true,
+        memo: [],
+        memoOr: true,
+        status: [],
+        statusOr: true,
+        entryPoint: [],
+        entryPointOr: true,
+        tags: [],
+        tagsOr: true,
+      }
+      this.searchCondition = {
+        searchDetail: this.changeSearchFormListToString(),
+      }
+      this.searchingFlg = false
+    },
+
     async search() {
       this.pageStatus.currentPage = 1
+      this.searchDialogVisible = false
+      this.searchCondition = {
+        searchDetail: this.changeSearchFormListToString(),
+      }
       await this.retrieveData()
+      this.searchConditionId = 'search'
+
+      this.searchingFlg = true
+    },
+
+    changeSearchFormStringToList(item) {
+      let form = {
+        idLower: item.idLower,
+        idUpper: item.idUpper,
+        name: this.changeStringToList(item.name),
+        nameOr: item.nameOr,
+        parentName: this.changeStringToList(item.parentName),
+        parentNameOr: item.parentNameOr,
+        startedAtLower: item.startedAtLower,
+        startedAtUpper: item.startedAtUpper,
+        startedBy: this.changeStringToList(item.startedBy),
+        startedByOr: item.startedByOr,
+        dataSet: this.changeStringToList(item.dataSet),
+        dataSetOr: item.dataSetOr,
+        memo: this.changeStringToList(item.memo),
+        memoOr: item.memoOr,
+        status: this.changeStringToList(item.status),
+        statusOr: item.statusOr,
+        entryPoint: this.changeStringToList(item.entryPoint),
+        entryPointOr: item.entryPointOr,
+        tags: this.changeStringToList(item.tags),
+        tagsOr: item.tagsOr,
+      }
+      return form
+    },
+    changeStringToList(str) {
+      if (str == null || str.length == 0) {
+        return []
+      }
+      let strs = str.split(',')
+      let list = []
+      for (let i in strs) {
+        list.push(strs[i])
+      }
+      return list
+    },
+
+    changeSearchFormListToString() {
+      let form = {
+        idLower: this.searchForm.idLower,
+        idUpper: this.searchForm.idUpper,
+        name: this.changeListToString(this.searchForm.name),
+        nameOr: this.searchForm.nameOr,
+        parentName: this.changeListToString(this.searchForm.parentName),
+        parentNameOr: this.searchForm.parentNameOr,
+        startedAtLower: this.searchForm.startedAtLower,
+        startedAtUpper: this.searchForm.startedAtUpper,
+        startedBy: this.changeListToString(this.searchForm.startedBy),
+        startedByOr: this.searchForm.startedByOr,
+        dataSet: this.changeListToString(this.searchForm.dataSet),
+        dataSetOr: this.searchForm.dataSetOr,
+        memo: this.changeListToString(this.searchForm.memo),
+        memoOr: this.searchForm.memoOr,
+        status: this.changeListToString(this.searchForm.status),
+        statusOr: this.searchForm.statusOr,
+        entryPoint: this.changeListToString(this.searchForm.entryPoint),
+        entryPointOr: this.searchForm.entryPointOr,
+        tags: this.changeListToString(this.searchForm.tags),
+        tagsOr: this.searchForm.tagsOr,
+      }
+      return form
+    },
+
+    changeListToString(list) {
+      if (list == null || list.length == 0) {
+        return null
+      }
+      let str = ''
+      for (let i in list) {
+        if (i == 0) {
+          str = str + list[i]
+        } else {
+          str = str + ',' + list[i]
+        }
+      }
+      return str
+    },
+
+    async saveSearchCondition() {
+      await this.fetchSearchHistories()
+    },
+    async selectSearchCondition() {
+      let params = {}
+      this.searchCondition = null
+      for (let i in this.searchHistories) {
+        if (this.searchConditionId == this.searchHistories[i].id) {
+          this.searchCondition = this.searchHistories[i]
+        }
+      }
+
+      if (
+        this.searchCondition != null &&
+        this.searchCondition.searchDetail != null
+      ) {
+        params = this.searchCondition.searchDetail
+        this.searchForm = this.changeSearchFormStringToList(
+          this.searchCondition.searchDetail,
+        )
+      }
+      params.page = this.pageStatus.currentPage
+      params.perPage = this.pageStatus.currentPageSize
+      params.withTotal = true
+      await this.fetchTrainHistories(params)
+      this.searchForm = this.changeSearchFormStringToList(
+        this.searchCondition.searchDetail,
+      )
+      this.searchingFlg = false
+    },
+
+    async clickDeleteSearchHistory(item) {
+      // 選択中の検索履歴を削除したとき
+      if (this.searchConditionId == item.id) {
+        this.searchConditionId = 'search'
+        this.searchingFlg = true
+      }
+      await this.deleteSearchHistory(item.id)
+      await this.fetchSearchHistories()
+    },
+
+    async updateTags(type) {
+      let ids = []
+      for (let i in this.selections) {
+        ids.push(this.selections[i].id)
+      }
+      let params = { id: ids, tags: this.tags }
+
+      if (type === 'post') {
+        await this.postTags(params)
+      } else if (type === 'delete') {
+        await this.deleteTags({ data: params })
+      }
+
+      this.tags = []
+      this.retrieveData()
+      this.updateTagDialogVisible = false
+      this.showSuccessMessage()
     },
 
     handleSelectionChange(val) {

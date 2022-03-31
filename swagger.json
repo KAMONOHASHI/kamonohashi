@@ -7495,6 +7495,179 @@
         ]
       }
     },
+    "/api/v2/training/search": {
+      "get": {
+        "tags": [
+          "Training"
+        ],
+        "summary": "指定された条件でページングされた状態で、全学習履歴を取得。詳細検索で使用。",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "IdLower",
+            "description": "IDの検索条件。\r\nこの数値以上のIDが検索される。",
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "in": "query",
+            "name": "IdUpper",
+            "description": "IDの検索条件。\r\nこの数値以下のIDが検索される。",
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "in": "query",
+            "name": "Name",
+            "description": "名前\r\n複数のワードが含まれる場合は\",\"区切り",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "NameOr",
+            "description": "名前がor検索かand検索か",
+            "type": "boolean"
+          },
+          {
+            "in": "query",
+            "name": "ParentName",
+            "description": "親学習名\r\n複数のワードが含まれる場合は\",\"区切り",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "ParentNameOr",
+            "description": "親学習名がor検索かand検索か",
+            "type": "boolean"
+          },
+          {
+            "in": "query",
+            "name": "StartedAtLower",
+            "description": "実行時刻の検索の期間の開始の条件。日付の形式。\r\n\"2018/01/01\" → 2018/01/01 00:00:00 以降が検索される。",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "StartedAtUpper",
+            "description": "実行時刻の検索の期間の終了の条件。日付の形式。\r\n\"2018/01/01\" → 2018/01/01 23:59:59 以前が検索される。",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "StartedBy",
+            "description": "実行者\r\n複数のワードが含まれる場合は\",\"区切り",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "StartedByOr",
+            "description": "実行者の検索がor検索かand検索か",
+            "type": "boolean"
+          },
+          {
+            "in": "query",
+            "name": "DataSet",
+            "description": "データセット名\r\n複数のワードが含まれる場合は\",\"区切り",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "DataSetOr",
+            "description": "データセット名がor検索かand検索か",
+            "type": "boolean"
+          },
+          {
+            "in": "query",
+            "name": "Memo",
+            "description": "メモ\r\n複数のワードが含まれる場合は\",\"区切り",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "MemoOr",
+            "description": "メモがor検索かand検索か",
+            "type": "boolean"
+          },
+          {
+            "in": "query",
+            "name": "Status",
+            "description": "ステータス\r\n複数のワードが含まれる場合は\",\"区切り",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "StatusOr",
+            "description": "ステータスがor検索かand検索か",
+            "type": "boolean"
+          },
+          {
+            "in": "query",
+            "name": "EntryPoint",
+            "description": "実行コマンド\r\n複数のワードが含まれる場合は\",\"区切り",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "EntryPointOr",
+            "description": "実行コマンドがor検索かand検索か",
+            "type": "boolean"
+          },
+          {
+            "in": "query",
+            "name": "Tags",
+            "description": "タグ\r\n複数のワードが含まれる場合は\",\"区切り",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "TagsOr",
+            "description": "タグがor検索かand検索か",
+            "type": "boolean"
+          },
+          {
+            "in": "query",
+            "name": "perPage",
+            "description": "表示件数。指定がない場合は上限(1000件)。",
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "description": "ページ番号。デフォルトは1。",
+            "type": "integer",
+            "format": "int32",
+            "default": 1
+          },
+          {
+            "in": "query",
+            "name": "withTotal",
+            "description": "合計件数をレスポンスヘッダ(X-Total-Count)に含めるか。デフォルトはfalse。",
+            "type": "boolean",
+            "default": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Nssol.Platypus.ApiModels.TrainingApiModels.IndexOutputModel"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": [ ]
+          }
+        ]
+      }
+    },
     "/api/v2/training/mount": {
       "get": {
         "tags": [
@@ -8154,6 +8327,205 @@
               "items": {
                 "type": "string"
               }
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": [ ]
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Training"
+        ],
+        "summary": "指定したIdに対応したTagをつける。",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "付与タグの入力モデル",
+            "schema": {
+              "$ref": "#/definitions/Nssol.Platypus.ApiModels.TrainingApiModels.TagsInputModel"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Success",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Nssol.Platypus.ApiModels.TrainingApiModels.IndexOutputModel"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": [ ]
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Training"
+        ],
+        "summary": "指定したIdに対応したTagを消去する。",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "削除タグの入力モデル",
+            "schema": {
+              "$ref": "#/definitions/Nssol.Platypus.ApiModels.TrainingApiModels.TagsInputModel"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Nssol.Platypus.ApiModels.TrainingApiModels.IndexOutputModel"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": [ ]
+          }
+        ]
+      }
+    },
+    "/api/v2/training/search-history": {
+      "get": {
+        "tags": [
+          "Training"
+        ],
+        "summary": "検索履歴の一覧を取得する",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Nssol.Platypus.ApiModels.TrainingApiModels.SearchHistoryOutputModel"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": [ ]
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Training"
+        ],
+        "summary": "検索履歴を保存する",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "保存対象の検索履歴入力モデル",
+            "schema": {
+              "$ref": "#/definitions/Nssol.Platypus.ApiModels.TrainingApiModels.SearchHistoryInputModel"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Nssol.Platypus.ApiModels.TrainingApiModels.SearchHistoryOutputModel"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": [ ]
+          }
+        ]
+      }
+    },
+    "/api/v2/training/search-history/{id}": {
+      "delete": {
+        "tags": [
+          "Training"
+        ],
+        "summary": "検索履歴を削除する",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "削除対象の検索履歴ID",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {
+            "api_key": [ ]
+          }
+        ]
+      }
+    },
+    "/api/v2/training/search/fill": {
+      "get": {
+        "tags": [
+          "Training"
+        ],
+        "summary": "検索時の補完に使用する項目を出力する",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/Nssol.Platypus.ApiModels.TrainingApiModels.TrainingSearchFillOutputModel"
             }
           }
         },
@@ -13881,6 +14253,145 @@
         }
       }
     },
+    "Nssol.Platypus.ApiModels.TrainingApiModels.SearchDetailInputModel": {
+      "description": "詳細検索の入力モデル。",
+      "type": "object",
+      "properties": {
+        "idLower": {
+          "format": "int64",
+          "description": "IDの検索条件。\r\nこの数値以上のIDが検索される。",
+          "type": "integer"
+        },
+        "idUpper": {
+          "format": "int64",
+          "description": "IDの検索条件。\r\nこの数値以下のIDが検索される。",
+          "type": "integer"
+        },
+        "name": {
+          "description": "名前\r\n複数のワードが含まれる場合は\",\"区切り",
+          "type": "string"
+        },
+        "nameOr": {
+          "description": "名前がor検索かand検索か",
+          "type": "boolean"
+        },
+        "parentName": {
+          "description": "親学習名\r\n複数のワードが含まれる場合は\",\"区切り",
+          "type": "string"
+        },
+        "parentNameOr": {
+          "description": "親学習名がor検索かand検索か",
+          "type": "boolean"
+        },
+        "startedAtLower": {
+          "description": "実行時刻の検索の期間の開始の条件。日付の形式。\r\n\"2018/01/01\" → 2018/01/01 00:00:00 以降が検索される。",
+          "type": "string"
+        },
+        "startedAtUpper": {
+          "description": "実行時刻の検索の期間の終了の条件。日付の形式。\r\n\"2018/01/01\" → 2018/01/01 23:59:59 以前が検索される。",
+          "type": "string"
+        },
+        "startedBy": {
+          "description": "実行者\r\n複数のワードが含まれる場合は\",\"区切り",
+          "type": "string"
+        },
+        "startedByOr": {
+          "description": "実行者の検索がor検索かand検索か",
+          "type": "boolean"
+        },
+        "dataSet": {
+          "description": "データセット名\r\n複数のワードが含まれる場合は\",\"区切り",
+          "type": "string"
+        },
+        "dataSetOr": {
+          "description": "データセット名がor検索かand検索か",
+          "type": "boolean"
+        },
+        "memo": {
+          "description": "メモ\r\n複数のワードが含まれる場合は\",\"区切り",
+          "type": "string"
+        },
+        "memoOr": {
+          "description": "メモがor検索かand検索か",
+          "type": "boolean"
+        },
+        "status": {
+          "description": "ステータス\r\n複数のワードが含まれる場合は\",\"区切り",
+          "type": "string"
+        },
+        "statusOr": {
+          "description": "ステータスがor検索かand検索か",
+          "type": "boolean"
+        },
+        "entryPoint": {
+          "description": "実行コマンド\r\n複数のワードが含まれる場合は\",\"区切り",
+          "type": "string"
+        },
+        "entryPointOr": {
+          "description": "実行コマンドがor検索かand検索か",
+          "type": "boolean"
+        },
+        "tags": {
+          "description": "タグ\r\n複数のワードが含まれる場合は\",\"区切り",
+          "type": "string"
+        },
+        "tagsOr": {
+          "description": "タグがor検索かand検索か",
+          "type": "boolean"
+        }
+      }
+    },
+    "Nssol.Platypus.ApiModels.TrainingApiModels.SearchHistoryInputModel": {
+      "description": "検索履歴入力モデル",
+      "required": [
+        "name"
+      ],
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "検索履歴の名前",
+          "minLength": 4,
+          "type": "string"
+        },
+        "searchDetailInputModel": {
+          "$ref": "#/definitions/Nssol.Platypus.ApiModels.TrainingApiModels.SearchDetailInputModel"
+        }
+      }
+    },
+    "Nssol.Platypus.ApiModels.TrainingApiModels.SearchHistoryOutputModel": {
+      "description": "検索履歴出力モデル",
+      "type": "object",
+      "properties": {
+        "createdBy": {
+          "description": "登録者",
+          "type": "string"
+        },
+        "createdAt": {
+          "description": "登録日",
+          "type": "string"
+        },
+        "modifiedBy": {
+          "description": "更新者",
+          "type": "string"
+        },
+        "modifiedAt": {
+          "description": "更新日",
+          "type": "string"
+        },
+        "name": {
+          "description": "履歴の登録名",
+          "type": "string"
+        },
+        "id": {
+          "format": "int64",
+          "description": "履歴のid",
+          "type": "integer"
+        },
+        "searchDetail": {
+          "$ref": "#/definitions/Nssol.Platypus.ApiModels.TrainingApiModels.SearchDetailInputModel"
+        }
+      }
+    },
     "Nssol.Platypus.ApiModels.TrainingApiModels.SimpleOutputModel": {
       "description": "学習履歴のうち、コスト最小で取得できる情報だけを保持する",
       "type": "object",
@@ -13933,6 +14444,31 @@
         }
       }
     },
+    "Nssol.Platypus.ApiModels.TrainingApiModels.TagsInputModel": {
+      "description": "付与または削除するタグ入力モデル",
+      "required": [
+        "id",
+        "tags"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "タグを付与、または、削除したい対象の学習履歴のId",
+          "type": "array",
+          "items": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "tags": {
+          "description": "付与、または、削除したいタグ",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "Nssol.Platypus.ApiModels.TrainingApiModels.TensorBoardInputModel": {
       "description": "TensorBoard起動モデル",
       "type": "object",
@@ -13982,6 +14518,40 @@
           "items": {
             "format": "int64",
             "type": "integer"
+          }
+        }
+      }
+    },
+    "Nssol.Platypus.ApiModels.TrainingApiModels.TrainingSearchFillOutputModel": {
+      "description": "学習検索項目補完出力モデル",
+      "type": "object",
+      "properties": {
+        "createdBy": {
+          "description": "実行者名の一覧",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "status": {
+          "description": "ステータスの一覧",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "tags": {
+          "description": "タグの一覧",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "datasets": {
+          "description": "データセットの補完",
+          "type": "array",
+          "items": {
+            "type": "string"
           }
         }
       }
