@@ -157,6 +157,7 @@
     <el-dialog
       :visible.sync="saveSearchFormDialogVisible"
       title="検索条件の保存"
+      :before-close="closeDialog"
     >
       <el-form>
         <el-form-item label="登録名">
@@ -257,7 +258,11 @@ export default {
     close() {
       this.$emit('close')
     },
-
+    closeDialog() {
+      this.error = null
+      this.searchConditionName = null
+      this.saveSearchFormDialogVisible = false
+    },
     search() {
       this.$emit('search')
     },
