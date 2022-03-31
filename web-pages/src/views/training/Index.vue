@@ -30,7 +30,7 @@
         <el-form>
           <el-form-item>
             <el-col :span="24">
-              <multi-input v-model="tags" />
+              <multi-input v-model="tags" :registered-items="searchFill.tags" />
             </el-col>
           </el-form-item>
         </el-form>
@@ -298,7 +298,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['histories', 'total', 'searchHistories']),
+    ...mapGetters(['histories', 'total', 'searchHistories', 'searchFill']),
   },
   async created() {
     await this.retrieveData()
