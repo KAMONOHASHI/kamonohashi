@@ -89,7 +89,7 @@
           <el-option
             v-for="item in searchHistories"
             :key="item.id"
-            :label="item.name"
+            :label="`${item.id}:${item.name}`"
             :value="item.id"
           >
             <span style="float: left">{{ item.id }}:{{ item.name }}</span>
@@ -480,6 +480,11 @@ export default {
     },
 
     async clickDeleteSearchHistory(item) {
+      // 選択中の検索履歴を削除したとき
+      if (this.searchConditionId === item.id) {
+        this.searchConditionId = 'search'
+        this.searchingFlg = true
+      }
       await this.deleteSearchHistory(item.id)
       await this.fetchSearchHistories()
     },
@@ -500,6 +505,7 @@ export default {
       this.tags = []
       this.retrieveData()
       this.updateTagDialogVisible = false
+      this.showSuccessMessage()
     },
 
     handleSelectionChange(val) {
