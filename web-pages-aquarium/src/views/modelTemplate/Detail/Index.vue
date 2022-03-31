@@ -1,9 +1,9 @@
 <template>
   <div>
     <el-row>
-      <el-col :span="12"
-        ><h2>テンプレート詳細＞ {{ detail.name }}</h2></el-col
-      >
+      <el-col :span="12">
+        <h2>テンプレート詳細＞ {{ detail.name }}</h2>
+      </el-col>
       <el-col :span="12" style="padding-top:15px">
         <el-select
           v-model="versionValue"
@@ -29,9 +29,10 @@
           v-if="preprocForm"
           ref="preprocessing"
           v-model="preprocForm"
-          :create-teplate="false"
+          :create-template="false"
           :required-form="false"
           :form-type="'前処理'"
+          @copy="copyAqContainer"
         />
       </el-tab-pane>
       <el-tab-pane label="学習" name="train">
@@ -39,9 +40,10 @@
           v-if="trainingForm"
           ref="training"
           v-model="trainingForm"
-          :create-teplate="false"
+          :create-template="false"
           :required-form="true"
           :form-type="'学習'"
+          @copy="copyAqContainer"
         />
       </el-tab-pane>
       <el-tab-pane label="推論" name="evaluation">
@@ -49,9 +51,10 @@
           v-if="evaluationForm"
           ref="evaluation"
           v-model="evaluationForm"
-          :create-teplate="false"
+          :create-template="false"
           :required-form="false"
           :form-type="'推論'"
+          @copy="copyAqContainer"
         />
       </el-tab-pane>
     </el-tabs>
@@ -186,6 +189,34 @@ export default {
       'delete',
       'deleteVersion',
     ]),
+    copyAqContainer(info) {
+      let from = info.from
+      let to = info.to
+      let fromData = null
+      if (from == 'preprocessing') {
+        fromData = this.preprocForm
+      } else if (from == 'train') {
+        fromData = this.trainingForm
+      } else if (from == 'evaluation') {
+        fromData = this.evaluationForm
+      }
+      if (to == 'preprocessing') {
+        this.preprocForm = Object.assign(
+          {},
+          JSON.parse(JSON.stringify(fromData)),
+        )
+      } else if (to == 'train') {
+        this.trainingForm = Object.assign(
+          {},
+          JSON.parse(JSON.stringify(fromData)),
+        )
+      } else if (to == 'evaluation') {
+        this.evaluationForm = Object.assign(
+          {},
+          JSON.parse(JSON.stringify(fromData)),
+        )
+      }
+    },
 
     tabChange() {
       let version = this.$route.query.version

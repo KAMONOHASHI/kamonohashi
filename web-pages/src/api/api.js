@@ -113,6 +113,7 @@ let api = {
   role: {
     admin: {
       get: gen.getApiV2AdminRoles,
+      getTenantCommonRoles: gen.getApiV2AdminTenantCommonRoles,
       post: gen.postApiV2AdminRoles,
       getById: gen.getApiV2AdminRolesById,
       put: gen.putApiV2AdminRolesById,
@@ -315,6 +316,7 @@ let api = {
       delete: gen.deleteApiV2AdminUsersById,
       put: gen.putApiV2AdminUsersById,
       putPassword: simpleStringBody(gen.putApiV2AdminUsersByIdPassword, 'body'),
+      postSyncLdap: gen.postApiV2AdminUsersSyncLdap,
     },
 
     tenant: {
@@ -324,6 +326,17 @@ let api = {
       putRoles: gen.putApiV2TenantUsersByIdRoles,
     },
   },
+
+  userGroup: {
+    admin: {
+      get: gen.getApiV2AdminUsergroup,
+      getById: gen.getApiV2AdminUsergroupById,
+      post: gen.postApiV2AdminUsergroup,
+      put: gen.putApiV2AdminUsergroupById,
+      delete: gen.deleteApiV2AdminUsergroupById,
+    },
+  },
+
   version: {
     get: gen.getApiV2Version,
   },

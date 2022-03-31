@@ -20,6 +20,7 @@ import storage from './modules/storage'
 import tenant from './modules/tenant'
 import training from './modules/training'
 import user from './modules/user'
+import userGroup from './modules/userGroup'
 import version from './modules/version'
 
 Vue.use(Vuex)
@@ -45,6 +46,7 @@ export default new Vuex.Store({
     tenant,
     training,
     user,
+    userGroup,
     version,
   },
   state: {

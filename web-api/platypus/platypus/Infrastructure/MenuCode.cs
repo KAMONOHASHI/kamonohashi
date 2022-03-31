@@ -100,6 +100,10 @@
         /// </summary>
         User,
         /// <summary>
+        /// ユーザグループ管理
+        /// </summary>
+        UserGroup,
+        /// <summary>
         /// ノード管理
         /// </summary>
         Node,

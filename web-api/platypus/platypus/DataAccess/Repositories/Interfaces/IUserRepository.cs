@@ -73,9 +73,38 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces
         IEnumerable<User> GetUsers(long tenantId);
 
         /// <summary>
+        /// 指定したテナントにLDAP経由で所属しているユーザを取得する。
+        /// テナントIDの存在チェックは行わない。
+        /// </summary>
+        /// <param name="tenantId">テナントID</param>
+        IEnumerable<User> GetLdapUsers(long tenantId);
+
+        /// <summary>
+        /// 指定したユーザが所属しているLDAPで参加したテナントを取得する。
+        /// </summary>
+        /// <param name="userId">ユーザID</param>
+        IEnumerable<Tenant> GetTenantByUser(long userId);
+
+        /// <summary>
         /// 指定したユーザが当該テナントに所属しているか
         /// </summary>
+        /// <param name="userId">ユーザID</param>
+        /// <param name="tenantId">テナントID</param>
         Task<bool> IsMemberAsync(long userId, long tenantId);
+
+        /// <summary>
+        /// 指定したユーザが当該テナントにKQI経由で所属しているか
+        /// </summary>
+        /// <param name="userId">ユーザID</param>
+        /// <param name="tenantId">テナントID</param>
+        bool IsOriginMember(long userId, long tenantId);
+
+        /// <summary>
+        /// 指定したユーザが所属しているテナントを取得する。
+        /// </summary>
+        /// <param name="userId">ユーザID</param>
+        /// <param name="tenantId">テナントID</param>
+        public UserTenantMap FindUserTenantMap(long userId, long tenantId);
 
         /// <summary>
         /// ユーザをテナントに所属させる。
@@ -85,17 +114,49 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces
         /// <param name="user">対象ユーザ</param>
         /// <param name="tenantId">対象テナントID</param>
         /// <param name="roles">テナントロール</param>
+        /// <param name="isOrigin">KQI上での紐づけならtrue</param>
+        /// <param name="userGroupIds">ユーザグループIDs</param>
         /// <exception cref="ArgumentException"><paramref name="roles"/>にシステムロールが含まれていたり、別テナント用のロールが含まれていた場合</exception>
-        IEnumerable<UserTenantRegistryMap> AttachTenant(User user, long tenantId, IEnumerable<Role> roles);
+        IEnumerable<UserTenantRegistryMap> AttachTenant(User user, long tenantId, IEnumerable<Role> roles, bool isOrigin, List<long> userGroupIds);
+
+        /// <summary>
+        /// すでにユーザがテナントに所属しているときテナント所属情報を更新する。
+        /// ユーザIDやテナントIDの存在チェックは行わない。
+        /// 結果として、作成したすべての<see cref="UserTenantRegistryMap"/>を返す。
+        /// </summary>
+        /// <param name="user">対象ユーザ</param>
+        /// <param name="tenantId">対象テナントID</param>
+        /// <param name="roles">テナントロール</param>
+        /// <param name="isOrigin">KQI上での紐づけならtrue</param>
+        /// <param name="userGroupIds">ユーザグループIDs</param>
+        /// <exception cref="ArgumentException"><paramref name="roles"/>にシステムロールが含まれていたり、別テナント用のロールが含まれていた場合</exception>
+        IEnumerable<UserTenantRegistryMap> UpdateTenant(User user, long tenantId, IEnumerable<Role> roles, bool isOrigin, List<long> userGroupIds);
 
         /// <summary>
         /// ユーザをテナントから外す。
         /// ユーザIDやテナントIDの存在チェック、および所属済みかのチェックは行わない。
         /// </summary>
-        /// <param name="userId">対象ユーザID</param>
+        /// <remarks>デフォルトテナントを外す場合は、デフォルトテナントの付け替えを行う。</remarks>
+        /// <param name="user">対象ユーザ</param>
         /// <param name="tenantId">対象テナントID</param>
         /// <param name="temporary">一時的な削除で再度紐づけなおす場合はtrue</param>
-        void DetachTenant(long userId, long tenantId, bool temporary);
+        void DetachTenant(User user, long tenantId, bool temporary);
+
+        /// <summary>
+        /// 指定したユーザとテナントのマップからKQIとの紐づけを解除する。
+        /// </summary>
+        /// <param name="user">>対象ユーザ</param>
+        /// <param name="tenantId">対象テナントID</param>
+        void DetachOriginTenant(User user, long tenantId);
+
+        /// <summary>
+        /// 指定したユーザとテナントのマップから指定したユーザグループとの紐づけを解除する。
+        /// ユーザグループとの紐づけがなくなった場合はテナントから脱退する。
+        /// </summary>
+        /// <param name="user">対象ユーザ</param>
+        /// <param name="tenantId">対象テナントID</param>
+        /// <param name="userGroupId">対象ユーザグループID</param>
+        void DetachUserGroup(User user, long tenantId, long userGroupId);
 
         /// <summary>
         /// 指定したテナントについて、ユーザのロールを変更する。
@@ -104,8 +165,16 @@ namespace Nssol.Platypus.DataAccess.Repositories.Interfaces
         /// <param name="userId">対象ユーザID</param>
         /// <param name="tenantId">対象テナントID</param>
         /// <param name="roles">テナントロール</param>
+        /// <param name="isOrigin">KQI上での紐づけならtrue</param>
         /// <exception cref="ArgumentException"><paramref name="roles"/>にシステムロールが含まれていたり、別テナント用のロールが含まれていた場合</exception>
-        void ChangeTenantRole(long userId, long tenantId, IEnumerable<Role> roles);
+        void ChangeTenantRole(long userId, long tenantId, IEnumerable<Role> roles, bool isOrigin);
+
+        /// <summary>
+        /// 指定したテナントについて、ユーザのLDAP経由で付与されたロール情報を更新する。
+        /// </summary>
+        /// <param name="userId">>対象ユーザID</param>
+        /// <param name="tenantId">対象テナントID</param>
+        void UpdateLdapRole(long userId, long tenantId);
 
         /// <summary>
         /// 指定したユーザ、テナントに対するクラスタトークンを取得する

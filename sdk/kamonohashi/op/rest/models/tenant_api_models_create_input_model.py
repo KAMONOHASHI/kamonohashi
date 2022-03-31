@@ -38,7 +38,8 @@ class TenantApiModelsCreateInputModel(object):
         'git_ids': 'list[int]',
         'registry_ids': 'list[int]',
         'storage_id': 'int',
-        'tenant_name': 'str'
+        'tenant_name': 'str',
+        'user_group_ids': 'list[int]'
     }
 
     attribute_map = {
@@ -49,10 +50,11 @@ class TenantApiModelsCreateInputModel(object):
         'git_ids': 'gitIds',
         'registry_ids': 'registryIds',
         'storage_id': 'storageId',
-        'tenant_name': 'tenantName'
+        'tenant_name': 'tenantName',
+        'user_group_ids': 'userGroupIds'
     }
 
-    def __init__(self, available_infinite_time_notebook=None, default_git_id=None, default_registry_id=None, display_name=None, git_ids=None, registry_ids=None, storage_id=None, tenant_name=None):  # noqa: E501
+    def __init__(self, available_infinite_time_notebook=None, default_git_id=None, default_registry_id=None, display_name=None, git_ids=None, registry_ids=None, storage_id=None, tenant_name=None, user_group_ids=None):  # noqa: E501
         """TenantApiModelsCreateInputModel - a model defined in Swagger"""  # noqa: E501
 
         self._available_infinite_time_notebook = None
@@ -63,6 +65,7 @@ class TenantApiModelsCreateInputModel(object):
         self._registry_ids = None
         self._storage_id = None
         self._tenant_name = None
+        self._user_group_ids = None
         self.discriminator = None
 
         if available_infinite_time_notebook is not None:
@@ -76,6 +79,8 @@ class TenantApiModelsCreateInputModel(object):
         self.registry_ids = registry_ids
         self.storage_id = storage_id
         self.tenant_name = tenant_name
+        if user_group_ids is not None:
+            self.user_group_ids = user_group_ids
 
     @property
     def available_infinite_time_notebook(self):
@@ -256,6 +261,27 @@ class TenantApiModelsCreateInputModel(object):
             raise ValueError(r"Invalid value for `tenant_name`, must be a follow pattern or equal to `/^[a-z]([-a-z0-9]*[a-z0-9])?$/`")  # noqa: E501
 
         self._tenant_name = tenant_name
+
+    @property
+    def user_group_ids(self):
+        """Gets the user_group_ids of this TenantApiModelsCreateInputModel.  # noqa: E501
+
+
+        :return: The user_group_ids of this TenantApiModelsCreateInputModel.  # noqa: E501
+        :rtype: list[int]
+        """
+        return self._user_group_ids
+
+    @user_group_ids.setter
+    def user_group_ids(self, user_group_ids):
+        """Sets the user_group_ids of this TenantApiModelsCreateInputModel.
+
+
+        :param user_group_ids: The user_group_ids of this TenantApiModelsCreateInputModel.  # noqa: E501
+        :type: list[int]
+        """
+
+        self._user_group_ids = user_group_ids
 
     def to_dict(self):
         """Returns the model properties as a dict"""

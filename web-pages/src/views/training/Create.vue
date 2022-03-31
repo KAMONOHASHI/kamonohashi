@@ -22,6 +22,7 @@
             <kqi-data-set-selector
               v-model="form.dataSetId"
               :data-sets="dataSets"
+              @input="selectDataset"
             />
             <el-form-item label="データセット作成方式">
               <el-switch
@@ -32,13 +33,20 @@
               />
             </el-form-item>
 
-            <el-form-item label="実行コマンド" prop="entryPoint">
+            <el-form-item
+              label="実行コマンド"
+              prop="entryPoint"
+              style="margin-bottom:5px"
+            >
               <el-input
                 v-model="form.entryPoint"
                 type="textarea"
                 :autosize="{ minRows: 10 }"
               />
             </el-form-item>
+
+            <kqi-path-info :data-set="dataSetDetail" />
+
             <kqi-container-selector
               v-model="form.containerImage"
               :registries="registries"
@@ -52,11 +60,13 @@
               :gits="gits"
               :repositories="repositories"
               :branches="branches"
-              :commits="commits"
+              :commits="commitsList"
               :loading-repositories="loadingRepositories"
               @selectGit="selectGit"
               @selectRepository="selectRepository"
               @selectBranch="selectBranch"
+              @searchCommitId="searchCommitId"
+              @getMoreCommits="getMoreCommits"
             />
           </el-col>
           <el-col :span="12">
@@ -162,11 +172,13 @@
                 :gits="gits"
                 :repositories="repositories"
                 :branches="branches"
-                :commits="commits"
+                :commits="commitsList"
                 :loading-repositories="loadingRepositories"
                 @selectGit="selectGit"
                 @selectRepository="selectRepository"
                 @selectBranch="selectBranch"
+                @searchCommitId="searchCommitId"
+                @getMoreCommits="getMoreCommits"
               />
             </el-col>
             <el-col :span="12">
@@ -177,43 +189,8 @@
                   :autosize="{ minRows: 10 }"
                 />
               </el-form-item>
-              <el-row
-                style="margin-bottom:5px;padding-left:15px;font-size:0.8em;"
-              >
-                参考：選択したデータセット【{{
-                  dataSetDetail.name
-                }}】のデータパス一覧
-              </el-row>
-              <el-row class="data-list">
-                <el-col v-if="dataSetDetail.flatEntries.length == 0" :span="24">
-                  <ul
-                    v-for="(datalist, index) in dataSetDetail.entries"
-                    :key="index"
-                  >
-                    <li style="padding-top:5px;list-style-type: none">
-                      {{ index }}:
-                    </li>
-                    <li
-                      v-for="data in datalist"
-                      :key="data.id"
-                      style="padding-top:5px;padding-left:15px;  list-style-type: none"
-                    >
-                      /kqi/input/{{ index }}/{{ data.id }}
-                    </li>
-                  </ul>
-                </el-col>
-                <el-col v-else :span="24">
-                  <ul>
-                    <li
-                      v-for="data in dataSetDetail.flatEntries"
-                      :key="data.id"
-                      style="padding-top:5px; list-style-type: none"
-                    >
-                      /kqi/input/{{ data.id }}
-                    </li>
-                  </ul>
-                </el-col>
-              </el-row>
+
+              <kqi-path-info :data-set="dataSetDetail" />
             </el-col>
           </el-form>
 
@@ -307,6 +284,7 @@ import KqiTrainingHistorySelector from '@/components/selector/KqiTrainingHistory
 import KqiContainerSelector from '@/components/selector/KqiContainerSelector'
 import KqiGitSelector from '@/components/selector/KqiGitSelector'
 import KqiResourceSelector from '@/components/selector/KqiResourceSelector'
+import KqiPathInfo from '@/components/KqiPathInfo'
 import KqiEnvironmentVariables from '@/components/KqiEnvironmentVariables'
 import KqiExposePorts from '@/components/KqiExposePorts'
 import KqiTagEditor from '@/components/KqiTagEditor'
@@ -330,6 +308,7 @@ export default {
     KqiContainerSelector,
     KqiGitSelector,
     KqiResourceSelector,
+    KqiPathInfo,
     KqiEnvironmentVariables,
     KqiExposePorts,
     KqiTagEditor,
@@ -343,6 +322,8 @@ export default {
   },
   data() {
     return {
+      commitsList: [],
+      commitsPage: 1,
       form: {
         name: null,
         dataSetId: null,
@@ -432,6 +413,8 @@ export default {
     await this['cluster/fetchQuota']()
     await this['dataSet/fetchDataSets']()
     await this['training/fetchTenantTags']()
+    // データセット詳細を初期化
+    await this['dataSet/fetchDetail'](null)
 
     // レジストリ一覧を取得し、デフォルトレジストリを設定
     await this['registrySelector/fetchRegistries']()
@@ -450,6 +433,7 @@ export default {
     // コピー実行時はコピー元情報を各項目を設定
     if (this.isCopyCreation) {
       await this['training/fetchDetail'](this.originId)
+      await this['dataSet/fetchDetail'](String(this.detail.dataSet.id))
 
       this.form.name = this.detail.name
       this.form.dataSetId = String(this.detail.dataSet.id)
@@ -562,7 +546,7 @@ export default {
             if (this.form.gitModel.branch) {
               commitId = this.form.gitModel.commit
                 ? this.form.gitModel.commit.commitId
-                : this.commits[0].commitId
+                : this.commitsList[0].commitId
             }
             // コピー時ブランチを切り替えずに実行
             // パラメータに格納する際の形を統一するため整形を行う
@@ -687,11 +671,41 @@ export default {
       }
     },
     async selectBranch(branchName) {
+      this.commitsPage = 1
+      // 過去の選択状態をリセット
+      this.form.gitModel.commit = null
       await gitSelectorUtil.selectBranch(
         this.form,
         this['gitSelector/fetchCommits'],
         branchName,
+        this.commitsPage,
       )
+      this.commitsList = [...this.commits]
+    },
+    async searchCommitId(commitId) {
+      await this['gitSelector/fetchCommitDetail']({
+        gitId: this.form.gitModel.git.id,
+        repository: this.form.gitModel.repository,
+        commitId: commitId,
+      })
+      if (this.commitDetail != null) {
+        this.form.gitModel.commit = this.commitDetail
+      }
+    },
+    async getMoreCommits() {
+      this.commitsPage++
+      // コピー実行時、パラメータに格納する際の形を統一するため整形を行う
+      if (typeof this.form.gitModel.branch.branchName === 'undefined') {
+        let branch = { branchName: this.form.gitModel.branch }
+        this.form.gitModel.branch = branch
+      }
+      await gitSelectorUtil.selectBranch(
+        this.form,
+        this['gitSelector/fetchCommits'],
+        this.form.gitModel.branch.branchName,
+        this.commitsPage,
+      )
+      this.commitsList = this.commitsList.concat(this.commits)
     },
   },
 }
@@ -740,15 +754,5 @@ export default {
 
 .element {
   padding-top: 40px;
-}
-.data-list {
-  overflow: auto;
-  height: 120px;
-  padding: 3px 15px 8px 15px;
-  border: 1px solid #e4e7ed;
-  border-radius: 5px;
-  background-color: #f5f7fa;
-  color: #999;
-  margin-left: 10px;
 }
 </style>

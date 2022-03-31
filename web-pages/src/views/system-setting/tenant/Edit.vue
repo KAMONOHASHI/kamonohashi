@@ -50,6 +50,11 @@
         v-model="form.registry"
         :registries="registryEndpoints"
       />
+
+      <kqi-user-group-selector
+        v-model="form.userGroupIds"
+        :user-groups="userGroups"
+      />
     </el-form>
   </kqi-dialog>
 </template>
@@ -61,6 +66,7 @@ import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
 import KqiStorageEndpointSelector from '@/components/selector/KqiStorageEndpointSelector'
 import KqiGitEndpointSelector from '@/components/selector/KqiGitEndpointSelector'
 import KqiRegistryEndpointSelector from '@/components/selector/KqiRegistryEndpointSelector'
+import KqiUserGroupSelector from '@/components/selector/KqiUserGroupSelector'
 import { mapGetters, mapActions } from 'vuex'
 import validator from '@/util/validator'
 
@@ -78,6 +84,7 @@ export default {
     KqiStorageEndpointSelector,
     KqiGitEndpointSelector,
     KqiRegistryEndpointSelector,
+    KqiUserGroupSelector,
   },
   props: {
     id: {
@@ -104,6 +111,7 @@ export default {
         },
         storageId: null,
         availableInfiniteTimeNotebook: false,
+        userGroupIds: [],
       },
 
       rules: {
@@ -129,12 +137,14 @@ export default {
       gitEndpoints: ['git/endpoints'],
       registryEndpoints: ['registry/registries'],
       storageEndpoints: ['storage/storages'],
+      userGroups: ['userGroup/userGroups'],
     }),
   },
   async created() {
     await this['storage/fetchStorages']()
     await this['git/fetchEndpoints']()
     await this['registry/fetchRegistries']()
+    await this['userGroup/fetchUserGroups']()
     if (this.id === null) {
       this.title = 'テナント作成'
     } else {
@@ -149,6 +159,7 @@ export default {
         this.form.registry.selectedIds = this.detail.registryIds
         this.form.registry.defaultId = this.detail.defaultRegistryId
         this.form.availableInfiniteTimeNotebook = this.detail.availableInfiniteTimeNotebook
+        this.form.userGroupIds = this.detail.userGroupIds
         this.error = null
         this.deleteButtonParams = {
           isDanger: true,
@@ -166,6 +177,7 @@ export default {
       'storage/fetchStorages',
       'git/fetchEndpoints',
       'registry/fetchRegistries',
+      'userGroup/fetchUserGroups',
       'tenant/fetchDetail',
       'tenant/post',
       'tenant/put',
@@ -175,27 +187,30 @@ export default {
       let form = this.$refs.createForm
       await form.validate(async valid => {
         if (valid) {
-          try {
-            let params = {
-              tenantName: this.form.tenantName,
-              displayName: this.form.displayName,
-              storageId: this.form.storageId,
-              gitIds: this.form.gitEndpoint.selectedIds,
-              defaultGitId: this.form.gitEndpoint.defaultId,
-              registryIds: this.form.registry.selectedIds,
-              defaultRegistryId: this.form.registry.defaultId,
-              availableInfiniteTimeNotebook: this.form
-                .availableInfiniteTimeNotebook,
+          if (await this.showConfirm()) {
+            try {
+              let params = {
+                tenantName: this.form.tenantName,
+                displayName: this.form.displayName,
+                storageId: this.form.storageId,
+                gitIds: this.form.gitEndpoint.selectedIds,
+                defaultGitId: this.form.gitEndpoint.defaultId,
+                registryIds: this.form.registry.selectedIds,
+                defaultRegistryId: this.form.registry.defaultId,
+                availableInfiniteTimeNotebook: this.form
+                  .availableInfiniteTimeNotebook,
+                userGroupIds: this.form.userGroupIds,
+              }
+              if (this.id === null) {
+                await this['tenant/post'](params)
+              } else {
+                await this['tenant/put']({ id: this.id, params: params })
+              }
+              this.error = null
+              this.emitDone()
+            } catch (e) {
+              this.error = e
             }
-            if (this.id === null) {
-              await this['tenant/post'](params)
-            } else {
-              await this['tenant/put']({ id: this.id, params: params })
-            }
-            this.error = null
-            this.emitDone()
-          } catch (e) {
-            this.error = e
           }
         }
       })
@@ -208,6 +223,38 @@ export default {
       } catch (e) {
         this.error = e
       }
+    },
+    async showConfirm() {
+      // 新規作成時は確認ダイアログを表示しない
+      if (this.id === null) {
+        return true
+      }
+      if (this.checkUserGroupsChange()) {
+        return true
+      }
+      let confirmMessage =
+        '紐づけが解除されたユーザグループに属するユーザはこのテナントに参加できなくなります。変更を保存しますか？'
+      try {
+        await this.$confirm(confirmMessage, 'Warning', {
+          confirmButtonText: 'はい',
+          cancelButtonText: 'キャンセル',
+          type: 'warning',
+        })
+        return true
+      } catch (e) {
+        return false
+      }
+    },
+    // ユーザグループの紐づけが解除されているか判定する
+    checkUserGroupsChange() {
+      if (!this.detail.userGroupIds) {
+        return true
+      }
+      let count = 0
+      this.detail.userGroupIds.forEach(id => {
+        if (this.form.userGroupIds.includes(id)) count++
+      })
+      return this.detail.userGroupIds.length == count
     },
     closeDialog() {
       this.emitCancel()

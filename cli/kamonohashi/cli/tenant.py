@@ -41,7 +41,8 @@ def get(id):
 @click.option('-rid', '--registry-ids', type=int, multiple=True, required=True, help='Registry id  [multiple]')
 @click.option('-drid', '--default-registry-id', type=int, help='A default registry id')
 @click.option('-sid', '--storage-id', type=int, required=True, help='A storage id')
-def create(name, display_name, git_ids, default_git_id, registry_ids, default_registry_id, storage_id):
+@click.option('-ugid', '--user-group-ids', type=int, multiple=True, help='UserGroup id  [multiple]')
+def create(name, display_name, git_ids, default_git_id, registry_ids, default_registry_id, storage_id, user_group_ids):
     """Create a new tenant"""
     api = rest.TenantApi(configuration.get_api_client())
     model = rest.TenantApiModelsCreateInputModel(
@@ -52,6 +53,7 @@ def create(name, display_name, git_ids, default_git_id, registry_ids, default_re
         registry_ids=list(registry_ids),
         default_registry_id=default_registry_id,
         storage_id=storage_id,
+        user_group_ids=list(user_group_ids),
     )
     result = api.create_tenant(body=model)
     print('created', result.id)
@@ -65,7 +67,8 @@ def create(name, display_name, git_ids, default_git_id, registry_ids, default_re
 @click.option('-rid', '--registry-ids', type=int, multiple=True, required=True, help='Registry id  [multiple]')
 @click.option('-drid', '--default-registry-id', type=int, help='A default registry id')
 @click.option('-sid', '--storage-id', type=int, required=True, help='A storage id')
-def update(id, display_name, git_ids, default_git_id, registry_ids, default_registry_id, storage_id):
+@click.option('-ugid', '--user-group-ids', type=int, multiple=True, help='UserGroup id  [multiple]')
+def update(id, display_name, git_ids, default_git_id, registry_ids, default_registry_id, storage_id, user_group_ids):
     """Update a tenant"""
     api = rest.TenantApi(configuration.get_api_client())
     model = rest.TenantApiModelsEditInputModel(
@@ -75,6 +78,7 @@ def update(id, display_name, git_ids, default_git_id, registry_ids, default_regi
         registry_ids=list(registry_ids),
         default_registry_id=default_registry_id,
         storage_id=storage_id,
+        user_group_ids=list(user_group_ids),
     )
     result = api.update_tenant(id, body=model)
     print('updated', result.id)

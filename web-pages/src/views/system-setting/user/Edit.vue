@@ -46,14 +46,15 @@
           show-system-role
         />
       </el-form-item>
-      <el-form-item label="テナント" prop="tenants">
-        <tenant-role-selector
-          ref="tenantsForm"
-          v-model="form.tenants"
-          :tenants="tenants"
-          :roles="roles"
-        />
-      </el-form-item>
+
+      <tenant-role-selector
+        ref="tenantsForm"
+        v-model="form.tenants"
+        :tenants="tenants"
+        :roles="roles"
+        :not-origin-tenants="notOriginTenants"
+        @default="setNotOriginTenants"
+      />
     </el-form>
   </kqi-dialog>
 </template>
@@ -139,6 +140,10 @@ export default {
       deleteButtonParams: {},
       passwordLabel: '',
       isCreateDialog: false,
+      notOriginTenants: {
+        selectedTenantIds: [],
+        selectedTenants: [],
+      },
     }
   },
   computed: {
@@ -175,23 +180,43 @@ export default {
           this.form.selectedSystemRoleIds.push(s.id)
         })
         this.form.tenants.selectedTenants = []
+        this.form.tenants.selectedNotOriginTenants = []
 
         this.detail.tenants.forEach(tenant => {
           let selectedRoleIds = []
+          let selectedNotOriginTenants = []
           tenant.roles.forEach(role => {
-            selectedRoleIds.push(role.id)
+            // KQI上で付与されたロールかどうか
+            if (role.isOrigin) {
+              selectedRoleIds.push(role.id)
+            }
+            // LDAP経由で付与されたロールかどうか
+            if (role.userGroupTanantMapIdLists.length > 0) {
+              selectedNotOriginTenants.push(role.id)
+            }
           })
-          this.form.tenants.selectedTenants.push({
-            tenantId: tenant.id,
-            tenantName: tenant.name,
-            selectedRoleIds: selectedRoleIds,
-            default: tenant.default,
-          })
+          // KQI上で参加したテナントかどうか
+          if (tenant.isOrigin) {
+            this.form.tenants.selectedTenants.push({
+              tenantId: tenant.id,
+              tenantName: tenant.name,
+              selectedRoleIds: selectedRoleIds,
+              default: tenant.default,
+            })
+            this.form.tenants.selectedTenantIds.push(tenant.id)
+          }
+          // LDAP経由で参加したテナントかどうか
+          if (selectedNotOriginTenants.length > 0) {
+            this.notOriginTenants.selectedTenants.push({
+              tenantId: tenant.id,
+              tenantName: tenant.name,
+              selectedRoleIds: selectedNotOriginTenants,
+              default: tenant.default,
+            })
+            this.notOriginTenants.selectedTenantIds.push(tenant.id)
+          }
         })
 
-        this.detail.tenants.forEach(s => {
-          this.form.tenants.selectedTenantIds.push(s.id)
-        })
         this.form.error = null
         this.deleteButtonParams = {
           isDanger: true,
@@ -228,6 +253,15 @@ export default {
               }
               postTenants.push(postTenant)
             })
+            // Ldap経由のテナントはロールを空にして追加
+            this.notOriginTenants.selectedTenants.forEach(tenant => {
+              let postTenant = {
+                id: tenant.tenantId,
+                default: tenant.default,
+                roles: [],
+              }
+              postTenants.push(postTenant)
+            })
             let params = {
               name: this.form.name,
               password: this.form.password[0],
@@ -256,6 +290,9 @@ export default {
       } catch (e) {
         this.error = e
       }
+    },
+    setNotOriginTenants(tenants) {
+      this.notOriginTenants = tenants
     },
     emitDone() {
       this.$emit('done')

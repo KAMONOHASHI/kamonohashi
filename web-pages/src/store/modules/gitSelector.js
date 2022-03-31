@@ -91,12 +91,13 @@ const actions = {
     }
   },
 
-  async fetchCommits({ commit }, { gitId, repository, branchName }) {
+  async fetchCommits({ commit }, { gitId, repository, branchName, page }) {
     let params = {
       gitId: gitId,
       owner: repository.owner,
       repositoryName: repository.name,
       branch: branchName,
+      page: page,
     }
     try {
       let commits = (await api.git.getCommits(params)).data
@@ -117,7 +118,8 @@ const actions = {
       let commitDetail = (await api.git.getCommit(params)).data
       commit('setCommitDetail', { commitDetail })
     } catch {
-      commit('setCommitDetail', null)
+      let commitDetail = null
+      commit('setCommitDetail', { commitDetail })
     }
   },
 }

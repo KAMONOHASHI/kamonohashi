@@ -518,7 +518,7 @@ export default {
             if (this.form.gitModel.branch) {
               commitId = this.form.gitModel.commit
                 ? this.form.gitModel.commit.commitId
-                : this.commits[0].commitId
+                : this.commitsList[0].commitId
             }
             // コピー時ブランチを切り替えずに実行
             // パラメータに格納する際の形を統一するため整形を行う
@@ -643,6 +643,8 @@ export default {
       }
     },
     async selectBranch(branchName) {
+      // 過去の選択状態をリセット
+      this.form.gitModel.commit = null
       await gitSelectorUtil.selectBranch(
         this.form,
         this['gitSelector/fetchCommits'],

@@ -27,6 +27,7 @@
             <kqi-data-set-selector
               v-model="form.dataSetId"
               :data-sets="dataSets"
+              @input="selectDataset"
             />
             <el-form-item label="データセット作成方式">
               <el-switch
@@ -44,6 +45,7 @@
                 :autosize="{ minRows: 10 }"
               />
             </el-form-item>
+            <kqi-path-info :data-set="dataSetDetail" />
             <kqi-container-selector
               v-model="form.containerImage"
               :registries="registries"
@@ -57,11 +59,13 @@
               :gits="gits"
               :repositories="repositories"
               :branches="branches"
-              :commits="commits"
+              :commits="commitsList"
               :loading-repositories="loadingRepositories"
               @selectGit="selectGit"
               @selectRepository="selectRepository"
               @selectBranch="selectBranch"
+              @searchCommitId="searchCommitId"
+              @getMoreCommits="getMoreCommits"
             />
           </el-col>
           <el-col :span="12">
@@ -131,6 +135,7 @@
               <kqi-data-set-selector
                 v-model="form.dataSetId"
                 :data-sets="dataSets"
+                @input="selectDataset"
               />
               <el-form-item label="データセット作成方式">
                 <el-switch
@@ -164,11 +169,13 @@
                 :gits="gits"
                 :repositories="repositories"
                 :branches="branches"
-                :commits="commits"
+                :commits="commitsList"
                 :loading-repositories="loadingRepositories"
                 @selectGit="selectGit"
                 @selectRepository="selectRepository"
                 @selectBranch="selectBranch"
+                @searchCommitId="searchCommitId"
+                @getMoreCommits="getMoreCommits"
               />
             </el-col>
             <el-col :span="12">
@@ -179,6 +186,7 @@
                   :autosize="{ minRows: 10 }"
                 />
               </el-form-item>
+              <kqi-path-info :data-set="dataSetDetail" />
             </el-col>
           </el-form>
 
@@ -266,6 +274,7 @@ import KqiInferenceHistorySelector from '@/components/selector/KqiInferenceHisto
 import KqiContainerSelector from '@/components/selector/KqiContainerSelector'
 import KqiGitSelector from '@/components/selector/KqiGitSelector'
 import KqiResourceSelector from '@/components/selector/KqiResourceSelector'
+import KqiPathInfo from '@/components/KqiPathInfo'
 import KqiEnvironmentVariables from '@/components/KqiEnvironmentVariables'
 import KqiPartitionSelector from '@/components/selector/KqiPartitionSelector'
 import validator from '@/util/validator'
@@ -288,6 +297,7 @@ export default {
     KqiContainerSelector,
     KqiGitSelector,
     KqiResourceSelector,
+    KqiPathInfo,
     KqiEnvironmentVariables,
     KqiPartitionSelector,
   },
@@ -299,6 +309,8 @@ export default {
   },
   data() {
     return {
+      commitsList: [],
+      commitsPage: 1,
       form: {
         name: null,
         dataSetId: null,
@@ -354,6 +366,7 @@ export default {
       inferenceHistories: ['inference/historiesToMount'],
       trainingDetail: ['training/detail'],
       dataSets: ['dataSet/dataSets'],
+      dataSetDetail: ['dataSet/detail'],
       registries: ['registrySelector/registries'],
       defaultRegistryId: ['registrySelector/defaultRegistryId'],
       images: ['registrySelector/images'],
@@ -387,6 +400,8 @@ export default {
     await this['cluster/fetchPartitions']()
     await this['cluster/fetchQuota']()
     await this['dataSet/fetchDataSets']()
+    // データセット詳細を初期化
+    await this['dataSet/fetchDetail'](null)
 
     // レジストリ一覧を取得し、デフォルトレジストリを設定
     await this['registrySelector/fetchRegistries']()
@@ -462,6 +477,8 @@ export default {
 
       // 下記は学習からの遷移/コピー実行に関わらずコピー
       this.form.dataSetId = String(detail.dataSet.id)
+      await this['dataSet/fetchDetail'](String(detail.dataSet.id))
+
       // レジストリの設定
       this.form.containerImage.registry = {
         id: detail.containerImage.registryId,
@@ -509,6 +526,7 @@ export default {
       'cluster/fetchPartitions',
       'cluster/fetchQuota',
       'dataSet/fetchDataSets',
+      'dataSet/fetchDetail',
       'registrySelector/fetchRegistries',
       'registrySelector/fetchImages',
       'registrySelector/fetchTags',
@@ -518,6 +536,10 @@ export default {
       'gitSelector/fetchCommits',
       'gitSelector/fetchCommitDetail',
     ]),
+    async selectDataset() {
+      //データセットを選択後、データセット詳細を取得する
+      await this['dataSet/fetchDetail'](this.form.dataSetId)
+    },
     async runInference() {
       let form = this.$refs.runForm
       if (this.active !== 0) {
@@ -546,7 +568,7 @@ export default {
             if (this.form.gitModel.branch) {
               commitId = this.form.gitModel.commit
                 ? this.form.gitModel.commit.commitId
-                : this.commits[0].commitId
+                : this.commitsList[0].commitId
             }
             // コピー時ブランチを切り替えずに実行
             // パラメータに格納する際の形を統一するため整形を行う
@@ -670,11 +692,41 @@ export default {
       }
     },
     async selectBranch(branchName) {
+      this.commitsPage = 1
+      // 過去の選択状態をリセット
+      this.form.gitModel.commit = null
       await gitSelectorUtil.selectBranch(
         this.form,
         this['gitSelector/fetchCommits'],
         branchName,
+        this.commitsPage,
       )
+      this.commitsList = [...this.commits]
+    },
+    async searchCommitId(commitId) {
+      await this['gitSelector/fetchCommitDetail']({
+        gitId: this.form.gitModel.git.id,
+        repository: this.form.gitModel.repository,
+        commitId: commitId,
+      })
+      if (this.commitDetail != null) {
+        this.form.gitModel.commit = this.commitDetail
+      }
+    },
+    async getMoreCommits() {
+      this.commitsPage++
+      // コピー実行時、パラメータに格納する際の形を統一するため整形を行う
+      if (typeof this.form.gitModel.branch.branchName === 'undefined') {
+        let branch = { branchName: this.form.gitModel.branch }
+        this.form.gitModel.branch = branch
+      }
+      await gitSelectorUtil.selectBranch(
+        this.form,
+        this['gitSelector/fetchCommits'],
+        this.form.gitModel.branch.branchName,
+        this.commitsPage,
+      )
+      this.commitsList = this.commitsList.concat(this.commits)
     },
   },
 }

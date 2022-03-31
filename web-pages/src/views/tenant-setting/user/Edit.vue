@@ -3,6 +3,7 @@
     title="テナントユーザ編集"
     :type="'EDIT'"
     :delete-button-params="deleteButtonParams"
+    :disabled-params="disabledParams"
     @submit="submit"
     @delete="deleteUser"
     @close="emitCancel"
@@ -17,6 +18,15 @@
           :roles="roles"
           :show-system-role="false"
         />
+        <div v-if="tenantNotOriginRoleIds.length > 0">
+          <label>ユーザグループ経由でのテナントロール</label>
+          <kqi-role-selector
+            v-model="tenantNotOriginRoleIds"
+            :roles="roles"
+            :show-system-role="false"
+            :is-disabled="true"
+          />
+        </div>
       </el-form-item>
     </el-form>
   </kqi-dialog>
@@ -54,12 +64,14 @@ export default {
         tenantRoleIds: [],
       },
       displayServiceType: '',
+      disabledParams: {},
       deleteButtonParams: {},
       dialogVisible: true,
       error: null,
       rules: {
         tenantRoleIds: [formRule],
       },
+      tenantNotOriginRoleIds: [],
     }
   },
   computed: {
@@ -88,14 +100,29 @@ export default {
       }
       // ロール一覧からIDを抽出
       this.detail.roles.forEach(s => {
-        this.form.tenantRoleIds.push(s.id)
+        if (s.isOrigin) {
+          this.form.tenantRoleIds.push(s.id)
+        }
+        if (s.userGroupTanantMapIdLists.length > 0) {
+          this.tenantNotOriginRoleIds.push(s.id)
+        }
       })
-      // dangerButtonのパラメータを設定
-      this.deleteButtonParams = {
-        isDanger: true,
-        warningText:
-          'ユーザを除外すると、対象ユーザは現在のテナントに入れなくなります。処理を続けるにはユーザ名を入力してください。',
-        confirmText: this.detail.name,
+      // ユーザグループ由来のロールがある時は必須チェックしない
+      if (this.tenantNotOriginRoleIds.length > 0) {
+        this.rules.tenantRoleIds = null
+        // deleteButtonのパラメータを設定
+        this.disabledParams = {
+          deleteButton: true,
+          submitButton: false,
+        }
+      } else {
+        // dangerButtonのパラメータを設定
+        this.deleteButtonParams = {
+          isDanger: true,
+          warningText:
+            'ユーザを除外すると、対象ユーザは現在のテナントに入れなくなります。処理を続けるにはユーザ名を入力してください。',
+          confirmText: this.detail.name,
+        }
       }
       this.error = null
     } catch (e) {
