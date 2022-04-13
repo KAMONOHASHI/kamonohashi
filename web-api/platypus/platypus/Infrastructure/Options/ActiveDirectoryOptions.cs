@@ -31,9 +31,14 @@
         public string BaseDn { get; set; }
 
         /// <summary>
-        /// Ldap検索用のフィルタ（ユーザ検索）
+        /// LDAP検索用のフィルタ（ユーザ検索）
         /// </summary>
         public string LdapFilter { get; set; }
+
+        /// <summary>
+        /// LDAPグループ検索用のフィルタ（ユーザ検索）
+        /// </summary>
+        public string LdapGroupFilter { get; set; }
 
         public string AuthBaseDn
         {

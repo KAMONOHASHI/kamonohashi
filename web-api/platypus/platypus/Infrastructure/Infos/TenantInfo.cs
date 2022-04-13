@@ -5,8 +5,16 @@ using System.Linq;
 
 namespace Nssol.Platypus.Infrastructure.Infos
 {
+    /// <summary>
+    /// テナント情報
+    /// </summary>
     public class TenantInfo
     {
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="tenant">テナント</param>
+        /// <param name="defaultTenantId">デフォルトテナントID</param>
         private TenantInfo(Tenant tenant, long? defaultTenantId)
         {
             Id = tenant?.Id;
@@ -15,23 +23,30 @@ namespace Nssol.Platypus.Infrastructure.Infos
             Default = tenant?.Id == defaultTenantId;
         }
 
-        public TenantInfo(Tenant tenant, List<Role> roles, long? defaultTenantId) : this(tenant, defaultTenantId)
-        {
-            Roles = roles?.OrderBy(r => r.SortOrder).Select(x => new RoleInfo(x)).ToList();
-        }
-
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="tenant">テナント</param>
+        /// <param name="roles">ロール</param>
+        /// <param name="defaultTenantId">デフォルトテナントID</param>
         public TenantInfo(Tenant tenant, List<RoleInfo> roles, long? defaultTenantId) : this(tenant, defaultTenantId)
         {
-            Roles = roles;
+            Roles = roles?.OrderBy(r => r.SortOrder).ToList();
         }
 
-        public TenantInfo(Tenant tenant, Dictionary<Tenant, List<Role>> TenantDic, long? defaultTenantId) : this(tenant, defaultTenantId)
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="tenant">テナント</param>
+        /// <param name="TenantDic">テナントとロール情報</param>
+        /// <param name="defaultTenantId">デフォルトテナントID</param>
+        public TenantInfo(Tenant tenant, Dictionary<Tenant, List<RoleInfo>> TenantDic, long? defaultTenantId) : this(tenant, defaultTenantId)
         {
             foreach (var dic in TenantDic)
             {
                 if (Id == dic.Key.Id)
                 {
-                    Roles = dic.Value.Select(x => new RoleInfo(x)).ToList();
+                    Roles = dic.Value.ToList();
                     break;
                 }
             }
@@ -57,5 +72,9 @@ namespace Nssol.Platypus.Infrastructure.Infos
         /// テナントの全ロール名
         /// </summary>
         public List<RoleInfo> Roles { get; set; }
+        /// <summary>
+        /// 元々KQI上で紐づけあったか。
+        /// </summary>
+        public Boolean IsOrigin { get; set; }
     }
 }

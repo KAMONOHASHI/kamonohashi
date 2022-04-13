@@ -29,18 +29,21 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly IRoleRepository roleRepository;
         private readonly IUnitOfWork unitOfWork;
         private readonly IClusterManagementLogic clusterManagementLogic;
+        private readonly IUserGroupLogic userGroupLogic;
 
         public UserController(
             IUserRepository userRepository,
             IRoleRepository roleRepository,
             IUnitOfWork unitOfWork,
             IClusterManagementLogic clusterManagementLogic,
+            IUserGroupLogic userGroupLogic,
             IHttpContextAccessor accessor) : base(accessor)
         {
             this.userRepository = userRepository;
             this.roleRepository = roleRepository;
             this.unitOfWork = unitOfWork;
             this.clusterManagementLogic = clusterManagementLogic;
+            this.userGroupLogic = userGroupLogic;
         }
 
         #region ユーザ管理
@@ -90,10 +93,10 @@ namespace Nssol.Platypus.Controllers.spa
 
             //ユーザのテナント情報（ロール含む）を取得
             var info = userRepository.GetUserInfo(user);
-            userModel.Tenants = info.TenantDic.Select(x => new TenantInfo(x.Key, x.Value, user.DefaultTenantId)).OrderBy(t => t.DisplayName).ToList();
+            userModel.Tenants = info.TenantDic.Select(x => new TenantInfo(x.Key, x.Value, user.DefaultTenantId) { IsOrigin = userRepository.IsOriginMember(user.Id,x.Key.Id)}).OrderBy(t => t.DisplayName).ToList();
 
             //このユーザのシステムロールを取得
-            userModel.SystemRoles = roleRepository.GetSystemRoles(user.Id).Select(r => new RoleInfo(r));
+            userModel.SystemRoles = roleRepository.GetSystemRoles(user.Id);
 
             return userModel;
         }
@@ -144,7 +147,7 @@ namespace Nssol.Platypus.Controllers.spa
             };
 
             //システムロールの登録
-            var addSystemRoleErrorResult = await AddSystemRolesAsync(user, model.SystemRoles, true);
+            var addSystemRoleErrorResult = await AddSystemRolesAsync(user, model.SystemRoles, true, true);
             if (addSystemRoleErrorResult != null)
             {
                 return addSystemRoleErrorResult;
@@ -160,7 +163,7 @@ namespace Nssol.Platypus.Controllers.spa
                     return JsonNotFound($"Tenant ID {tenantInput.Id} is not found.");
                 }
                 // 関連 map の作成
-                var addTenantErrorResult = await AddTenantAsync(user, tenant, tenantInput.Roles);
+                var addTenantErrorResult = await AddTenantAsync(user, tenant, tenantInput.Roles, true);
                 if (addTenantErrorResult != null)
                 {
                     return addTenantErrorResult;
@@ -241,7 +244,7 @@ namespace Nssol.Platypus.Controllers.spa
 
             //とりあえずすべてのシステムロールを一度外す
             roleRepository.DetachSystemRole(user.Id);
-            var addSystemRoleErrorResult = await AddSystemRolesAsync(user, model.SystemRoles, false);
+            var addSystemRoleErrorResult = await AddSystemRolesAsync(user, model.SystemRoles, false, true);
             if (addSystemRoleErrorResult != null)
             {
                 return addSystemRoleErrorResult;
@@ -261,22 +264,31 @@ namespace Nssol.Platypus.Controllers.spa
                     return JsonNotFound($"Tenant ID {tenantInput.Id} is not found.");
                 }
 
+                // ロールの空チェック(Ldap経由で紐づいているテナントはロールが空になっている)
+                if(tenantInput.Roles.Count() <= 0)
+                {
+                    continue;
+                }
+
                 // このテナントが既に紐づけられているか確認
                 Tenant currentTenant = currentTenants.FirstOrDefault(t => t.Id == tenantInput.Id);
                 if (currentTenant != null)
                 {
-                    //ロールが変更されている可能性があるので、更新処理を行う
-                    //一度テナントから外す
-                    userRepository.DetachTenant(id.Value, tenantInput.Id.Value, true);
+                    // すでに紐づけられている場合、ロールが変更されている可能性があるので、更新処理を行う
+                    await UpdateTenantAsync(user, tenant, tenantInput.Roles, true);
                     //候補から外す
                     currentTenants.Remove(currentTenant);
                 }
 
-                var addTenantErrorResult = await AddTenantAsync(user, tenant, tenantInput.Roles);
-                if (addTenantErrorResult != null)
+                // 新規の紐づけの場合はこちら。
+                else
                 {
-                    //ロールバックされるので、不整合は起こらない
-                    return addTenantErrorResult;
+                    var addTenantErrorResult = await AddTenantAsync(user, tenant, tenantInput.Roles, true);
+                    if (addTenantErrorResult != null)
+                    {
+                        //ロールバックされるので、不整合は起こらない
+                        return addTenantErrorResult;
+                    }
                 }
             }
             //残っているのは削除対象
@@ -287,8 +299,8 @@ namespace Nssol.Platypus.Controllers.spa
                 {
                     return JsonConflict($"You are NOT allowed removing yourself from the currently connected tenant.");
                 }
-
-                userRepository.DetachTenant(id.Value, removedTenant.Id, false);
+                // KQI上の紐づけを外す
+                userRepository.DetachOriginTenant(user, removedTenant.Id);
             }
 
             // デフォルトテナントの変更
@@ -297,7 +309,7 @@ namespace Nssol.Platypus.Controllers.spa
             unitOfWork.Commit();
 
             var userModel = new IndexForAdminOutputModel(user);
-            userModel.SystemRoles = roleRepository.GetSystemRoles(user.Id).Select(r => new RoleInfo(r));
+            userModel.SystemRoles = roleRepository.GetSystemRoles(user.Id);
             return JsonOK(userModel);
         }
 
@@ -353,11 +365,72 @@ namespace Nssol.Platypus.Controllers.spa
         }
 
         /// <summary>
+        /// LDAPサーバに問い合わせを行い、各ユーザの権限を更新する
+        /// </summary>
+        /// <param name="model">LDAP認証情報入力モデル</param>
+        [HttpPost("sync-ldap")]
+        [Filters.PermissionFilter(MenuCode.User)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        public async Task<IActionResult> SyncLdapUser([FromBody] LdapAuthenticationInputModel model)
+        {
+            // 全LDAPユーザの取得
+            var users = userRepository.GetAllUsersWithTenant().Where(user => user.ServiceType == AuthServiceType.Ldap).ToList();
+
+            foreach (var user in users)
+            {
+                // LDAPサーバ上のユーザ情報を取得
+                var result = userGroupLogic.Authenticate(user, model.UserName, model.Password);
+                if (!result.IsSuccess)
+                {
+                    if (!string.IsNullOrEmpty(result.Error))
+                    {
+                        // 認証情報に誤りがあったときにエラーを返す
+                        return JsonBadRequest(result.Error);
+                    }
+                    // ユーザ情報が取得できなかったとき、LDAP由来のテナントから脱退する
+                    LogInformation($"LDAPサーバにユーザ: {user.Name} は見つかりませんでした。");
+                    var tenants = userRepository.GetTenantByUser(user.Id).ToList();
+                    if (tenants != null && tenants.Count > 0)
+                    {
+                        foreach (var tenant in tenants)
+                        {
+                            if (userRepository.IsOriginMember(user.Id, tenant.Id))
+                            {
+                                // KQIの紐づけがあるとき
+                                // 関連テーブルのUserGroupTenantMapIdsをnullにする
+                                userRepository.UpdateTenant(user, tenant.Id, null, false, null);
+                                // ロールの更新
+                                userRepository.UpdateLdapRole(user.Id, tenant.Id);
+                            }
+                            else
+                            {
+                                // KQIの紐づけがないとき
+                                userRepository.DetachTenant(user, tenant.Id, false);
+                            }
+                        }
+                        LogInformation($"ユーザ: {user.Name} がLDAP経由で参加したテナントの紐づけを解除しました。");
+                    }
+                }
+                else
+                {
+                    await userGroupLogic.AddTenantFromGroup(result.Value, user, model.UserName, model.Password);
+                }
+            }
+            unitOfWork.Commit();
+
+            return JsonNoContent();
+        }
+
+        /// <summary>
         /// 指定したユーザにシステムロールを新規に付与する。
         /// 途中でエラーが発生した場合、そのエラー結果が返る。NULLなら成功。
         /// 編集の場合、事前に削除処理を行っておくこと。
         /// </summary>
-        private async Task<IActionResult> AddSystemRolesAsync(User user, IEnumerable<long> systemRoleIds, bool isCreate)
+        /// <param name="user">対象ユーザ</param>
+        /// <param name="systemRoleIds">システムロールID</param>
+        /// <param name="isCreate">ユーザが新規作成の状態(=ID未割当)ならtrue</param>
+        /// <param name="isOrigin">KQI上での紐づけならtrue</param>
+        private async Task<IActionResult> AddSystemRolesAsync(User user, IEnumerable<long> systemRoleIds, bool isCreate, bool isOrigin)
         {
             if (systemRoleIds != null && systemRoleIds.Count() > 0)
             {
@@ -373,7 +446,7 @@ namespace Nssol.Platypus.Controllers.spa
                         return JsonNotFound($"Role ID {roleId} is not a system role.");
                     }
                     //ロールを一つずつ追加
-                    roleRepository.AttachRole(user, role, null, isCreate);
+                    roleRepository.AttachRole(user, role, null, isCreate, isOrigin);
                 }
             }
             return null;
@@ -383,7 +456,11 @@ namespace Nssol.Platypus.Controllers.spa
         /// 指定したユーザをテナントに新規登録する。
         /// 途中でエラーが発生した場合、そのエラー結果が返る。NULLなら成功。
         /// </summary>
-        private async Task<IActionResult> AddTenantAsync(User user, Tenant tenant, IEnumerable<long> tenantRoleIds)
+        /// <param name="user">対象ユーザ</param>
+        /// <param name="tenant">対象テナント</param>
+        /// <param name="tenantRoleIds">テナントロールID</param>
+        /// <param name="isOrigin">KQI上での紐づけならtrue</param>
+        private async Task<IActionResult> AddTenantAsync(User user, Tenant tenant, IEnumerable<long> tenantRoleIds, bool isOrigin)
         {
             //ロールについての存在＆入力チェック
             var roles = new List<Role>();
@@ -406,7 +483,51 @@ namespace Nssol.Platypus.Controllers.spa
                 }
             }
 
-            var maps = userRepository.AttachTenant(user, tenant.Id, roles);
+            var maps = userRepository.AttachTenant(user, tenant.Id, roles, isOrigin, null);
+            if (maps != null)
+            {
+                foreach (var map in maps)
+                {
+                    //レジストリを登録
+                    await clusterManagementLogic.RegistRegistryToTenantAsync(tenant.Name, map);
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// 指定したユーザとテナントの紐づけを更新する。
+        /// 途中でエラーが発生した場合、そのエラー結果が返る。NULLなら成功。
+        /// </summary>
+        /// <param name="user">対象ユーザ</param>
+        /// <param name="tenant">対象テナント</param>
+        /// <param name="tenantRoleIds">テナントロールID</param>
+        /// <param name="isOrigin">KQI上での紐づけならtrue</param>
+        private async Task<IActionResult> UpdateTenantAsync(User user, Tenant tenant, IEnumerable<long> tenantRoleIds, bool isOrigin)
+        {
+            //ロールについての存在＆入力チェック
+            var roles = new List<Role>();
+            if (tenantRoleIds != null)
+            {
+                foreach (long roleId in tenantRoleIds)
+                {
+                    var role = await roleRepository.GetRoleAsync(roleId);
+                    if (role == null)
+                    {
+                        //ロールがない
+                        return JsonNotFound($"Role ID {roleId} is not found.");
+                    }
+                    if (role.IsSystemRole)
+                    {
+                        //システムロールをテナントロールとして追加しようとしている
+                        return JsonBadRequest($"The system role {role.Name} is not assigned to a user as a tenant role.");
+                    }
+                    roles.Add(role);
+                }
+            }
+
+            var maps = userRepository.UpdateTenant(user, tenant.Id, roles, isOrigin, null);
             if (maps != null)
             {
                 foreach (var map in maps)
@@ -468,7 +589,7 @@ namespace Nssol.Platypus.Controllers.spa
             return JsonOK(users.Select(u =>
             {
                 var result = new IndexForTenantOutputModel(u);
-                result.Roles = roleRepository.GetTenantRoles(u.Id, tenantId).OrderBy(r => r.SortOrder).Select(r => new RoleInfo(r));
+                result.Roles = roleRepository.GetTenantRoles(u.Id, tenantId).OrderBy(r => r.SortOrder);
                 return result;
             }));
         }
@@ -501,7 +622,7 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             var result = new IndexForTenantOutputModel(user);
-            result.Roles = roleRepository.GetTenantRoles(user.Id, tenantId).Select(r => new RoleInfo(r));
+            result.Roles = roleRepository.GetTenantRoles(user.Id, tenantId);
 
             //ロール情報・テナント情報と紐づけて、返す
             return JsonOK(result);
@@ -541,25 +662,9 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonNotFound($"User ID {id} is not found.");
             }
 
-            userRepository.DetachTenant(user.Id, tenant.Id, true);
+            // KQI上の紐づけを外す
+            userRepository.DetachOriginTenant(user, tenant.Id);
 
-            if (user.DefaultTenantId == tenant.Id)
-            {
-                //デフォルトテナントを外した場合、デフォルトを他に付け替える
-
-                //他のテナント情報を取得
-                var userInfo = userRepository.GetUserInfo(user); //DBへの反映は遅延実行なので、まだこの時点では当該テナントに所属している状態になる
-                var newDefaultTenant = userInfo.TenantDic.Keys.FirstOrDefault(d => d.Id != tenant.Id);
-                if (newDefaultTenant == null)
-                {
-                    //付け替え先がないので、止む無くSandboxに新規紐づけする
-                    userRepository.AttachSandbox(user);
-                }
-                else
-                {
-                    user.DefaultTenantId = newDefaultTenant.Id;
-                }
-            }
             unitOfWork.Commit();
 
             return JsonNoContent();
@@ -604,11 +709,12 @@ namespace Nssol.Platypus.Controllers.spa
                 }
             }
 
-            userRepository.ChangeTenantRole(id, tenant.Id, roles);
+            userRepository.ChangeTenantRole(id, tenant.Id, roles, true);
+
             unitOfWork.Commit();
 
             var result = new IndexForTenantOutputModel(user);
-            result.Roles = roleRepository.GetTenantRoles(user.Id, tenant.Id).Select(r => new RoleInfo(r));
+            result.Roles = roleRepository.GetTenantRoles(user.Id, tenant.Id);
 
             //ロール情報・テナント情報と紐づけて、返す
             return JsonOK(result);

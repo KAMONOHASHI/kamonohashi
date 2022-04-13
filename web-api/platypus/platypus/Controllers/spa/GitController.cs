@@ -322,17 +322,18 @@ namespace Nssol.Platypus.Controllers.spa
         /// <param name="repositoryName">リポジトリ名</param>
         /// <param name="owner">オーナー名</param>
         /// <param name="branch">ブランチ名</param>
+        /// <param name="page">ページ番号</param>
         [HttpGet("{gitId}/repos/{owner}/{repositoryName}/commits")]
         [Filters.PermissionFilter(MenuCode.Training, MenuCode.Preprocess, MenuCode.Inference, MenuCode.Notebook)]
         [ProducesResponseType(typeof(IEnumerable<ServiceModels.Git.CommitModel>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetAllCommitAsync([FromRoute] long gitId, [FromRoute] string owner, [FromRoute] string repositoryName, string branch)
+        public async Task<IActionResult> GetAllCommitAsync([FromRoute] long gitId, [FromRoute] string owner, [FromRoute] string repositoryName, string branch, string page)
         {
             long? selectedGitId = gitId == -1 ? CurrentUserInfo.SelectedTenant.DefaultGitId : gitId;
             if (selectedGitId == null)
             {
                 return JsonNotFound($"There is no git server you can use. Please contact a user administrator.");
             }
-            var result = await gitLogic.GetAllCommitsAsync(selectedGitId.Value, repositoryName, owner, branch);
+            var result = await gitLogic.GetAllCommitsAsync(selectedGitId.Value, repositoryName, owner, branch, page);
             if (result.IsSuccess == false)
             {
                 return JsonError(HttpStatusCode.ServiceUnavailable, $"Failed to access a git service: {result.Error}");
@@ -379,7 +380,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// </summary>
         [HttpGet("{gitId}/repos/{*segments}")]
         [Filters.PermissionFilter(MenuCode.Training, MenuCode.Preprocess, MenuCode.Inference, MenuCode.Notebook)]
-        public async Task<IActionResult> AllocatieRoute([FromRoute] long gitId, [FromRoute] string segments, [FromQuery] string branch)
+        public async Task<IActionResult> AllocatieRoute([FromRoute] long gitId, [FromRoute] string segments, [FromQuery] string branch, [FromQuery] string page)
         {
             string[] segmentsArray = segments.Split('/');
 
@@ -400,7 +401,7 @@ namespace Nssol.Platypus.Controllers.spa
                 case "branches":
                     return await GetAllBranchAsync(gitId, owner, repository);
                 case "commits":
-                    return await GetAllCommitAsync(gitId, owner, repository, branch);
+                    return await GetAllCommitAsync(gitId, owner, repository, branch, page);
                 default:
                     return JsonNotFound();
             }

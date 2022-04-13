@@ -11,10 +11,10 @@
       <el-col :span="4">
         <div style="height: 400px;">
           <el-steps direction="vertical" :active="active">
-            <el-step title="Step 1" description="基本設定"></el-step>
-            <el-step title="Step 2" description="前処理"></el-step>
-            <el-step title="Step 3" description="学習"></el-step>
-            <el-step title="Step 4" description="推論"></el-step>
+            <el-step title="Step 1" description="基本設定" />
+            <el-step title="Step 2" description="前処理" />
+            <el-step title="Step 3" description="学習" />
+            <el-step title="Step 4" description="推論" />
           </el-steps>
         </div>
       </el-col>
@@ -45,14 +45,16 @@
               label="公開設定 "
               prop="accessLevel"
               style="display:block"
-              ><br />
+            >
+              <br />
               <el-radio-group v-model="form.accessLevel">
-                <el-radio :label="1" style="margin:10px"
-                  >現在のテナント </el-radio
-                ><br />
-                <el-radio :label="2" style="margin:10px"
-                  >全テナントに公開</el-radio
-                >
+                <el-radio :label="1" style="margin:10px">
+                  現在のテナント
+                </el-radio>
+                <br />
+                <el-radio :label="2" style="margin:10px">
+                  全テナントに公開
+                </el-radio>
               </el-radio-group>
             </el-form-item>
           </el-form>
@@ -64,6 +66,7 @@
             :create-template="true"
             :required-form="false"
             :form-type="'前処理'"
+            @copy="copyAqContainer"
           />
           <!-- step 3 -->
           <training
@@ -73,6 +76,7 @@
             :create-template="true"
             :required-form="true"
             :form-type="'学習'"
+            @copy="copyAqContainer"
           />
           <!-- step 4 : 推論 -->
           <evaluation
@@ -82,6 +86,7 @@
             :create-template="true"
             :required-form="false"
             :form-type="'推論'"
+            @copy="copyAqContainer"
           />
         </el-form>
       </el-col>
@@ -234,6 +239,34 @@ export default {
       'template/post',
       'template/put',
     ]),
+    copyAqContainer(info) {
+      let from = info.from
+      let to = info.to
+      let fromData = null
+      if (from == 'preprocessing') {
+        fromData = this.form.preprocForm
+      } else if (from == 'train') {
+        fromData = this.form.trainingForm
+      } else if (from == 'evaluation') {
+        fromData = this.form.evaluationForm
+      }
+      if (to == 'preprocessing') {
+        this.form.preprocForm = Object.assign(
+          {},
+          JSON.parse(JSON.stringify(fromData)),
+        )
+      } else if (to == 'train') {
+        this.form.trainingForm = Object.assign(
+          {},
+          JSON.parse(JSON.stringify(fromData)),
+        )
+      } else if (to == 'evaluation') {
+        this.form.evaluationForm = Object.assign(
+          {},
+          JSON.parse(JSON.stringify(fromData)),
+        )
+      }
+    },
     async initialize() {
       let url = this.$route.path
       let type = url.split('/')[3] // ["", "preprocessing", "{type}", "{id}"]

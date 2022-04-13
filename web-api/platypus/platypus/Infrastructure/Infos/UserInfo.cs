@@ -1,4 +1,5 @@
-﻿using Nssol.Platypus.Infrastructure.Types;
+﻿using Nssol.Platypus.Infrastructure.Infos;
+using Nssol.Platypus.Infrastructure.Types;
 using Nssol.Platypus.Models;
 using System;
 using System.Collections.Generic;
@@ -45,12 +46,12 @@ namespace Nssol.Platypus.Infrastructure
         /// <summary>
         /// 所属しているシステムロール
         /// </summary>
-        public IEnumerable<Role> SystemRoles { get; set; }
+        public IEnumerable<RoleInfo> SystemRoles { get; set; }
 
         /// <summary>
         /// 現在選択中のテナントのロール情報
         /// </summary>
-        public List<Role> SelectedTenantRoles
+        public List<RoleInfo> SelectedTenantRoles
         {
             get
             {
@@ -91,7 +92,7 @@ namespace Nssol.Platypus.Infrastructure
         /// <summary>
         /// 所属するテナントと、そのテナントでのロール。
         /// </summary>
-        public Dictionary<Tenant, List<Role>> TenantDic { get; set; }
+        public Dictionary<Tenant, List<RoleInfo>> TenantDic { get; set; }
 
         /// <summary>
         /// 指定したテナントIDのテナントを選択させる

@@ -36,6 +36,7 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly ITrainingHistoryRepository trainingHistoryRepository;
         private readonly IInferenceHistoryRepository inferenceHistoryRepository;
         private readonly ITensorBoardContainerRepository tensorBoardContainerRepository;
+        private readonly ITrainingSearchHistoryRepository trainingSearchHistoryRepository;
         private readonly IUserRepository userRepository;
         private readonly IDataSetRepository dataSetRepository;
         private readonly ITagRepository tagRepository;
@@ -58,6 +59,7 @@ namespace Nssol.Platypus.Controllers.spa
             ITrainingHistoryRepository trainingHistoryRepository,
             IInferenceHistoryRepository inferenceHistoryRepository,
             ITensorBoardContainerRepository tensorBoardContainerRepository,
+            ITrainingSearchHistoryRepository trainingSearchHistoryRepository,
             IUserRepository userRepository,
             IDataSetRepository dataSetRepository,
             ITagRepository tagRepository,
@@ -77,6 +79,7 @@ namespace Nssol.Platypus.Controllers.spa
             this.trainingHistoryRepository = trainingHistoryRepository;
             this.inferenceHistoryRepository = inferenceHistoryRepository;
             this.tensorBoardContainerRepository = tensorBoardContainerRepository;
+            this.trainingSearchHistoryRepository = trainingSearchHistoryRepository;
             this.userRepository = userRepository;
             this.dataSetRepository = dataSetRepository;
             this.tagRepository = tagRepository;
@@ -120,19 +123,83 @@ namespace Nssol.Platypus.Controllers.spa
             var data = trainingHistoryRepository.GetAllIncludeDataSetAndParentWithOrdering().AsEnumerable();
             data = Search(data, filter);
 
+            if (withTotal)
+            {
+                int total = data.Count();
+                SetTotalCountToHeader(total);
+            }
+
             //未指定、あるいは1000件以上であれば、1000件に指定
             int pageCount = (perPage.HasValue && perPage.Value < 1000) ? perPage.Value : 1000;
             data = data.Paging(page, pageCount);
 
+            //SQLが多重実行されることを防ぐため、ToListで即時発行させたうえで、結果を生成
+            return JsonOK(data.ToList().Select(history => GetUpdatedIndexOutputModelAsync(history).Result));
+        }
+
+        /// <summary>
+        /// 指定された条件でページングされた状態で、全学習履歴を取得。詳細検索で使用。
+        /// </summary>
+        /// <param name="page">ページ番号。デフォルトは1。</param>
+        /// <param name="perPage">表示件数。指定がない場合は上限(1000件)。</param>
+        /// <param name="filter">検索条件</param>
+        /// <param name="withTotal">合計件数をレスポンスヘッダ(X-Total-Count)に含めるか。デフォルトはfalse。</param>
+        [HttpGet("search")]
+        [Filters.PermissionFilter(MenuCode.Training)]
+        [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
+        public IActionResult GetAll([FromQuery] SearchDetailInputModel filter, [FromQuery] int? perPage, [FromQuery] int page = 1, bool withTotal = false)
+        {
+            // 入力値チェック (or検索を利用するかどうかの変数がnullの場合、falseを入れておく)
+            if (filter.DataSetOr.HasValue == false)
+            {
+                filter.DataSetOr = true;
+            }
+            if (filter.EntryPointOr.HasValue == false)
+            {
+                filter.EntryPointOr = true;
+            }
+            if (filter.MemoOr.HasValue == false)
+            {
+                filter.MemoOr = true;
+            }
+            if (filter.NameOr.HasValue == false)
+            {
+                filter.NameOr = true;
+            }
+            if (filter.ParentNameOr.HasValue == false)
+            {
+                filter.ParentNameOr = true;
+            }
+            if (filter.StartedByOr.HasValue == false)
+            {
+                filter.StartedByOr = true;
+            }
+            if (filter.StatusOr.HasValue == false)
+            {
+                filter.StatusOr = true;
+            }
+            if (filter.TagsOr.HasValue == false)
+            {
+                filter.TagsOr = true;
+            }
+
+            var data = trainingHistoryRepository.GetAllIncludeDataSetAndParentWithOrdering().AsEnumerable();
+            data = Search(data, filter);
+
             if (withTotal)
             {
-                int total = GetTotalCount(filter);
+                int total = data.Count();
                 SetTotalCountToHeader(total);
             }
+
+            //未指定、あるいは1000件以上であれば、1000件に指定
+            int pageCount = (perPage.HasValue && perPage.Value < 1000) ? perPage.Value : 1000;
+            data = data.Paging(page, pageCount);
 
             //SQLが多重実行されることを防ぐため、ToListで即時発行させたうえで、結果を生成
             return JsonOK(data.ToList().Select(history => GetUpdatedIndexOutputModelAsync(history).Result));
         }
+
 
         /// <summary>
         /// ステータスを更新して、出力モデルに変換する
@@ -165,27 +232,6 @@ namespace Nssol.Platypus.Controllers.spa
                 }
             }
             return status;
-        }
-
-        /// <summary>
-        /// データ件数を取得する
-        /// </summary>
-        /// <param name="filter">検索条件</param>
-        private int GetTotalCount(SearchInputModel filter)
-        {
-            IEnumerable<TrainingHistory> histories;
-            if (string.IsNullOrEmpty(filter.DataSet))
-            {
-                histories = trainingHistoryRepository.GetAll().AsEnumerable();
-            }
-            else
-            {
-                //データセット名のフィルターがかかっている場合、データセットも併せて取得しないといけない
-                histories = trainingHistoryRepository.GetAllIncludeDataSet().AsEnumerable();
-            }
-
-            histories = Search(histories, filter);
-            return histories.Count();
         }
 
         /// <summary>
@@ -319,6 +365,134 @@ namespace Nssol.Platypus.Controllers.spa
             }
             return data;
         }
+
+        /// <summary>
+        /// 詳細検索時に履歴の絞り込みを行うメソッド
+        /// </summary>
+        /// <param name="sourceData">加工前の検索結果</param>
+        /// <param name="filter">検索条件</param>
+        private static IEnumerable<TrainingHistory> Search(IEnumerable<TrainingHistory> sourceData, SearchDetailInputModel filter)
+        {
+            IEnumerable<TrainingHistory> data = sourceData;
+
+            data = data
+                .Where(d => PartialMuchKeywords(d.Name, filter.Name, filter.NameOr))
+                .Where(d => PartialMuchKeywords(d.CreatedBy, filter.StartedBy, filter.StartedByOr))
+                .Where(d => PartialMuchKeywords(d.EntryPoint, filter.EntryPoint, filter.EntryPointOr))
+                .Where(d => PartialMuchKeywords(d.Memo, filter.Memo, filter.MemoOr))
+                .Where(d => PartialMuchKeywords(d.GetStatus().ToString(), filter.Status, filter.StatusOr))
+                .Where(d => PartialMuchKeywords(d.DataSet.Name, filter.DataSet, filter.DataSetOr));
+
+            // IDによる検索
+            if (filter.IdUpper.HasValue)
+            {
+                data = data.Where(d => d.Id <= filter.IdUpper);
+            }
+            if (filter.IdLower.HasValue)
+            {
+                data = data.Where(d => d.Id >= filter.IdLower);
+            }
+
+            // 開始日時による検索
+            if (string.IsNullOrEmpty(filter.StartedAtUpper) == false)
+            {
+                if (DateTime.TryParse(filter.StartedAtUpper, out DateTime upper))
+                {
+                    data = data.SearchTime(d => d.CreatedAt, "<" + (upper.Date + new TimeSpan(1, 0, 0, 0)));
+                }
+            }
+            if (string.IsNullOrEmpty(filter.StartedAtLower) == false)
+            {
+                data = data.SearchTime(d => d.CreatedAt, ">" + filter.StartedAtLower);
+            }
+
+            // マウントした学習名での検索
+            if (string.IsNullOrEmpty(filter.ParentName) == false && filter.ParentNameOr.HasValue)
+            {
+                // まずマウントされた学習があるdataのみに絞る
+                data = data.Where(d => d.ParentMaps != null && d.ParentMaps.Count > 0);
+
+                if ((bool)filter.ParentNameOr)
+                {
+                    // OR検索
+                    data = data.Where(d => d.ParentMaps.Any(m => PartialMuchKeywords(m.Parent.Name, filter.ParentName, true)));
+                }
+                else
+                {
+                    // AND検索
+                    var parentNames = filter.ParentName.Split(",");
+                    foreach (var parentName in parentNames)
+                    {
+                        data = data.Where(d => d.ParentMaps.Any(m => m.Parent.Name.Contains(parentName, StringComparison.CurrentCulture)));
+                    }
+                }
+            }
+
+            // タグ検索
+            if (string.IsNullOrEmpty(filter.Tags) == false && (bool)filter.TagsOr.HasValue)
+            {
+                // まずタグが存在するdataのみに絞る
+                data = data.Where(d => d.TagMaps != null && d.TagMaps.Count > 0);
+
+                if ((bool)filter.TagsOr)
+                {
+                    // OR検索
+                    data = data.Where(d => d.TagMaps.Any(m => PartialMuchKeywords(m.Tag.Name, filter.Tags, true)));
+                }
+                else
+                {
+                    // AND検索
+                    var tags = filter.Tags.Split(",");
+                    foreach (var tag in tags)
+                    {
+                        data = data.Where(d => d.TagMaps.Any(m => m.Tag.Name.Contains(tag, StringComparison.CurrentCulture)));
+                    }
+                }
+            }
+            return data;
+        }
+
+        /// <summary>
+        /// 指定された条件に応じて検索の条件に合うか判定を行う
+        /// 部分一致の場合
+        /// </summary>
+        /// <param name="target">対象フィールド</param>
+        /// <param name="keywords">検索条件</param>
+        /// <param name="or">OR検索か</param>
+        private static bool PartialMuchKeywords(string target, string keywords, bool? or)
+        {
+            // 検索条件が指定されていない(orがNull または keywords が空)なら条件を満たす。
+            if (or.HasValue == false || string.IsNullOrEmpty(keywords))
+            {
+                return true;
+            }
+            // 検索条件が指定されているが対象フィールドが空の場合は条件を満たさない。
+            else if (string.IsNullOrEmpty(target))
+            {
+                return false;
+            }
+            // OR検索の場合、一つでも条件に合うものがあればTrueを返す。
+            else if ((bool)or)
+            {
+                var splitKeywords = keywords.Split(",");
+                foreach (string keyword in splitKeywords)
+                {
+                    if (target.Contains(keyword, StringComparison.CurrentCulture)) return true;
+                }
+                return false;
+            }
+            // AND検索の場合、全ての条件を満たせばTrueを返す。
+            else
+            {
+                var splitKeywords = keywords.Split(",");
+                foreach (string keyword in splitKeywords)
+                {
+                    if (target.Contains(keyword, StringComparison.CurrentCulture) == false) return false;
+                }
+                return true;
+            }
+        }
+
 
         /// <summary>
         /// マウントする学習履歴を取得
@@ -1219,6 +1393,222 @@ namespace Nssol.Platypus.Controllers.spa
             // タグ種別が学習のものに限定する
             var tags = tagLogic.GetAllTags().Where(t => t.Type == TagType.Training);
             return JsonOK(tags.Select(t => t.Name));
+        }
+
+        /// <summary>
+        /// 指定したIdに対応したTagをつける。
+        /// </summary>
+        /// <param name="tagsInput">付与タグの入力モデル</param>
+        [HttpPost("tags")]
+        [Filters.PermissionFilter(MenuCode.Training)]
+        [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.Created)]
+        public async Task<IActionResult> PostTagsAsync([FromBody] TagsInputModel tagsInput)
+        {
+            // 対象の学習IdとTagは必須
+            if (tagsInput.Id.Count() == 0 || tagsInput.Tags.Count() == 0)
+            {
+                return JsonBadRequest("target training id or tags is required.");
+            }
+
+            // 各対象IDの学習について存在するか調べる
+            foreach (var trainingId in tagsInput.Id)
+            {
+                var trainingHistory = await trainingHistoryRepository.GetByIdAsync(trainingId);
+                if (trainingHistory == null)
+                {
+                    return JsonNotFound($"Training ID {trainingId} is not found.");
+                }
+            }
+
+            // 各学習履歴にTagを追加していく
+            foreach (var trainingId in tagsInput.Id)
+            {
+                await tagLogic.AddTrainingHistoryTagsAsync(trainingId, tagsInput.Tags);
+                unitOfWork.Commit();
+            }
+
+            var changedHistory = trainingHistoryRepository.GetAllIncludeDataSetAndParentWithOrdering();
+            changedHistory = changedHistory.Where(d => tagsInput.Id.Contains(d.Id));
+
+            return JsonCreated(changedHistory.ToList().Select(history => GetUpdatedIndexOutputModelAsync(history).Result));
+        }
+
+        /// <summary>
+        /// 指定したIdに対応したTagを消去する。
+        /// </summary>
+        /// <param name="tagsInput">削除タグの入力モデル</param>
+        [HttpDelete("tags")]
+        [Filters.PermissionFilter(MenuCode.Training)]
+        [ProducesResponseType(typeof(IEnumerable<IndexOutputModel>), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> DeleteTagsAsync([FromBody] TagsInputModel tagsInput)
+        {
+            // 対象の学習IdとTagは必須
+            if (tagsInput.Id.Count() == 0 || tagsInput.Tags.Count() == 0)
+            {
+                return JsonBadRequest("target training id or tags is required.");
+            }
+
+            // 各対象IDの学習について存在するか調べる
+            foreach (var trainingId in tagsInput.Id)
+            {
+                var trainingHistory = await trainingHistoryRepository.GetByIdAsync(trainingId);
+                if (trainingHistory == null)
+                {
+                    return JsonNotFound($"Training ID {trainingId} is not found.");
+                }
+            }
+
+            // 各学習履歴からTagを削除していく。
+            foreach (var trainingId in tagsInput.Id)
+            {
+                // tag一覧の取得
+                var tags = tagLogic.GetAllTrainingHistoryTag(trainingId).ToList().Select(t => t.Name);
+                // 削除対象タグに含まれていないタグのみ残す
+                tags = tags.Where(t => tagsInput.Tags.Contains(t) == false);
+                // 残ったタグのみを新規に登録
+                if (tags.Count() > 0)
+                {
+                    await tagLogic.EditTrainingHistoryTagsAsync(trainingId, tags);
+                }
+                else
+                {
+                    tagLogic.DeleteTrainingHistoryTags(trainingId);
+                }
+                unitOfWork.Commit();
+            }
+
+            // 未使用タグ削除
+            tagRepository.DeleteUnUsedTrainingHistoryTags();
+            unitOfWork.Commit();
+
+            var changedHistory = trainingHistoryRepository.GetAllIncludeDataSetAndParentWithOrdering();
+            changedHistory = changedHistory.Where(d => tagsInput.Id.Contains(d.Id));
+
+            return JsonCreated(changedHistory.ToList().Select(history => GetUpdatedIndexOutputModelAsync(history).Result));
+        }
+
+        /// <summary>
+        /// 検索履歴の一覧を取得する
+        /// </summary>
+        [HttpGet("search-history")]
+        [Filters.PermissionFilter(MenuCode.Training)]
+        [ProducesResponseType(typeof(IEnumerable<SearchHistoryOutputModel>), (int)HttpStatusCode.OK)]
+        public IActionResult GetSearchHistoryAsync()
+        {
+            var searchHistories = trainingSearchHistoryRepository.GetAll();
+
+            return JsonOK(searchHistories.Select(h => new SearchHistoryOutputModel(h)));
+        }
+
+        /// <summary>
+        /// 検索履歴を保存する
+        /// </summary>
+        /// <param name="searchHistoryInputModel">保存対象の検索履歴入力モデル</param>
+        [HttpPost("search-history")]
+        [Filters.PermissionFilter(MenuCode.Training)]
+        [ProducesResponseType(typeof(SearchHistoryOutputModel), (int)HttpStatusCode.Created)]
+        public IActionResult PostSearchHistoryAsync([FromBody] SearchHistoryInputModel searchHistoryInputModel)
+        {
+            TrainingSearchHistories history = new TrainingSearchHistories();
+            var searchDetailInputModel = searchHistoryInputModel.SearchDetailInputModel;
+            history.Name = searchHistoryInputModel.Name;
+            history.TenantId = CurrentUserInfo.SelectedTenant.Id;
+            history.CreatedBy = CurrentUserInfo.Name;
+            history.ModifiedBy = CurrentUserInfo.Name;
+            history.CreatedAt = DateTime.Now;
+            history.ModifiedAt = DateTime.Now;
+            history.IdLower = searchDetailInputModel.IdLower;
+            history.IdUpper = searchDetailInputModel.IdUpper;
+            if (searchDetailInputModel.Name != null)
+            {
+                history.TrainingName = searchDetailInputModel.Name;
+                history.TrainingNameOr = searchDetailInputModel.NameOr;
+            }
+            if (searchDetailInputModel.ParentName != null)
+            {
+                history.ParentName = searchDetailInputModel.ParentName;
+                history.ParentNameOr = searchDetailInputModel.ParentNameOr;
+            }
+            history.StartedAtLower = searchDetailInputModel.StartedAtLower;
+            history.StartedAtUpper = searchDetailInputModel.StartedAtUpper;
+            if (searchDetailInputModel.StartedBy != null)
+            {
+                history.StartedBy =searchDetailInputModel.StartedBy;
+                history.StartedByOr = searchDetailInputModel.StartedByOr;
+            }
+            if (searchDetailInputModel.DataSet != null)
+            {
+                history.DataSet = searchDetailInputModel.DataSet;
+                history.DataSetOr = searchDetailInputModel.DataSetOr;
+            }
+            if (searchDetailInputModel.EntryPoint != null)
+            {
+                history.EntryPoint = searchDetailInputModel.EntryPoint;
+                history.EntryPointOr = searchDetailInputModel.EntryPointOr;
+            }
+            if (searchDetailInputModel.Memo != null)
+            {
+                history.Memo = searchDetailInputModel.Memo;
+                history.MemoOr = searchDetailInputModel.MemoOr;
+            }
+            if (searchDetailInputModel.Tags != null)
+            {
+                history.Tags = searchDetailInputModel.Tags;
+                history.TagsOr = searchDetailInputModel.TagsOr;
+            }
+            if (searchDetailInputModel.Status != null)
+            {
+                history.Status = searchDetailInputModel.Status;
+                history.StatusOr = searchDetailInputModel.StatusOr;
+            }
+            trainingSearchHistoryRepository.Add(history);
+            unitOfWork.Commit();
+
+            return JsonCreated(new SearchHistoryOutputModel(history));
+        }
+
+        /// <summary>
+        /// 検索履歴を削除する
+        /// </summary>
+        /// <param name="id">削除対象の検索履歴ID</param>
+        [HttpDelete("search-history/{id}")]
+        [Filters.PermissionFilter(MenuCode.Training)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        public async Task<IActionResult> DeleteSearchHistory(long id)
+        {
+            // データの存在チェック
+            var searchHistory = await trainingSearchHistoryRepository.GetByIdAsync(id);
+            if (searchHistory == null)
+            {
+                return JsonBadRequest($"SearchHistory id {id} is not found");
+            }
+
+            await trainingSearchHistoryRepository.DeleteByIdAsync(id);
+            unitOfWork.Commit();
+
+            return JsonNoContent();
+        }
+
+        /// <summary>
+        /// 検索時の補完に使用する項目を出力する
+        /// </summary>
+        [HttpGet("search/fill")]
+        [Filters.PermissionFilter(MenuCode.Training)]
+        [ProducesResponseType(typeof(TrainingSearchFillOutputModel), (int)HttpStatusCode.OK)]
+        public IActionResult GetFillSerch()
+        {
+            var fillOutput = new TrainingSearchFillOutputModel();
+
+            // タグ種別が学習のものに限定する
+            fillOutput.Tags = tagLogic.GetAllTags().Where(t => t.Type == TagType.Training).Select(t => t.Name).Distinct();
+            
+            // ステータス、実行者名、データセットについては学習履歴から取得する
+            var data = trainingHistoryRepository.GetAllIncludeDataSetAndParentWithOrdering().AsEnumerable();
+            fillOutput.CreatedBy = data.Select(d => d.CreatedBy).Distinct();
+            fillOutput.Status = data.Select(d => d.GetStatus().ToString()).Distinct();
+            fillOutput.Datasets = data.Select(d => d.DataSet.Name).Distinct();
+
+            return JsonOK(fillOutput);
         }
     }
 }

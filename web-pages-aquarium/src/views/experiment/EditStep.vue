@@ -8,6 +8,7 @@
     <el-row :gutter="20"><h2>新しい実験の開始</h2></el-row>
     <el-row :gutter="20">
       <el-col :span="20" style="padding-left:30px">
+        <kqi-display-error :error="error" />
         <el-form
           ref="createForm"
           :model="form"
@@ -15,14 +16,13 @@
           element-loading-background="rgba(255, 255, 255, 0.7)"
         >
           <el-form-item label="実験名" prop="name">
-            <kqi-display-error :error="error" />
             <el-input v-model="form.name" />
           </el-form-item>
 
           <el-form-item
             label="データセットの選択"
             prop="selectedDataSetVersionName"
-            ><kqi-display-error :error="error" />
+          >
             <el-input
               v-model="form.selectedDataSetVersionName"
               :disabled="true"
@@ -33,7 +33,6 @@
             label=" テンプレートバージョン"
             prop="templateVersionValue"
             ><br />
-            <kqi-display-error :error="error" />
             <el-select v-model="form.templateVersionValue" placeholder="Select">
               <el-option
                 v-for="item in templateVersions"

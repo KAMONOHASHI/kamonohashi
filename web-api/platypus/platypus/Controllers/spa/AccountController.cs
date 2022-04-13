@@ -69,7 +69,7 @@ namespace Nssol.Platypus.Controllers.spa
                 UserDisplayName = userInfo.DisplayName,
                 SelectedTenant = new TenantInfo(userInfo.SelectedTenant, userInfo.TenantDic, userInfo.DefaultTenant.Id),
                 DefaultTenant = new TenantInfo(userInfo.DefaultTenant, userInfo.TenantDic, userInfo.DefaultTenant.Id),
-                Tenants = userInfo.TenantDic.Select(x => new TenantInfo(x.Key, x.Value, userInfo.DefaultTenant.Id)).OrderBy(t => t.DisplayName).ToList(),
+                Tenants = userInfo.TenantDic.Select(x => new TenantInfo(x.Key, x.Value, userInfo.DefaultTenant.Id) { IsOrigin = userRepository.IsOriginMember(userInfo.Id, x.Key.Id) }).OrderBy(t => t.DisplayName).ToList(),
                 PasswordChangeEnabled = userInfo.ServiceType == AuthServiceType.Local
             };
 

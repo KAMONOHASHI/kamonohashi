@@ -43,5 +43,10 @@ namespace Nssol.Platypus.ApiModels.TenantApiModels
         /// ノートブック無期限利用可否フラグ
         /// </summary>
         public bool AvailableInfiniteTimeNotebook { get; set; }
+
+        /// <summary>
+        /// UserGroup IDs。
+        /// </summary>
+        public IEnumerable<long> UserGroupIds { get; set; }
     }
 }

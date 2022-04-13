@@ -44,7 +44,8 @@ class TenantApiModelsDetailsOutputModel(object):
         'name': 'str',
         'registry_ids': 'list[int]',
         'storage_id': 'int',
-        'storage_path': 'str'
+        'storage_path': 'str',
+        'user_group_ids': 'list[int]'
     }
 
     attribute_map = {
@@ -61,10 +62,11 @@ class TenantApiModelsDetailsOutputModel(object):
         'name': 'name',
         'registry_ids': 'registryIds',
         'storage_id': 'storageId',
-        'storage_path': 'storagePath'
+        'storage_path': 'storagePath',
+        'user_group_ids': 'userGroupIds'
     }
 
-    def __init__(self, available_infinite_time_notebook=None, created_at=None, created_by=None, default_git_id=None, default_registry_id=None, display_name=None, git_ids=None, id=None, modified_at=None, modified_by=None, name=None, registry_ids=None, storage_id=None, storage_path=None):  # noqa: E501
+    def __init__(self, available_infinite_time_notebook=None, created_at=None, created_by=None, default_git_id=None, default_registry_id=None, display_name=None, git_ids=None, id=None, modified_at=None, modified_by=None, name=None, registry_ids=None, storage_id=None, storage_path=None, user_group_ids=None):  # noqa: E501
         """TenantApiModelsDetailsOutputModel - a model defined in Swagger"""  # noqa: E501
 
         self._available_infinite_time_notebook = None
@@ -81,6 +83,7 @@ class TenantApiModelsDetailsOutputModel(object):
         self._registry_ids = None
         self._storage_id = None
         self._storage_path = None
+        self._user_group_ids = None
         self.discriminator = None
 
         if available_infinite_time_notebook is not None:
@@ -111,6 +114,8 @@ class TenantApiModelsDetailsOutputModel(object):
             self.storage_id = storage_id
         if storage_path is not None:
             self.storage_path = storage_path
+        if user_group_ids is not None:
+            self.user_group_ids = user_group_ids
 
     @property
     def available_infinite_time_notebook(self):
@@ -405,6 +410,27 @@ class TenantApiModelsDetailsOutputModel(object):
         """
 
         self._storage_path = storage_path
+
+    @property
+    def user_group_ids(self):
+        """Gets the user_group_ids of this TenantApiModelsDetailsOutputModel.  # noqa: E501
+
+
+        :return: The user_group_ids of this TenantApiModelsDetailsOutputModel.  # noqa: E501
+        :rtype: list[int]
+        """
+        return self._user_group_ids
+
+    @user_group_ids.setter
+    def user_group_ids(self, user_group_ids):
+        """Sets the user_group_ids of this TenantApiModelsDetailsOutputModel.
+
+
+        :param user_group_ids: The user_group_ids of this TenantApiModelsDetailsOutputModel.  # noqa: E501
+        :type: list[int]
+        """
+
+        self._user_group_ids = user_group_ids
 
     def to_dict(self):
         """Returns the model properties as a dict"""

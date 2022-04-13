@@ -34,23 +34,32 @@ class InfosRoleInfo(object):
         'display_name': 'str',
         'id': 'int',
         'is_customed': 'bool',
-        'name': 'str'
+        'is_origin': 'bool',
+        'name': 'str',
+        'sort_order': 'int',
+        'user_group_tanant_map_id_lists': 'list[int]'
     }
 
     attribute_map = {
         'display_name': 'displayName',
         'id': 'id',
         'is_customed': 'isCustomed',
-        'name': 'name'
+        'is_origin': 'isOrigin',
+        'name': 'name',
+        'sort_order': 'sortOrder',
+        'user_group_tanant_map_id_lists': 'userGroupTanantMapIdLists'
     }
 
-    def __init__(self, display_name=None, id=None, is_customed=None, name=None):  # noqa: E501
+    def __init__(self, display_name=None, id=None, is_customed=None, is_origin=None, name=None, sort_order=None, user_group_tanant_map_id_lists=None):  # noqa: E501
         """InfosRoleInfo - a model defined in Swagger"""  # noqa: E501
 
         self._display_name = None
         self._id = None
         self._is_customed = None
+        self._is_origin = None
         self._name = None
+        self._sort_order = None
+        self._user_group_tanant_map_id_lists = None
         self.discriminator = None
 
         if display_name is not None:
@@ -59,8 +68,14 @@ class InfosRoleInfo(object):
             self.id = id
         if is_customed is not None:
             self.is_customed = is_customed
+        if is_origin is not None:
+            self.is_origin = is_origin
         if name is not None:
             self.name = name
+        if sort_order is not None:
+            self.sort_order = sort_order
+        if user_group_tanant_map_id_lists is not None:
+            self.user_group_tanant_map_id_lists = user_group_tanant_map_id_lists
 
     @property
     def display_name(self):
@@ -126,6 +141,27 @@ class InfosRoleInfo(object):
         self._is_customed = is_customed
 
     @property
+    def is_origin(self):
+        """Gets the is_origin of this InfosRoleInfo.  # noqa: E501
+
+
+        :return: The is_origin of this InfosRoleInfo.  # noqa: E501
+        :rtype: bool
+        """
+        return self._is_origin
+
+    @is_origin.setter
+    def is_origin(self, is_origin):
+        """Sets the is_origin of this InfosRoleInfo.
+
+
+        :param is_origin: The is_origin of this InfosRoleInfo.  # noqa: E501
+        :type: bool
+        """
+
+        self._is_origin = is_origin
+
+    @property
     def name(self):
         """Gets the name of this InfosRoleInfo.  # noqa: E501
 
@@ -145,6 +181,48 @@ class InfosRoleInfo(object):
         """
 
         self._name = name
+
+    @property
+    def sort_order(self):
+        """Gets the sort_order of this InfosRoleInfo.  # noqa: E501
+
+
+        :return: The sort_order of this InfosRoleInfo.  # noqa: E501
+        :rtype: int
+        """
+        return self._sort_order
+
+    @sort_order.setter
+    def sort_order(self, sort_order):
+        """Sets the sort_order of this InfosRoleInfo.
+
+
+        :param sort_order: The sort_order of this InfosRoleInfo.  # noqa: E501
+        :type: int
+        """
+
+        self._sort_order = sort_order
+
+    @property
+    def user_group_tanant_map_id_lists(self):
+        """Gets the user_group_tanant_map_id_lists of this InfosRoleInfo.  # noqa: E501
+
+
+        :return: The user_group_tanant_map_id_lists of this InfosRoleInfo.  # noqa: E501
+        :rtype: list[int]
+        """
+        return self._user_group_tanant_map_id_lists
+
+    @user_group_tanant_map_id_lists.setter
+    def user_group_tanant_map_id_lists(self, user_group_tanant_map_id_lists):
+        """Sets the user_group_tanant_map_id_lists of this InfosRoleInfo.
+
+
+        :param user_group_tanant_map_id_lists: The user_group_tanant_map_id_lists of this InfosRoleInfo.  # noqa: E501
+        :type: list[int]
+        """
+
+        self._user_group_tanant_map_id_lists = user_group_tanant_map_id_lists
 
     def to_dict(self):
         """Returns the model properties as a dict"""
