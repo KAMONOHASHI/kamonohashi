@@ -12,6 +12,11 @@ namespace Nssol.Platypus.ApiModels.DataApiModels
         }
 
         /// <summary>
+        /// 登録者表示名
+        /// </summary>
+        public string DisplayNameCreatedBy { get; set; }
+
+        /// <summary>
         /// データファイル名リスト
         /// </summary>
         public IEnumerable<string> FileNames { get; set; }

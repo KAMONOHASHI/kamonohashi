@@ -117,6 +117,11 @@ namespace Nssol.Platypus.ApiModels.InferenceApiModels
         public string StartedAt { get; set; }
 
         /// <summary>
+        /// 登録者表示名
+        /// </summary>
+        public string DisplayNameCreatedBy { get; set; }
+
+        /// <summary>
         /// コンテナが実行されたノード名
         /// </summary>
         public string Node { get; set; }

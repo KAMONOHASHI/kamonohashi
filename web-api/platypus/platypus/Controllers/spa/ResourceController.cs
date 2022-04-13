@@ -117,11 +117,17 @@ namespace Nssol.Platypus.Controllers.spa
                         {
                             result.Add("*Unassigned*", new NodeResourceOutputModel());
                         }
-                        result["*Unassigned*"].Add(CreateContainerDetailsOutputModel(container));
+                        var ccdo = CreateContainerDetailsOutputModel(container);
+                        UserInfo userInfo = await userRepository.GetUserInfoAsync(ccdo.CreatedBy);
+                        ccdo.DisplayNameCreatedBy = userInfo.DisplayName;
+                        result["*Unassigned*"].Add(ccdo);
                     }
                     else if (result.ContainsKey(container.NodeName))
                     {
-                        result[container.NodeName].Add(CreateContainerDetailsOutputModel(container));
+                        var ccdo = CreateContainerDetailsOutputModel(container);
+                        UserInfo userInfo = await userRepository.GetUserInfoAsync(ccdo.CreatedBy);
+                        ccdo.DisplayNameCreatedBy = userInfo.DisplayName;
+                        result[container.NodeName].Add(ccdo);
                     }
                     else
                     {
@@ -204,6 +210,11 @@ namespace Nssol.Platypus.Controllers.spa
                 {
                     // ノード名の昇順に並び替える
                     tenant.ContainerResourceList = tenant.ContainerResourceList.OrderBy(c => c.NodeName).ToList();
+                    foreach (var cr in tenant.ContainerResourceList)
+                    {
+                        UserInfo userInfo = await userRepository.GetUserInfoAsync(cr.CreatedBy);
+                        cr.DisplayNameCreatedBy = userInfo.DisplayName;
+                    }
                 }
                 return JsonOK(result.Values);
             }
@@ -227,10 +238,21 @@ namespace Nssol.Platypus.Controllers.spa
             var result = await clusterManagementLogic.GetAllContainerDetailsInfosAsync();
             if (result.IsSuccess)
             {
+                // 返却データの List 生成
+                List<ContainerDetailsOutputModel> list = new List<ContainerDetailsOutputModel>();
+
                 // 登録ノードに所属していないコンテナは無視し、ノード名（昇順）、テナント名（昇順）で並び替える
-                return JsonOK(result.Value
+                var ret = result.Value
                     .Select(info => CreateContainerDetailsOutputModel(info)).OrderBy(c => c.NodeName).ThenBy(c => c.TenantName)
-                    .Where(info => nodes.FirstOrDefault(n => n.Name == info.NodeName) != null));
+                    .Where(info => nodes.FirstOrDefault(n => n.Name == info.NodeName) != null);
+                
+                foreach (var data in ret)
+                {
+                    UserInfo userInfo = await userRepository.GetUserInfoAsync(data.CreatedBy);
+                    data.DisplayNameCreatedBy = userInfo.DisplayName;
+                    list.Add(data);
+                }
+                return JsonOK(list);
             }
             else
             {
@@ -330,7 +352,8 @@ namespace Nssol.Platypus.Controllers.spa
                 ContainerType = containerType, //コンテナの種別を確認
                 CreatedBy = userRepository.GetUserName(info.CreatedBy)
             };
-
+            UserInfo userInfo = await userRepository.GetUserInfoAsync(result.CreatedBy);
+            result.DisplayNameCreatedBy = userInfo.DisplayName;
             return JsonOK(result);
         }
 
@@ -656,10 +679,18 @@ namespace Nssol.Platypus.Controllers.spa
             var result = await clusterManagementLogic.GetAllContainerDetailsInfosAsync(CurrentUserInfo.SelectedTenant.Name);
             if (result.IsSuccess)
             {
-                return JsonOK(result.Value.Select(info => new ContainerDetailsForTenantOutputModel(info)
+                List<ContainerDetailsForTenantOutputModel> list = new List<ContainerDetailsForTenantOutputModel>();
+                var ret = result.Value.Select(info => new ContainerDetailsForTenantOutputModel(info)
                 {
                     CreatedBy = userRepository.GetUserName(info.CreatedBy)
-                }));
+                });
+                foreach (var data in ret)
+                {
+                    UserInfo userInfo = await userRepository.GetUserInfoAsync(data.CreatedBy);
+                    data.DisplayNameCreatedBy = userInfo.DisplayName;
+                    list.Add(data);
+                }
+                return JsonOK(list);
             }
             else
             {
@@ -738,12 +769,18 @@ namespace Nssol.Platypus.Controllers.spa
                 if (container.TenantName.Equals(CurrentUserInfo.SelectedTenant.Name, StringComparison.CurrentCulture))
                 {
                     // 現テナントと同じならリソース情報詳細を追加
-                    result[container.NodeName].Add(CreateContainerDetailsOutputModel(container));
+                    var ccdo = CreateContainerDetailsOutputModel(container);
+                    UserInfo userInfo = await userRepository.GetUserInfoAsync(ccdo.CreatedBy);
+                    ccdo.DisplayNameCreatedBy = userInfo.DisplayName;
+                    result[container.NodeName].Add(ccdo);
                 }
                 else
                 {
                     // CPU, Memory, GPU のデータを加算
-                    result[container.NodeName].IncrementData(CreateContainerDetailsOutputModel(container));
+                    var ccdo = CreateContainerDetailsOutputModel(container);
+                    UserInfo userInfo = await userRepository.GetUserInfoAsync(ccdo.CreatedBy);
+                    ccdo.DisplayNameCreatedBy = userInfo.DisplayName;
+                    result[container.NodeName].IncrementData(ccdo);
                 }
             }
             return JsonOK(result.Values);
@@ -779,7 +816,8 @@ namespace Nssol.Platypus.Controllers.spa
                 CreatedBy = userRepository.GetUserName(info.CreatedBy),
                 ContainerType = containerType
             };
-
+            UserInfo userInfo = await userRepository.GetUserInfoAsync(result.CreatedBy);
+            result.DisplayNameCreatedBy = userInfo.DisplayName;
             return JsonOK(result);
         }
 

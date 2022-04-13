@@ -33,6 +33,7 @@ namespace Nssol.Platypus.Controllers.spa
     {
         private readonly ITrainingHistoryRepository trainingHistoryRepository;
         private readonly IInferenceHistoryRepository inferenceHistoryRepository;
+        private readonly IUserRepository userRepository;
         private readonly IDataSetRepository dataSetRepository;
         private readonly ITenantRepository tenantRepository;
         private readonly INodeRepository nodeRepository;
@@ -50,6 +51,7 @@ namespace Nssol.Platypus.Controllers.spa
         public InferenceController(
             ITrainingHistoryRepository trainingHistoryRepository,
             IInferenceHistoryRepository inferenceHistoryRepository,
+            IUserRepository userRepository,
             IDataSetRepository dataSetRepository,
             ITenantRepository tenantRepository,
             INodeRepository nodeRepository,
@@ -64,6 +66,7 @@ namespace Nssol.Platypus.Controllers.spa
         {
             this.trainingHistoryRepository = trainingHistoryRepository;
             this.inferenceHistoryRepository = inferenceHistoryRepository;
+            this.userRepository = userRepository;
             this.dataSetRepository = dataSetRepository;
             this.tenantRepository = tenantRepository;
             this.nodeRepository = nodeRepository;
@@ -366,6 +369,9 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             var model = new InferenceDetailsOutputModel(history);
+
+            UserInfo userInfo = await userRepository.GetUserInfoAsync(model.CreatedBy);
+            model.DisplayNameCreatedBy = userInfo.DisplayName;
 
             var status = history.GetStatus();
             model.StatusType = status.StatusType;

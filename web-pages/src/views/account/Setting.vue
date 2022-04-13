@@ -5,6 +5,7 @@
       <!-- 選択中テナント情報 -->
       <tenant-info
         :user-name="account.userName"
+        :user-display-name="account.userDisplayName"
         :tenant="account.selectedTenant"
       />
 

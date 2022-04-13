@@ -172,7 +172,12 @@
             </div>
           </el-form-item>
 
-          <kqi-display-text-form label="作成者" :value="detail.createdBy" />
+          <kqi-display-text-form
+            label="作成者"
+            :value="
+              detail.createdBy + '【' + detail.displayNameCreatedBy + '】'
+            "
+          />
           <kqi-display-text-form label="開始日時" :value="detail.startedAt" />
           <kqi-display-text-form label="完了日時" :value="detail.completedAt" />
           <kqi-display-text-form label="待機時間" :value="detail.waitingTime" />
@@ -341,6 +346,7 @@ export default {
     ]),
     async retrieveData() {
       await this.fetchDetail(this.id)
+      console.log(this.detail)
       if (
         this.detail.statusType === 'Running' ||
         this.detail.statusType === 'Error'

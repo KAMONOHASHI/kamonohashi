@@ -98,6 +98,11 @@ namespace Nssol.Platypus.ApiModels.NotebookApiModels
         }
 
         /// <summary>
+        /// 登録者表示名
+        /// </summary>
+        public string DisplayNameCreatedBy { get; set; }
+
+        /// <summary>
         /// コンテナ名になる一意識別文字列
         /// </summary>
         public string Key { get; set; }

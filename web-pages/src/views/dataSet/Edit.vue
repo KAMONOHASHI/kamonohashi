@@ -43,7 +43,11 @@
             <kqi-display-text-form v-else value="可" />
           </el-form-item>
           <el-form-item label="登録者">
-            <kqi-display-text-form v-model="detail.createdBy" />
+            <kqi-display-text-form
+              :value="
+                detail.createdBy + '【' + detail.displayNameCreatedBy + '】'
+              "
+            />
           </el-form-item>
           <el-form-item label="登録日時">
             <kqi-display-text-form v-model="detail.createdAt" />
@@ -243,6 +247,7 @@ export default {
       this.form.entries = null
       try {
         await this.fetchDetail(this.id)
+        console.log(this.detail)
         this.form.name = this.detail.name
         this.form.memo = this.detail.memo
         this.form.isFlat = this.detail.isFlat

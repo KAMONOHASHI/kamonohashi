@@ -19,7 +19,15 @@
             @row-click="handleEditOpen"
           >
             <el-table-column width="auto" />
-            <el-table-column prop="createdBy" width="auto" />
+            <el-table-column prop="createdBy" width="auto">
+              <template slot-scope="scope">
+                <span>
+                  {{ scope.row.createdBy }}【{{
+                    scope.row.displayNameCreatedBy
+                  }}】
+                </span>
+              </template>
+            </el-table-column>
             <el-table-column prop="name" width="auto" />
             <el-table-column align="right" prop="cpu" :width="columnWidth" />
             <el-table-column align="right" prop="memory" :width="columnWidth" />

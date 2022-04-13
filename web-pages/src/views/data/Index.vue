@@ -55,7 +55,14 @@
           </div>
         </el-table-column>
         <el-table-column prop="createdAt" label="登録日時" width="200px" />
-        <el-table-column prop="createdBy" label="登録者" width="120px" />
+        <el-table-column label="登録者" width="120px">
+          <template slot-scope="scope">
+            <p>
+              {{ scope.row.createdBy }}【{{ scope.row.displayNameCreatedBy }}】
+            </p>
+          </template>
+        </el-table-column>
+
         <el-table-column
           prop="memo"
           label="メモ"
