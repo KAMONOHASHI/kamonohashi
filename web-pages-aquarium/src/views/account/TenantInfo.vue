@@ -5,7 +5,8 @@
       <img src="@/assets/logo_A.png" alt="" />
     </div>
     <el-row class="row-element" style="text-align: center;">
-      {{ userName }} 【{{ userDisplayName }}】
+      {{ userName
+      }}<span v-if="userDisplayName"> 【{{ userDisplayName }}】</span>
     </el-row>
     <el-row class="row-element">
       <el-col :span="12" class="content-color">選択中のテナント</el-col>

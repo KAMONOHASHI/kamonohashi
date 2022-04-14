@@ -58,7 +58,10 @@
         <el-table-column label="登録者" width="120px">
           <template slot-scope="scope">
             <p>
-              {{ scope.row.createdBy }}【{{ scope.row.displayNameCreatedBy }}】
+              {{ scope.row.createdBy
+              }}<span v-if="scope.row.displayNameCreatedBy"
+                >【{{ scope.row.displayNameCreatedBy }}】</span
+              >
             </p>
           </template>
         </el-table-column>

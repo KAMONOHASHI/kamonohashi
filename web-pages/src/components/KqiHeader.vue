@@ -24,9 +24,10 @@ title
               style="position: relative; top: 7px; left: -8px;"
             />
 
-            {{ omitIfLong(account.userName) }}【{{
-              omitIfLong(account.userDisplayName)
-            }}】/
+            {{ omitIfLong(account.userName)
+            }}<span v-if="account.userDisplayName"
+              >【{{ omitIfLong(account.userDisplayName) }}】</span
+            >/
             {{ omitIfLong(account.selectedTenant.displayName) }}
             <i class="el-icon-caret-bottom" />
           </span>

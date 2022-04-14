@@ -43,7 +43,13 @@
       <kqi-display-text-form
         v-if="isEditDialog"
         label="登録者"
-        :value="detail.createdBy + '【' + detail.displayNameCreatedBy + '】'"
+        :value="
+          detail
+            ? detail.displayNameCreatedBy
+              ? detail.createdBy + '【' + detail.displayNameCreatedBy + '】'
+              : detail.createdBy
+            : ''
+        "
       />
       <kqi-display-text-form
         v-if="isEditDialog"

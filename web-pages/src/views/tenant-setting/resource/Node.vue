@@ -22,9 +22,10 @@
             <el-table-column prop="createdBy" width="auto">
               <template slot-scope="scope">
                 <span>
-                  {{ scope.row.createdBy }}【{{
-                    scope.row.displayNameCreatedBy
-                  }}】
+                  {{ scope.row.createdBy
+                  }}<span v-if="scope.row.displayNameCreatedBy"
+                    >【{{ scope.row.displayNameCreatedBy }}】</span
+                  >
                 </span>
               </template>
             </el-table-column>

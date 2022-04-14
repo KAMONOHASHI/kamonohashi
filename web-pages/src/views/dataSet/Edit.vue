@@ -45,7 +45,14 @@
           <el-form-item label="登録者">
             <kqi-display-text-form
               :value="
-                detail.createdBy + '【' + detail.displayNameCreatedBy + '】'
+                detail
+                  ? detail.displayNameCreatedBy
+                    ? detail.createdBy +
+                      '【' +
+                      detail.displayNameCreatedBy +
+                      '】'
+                    : detail.createdBy
+                  : ''
               "
             />
           </el-form-item>

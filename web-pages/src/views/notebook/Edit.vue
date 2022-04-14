@@ -175,7 +175,11 @@
           <kqi-display-text-form
             label="作成者"
             :value="
-              detail.createdBy + '【' + detail.displayNameCreatedBy + '】'
+              detail
+                ? detail.displayNameCreatedBy
+                  ? detail.createdBy + '【' + detail.displayNameCreatedBy + '】'
+                  : detail.createdBy
+                : ''
             "
           />
           <kqi-display-text-form label="開始日時" :value="detail.startedAt" />
@@ -346,7 +350,6 @@ export default {
     ]),
     async retrieveData() {
       await this.fetchDetail(this.id)
-      console.log(this.detail)
       if (
         this.detail.statusType === 'Running' ||
         this.detail.statusType === 'Error'

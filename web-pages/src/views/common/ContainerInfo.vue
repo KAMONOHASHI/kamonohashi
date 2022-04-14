@@ -34,7 +34,9 @@
           label="ユーザ"
           :value="
             detail
-              ? detail.createdBy + '【' + detail.displayNameCreatedBy + '】'
+              ? detail.displayNameCreatedBy
+                ? detail.createdBy + '【' + detail.displayNameCreatedBy + '】'
+                : detail.createdBy
               : ''
           "
         />
