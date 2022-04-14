@@ -254,7 +254,6 @@ export default {
       this.form.entries = null
       try {
         await this.fetchDetail(this.id)
-        console.log(this.detail)
         this.form.name = this.detail.name
         this.form.memo = this.detail.memo
         this.form.isFlat = this.detail.isFlat
