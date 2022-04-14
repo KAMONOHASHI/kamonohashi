@@ -119,14 +119,20 @@ namespace Nssol.Platypus.Controllers.spa
                         }
                         var ccdo = CreateContainerDetailsOutputModel(container);
                         UserInfo userInfo = await userRepository.GetUserInfoAsync(ccdo.CreatedBy);
-                        ccdo.DisplayNameCreatedBy = userInfo.DisplayName;
+                        if (userInfo != null)
+                        {
+                            ccdo.DisplayNameCreatedBy = userInfo.DisplayName;
+                        }
                         result["*Unassigned*"].Add(ccdo);
                     }
                     else if (result.ContainsKey(container.NodeName))
                     {
                         var ccdo = CreateContainerDetailsOutputModel(container);
                         UserInfo userInfo = await userRepository.GetUserInfoAsync(ccdo.CreatedBy);
-                        ccdo.DisplayNameCreatedBy = userInfo.DisplayName;
+                        if (userInfo != null)
+                        {
+                            ccdo.DisplayNameCreatedBy = userInfo.DisplayName;
+                        }
                         result[container.NodeName].Add(ccdo);
                     }
                     else
@@ -213,7 +219,10 @@ namespace Nssol.Platypus.Controllers.spa
                     foreach (var cr in tenant.ContainerResourceList)
                     {
                         UserInfo userInfo = await userRepository.GetUserInfoAsync(cr.CreatedBy);
-                        cr.DisplayNameCreatedBy = userInfo.DisplayName;
+                        if (userInfo != null)
+                        {
+                            cr.DisplayNameCreatedBy = userInfo.DisplayName;
+                        }                        
                     }
                 }
                 return JsonOK(result.Values);
@@ -249,7 +258,11 @@ namespace Nssol.Platypus.Controllers.spa
                 foreach (var data in ret)
                 {
                     UserInfo userInfo = await userRepository.GetUserInfoAsync(data.CreatedBy);
-                    data.DisplayNameCreatedBy = userInfo.DisplayName;
+                    if (userInfo != null)
+                    {
+                        data.DisplayNameCreatedBy = userInfo.DisplayName;
+                    }
+                    
                     list.Add(data);
                 }
                 return JsonOK(list);
@@ -353,7 +366,10 @@ namespace Nssol.Platypus.Controllers.spa
                 CreatedBy = userRepository.GetUserName(info.CreatedBy)
             };
             UserInfo userInfo = await userRepository.GetUserInfoAsync(result.CreatedBy);
-            result.DisplayNameCreatedBy = userInfo.DisplayName;
+            if (userInfo != null)
+            {
+                result.DisplayNameCreatedBy = userInfo.DisplayName;
+            }
             return JsonOK(result);
         }
 
@@ -687,7 +703,10 @@ namespace Nssol.Platypus.Controllers.spa
                 foreach (var data in ret)
                 {
                     UserInfo userInfo = await userRepository.GetUserInfoAsync(data.CreatedBy);
-                    data.DisplayNameCreatedBy = userInfo.DisplayName;
+                    if (userInfo != null)
+                    {
+                        data.DisplayNameCreatedBy = userInfo.DisplayName;
+                    }
                     list.Add(data);
                 }
                 return JsonOK(list);
@@ -771,7 +790,10 @@ namespace Nssol.Platypus.Controllers.spa
                     // 現テナントと同じならリソース情報詳細を追加
                     var ccdo = CreateContainerDetailsOutputModel(container);
                     UserInfo userInfo = await userRepository.GetUserInfoAsync(ccdo.CreatedBy);
-                    ccdo.DisplayNameCreatedBy = userInfo.DisplayName;
+                    if (userInfo != null)
+                    {
+                        ccdo.DisplayNameCreatedBy = userInfo.DisplayName;
+                    }
                     result[container.NodeName].Add(ccdo);
                 }
                 else
@@ -779,7 +801,10 @@ namespace Nssol.Platypus.Controllers.spa
                     // CPU, Memory, GPU のデータを加算
                     var ccdo = CreateContainerDetailsOutputModel(container);
                     UserInfo userInfo = await userRepository.GetUserInfoAsync(ccdo.CreatedBy);
-                    ccdo.DisplayNameCreatedBy = userInfo.DisplayName;
+                    if(userInfo != null)
+                    {
+                        ccdo.DisplayNameCreatedBy = userInfo.DisplayName;
+                    }
                     result[container.NodeName].IncrementData(ccdo);
                 }
             }
@@ -817,7 +842,10 @@ namespace Nssol.Platypus.Controllers.spa
                 ContainerType = containerType
             };
             UserInfo userInfo = await userRepository.GetUserInfoAsync(result.CreatedBy);
-            result.DisplayNameCreatedBy = userInfo.DisplayName;
+            if (userInfo != null)
+            {
+                result.DisplayNameCreatedBy = userInfo.DisplayName;
+            }            
             return JsonOK(result);
         }
 

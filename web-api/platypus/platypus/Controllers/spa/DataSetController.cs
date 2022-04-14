@@ -127,7 +127,10 @@ namespace Nssol.Platypus.Controllers.spa
             var model = new DetailsOutputModel(dataSet);
 
             UserInfo userInfo = await userRepository.GetUserInfoAsync(model.CreatedBy);
-            model.DisplayNameCreatedBy = userInfo.DisplayName;
+            if (userInfo != null)
+            {
+                model.DisplayNameCreatedBy = userInfo.DisplayName;
+            }
 
             if (dataSet.DataSetEntries != null)
             {

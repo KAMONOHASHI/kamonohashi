@@ -371,7 +371,10 @@ namespace Nssol.Platypus.Controllers.spa
             var model = new InferenceDetailsOutputModel(history);
 
             UserInfo userInfo = await userRepository.GetUserInfoAsync(model.CreatedBy);
-            model.DisplayNameCreatedBy = userInfo.DisplayName;
+            if (userInfo != null)
+            {
+                model.DisplayNameCreatedBy = userInfo.DisplayName;
+            }
 
             var status = history.GetStatus();
             model.StatusType = status.StatusType;
