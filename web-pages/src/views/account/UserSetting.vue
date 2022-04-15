@@ -53,10 +53,10 @@ export default {
         password: ['', ''],
       }),
     },
+    oldDisplayName: { type: String, default: () => null },
   },
   data() {
     return {
-      oldDisplayName: '',
       labelwidth: '320px',
 
       passRules: {
@@ -80,9 +80,7 @@ export default {
       return this.value === undefined || this.value === null ? {} : this.value
     },
   },
-  created() {
-    this.oldDisplayName = this.passForm.displayName
-  },
+
   methods: {
     passwordValidator(rule, value, callback) {
       if (!(value[0] && value[1])) {

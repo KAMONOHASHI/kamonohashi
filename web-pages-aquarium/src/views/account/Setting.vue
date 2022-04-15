@@ -118,8 +118,9 @@
               class="cp_tabpanel"
             >
               <kqi-display-error :error="passwordError" />
-              <User-Setting
+              <user-setting
                 v-model="passForm"
+                :old-display-name="account.userDisplayName"
                 @updateDisplayName="updateDisplayName"
                 @updatePassword="updatePassword"
               />

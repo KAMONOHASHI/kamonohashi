@@ -7,7 +7,6 @@ namespace Nssol.Platypus.ApiModels.AccountApiModels
         /// <summary>
         /// ユーザ表示名
         /// </summary>
-        [Required]
         public string DisplayName { get; set; }
 
     }
