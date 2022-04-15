@@ -111,14 +111,14 @@
               />
             </div>
 
-            <!-- パスワード変更 -->
+            <!-- パスワード変更・ユーザ表示名変更 -->
             <div
               v-if="passwordChangeEnabled"
               id="sixth_tab01"
               class="cp_tabpanel"
             >
               <kqi-display-error :error="passwordError" />
-              <Password-Setting
+              <User-Setting
                 v-model="passForm"
                 @updateDisplayName="updateDisplayName"
                 @updatePassword="updatePassword"
@@ -138,7 +138,7 @@ import DefaultTenantSetting from './DefaultTenantSetting'
 import AccessTokenSetting from './AccessTokenSetting'
 import GitTokenSetting from '@/views/account/GitTokenSetting'
 import RegistryTokenSetting from '@/views/account/RegistryTokenSetting'
-import PasswordSetting from './PasswordSetting'
+import UserSetting from './UserSetting'
 import WebhookSetting from './WebhookSetting'
 import { mapGetters, mapActions } from 'vuex'
 
@@ -151,7 +151,7 @@ export default {
     AccessTokenSetting,
     GitTokenSetting,
     RegistryTokenSetting,
-    PasswordSetting,
+    UserSetting,
     WebhookSetting,
   },
   data() {
