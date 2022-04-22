@@ -34,7 +34,7 @@
           @add="handleAdd"
           @remove="handleRemove"
           @paging="handleDataViewPaging"
-          @filter="x => retrieveData(dataViewInfo.currentPage, x.filter)"
+          @filter="x => retrieveData(dataViewInfo.currentPage, x.filter, true)"
         />
       </span>
 
@@ -164,15 +164,21 @@ export default {
     ...mapActions(['fetchData']),
 
     // データ一覧を取得し、それぞれのデータをentryに割り当てる
-    async retrieveData(page, filter) {
+    async retrieveData(page, filter, changeFilter) {
       let params = Object.assign({}, filter)
       params.page = page
       params.perPage = this.dataViewInfo.currentPageSize
       params.withTotal = true
+      if (changeFilter) {
+        params.page = 1
+      }
       await this.fetchData(params)
       this.dataViewInfo.dataList = this.data
       this.dataViewInfo.filteredTotal = this.total
       this.dataViewInfo.currentPage = page
+      if (changeFilter) {
+        this.dataViewInfo.currentPage = 1
+      }
       this.refreshAssign()
     },
 
@@ -323,7 +329,7 @@ export default {
 
     // 'filter'がemitされた際の処理
     handleFilter(info) {
-      let { filter, entryName } = info
+      let { filter, entryName, changeFilter } = info
       let viewInfo = this.getViewInfo(entryName)
       viewInfo.filter = filter
       if (filter && Object.keys(filter).length > 0) {
@@ -339,6 +345,9 @@ export default {
         )
       } else {
         this.filteredEntryList[entryName] = this.entryList[entryName]
+      }
+      if (changeFilter) {
+        viewInfo.currentPage = 1
       }
       this.handlePaging({ entryName, page: viewInfo.currentPage })
     },

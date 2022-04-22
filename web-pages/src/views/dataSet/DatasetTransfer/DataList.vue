@@ -358,6 +358,7 @@ export default {
       this.$emit('filter', {
         entryName: this.viewInfo.entryName,
         filter: this.searchCondition,
+        changeFilter: true,
       })
     },
     emitPaging(entryName, page, searchCondition) {
