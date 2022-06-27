@@ -23,7 +23,7 @@ namespace Nssol.Platypus.Services.Interfaces
         /// 指定したテナントに、新規にコンテナを作成する。
         /// 失敗した場合はnullが返る。
         /// </summary>
-        Task<Result<RunContainerOutputModel, string>> RunContainerAsync(RunContainerInputModel inModel);
+        Task<Result<RunContainerOutputModel, string>> RunContainerAsync(RunContainerInputModel inModel, string baseUrl);
 
         /// <summary>
         /// 全コンテナ情報を取得する

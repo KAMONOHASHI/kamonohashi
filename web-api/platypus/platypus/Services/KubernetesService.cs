@@ -65,7 +65,7 @@ namespace Nssol.Platypus.Services
         /// 3.Service作成
         /// 4.ステータスの確認
         /// </summary>
-        public async Task<Result<RunContainerOutputModel, string>> RunContainerAsync(RunContainerInputModel inModel)
+        public async Task<Result<RunContainerOutputModel, string>> RunContainerAsync(RunContainerInputModel inModel, string baseUrl)
         {
             string config = "";
             //1. コンフィグマップを作って、そこにスクリプトの内容を登録する
@@ -140,7 +140,7 @@ namespace Nssol.Platypus.Services
         /// コンテナを削除する。
         /// 対象コンテナが存在しない場合はエラーになる。
         /// </summary>
-        public async Task<bool> DeleteContainerAsync(ContainerType type, string containerName, string tenantName, string token)
+        public async Task<bool> DeleteContainerAsync(ContainerType type, string containerName, string tenantName, string token, string )
         {
             //ServiceとConfigMapはない可能性があるので、要否を確認
             bool hasService = false;

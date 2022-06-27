@@ -380,7 +380,9 @@ namespace Nssol.Platypus.Logic
                 inputModel.ConstraintList.Add(containerOptions.ContainerLabelPartition, new List<string> { preprocessHistory.Partition });
             }
 
-            var outModel = await clusterManagementService.RunContainerAsync(inputModel);
+            var baseUrl = GetAccessKubernetesEndpointsForRunningJob();
+
+            var outModel = await clusterManagementService.RunContainerAsync(inputModel, baseUrl);
             if (outModel.IsSuccess == false)
             {
                 return Result<ContainerInfo, string>.CreateErrorResult(outModel.Error);
@@ -610,7 +612,9 @@ namespace Nssol.Platypus.Logic
                 inputModel.ConstraintList.Add(containerOptions.ContainerLabelPartition, new List<string> { trainHistory.Partition });
             }
 
-            var outModel = await clusterManagementService.RunContainerAsync(inputModel);
+            var baseUrl = GetAccessKubernetesEndpointsForRunningJob();
+
+            var outModel = await clusterManagementService.RunContainerAsync(inputModel, baseUrl);
             if (outModel.IsSuccess == false)
             {
                 return Result<ContainerInfo, string>.CreateErrorResult(outModel.Error);
@@ -831,7 +835,8 @@ namespace Nssol.Platypus.Logic
                 inputModel.ConstraintList.Add(containerOptions.ContainerLabelPartition, new List<string> { inferenceHistory.Partition });
             }
 
-            var outModel = await clusterManagementService.RunContainerAsync(inputModel);
+            var baseUrl = GetAccessKubernetesEndpointsForRunningJob();
+            var outModel = await clusterManagementService.RunContainerAsync(inputModel, baseUrl);
             if (outModel.IsSuccess == false)
             {
                 return Result<ContainerInfo, string>.CreateErrorResult(outModel.Error);
@@ -971,7 +976,8 @@ namespace Nssol.Platypus.Logic
                 EntryPoint = entryPoint
             };
 
-            var outModel = await clusterManagementService.RunContainerAsync(inputModel);
+            var baseUrl = GetAccessKubernetesEndpointsForRunningJob();
+            var outModel = await clusterManagementService.RunContainerAsync(inputModel, baseUrl);
 
             if (outModel.IsSuccess == false)
             {
@@ -1268,7 +1274,8 @@ namespace Nssol.Platypus.Logic
                 inputModel.ConstraintList.Add(containerOptions.ContainerLabelPartition, new List<string> { notebookHistory.Partition });
             }
 
-            var outModel = await clusterManagementService.RunContainerAsync(inputModel);
+            var baseUrl = GetAccessKubernetesEndpointsForRunningJob();
+            var outModel = await clusterManagementService.RunContainerAsync(inputModel, baseUrl);
             if (outModel.IsSuccess == false)
             {
                 return Result<ContainerInfo, string>.CreateErrorResult(outModel.Error);
@@ -1372,7 +1379,8 @@ namespace Nssol.Platypus.Logic
                 IsNodePort = true //ランダムポート指定。アクセス先ポートが動的に決まるようになる。
             };
 
-            var outModel = await clusterManagementService.RunContainerAsync(inputModel);
+            var baseUrl = GetAccessKubernetesEndpointsForRunningJob();
+            var outModel = await clusterManagementService.RunContainerAsync(inputModel, baseUrl);
             if (outModel.IsSuccess == false)
             {
                 return new ContainerInfo() { Status = ContainerStatus.Failed };
@@ -1772,6 +1780,21 @@ namespace Nssol.Platypus.Logic
             // Kubernetesとの接続が切れた場合(ジョブが終了した場合等)
             await kubernetesWebSocket.CloseOutputAsync(kubernetesWebSocket.CloseStatus.Value, kubernetesWebSocket.CloseStatusDescription, CancellationToken.None);
             await browserWebSocket.CloseOutputAsync(kubernetesWebSocket.CloseStatus.Value, kubernetesWebSocket.CloseStatusDescription, CancellationToken.None);
+        }
+        #endregion
+
+        #region 接続先k8sエンドポイント管理
+        /// <summary>
+        /// 接続先のk8sのエンドポイントを取得する。
+        /// 実際の実装時にはkqiを管理しているk8sエンドポイントにキューイングされ待ちとなっている
+        /// ジョブの数の計測等を行う必要があるが、現時点ではダミーとして実装している。
+        /// </summary>
+        /// <returns>
+        /// 接続先のk8sのAPIのエンドポイントのURL
+        /// </returns>
+        public string GetAccessKubernetesEndpointsForRunningJob()
+        {
+            return containerOptions.ContainerServiceBaseUrl;
         }
         #endregion
     }
