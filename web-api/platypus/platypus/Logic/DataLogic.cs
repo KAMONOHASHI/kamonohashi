@@ -88,8 +88,6 @@ namespace Nssol.Platypus.Logic
             // データとファイルを削除
             var data = await dataRepository.GetDataIncludeAllAsync(dataId);
 
-            dataRepository.DeleteData(data);
-
             foreach (var file in data.DataProperties)
             {
                 if (file.DataFile != null)
@@ -97,6 +95,8 @@ namespace Nssol.Platypus.Logic
                     await storageLogic.AddFileToDeleteListAsync(ResourceType.Data, file.DataFile.StoredPath);
                 }
             }
+
+            dataRepository.DeleteData(data);
 
             // タグマップを削除
             tagLogic.DeleteDataTags(dataId);
