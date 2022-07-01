@@ -168,45 +168,24 @@ export default {
         this.errors.push('利用可能なノードがありません。')
         this.errors.push('システム管理者に確認してください。')
       } else {
-        // 利用可能なノードがあれば設定リソース値を確認
+        // 各リソースの最大値を持つノードに対して、それ以上のリソースを指定していればエラーを出す
         let message = []
-        // 組み合わせ確認フラグ
-        let combinationCheckFlg = true
-
         // CPUの設定値をもとにチェックする。
         if (this.maxCpuNode) {
           if (this.maxCpuNode.allocatableCpu < this.value.cpu) {
             message.push('CPU')
-          } else if (
-            this.maxCpuNode.allocatableMemory < this.value.memory ||
-            this.maxCpuNode.allocatableGpu < this.value.gpu
-          ) {
-            // 実行可能な組み合わせではないため、ユーザにお知らせする。
-            combinationCheckFlg = false
           }
         }
         // メモリの設定値をもとにチェックする。
         if (this.maxMemoryNode) {
           if (this.maxMemoryNode.allocatableMemory < this.value.memory) {
             message.push('メモリ')
-          } else if (
-            this.maxMemoryNode.allocatableCpu < this.value.cpu ||
-            this.maxMemoryNode.allocatableGpu < this.value.gpu
-          ) {
-            // 実行可能な組み合わせではないため、ユーザにお知らせする。
-            combinationCheckFlg = false
           }
         }
         // GPUの設定値をもとにチェックする。
         if (this.maxGpuNode) {
           if (this.maxGpuNode.allocatableGpu < this.value.gpu) {
             message.push('GPU')
-          } else if (
-            this.maxGpuNode.allocatableCpu < this.value.cpu ||
-            this.maxGpuNode.allocatableMemory < this.value.memory
-          ) {
-            // 実行可能な組み合わせではないため、ユーザにお知らせする。
-            combinationCheckFlg = false
           }
         }
         // メッセージがあればエラーメッセージに格納し表示する。
@@ -214,8 +193,23 @@ export default {
           this.errors.push(
             'ノードに要求分の' + message.join(',') + 'のリソースがありません。',
           )
-        } else if (!combinationCheckFlg) {
+
+          // エラーを出力したら抜ける
+          return
+        }
+
+        // 各リソースの組み合わせに対して、条件を満たすノードが1つ以上存在するか判定する
+        var allocatableNodes = this.nodes.filter(
+          n =>
+            n.allocatableCpu >= this.value.cpu &&
+            n.allocatableMemory >= this.value.memory &&
+            n.allocatableGpu >= this.value.gpu,
+        )
+        if (allocatableNodes.length == 0) {
           this.errors.push('要求分のリソースで実行可能なノードがありません。')
+
+          // エラーを出力したら抜ける
+          return
         }
       }
     },
