@@ -14,7 +14,7 @@ module.exports = {
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'warn',
   },
   parserOptions: {
-    parser: 'babel-eslint',
+    parser: '@typescript-eslint/parser',
   },
   overrides: [
     {
@@ -24,4 +24,4 @@ module.exports = {
       },
     },
   ],
-};
+}
