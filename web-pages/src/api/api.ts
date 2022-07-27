@@ -71,16 +71,16 @@ let api = {
             },
           ]
         },
-      postQuota: (
-        params: [
+      postQuota: (params: {
+        body: [
           {
             tenantId: number
             cpu: number
             memory: number
             gpu: number
           },
-        ],
-      ) =>
+        ]
+      }) =>
         gen.postApiV2AdminQuotas(params) as {
           data: [
             {
@@ -162,16 +162,16 @@ let api = {
           },
         ]
       },
-    post: (
-      params: [
+    post: (params: {
+      body: [
         {
           tenantId: number
           cpu: number
           memory: number
           gpu: number
         },
-      ],
-    ) =>
+      ]
+    }) =>
       gen.postApiV2AdminQuotas(params) as {
         data: [
           {
@@ -213,13 +213,15 @@ let api = {
           ]
         },
       post: (params: {
-        name: string
-        memo: string
-        partition: string
-        accessLevel: number
-        assignedTenantIds: [number]
-        tensorBoardEnabled: true
-        notebookEnabled: true
+        body: {
+          name: string
+          memo: string
+          partition: string
+          accessLevel: number
+          assignedTenantIds: [number]
+          tensorBoardEnabled: true
+          notebookEnabled: true
+        }
       }) =>
         gen.postApiV2AdminNodes(params) as {
           data: {
@@ -261,7 +263,18 @@ let api = {
             ]
           }
         },
-      put: (params: { id: number }) =>
+      put: (params: {
+        id: number
+        body: {
+          name: string
+          memo: string
+          partition: string
+          accessLevel: number
+          assignedTenantIds: [number]
+          tensorBoardEnabled: boolean
+          notebookEnabled: boolean
+        }
+      }) =>
         gen.putApiV2AdminNodesById(params) as {
           data: {
             name: string
@@ -755,7 +768,7 @@ let api = {
           }
         },
       getById: (params: { id: number }) =>
-        gen.getApiV2AdminRolesById() as {
+        gen.getApiV2AdminRolesById(params) as {
           data: {
             createdBy: string
             createdAt: string
@@ -1034,202 +1047,3053 @@ let api = {
   },
 
   datasets: {
-    get: gen.getApiV2Datasets,
-    post: gen.postApiV2Datasets,
-    getById: gen.getApiV2DatasetsById,
-    put: gen.putApiV2DatasetsById,
-    delete: gen.deleteApiV2DatasetsById,
-    patch: gen.patchApiV2DatasetsById,
-    getFiles: gen.getApiV2DataByIdFiles,
-    getDatatypes: gen.getApiV2Datatypes,
+    get: (params: {
+      id?: string
+      name?: string
+      memo?: string
+      createdAt?: string
+      perPage?: number
+      page?: number
+      withTotal?: boolean
+    }) =>
+      gen.getApiV2Datasets(params) as {
+        headers: { 'x-total-count': string }
+        data: [
+          {
+            createdBy: string
+            createdAt: string
+            modifiedBy: string
+            modifiedAt: string
+            id: number
+            displayId: number
+            name: string
+            memo: string
+            isFlat: true
+          },
+        ]
+      },
+    post: (params: {
+      body: {
+        name: string
+        memo: string
+        isFlat: boolean
+        entries: {
+          additionalProp1: [
+            {
+              id: number
+            },
+          ]
+          additionalProp2: [
+            {
+              id: number
+            },
+          ]
+          additionalProp3: [
+            {
+              id: number
+            },
+          ]
+        }
+        flatEntries: [
+          {
+            id: number
+          },
+        ]
+      }
+    }) =>
+      gen.postApiV2Datasets(params) as {
+        data: {
+          createdBy: string
+          createdAt: string
+          modifiedBy: string
+          modifiedAt: string
+          id: number
+          displayId: number
+          name: string
+          memo: string
+          isFlat: boolean
+        }
+      },
+    getById: (params: { id: number }) =>
+      gen.getApiV2DatasetsById(params) as {
+        data: {
+          createdBy: string
+          createdAt: string
+          modifiedBy: string
+          modifiedAt: string
+          id: number
+          displayId: number
+          name: string
+          memo: string
+          isFlat: boolean
+          entries: {
+            additionalProp1: [
+              {
+                createdBy: string
+                createdAt: string
+                modifiedBy: string
+                modifiedAt: string
+                id: number
+                displayId: number
+                name: string
+                memo: string
+                isRaw: boolean
+                parentDataName: string
+                parentDataId: number
+                tags: [string]
+              },
+            ]
+            additionalProp2: [
+              {
+                createdBy: string
+                createdAt: string
+                modifiedBy: string
+                modifiedAt: string
+                id: number
+                displayId: number
+                name: string
+                memo: string
+                isRaw: boolean
+                parentDataName: string
+                parentDataId: number
+                tags: [string]
+              },
+            ]
+            additionalProp3: [
+              {
+                createdBy: string
+                createdAt: string
+                modifiedBy: string
+                modifiedAt: string
+                id: number
+                displayId: number
+                name: string
+                memo: string
+                isRaw: boolean
+                parentDataName: string
+                parentDataId: number
+                tags: [string]
+              },
+            ]
+          }
+          flatEntries: [
+            {
+              createdBy: string
+              createdAt: string
+              modifiedBy: string
+              modifiedAt: string
+              id: number
+              displayId: number
+              name: string
+              memo: string
+              isRaw: boolean
+              parentDataName: string
+              parentDataId: number
+              tags: [string]
+            },
+          ]
+          isLocked: boolean
+        }
+      },
+    put: (params: {
+      id: number
+      body: {
+        name: string
+        memo: string
+        entries: {
+          additionalProp1: [
+            {
+              id: number
+            },
+          ]
+          additionalProp2: [
+            {
+              id: number
+            },
+          ]
+          additionalProp3: [
+            {
+              id: number
+            },
+          ]
+        }
+        flatEntries: [
+          {
+            id: number
+          },
+        ]
+      }
+    }) =>
+      gen.putApiV2DatasetsById(params) as {
+        data: {
+          createdBy: string
+          createdAt: string
+          modifiedBy: string
+          modifiedAt: string
+          id: number
+          displayId: number
+          name: string
+          memo: string
+          isFlat: boolean
+        }
+      },
+    delete: (params: { id: number }) => gen.deleteApiV2DatasetsById(params),
+    patch: (params: { id: number; body: { name: string; memo: string } }) =>
+      gen.patchApiV2DatasetsById(params) as {
+        data: {
+          createdBy: string
+          createdAt: string
+          modifiedBy: string
+          modifiedAt: string
+          id: number
+          displayId: number
+          name: string
+          memo: string
+          isFlat: boolean
+        }
+      },
+    getFiles: (params: { id: number; withUrl?: boolean }) =>
+      gen.getApiV2DataByIdFiles(params) as {
+        data: {
+          createdBy: string
+          createdAt: string
+          modifiedBy: string
+          modifiedAt: string
+          id: number
+          displayId: number
+          name: string
+          memo: string
+          isFlat: boolean
+          entries: [
+            {
+              type: string
+              files: [
+                {
+                  id: number
+                  fileId: number
+                  key: string
+                  url: string
+                  fileName: string
+                  fileSize: number
+                },
+              ]
+            },
+          ]
+          flatEntries: [
+            {
+              id: number
+              fileId: number
+              key: string
+              url: string
+              fileName: string
+              fileSize: number
+            },
+          ]
+        }
+      },
+    getDatatypes: () =>
+      gen.getApiV2Datatypes() as {
+        data: [
+          {
+            id: number
+            name: string
+          },
+        ]
+      },
   },
 
   git: {
     admin: {
-      getEndpoints: gen.getApiV2AdminGitEndpoints,
-      postEndpoint: gen.postApiV2AdminGitEndpoints,
-      putEndpoint: gen.putApiV2AdminGitEndpointsById,
-      getById: gen.getApiV2AdminGitEndpointsById,
-      deleteById: gen.deleteApiV2AdminGitEndpointsById,
-      getTypes: gen.getApiV2AdminGitTypes,
+      getEndpoints: () =>
+        gen.getApiV2AdminGitEndpoints() as {
+          data: [
+            {
+              createdBy: string
+              createdAt: string
+              modifiedBy: string
+              modifiedAt: string
+              id: number
+              name: string
+              serviceType: number
+              repositoryUrl: string
+              apiUrl: string
+              serviceTypeName: string
+            },
+          ]
+        },
+      postEndpoint: (params: {
+        body: {
+          name: string
+          serviceType: number
+          apiUrl: string
+          repositoryUrl: string
+        }
+      }) =>
+        gen.postApiV2AdminGitEndpoints(params) as {
+          data: {
+            createdBy: string
+            createdAt: string
+            modifiedBy: string
+            modifiedAt: string
+            id: number
+            name: string
+            serviceType: number
+            repositoryUrl: string
+            apiUrl: string
+            serviceTypeName: string
+          }
+        },
+      putEndpoint: (params: {
+        id: number
+        body: {
+          name: string
+          serviceType: number
+          apiUrl: string
+          repositoryUrl: string
+        }
+      }) =>
+        gen.putApiV2AdminGitEndpointsById(params) as {
+          data: {
+            createdBy: string
+            createdAt: string
+            modifiedBy: string
+            modifiedAt: string
+            id: number
+            name: string
+            serviceType: number
+            repositoryUrl: string
+            apiUrl: string
+            serviceTypeName: string
+          }
+        },
+      getById: (params: { id: number }) =>
+        gen.getApiV2AdminGitEndpointsById(params) as {
+          data: {
+            createdBy: string
+            createdAt: string
+            modifiedBy: string
+            modifiedAt: string
+            id: number
+            name: string
+            serviceType: number
+            repositoryUrl: string
+            apiUrl: string
+            serviceTypeName: string
+            isNotEditable: boolean
+          }
+        },
+      deleteById: (params: { id: number }) =>
+        gen.deleteApiV2AdminGitEndpointsById(params),
+      getTypes: () =>
+        gen.getApiV2AdminGitTypes() as {
+          data: [
+            {
+              id: number
+              name: string
+            },
+          ]
+        },
     },
     tenant: {
-      getEndpoints: gen.getApiV2TenantGitEndpoints,
+      getEndpoints: () =>
+        gen.getApiV2TenantGitEndpoints() as {
+          data: [
+            {
+              createdBy: string
+              createdAt: string
+              modifiedBy: string
+              modifiedAt: string
+              id: number
+              name: string
+              serviceType: number
+              repositoryUrl: string
+              apiUrl: string
+              serviceTypeName: string
+            },
+          ]
+        },
     },
-    getRepos: gen.getApiV2GitByGitIdRepos,
-    getBranches: gen.getApiV2GitByGitIdReposByOwnerByRepositoryNameBranches,
-    getCommits: gen.getApiV2GitByGitIdReposByOwnerByRepositoryNameCommits,
-    getCommit:
-      gen.getApiV2GitByGitIdReposByOwnerByRepositoryNameCommitsByCommitId,
+    getRepos: (params: { gitId: number }) =>
+      gen.getApiV2GitByGitIdRepos(params) as {
+        data: [
+          {
+            owner: string
+            name: string
+            fullName: string
+          },
+        ]
+      },
+    getBranches: (params: {
+      gitId: number
+      owner: string
+      repositoryName: string
+    }) =>
+      gen.getApiV2GitByGitIdReposByOwnerByRepositoryNameBranches(params) as {
+        data: [
+          {
+            branchName: string
+            commitId: string
+          },
+        ]
+      },
+    getCommits: (params: {
+      gitId: number
+      owner: string
+      repositoryName: string
+      branch?: string
+      page?: string
+    }) =>
+      gen.getApiV2GitByGitIdReposByOwnerByRepositoryNameCommits(params) as {
+        data: [
+          {
+            commitId: string
+            committerName: string
+            commitAt: string
+            comment: string
+            display: string
+          },
+        ]
+      },
+    getCommit: (params: {
+      gitId: number
+      owner: string
+      repositoryName: string
+      commitId: string
+    }) =>
+      gen.getApiV2GitByGitIdReposByOwnerByRepositoryNameCommitsByCommitId(
+        params,
+      ) as {
+        data: {
+          commitId: string
+          committerName: string
+          commitAt: string
+          comment: string
+          display: string
+        }
+      },
     // GET /spa/git/repos/{segments}
   },
 
   preprocessings: {
-    get: gen.getApiV2Preprocessings,
-    post: gen.postApiV2Preprocessings,
-    getById: gen.getApiV2PreprocessingsById,
-    put: gen.putApiV2PreprocessingsById,
-    delete: gen.deleteApiV2PreprocessingsById,
-    patch: gen.patchApiV2PreprocessingsById,
-    getFilesById: gen.getApiV2PreprocessingsByIdHistoriesByDataIdFiles,
-    getHistory: gen.getApiV2PreprocessingsByIdHistories,
-    getHistroyById: gen.getApiV2PreprocessingsByIdHistoriesByDataId,
-    deleteHistroyById: gen.deleteApiV2PreprocessingsByIdHistoriesByDataId,
-    getEventsById: gen.getApiV2PreprocessingsByIdHistoriesByDataIdEvents,
-    runById: gen.postApiV2PreprocessingsByIdRun,
+    get: (params: {
+      id?: string
+      name?: string
+      createdAt?: string
+      memo?: string
+      perPage?: number
+      page?: number
+      withTotal?: boolean
+    }) =>
+      gen.getApiV2Preprocessings(params) as {
+        headers: { 'x-total-count': string }
+        data: [
+          {
+            createdBy: string
+            createdAt: string
+            modifiedBy: string
+            modifiedAt: string
+            id: number
+            name: string
+            memo: string
+            cpu: number
+            memory: number
+            gpu: number
+          },
+        ]
+      },
+    post: (params: {
+      body: {
+        name: string
+        entryPoint: string
+        containerImage: {
+          registryId: number
+          image: string
+          tag: string
+        }
+        gitModel: {
+          gitId: number
+          repository: string
+          owner: string
+          branch: string
+          commitId: string
+        }
+        memo: string
+        cpu: number
+        memory: number
+        gpu: number
+      }
+    }) =>
+      gen.postApiV2Preprocessings(params) as {
+        data: {
+          createdBy: string
+          createdAt: string
+          modifiedBy: string
+          modifiedAt: string
+          id: number
+          name: string
+          memo: string
+          cpu: number
+          memory: number
+          gpu: number
+        }
+      },
+    getById: (params: { id: number }) =>
+      gen.getApiV2PreprocessingsById(params) as {
+        data: {
+          createdBy: string
+          createdAt: string
+          modifiedBy: string
+          modifiedAt: string
+          id: number
+          name: string
+          memo: string
+          cpu: number
+          memory: number
+          gpu: number
+          gitModel: {
+            gitId: number
+            repository: string
+            owner: string
+            branch: string
+            commitId: string
+            url: string
+          }
+          containerImage: {
+            registryId: number
+            image: string
+            tag: string
+            registryName: string
+            url: string
+          }
+          entryPoint: string
+          isLocked: boolean
+        }
+      },
+    put: (params: {
+      id: number
+      body: {
+        name: string
+        entryPoint: string
+        containerImage: {
+          registryId: number
+          image: string
+          tag: string
+        }
+        gitModel: {
+          gitId: number
+          repository: string
+          owner: string
+          branch: string
+          commitId: string
+        }
+        memo: string
+        cpu: number
+        memory: number
+        gpu: number
+      }
+    }) =>
+      gen.putApiV2PreprocessingsById(params) as {
+        data: {
+          createdBy: string
+          createdAt: string
+          modifiedBy: string
+          modifiedAt: string
+          id: number
+          name: string
+          memo: string
+          cpu: number
+          memory: number
+          gpu: number
+        }
+      },
+    delete: (params: { id: number }) =>
+      gen.deleteApiV2PreprocessingsById(params),
+    patch: (params: {
+      id: number
+      body: {
+        name: string
+        memo: string
+        cpu: number
+        memory: number
+        gpu: number
+      }
+    }) =>
+      gen.patchApiV2PreprocessingsById(params) as {
+        data: {
+          name: string
+          memo: string
+          cpu: number
+          memory: number
+          gpu: number
+        }
+      },
+    getFilesById: (params: { id: number; dataId: number; withUrl?: boolean }) =>
+      gen.getApiV2PreprocessingsByIdHistoriesByDataIdFiles(params) as {
+        data: {
+          id: number
+          fileId: number
+          url: string
+          fileName: string
+          isLocked: boolean
+        }
+      },
+    getHistory: (params: { id: number }) =>
+      gen.getApiV2PreprocessingsByIdHistories(params) as {
+        data: [
+          {
+            key: string
+            status: string
+            statusType: string
+            createdAt: string
+            dataId: number
+            dataName: string
+            preprocessId: number
+            preprocessName: string
+          },
+        ]
+      },
+    getHistroyById: (params: { id: number; dataId: number }) =>
+      gen.getApiV2PreprocessingsByIdHistoriesByDataId(params) as {
+        data: {
+          key: string
+          status: string
+          statusType: string
+          createdAt: string
+          dataId: number
+          dataName: string
+          preprocessId: number
+          preprocessName: string
+          outputDataIds: [number]
+        }
+      },
+    deleteHistroyById: (params: { id: number; dataId: number }) =>
+      gen.deleteApiV2PreprocessingsByIdHistoriesByDataId(params),
+    getEventsById: (params: { id: number; dataId: number }) =>
+      gen.getApiV2PreprocessingsByIdHistoriesByDataIdEvents(params) as {
+        data: {
+          key: string
+          status: string
+          statusType: string
+          createdAt: string
+          dataId: number
+          dataName: string
+          preprocessId: number
+          preprocessName: string
+        }
+      },
+    runById: (params: {
+      id: number
+      body: {
+        dataId: number
+        options: {
+          additionalProp1: string
+          additionalProp2: string
+          additionalProp3: string
+        }
+        cpu: number
+        memory: number
+        gpu: number
+        partition: string
+      }
+    }) =>
+      gen.postApiV2PreprocessingsByIdRun(params) as {
+        data: {
+          key: string
+          status: string
+          statusType: string
+          createdAt: string
+          dataId: number
+          dataName: string
+          preprocessId: number
+          preprocessName: string
+        }
+      },
   },
 
   resource: {
     admin: {
-      getNodes: gen.getApiV2AdminResourceNodes,
-      getTenants: gen.getApiV2AdminResourceTenants,
-      getContainers: gen.getApiV2AdminResourceContainers,
-      getContainerByName: gen.getApiV2AdminResourceContainersByTenantIdByName,
-      deleteContainerByName:
-        gen.deleteApiV2AdminResourceContainersByTenantIdByName,
-      getContainerLogByName:
-        gen.getApiV2AdminResourceContainersByTenantIdByNameLog,
-      getContainerEventsByName:
-        gen.getApiV2AdminResourceContainersByTenantIdByNameEvents,
-      getHistoriesContainersMetadata:
-        gen.getApiV2AdminResourceHistoriesContainersMetadata,
-      getHistoriesContainersData:
-        gen.getApiV2AdminResourceHistoriesContainersData,
-      deleteHistoriesContainers: gen.patchApiV2AdminResourceHistoriesContainers,
-      getHistoriesJobsMetadata: gen.getApiV2AdminResourceHistoriesJobsMetadata,
-      getHistoriesJobsData: gen.getApiV2AdminResourceHistoriesJobsData,
-      deleteHistoriesJobs: gen.patchApiV2AdminResourceHistoriesJobs,
+      getNodes: () =>
+        gen.getApiV2AdminResourceNodes() as {
+          data: [
+            {
+              name: string
+              memo: string
+              partition: string
+              accessLevel: number
+              tensorBoardEnabled: boolean
+              allocatableCpu: number
+              allocatableMemory: number
+              allocatableGpu: number
+              assignedCpu: number
+              assignedMemory: number
+              assignedGpu: number
+              cpuInfo: string
+              memoryInfo: string
+              gpuInfo: string
+              containerResourceList: [
+                {
+                  name: string
+                  createdBy: string
+                  containerType: number
+                  conditionNote: string
+                  cpu: number
+                  memory: number
+                  gpu: number
+                  statusType: string
+                  status: string
+                  nodeName: string
+                  tenantId: number
+                  tenantName: string
+                  displayName: string
+                },
+              ]
+            },
+          ]
+        },
+      getTenants: () =>
+        gen.getApiV2AdminResourceTenants() as {
+          data: [
+            {
+              id: number
+              name: string
+              displayName: string
+              allocatableCpu: number
+              allocatableMemory: number
+              allocatableGpu: number
+              assignedCpu: number
+              assignedMemory: number
+              assignedGpu: number
+              cpuInfo: string
+              memoryInfo: string
+              gpuInfo: string
+              containerResourceList: [
+                {
+                  name: string
+                  createdBy: string
+                  containerType: number
+                  conditionNote: string
+                  cpu: number
+                  memory: number
+                  gpu: number
+                  statusType: string
+                  status: string
+                  nodeName: string
+                  tenantId: number
+                  tenantName: string
+                  displayName: string
+                },
+              ]
+            },
+          ]
+        },
+      getContainers: () =>
+        gen.getApiV2AdminResourceContainers() as {
+          data: [
+            {
+              name: string
+              createdBy: string
+              containerType: number
+              conditionNote: string
+              cpu: number
+              memory: number
+              gpu: number
+              statusType: string
+              status: string
+              nodeName: string
+              tenantId: number
+              tenantName: string
+              displayName: string
+            },
+          ]
+        },
+      getContainerByName: (params: { tenantId: number; name: string }) =>
+        gen.getApiV2AdminResourceContainersByTenantIdByName(params) as {
+          data: {
+            name: string
+            createdBy: string
+            containerType: number
+            conditionNote: string
+            cpu: number
+            memory: number
+            gpu: number
+            statusType: string
+            status: string
+            nodeName: string
+            tenantId: number
+            tenantName: string
+            displayName: string
+          }
+        },
+      deleteContainerByName: (params: { tenantId: number; name: string }) =>
+        gen.deleteApiV2AdminResourceContainersByTenantIdByName(params),
+      getContainerLogByName: (params: { tenantId: number; name: string }) =>
+        gen.getApiV2AdminResourceContainersByTenantIdByNameLog(params),
+      getContainerEventsByName: (params: { tenantId: number; name: string }) =>
+        gen.getApiV2AdminResourceContainersByTenantIdByNameEvents(params) as {
+          data: {
+            canRead: boolean
+            canSeek: boolean
+            canTimeout: boolean
+            canWrite: boolean
+            length: number
+            position: number
+            readTimeout: number
+            writeTimeout: number
+          }
+        },
+      getHistoriesContainersMetadata: () =>
+        gen.getApiV2AdminResourceHistoriesContainersMetadata() as {
+          data: {
+            count: number
+            startDate: string
+            endDate: string
+          }
+        },
+      getHistoriesContainersData: (params: {
+        startData?: string
+        endDate?: string
+        withHeader?: boolean
+      }) => gen.getApiV2AdminResourceHistoriesContainersData(params),
+      deleteHistoriesContainers: (params: { body: { endDate: string } }) =>
+        gen.patchApiV2AdminResourceHistoriesContainers(params),
+      getHistoriesJobsMetadata: () =>
+        gen.getApiV2AdminResourceHistoriesJobsMetadata() as {
+          data: {
+            count: number
+            startDate: string
+            endDate: string
+          }
+        },
+      getHistoriesJobsData: (params: {
+        startDate?: string
+        endDate?: string
+        withHeader?: boolean
+      }) => gen.getApiV2AdminResourceHistoriesJobsData(params),
+      deleteHistoriesJobs: (params: { body: { endDate: string } }) =>
+        gen.patchApiV2AdminResourceHistoriesJobs(params),
     },
     tenant: {
-      getNodes: gen.getApiV2TenantResourceNodes,
-      getContainers: gen.getApiV2TenantResourceContainers,
-      getContainerByName: gen.getApiV2TenantResourceContainersByName,
-      deleteContainerByName: gen.deleteApiV2TenantResourceContainersByName,
-      getContainerLogByName: gen.getApiV2TenantResourceContainersByNameLog,
+      getNodes: () =>
+        gen.getApiV2TenantResourceNodes() as {
+          data: [
+            {
+              name: string
+              memo: string
+              partition: string
+              accessLevel: number
+              tensorBoardEnabled: boolean
+              allocatableCpu: number
+              allocatableMemory: number
+              allocatableGpu: number
+              assignedCpu: number
+              assignedMemory: number
+              assignedGpu: number
+              cpuInfo: string
+              memoryInfo: string
+              gpuInfo: string
+              containerResourceList: [
+                {
+                  name: string
+                  createdBy: string
+                  containerType: number
+                  conditionNote: string
+                  cpu: number
+                  memory: number
+                  gpu: number
+                  statusType: string
+                  status: string
+                  nodeName: string
+                  tenantId: number
+                  tenantName: string
+                  displayName: string
+                },
+              ]
+            },
+          ]
+        },
+      getContainers: () =>
+        gen.getApiV2TenantResourceContainers() as {
+          data: [
+            {
+              name: string
+              createdBy: string
+              containerType: number
+              conditionNote: string
+              cpu: number
+              memory: number
+              gpu: number
+              statusType: string
+              status: string
+              nodeName: string
+            },
+          ]
+        },
+      getContainerByName: (params: { name: string }) =>
+        gen.getApiV2TenantResourceContainersByName(params) as {
+          data: {
+            name: string
+            createdBy: string
+            containerType: number
+            conditionNote: string
+            cpu: number
+            memory: number
+            gpu: number
+            statusType: string
+            status: string
+            nodeName: string
+          }
+        },
+      deleteContainerByName: (params: { name: string }) =>
+        gen.deleteApiV2TenantResourceContainersByName(params),
+      getContainerLogByName: (params: { name: string }) =>
+        gen.getApiV2TenantResourceContainersByNameLog(params),
     },
   },
 
   training: {
-    getSimple: gen.getApiV2TrainingSimple,
-    get: gen.getApiV2Training,
-    getSearch: gen.getApiV2TrainingSearch,
-    post: gen.postApiV2TrainingRun,
-    getById: gen.getApiV2TrainingById,
-    deleteById: gen.deleteApiV2TrainingById,
-    putById: gen.putApiV2TrainingById,
+    getSimple: () =>
+      gen.getApiV2TrainingSimple() as {
+        data: [
+          {
+            createdBy: string
+            createdAt: string
+            modifiedBy: string
+            modifiedAt: string
+            id: number
+            displayId: number
+            name: string
+            memo: string
+            status: string
+            favorite: boolean
+            fullName: string
+          },
+        ]
+      },
+    get: (params: {
+      id?: string
+      name?: string
+      parentId?: string
+      parentName?: string
+      startedAt?: string
+      startedBy?: string
+      dataSet?: string
+      memo?: string
+      status?: string
+      entryPoint?: string
+      tag?: [string]
+      perPage?: number
+      page?: number
+      withTotal?: boolean
+    }) =>
+      gen.getApiV2Training(params) as {
+        headers: { 'x-total-count': string }
+        data: [
+          {
+            createdBy: string
+            createdAt: string
+            modifiedBy: string
+            modifiedAt: string
+            id: number
+            displayId: number
+            name: string
+            memo: string
+            status: string
+            favorite: boolean
+            fullName: string
+            dataSet: {
+              createdBy: string
+              createdAt: string
+              modifiedBy: string
+              modifiedAt: string
+              id: number
+              displayId: number
+              name: string
+              memo: string
+              isFlat: boolean
+            }
+            entryPoint: string
+            parentFullNameList: [string]
+            tags: [string]
+          },
+        ]
+      },
+    getSearch: (params: {
+      idLower?: number
+      idUpper?: number
+      name?: string
+      nameOr?: boolean
+      parentName?: string
+      parentNameOr?: boolean
+      startedAtLower?: string
+      startedAtUpper?: string
+      startedBy?: string
+      startedByOr?: boolean
+      dataSet?: string
+      dataSetOr?: boolean
+      memo?: string
+      memoOr?: boolean
+      status?: string
+      statusOr?: boolean
+      entryPoint?: string
+      entryPointOr?: boolean
+      tags?: string
+      tagsOr?: boolean
+      perPage?: number
+      page?: number
+      withTotl?: boolean
+    }) =>
+      gen.getApiV2TrainingSearch(params) as {
+        headers: { 'x-total-count': string }
+        data: [
+          {
+            createdBy: string
+            createdAt: string
+            modifiedBy: string
+            modifiedAt: string
+            id: number
+            displayId: number
+            name: string
+            memo: string
+            status: string
+            favorite: boolean
+            fullName: string
+            dataSet: {
+              createdBy: string
+              createdAt: string
+              modifiedBy: string
+              modifiedAt: string
+              id: number
+              displayId: number
+              name: string
+              memo: string
+              isFlat: boolean
+            }
+            entryPoint: string
+            parentFullNameList: [string]
+            tags: [string]
+          },
+        ]
+      },
+    post: (params: {
+      body: {
+        name: string
+        containerImage: {
+          registryId: number
+          image: string
+          tag: string
+        }
+        dataSetId: number
+        parentIds: [number]
+        gitModel: {
+          gitId: number
+          repository: string
+          owner: string
+          branch: string
+          commitId: string
+        }
+        entryPoint: string
+        options: {
+          additionalProp1: string
+          additionalProp2: string
+          additionalProp3: string
+        }
+        cpu: number
+        memory: number
+        gpu: number
+        partition: string
+        ports: [number]
+        memo: string
+        tags: [string]
+        zip: boolean
+        localDataSet: boolean
+      }
+    }) =>
+      gen.postApiV2TrainingRun(params) as {
+        data: {
+          createdBy: string
+          createdAt: string
+          modifiedBy: string
+          modifiedAt: string
+          id: number
+          displayId: number
+          name: string
+          memo: string
+          status: string
+          favorite: boolean
+          fullName: string
+        }
+      },
+    getById: (params: { id: number }) =>
+      gen.getApiV2TrainingById(params) as {
+        data: {
+          createdBy: string
+          createdAt: string
+          modifiedBy: string
+          modifiedAt: string
+          id: number
+          displayId: number
+          name: string
+          memo: string
+          status: string
+          favorite: boolean
+          fullName: string
+          dataSet: {
+            createdBy: string
+            createdAt: string
+            modifiedBy: string
+            modifiedAt: string
+            id: number
+            displayId: number
+            name: string
+            memo: string
+            isFlat: boolean
+          }
+          entryPoint: string
+          parentFullNameList: [string]
+          tags: [string]
+          key: string
+          gitModel: {
+            gitId: number
+            repository: string
+            owner: string
+            branch: string
+            commitId: string
+            url: string
+          }
+          options: [
+            {
+              key: string
+              value: string
+            },
+          ]
+          containerImage: {
+            registryId: number
+            image: string
+            tag: string
+            registryName: string
+            url: string
+          }
+          parents: [
+            {
+              createdBy: string
+              createdAt: string
+              modifiedBy: string
+              modifiedAt: string
+              id: number
+              displayId: number
+              name: string
+              memo: string
+              status: string
+              favorite: boolean
+              fullName: string
+              dataSet: {
+                createdBy: string
+                createdAt: string
+                modifiedBy: string
+                modifiedAt: string
+                id: number
+                displayId: number
+                name: string
+                memo: string
+                isFlat: boolean
+              }
+              entryPoint: string
+              parentFullNameList: [string]
+              tags: [string]
+            },
+          ]
+          completedAt: string
+          startedAt: string
+          node: string
+          logSummary: string
+          cpu: number
+          memory: number
+          gpu: number
+          partition: string
+          ports: [number]
+          nodePorts: [
+            {
+              key: string
+              value: string
+            },
+          ]
+          statusType: string
+          conditionNote: string
+          waitingTime: string
+          executionTime: string
+          zip: boolean
+          localDataSet: boolean
+        }
+      },
+    deleteById: (params: { id: number }) => gen.deleteApiV2TrainingById(params),
+    putById: (params: {
+      id: number
+      body: {
+        name: string
+        memo: string
+        favorite: boolean
+        tags: [string]
+      }
+    }) =>
+      gen.putApiV2TrainingById(params) as {
+        data: {
+          createdBy: string
+          createdAt: string
+          modifiedBy: string
+          modifiedAt: string
+          id: number
+          displayId: number
+          name: string
+          memo: string
+          status: string
+          favorite: boolean
+          fullName: string
+        }
+      },
     // GET /spa/trains/{id}/log
-    getFilesById: gen.getApiV2TrainingByIdFiles,
-    getFileSize: gen.getApiV2TrainingByIdFilesByNameSize,
-    postFilesById: gen.postApiV2TrainingByIdFiles,
-    getContainerFilesById: gen.getApiV2TrainingByIdContainerFiles,
-    deleteByIdFilesByFileId: gen.deleteApiV2TrainingByIdFilesByFileId,
-    getTensorboardById: gen.getApiV2TrainingByIdTensorboard,
-    putTensorboardById: gen.putApiV2TrainingByIdTensorboard,
-    deleteTensorboardById: gen.deleteApiV2TrainingByIdTensorboard,
-    postHaltById: gen.postApiV2TrainingByIdHalt,
-    postUserCancelById: gen.postApiV2TrainingByIdUserCancel,
-    getEventsById: gen.getApiV2TrainingByIdEvents,
-    getMount: gen.getApiV2TrainingMount,
-    getTags: gen.getApiV2TrainingTags,
-    postTags: gen.postApiV2TrainingTags,
-    deleteTags: gen.deleteApiV2TrainingTags,
-    getSearchHistory: gen.getApiV2TrainingSearchHistory,
-    postSearchHistory: gen.postApiV2TrainingSearchHistory,
-    deleteSearchHistoryById: gen.deleteApiV2TrainingSearchHistoryById,
-    getSearchFill: gen.getApiV2TrainingSearchFill,
+    getFilesById: (params: { id: number; withUrl?: boolean }) =>
+      gen.getApiV2TrainingByIdFiles(params) as {
+        data: [
+          {
+            id: number
+            fileId: number
+            url: string
+            fileName: string
+            isLocked: boolean
+          },
+        ]
+      },
+    getFileSize: (params: { id: number; name: string }) =>
+      gen.getApiV2TrainingByIdFilesByNameSize(params) as {
+        data: {
+          id: number
+          fileId: number
+          key: string
+          url: string
+          fileName: string
+          fileSize: number
+        }
+      },
+    postFilesById: (params: {
+      id: number
+      body: {
+        fileName: string
+        storedPath: string
+      }
+    }) =>
+      gen.postApiV2TrainingByIdFiles(params) as {
+        data: {
+          id: number
+          fileId: number
+          url: string
+          fileName: string
+          isLocked: boolean
+        }
+      },
+    getContainerFilesById: (params: {
+      id: number
+      path?: string
+      withUrl?: boolean
+    }) =>
+      gen.getApiV2TrainingByIdContainerFiles(params) as {
+        data: {
+          dirs: [
+            {
+              dirPath: string
+              dirName: string
+            },
+          ]
+          files: [
+            {
+              key: string
+              fileName: string
+              lastModified: string
+              size: number
+              url: string
+            },
+          ]
+          exceeded: boolean
+        }
+      },
+    deleteByIdFilesByFileId: (params: { id: number; fileId: number }) =>
+      gen.deleteApiV2TrainingByIdFilesByFileId(params),
+    getTensorboardById: (params: { id: number }) =>
+      gen.getApiV2TrainingByIdTensorboard(params) as {
+        data: {
+          name: string
+          status: string
+          statusType: string
+          nodePort: string
+          remainingTime: string
+          mountedTrainingHistoryIds: [number]
+        }
+      },
+    putTensorboardById: (params: {
+      id: number
+      body: {
+        expiresIn: number
+        selectedHistoryIds: [number]
+      }
+    }) =>
+      gen.putApiV2TrainingByIdTensorboard(params) as {
+        data: {
+          name: string
+          status: string
+          statusType: string
+          nodePort: string
+          remainingTime: string
+          mountedTrainingHistoryIds: [number]
+        }
+      },
+    deleteTensorboardById: (params: { id: number }) =>
+      gen.deleteApiV2TrainingByIdTensorboard(params),
+    postHaltById: (params: { id: number }) =>
+      gen.postApiV2TrainingByIdHalt(params) as {
+        data: {
+          createdBy: string
+          createdAt: string
+          modifiedBy: string
+          modifiedAt: string
+          id: number
+          displayId: number
+          name: string
+          memo: string
+          status: string
+          favorite: boolean
+          fullName: string
+        }
+      },
+    postUserCancelById: (params: { id: number }) =>
+      gen.postApiV2TrainingByIdUserCancel(params) as {
+        data: {
+          createdBy: string
+          createdAt: string
+          modifiedBy: string
+          modifiedAt: string
+          id: number
+          displayId: number
+          name: string
+          memo: string
+          status: string
+          favorite: boolean
+          fullName: string
+        }
+      },
+    getEventsById: (params: { id: number }) =>
+      gen.getApiV2TrainingByIdEvents(params) as {
+        data: {
+          tenantId: number
+          tenantName: string
+          containerName: string
+          message: string
+          details: string
+          isError: boolean
+          firstTimestamp: string
+          lastTimestamp: string
+        }
+      },
+    getMount: (params: { status: [string] }) =>
+      gen.getApiV2TrainingMount(params) as {
+        data: [
+          {
+            createdBy: string
+            createdAt: string
+            modifiedBy: string
+            modifiedAt: string
+            id: number
+            displayId: number
+            name: string
+            memo: string
+            status: string
+            favorite: boolean
+            fullName: string
+            dataSet: {
+              createdBy: string
+              createdAt: string
+              modifiedBy: string
+              modifiedAt: string
+              id: number
+              displayId: number
+              name: string
+              memo: string
+              isFlat: boolean
+            }
+            entryPoint: string
+            parentFullNameList: [string]
+            tags: [string]
+          },
+        ]
+      },
+    getTags: () => gen.getApiV2TrainingTags() as { data: [string] },
+    postTags: (params: {
+      body: {
+        id: [number]
+        tags: [string]
+      }
+    }) =>
+      gen.postApiV2TrainingTags(params) as {
+        data: [
+          {
+            createdBy: string
+            createdAt: string
+            modifiedBy: string
+            modifiedAt: string
+            id: number
+            displayId: number
+            name: string
+            memo: string
+            status: string
+            favorite: boolean
+            fullName: string
+            dataSet: {
+              createdBy: string
+              createdAt: string
+              modifiedBy: string
+              modifiedAt: string
+              id: number
+              displayId: number
+              name: string
+              memo: string
+              isFlat: boolean
+            }
+            entryPoint: string
+            parentFullNameList: [string]
+            tags: [string]
+          },
+        ]
+      },
+    deleteTags: (params: {
+      body: {
+        id: [number]
+        tags: [string]
+      }
+    }) =>
+      gen.deleteApiV2TrainingTags(params) as {
+        data: [
+          {
+            createdBy: string
+            createdAt: string
+            modifiedBy: string
+            modifiedAt: string
+            id: number
+            displayId: number
+            name: string
+            memo: string
+            status: string
+            favorite: boolean
+            fullName: string
+            dataSet: {
+              createdBy: string
+              createdAt: string
+              modifiedBy: string
+              modifiedAt: string
+              id: number
+              displayId: number
+              name: string
+              memo: string
+              isFlat: boolean
+            }
+            entryPoint: string
+            parentFullNameList: [string]
+            tags: [string]
+          },
+        ]
+      },
+    getSearchHistory: () =>
+      gen.getApiV2TrainingSearchHistory() as {
+        data: [
+          {
+            createdBy: string
+            createdAt: string
+            modifiedBy: string
+            modifiedAt: string
+            name: string
+            id: number
+            searchDetail: {
+              idLower: number
+              idUpper: number
+              name: string
+              nameOr: boolean
+              parentName: string
+              parentNameOr: boolean
+              startedAtLower: string
+              startedAtUpper: string
+              startedBy: string
+              startedByOr: boolean
+              dataSet: string
+              dataSetOr: boolean
+              memo: string
+              memoOr: boolean
+              status: string
+              statusOr: boolean
+              entryPoint: string
+              entryPointOr: boolean
+              tags: string
+              tagsOr: boolean
+            }
+          },
+        ]
+      },
+    postSearchHistory: (params: {
+      body: {
+        name: string
+        searchDetailInputModel: {
+          idLower: number
+          idUpper: number
+          name: string
+          nameOr: boolean
+          parentName: string
+          parentNameOr: boolean
+          startedAtLower: string
+          startedAtUpper: string
+          startedBy: string
+          startedByOr: boolean
+          dataSet: string
+          dataSetOr: boolean
+          memo: string
+          memoOr: boolean
+          status: string
+          statusOr: boolean
+          entryPoint: string
+          entryPointOr: boolean
+          tags: string
+          tagsOr: boolean
+        }
+      }
+    }) =>
+      gen.postApiV2TrainingSearchHistory(params) as {
+        data: {
+          createdBy: string
+          createdAt: string
+          modifiedBy: string
+          modifiedAt: string
+          name: string
+          id: number
+          searchDetail: {
+            idLower: number
+            idUpper: number
+            name: string
+            nameOr: boolean
+            parentName: string
+            parentNameOr: boolean
+            startedAtLower: string
+            startedAtUpper: string
+            startedBy: string
+            startedByOr: boolean
+            dataSet: string
+            dataSetOr: boolean
+            memo: string
+            memoOr: boolean
+            status: string
+            statusOr: boolean
+            entryPoint: string
+            entryPointOr: boolean
+            tags: string
+            tagsOr: boolean
+          }
+        }
+      },
+    deleteSearchHistoryById: (params: { id: number }) =>
+      gen.deleteApiV2TrainingSearchHistoryById(params),
+    getSearchFill: () =>
+      gen.getApiV2TrainingSearchFill() as {
+        data: {
+          createdBy: [string]
+          status: [string]
+          tags: [string]
+          datasets: [string]
+        }
+      },
   },
 
   notebook: {
-    getSimple: gen.getApiV2NotebookSimple,
-    get: gen.getApiV2Notebook,
-    post: gen.postApiV2NotebookRun,
-    getById: gen.getApiV2NotebookById,
-    deleteById: gen.deleteApiV2NotebookById,
-    putById: gen.putApiV2NotebookById,
-    getContainerFilesById: gen.getApiV2NotebookByIdContainerFiles,
-    postHaltById: gen.postApiV2NotebookByIdHalt,
-    getEventsById: gen.getApiV2NotebookByIdEvents,
-    getEndpointById: gen.getApiV2NotebookByIdEndpoint,
-    getFilesById: gen.getApiV2NotebookByIdContainerFiles,
-    postRerun: gen.postApiV2NotebookByIdRerun,
-    getAvailableInfiniteTime: gen.getApiV2NotebookAvailableInfiniteTime,
+    getSimple: () =>
+      gen.getApiV2NotebookSimple() as {
+        data: [
+          {
+            createdBy: string
+            createdAt: string
+            modifiedBy: string
+            modifiedAt: string
+            id: number
+            displayId: number
+            name: string
+            memo: string
+            status: string
+            favorite: boolean
+            fullName: string
+          },
+        ]
+      },
+    get: (params: {
+      id?: string
+      name?: string
+      createdAt?: string
+      createdBy?: string
+      memo?: string
+      status?: string
+      perPage?: number
+      page?: number
+      withTotal?: boolean
+    }) =>
+      gen.getApiV2Notebook(params) as {
+        headers: { 'x-total-count': string }
+        data: [
+          {
+            createdBy: string
+            createdAt: string
+            modifiedBy: string
+            modifiedAt: string
+            id: number
+            displayId: number
+            name: string
+            memo: string
+            status: string
+            favorite: boolean
+            fullName: string
+          },
+        ]
+      },
+    post: (params: {
+      body: {
+        name: string
+        containerImage: {
+          registryId: number
+          image: string
+          tag: string
+        }
+        dataSetId: number
+        jupyterLabVersion: string
+        parentIds: [number]
+        inferenceIds: [number]
+        gitModel: {
+          gitId: number
+          repository: string
+          owner: string
+          branch: string
+          commitId: string
+        }
+        options: {
+          additionalProp1: string
+          additionalProp2: string
+          additionalProp3: string
+        }
+        cpu: number
+        memory: number
+        gpu: number
+        partition: string
+        memo: string
+        expiresIn: number
+        localDataSet: boolean
+        entryPoint: string
+      }
+    }) =>
+      gen.postApiV2NotebookRun(params) as {
+        data: {
+          createdBy: string
+          createdAt: string
+          modifiedBy: string
+          modifiedAt: string
+          id: number
+          displayId: number
+          name: string
+          memo: string
+          status: string
+          favorite: boolean
+          fullName: string
+        }
+      },
+    getById: (params: { id: number }) =>
+      gen.getApiV2NotebookById(params) as {
+        data: {
+          createdBy: string
+          createdAt: string
+          modifiedBy: string
+          modifiedAt: string
+          id: number
+          displayId: number
+          name: string
+          memo: string
+          status: string
+          favorite: boolean
+          fullName: string
+          key: string
+          dataSet: {
+            createdBy: string
+            createdAt: string
+            modifiedBy: string
+            modifiedAt: string
+            id: number
+            displayId: number
+            name: string
+            memo: string
+            isFlat: boolean
+          }
+          parents: [
+            {
+              createdBy: string
+              createdAt: string
+              modifiedBy: string
+              modifiedAt: string
+              id: number
+              displayId: number
+              name: string
+              memo: string
+              status: string
+              favorite: boolean
+              fullName: string
+              dataSet: {
+                createdBy: string
+                createdAt: string
+                modifiedBy: string
+                modifiedAt: string
+                id: number
+                displayId: number
+                name: string
+                memo: string
+                isFlat: boolean
+              }
+              entryPoint: string
+              parentFullNameList: [string]
+              tags: [string]
+            },
+          ]
+          inferences: [
+            {
+              createdBy: string
+              createdAt: string
+              modifiedBy: string
+              modifiedAt: string
+              id: number
+              displayId: number
+              name: string
+              memo: string
+              status: string
+              favorite: boolean
+              fullName: string
+              dataSet: {
+                createdBy: string
+                createdAt: string
+                modifiedBy: string
+                modifiedAt: string
+                id: number
+                displayId: number
+                name: string
+                memo: string
+                isFlat: boolean
+              }
+              entryPoint: string
+              parentFullNameList: [string]
+              parentInferenceFullNameList: [string]
+              outputValue: string
+            },
+          ]
+          gitModel: {
+            gitId: number
+            repository: string
+            owner: string
+            branch: string
+            commitId: string
+            url: string
+          }
+          options: [
+            {
+              key: string
+              value: string
+            },
+          ]
+          containerImage: {
+            registryId: number
+            image: string
+            tag: string
+            registryName: string
+            url: string
+          }
+          completedAt: string
+          startedAt: string
+          node: string
+          cpu: number
+          memory: number
+          gpu: number
+          partition: string
+          jupyterLabVersion: string
+          statusType: string
+          notebookNodePort: string
+          notebookToken: string
+          conditionNote: string
+          waitingTime: string
+          executionTime: string
+          expiresIn: number
+          localDataSet: boolean
+          entryPoint: string
+        }
+      },
+    deleteById: (params: { id: number }) => gen.deleteApiV2NotebookById(params),
+    putById: (params: {
+      id: number
+      body: {
+        name: string
+        memo: string
+        favorite: boolean
+      }
+    }) =>
+      gen.putApiV2NotebookById(params) as {
+        data: {
+          createdBy: string
+          createdAt: string
+          modifiedBy: string
+          modifiedAt: string
+          id: number
+          displayId: number
+          name: string
+          memo: string
+          status: string
+          favorite: boolean
+          fullName: string
+        }
+      },
+    getContainerFilesById: (params: {
+      id: number
+      path?: string
+      withUrl?: boolean
+    }) =>
+      gen.getApiV2NotebookByIdContainerFiles(params) as {
+        data: {
+          dirs: [
+            {
+              dirPath: string
+              dirName: string
+            },
+          ]
+          files: [
+            {
+              key: string
+              fileName: string
+              lastModified: string
+              size: number
+              url: string
+            },
+          ]
+          exceeded: boolean
+        }
+      },
+    postHaltById: (params: { id: number }) =>
+      gen.postApiV2NotebookByIdHalt(params) as {
+        data: {
+          createdBy: string
+          createdAt: string
+          modifiedBy: string
+          modifiedAt: string
+          id: number
+          displayId: number
+          name: string
+          memo: string
+          status: string
+          favorite: boolean
+          fullName: string
+        }
+      },
+    getEventsById: (params: { id: number }) =>
+      gen.getApiV2NotebookByIdEvents(params) as {
+        data: {
+          tenantId: number
+          tenantName: string
+          containerName: string
+          message: string
+          details: string
+          isError: boolean
+          firstTimestamp: string
+          lastTimestamp: string
+        }
+      },
+    getEndpointById: (params: { id: number }) =>
+      gen.getApiV2NotebookByIdEndpoint(params) as {
+        data: {
+          nodePort: string
+          token: string
+        }
+      },
+    getFilesById: (params: { id: number; path?: string; withUrl?: boolean }) =>
+      gen.getApiV2NotebookByIdContainerFiles(params) as {
+        data: {
+          dirs: [
+            {
+              dirPath: string
+              dirName: string
+            },
+          ]
+          files: [
+            {
+              key: string
+              fileName: string
+              lastModified: string
+              size: number
+              url: string
+            },
+          ]
+          exceeded: boolean
+        }
+      },
+    postRerun: (params: {
+      id: number
+      body: {
+        dataSetId: number
+        parentIds: [number]
+        inferenceIds: [number]
+        containerImage: {
+          registryId: number
+          image: string
+          tag: string
+        }
+        gitModel: {
+          gitId: number
+          repository: string
+          owner: string
+          branch: string
+          commitId: string
+        }
+        jupyterLabVersion: string
+        cpu: number
+        memory: number
+        gpu: number
+        expiresIn: number
+        localDataSet: boolean
+        entryPoint: string
+      }
+    }) =>
+      gen.postApiV2NotebookByIdRerun(params) as {
+        data: {
+          createdBy: string
+          createdAt: string
+          modifiedBy: string
+          modifiedAt: string
+          id: number
+          displayId: number
+          name: string
+          memo: string
+          status: string
+          favorite: boolean
+          fullName: string
+        }
+      },
+    getAvailableInfiniteTime: () =>
+      gen.getApiV2NotebookAvailableInfiniteTime() as { data: boolean },
   },
 
   inference: {
-    getSimple: gen.getApiV2InferencesSimple,
-    get: gen.getApiV2Inferences,
-    getMount: gen.getApiV2InferencesMount,
-    post: gen.postApiV2InferencesRun,
-    getById: gen.getApiV2InferencesById,
-    deleteById: gen.deleteApiV2InferencesById,
-    putById: gen.putApiV2InferencesById,
+    getSimple: () =>
+      gen.getApiV2InferencesSimple() as {
+        data: [
+          {
+            createdBy: string
+            createdAt: string
+            modifiedBy: string
+            modifiedAt: string
+            id: number
+            displayId: number
+            name: string
+            memo: string
+            status: string
+            favorite: boolean
+            fullName: string
+          },
+        ]
+      },
+    get: (params: {
+      id?: string
+      name?: string
+      startedAt?: string
+      startedBy?: string
+      dataSet?: string
+      memo?: string
+      status?: string
+      entryPoint?: string
+      parentId?: string
+      parentInferenceId?: string
+      parentName?: string
+      parentInferenceName?: string
+      perPage?: number
+      page?: number
+      withTotal?: boolean
+    }) =>
+      gen.getApiV2Inferences(params) as {
+        headers: { 'x-total-count': string }
+        data: [
+          {
+            createdBy: string
+            createdAt: string
+            modifiedBy: string
+            modifiedAt: string
+            id: number
+            displayId: number
+            name: string
+            memo: string
+            status: string
+            favorite: boolean
+            fullName: string
+            dataSet: {
+              createdBy: string
+              createdAt: string
+              modifiedBy: string
+              modifiedAt: string
+              id: number
+              displayId: number
+              name: string
+              memo: string
+              isFlat: boolean
+            }
+            entryPoint: string
+            parentFullNameList: [string]
+            parentInferenceFullNameList: [string]
+            outputValue: string
+          },
+        ]
+      },
+    getMount: (params: { status: [string] }) =>
+      gen.getApiV2InferencesMount(params) as {
+        data: [
+          {
+            createdBy: string
+            createdAt: string
+            modifiedBy: string
+            modifiedAt: string
+            id: number
+            displayId: number
+            name: string
+            memo: string
+            status: string
+            favorite: boolean
+            fullName: string
+            dataSet: {
+              createdBy: string
+              createdAt: string
+              modifiedBy: string
+              modifiedAt: string
+              id: number
+              displayId: number
+              name: string
+              memo: string
+              isFlat: boolean
+            }
+            entryPoint: string
+            parentFullNameList: [string]
+            parentInferenceFullNameList: [string]
+            outputValue: string
+          },
+        ]
+      },
+    post: (params: {
+      body: {
+        name: string
+        containerImage: {
+          registryId: number
+          image: string
+          tag: string
+        }
+        dataSetId: number
+        parentIds: [number]
+        inferenceIds: [number]
+        gitModel: {
+          gitId: number
+          repository: string
+          owner: string
+          branch: string
+          commitId: string
+        }
+        entryPoint: string
+        options: {
+          additionalProp1: string
+          additionalProp2: string
+          additionalProp3: string
+        }
+        cpu: number
+        memory: number
+        gpu: number
+        partition: string
+        ports: [number]
+        memo: string
+        tags: [string]
+        zip: boolean
+        localDataSet: boolean
+      }
+    }) =>
+      gen.postApiV2InferencesRun(params) as {
+        data: {
+          createdBy: string
+          createdAt: string
+          modifiedBy: string
+          modifiedAt: string
+          id: number
+          displayId: number
+          name: string
+          memo: string
+          status: string
+          favorite: boolean
+          fullName: string
+        }
+      },
+    getById: (params: { id: number }) =>
+      gen.getApiV2InferencesById(params) as {
+        data: {
+          createdBy: string
+          createdAt: string
+          modifiedBy: string
+          modifiedAt: string
+          id: number
+          displayId: number
+          name: string
+          memo: string
+          status: string
+          favorite: boolean
+          fullName: string
+          dataSet: {
+            createdBy: string
+            createdAt: string
+            modifiedBy: string
+            modifiedAt: string
+            id: number
+            displayId: number
+            name: string
+            memo: string
+            isFlat: boolean
+          }
+          entryPoint: string
+          parentFullNameList: [string]
+          parentInferenceFullNameList: [string]
+          outputValue: string
+          key: string
+          gitModel: {
+            gitId: number
+            repository: string
+            owner: string
+            branch: string
+            commitId: string
+            url: string
+          }
+          options: [
+            {
+              key: string
+              value: string
+            },
+          ]
+          containerImage: {
+            registryId: number
+            image: string
+            tag: string
+            registryName: string
+            url: string
+          }
+          parents: [
+            {
+              createdBy: string
+              createdAt: string
+              modifiedBy: string
+              modifiedAt: string
+              id: number
+              displayId: number
+              name: string
+              memo: string
+              status: string
+              favorite: boolean
+              fullName: string
+              dataSet: {
+                createdBy: string
+                createdAt: string
+                modifiedBy: string
+                modifiedAt: string
+                id: number
+                displayId: number
+                name: string
+                memo: string
+                isFlat: boolean
+              }
+              entryPoint: string
+              parentFullNameList: [string]
+              tags: [string]
+            },
+          ]
+          parentInferences: [
+            {
+              createdBy: string
+              createdAt: string
+              modifiedBy: string
+              modifiedAt: string
+              id: number
+              displayId: number
+              name: string
+              memo: string
+              status: string
+              favorite: boolean
+              fullName: string
+              dataSet: {
+                createdBy: string
+                createdAt: string
+                modifiedBy: string
+                modifiedAt: string
+                id: number
+                displayId: number
+                name: string
+                memo: string
+                isFlat: boolean
+              }
+              entryPoint: string
+              parentFullNameList: [string]
+              parentInferenceFullNameList: [string]
+              outputValue: string
+            },
+          ]
+          completedAt: string
+          startedAt: string
+          node: string
+          logSummary: string
+          cpu: number
+          memory: number
+          gpu: number
+          partition: string
+          statusType: string
+          conditionNote: string
+          zip: boolean
+          localDataSet: boolean
+        }
+      },
+    deleteById: (params: { id: number }) =>
+      gen.deleteApiV2InferencesById(params),
+    putById: (params: {
+      id: number
+      body: {
+        name: string
+        memo: string
+        favorite: boolean
+        tags: [string]
+      }
+    }) =>
+      gen.putApiV2InferencesById(params) as {
+        data: {
+          createdBy: string
+          createdAt: string
+          modifiedBy: string
+          modifiedAt: string
+          id: number
+          displayId: number
+          name: string
+          memo: string
+          status: string
+          favorite: boolean
+          fullName: string
+        }
+      },
     // GET /spa/trains/{id}/log
-    getFilesById: gen.getApiV2InferencesByIdFiles,
-    getFileSize: gen.getApiV2InferencesByIdFilesByNameSize,
-    postFilesById: gen.postApiV2InferencesByIdFiles,
-    getContainerFilesById: gen.getApiV2InferencesByIdContainerFiles,
-    deleteByIdFilesByFileId: gen.deleteApiV2InferencesByIdFilesByFileId,
-    postHaltById: gen.postApiV2InferencesByIdHalt,
-    postUserCancelById: gen.postApiV2InferencesByIdUserCancel,
-    getEventsById: gen.getApiV2InferencesByIdEvents,
+    getFilesById: (params: { id: number; withUrl?: boolean }) =>
+      gen.getApiV2InferencesByIdFiles(params) as {
+        data: [
+          {
+            id: number
+            fileId: number
+            url: string
+            fileName: string
+            isLocked: boolean
+          },
+        ]
+      },
+    getFileSize: (params: { id: number; name: string }) =>
+      gen.getApiV2InferencesByIdFilesByNameSize(params) as {
+        data: {
+          id: number
+          fileId: number
+          key: string
+          url: string
+          fileName: string
+          fileSize: number
+        }
+      },
+    postFilesById: (params: {
+      id: number
+      body: {
+        fileName: string
+        storedPath: string
+      }
+    }) =>
+      gen.postApiV2InferencesByIdFiles(params) as {
+        data: {
+          id: number
+          fileId: number
+          url: string
+          fileName: string
+          isLocked: boolean
+        }
+      },
+    getContainerFilesById: (params: {
+      id: number
+      path?: string
+      withUrl?: boolean
+    }) =>
+      gen.getApiV2InferencesByIdContainerFiles(params) as {
+        data: {
+          dirs: [
+            {
+              dirPath: string
+              dirName: string
+            },
+          ]
+          files: [
+            {
+              key: string
+              fileName: string
+              lastModified: string
+              size: number
+              url: string
+            },
+          ]
+          exceeded: boolean
+        }
+      },
+    deleteByIdFilesByFileId: (params: { id: number; fileId: number }) =>
+      gen.deleteApiV2InferencesByIdFilesByFileId(params),
+    postHaltById: (params: { id: number }) =>
+      gen.postApiV2InferencesByIdHalt(params) as {
+        data: {
+          createdBy: string
+          createdAt: string
+          modifiedBy: string
+          modifiedAt: string
+          id: number
+          displayId: number
+          name: string
+          memo: string
+          status: string
+          favorite: boolean
+          fullName: string
+        }
+      },
+    postUserCancelById: (params: { id: number }) =>
+      gen.postApiV2InferencesByIdUserCancel(params) as {
+        data: {
+          createdBy: string
+          createdAt: string
+          modifiedBy: string
+          modifiedAt: string
+          id: number
+          displayId: number
+          name: string
+          memo: string
+          status: string
+          favorite: boolean
+          fullName: string
+        }
+      },
+    getEventsById: (params: { id: number }) =>
+      gen.getApiV2InferencesByIdEvents(params) as {
+        data: {
+          tenantId: number
+          tenantName: string
+          containerName: string
+          message: string
+          details: string
+          isError: boolean
+          firstTimestamp: string
+          lastTimestamp: string
+        }
+      },
   },
 
   storage: {
     admin: {
-      get: gen.getApiV2AdminStorageEndpoints,
-      post: gen.postApiV2AdminStorageEndpoints,
-      getById: gen.getApiV2AdminStorageEndpointsById,
-      put: gen.putApiV2AdminStorageEndpointsById,
-      delete: gen.deleteApiV2AdminStorageEndpointsById,
+      get: () =>
+        gen.getApiV2AdminStorageEndpoints() as {
+          data: [
+            {
+              createdBy: string
+              createdAt: string
+              modifiedBy: string
+              modifiedAt: string
+              id: number
+              name: string
+              serverUrl: string
+              nfsServer: string
+              nfsRoot: string
+            },
+          ]
+        },
+      post: (params: {
+        body: {
+          name: string
+          serverUrl: string
+          accessKey: string
+          secretKey: string
+          nfsServer: string
+          nfsRoot: string
+        }
+      }) =>
+        gen.postApiV2AdminStorageEndpoints(params) as {
+          data: {
+            createdBy: string
+            createdAt: string
+            modifiedBy: string
+            modifiedAt: string
+            id: number
+            name: string
+            serverUrl: string
+            nfsServer: string
+            nfsRoot: string
+          }
+        },
+      getById: (params: { id: number }) =>
+        gen.getApiV2AdminStorageEndpointsById(params) as {
+          data: {
+            createdBy: string
+            createdAt: string
+            modifiedBy: string
+            modifiedAt: string
+            id: number
+            name: string
+            serverUrl: string
+            nfsServer: string
+            nfsRoot: string
+            accessKey: string
+            secretKey: string
+          }
+        },
+      put: (params: {
+        id: number
+        body: {
+          name: string
+          serverUrl: string
+          accessKey: string
+          secretKey: string
+          nfsServer: string
+          nfsRoot: string
+        }
+      }) =>
+        gen.putApiV2AdminStorageEndpointsById(params) as {
+          data: {
+            createdBy: string
+            createdAt: string
+            modifiedBy: string
+            modifiedAt: string
+            id: number
+            name: string
+            serverUrl: string
+            nfsServer: string
+            nfsRoot: string
+          }
+        },
+      delete: (params: { id: number }) =>
+        gen.deleteApiV2AdminStorageEndpointsById(params),
     },
-    getUploadParameter: gen.getApiV2UploadParameter,
-    postUploadComplete: gen.postApiV2UploadComplete,
-    getDownloadUrl: gen.getApiV2DownloadUrl,
+    getUploadParameter: (params: {
+      fileName: string
+      partSum: number
+      type: string
+    }) =>
+      gen.getApiV2UploadParameter(params) as {
+        data: {
+          uris: [string]
+          partsSum: number
+          uploadId: string
+          key: string
+          fileName: string
+          storedPath: string
+        }
+      },
+    postUploadComplete: (params: {
+      body: {
+        partETags: [string]
+        uploadId: string
+        key: string
+      }
+    }) =>
+      gen.postApiV2UploadComplete(params) as {
+        data: {
+          partETags: [string]
+          uploadId: string
+          key: string
+        }
+      },
+    getDownloadUrl: (params: {
+      type?: string
+      storedPath?: string
+      fileName?: string
+      secure: boolean
+    }) => gen.getApiV2DownloadUrl(params) as { data: { url: string } },
   },
 
   tenant: {
     admin: {
-      get: gen.getApiV2AdminTenants,
-      post: gen.postApiV2AdminTenants,
-      getById: gen.getApiV2AdminTenantsById,
-      put: gen.putApiV2AdminTenantsById,
-      delete: gen.deleteApiV2AdminTenantsById,
+      get: () =>
+        gen.getApiV2AdminTenants() as {
+          data: [
+            {
+              createdBy: string
+              createdAt: string
+              modifiedBy: string
+              modifiedAt: string
+              id: number
+              name: string
+              displayName: string
+              storagePath: string
+            },
+          ]
+        },
+      post: (params: {
+        body: {
+          displayName: string
+          defaultGitId: number
+          gitIds: [number]
+          defaultRegistryId: number
+          registryIds: [number]
+          storageId: number
+          availableInfiniteTimeNotebook: boolean
+          userGroupIds: [number]
+          tenantName: string
+        }
+      }) =>
+        gen.postApiV2AdminTenants(params) as {
+          data: {
+            createdBy: string
+            createdAt: string
+            modifiedBy: string
+            modifiedAt: string
+            id: number
+            name: string
+            displayName: string
+            storagePath: string
+          }
+        },
+      getById: (params: { id: number }) =>
+        gen.getApiV2AdminTenantsById(params) as {
+          data: {
+            createdBy: string
+            createdAt: string
+            modifiedBy: string
+            modifiedAt: string
+            id: number
+            name: string
+            displayName: string
+            storagePath: string
+            defaultGitId: number
+            gitIds: [number]
+            defaultRegistryId: number
+            registryIds: [number]
+            storageId: number
+            availableInfiniteTimeNotebook: boolean
+            userGroupIds: [number]
+          }
+        },
+      put: (params: {
+        id: number
+        body: {
+          displayName: string
+          defaultGitId: number
+          gitIds: [number]
+          defaultRegistryId: number
+          registryIds: [number]
+          storageId: number
+          availableInfiniteTimeNotebook: boolean
+          userGroupIds: [number]
+        }
+      }) =>
+        gen.putApiV2AdminTenantsById(params) as {
+          data: {
+            createdBy: string
+            createdAt: string
+            modifiedBy: string
+            modifiedAt: string
+            id: number
+            name: string
+            displayName: string
+            storagePath: string
+          }
+        },
+      delete: (params: { id: number }) =>
+        gen.deleteApiV2AdminTenantsById(params) as {
+          data: {
+            containerWarnMsg: string
+          }
+        },
     },
-    get: gen.getApiV2Tenant,
-    put: gen.putApiV2Tenant,
+    get: () =>
+      gen.getApiV2Tenant() as {
+        data: {
+          createdBy: string
+          createdAt: string
+          modifiedBy: string
+          modifiedAt: string
+          id: number
+          name: string
+          displayName: string
+          storagePath: string
+          defaultGitId: number
+          gitIds: [number]
+          defaultRegistryId: number
+          registryIds: [number]
+          storageId: number
+          availableInfiniteTimeNotebook: boolean
+          userGroupIds: [number]
+        }
+      },
+    put: (params: {
+      body: {
+        displayName: string
+        defaultGitId: number
+        gitIds: [number]
+        defaultRegistryId: number
+        registryIds: [number]
+        storageId: number
+        availableInfiniteTimeNotebook: boolean
+        userGroupIds: [number]
+      }
+    }) =>
+      gen.putApiV2Tenant(params) as {
+        data: {
+          createdBy: string
+          createdAt: string
+          modifiedBy: string
+          modifiedAt: string
+          id: number
+          name: string
+          displayName: string
+          storagePath: string
+        }
+      },
   },
 
   user: {
     admin: {
-      get: gen.getApiV2AdminUsers,
-      post: gen.postApiV2AdminUsers,
-      getById: gen.getApiV2AdminUsersById,
-      delete: gen.deleteApiV2AdminUsersById,
-      put: gen.putApiV2AdminUsersById,
-      putPassword: simpleStringBody(gen.putApiV2AdminUsersByIdPassword, 'body'),
-      postSyncLdap: gen.postApiV2AdminUsersSyncLdap,
+      get: () =>
+        gen.getApiV2AdminUsers() as {
+          data: [
+            {
+              createdBy: string
+              createdAt: string
+              modifiedBy: string
+              modifiedAt: string
+              id: number
+              name: string
+              serviceType: number
+              systemRoles: [
+                {
+                  id: number
+                  name: string
+                  displayName: string
+                  isCustomed: boolean
+                  sortOrder: number
+                  isOrigin: boolean
+                  userGroupTanantMapIdLists: [number]
+                },
+              ]
+              tenants: [
+                {
+                  id: number
+                  name: string
+                  default: boolean
+                  displayName: string
+                  roles: [
+                    {
+                      id: number
+                      name: string
+                      displayName: string
+                      isCustomed: boolean
+                      sortOrder: number
+                      isOrigin: boolean
+                      userGroupTanantMapIdLists: [number]
+                    },
+                  ]
+                  isOrigin: boolean
+                },
+              ]
+            },
+          ]
+        },
+      post: (params: {
+        body: {
+          name: string
+          password: string
+          systemRoles: [number]
+          tenants: [
+            {
+              id: number
+              default: boolean
+              roles: [number]
+            },
+          ]
+        }
+      }) =>
+        gen.postApiV2AdminUsers(params) as {
+          data: {
+            createdBy: string
+            createdAt: string
+            modifiedBy: string
+            modifiedAt: string
+            id: number
+            name: string
+            serviceType: number
+            systemRoles: [
+              {
+                id: number
+                name: string
+                displayName: string
+                isCustomed: boolean
+                sortOrder: number
+                isOrigin: boolean
+                userGroupTanantMapIdLists: [number]
+              },
+            ]
+            tenants: [
+              {
+                id: number
+                name: string
+                default: boolean
+                displayName: string
+                roles: [
+                  {
+                    id: number
+                    name: string
+                    displayName: string
+                    isCustomed: boolean
+                    sortOrder: number
+                    isOrigin: boolean
+                    userGroupTanantMapIdLists: [number]
+                  },
+                ]
+                isOrigin: boolean
+              },
+            ]
+          }
+        },
+      getById: (params: { id: number }) =>
+        gen.getApiV2AdminUsersById(params) as {
+          data: {
+            createdBy: string
+            createdAt: string
+            modifiedBy: string
+            modifiedAt: string
+            id: number
+            name: string
+            serviceType: number
+            systemRoles: [
+              {
+                id: number
+                name: string
+                displayName: string
+                isCustomed: boolean
+                sortOrder: number
+                isOrigin: boolean
+                userGroupTanantMapIdLists: [number]
+              },
+            ]
+            tenants: [
+              {
+                id: number
+                name: string
+                default: boolean
+                displayName: string
+                roles: [
+                  {
+                    id: number
+                    name: string
+                    displayName: string
+                    isCustomed: boolean
+                    sortOrder: number
+                    isOrigin: boolean
+                    userGroupTanantMapIdLists: [number]
+                  },
+                ]
+                isOrigin: boolean
+              },
+            ]
+          }
+        },
+      delete: (params: { id: number }) => gen.deleteApiV2AdminUsersById(params),
+      put: (params: {
+        id: number
+        body: {
+          systemRoles: [number]
+          tenants: [
+            {
+              id: number
+              default: boolean
+              roles: [number]
+            },
+          ]
+        }
+      }) =>
+        gen.putApiV2AdminUsersById(params) as {
+          data: {
+            createdBy: string
+            createdAt: string
+            modifiedBy: string
+            modifiedAt: string
+            id: number
+            name: string
+            serviceType: number
+            systemRoles: [
+              {
+                id: number
+                name: string
+                displayName: string
+                isCustomed: boolean
+                sortOrder: number
+                isOrigin: boolean
+                userGroupTanantMapIdLists: [number]
+              },
+            ]
+            tenants: [
+              {
+                id: number
+                name: string
+                default: boolean
+                displayName: string
+                roles: [
+                  {
+                    id: number
+                    name: string
+                    displayName: string
+                    isCustomed: boolean
+                    sortOrder: number
+                    isOrigin: boolean
+                    userGroupTanantMapIdLists: [number]
+                  },
+                ]
+                isOrigin: boolean
+              },
+            ]
+          }
+        },
+      putPassword: (params: { id: number; body: string }) =>
+        simpleStringBody(gen.putApiV2AdminUsersByIdPassword, 'body')(params),
+      postSyncLdap: (params: {
+        body: {
+          userName: string
+          password: string
+        }
+      }) => gen.postApiV2AdminUsersSyncLdap(params),
     },
 
     tenant: {
-      get: gen.getApiV2TenantUsers,
-      getById: gen.getApiV2TenantUsersById,
-      delete: gen.deleteApiV2TenantUsersById,
-      putRoles: gen.putApiV2TenantUsersByIdRoles,
+      get: () =>
+        gen.getApiV2TenantUsers() as {
+          data: [
+            {
+              createdBy: string
+              createdAt: string
+              modifiedBy: string
+              modifiedAt: string
+              id: number
+              name: string
+              serviceType: number
+              roles: [
+                {
+                  id: number
+                  name: string
+                  displayName: string
+                  isCustomed: boolean
+                  sortOrder: number
+                  isOrigin: boolean
+                  userGroupTanantMapIdLists: [number]
+                },
+              ]
+            },
+          ]
+        },
+      getById: (params: { id: number }) =>
+        gen.getApiV2TenantUsersById(params) as {
+          data: {
+            createdBy: string
+            createdAt: string
+            modifiedBy: string
+            modifiedAt: string
+            id: number
+            name: string
+            serviceType: number
+            roles: [
+              {
+                id: number
+                name: string
+                displayName: string
+                isCustomed: boolean
+                sortOrder: number
+                isOrigin: boolean
+                userGroupTanantMapIdLists: [number]
+              },
+            ]
+          }
+        },
+      delete: (params: { id: number }) =>
+        gen.deleteApiV2TenantUsersById(params),
+      putRoles: (params: { id: number; body: [number] }) =>
+        gen.putApiV2TenantUsersByIdRoles(params) as {
+          data: {
+            createdBy: string
+            createdAt: string
+            modifiedBy: string
+            modifiedAt: string
+            id: number
+            name: string
+            serviceType: number
+            systemRoles: [
+              {
+                id: number
+                name: string
+                displayName: string
+                isCustomed: boolean
+                sortOrder: number
+                isOrigin: boolean
+                userGroupTanantMapIdLists: [number]
+              },
+            ]
+            tenants: [
+              {
+                id: number
+                name: string
+                default: boolean
+                displayName: string
+                roles: [
+                  {
+                    id: number
+                    name: string
+                    displayName: string
+                    isCustomed: boolean
+                    sortOrder: number
+                    isOrigin: boolean
+                    userGroupTanantMapIdLists: [number]
+                  },
+                ]
+                isOrigin: boolean
+              },
+            ]
+          }
+        },
     },
   },
 
   userGroup: {
     admin: {
-      get: gen.getApiV2AdminUsergroup,
-      getById: gen.getApiV2AdminUsergroupById,
-      post: gen.postApiV2AdminUsergroup,
-      put: gen.putApiV2AdminUsergroupById,
-      delete: gen.deleteApiV2AdminUsergroupById,
+      get: () =>
+        gen.getApiV2AdminUsergroup() as {
+          data: [
+            {
+              createdBy: string
+              createdAt: string
+              modifiedBy: string
+              modifiedAt: string
+              id: number
+              name: string
+              memo: string
+              isGroup: boolean
+              dn: string
+            },
+          ]
+        },
+      getById: (params: { id: number }) =>
+        gen.getApiV2AdminUsergroupById(params) as {
+          data: {
+            createdBy: string
+            createdAt: string
+            modifiedBy: string
+            modifiedAt: string
+            id: number
+            name: string
+            memo: string
+            isGroup: boolean
+            dn: string
+            isDirect: boolean
+            roles: [
+              {
+                id: number
+                name: string
+                displayName: string
+                isCustomed: boolean
+                sortOrder: number
+                isOrigin: boolean
+                userGroupTanantMapIdLists: [number]
+              },
+            ]
+          }
+        },
+      post: (params: {
+        body: {
+          name: string
+          memo: string
+          isGroup: boolean
+          dn: string
+          isDirect: boolean
+          roleIds: [number]
+        }
+      }) =>
+        gen.postApiV2AdminUsergroup(params) as {
+          data: {
+            createdBy: string
+            createdAt: string
+            modifiedBy: string
+            modifiedAt: string
+            id: number
+            name: string
+            memo: string
+            isGroup: boolean
+            dn: string
+            isDirect: boolean
+            roles: [
+              {
+                id: number
+                name: string
+                displayName: string
+                isCustomed: boolean
+                sortOrder: number
+                isOrigin: boolean
+                userGroupTanantMapIdLists: [number]
+              },
+            ]
+          }
+        },
+      put: (params: {
+        id: number
+        body: {
+          name: string
+          memo: string
+          isGroup: boolean
+          dn: string
+          isDirect: boolean
+          roleIds: [number]
+        }
+      }) =>
+        gen.putApiV2AdminUsergroupById(params) as {
+          data: {
+            createdBy: string
+            createdAt: string
+            modifiedBy: string
+            modifiedAt: string
+            id: number
+            name: string
+            memo: string
+            isGroup: boolean
+            dn: string
+            isDirect: boolean
+            roles: [
+              {
+                id: number
+                name: string
+                displayName: string
+                isCustomed: boolean
+                sortOrder: number
+                isOrigin: boolean
+                userGroupTanantMapIdLists: [number]
+              },
+            ]
+          }
+        },
+      delete: (params: { id: number }) =>
+        gen.deleteApiV2AdminUsergroupById(params),
     },
   },
 
   version: {
-    get: gen.getApiV2Version,
+    get: () =>
+      gen.getApiV2Version() as {
+        data: {
+          version: string
+          messages: [string]
+        }
+      },
   },
 
   // dataを取り出すメソッド
