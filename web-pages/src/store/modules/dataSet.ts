@@ -1,4 +1,19 @@
+import { GetterTree, ActionTree, MutationTree } from 'vuex'
+
 import api from '@/api/api'
+import * as gen from '@/api/api.generate'
+import { RootState } from '../index'
+
+interface StateType {
+  dataSets: Array<gen.NssolPlatypusApiModelsDataSetApiModelsIndexOutputModel>
+  total: number
+  dataTotal: number
+  detail: gen.NssolPlatypusApiModelsDataSetApiModelsDetailsOutputModel
+  dataTypes: Array<
+    gen.NssolPlatypusApiModelsDataSetApiModelsDataTypeOutputModel
+  >
+  data: Array<gen.NssolPlatypusApiModelsDataApiModelsIndexOutputModel>
+}
 
 // initial state
 const state = {
@@ -11,7 +26,7 @@ const state = {
 }
 
 // getters
-const getters = {
+const getters: GetterTree<StateType, RootState> = {
   dataSets(state) {
     return state.dataSets
   },
@@ -38,8 +53,8 @@ const getters = {
 }
 
 // actions
-const actions = {
-  async fetchData({ commit }, params) {
+const actions: ActionTree<StateType, RootState> = {
+  async fetchData({ commit }, params: gen.DataApiApiV2DataGetRequest) {
     let response = await api.data.get(params)
     let data = response.data
     let total = response.headers['x-total-count']
@@ -96,7 +111,7 @@ const actions = {
 }
 
 // mutations
-const mutations = {
+const mutations: MutationTree<StateType> = {
   setData(state, { data }) {
     state.data = data
   },

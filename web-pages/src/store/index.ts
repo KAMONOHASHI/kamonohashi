@@ -23,6 +23,10 @@ import user from './modules/user'
 import userGroup from './modules/userGroup'
 import version from './modules/version'
 
+export interface RootState {
+  version: string
+}
+
 Vue.use(Vuex)
 export default new Vuex.Store({
   modules: {

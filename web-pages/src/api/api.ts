@@ -1,4099 +1,825 @@
-import * as gen from './api.generator.js'
-import axiosRoot from 'axios'
 import * as ext from '@/util/axios-ext'
+import * as gen from './api.generate'
 
-// -----------------------------------------------------------------------
-// axiosの拡張
-// テストでモックさせるためaxiosをexport
-let axios = axiosRoot.create({
-  // VUE_APP_API_HOST: .envから取得
-  baseURL: 'http://' + (process.env.VUE_APP_API_HOST || ''),
+import axios from 'axios'
+const API_URL = 'http://' + process.env.VUE_APP_API_HOST //process.env
+
+const axiosInstance = axios.create({
+  baseURL: API_URL,
   headers: { 'Content-Type': 'application/json' },
 })
-ext.axiosLoggerInterceptors(axios)
-ext.axiosAuthInterceptors(axios)
-ext.axiosLoadingInterceptors(axios)
-ext.axiosErrorHandlingInterceptors(axios)
-gen.setAxios(axios)
 
-// -----------------------------------------------------------------------
-// HTTP Method の拡張
-let simpleStringBody = function(func, paramName) {
-  return async function(params) {
-    if (paramName in params) {
-      params[paramName] = '"' + params[paramName] + '"'
-    }
-    return await func(params)
-  }
-}
+ext.axiosAuthInterceptors(axiosInstance)
+ext.axiosLoadingInterceptors(axiosInstance)
+ext.axiosErrorHandlingInterceptors(axiosInstance, null)
+ext.axiosLoggerInterceptors(axiosInstance)
+
+const accountApi = new gen.AccountApi(undefined, '', axiosInstance)
+const clusterApi = new gen.ClusterApi(undefined, '', axiosInstance)
+const dataApi = new gen.DataApi(undefined, '', axiosInstance)
+const dataSetApi = new gen.DataSetApi(undefined, '', axiosInstance)
+const gitApi = new gen.GitApi(undefined, '', axiosInstance)
+const inferenceApi = new gen.InferenceApi(undefined, '', axiosInstance)
+const menuApi = new gen.MenuApi(undefined, '', axiosInstance)
+const nodeApi = new gen.NodeApi(undefined, '', axiosInstance)
+const notebookApi = new gen.NotebookApi(undefined, '', axiosInstance)
+const preprocessingApi = new gen.PreprocessingApi(undefined, '', axiosInstance)
+const registryApi = new gen.RegistryApi(undefined, '', axiosInstance)
+const resourceApi = new gen.ResourceApi(undefined, '', axiosInstance)
+const roleApi = new gen.RoleApi(undefined, '', axiosInstance)
+const storageApi = new gen.StorageApi(undefined, '', axiosInstance)
+const tenantApi = new gen.TenantApi(undefined, '', axiosInstance)
+const trainingApi = new gen.TrainingApi(undefined, '', axiosInstance)
+const userApi = new gen.UserApi(undefined, '', axiosInstance)
+const userGroupApi = new gen.UserGroupApi(undefined, '', axiosInstance)
+const versionApi = new gen.VersionApi(undefined, '', axiosInstance)
 
 // -----------------------------------------------------------------------
 // 使いやすいようにAPI領域で再定義
 // （swagger-vue で自動生成生成：https://github.com/chenweiqun/swagger-vue）
 let api = {
   cluster: {
-    getPartitions: () => gen.getApiV2TenantPartitions() as { data: [string] },
-    getQuota: () =>
-      gen.getApiV2TenantQuota() as {
-        data: {
-          tenantId: number
-          cpu: number
-          memory: number
-          gpu: number
-          tenantName: string
-        }
-      },
-    getTenantNodes: () =>
-      gen.getApiV2TenantNodes() as {
-        data: [
-          {
-            name: string
-            memo: string
-            partition: string
-            accessLevel: number
-            allocatableCpu: number
-            allocatableMemory: number
-            allocatableGpu: number
-          },
-        ]
-      },
+    getPartitions: () => clusterApi.apiV2TenantPartitionsGet(),
+    getQuota: () => clusterApi.apiV2TenantQuotaGet(),
+    getTenantNodes: () => clusterApi.apiV2TenantNodesGet(),
 
     admin: {
-      getQuotas: () =>
-        gen.getApiV2AdminQuotas() as {
-          data: [
-            {
-              tenantId: number
-              cpu: number
-              memory: number
-              gpu: number
-              tenantName: string
-            },
-          ]
-        },
+      getQuotas: () => clusterApi.apiV2AdminQuotasGet(),
       postQuota: (params: {
-        body: [
-          {
-            tenantId: number
-            cpu: number
-            memory: number
-            gpu: number
-          },
-        ]
+        body: Array<gen.NssolPlatypusApiModelsClusterApiModelsQuotaInputModel>
       }) =>
-        gen.postApiV2AdminQuotas(params) as {
-          data: [
-            {
-              tenantId: number
-              cpu: number
-              memory: number
-              gpu: number
-              tenantName: string
-            },
-          ]
-        },
-      deleteTensorboards: gen.deleteApiV2AdminTensorboards as number,
+        clusterApi.apiV2AdminQuotasPost({
+          nssolPlatypusApiModelsClusterApiModelsQuotaInputModel: params.body,
+        }),
+      deleteTensorboards: () => clusterApi.apiV2AdminTensorboardsDelete(),
     },
   },
 
   menu: {
     admin: {
-      get: () =>
-        gen.getApiV2AdminMenus() as {
-          data: [
-            {
-              id: 0
-              name: string
-              description: string
-              menuType: 0
-              roles: [
-                {
-                  id: 0
-                  name: string
-                  isSystemRole: true
-                },
-              ]
-            },
-          ]
-        },
-      put: (params: { id: number }) => gen.putApiV2AdminMenusById(params),
-      getTypes: () =>
-        gen.getApiV2AdminMenuTypes() as {
-          data: [
-            {
-              id: number
-              name: string
-            },
-          ]
-        },
+      get: () => menuApi.apiV2AdminMenusGet(),
+      put: (params: {
+        id: gen.NssolPlatypusInfrastructureMenuCode
+        body: Array<number>
+      }) =>
+        menuApi.apiV2AdminMenusIdPut({
+          id: params.id,
+          requestBody: params.body,
+        }),
+      getTypes: () => menuApi.apiV2AdminMenuTypesGet(),
     },
 
     tenant: {
-      get: gen.getApiV2TenantMenus,
-      put: gen.putApiV2TenantMenusById,
-      getTypes: gen.getApiV2TenantMenuTypes,
+      get: () => menuApi.apiV2TenantMenusGet(),
+      put: (params: {
+        id: gen.NssolPlatypusInfrastructureMenuCode
+        body: Array<number>
+      }) =>
+        menuApi.apiV2TenantMenusIdPut({
+          id: params.id,
+          requestBody: params.body,
+        }),
+      getTypes: () => menuApi.apiV2TenantMenuTypesGet(),
     },
   },
 
   menuList: {
-    getMenuList: () =>
-      gen.getApiV2AccountMenusList() as {
-        data: [
-          {
-            name: 'string'
-            description: 'string'
-            url: 'string'
-            category: 'string'
-          },
-        ]
-      },
+    getMenuList: (params: gen.AccountApiApiV2AccountMenusListGetRequest) =>
+      accountApi.apiV2AccountMenusListGet(params),
   },
 
   quotas: {
-    get: () =>
-      gen.getApiV2AdminQuotas() as {
-        data: [
-          {
-            tenantId: number
-            cpu: number
-            memory: number
-            gpu: number
-            tenantName: string
-          },
-        ]
-      },
+    get: () => clusterApi.apiV2AdminQuotasGet(),
     post: (params: {
-      body: [
-        {
-          tenantId: number
-          cpu: number
-          memory: number
-          gpu: number
-        },
-      ]
+      body: Array<gen.NssolPlatypusApiModelsClusterApiModelsQuotaInputModel>
     }) =>
-      gen.postApiV2AdminQuotas(params) as {
-        data: [
-          {
-            tenantId: number
-            cpu: number
-            memory: number
-            gpu: number
-            tenantName: string
-          },
-        ]
-      },
+      clusterApi.apiV2AdminQuotasPost({
+        nssolPlatypusApiModelsClusterApiModelsQuotaInputModel: params.body,
+      }),
   },
 
   nodes: {
     admin: {
-      get: (params: {
-        name?: string
-        perPage?: number
-        page?: number
-        withTotal?: boolean
-      }) =>
-        gen.getApiV2AdminNodes(params) as {
-          headers: { 'x-total-count': string }
-          data: [
-            {
-              createdBy: string
-              createdAt: string
-              modifiedBy: string
-              modifiedAt: string
-              id: number
-              name: string
-              memo: string
-              partition: string
-              accessLevel: number
-              accessLevelStr: string
-              tensorBoardEnabled: true
-              notebookEnabled: true
-            },
-          ]
-        },
+      get: (params: gen.NodeApiApiV2AdminNodesGetRequest) =>
+        nodeApi.apiV2AdminNodesGet(params),
       post: (params: {
-        body: {
-          name: string
-          memo: string
-          partition: string
-          accessLevel: number
-          assignedTenantIds: [number]
-          tensorBoardEnabled: true
-          notebookEnabled: true
-        }
+        body: gen.NssolPlatypusApiModelsNodeApiModelsCreateInputModel
       }) =>
-        gen.postApiV2AdminNodes(params) as {
-          data: {
-            createdBy: string
-            createdAt: string
-            modifiedBy: string
-            modifiedAt: string
-            id: number
-            name: string
-            memo: string
-            partition: string
-            accessLevel: number
-            accessLevelStr: string
-            tensorBoardEnabled: true
-            notebookEnabled: true
-          }
-        },
-      getById: (params: { id: number }) =>
-        gen.getApiV2AdminNodesById(params) as {
-          data: {
-            createdBy: string
-            createdAt: string
-            modifiedBy: string
-            modifiedAt: string
-            id: number
-            name: string
-            memo: string
-            partition: string
-            accessLevel: number
-            accessLevelStr: string
-            tensorBoardEnabled: true
-            notebookEnabled: true
-            assignedTenants: [
-              {
-                id: number
-                name: string
-                displayName: string
-              },
-            ]
-          }
-        },
+        nodeApi.apiV2AdminNodesPost({
+          nssolPlatypusApiModelsNodeApiModelsCreateInputModel: params.body,
+        }),
+      getById: (params: gen.NodeApiApiV2AdminNodesIdGetRequest) =>
+        nodeApi.apiV2AdminNodesIdGet(params),
       put: (params: {
         id: number
-        body: {
-          name: string
-          memo: string
-          partition: string
-          accessLevel: number
-          assignedTenantIds: [number]
-          tensorBoardEnabled: boolean
-          notebookEnabled: boolean
-        }
+        body: gen.NssolPlatypusApiModelsNodeApiModelsCreateInputModel
       }) =>
-        gen.putApiV2AdminNodesById(params) as {
-          data: {
-            name: string
-            memo: string
-            partition: string
-            accessLevel: number
-            assignedTenantIds: [number]
-            tensorBoardEnabled: true
-            notebookEnabled: true
-          }
-        },
-      delete: (params: { id: number }) => gen.deleteApiV2AdminNodesById(params),
-      postSyncFromDb: () =>
-        gen.postApiV2AdminNodesSyncClusterFromDb() as {
-          data: [
-            {
-              createdBy: string
-              createdAt: string
-              modifiedBy: string
-              modifiedAt: string
-              id: number
-              name: string
-              memo: string
-              partition: string
-              accessLevel: number
-              accessLevelStr: string
-              tensorBoardEnabled: true
-              notebookEnabled: true
-            },
-          ]
-        },
-      getAccessLevel: () =>
-        gen.getApiV2AdminNodeAccessLevels() as {
-          data: [
-            {
-              id: number
-              name: 'string'
-            },
-          ]
-        },
+        nodeApi.apiV2AdminNodesIdPut({
+          id: params.id,
+          nssolPlatypusApiModelsNodeApiModelsCreateInputModel: params.body,
+        }),
+      delete: (params: { id: number }) =>
+        nodeApi.apiV2AdminNodesIdDelete({ id: params.id }),
+      postSyncFromDb: () => nodeApi.apiV2AdminNodesSyncClusterFromDbPost(),
+      getAccessLevel: () => nodeApi.apiV2AdminNodeAccessLevelsGet(),
     },
   },
   registry: {
     admin: {
-      get: () =>
-        gen.getApiV2AdminRegistryEndpoints() as {
-          data: [
-            {
-              createdBy: string
-              createdAt: string
-              modifiedBy: string
-              modifiedAt: string
-              id: number
-              name: string
-              registryPath: string
-              projectName: string
-              serviceType: number
-            },
-          ]
-        },
-      getById: (params: { id: number }) =>
-        gen.getApiV2AdminRegistryEndpointsById(params) as {
-          data: {
-            createdBy: string
-            createdAt: string
-            modifiedBy: string
-            modifiedAt: string
-            id: number
-            name: string
-            registryPath: string
-            projectName: string
-            serviceType: number
-            host: string
-            portNo: number
-            apiUrl: string
-            registryUrl: string
-            isNotEditable: true
-          }
-        },
-      getType: () =>
-        gen.getApiV2AdminRegistryTypes() as {
-          data: [
-            {
-              id: number
-              name: string
-            },
-          ]
-        },
+      get: () => registryApi.apiV2AdminRegistryEndpointsGet(),
+      getById: (
+        params: gen.RegistryApiApiV2AdminRegistryEndpointsIdGetRequest,
+      ) => registryApi.apiV2AdminRegistryEndpointsIdGet(params),
+      getType: () => registryApi.apiV2AdminRegistryTypesGet(),
       post: (params: {
-        body: {
-          name: string
-          host: string
-          portNo: number
-          serviceType: number
-          projectName: string
-          apiUrl: string
-          registryUrl: string
-        }
+        body: gen.NssolPlatypusApiModelsRegistryApiModelsCreateInputModel
       }) =>
-        gen.postApiV2AdminRegistryEndpoints(params) as {
-          data: {
-            createdBy: string
-            createdAt: string
-            modifiedBy: string
-            modifiedAt: string
-            id: number
-            name: string
-            registryPath: string
-            projectName: string
-            serviceType: number
-          }
-        },
+        registryApi.apiV2AdminRegistryEndpointsPost({
+          nssolPlatypusApiModelsRegistryApiModelsCreateInputModel: params.body,
+        }),
       putById: (params: {
         id: number
-        body: {
-          name: string
-          host: string
-          portNo: number
-          serviceType: number
-          projectName: string
-          apiUrl: string
-          registryUrl: string
-        }
+        body: gen.NssolPlatypusApiModelsRegistryApiModelsCreateInputModel
       }) =>
-        gen.putApiV2AdminRegistryEndpointsById(params) as {
-          data: {
-            createdBy: string
-            createdAt: string
-            modifiedBy: string
-            modifiedAt: string
-            id: number
-            name: string
-            registryPath: string
-            projectName: string
-            serviceType: number
-          }
-        },
-      deleteById: (params: { id: number }) =>
-        gen.deleteApiV2AdminRegistryEndpointsById(params),
+        registryApi.apiV2AdminRegistryEndpointsIdPut({
+          id: params.id,
+          nssolPlatypusApiModelsRegistryApiModelsCreateInputModel: params.body,
+        }),
+      deleteById: (
+        params: gen.RegistryApiApiV2AdminRegistryEndpointsIdDeleteRequest,
+      ) => registryApi.apiV2AdminRegistryEndpointsIdDelete(params),
     },
     tenant: {
-      getEndpoints: () =>
-        gen.getApiV2TenantRegistryEndpoints() as {
-          data: [
-            {
-              createdBy: string
-              createdAt: string
-              modifiedBy: string
-              modifiedAt: string
-              id: number
-              name: string
-              registryPath: string
-              projectName: string
-              serviceType: number
-            },
-          ]
-        },
+      getEndpoints: () => registryApi.apiV2TenantRegistryEndpointsGet(),
     },
-    getImages: (params: { registryId: number }) =>
-      gen.getApiV2RegistriesByRegistryIdImages(params) as { data: [string] },
-    getTags: (params: { registryId: number; image: string }) =>
-      gen.getApiV2RegistriesByRegistryIdImagesByImageTags(params) as {
-        data: [string]
-      },
+    getImages: ({ registryId }: any) =>
+      registryApi.apiV2RegistriesRegistryIdImagesGet(registryId),
+    getTags: ({ registryId, image }: any) =>
+      registryApi.apiV2RegistriesRegistryIdImagesImageTagsGet({
+        registryId,
+        image,
+      }),
   },
 
   account: {
-    get: () =>
-      gen.getApiV2Account() as {
-        data: {
-          userId: number
-          userName: string
-          passwordChangeEnabled: true
-          selectedTenant: {
-            id: number
-            name: string
-            default: true
-            displayName: string
-            roles: [
-              {
-                id: number
-                name: string
-                displayName: string
-                isCustomed: true
-                sortOrder: number
-                isOrigin: true
-                userGroupTanantMapIdLists: [number]
-              },
-            ]
-            isOrigin: true
-          }
-          defaultTenant: {
-            id: number
-            name: string
-            default: true
-            displayName: string
-            roles: [
-              {
-                id: number
-                name: string
-                displayName: string
-                isCustomed: true
-                sortOrder: number
-                isOrigin: true
-                userGroupTanantMapIdLists: [number]
-              },
-            ]
-            isOrigin: true
-          }
-          tenants: [
-            {
-              id: number
-              name: string
-              default: true
-              displayName: string
-              roles: [
-                {
-                  id: number
-                  name: string
-                  displayName: string
-                  isCustomed: true
-                  sortOrder: number
-                  isOrigin: true
-                  userGroupTanantMapIdLists: [number]
-                },
-              ]
-              isOrigin: true
-            },
-          ]
-        }
-      },
-    put: (params: { DefaultTenant: string }) =>
-      gen.putApiV2Account(params) as {
-        data: {
-          userId: number
-          userName: string
-          passwordChangeEnabled: true
-          selectedTenant: {
-            id: number
-            name: string
-            default: true
-            displayName: string
-            roles: [
-              {
-                id: number
-                name: string
-                displayName: string
-                isCustomed: true
-                sortOrder: number
-                isOrigin: true
-                userGroupTanantMapIdLists: [number]
-              },
-            ]
-            isOrigin: true
-          }
-          defaultTenant: {
-            id: number
-            name: string
-            default: true
-            displayName: string
-            roles: [
-              {
-                id: number
-                name: string
-                displayName: string
-                isCustomed: true
-                sortOrder: number
-                isOrigin: true
-                userGroupTanantMapIdLists: [number]
-              },
-            ]
-            isOrigin: true
-          }
-          tenants: [
-            {
-              id: number
-              name: string
-              default: true
-              displayName: string
-              roles: [
-                {
-                  id: number
-                  name: string
-                  displayName: string
-                  isCustomed: true
-                  sortOrder: number
-                  isOrigin: true
-                  userGroupTanantMapIdLists: [number]
-                },
-              ]
-              isOrigin: true
-            },
-          ]
-        }
-      },
-    putPassword: (params: { currentPassword: string; newPassword: string }) =>
-      gen.putApiV2AccountPassword(params),
+    get: () => accountApi.apiV2AccountGet(),
+    put: (params: gen.AccountApiApiV2AccountPutRequest) =>
+      accountApi.apiV2AccountPut(params),
+    putPassword: (params: {
+      body: gen.NssolPlatypusApiModelsAccountApiModelsPasswordInputModel
+    }) =>
+      accountApi.apiV2AccountPasswordPut({
+        nssolPlatypusApiModelsAccountApiModelsPasswordInputModel: params.body,
+      }),
     postLogin: (params: {
-      userName: string
-      password: string
-      tenantId: number
-      expiresIn: number
+      body: gen.NssolPlatypusApiModelsAccountApiModelsLoginInputModel
     }) =>
-      gen.postApiV2AccountLogin(params) as {
-        data: {
-          token: string
-          userName: string
-          tenantId: number
-          tenantName: string
-          expiresIn: number
-        }
-      },
-    postTokenTenants: (params: {
-      tenantId: number
-      body: { expiresIn: null }
-    }) =>
-      gen.postApiV2AccountTenantsByTenantIdToken(params) as {
-        data: {
-          token: string
-          userName: string
-          tenantId: number
-          tenantName: string
-          expiresIn: number
-        }
-      },
-    getTreeMenus: () =>
-      gen.getApiV2AccountMenusTree() as {
-        data: [
-          {
-            label: string
-            category: string
-            url: string
-            children: [
-              {
-                label: string
-                category: string
-                url: string
-              },
-            ]
-          },
-        ]
-      },
-    getListMenus: () =>
-      gen.getApiV2AccountMenusList() as {
-        data: [
-          {
-            name: string
-            description: string
-            url: string
-            category: string
-          },
-        ]
-      },
-    getRegistries: () =>
-      gen.getApiV2AccountRegistries() as {
-        data: {
-          defaultRegistryId: number
-          registries: [
-            {
-              id: number
-              userName: string
-              password: string
-              name: string
-              projectName: string
-              serviceType: number
-            },
-          ]
-        }
-      },
+      accountApi.apiV2AccountLoginPost({
+        nssolPlatypusApiModelsAccountApiModelsLoginInputModel: params.body,
+      }),
+    postTokenTenants: (params: { body: any; tenantId: number }) =>
+      accountApi.apiV2AccountTenantsTenantIdTokenPost({
+        tenantId: params.tenantId,
+        nssolPlatypusApiModelsAccountApiModelsSwitchTenantInputModel:
+          params.body,
+      }),
+    getTreeMenus: () => accountApi.apiV2AccountMenusTreeGet(),
+    getListMenus: () => accountApi.apiV2AccountMenusListGet(),
+    getRegistries: () => accountApi.apiV2AccountRegistriesGet(),
     putRegistries: (params: {
-      id: number
-      userName: string
-      password: string
+      body: gen.NssolPlatypusApiModelsAccountApiModelsRegistryCredentialInputModel
     }) =>
-      gen.putApiV2AccountRegistries(params) as {
-        data: {
-          id: number
-          userName: string
-          password: string
-          name: string
-          projectName: string
-          serviceType: number
-        }
-      },
-    getGits: () =>
-      gen.getApiV2AccountGits() as {
-        data: {
-          defaultGitId: number
-          gits: [
-            {
-              id: number
-              token: string
-              name: string
-              serviceType: number
-            },
-          ]
-        }
-      },
+      accountApi.apiV2AccountRegistriesPut({
+        nssolPlatypusApiModelsAccountApiModelsRegistryCredentialInputModel:
+          params.body,
+      }),
+    getGits: () => accountApi.apiV2AccountGitsGet(),
     putGits: (params: {
-      body: {
-        id: number
-        token: string
-      }
+      body: gen.NssolPlatypusApiModelsAccountApiModelsGitCredentialInputModel
     }) =>
-      gen.putApiV2AccountGits(params) as {
-        data: {
-          id: number
-          token: string
-          name: string
-          serviceType: number
-        }
-      },
-    getWebhookSlack: () =>
-      gen.getApiV2AccountWebhookSlack() as {
-        data: {
-          slackUrl: string
-          mention: string
-        }
-      },
+      accountApi.apiV2AccountGitsPut({
+        nssolPlatypusApiModelsAccountApiModelsGitCredentialInputModel:
+          params.body,
+      }),
+    getWebhookSlack: () => accountApi.apiV2AccountWebhookSlackGet(),
     putWebhookSlack: (params: {
-      body: {
-        slackUrl: string
-        mention: string
-      }
-    }) => gen.putApiV2AccountWebhookSlack(params),
+      body: gen.NssolPlatypusApiModelsAccountApiModelsWebhookModel
+    }) =>
+      accountApi.apiV2AccountWebhookSlackPut({
+        nssolPlatypusApiModelsAccountApiModelsWebhookModel: params.body,
+      }),
     postWebhookSlackTest: (params: {
-      body: {
-        slackUrl: string
-        mention: string
-      }
-    }) => gen.postApiV2AccountWebhookSlackTest(params),
+      body: gen.NssolPlatypusApiModelsAccountApiModelsWebhookModel
+    }) =>
+      accountApi.apiV2AccountWebhookSlackTestPost({
+        nssolPlatypusApiModelsAccountApiModelsWebhookModel: params.body,
+      }),
   },
 
   role: {
     admin: {
-      get: () =>
-        gen.getApiV2AdminRoles() as {
-          data: [
-            {
-              createdBy: string
-              createdAt: string
-              modifiedBy: string
-              modifiedAt: string
-              id: number
-              name: string
-              displayName: string
-              isSystemRole: true
-              tenantId: number
-              sortOrder: number
-            },
-          ]
-        },
-      getTenantCommonRoles: () =>
-        gen.getApiV2AdminTenantCommonRoles as {
-          data: [
-            {
-              createdBy: string
-              createdAt: string
-              modifiedBy: string
-              modifiedAt: string
-              id: number
-              name: string
-              displayName: string
-              isSystemRole: true
-              tenantId: number
-              sortOrder: number
-            },
-          ]
-        },
+      get: () => roleApi.apiV2AdminRolesGet(),
+      getTenantCommonRoles: () => roleApi.apiV2AdminTenantCommonRolesGet(),
       post: (params: {
-        body: {
-          name: string
-          displayName: string
-          sortOrder: number
-          isSystemRole: true
-          tenantId: number
-        }
+        body: gen.NssolPlatypusApiModelsRoleApiModelsCreateInputModel
       }) =>
-        gen.postApiV2AdminRoles(params) as {
-          data: {
-            createdBy: string
-            createdAt: string
-            modifiedBy: string
-            modifiedAt: string
-            id: number
-            name: string
-            displayName: string
-            isSystemRole: true
-            tenantId: number
-            sortOrder: number
-          }
-        },
-      getById: (params: { id: number }) =>
-        gen.getApiV2AdminRolesById(params) as {
-          data: {
-            createdBy: string
-            createdAt: string
-            modifiedBy: string
-            modifiedAt: string
-            id: number
-            name: string
-            displayName: string
-            isSystemRole: true
-            tenantId: number
-            sortOrder: number
-            tenantName: string
-            isNotEditable: true
-          }
-        },
+        roleApi.apiV2AdminRolesPost({
+          nssolPlatypusApiModelsRoleApiModelsCreateInputModel: params.body,
+        }),
+      getById: (params: gen.RoleApiApiV2AdminRolesIdGetRequest) =>
+        roleApi.apiV2AdminRolesIdGet(params),
       put: (params: {
         id: number
-        body: {
-          name: string
-          displayName: string
-          sortOrder: number
-          isSystemRole: true
-          tenantId: number
-        }
+        body: gen.NssolPlatypusApiModelsRoleApiModelsEditInputModel
       }) =>
-        gen.putApiV2AdminRolesById(params) as {
-          createdBy: string
-          createdAt: string
-          modifiedBy: string
-          modifiedAt: string
-          id: number
-          name: string
-          displayName: string
-          isSystemRole: true
-          tenantId: number
-          sortOrder: number
-        },
-      delete: (params: { id: number }) => gen.deleteApiV2AdminRolesById(params),
+        roleApi.apiV2AdminRolesIdPut({
+          id: params.id,
+          nssolPlatypusApiModelsRoleApiModelsEditInputModel: params.body,
+        }),
+      delete: (params: gen.RoleApiApiV2AdminRolesIdDeleteRequest) =>
+        roleApi.apiV2AdminRolesIdDelete(params),
     },
     tenant: {
-      get: () =>
-        gen.getApiV2TenantRoles() as {
-          data: [
-            {
-              createdBy: string
-              createdAt: string
-              modifiedBy: string
-              modifiedAt: string
-              id: number
-              name: string
-              displayName: string
-              isSystemRole: true
-              tenantId: number
-              sortOrder: number
-            },
-          ]
-        },
+      get: () => roleApi.apiV2TenantRolesGet(),
       post: (params: {
-        body: {
-          name: string
-          displayName: string
-          sortOrder: number
-        }
+        body: gen.NssolPlatypusApiModelsRoleApiModelsCreateForTenantInputModel
       }) =>
-        gen.postApiV2TenantRoles(params) as {
-          data: {
-            createdBy: string
-            createdAt: string
-            modifiedBy: string
-            modifiedAt: string
-            id: number
-            name: string
-            displayName: string
-            isSystemRole: true
-            tenantId: number
-            sortOrder: number
-          }
-        },
-      getById: (params: { id: number }) =>
-        gen.getApiV2TenantRolesById(params) as {
-          data: {
-            createdBy: string
-            createdAt: string
-            modifiedBy: string
-            modifiedAt: string
-            id: number
-            name: string
-            displayName: string
-            isSystemRole: true
-            tenantId: number
-            sortOrder: number
-            tenantName: string
-            isNotEditable: true
-          }
-        },
+        roleApi.apiV2TenantRolesPost({
+          nssolPlatypusApiModelsRoleApiModelsCreateForTenantInputModel:
+            params.body,
+        }),
+      getById: (params: gen.RoleApiApiV2TenantRolesIdGetRequest) =>
+        roleApi.apiV2TenantRolesIdGet(params),
       put: (params: {
         id: number
-        body: {
-          name: string
-          displayName: string
-          sortOrder: number
-        }
+        body: gen.NssolPlatypusApiModelsRoleApiModelsEditForTenantInputModel
       }) =>
-        gen.putApiV2TenantRolesById(params) as {
-          data: {
-            createdBy: string
-            createdAt: string
-            modifiedBy: string
-            modifiedAt: string
-            id: number
-            name: string
-            displayName: string
-            isSystemRole: true
-            tenantId: number
-            sortOrder: number
-          }
-        },
-      delete: (params: { id: number }) =>
-        gen.deleteApiV2TenantRolesById(params),
+        roleApi.apiV2TenantRolesIdPut({
+          id: params.id,
+          nssolPlatypusApiModelsRoleApiModelsEditForTenantInputModel:
+            params.body,
+        }),
+      delete: (params: gen.RoleApiApiV2TenantRolesIdDeleteRequest) =>
+        roleApi.apiV2TenantRolesIdDelete(params),
     },
   },
 
   data: {
-    get: (params: {
-      perPage: number
-      page: number
-      withTotal: boolean
-      id?: string
-      name?: string
-      memo?: string
-      createdAt?: string
-      createdBy?: string
-      tag?: string[]
-    }) =>
-      gen.getApiV2Data(params) as {
-        headers: { 'x-total-count': string }
-        data: [
-          {
-            createdBy: string
-            createdAt: string
-            modifiedBy: string
-            modifiedAt: string
-            id: number
-            displayId: number
-            name: string
-            memo: string
-            isRaw: boolean
-            parentDataName: string
-            parentDataId: number
-            tags: ['string']
-          },
-        ]
-      },
+    get: (params: gen.DataApiApiV2DataGetRequest) =>
+      dataApi.apiV2DataGet(params),
     post: (params: {
-      body: { name: string; memo?: string; tags?: [string] }
-    }) => gen.postApiV2Data(params),
-    getById: (params: { id: number }) =>
-      gen.getApiV2DataById(params) as {
-        data: {
-          createdBy: string
-          createdAt: string
-          modifiedBy: string
-          modifiedAt: string
-          id: number
-          displayId: number
-          name: string
-          memo: string
-          isRaw: true
-          parentDataName: string
-          parentDataId: number
-          tags: [string]
-          fileNames: [string]
-          parent: {
-            createdBy: string
-            createdAt: string
-            modifiedBy: string
-            modifiedAt: string
-            id: number
-            displayId: number
-            name: string
-            memo: string
-            isRaw: true
-            parentDataName: string
-            parentDataId: number
-            tags: [string]
-          }
-          children: [
-            {
-              id: number
-              inputDataId: number
-              inputDataName: string
-              preprocessId: number
-              preprocessName: string
-            },
-          ]
-        }
-      },
-    putById: (params: { name: string; memo?: string; tags?: [string] }) =>
-      gen.putApiV2DataById(params) as {
-        createdBy: string
-        createdAt: string
-        modifiedBy: string
-        modifiedAt: string
-        id: number
-        displayId: number
-        name: string
-        memo: string
-        isRaw: true
-        parentDataName: string
-        parentDataId: number
-        tags: [string]
-      },
-    deleteById: (params: { id: number }) => gen.deleteApiV2DataById(params),
-    getFilesByKey: (params: { id: number; name: string }) =>
-      gen.getApiV2DataByIdFilesByName(params) as {
-        data: {
-          id: number
-          fileId: number
-          key: string
-          url: string
-          fileName: string
-          fileSize: number
-        }
-      },
-    getFilesById: (params: { id: number; withUrl?: boolean }) =>
-      gen.getApiV2DataByIdFiles(params) as {
-        data: [
-          {
-            id: number
-            fileId: number
-            key: string
-            url: string
-            fileName: string
-            fileSize: number
-          },
-        ]
-      },
+      body: gen.NssolPlatypusApiModelsDataApiModelsCreateInputModel
+    }) =>
+      dataApi.apiV2DataPost({
+        nssolPlatypusApiModelsDataApiModelsCreateInputModel: params.body,
+      }),
+    getById: (params: gen.DataApiApiV2DataIdGetRequest) =>
+      dataApi.apiV2DataIdGet(params),
+    putById: (params: {
+      id: number
+      body: gen.NssolPlatypusApiModelsDataApiModelsEditInputModel
+    }) =>
+      dataApi.apiV2DataIdPut({
+        id: params.id,
+        nssolPlatypusApiModelsDataApiModelsEditInputModel: params.body,
+      }),
+    deleteById: (params: gen.DataApiApiV2DataIdDeleteRequest) =>
+      dataApi.apiV2DataIdDelete(params),
+    getFilesByKey: (params: gen.DataApiApiV2DataIdFilesNameGetRequest) =>
+      dataApi.apiV2DataIdFilesNameGet(params),
+    getFilesById: (params: gen.DataApiApiV2DataIdFilesGetRequest) =>
+      dataApi.apiV2DataIdFilesGet(params),
     putFilesById: (params: {
       id: number
-      body: {
-        files: [
-          {
-            fileName: string
-            storedPath: string
-          },
-        ]
-      }
+      body: gen.NssolPlatypusApiModelsDataApiModelsAddFilesInputModel
     }) =>
-      gen.postApiV2DataByIdFiles(params) as {
-        id: number
-        files: [
-          {
-            id: number
-            fileId: number
-            key: string
-            url: string
-            fileName: string
-            fileSize: number
-          },
-        ]
-      },
-    deleteFilesById: (params: { id: number; fileId: string }) =>
-      gen.deleteApiV2DataByIdFilesByFileId(params),
-    getDataTags: () => gen.getApiV2DataDatatags() as { data: [string] },
-    getFileSize: (params: { id: number; name: string }) =>
-      gen.getApiV2DataByIdFilesByNameSize(params) as {
-        data: {
-          id: number
-          fileId: number
-          key: string
-          url: string
-          fileName: string
-          fileSize: number
-        }
-      },
+      dataApi.apiV2DataIdFilesPost({
+        id: params.id,
+        nssolPlatypusApiModelsDataApiModelsAddFilesInputModel: params.body,
+      }),
+    deleteFilesById: (params: gen.DataApiApiV2DataIdFilesFileIdDeleteRequest) =>
+      dataApi.apiV2DataIdFilesFileIdDelete(params),
+    getDataTags: () => dataApi.apiV2DataDatatagsGet(),
+    getFileSize: (params: gen.DataApiApiV2DataIdFilesNameSizeGetRequest) =>
+      dataApi.apiV2DataIdFilesNameSizeGet(params),
   },
 
   datasets: {
-    get: (params: {
-      id?: string
-      name?: string
-      memo?: string
-      createdAt?: string
-      perPage?: number
-      page?: number
-      withTotal?: boolean
-    }) =>
-      gen.getApiV2Datasets(params) as {
-        headers: { 'x-total-count': string }
-        data: [
-          {
-            createdBy: string
-            createdAt: string
-            modifiedBy: string
-            modifiedAt: string
-            id: number
-            displayId: number
-            name: string
-            memo: string
-            isFlat: true
-          },
-        ]
-      },
+    get: (params: gen.DataSetApiApiV2DatasetsGetRequest) =>
+      dataSetApi.apiV2DatasetsGet(params),
     post: (params: {
-      body: {
-        name: string
-        memo: string
-        isFlat: boolean
-        entries: {
-          additionalProp1: [
-            {
-              id: number
-            },
-          ]
-          additionalProp2: [
-            {
-              id: number
-            },
-          ]
-          additionalProp3: [
-            {
-              id: number
-            },
-          ]
-        }
-        flatEntries: [
-          {
-            id: number
-          },
-        ]
-      }
+      body: gen.NssolPlatypusApiModelsDataSetApiModelsCreateInputModel
     }) =>
-      gen.postApiV2Datasets(params) as {
-        data: {
-          createdBy: string
-          createdAt: string
-          modifiedBy: string
-          modifiedAt: string
-          id: number
-          displayId: number
-          name: string
-          memo: string
-          isFlat: boolean
-        }
-      },
-    getById: (params: { id: number }) =>
-      gen.getApiV2DatasetsById(params) as {
-        data: {
-          createdBy: string
-          createdAt: string
-          modifiedBy: string
-          modifiedAt: string
-          id: number
-          displayId: number
-          name: string
-          memo: string
-          isFlat: boolean
-          entries: {
-            additionalProp1: [
-              {
-                createdBy: string
-                createdAt: string
-                modifiedBy: string
-                modifiedAt: string
-                id: number
-                displayId: number
-                name: string
-                memo: string
-                isRaw: boolean
-                parentDataName: string
-                parentDataId: number
-                tags: [string]
-              },
-            ]
-            additionalProp2: [
-              {
-                createdBy: string
-                createdAt: string
-                modifiedBy: string
-                modifiedAt: string
-                id: number
-                displayId: number
-                name: string
-                memo: string
-                isRaw: boolean
-                parentDataName: string
-                parentDataId: number
-                tags: [string]
-              },
-            ]
-            additionalProp3: [
-              {
-                createdBy: string
-                createdAt: string
-                modifiedBy: string
-                modifiedAt: string
-                id: number
-                displayId: number
-                name: string
-                memo: string
-                isRaw: boolean
-                parentDataName: string
-                parentDataId: number
-                tags: [string]
-              },
-            ]
-          }
-          flatEntries: [
-            {
-              createdBy: string
-              createdAt: string
-              modifiedBy: string
-              modifiedAt: string
-              id: number
-              displayId: number
-              name: string
-              memo: string
-              isRaw: boolean
-              parentDataName: string
-              parentDataId: number
-              tags: [string]
-            },
-          ]
-          isLocked: boolean
-        }
-      },
+      dataSetApi.apiV2DatasetsPost({
+        nssolPlatypusApiModelsDataSetApiModelsCreateInputModel: params.body,
+      }),
+    getById: (params: { id: number }) => dataSetApi.apiV2DatasetsIdGet(params),
     put: (params: {
       id: number
-      body: {
-        name: string
-        memo: string
-        entries: {
-          additionalProp1: [
-            {
-              id: number
-            },
-          ]
-          additionalProp2: [
-            {
-              id: number
-            },
-          ]
-          additionalProp3: [
-            {
-              id: number
-            },
-          ]
-        }
-        flatEntries: [
-          {
-            id: number
-          },
-        ]
-      }
+      body: gen.NssolPlatypusApiModelsDataSetApiModelsEditEntriesInputModel
     }) =>
-      gen.putApiV2DatasetsById(params) as {
-        data: {
-          createdBy: string
-          createdAt: string
-          modifiedBy: string
-          modifiedAt: string
-          id: number
-          displayId: number
-          name: string
-          memo: string
-          isFlat: boolean
-        }
-      },
-    delete: (params: { id: number }) => gen.deleteApiV2DatasetsById(params),
-    patch: (params: { id: number; body: { name: string; memo: string } }) =>
-      gen.patchApiV2DatasetsById(params) as {
-        data: {
-          createdBy: string
-          createdAt: string
-          modifiedBy: string
-          modifiedAt: string
-          id: number
-          displayId: number
-          name: string
-          memo: string
-          isFlat: boolean
-        }
-      },
-    getFiles: (params: { id: number; withUrl?: boolean }) =>
-      gen.getApiV2DataByIdFiles(params) as {
-        data: {
-          createdBy: string
-          createdAt: string
-          modifiedBy: string
-          modifiedAt: string
-          id: number
-          displayId: number
-          name: string
-          memo: string
-          isFlat: boolean
-          entries: [
-            {
-              type: string
-              files: [
-                {
-                  id: number
-                  fileId: number
-                  key: string
-                  url: string
-                  fileName: string
-                  fileSize: number
-                },
-              ]
-            },
-          ]
-          flatEntries: [
-            {
-              id: number
-              fileId: number
-              key: string
-              url: string
-              fileName: string
-              fileSize: number
-            },
-          ]
-        }
-      },
-    getDatatypes: () =>
-      gen.getApiV2Datatypes() as {
-        data: [
-          {
-            id: number
-            name: string
-          },
-        ]
-      },
+      dataSetApi.apiV2DatasetsIdPut({
+        id: params.id,
+        nssolPlatypusApiModelsDataSetApiModelsEditEntriesInputModel:
+          params.body,
+      }),
+    delete: (params: gen.DataSetApiApiV2DatasetsIdDeleteRequest) =>
+      dataSetApi.apiV2DatasetsIdDelete(params),
+    patch: (params: {
+      id: number
+      body: gen.NssolPlatypusApiModelsDataSetApiModelsEditInputModel
+    }) =>
+      dataSetApi.apiV2DatasetsIdPatch({
+        id: params.id,
+        nssolPlatypusApiModelsDataSetApiModelsEditInputModel: params.body,
+      }),
+    getFiles: (params: gen.DataSetApiApiV2DatasetsIdFilesGetRequest) =>
+      dataSetApi.apiV2DatasetsIdFilesGet(params),
+    getDatatypes: () => dataSetApi.apiV2DatatypesGet(),
   },
 
   git: {
     admin: {
-      getEndpoints: () =>
-        gen.getApiV2AdminGitEndpoints() as {
-          data: [
-            {
-              createdBy: string
-              createdAt: string
-              modifiedBy: string
-              modifiedAt: string
-              id: number
-              name: string
-              serviceType: number
-              repositoryUrl: string
-              apiUrl: string
-              serviceTypeName: string
-            },
-          ]
-        },
+      getEndpoints: () => gitApi.apiV2AdminGitEndpointsGet(),
       postEndpoint: (params: {
-        body: {
-          name: string
-          serviceType: number
-          apiUrl: string
-          repositoryUrl: string
-        }
+        body: gen.NssolPlatypusApiModelsGitApiModelsCreateInputModel
       }) =>
-        gen.postApiV2AdminGitEndpoints(params) as {
-          data: {
-            createdBy: string
-            createdAt: string
-            modifiedBy: string
-            modifiedAt: string
-            id: number
-            name: string
-            serviceType: number
-            repositoryUrl: string
-            apiUrl: string
-            serviceTypeName: string
-          }
-        },
+        gitApi.apiV2AdminGitEndpointsPost({
+          nssolPlatypusApiModelsGitApiModelsCreateInputModel: params.body,
+        }),
       putEndpoint: (params: {
         id: number
-        body: {
-          name: string
-          serviceType: number
-          apiUrl: string
-          repositoryUrl: string
-        }
+        body: gen.NssolPlatypusApiModelsGitApiModelsCreateInputModel
       }) =>
-        gen.putApiV2AdminGitEndpointsById(params) as {
-          data: {
-            createdBy: string
-            createdAt: string
-            modifiedBy: string
-            modifiedAt: string
-            id: number
-            name: string
-            serviceType: number
-            repositoryUrl: string
-            apiUrl: string
-            serviceTypeName: string
-          }
-        },
-      getById: (params: { id: number }) =>
-        gen.getApiV2AdminGitEndpointsById(params) as {
-          data: {
-            createdBy: string
-            createdAt: string
-            modifiedBy: string
-            modifiedAt: string
-            id: number
-            name: string
-            serviceType: number
-            repositoryUrl: string
-            apiUrl: string
-            serviceTypeName: string
-            isNotEditable: boolean
-          }
-        },
-      deleteById: (params: { id: number }) =>
-        gen.deleteApiV2AdminGitEndpointsById(params),
-      getTypes: () =>
-        gen.getApiV2AdminGitTypes() as {
-          data: [
-            {
-              id: number
-              name: string
-            },
-          ]
-        },
+        gitApi.apiV2AdminGitEndpointsIdPut({
+          id: params.id,
+          nssolPlatypusApiModelsGitApiModelsCreateInputModel: params.body,
+        }),
+      getById: (params: gen.GitApiApiV2AdminGitEndpointsIdGetRequest) =>
+        gitApi.apiV2AdminGitEndpointsIdGet(params),
+      deleteById: (params: gen.GitApiApiV2AdminGitEndpointsIdDeleteRequest) =>
+        gitApi.apiV2AdminGitEndpointsIdDelete(params),
+      getTypes: () => gitApi.apiV2AdminGitTypesGet(),
     },
     tenant: {
-      getEndpoints: () =>
-        gen.getApiV2TenantGitEndpoints() as {
-          data: [
-            {
-              createdBy: string
-              createdAt: string
-              modifiedBy: string
-              modifiedAt: string
-              id: number
-              name: string
-              serviceType: number
-              repositoryUrl: string
-              apiUrl: string
-              serviceTypeName: string
-            },
-          ]
-        },
+      getEndpoints: () => gitApi.apiV2TenantGitEndpointsGet(),
     },
-    getRepos: (params: { gitId: number }) =>
-      gen.getApiV2GitByGitIdRepos(params) as {
-        data: [
-          {
-            owner: string
-            name: string
-            fullName: string
-          },
-        ]
-      },
-    getBranches: (params: {
-      gitId: number
-      owner: string
-      repositoryName: string
-    }) =>
-      gen.getApiV2GitByGitIdReposByOwnerByRepositoryNameBranches(params) as {
-        data: [
-          {
-            branchName: string
-            commitId: string
-          },
-        ]
-      },
-    getCommits: (params: {
-      gitId: number
-      owner: string
-      repositoryName: string
-      branch?: string
-      page?: string
-    }) =>
-      gen.getApiV2GitByGitIdReposByOwnerByRepositoryNameCommits(params) as {
-        data: [
-          {
-            commitId: string
-            committerName: string
-            commitAt: string
-            comment: string
-            display: string
-          },
-        ]
-      },
-    getCommit: (params: {
-      gitId: number
-      owner: string
-      repositoryName: string
-      commitId: string
-    }) =>
-      gen.getApiV2GitByGitIdReposByOwnerByRepositoryNameCommitsByCommitId(
-        params,
-      ) as {
-        data: {
-          commitId: string
-          committerName: string
-          commitAt: string
-          comment: string
-          display: string
-        }
-      },
+    getRepos: (params: gen.GitApiApiV2GitGitIdReposGetRequest) =>
+      gitApi.apiV2GitGitIdReposGet(params),
+    getBranches: (
+      params: gen.GitApiApiV2GitGitIdReposOwnerRepositoryNameBranchesGetRequest,
+    ) => gitApi.apiV2GitGitIdReposOwnerRepositoryNameBranchesGet(params),
+    getCommits: (params: any) =>
+      gitApi.apiV2GitGitIdReposOwnerRepositoryNameCommitsGet(params),
+    getCommit: gitApi.apiV2GitGitIdReposOwnerRepositoryNameCommitsCommitIdGet,
     // GET /spa/git/repos/{segments}
   },
 
   preprocessings: {
-    get: (params: {
-      id?: string
-      name?: string
-      createdAt?: string
-      memo?: string
-      perPage?: number
-      page?: number
-      withTotal?: boolean
-    }) =>
-      gen.getApiV2Preprocessings(params) as {
-        headers: { 'x-total-count': string }
-        data: [
-          {
-            createdBy: string
-            createdAt: string
-            modifiedBy: string
-            modifiedAt: string
-            id: number
-            name: string
-            memo: string
-            cpu: number
-            memory: number
-            gpu: number
-          },
-        ]
-      },
+    get: (params: gen.PreprocessingApiApiV2PreprocessingsGetRequest) =>
+      preprocessingApi.apiV2PreprocessingsGet(params),
     post: (params: {
-      body: {
-        name: string
-        entryPoint: string
-        containerImage: {
-          registryId: number
-          image: string
-          tag: string
-        }
-        gitModel: {
-          gitId: number
-          repository: string
-          owner: string
-          branch: string
-          commitId: string
-        }
-        memo: string
-        cpu: number
-        memory: number
-        gpu: number
-      }
+      body: gen.NssolPlatypusApiModelsPreprocessingApiModelsCreateInputModel
     }) =>
-      gen.postApiV2Preprocessings(params) as {
-        data: {
-          createdBy: string
-          createdAt: string
-          modifiedBy: string
-          modifiedAt: string
-          id: number
-          name: string
-          memo: string
-          cpu: number
-          memory: number
-          gpu: number
-        }
-      },
-    getById: (params: { id: number }) =>
-      gen.getApiV2PreprocessingsById(params) as {
-        data: {
-          createdBy: string
-          createdAt: string
-          modifiedBy: string
-          modifiedAt: string
-          id: number
-          name: string
-          memo: string
-          cpu: number
-          memory: number
-          gpu: number
-          gitModel: {
-            gitId: number
-            repository: string
-            owner: string
-            branch: string
-            commitId: string
-            url: string
-          }
-          containerImage: {
-            registryId: number
-            image: string
-            tag: string
-            registryName: string
-            url: string
-          }
-          entryPoint: string
-          isLocked: boolean
-        }
-      },
+      preprocessingApi.apiV2PreprocessingsPost({
+        nssolPlatypusApiModelsPreprocessingApiModelsCreateInputModel:
+          params.body,
+      }),
+    getById: (params: gen.PreprocessingApiApiV2PreprocessingsIdGetRequest) =>
+      preprocessingApi.apiV2PreprocessingsIdGet(params),
     put: (params: {
       id: number
-      body: {
-        name: string
-        entryPoint: string
-        containerImage: {
-          registryId: number
-          image: string
-          tag: string
-        }
-        gitModel: {
-          gitId: number
-          repository: string
-          owner: string
-          branch: string
-          commitId: string
-        }
-        memo: string
-        cpu: number
-        memory: number
-        gpu: number
-      }
+      body: gen.NssolPlatypusApiModelsPreprocessingApiModelsCreateInputModel
     }) =>
-      gen.putApiV2PreprocessingsById(params) as {
-        data: {
-          createdBy: string
-          createdAt: string
-          modifiedBy: string
-          modifiedAt: string
-          id: number
-          name: string
-          memo: string
-          cpu: number
-          memory: number
-          gpu: number
-        }
-      },
-    delete: (params: { id: number }) =>
-      gen.deleteApiV2PreprocessingsById(params),
-    patch: (params: {
-      id: number
-      body: {
-        name: string
-        memo: string
-        cpu: number
-        memory: number
-        gpu: number
-      }
-    }) =>
-      gen.patchApiV2PreprocessingsById(params) as {
-        data: {
-          name: string
-          memo: string
-          cpu: number
-          memory: number
-          gpu: number
-        }
-      },
-    getFilesById: (params: { id: number; dataId: number; withUrl?: boolean }) =>
-      gen.getApiV2PreprocessingsByIdHistoriesByDataIdFiles(params) as {
-        data: {
-          id: number
-          fileId: number
-          url: string
-          fileName: string
-          isLocked: boolean
-        }
-      },
-    getHistory: (params: { id: number }) =>
-      gen.getApiV2PreprocessingsByIdHistories(params) as {
-        data: [
-          {
-            key: string
-            status: string
-            statusType: string
-            createdAt: string
-            dataId: number
-            dataName: string
-            preprocessId: number
-            preprocessName: string
-          },
-        ]
-      },
-    getHistroyById: (params: { id: number; dataId: number }) =>
-      gen.getApiV2PreprocessingsByIdHistoriesByDataId(params) as {
-        data: {
-          key: string
-          status: string
-          statusType: string
-          createdAt: string
-          dataId: number
-          dataName: string
-          preprocessId: number
-          preprocessName: string
-          outputDataIds: [number]
-        }
-      },
-    deleteHistroyById: (params: { id: number; dataId: number }) =>
-      gen.deleteApiV2PreprocessingsByIdHistoriesByDataId(params),
-    getEventsById: (params: { id: number; dataId: number }) =>
-      gen.getApiV2PreprocessingsByIdHistoriesByDataIdEvents(params) as {
-        data: {
-          key: string
-          status: string
-          statusType: string
-          createdAt: string
-          dataId: number
-          dataName: string
-          preprocessId: number
-          preprocessName: string
-        }
-      },
+      preprocessingApi.apiV2PreprocessingsIdPut({
+        id: params.id,
+        nssolPlatypusApiModelsPreprocessingApiModelsCreateInputModel:
+          params.body,
+      }),
+    delete: (params: gen.PreprocessingApiApiV2PreprocessingsIdDeleteRequest) =>
+      preprocessingApi.apiV2PreprocessingsIdDelete(params),
+    patch: (params: gen.PreprocessingApiApiV2PreprocessingsIdPatchRequest) =>
+      preprocessingApi.apiV2PreprocessingsIdPatch(params),
+    getFilesById: (
+      params: gen.PreprocessingApiApiV2PreprocessingsIdHistoriesDataIdFilesGetRequest,
+    ) => preprocessingApi.apiV2PreprocessingsIdHistoriesDataIdFilesGet(params),
+    getHistory: (
+      params: gen.PreprocessingApiApiV2PreprocessingsIdHistoriesGetRequest,
+    ) => preprocessingApi.apiV2PreprocessingsIdHistoriesGet(params),
+    getHistroyById: (
+      params: gen.PreprocessingApiApiV2PreprocessingsIdHistoriesDataIdGetRequest,
+    ) => preprocessingApi.apiV2PreprocessingsIdHistoriesDataIdGet(params),
+    deleteHistroyById: (
+      params: gen.PreprocessingApiApiV2PreprocessingsIdHistoriesDataIdDeleteRequest,
+    ) => preprocessingApi.apiV2PreprocessingsIdHistoriesDataIdDelete(params),
+    getEventsById: (
+      params: gen.PreprocessingApiApiV2PreprocessingsIdHistoriesDataIdEventsGetRequest,
+    ) => preprocessingApi.apiV2PreprocessingsIdHistoriesDataIdEventsGet(params),
     runById: (params: {
       id: number
-      body: {
-        dataId: number
-        options: {
-          additionalProp1: string
-          additionalProp2: string
-          additionalProp3: string
-        }
-        cpu: number
-        memory: number
-        gpu: number
-        partition: string
-      }
+      body: gen.NssolPlatypusApiModelsPreprocessingApiModelsRunPreprocessHistoryInputModel
     }) =>
-      gen.postApiV2PreprocessingsByIdRun(params) as {
-        data: {
-          key: string
-          status: string
-          statusType: string
-          createdAt: string
-          dataId: number
-          dataName: string
-          preprocessId: number
-          preprocessName: string
-        }
-      },
+      preprocessingApi.apiV2PreprocessingsIdRunPost({
+        id: params.id,
+        nssolPlatypusApiModelsPreprocessingApiModelsRunPreprocessHistoryInputModel:
+          params.body,
+      }),
   },
 
   resource: {
     admin: {
-      getNodes: () =>
-        gen.getApiV2AdminResourceNodes() as {
-          data: [
-            {
-              name: string
-              memo: string
-              partition: string
-              accessLevel: number
-              tensorBoardEnabled: boolean
-              allocatableCpu: number
-              allocatableMemory: number
-              allocatableGpu: number
-              assignedCpu: number
-              assignedMemory: number
-              assignedGpu: number
-              cpuInfo: string
-              memoryInfo: string
-              gpuInfo: string
-              containerResourceList: [
-                {
-                  name: string
-                  createdBy: string
-                  containerType: number
-                  conditionNote: string
-                  cpu: number
-                  memory: number
-                  gpu: number
-                  statusType: string
-                  status: string
-                  nodeName: string
-                  tenantId: number
-                  tenantName: string
-                  displayName: string
-                },
-              ]
-            },
-          ]
-        },
-      getTenants: () =>
-        gen.getApiV2AdminResourceTenants() as {
-          data: [
-            {
-              id: number
-              name: string
-              displayName: string
-              allocatableCpu: number
-              allocatableMemory: number
-              allocatableGpu: number
-              assignedCpu: number
-              assignedMemory: number
-              assignedGpu: number
-              cpuInfo: string
-              memoryInfo: string
-              gpuInfo: string
-              containerResourceList: [
-                {
-                  name: string
-                  createdBy: string
-                  containerType: number
-                  conditionNote: string
-                  cpu: number
-                  memory: number
-                  gpu: number
-                  statusType: string
-                  status: string
-                  nodeName: string
-                  tenantId: number
-                  tenantName: string
-                  displayName: string
-                },
-              ]
-            },
-          ]
-        },
-      getContainers: () =>
-        gen.getApiV2AdminResourceContainers() as {
-          data: [
-            {
-              name: string
-              createdBy: string
-              containerType: number
-              conditionNote: string
-              cpu: number
-              memory: number
-              gpu: number
-              statusType: string
-              status: string
-              nodeName: string
-              tenantId: number
-              tenantName: string
-              displayName: string
-            },
-          ]
-        },
-      getContainerByName: (params: { tenantId: number; name: string }) =>
-        gen.getApiV2AdminResourceContainersByTenantIdByName(params) as {
-          data: {
-            name: string
-            createdBy: string
-            containerType: number
-            conditionNote: string
-            cpu: number
-            memory: number
-            gpu: number
-            statusType: string
-            status: string
-            nodeName: string
-            tenantId: number
-            tenantName: string
-            displayName: string
-          }
-        },
-      deleteContainerByName: (params: { tenantId: number; name: string }) =>
-        gen.deleteApiV2AdminResourceContainersByTenantIdByName(params),
-      getContainerLogByName: (params: { tenantId: number; name: string }) =>
-        gen.getApiV2AdminResourceContainersByTenantIdByNameLog(params),
-      getContainerEventsByName: (params: { tenantId: number; name: string }) =>
-        gen.getApiV2AdminResourceContainersByTenantIdByNameEvents(params) as {
-          data: {
-            canRead: boolean
-            canSeek: boolean
-            canTimeout: boolean
-            canWrite: boolean
-            length: number
-            position: number
-            readTimeout: number
-            writeTimeout: number
-          }
-        },
+      getNodes: () => resourceApi.apiV2AdminResourceNodesGet(),
+      getTenants: () => resourceApi.apiV2AdminResourceTenantsGet(),
+      getContainers: () => resourceApi.apiV2AdminResourceContainersGet(),
+      getContainerByName: (
+        params: gen.ResourceApiApiV2AdminResourceContainersTenantIdNameGetRequest,
+      ) => resourceApi.apiV2AdminResourceContainersTenantIdNameGet(params),
+      deleteContainerByName: (
+        params: gen.ResourceApiApiV2AdminResourceContainersTenantIdNameDeleteRequest,
+      ) => resourceApi.apiV2AdminResourceContainersTenantIdNameDelete(params),
+      getContainerLogByName: (
+        params: gen.ResourceApiApiV2AdminResourceContainersTenantIdNameLogGetRequest,
+      ) => resourceApi.apiV2AdminResourceContainersTenantIdNameLogGet(params),
+      getContainerEventsByName: (
+        params: gen.ResourceApiApiV2AdminResourceContainersTenantIdNameEventsGetRequest,
+      ) =>
+        resourceApi.apiV2AdminResourceContainersTenantIdNameEventsGet(params),
       getHistoriesContainersMetadata: () =>
-        gen.getApiV2AdminResourceHistoriesContainersMetadata() as {
-          data: {
-            count: number
-            startDate: string
-            endDate: string
-          }
-        },
-      getHistoriesContainersData: (params: {
-        startData?: string
-        endDate?: string
-        withHeader?: boolean
-      }) => gen.getApiV2AdminResourceHistoriesContainersData(params),
-      deleteHistoriesContainers: (params: { body: { endDate: string } }) =>
-        gen.patchApiV2AdminResourceHistoriesContainers(params),
+        resourceApi.apiV2AdminResourceHistoriesContainersMetadataGet(),
+      getHistoriesContainersData: (
+        params: gen.ResourceApiApiV2AdminResourceHistoriesContainersDataGetRequest,
+      ) => resourceApi.apiV2AdminResourceHistoriesContainersDataGet(params),
+      deleteHistoriesContainers: (params: {
+        body: gen.NssolPlatypusApiModelsResourceApiModelsHistoryDeleteInputModel
+      }) =>
+        resourceApi.apiV2AdminResourceHistoriesContainersPatch({
+          nssolPlatypusApiModelsResourceApiModelsHistoryDeleteInputModel:
+            params.body,
+        }),
       getHistoriesJobsMetadata: () =>
-        gen.getApiV2AdminResourceHistoriesJobsMetadata() as {
-          data: {
-            count: number
-            startDate: string
-            endDate: string
-          }
-        },
-      getHistoriesJobsData: (params: {
-        startDate?: string
-        endDate?: string
-        withHeader?: boolean
-      }) => gen.getApiV2AdminResourceHistoriesJobsData(params),
-      deleteHistoriesJobs: (params: { body: { endDate: string } }) =>
-        gen.patchApiV2AdminResourceHistoriesJobs(params),
+        resourceApi.apiV2AdminResourceHistoriesJobsMetadataGet(),
+      getHistoriesJobsData: (
+        params: gen.ResourceApiApiV2AdminResourceHistoriesJobsDataGetRequest,
+      ) => resourceApi.apiV2AdminResourceHistoriesJobsDataGet(params),
+      deleteHistoriesJobs: (params: {
+        body: gen.NssolPlatypusApiModelsResourceApiModelsHistoryDeleteInputModel
+      }) =>
+        resourceApi.apiV2AdminResourceHistoriesJobsPatch({
+          nssolPlatypusApiModelsResourceApiModelsHistoryDeleteInputModel:
+            params.body,
+        }),
     },
     tenant: {
-      getNodes: () =>
-        gen.getApiV2TenantResourceNodes() as {
-          data: [
-            {
-              name: string
-              memo: string
-              partition: string
-              accessLevel: number
-              tensorBoardEnabled: boolean
-              allocatableCpu: number
-              allocatableMemory: number
-              allocatableGpu: number
-              assignedCpu: number
-              assignedMemory: number
-              assignedGpu: number
-              cpuInfo: string
-              memoryInfo: string
-              gpuInfo: string
-              containerResourceList: [
-                {
-                  name: string
-                  createdBy: string
-                  containerType: number
-                  conditionNote: string
-                  cpu: number
-                  memory: number
-                  gpu: number
-                  statusType: string
-                  status: string
-                  nodeName: string
-                  tenantId: number
-                  tenantName: string
-                  displayName: string
-                },
-              ]
-            },
-          ]
-        },
-      getContainers: () =>
-        gen.getApiV2TenantResourceContainers() as {
-          data: [
-            {
-              name: string
-              createdBy: string
-              containerType: number
-              conditionNote: string
-              cpu: number
-              memory: number
-              gpu: number
-              statusType: string
-              status: string
-              nodeName: string
-            },
-          ]
-        },
-      getContainerByName: (params: { name: string }) =>
-        gen.getApiV2TenantResourceContainersByName(params) as {
-          data: {
-            name: string
-            createdBy: string
-            containerType: number
-            conditionNote: string
-            cpu: number
-            memory: number
-            gpu: number
-            statusType: string
-            status: string
-            nodeName: string
-          }
-        },
-      deleteContainerByName: (params: { name: string }) =>
-        gen.deleteApiV2TenantResourceContainersByName(params),
-      getContainerLogByName: (params: { name: string }) =>
-        gen.getApiV2TenantResourceContainersByNameLog(params),
+      getNodes: () => resourceApi.apiV2TenantResourceNodesGet(),
+      getContainers: () => resourceApi.apiV2TenantResourceContainersGet(),
+      getContainerByName: (
+        params: gen.ResourceApiApiV2TenantResourceContainersNameGetRequest,
+      ) => resourceApi.apiV2TenantResourceContainersNameGet(params),
+      deleteContainerByName: (
+        params: gen.ResourceApiApiV2TenantResourceContainersNameDeleteRequest,
+      ) => resourceApi.apiV2TenantResourceContainersNameDelete(params),
+      getContainerLogByName: (
+        params: gen.ResourceApiApiV2TenantResourceContainersNameLogGetRequest,
+      ) => resourceApi.apiV2TenantResourceContainersNameLogGet(params),
     },
   },
 
   training: {
-    getSimple: () =>
-      gen.getApiV2TrainingSimple() as {
-        data: [
-          {
-            createdBy: string
-            createdAt: string
-            modifiedBy: string
-            modifiedAt: string
-            id: number
-            displayId: number
-            name: string
-            memo: string
-            status: string
-            favorite: boolean
-            fullName: string
-          },
-        ]
-      },
-    get: (params: {
-      id?: string
-      name?: string
-      parentId?: string
-      parentName?: string
-      startedAt?: string
-      startedBy?: string
-      dataSet?: string
-      memo?: string
-      status?: string
-      entryPoint?: string
-      tag?: [string]
-      perPage?: number
-      page?: number
-      withTotal?: boolean
-    }) =>
-      gen.getApiV2Training(params) as {
-        headers: { 'x-total-count': string }
-        data: [
-          {
-            createdBy: string
-            createdAt: string
-            modifiedBy: string
-            modifiedAt: string
-            id: number
-            displayId: number
-            name: string
-            memo: string
-            status: string
-            favorite: boolean
-            fullName: string
-            dataSet: {
-              createdBy: string
-              createdAt: string
-              modifiedBy: string
-              modifiedAt: string
-              id: number
-              displayId: number
-              name: string
-              memo: string
-              isFlat: boolean
-            }
-            entryPoint: string
-            parentFullNameList: [string]
-            tags: [string]
-          },
-        ]
-      },
-    getSearch: (params: {
-      idLower?: number
-      idUpper?: number
-      name?: string
-      nameOr?: boolean
-      parentName?: string
-      parentNameOr?: boolean
-      startedAtLower?: string
-      startedAtUpper?: string
-      startedBy?: string
-      startedByOr?: boolean
-      dataSet?: string
-      dataSetOr?: boolean
-      memo?: string
-      memoOr?: boolean
-      status?: string
-      statusOr?: boolean
-      entryPoint?: string
-      entryPointOr?: boolean
-      tags?: string
-      tagsOr?: boolean
-      perPage?: number
-      page?: number
-      withTotl?: boolean
-    }) =>
-      gen.getApiV2TrainingSearch(params) as {
-        headers: { 'x-total-count': string }
-        data: [
-          {
-            createdBy: string
-            createdAt: string
-            modifiedBy: string
-            modifiedAt: string
-            id: number
-            displayId: number
-            name: string
-            memo: string
-            status: string
-            favorite: boolean
-            fullName: string
-            dataSet: {
-              createdBy: string
-              createdAt: string
-              modifiedBy: string
-              modifiedAt: string
-              id: number
-              displayId: number
-              name: string
-              memo: string
-              isFlat: boolean
-            }
-            entryPoint: string
-            parentFullNameList: [string]
-            tags: [string]
-          },
-        ]
-      },
+    getSimple: () => trainingApi.apiV2TrainingSimpleGet(),
+    get: (params: gen.TrainingApiApiV2TrainingGetRequest) =>
+      trainingApi.apiV2TrainingGet(params),
+    getSearch: (params: gen.TrainingApiApiV2TrainingSearchGetRequest) =>
+      trainingApi.apiV2TrainingSearchGet(params),
     post: (params: {
-      body: {
-        name: string
-        containerImage: {
-          registryId: number
-          image: string
-          tag: string
-        }
-        dataSetId: number
-        parentIds: [number]
-        gitModel: {
-          gitId: number
-          repository: string
-          owner: string
-          branch: string
-          commitId: string
-        }
-        entryPoint: string
-        options: {
-          additionalProp1: string
-          additionalProp2: string
-          additionalProp3: string
-        }
-        cpu: number
-        memory: number
-        gpu: number
-        partition: string
-        ports: [number]
-        memo: string
-        tags: [string]
-        zip: boolean
-        localDataSet: boolean
-      }
+      body: gen.NssolPlatypusApiModelsTrainingApiModelsCreateInputModel
     }) =>
-      gen.postApiV2TrainingRun(params) as {
-        data: {
-          createdBy: string
-          createdAt: string
-          modifiedBy: string
-          modifiedAt: string
-          id: number
-          displayId: number
-          name: string
-          memo: string
-          status: string
-          favorite: boolean
-          fullName: string
-        }
-      },
-    getById: (params: { id: number }) =>
-      gen.getApiV2TrainingById(params) as {
-        data: {
-          createdBy: string
-          createdAt: string
-          modifiedBy: string
-          modifiedAt: string
-          id: number
-          displayId: number
-          name: string
-          memo: string
-          status: string
-          favorite: boolean
-          fullName: string
-          dataSet: {
-            createdBy: string
-            createdAt: string
-            modifiedBy: string
-            modifiedAt: string
-            id: number
-            displayId: number
-            name: string
-            memo: string
-            isFlat: boolean
-          }
-          entryPoint: string
-          parentFullNameList: [string]
-          tags: [string]
-          key: string
-          gitModel: {
-            gitId: number
-            repository: string
-            owner: string
-            branch: string
-            commitId: string
-            url: string
-          }
-          options: [
-            {
-              key: string
-              value: string
-            },
-          ]
-          containerImage: {
-            registryId: number
-            image: string
-            tag: string
-            registryName: string
-            url: string
-          }
-          parents: [
-            {
-              createdBy: string
-              createdAt: string
-              modifiedBy: string
-              modifiedAt: string
-              id: number
-              displayId: number
-              name: string
-              memo: string
-              status: string
-              favorite: boolean
-              fullName: string
-              dataSet: {
-                createdBy: string
-                createdAt: string
-                modifiedBy: string
-                modifiedAt: string
-                id: number
-                displayId: number
-                name: string
-                memo: string
-                isFlat: boolean
-              }
-              entryPoint: string
-              parentFullNameList: [string]
-              tags: [string]
-            },
-          ]
-          completedAt: string
-          startedAt: string
-          node: string
-          logSummary: string
-          cpu: number
-          memory: number
-          gpu: number
-          partition: string
-          ports: [number]
-          nodePorts: [
-            {
-              key: string
-              value: string
-            },
-          ]
-          statusType: string
-          conditionNote: string
-          waitingTime: string
-          executionTime: string
-          zip: boolean
-          localDataSet: boolean
-        }
-      },
-    deleteById: (params: { id: number }) => gen.deleteApiV2TrainingById(params),
+      trainingApi.apiV2TrainingRunPost({
+        nssolPlatypusApiModelsTrainingApiModelsCreateInputModel: params.body,
+      }),
+    getById: (params: gen.TrainingApiApiV2TrainingIdGetRequest) =>
+      trainingApi.apiV2TrainingIdGet(params),
+    deleteById: (params: gen.TrainingApiApiV2TrainingIdDeleteRequest) =>
+      trainingApi.apiV2TrainingIdDelete(params),
     putById: (params: {
       id: number
-      body: {
-        name: string
-        memo: string
-        favorite: boolean
-        tags: [string]
-      }
+      body: gen.NssolPlatypusApiModelsTrainingApiModelsEditInputModel
     }) =>
-      gen.putApiV2TrainingById(params) as {
-        data: {
-          createdBy: string
-          createdAt: string
-          modifiedBy: string
-          modifiedAt: string
-          id: number
-          displayId: number
-          name: string
-          memo: string
-          status: string
-          favorite: boolean
-          fullName: string
-        }
-      },
+      trainingApi.apiV2TrainingIdPut({
+        id: params.id,
+        nssolPlatypusApiModelsTrainingApiModelsEditInputModel: params.body,
+      }),
     // GET /spa/trains/{id}/log
-    getFilesById: (params: { id: number; withUrl?: boolean }) =>
-      gen.getApiV2TrainingByIdFiles(params) as {
-        data: [
-          {
-            id: number
-            fileId: number
-            url: string
-            fileName: string
-            isLocked: boolean
-          },
-        ]
-      },
-    getFileSize: (params: { id: number; name: string }) =>
-      gen.getApiV2TrainingByIdFilesByNameSize(params) as {
-        data: {
-          id: number
-          fileId: number
-          key: string
-          url: string
-          fileName: string
-          fileSize: number
-        }
-      },
+    getFilesById: (params: gen.TrainingApiApiV2TrainingIdFilesGetRequest) =>
+      trainingApi.apiV2TrainingIdFilesGet(params),
+    getFileSize: (
+      params: gen.TrainingApiApiV2TrainingIdFilesNameSizeGetRequest,
+    ) => trainingApi.apiV2TrainingIdFilesNameSizeGet(params),
     postFilesById: (params: {
       id: number
-      body: {
-        fileName: string
-        storedPath: string
-      }
+      body: gen.NssolPlatypusApiModelsComponentsAddFileInputModel
     }) =>
-      gen.postApiV2TrainingByIdFiles(params) as {
-        data: {
-          id: number
-          fileId: number
-          url: string
-          fileName: string
-          isLocked: boolean
-        }
-      },
-    getContainerFilesById: (params: {
-      id: number
-      path?: string
-      withUrl?: boolean
-    }) =>
-      gen.getApiV2TrainingByIdContainerFiles(params) as {
-        data: {
-          dirs: [
-            {
-              dirPath: string
-              dirName: string
-            },
-          ]
-          files: [
-            {
-              key: string
-              fileName: string
-              lastModified: string
-              size: number
-              url: string
-            },
-          ]
-          exceeded: boolean
-        }
-      },
-    deleteByIdFilesByFileId: (params: { id: number; fileId: number }) =>
-      gen.deleteApiV2TrainingByIdFilesByFileId(params),
-    getTensorboardById: (params: { id: number }) =>
-      gen.getApiV2TrainingByIdTensorboard(params) as {
-        data: {
-          name: string
-          status: string
-          statusType: string
-          nodePort: string
-          remainingTime: string
-          mountedTrainingHistoryIds: [number]
-        }
-      },
+      trainingApi.apiV2TrainingIdFilesPost({
+        id: params.id,
+        nssolPlatypusApiModelsComponentsAddFileInputModel: params.body,
+      }),
+    getContainerFilesById: (
+      params: gen.TrainingApiApiV2TrainingIdContainerFilesGetRequest,
+    ) => trainingApi.apiV2TrainingIdContainerFilesGet(params),
+    deleteByIdFilesByFileId: (
+      params: gen.TrainingApiApiV2TrainingIdFilesFileIdDeleteRequest,
+    ) => trainingApi.apiV2TrainingIdFilesFileIdDelete(params),
+    getTensorboardById: (
+      params: gen.TrainingApiApiV2TrainingIdTensorboardGetRequest,
+    ) => trainingApi.apiV2TrainingIdTensorboardGet(params),
     putTensorboardById: (params: {
       id: number
-      body: {
-        expiresIn: number
-        selectedHistoryIds: [number]
-      }
+      body: gen.NssolPlatypusApiModelsTrainingApiModelsTensorBoardInputModel
     }) =>
-      gen.putApiV2TrainingByIdTensorboard(params) as {
-        data: {
-          name: string
-          status: string
-          statusType: string
-          nodePort: string
-          remainingTime: string
-          mountedTrainingHistoryIds: [number]
-        }
-      },
-    deleteTensorboardById: (params: { id: number }) =>
-      gen.deleteApiV2TrainingByIdTensorboard(params),
-    postHaltById: (params: { id: number }) =>
-      gen.postApiV2TrainingByIdHalt(params) as {
-        data: {
-          createdBy: string
-          createdAt: string
-          modifiedBy: string
-          modifiedAt: string
-          id: number
-          displayId: number
-          name: string
-          memo: string
-          status: string
-          favorite: boolean
-          fullName: string
-        }
-      },
-    postUserCancelById: (params: { id: number }) =>
-      gen.postApiV2TrainingByIdUserCancel(params) as {
-        data: {
-          createdBy: string
-          createdAt: string
-          modifiedBy: string
-          modifiedAt: string
-          id: number
-          displayId: number
-          name: string
-          memo: string
-          status: string
-          favorite: boolean
-          fullName: string
-        }
-      },
-    getEventsById: (params: { id: number }) =>
-      gen.getApiV2TrainingByIdEvents(params) as {
-        data: {
-          tenantId: number
-          tenantName: string
-          containerName: string
-          message: string
-          details: string
-          isError: boolean
-          firstTimestamp: string
-          lastTimestamp: string
-        }
-      },
-    getMount: (params: { status: [string] }) =>
-      gen.getApiV2TrainingMount(params) as {
-        data: [
-          {
-            createdBy: string
-            createdAt: string
-            modifiedBy: string
-            modifiedAt: string
-            id: number
-            displayId: number
-            name: string
-            memo: string
-            status: string
-            favorite: boolean
-            fullName: string
-            dataSet: {
-              createdBy: string
-              createdAt: string
-              modifiedBy: string
-              modifiedAt: string
-              id: number
-              displayId: number
-              name: string
-              memo: string
-              isFlat: boolean
-            }
-            entryPoint: string
-            parentFullNameList: [string]
-            tags: [string]
-          },
-        ]
-      },
-    getTags: () => gen.getApiV2TrainingTags() as { data: [string] },
+      trainingApi.apiV2TrainingIdTensorboardPut({
+        id: params.id,
+        nssolPlatypusApiModelsTrainingApiModelsTensorBoardInputModel:
+          params.body,
+      }),
+    deleteTensorboardById: (
+      params: gen.TrainingApiApiV2TrainingIdTensorboardDeleteRequest,
+    ) => trainingApi.apiV2TrainingIdTensorboardDelete(params),
+    postHaltById: (params: gen.TrainingApiApiV2TrainingIdHaltPostRequest) =>
+      trainingApi.apiV2TrainingIdHaltPost(params),
+    postUserCancelById: (
+      params: gen.TrainingApiApiV2TrainingIdUserCancelPostRequest,
+    ) => trainingApi.apiV2TrainingIdUserCancelPost(params),
+    getEventsById: (params: gen.TrainingApiApiV2TrainingIdEventsGetRequest) =>
+      trainingApi.apiV2TrainingIdEventsGet(params),
+    getMount: (params: gen.TrainingApiApiV2TrainingMountGetRequest) =>
+      trainingApi.apiV2TrainingMountGet(params),
+    getTags: trainingApi.apiV2TrainingTagsGet,
     postTags: (params: {
-      body: {
-        id: [number]
-        tags: [string]
-      }
+      body: gen.NssolPlatypusApiModelsTrainingApiModelsTagsInputModel
     }) =>
-      gen.postApiV2TrainingTags(params) as {
-        data: [
-          {
-            createdBy: string
-            createdAt: string
-            modifiedBy: string
-            modifiedAt: string
-            id: number
-            displayId: number
-            name: string
-            memo: string
-            status: string
-            favorite: boolean
-            fullName: string
-            dataSet: {
-              createdBy: string
-              createdAt: string
-              modifiedBy: string
-              modifiedAt: string
-              id: number
-              displayId: number
-              name: string
-              memo: string
-              isFlat: boolean
-            }
-            entryPoint: string
-            parentFullNameList: [string]
-            tags: [string]
-          },
-        ]
-      },
-    deleteTags: (params: {
-      body: {
-        id: [number]
-        tags: [string]
-      }
-    }) =>
-      gen.deleteApiV2TrainingTags(params) as {
-        data: [
-          {
-            createdBy: string
-            createdAt: string
-            modifiedBy: string
-            modifiedAt: string
-            id: number
-            displayId: number
-            name: string
-            memo: string
-            status: string
-            favorite: boolean
-            fullName: string
-            dataSet: {
-              createdBy: string
-              createdAt: string
-              modifiedBy: string
-              modifiedAt: string
-              id: number
-              displayId: number
-              name: string
-              memo: string
-              isFlat: boolean
-            }
-            entryPoint: string
-            parentFullNameList: [string]
-            tags: [string]
-          },
-        ]
-      },
-    getSearchHistory: () =>
-      gen.getApiV2TrainingSearchHistory() as {
-        data: [
-          {
-            createdBy: string
-            createdAt: string
-            modifiedBy: string
-            modifiedAt: string
-            name: string
-            id: number
-            searchDetail: {
-              idLower: number
-              idUpper: number
-              name: string
-              nameOr: boolean
-              parentName: string
-              parentNameOr: boolean
-              startedAtLower: string
-              startedAtUpper: string
-              startedBy: string
-              startedByOr: boolean
-              dataSet: string
-              dataSetOr: boolean
-              memo: string
-              memoOr: boolean
-              status: string
-              statusOr: boolean
-              entryPoint: string
-              entryPointOr: boolean
-              tags: string
-              tagsOr: boolean
-            }
-          },
-        ]
-      },
+      trainingApi.apiV2TrainingTagsPost({
+        nssolPlatypusApiModelsTrainingApiModelsTagsInputModel: params.body,
+      }),
+    deleteTags: (params: gen.TrainingApiApiV2TrainingTagsDeleteRequest) =>
+      trainingApi.apiV2TrainingTagsDelete(params),
+    getSearchHistory: trainingApi.apiV2TrainingSearchHistoryGet,
     postSearchHistory: (params: {
-      body: {
-        name: string
-        searchDetailInputModel: {
-          idLower: number
-          idUpper: number
-          name: string
-          nameOr: boolean
-          parentName: string
-          parentNameOr: boolean
-          startedAtLower: string
-          startedAtUpper: string
-          startedBy: string
-          startedByOr: boolean
-          dataSet: string
-          dataSetOr: boolean
-          memo: string
-          memoOr: boolean
-          status: string
-          statusOr: boolean
-          entryPoint: string
-          entryPointOr: boolean
-          tags: string
-          tagsOr: boolean
-        }
-      }
+      body: gen.NssolPlatypusApiModelsTrainingApiModelsSearchHistoryInputModel
     }) =>
-      gen.postApiV2TrainingSearchHistory(params) as {
-        data: {
-          createdBy: string
-          createdAt: string
-          modifiedBy: string
-          modifiedAt: string
-          name: string
-          id: number
-          searchDetail: {
-            idLower: number
-            idUpper: number
-            name: string
-            nameOr: boolean
-            parentName: string
-            parentNameOr: boolean
-            startedAtLower: string
-            startedAtUpper: string
-            startedBy: string
-            startedByOr: boolean
-            dataSet: string
-            dataSetOr: boolean
-            memo: string
-            memoOr: boolean
-            status: string
-            statusOr: boolean
-            entryPoint: string
-            entryPointOr: boolean
-            tags: string
-            tagsOr: boolean
-          }
-        }
-      },
-    deleteSearchHistoryById: (params: { id: number }) =>
-      gen.deleteApiV2TrainingSearchHistoryById(params),
-    getSearchFill: () =>
-      gen.getApiV2TrainingSearchFill() as {
-        data: {
-          createdBy: [string]
-          status: [string]
-          tags: [string]
-          datasets: [string]
-        }
-      },
+      trainingApi.apiV2TrainingSearchHistoryPost({
+        nssolPlatypusApiModelsTrainingApiModelsSearchHistoryInputModel:
+          params.body,
+      }),
+    deleteSearchHistoryById: (
+      params: gen.TrainingApiApiV2TrainingSearchHistoryIdDeleteRequest,
+    ) => trainingApi.apiV2TrainingSearchHistoryIdDelete(params),
+    getSearchFill: () => trainingApi.apiV2TrainingSearchFillGet(),
   },
 
   notebook: {
-    getSimple: () =>
-      gen.getApiV2NotebookSimple() as {
-        data: [
-          {
-            createdBy: string
-            createdAt: string
-            modifiedBy: string
-            modifiedAt: string
-            id: number
-            displayId: number
-            name: string
-            memo: string
-            status: string
-            favorite: boolean
-            fullName: string
-          },
-        ]
-      },
-    get: (params: {
-      id?: string
-      name?: string
-      createdAt?: string
-      createdBy?: string
-      memo?: string
-      status?: string
-      perPage?: number
-      page?: number
-      withTotal?: boolean
-    }) =>
-      gen.getApiV2Notebook(params) as {
-        headers: { 'x-total-count': string }
-        data: [
-          {
-            createdBy: string
-            createdAt: string
-            modifiedBy: string
-            modifiedAt: string
-            id: number
-            displayId: number
-            name: string
-            memo: string
-            status: string
-            favorite: boolean
-            fullName: string
-          },
-        ]
-      },
+    getSimple: () => notebookApi.apiV2NotebookSimpleGet(),
+    get: (params: gen.NotebookApiApiV2NotebookGetRequest) =>
+      notebookApi.apiV2NotebookGet(params),
     post: (params: {
-      body: {
-        name: string
-        containerImage: {
-          registryId: number
-          image: string
-          tag: string
-        }
-        dataSetId: number
-        jupyterLabVersion: string
-        parentIds: [number]
-        inferenceIds: [number]
-        gitModel: {
-          gitId: number
-          repository: string
-          owner: string
-          branch: string
-          commitId: string
-        }
-        options: {
-          additionalProp1: string
-          additionalProp2: string
-          additionalProp3: string
-        }
-        cpu: number
-        memory: number
-        gpu: number
-        partition: string
-        memo: string
-        expiresIn: number
-        localDataSet: boolean
-        entryPoint: string
-      }
+      body: gen.NssolPlatypusApiModelsNotebookApiModelsCreateInputModel
     }) =>
-      gen.postApiV2NotebookRun(params) as {
-        data: {
-          createdBy: string
-          createdAt: string
-          modifiedBy: string
-          modifiedAt: string
-          id: number
-          displayId: number
-          name: string
-          memo: string
-          status: string
-          favorite: boolean
-          fullName: string
-        }
-      },
-    getById: (params: { id: number }) =>
-      gen.getApiV2NotebookById(params) as {
-        data: {
-          createdBy: string
-          createdAt: string
-          modifiedBy: string
-          modifiedAt: string
-          id: number
-          displayId: number
-          name: string
-          memo: string
-          status: string
-          favorite: boolean
-          fullName: string
-          key: string
-          dataSet: {
-            createdBy: string
-            createdAt: string
-            modifiedBy: string
-            modifiedAt: string
-            id: number
-            displayId: number
-            name: string
-            memo: string
-            isFlat: boolean
-          }
-          parents: [
-            {
-              createdBy: string
-              createdAt: string
-              modifiedBy: string
-              modifiedAt: string
-              id: number
-              displayId: number
-              name: string
-              memo: string
-              status: string
-              favorite: boolean
-              fullName: string
-              dataSet: {
-                createdBy: string
-                createdAt: string
-                modifiedBy: string
-                modifiedAt: string
-                id: number
-                displayId: number
-                name: string
-                memo: string
-                isFlat: boolean
-              }
-              entryPoint: string
-              parentFullNameList: [string]
-              tags: [string]
-            },
-          ]
-          inferences: [
-            {
-              createdBy: string
-              createdAt: string
-              modifiedBy: string
-              modifiedAt: string
-              id: number
-              displayId: number
-              name: string
-              memo: string
-              status: string
-              favorite: boolean
-              fullName: string
-              dataSet: {
-                createdBy: string
-                createdAt: string
-                modifiedBy: string
-                modifiedAt: string
-                id: number
-                displayId: number
-                name: string
-                memo: string
-                isFlat: boolean
-              }
-              entryPoint: string
-              parentFullNameList: [string]
-              parentInferenceFullNameList: [string]
-              outputValue: string
-            },
-          ]
-          gitModel: {
-            gitId: number
-            repository: string
-            owner: string
-            branch: string
-            commitId: string
-            url: string
-          }
-          options: [
-            {
-              key: string
-              value: string
-            },
-          ]
-          containerImage: {
-            registryId: number
-            image: string
-            tag: string
-            registryName: string
-            url: string
-          }
-          completedAt: string
-          startedAt: string
-          node: string
-          cpu: number
-          memory: number
-          gpu: number
-          partition: string
-          jupyterLabVersion: string
-          statusType: string
-          notebookNodePort: string
-          notebookToken: string
-          conditionNote: string
-          waitingTime: string
-          executionTime: string
-          expiresIn: number
-          localDataSet: boolean
-          entryPoint: string
-        }
-      },
-    deleteById: (params: { id: number }) => gen.deleteApiV2NotebookById(params),
+      notebookApi.apiV2NotebookRunPost({
+        nssolPlatypusApiModelsNotebookApiModelsCreateInputModel: params.body,
+      }),
+    getById: (params: gen.NotebookApiApiV2NotebookIdGetRequest) =>
+      notebookApi.apiV2NotebookIdGet(params),
+    deleteById: (params: gen.NotebookApiApiV2NotebookIdDeleteRequest) =>
+      notebookApi.apiV2NotebookIdDelete(params),
     putById: (params: {
       id: number
-      body: {
-        name: string
-        memo: string
-        favorite: boolean
-      }
+      body: gen.NssolPlatypusApiModelsNotebookApiModelsEditInputModel
     }) =>
-      gen.putApiV2NotebookById(params) as {
-        data: {
-          createdBy: string
-          createdAt: string
-          modifiedBy: string
-          modifiedAt: string
-          id: number
-          displayId: number
-          name: string
-          memo: string
-          status: string
-          favorite: boolean
-          fullName: string
-        }
-      },
-    getContainerFilesById: (params: {
-      id: number
-      path?: string
-      withUrl?: boolean
-    }) =>
-      gen.getApiV2NotebookByIdContainerFiles(params) as {
-        data: {
-          dirs: [
-            {
-              dirPath: string
-              dirName: string
-            },
-          ]
-          files: [
-            {
-              key: string
-              fileName: string
-              lastModified: string
-              size: number
-              url: string
-            },
-          ]
-          exceeded: boolean
-        }
-      },
-    postHaltById: (params: { id: number }) =>
-      gen.postApiV2NotebookByIdHalt(params) as {
-        data: {
-          createdBy: string
-          createdAt: string
-          modifiedBy: string
-          modifiedAt: string
-          id: number
-          displayId: number
-          name: string
-          memo: string
-          status: string
-          favorite: boolean
-          fullName: string
-        }
-      },
-    getEventsById: (params: { id: number }) =>
-      gen.getApiV2NotebookByIdEvents(params) as {
-        data: {
-          tenantId: number
-          tenantName: string
-          containerName: string
-          message: string
-          details: string
-          isError: boolean
-          firstTimestamp: string
-          lastTimestamp: string
-        }
-      },
-    getEndpointById: (params: { id: number }) =>
-      gen.getApiV2NotebookByIdEndpoint(params) as {
-        data: {
-          nodePort: string
-          token: string
-        }
-      },
-    getFilesById: (params: { id: number; path?: string; withUrl?: boolean }) =>
-      gen.getApiV2NotebookByIdContainerFiles(params) as {
-        data: {
-          dirs: [
-            {
-              dirPath: string
-              dirName: string
-            },
-          ]
-          files: [
-            {
-              key: string
-              fileName: string
-              lastModified: string
-              size: number
-              url: string
-            },
-          ]
-          exceeded: boolean
-        }
-      },
+      notebookApi.apiV2NotebookIdPut({
+        id: params.id,
+        nssolPlatypusApiModelsNotebookApiModelsEditInputModel: params.body,
+      }),
+    getContainerFilesById: (
+      params: gen.NotebookApiApiV2NotebookIdContainerFilesGetRequest,
+    ) => notebookApi.apiV2NotebookIdContainerFilesGet(params),
+    postHaltById: (params: gen.NotebookApiApiV2NotebookIdHaltPostRequest) =>
+      notebookApi.apiV2NotebookIdHaltPost(params),
+    getEventsById: (params: gen.NotebookApiApiV2NotebookIdEventsGetRequest) =>
+      notebookApi.apiV2NotebookIdEventsGet(params),
+    getEndpointById: (
+      params: gen.NotebookApiApiV2NotebookIdEndpointGetRequest,
+    ) => notebookApi.apiV2NotebookIdEndpointGet(params),
+    getFilesById: (
+      params: gen.NotebookApiApiV2NotebookIdContainerFilesGetRequest,
+    ) => notebookApi.apiV2NotebookIdContainerFilesGet(params),
     postRerun: (params: {
       id: number
-      body: {
-        dataSetId: number
-        parentIds: [number]
-        inferenceIds: [number]
-        containerImage: {
-          registryId: number
-          image: string
-          tag: string
-        }
-        gitModel: {
-          gitId: number
-          repository: string
-          owner: string
-          branch: string
-          commitId: string
-        }
-        jupyterLabVersion: string
-        cpu: number
-        memory: number
-        gpu: number
-        expiresIn: number
-        localDataSet: boolean
-        entryPoint: string
-      }
+      body: gen.NssolPlatypusApiModelsNotebookApiModelsRerunInputModel
     }) =>
-      gen.postApiV2NotebookByIdRerun(params) as {
-        data: {
-          createdBy: string
-          createdAt: string
-          modifiedBy: string
-          modifiedAt: string
-          id: number
-          displayId: number
-          name: string
-          memo: string
-          status: string
-          favorite: boolean
-          fullName: string
-        }
-      },
+      notebookApi.apiV2NotebookIdRerunPost({
+        id: params.id,
+        nssolPlatypusApiModelsNotebookApiModelsRerunInputModel: params.body,
+      }),
     getAvailableInfiniteTime: () =>
-      gen.getApiV2NotebookAvailableInfiniteTime() as { data: boolean },
+      notebookApi.apiV2NotebookAvailableInfiniteTimeGet(),
   },
 
   inference: {
-    getSimple: () =>
-      gen.getApiV2InferencesSimple() as {
-        data: [
-          {
-            createdBy: string
-            createdAt: string
-            modifiedBy: string
-            modifiedAt: string
-            id: number
-            displayId: number
-            name: string
-            memo: string
-            status: string
-            favorite: boolean
-            fullName: string
-          },
-        ]
-      },
-    get: (params: {
-      id?: string
-      name?: string
-      startedAt?: string
-      startedBy?: string
-      dataSet?: string
-      memo?: string
-      status?: string
-      entryPoint?: string
-      parentId?: string
-      parentInferenceId?: string
-      parentName?: string
-      parentInferenceName?: string
-      perPage?: number
-      page?: number
-      withTotal?: boolean
-    }) =>
-      gen.getApiV2Inferences(params) as {
-        headers: { 'x-total-count': string }
-        data: [
-          {
-            createdBy: string
-            createdAt: string
-            modifiedBy: string
-            modifiedAt: string
-            id: number
-            displayId: number
-            name: string
-            memo: string
-            status: string
-            favorite: boolean
-            fullName: string
-            dataSet: {
-              createdBy: string
-              createdAt: string
-              modifiedBy: string
-              modifiedAt: string
-              id: number
-              displayId: number
-              name: string
-              memo: string
-              isFlat: boolean
-            }
-            entryPoint: string
-            parentFullNameList: [string]
-            parentInferenceFullNameList: [string]
-            outputValue: string
-          },
-        ]
-      },
-    getMount: (params: { status: [string] }) =>
-      gen.getApiV2InferencesMount(params) as {
-        data: [
-          {
-            createdBy: string
-            createdAt: string
-            modifiedBy: string
-            modifiedAt: string
-            id: number
-            displayId: number
-            name: string
-            memo: string
-            status: string
-            favorite: boolean
-            fullName: string
-            dataSet: {
-              createdBy: string
-              createdAt: string
-              modifiedBy: string
-              modifiedAt: string
-              id: number
-              displayId: number
-              name: string
-              memo: string
-              isFlat: boolean
-            }
-            entryPoint: string
-            parentFullNameList: [string]
-            parentInferenceFullNameList: [string]
-            outputValue: string
-          },
-        ]
-      },
+    getSimple: () => inferenceApi.apiV2InferencesSimpleGet(),
+    get: (params: gen.InferenceApiApiV2InferencesGetRequest) =>
+      inferenceApi.apiV2InferencesGet(params),
+    getMount: (params: gen.InferenceApiApiV2InferencesMountGetRequest) =>
+      inferenceApi.apiV2InferencesMountGet(params),
     post: (params: {
-      body: {
-        name: string
-        containerImage: {
-          registryId: number
-          image: string
-          tag: string
-        }
-        dataSetId: number
-        parentIds: [number]
-        inferenceIds: [number]
-        gitModel: {
-          gitId: number
-          repository: string
-          owner: string
-          branch: string
-          commitId: string
-        }
-        entryPoint: string
-        options: {
-          additionalProp1: string
-          additionalProp2: string
-          additionalProp3: string
-        }
-        cpu: number
-        memory: number
-        gpu: number
-        partition: string
-        ports: [number]
-        memo: string
-        tags: [string]
-        zip: boolean
-        localDataSet: boolean
-      }
+      body: gen.NssolPlatypusApiModelsInferenceApiModelsCreateInputModel
     }) =>
-      gen.postApiV2InferencesRun(params) as {
-        data: {
-          createdBy: string
-          createdAt: string
-          modifiedBy: string
-          modifiedAt: string
-          id: number
-          displayId: number
-          name: string
-          memo: string
-          status: string
-          favorite: boolean
-          fullName: string
-        }
-      },
-    getById: (params: { id: number }) =>
-      gen.getApiV2InferencesById(params) as {
-        data: {
-          createdBy: string
-          createdAt: string
-          modifiedBy: string
-          modifiedAt: string
-          id: number
-          displayId: number
-          name: string
-          memo: string
-          status: string
-          favorite: boolean
-          fullName: string
-          dataSet: {
-            createdBy: string
-            createdAt: string
-            modifiedBy: string
-            modifiedAt: string
-            id: number
-            displayId: number
-            name: string
-            memo: string
-            isFlat: boolean
-          }
-          entryPoint: string
-          parentFullNameList: [string]
-          parentInferenceFullNameList: [string]
-          outputValue: string
-          key: string
-          gitModel: {
-            gitId: number
-            repository: string
-            owner: string
-            branch: string
-            commitId: string
-            url: string
-          }
-          options: [
-            {
-              key: string
-              value: string
-            },
-          ]
-          containerImage: {
-            registryId: number
-            image: string
-            tag: string
-            registryName: string
-            url: string
-          }
-          parents: [
-            {
-              createdBy: string
-              createdAt: string
-              modifiedBy: string
-              modifiedAt: string
-              id: number
-              displayId: number
-              name: string
-              memo: string
-              status: string
-              favorite: boolean
-              fullName: string
-              dataSet: {
-                createdBy: string
-                createdAt: string
-                modifiedBy: string
-                modifiedAt: string
-                id: number
-                displayId: number
-                name: string
-                memo: string
-                isFlat: boolean
-              }
-              entryPoint: string
-              parentFullNameList: [string]
-              tags: [string]
-            },
-          ]
-          parentInferences: [
-            {
-              createdBy: string
-              createdAt: string
-              modifiedBy: string
-              modifiedAt: string
-              id: number
-              displayId: number
-              name: string
-              memo: string
-              status: string
-              favorite: boolean
-              fullName: string
-              dataSet: {
-                createdBy: string
-                createdAt: string
-                modifiedBy: string
-                modifiedAt: string
-                id: number
-                displayId: number
-                name: string
-                memo: string
-                isFlat: boolean
-              }
-              entryPoint: string
-              parentFullNameList: [string]
-              parentInferenceFullNameList: [string]
-              outputValue: string
-            },
-          ]
-          completedAt: string
-          startedAt: string
-          node: string
-          logSummary: string
-          cpu: number
-          memory: number
-          gpu: number
-          partition: string
-          statusType: string
-          conditionNote: string
-          zip: boolean
-          localDataSet: boolean
-        }
-      },
-    deleteById: (params: { id: number }) =>
-      gen.deleteApiV2InferencesById(params),
+      inferenceApi.apiV2InferencesRunPost({
+        nssolPlatypusApiModelsInferenceApiModelsCreateInputModel: params.body,
+      }),
+    getById: (params: gen.InferenceApiApiV2InferencesIdGetRequest) =>
+      inferenceApi.apiV2InferencesIdGet(params),
+    deleteById: (params: gen.InferenceApiApiV2InferencesIdDeleteRequest) =>
+      inferenceApi.apiV2InferencesIdDelete(params),
     putById: (params: {
       id: number
-      body: {
-        name: string
-        memo: string
-        favorite: boolean
-        tags: [string]
-      }
+      body: gen.NssolPlatypusApiModelsTrainingApiModelsEditInputModel
     }) =>
-      gen.putApiV2InferencesById(params) as {
-        data: {
-          createdBy: string
-          createdAt: string
-          modifiedBy: string
-          modifiedAt: string
-          id: number
-          displayId: number
-          name: string
-          memo: string
-          status: string
-          favorite: boolean
-          fullName: string
-        }
-      },
+      inferenceApi.apiV2InferencesIdPut({
+        id: params.id,
+        nssolPlatypusApiModelsTrainingApiModelsEditInputModel: params.body,
+      }),
     // GET /spa/trains/{id}/log
-    getFilesById: (params: { id: number; withUrl?: boolean }) =>
-      gen.getApiV2InferencesByIdFiles(params) as {
-        data: [
-          {
-            id: number
-            fileId: number
-            url: string
-            fileName: string
-            isLocked: boolean
-          },
-        ]
-      },
-    getFileSize: (params: { id: number; name: string }) =>
-      gen.getApiV2InferencesByIdFilesByNameSize(params) as {
-        data: {
-          id: number
-          fileId: number
-          key: string
-          url: string
-          fileName: string
-          fileSize: number
-        }
-      },
+    getFilesById: (params: gen.InferenceApiApiV2InferencesIdFilesGetRequest) =>
+      inferenceApi.apiV2InferencesIdFilesGet(params),
+    getFileSize: (
+      params: gen.InferenceApiApiV2InferencesIdFilesNameSizeGetRequest,
+    ) => inferenceApi.apiV2InferencesIdFilesNameSizeGet(params),
     postFilesById: (params: {
       id: number
-      body: {
-        fileName: string
-        storedPath: string
-      }
+      body: gen.NssolPlatypusApiModelsComponentsAddFileInputModel
     }) =>
-      gen.postApiV2InferencesByIdFiles(params) as {
-        data: {
-          id: number
-          fileId: number
-          url: string
-          fileName: string
-          isLocked: boolean
-        }
-      },
-    getContainerFilesById: (params: {
-      id: number
-      path?: string
-      withUrl?: boolean
-    }) =>
-      gen.getApiV2InferencesByIdContainerFiles(params) as {
-        data: {
-          dirs: [
-            {
-              dirPath: string
-              dirName: string
-            },
-          ]
-          files: [
-            {
-              key: string
-              fileName: string
-              lastModified: string
-              size: number
-              url: string
-            },
-          ]
-          exceeded: boolean
-        }
-      },
-    deleteByIdFilesByFileId: (params: { id: number; fileId: number }) =>
-      gen.deleteApiV2InferencesByIdFilesByFileId(params),
-    postHaltById: (params: { id: number }) =>
-      gen.postApiV2InferencesByIdHalt(params) as {
-        data: {
-          createdBy: string
-          createdAt: string
-          modifiedBy: string
-          modifiedAt: string
-          id: number
-          displayId: number
-          name: string
-          memo: string
-          status: string
-          favorite: boolean
-          fullName: string
-        }
-      },
-    postUserCancelById: (params: { id: number }) =>
-      gen.postApiV2InferencesByIdUserCancel(params) as {
-        data: {
-          createdBy: string
-          createdAt: string
-          modifiedBy: string
-          modifiedAt: string
-          id: number
-          displayId: number
-          name: string
-          memo: string
-          status: string
-          favorite: boolean
-          fullName: string
-        }
-      },
-    getEventsById: (params: { id: number }) =>
-      gen.getApiV2InferencesByIdEvents(params) as {
-        data: {
-          tenantId: number
-          tenantName: string
-          containerName: string
-          message: string
-          details: string
-          isError: boolean
-          firstTimestamp: string
-          lastTimestamp: string
-        }
-      },
+      inferenceApi.apiV2InferencesIdFilesPost({
+        id: params.id,
+        nssolPlatypusApiModelsComponentsAddFileInputModel: params.body,
+      }),
+    getContainerFilesById: (
+      params: gen.InferenceApiApiV2InferencesIdContainerFilesGetRequest,
+    ) => inferenceApi.apiV2InferencesIdContainerFilesGet(params),
+    deleteByIdFilesByFileId: (
+      params: gen.InferenceApiApiV2InferencesIdFilesFileIdDeleteRequest,
+    ) => inferenceApi.apiV2InferencesIdFilesFileIdDelete(params),
+    postHaltById: (params: gen.InferenceApiApiV2InferencesIdHaltPostRequest) =>
+      inferenceApi.apiV2InferencesIdHaltPost(params),
+    postUserCancelById: (
+      params: gen.InferenceApiApiV2InferencesIdUserCancelPostRequest,
+    ) => inferenceApi.apiV2InferencesIdUserCancelPost(params),
+    getEventsById: (
+      params: gen.InferenceApiApiV2InferencesIdEventsGetRequest,
+    ) => inferenceApi.apiV2InferencesIdEventsGet(params),
   },
 
   storage: {
     admin: {
-      get: () =>
-        gen.getApiV2AdminStorageEndpoints() as {
-          data: [
-            {
-              createdBy: string
-              createdAt: string
-              modifiedBy: string
-              modifiedAt: string
-              id: number
-              name: string
-              serverUrl: string
-              nfsServer: string
-              nfsRoot: string
-            },
-          ]
-        },
+      get: () => storageApi.apiV2AdminStorageEndpointsGet(),
       post: (params: {
-        body: {
-          name: string
-          serverUrl: string
-          accessKey: string
-          secretKey: string
-          nfsServer: string
-          nfsRoot: string
-        }
+        body: gen.NssolPlatypusApiModelsStorageApiModelsCreateInputModel
       }) =>
-        gen.postApiV2AdminStorageEndpoints(params) as {
-          data: {
-            createdBy: string
-            createdAt: string
-            modifiedBy: string
-            modifiedAt: string
-            id: number
-            name: string
-            serverUrl: string
-            nfsServer: string
-            nfsRoot: string
-          }
-        },
-      getById: (params: { id: number }) =>
-        gen.getApiV2AdminStorageEndpointsById(params) as {
-          data: {
-            createdBy: string
-            createdAt: string
-            modifiedBy: string
-            modifiedAt: string
-            id: number
-            name: string
-            serverUrl: string
-            nfsServer: string
-            nfsRoot: string
-            accessKey: string
-            secretKey: string
-          }
-        },
+        storageApi.apiV2AdminStorageEndpointsPost({
+          nssolPlatypusApiModelsStorageApiModelsCreateInputModel: params.body,
+        }),
+      getById: (params: gen.StorageApiApiV2AdminStorageEndpointsIdGetRequest) =>
+        storageApi.apiV2AdminStorageEndpointsIdGet(params),
       put: (params: {
         id: number
-        body: {
-          name: string
-          serverUrl: string
-          accessKey: string
-          secretKey: string
-          nfsServer: string
-          nfsRoot: string
-        }
+        body: gen.NssolPlatypusApiModelsStorageApiModelsCreateInputModel
       }) =>
-        gen.putApiV2AdminStorageEndpointsById(params) as {
-          data: {
-            createdBy: string
-            createdAt: string
-            modifiedBy: string
-            modifiedAt: string
-            id: number
-            name: string
-            serverUrl: string
-            nfsServer: string
-            nfsRoot: string
-          }
-        },
-      delete: (params: { id: number }) =>
-        gen.deleteApiV2AdminStorageEndpointsById(params),
+        storageApi.apiV2AdminStorageEndpointsIdPut({
+          id: params.id,
+          nssolPlatypusApiModelsStorageApiModelsCreateInputModel: params.body,
+        }),
+      delete: (
+        params: gen.StorageApiApiV2AdminStorageEndpointsIdDeleteRequest,
+      ) => storageApi.apiV2AdminStorageEndpointsIdDelete(params),
     },
-    getUploadParameter: (params: {
-      fileName: string
-      partSum: number
-      type: string
-    }) =>
-      gen.getApiV2UploadParameter(params) as {
-        data: {
-          uris: [string]
-          partsSum: number
-          uploadId: string
-          key: string
-          fileName: string
-          storedPath: string
-        }
-      },
+    getUploadParameter: (
+      params: gen.StorageApiApiV2UploadParameterGetRequest,
+    ) => storageApi.apiV2UploadParameterGet(params),
     postUploadComplete: (params: {
-      body: {
-        partETags: [string]
-        uploadId: string
-        key: string
-      }
+      body: gen.NssolPlatypusLogicModelsStorageLogicModelsCompleteMultiplePartUploadInputModel
     }) =>
-      gen.postApiV2UploadComplete(params) as {
-        data: {
-          partETags: [string]
-          uploadId: string
-          key: string
-        }
-      },
-    getDownloadUrl: (params: {
-      type?: string
-      storedPath?: string
-      fileName?: string
-      secure: boolean
-    }) => gen.getApiV2DownloadUrl(params) as { data: { url: string } },
+      storageApi.apiV2UploadCompletePost({
+        nssolPlatypusLogicModelsStorageLogicModelsCompleteMultiplePartUploadInputModel:
+          params.body,
+      }),
+    getDownloadUrl: (params: gen.StorageApiApiV2DownloadUrlGetRequest) =>
+      storageApi.apiV2DownloadUrlGet(params),
   },
 
   tenant: {
     admin: {
-      get: () =>
-        gen.getApiV2AdminTenants() as {
-          data: [
-            {
-              createdBy: string
-              createdAt: string
-              modifiedBy: string
-              modifiedAt: string
-              id: number
-              name: string
-              displayName: string
-              storagePath: string
-            },
-          ]
-        },
+      get: () => tenantApi.apiV2AdminTenantsGet(),
       post: (params: {
-        body: {
-          displayName: string
-          defaultGitId: number
-          gitIds: [number]
-          defaultRegistryId: number
-          registryIds: [number]
-          storageId: number
-          availableInfiniteTimeNotebook: boolean
-          userGroupIds: [number]
-          tenantName: string
-        }
+        body: gen.NssolPlatypusApiModelsTenantApiModelsCreateInputModel
       }) =>
-        gen.postApiV2AdminTenants(params) as {
-          data: {
-            createdBy: string
-            createdAt: string
-            modifiedBy: string
-            modifiedAt: string
-            id: number
-            name: string
-            displayName: string
-            storagePath: string
-          }
-        },
-      getById: (params: { id: number }) =>
-        gen.getApiV2AdminTenantsById(params) as {
-          data: {
-            createdBy: string
-            createdAt: string
-            modifiedBy: string
-            modifiedAt: string
-            id: number
-            name: string
-            displayName: string
-            storagePath: string
-            defaultGitId: number
-            gitIds: [number]
-            defaultRegistryId: number
-            registryIds: [number]
-            storageId: number
-            availableInfiniteTimeNotebook: boolean
-            userGroupIds: [number]
-          }
-        },
+        tenantApi.apiV2AdminTenantsPost({
+          nssolPlatypusApiModelsTenantApiModelsCreateInputModel: params.body,
+        }),
+      getById: (params: gen.TenantApiApiV2AdminTenantsIdGetRequest) =>
+        tenantApi.apiV2AdminTenantsIdGet(params),
       put: (params: {
         id: number
-        body: {
-          displayName: string
-          defaultGitId: number
-          gitIds: [number]
-          defaultRegistryId: number
-          registryIds: [number]
-          storageId: number
-          availableInfiniteTimeNotebook: boolean
-          userGroupIds: [number]
-        }
+        body: gen.NssolPlatypusApiModelsTenantApiModelsEditInputModel
       }) =>
-        gen.putApiV2AdminTenantsById(params) as {
-          data: {
-            createdBy: string
-            createdAt: string
-            modifiedBy: string
-            modifiedAt: string
-            id: number
-            name: string
-            displayName: string
-            storagePath: string
-          }
-        },
-      delete: (params: { id: number }) =>
-        gen.deleteApiV2AdminTenantsById(params) as {
-          data: {
-            containerWarnMsg: string
-          }
-        },
+        tenantApi.apiV2AdminTenantsIdPut({
+          id: params.id,
+          nssolPlatypusApiModelsTenantApiModelsEditInputModel: params.body,
+        }),
+      delete: (params: gen.TenantApiApiV2AdminTenantsIdDeleteRequest) =>
+        tenantApi.apiV2AdminTenantsIdDelete(params),
     },
-    get: () =>
-      gen.getApiV2Tenant() as {
-        data: {
-          createdBy: string
-          createdAt: string
-          modifiedBy: string
-          modifiedAt: string
-          id: number
-          name: string
-          displayName: string
-          storagePath: string
-          defaultGitId: number
-          gitIds: [number]
-          defaultRegistryId: number
-          registryIds: [number]
-          storageId: number
-          availableInfiniteTimeNotebook: boolean
-          userGroupIds: [number]
-        }
-      },
+    get: () => tenantApi.apiV2TenantGet(),
     put: (params: {
-      body: {
-        displayName: string
-        defaultGitId: number
-        gitIds: [number]
-        defaultRegistryId: number
-        registryIds: [number]
-        storageId: number
-        availableInfiniteTimeNotebook: boolean
-        userGroupIds: [number]
-      }
+      body: gen.NssolPlatypusApiModelsTenantApiModelsEditInputModel
     }) =>
-      gen.putApiV2Tenant(params) as {
-        data: {
-          createdBy: string
-          createdAt: string
-          modifiedBy: string
-          modifiedAt: string
-          id: number
-          name: string
-          displayName: string
-          storagePath: string
-        }
-      },
+      tenantApi.apiV2TenantPut({
+        nssolPlatypusApiModelsTenantApiModelsEditInputModel: params.body,
+      }),
   },
 
   user: {
     admin: {
-      get: () =>
-        gen.getApiV2AdminUsers() as {
-          data: [
-            {
-              createdBy: string
-              createdAt: string
-              modifiedBy: string
-              modifiedAt: string
-              id: number
-              name: string
-              serviceType: number
-              systemRoles: [
-                {
-                  id: number
-                  name: string
-                  displayName: string
-                  isCustomed: boolean
-                  sortOrder: number
-                  isOrigin: boolean
-                  userGroupTanantMapIdLists: [number]
-                },
-              ]
-              tenants: [
-                {
-                  id: number
-                  name: string
-                  default: boolean
-                  displayName: string
-                  roles: [
-                    {
-                      id: number
-                      name: string
-                      displayName: string
-                      isCustomed: boolean
-                      sortOrder: number
-                      isOrigin: boolean
-                      userGroupTanantMapIdLists: [number]
-                    },
-                  ]
-                  isOrigin: boolean
-                },
-              ]
-            },
-          ]
-        },
+      get: () => userApi.apiV2AdminUsersGet(),
       post: (params: {
-        body: {
-          name: string
-          password: string
-          systemRoles: [number]
-          tenants: [
-            {
-              id: number
-              default: boolean
-              roles: [number]
-            },
-          ]
-        }
+        body: gen.NssolPlatypusApiModelsUserApiModelsCreateInputModel
       }) =>
-        gen.postApiV2AdminUsers(params) as {
-          data: {
-            createdBy: string
-            createdAt: string
-            modifiedBy: string
-            modifiedAt: string
-            id: number
-            name: string
-            serviceType: number
-            systemRoles: [
-              {
-                id: number
-                name: string
-                displayName: string
-                isCustomed: boolean
-                sortOrder: number
-                isOrigin: boolean
-                userGroupTanantMapIdLists: [number]
-              },
-            ]
-            tenants: [
-              {
-                id: number
-                name: string
-                default: boolean
-                displayName: string
-                roles: [
-                  {
-                    id: number
-                    name: string
-                    displayName: string
-                    isCustomed: boolean
-                    sortOrder: number
-                    isOrigin: boolean
-                    userGroupTanantMapIdLists: [number]
-                  },
-                ]
-                isOrigin: boolean
-              },
-            ]
-          }
-        },
-      getById: (params: { id: number }) =>
-        gen.getApiV2AdminUsersById(params) as {
-          data: {
-            createdBy: string
-            createdAt: string
-            modifiedBy: string
-            modifiedAt: string
-            id: number
-            name: string
-            serviceType: number
-            systemRoles: [
-              {
-                id: number
-                name: string
-                displayName: string
-                isCustomed: boolean
-                sortOrder: number
-                isOrigin: boolean
-                userGroupTanantMapIdLists: [number]
-              },
-            ]
-            tenants: [
-              {
-                id: number
-                name: string
-                default: boolean
-                displayName: string
-                roles: [
-                  {
-                    id: number
-                    name: string
-                    displayName: string
-                    isCustomed: boolean
-                    sortOrder: number
-                    isOrigin: boolean
-                    userGroupTanantMapIdLists: [number]
-                  },
-                ]
-                isOrigin: boolean
-              },
-            ]
-          }
-        },
-      delete: (params: { id: number }) => gen.deleteApiV2AdminUsersById(params),
+        userApi.apiV2AdminUsersPost({
+          nssolPlatypusApiModelsUserApiModelsCreateInputModel: params.body,
+        }),
+      getById: (params: gen.UserApiApiV2AdminUsersIdGetRequest) =>
+        userApi.apiV2AdminUsersIdGet(params),
+      delete: (params: gen.UserApiApiV2AdminUsersIdDeleteRequest) =>
+        userApi.apiV2AdminUsersIdDelete(params),
       put: (params: {
         id: number
-        body: {
-          systemRoles: [number]
-          tenants: [
-            {
-              id: number
-              default: boolean
-              roles: [number]
-            },
-          ]
-        }
+        body: gen.NssolPlatypusApiModelsUserApiModelsEditInputModel
       }) =>
-        gen.putApiV2AdminUsersById(params) as {
-          data: {
-            createdBy: string
-            createdAt: string
-            modifiedBy: string
-            modifiedAt: string
-            id: number
-            name: string
-            serviceType: number
-            systemRoles: [
-              {
-                id: number
-                name: string
-                displayName: string
-                isCustomed: boolean
-                sortOrder: number
-                isOrigin: boolean
-                userGroupTanantMapIdLists: [number]
-              },
-            ]
-            tenants: [
-              {
-                id: number
-                name: string
-                default: boolean
-                displayName: string
-                roles: [
-                  {
-                    id: number
-                    name: string
-                    displayName: string
-                    isCustomed: boolean
-                    sortOrder: number
-                    isOrigin: boolean
-                    userGroupTanantMapIdLists: [number]
-                  },
-                ]
-                isOrigin: boolean
-              },
-            ]
-          }
-        },
-      putPassword: (params: { id: number; body: string }) =>
-        simpleStringBody(gen.putApiV2AdminUsersByIdPassword, 'body')(params),
+        userApi.apiV2AdminUsersIdPut({
+          id: params.id,
+          nssolPlatypusApiModelsUserApiModelsEditInputModel: params.body,
+        }),
+      putPassword: (params: gen.UserApiApiV2AdminUsersIdPasswordPutRequest) =>
+        userApi.apiV2AdminUsersIdPasswordPut({
+          id: params.id,
+          body: JSON.stringify(params.body),
+        }),
+
       postSyncLdap: (params: {
-        body: {
-          userName: string
-          password: string
-        }
-      }) => gen.postApiV2AdminUsersSyncLdap(params),
+        body: gen.NssolPlatypusApiModelsUserApiModelsLdapAuthenticationInputModel
+      }) =>
+        userApi.apiV2AdminUsersSyncLdapPost({
+          nssolPlatypusApiModelsUserApiModelsLdapAuthenticationInputModel:
+            params.body,
+        }),
     },
 
     tenant: {
-      get: () =>
-        gen.getApiV2TenantUsers() as {
-          data: [
-            {
-              createdBy: string
-              createdAt: string
-              modifiedBy: string
-              modifiedAt: string
-              id: number
-              name: string
-              serviceType: number
-              roles: [
-                {
-                  id: number
-                  name: string
-                  displayName: string
-                  isCustomed: boolean
-                  sortOrder: number
-                  isOrigin: boolean
-                  userGroupTanantMapIdLists: [number]
-                },
-              ]
-            },
-          ]
-        },
-      getById: (params: { id: number }) =>
-        gen.getApiV2TenantUsersById(params) as {
-          data: {
-            createdBy: string
-            createdAt: string
-            modifiedBy: string
-            modifiedAt: string
-            id: number
-            name: string
-            serviceType: number
-            roles: [
-              {
-                id: number
-                name: string
-                displayName: string
-                isCustomed: boolean
-                sortOrder: number
-                isOrigin: boolean
-                userGroupTanantMapIdLists: [number]
-              },
-            ]
-          }
-        },
-      delete: (params: { id: number }) =>
-        gen.deleteApiV2TenantUsersById(params),
-      putRoles: (params: { id: number; body: [number] }) =>
-        gen.putApiV2TenantUsersByIdRoles(params) as {
-          data: {
-            createdBy: string
-            createdAt: string
-            modifiedBy: string
-            modifiedAt: string
-            id: number
-            name: string
-            serviceType: number
-            systemRoles: [
-              {
-                id: number
-                name: string
-                displayName: string
-                isCustomed: boolean
-                sortOrder: number
-                isOrigin: boolean
-                userGroupTanantMapIdLists: [number]
-              },
-            ]
-            tenants: [
-              {
-                id: number
-                name: string
-                default: boolean
-                displayName: string
-                roles: [
-                  {
-                    id: number
-                    name: string
-                    displayName: string
-                    isCustomed: boolean
-                    sortOrder: number
-                    isOrigin: boolean
-                    userGroupTanantMapIdLists: [number]
-                  },
-                ]
-                isOrigin: boolean
-              },
-            ]
-          }
-        },
+      get: () => userApi.apiV2TenantUsersGet(),
+      getById: (params: gen.UserApiApiV2TenantUsersIdGetRequest) =>
+        userApi.apiV2TenantUsersIdGet(params),
+      delete: (params: gen.UserApiApiV2TenantUsersIdDeleteRequest) =>
+        userApi.apiV2TenantUsersIdDelete(params),
+      putRoles: (params: { id: number; body: Array<number> }) =>
+        userApi.apiV2TenantUsersIdRolesPut({
+          id: params.id,
+          requestBody: params.body,
+        }),
     },
   },
 
   userGroup: {
     admin: {
-      get: () =>
-        gen.getApiV2AdminUsergroup() as {
-          data: [
-            {
-              createdBy: string
-              createdAt: string
-              modifiedBy: string
-              modifiedAt: string
-              id: number
-              name: string
-              memo: string
-              isGroup: boolean
-              dn: string
-            },
-          ]
-        },
-      getById: (params: { id: number }) =>
-        gen.getApiV2AdminUsergroupById(params) as {
-          data: {
-            createdBy: string
-            createdAt: string
-            modifiedBy: string
-            modifiedAt: string
-            id: number
-            name: string
-            memo: string
-            isGroup: boolean
-            dn: string
-            isDirect: boolean
-            roles: [
-              {
-                id: number
-                name: string
-                displayName: string
-                isCustomed: boolean
-                sortOrder: number
-                isOrigin: boolean
-                userGroupTanantMapIdLists: [number]
-              },
-            ]
-          }
-        },
+      get: () => userGroupApi.apiV2AdminUsergroupGet(),
+      getById: (params: gen.UserGroupApiApiV2AdminUsergroupIdGetRequest) =>
+        userGroupApi.apiV2AdminUsergroupIdGet(params),
       post: (params: {
-        body: {
-          name: string
-          memo: string
-          isGroup: boolean
-          dn: string
-          isDirect: boolean
-          roleIds: [number]
-        }
+        body: gen.NssolPlatypusApiModelsUserGroupApiModelsCreateInputModel
       }) =>
-        gen.postApiV2AdminUsergroup(params) as {
-          data: {
-            createdBy: string
-            createdAt: string
-            modifiedBy: string
-            modifiedAt: string
-            id: number
-            name: string
-            memo: string
-            isGroup: boolean
-            dn: string
-            isDirect: boolean
-            roles: [
-              {
-                id: number
-                name: string
-                displayName: string
-                isCustomed: boolean
-                sortOrder: number
-                isOrigin: boolean
-                userGroupTanantMapIdLists: [number]
-              },
-            ]
-          }
-        },
+        userGroupApi.apiV2AdminUsergroupPost({
+          nssolPlatypusApiModelsUserGroupApiModelsCreateInputModel: params.body,
+        }),
       put: (params: {
         id: number
-        body: {
-          name: string
-          memo: string
-          isGroup: boolean
-          dn: string
-          isDirect: boolean
-          roleIds: [number]
-        }
+        body: gen.NssolPlatypusApiModelsUserGroupApiModelsCreateInputModel
       }) =>
-        gen.putApiV2AdminUsergroupById(params) as {
-          data: {
-            createdBy: string
-            createdAt: string
-            modifiedBy: string
-            modifiedAt: string
-            id: number
-            name: string
-            memo: string
-            isGroup: boolean
-            dn: string
-            isDirect: boolean
-            roles: [
-              {
-                id: number
-                name: string
-                displayName: string
-                isCustomed: boolean
-                sortOrder: number
-                isOrigin: boolean
-                userGroupTanantMapIdLists: [number]
-              },
-            ]
-          }
-        },
-      delete: (params: { id: number }) =>
-        gen.deleteApiV2AdminUsergroupById(params),
+        userGroupApi.apiV2AdminUsergroupIdPut({
+          id: params.id,
+          nssolPlatypusApiModelsUserGroupApiModelsCreateInputModel: params.body,
+        }),
+      delete: (params: gen.UserGroupApiApiV2AdminUsergroupIdDeleteRequest) =>
+        userGroupApi.apiV2AdminUsergroupIdDelete(params),
     },
   },
 
   version: {
-    get: () =>
-      gen.getApiV2Version() as {
-        data: {
-          version: string
-          messages: [string]
-        }
-      },
+    get: () => versionApi.apiV2VersionGet(),
   },
 
   // dataを取り出すメソッド

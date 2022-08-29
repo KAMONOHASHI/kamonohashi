@@ -94,20 +94,38 @@
   </div>
 </template>
 
-<script>
-import KqiPagination from '@/components/KqiPagination'
-import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index'
+<script lang="ts">
+import Vue from 'vue'
+import KqiPagination from '@/components/KqiPagination.vue'
+import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index.vue'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('data')
+import * as gen from '@/api/api.generate'
 
-export default {
-  title: 'データ管理',
+import { DeepWriteable } from '@/@types/type'
+type DataApiApiV2DataGetRequest = DeepWriteable<gen.DataApiApiV2DataGetRequest>
+
+interface DataType {
+  pageStatus: {
+    currentPage: number
+    currentPageSize: number
+  }
+  searchCondition: DataApiApiV2DataGetRequest
+  searchConfigs: Array<{
+    prop: string
+    name: string
+    type: string
+    multiple?: boolean
+  }>
+  selections: Array<gen.NssolPlatypusApiModelsDataApiModelsIndexOutputModel>
+}
+export default Vue.extend({
   components: {
     KqiPagination,
     KqiSmartSearchInput,
   },
 
-  data() {
+  data(): DataType {
     return {
       pageStatus: {
         currentPage: 1,
@@ -145,10 +163,14 @@ export default {
       await this.retrieveData()
     },
     // checkboxの要素変更
-    handleSelectionChange(val) {
+    handleSelectionChange(
+      val: Array<gen.NssolPlatypusApiModelsDataApiModelsIndexOutputModel>,
+    ) {
       this.selections = val
     },
-    openEditDialog(selectedRow) {
+    openEditDialog(
+      selectedRow: gen.NssolPlatypusApiModelsDataApiModelsIndexOutputModel,
+    ) {
       this.$router.push('/data/edit/' + selectedRow.id)
     },
     openCreateDialog() {
@@ -157,7 +179,7 @@ export default {
     closeDialog() {
       this.$router.push('/data')
     },
-    async done(type) {
+    async done(type: string) {
       if (type === 'delete') {
         // 削除時、表示していたページにデータが無くなっている可能性がある。
         // 総数 % ページサイズ === 1の時、残り1の状態で削除したため、currentPageが1で無ければ1つ前のページに戻す
@@ -177,7 +199,9 @@ export default {
       } else {
         let selectionString = ''
         this.selections.forEach(value => {
-          selectionString += value.id.toString() + ' '
+          if (value.id != undefined) {
+            selectionString += value.id.toString() + ' '
+          }
         })
         this.$router.push('/data/' + selectionString + '/preprocessing')
       }
@@ -186,7 +210,7 @@ export default {
       this.$router.push('/preprocessing')
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>
