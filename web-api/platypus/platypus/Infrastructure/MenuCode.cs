@@ -115,6 +115,10 @@
         /// リソース管理
         /// </summary>
         Resource,
+        /// <summary>
+        /// EKS管理
+        /// </summary>
+        Eks,
 
         /// <summary>
         /// モデルテンプレート

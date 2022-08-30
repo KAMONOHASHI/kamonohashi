@@ -29,12 +29,12 @@ namespace Nssol.Platypus.Models
         /// ポート番号
         /// </summary>
         [Required]
-        public int PortNumber { get; set; }
+        public string PortNumber { get; set; }
 
         /// <summary>
-        /// API key (k8sの認証キー)
+        /// API key (EKSの認証キー)
         /// </summary>
         [Required]
-        public string ApiKey { get; set; }
+        public string Token { get; set; }
     }
 }
