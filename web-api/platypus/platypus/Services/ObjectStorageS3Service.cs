@@ -768,7 +768,7 @@ namespace Nssol.Platypus.Services
                     LogDebug($"storeage response : {response.ToString()}");
 
                     dirs.AddRange(response.CommonPrefixes.Select(x => new StorageDirInfo(x)).ToList());
-                    files.AddRange(response.S3Objects.Select(x => new StorageFileInfo(x.Key, x.LastModified, x.Size)).ToList());
+                    files.AddRange(response.S3Objects.Select(x => new StorageFileInfo(x.Key, x.LastModified, x.Size)).Where(x => !string.IsNullOrEmpty(x.FileName)).ToList());
 
                     // 次の一覧取得の開始位置であるオブジェクトを設定する
                     request.ContinuationToken = response.NextContinuationToken;
