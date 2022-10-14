@@ -534,7 +534,7 @@ namespace Nssol.Platypus.Controllers.spa
                 //コンテナイメージの設定がない場合デフォルトのイメージを設定
                 notebookHistory.ContainerRegistryId = null;
                 notebookHistory.ContainerImage = "kamonohashi/jupyterlab";
-                notebookHistory.ContainerTag = "tensorflow-2.9.0";
+                notebookHistory.ContainerTag = "tensorflow-2.9-pytorch-1.12";
             }
 
             //gitが指定されているかチェック
@@ -807,7 +807,7 @@ namespace Nssol.Platypus.Controllers.spa
                 // コンテナイメージの設定がない場合デフォルトのイメージを設定
                 notebookHistory.ContainerRegistryId = null;
                 notebookHistory.ContainerImage = "kamonohashi/jupyterlab";
-                notebookHistory.ContainerTag = "tensorflow-2.9.0";
+                notebookHistory.ContainerTag = "tensorflow-2.9-pytorch-1.12";
             }
             // gitが指定されているかチェック
             if (model.GitModel != null)
