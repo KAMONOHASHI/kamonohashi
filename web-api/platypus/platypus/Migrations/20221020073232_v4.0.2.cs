@@ -2,7 +2,7 @@
 
 namespace Nssol.Platypus.Migrations
 {
-    public partial class v401 : Migration
+    public partial class v402 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
