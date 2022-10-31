@@ -4,6 +4,12 @@ namespace Nssol.Platypus.Models.CustomModels
 {
     public class DataIndex : TenantModelBase
     {
+
+        /// <summary>
+        /// 登録者表示名
+        /// </summary>
+        public string DisplayNameCreatedBy { get; set; }
+
         /// <summary>
         /// 表示用ID
         /// </summary>

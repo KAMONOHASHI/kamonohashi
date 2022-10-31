@@ -47,6 +47,12 @@ const actions = {
   // eslint-disable-next-line no-unused-vars
   async put({ commit }, { id, params }) {
     if (params.serviceType === 1) {
+      if (params.displayName) {
+        await api.user.admin.putDisplayName({
+          id: id,
+          body: params.displayName,
+        })
+      }
       if (params.password) {
         await api.user.admin.putPassword({ id: id, body: params.password })
       }

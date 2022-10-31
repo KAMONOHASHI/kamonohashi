@@ -20,5 +20,12 @@ namespace Nssol.Platypus.ApiModels.ResourceApiModels
         /// 表示名
         /// </summary>
         public string DisplayName { get; set; }
+
+        /// <summary>
+        /// 登録者表示名
+        /// </summary>
+        public string DisplayNameCreatedBy { get; set; }
+
+
     }
 }

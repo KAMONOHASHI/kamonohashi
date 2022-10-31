@@ -27,6 +27,7 @@ namespace Nssol.Platypus.ApiModels.DataApiModels
             DisplayId = data.DisplayId;
             Name = data.Name;
             Memo = data.Memo;
+            DisplayNameCreatedBy = data.DisplayNameCreatedBy;
             IsRaw = data.ParentDataId == null;
             ParentDataId = data.ParentDataId;
             ParentDataName = data.ParentDataName;
@@ -49,6 +50,11 @@ namespace Nssol.Platypus.ApiModels.DataApiModels
         /// 表示用ID
         /// </summary>
         public long? DisplayId { get; set; }
+
+        /// <summary>
+        /// 登録者表示名
+        /// </summary>
+        public string DisplayNameCreatedBy { get; set; }
 
         /// <summary>
         /// 名前

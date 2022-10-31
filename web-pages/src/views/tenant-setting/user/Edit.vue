@@ -10,7 +10,16 @@
   >
     <el-form ref="form" :model="form" :rules="rules">
       <kqi-display-error :error="error" />
-      <kqi-display-text-form label="ユーザ名" :value="detail.name" />
+      <kqi-display-text-form
+        label="ユーザ名"
+        :value="
+          detail
+            ? detail.displayName
+              ? detail.name + '【' + detail.displayName + '】'
+              : detail.name
+            : ''
+        "
+      />
       <kqi-display-text-form label="認証タイプ" :value="displayServiceType" />
       <el-form-item label="テナントロール" prop="tenantRoleIds">
         <kqi-role-selector

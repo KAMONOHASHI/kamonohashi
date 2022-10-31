@@ -37,6 +37,7 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly IInferenceHistoryRepository inferenceHistoryRepository;
         private readonly ITensorBoardContainerRepository tensorBoardContainerRepository;
         private readonly ITrainingSearchHistoryRepository trainingSearchHistoryRepository;
+        private readonly IUserRepository userRepository;
         private readonly IDataSetRepository dataSetRepository;
         private readonly ITagRepository tagRepository;
         private readonly ITenantRepository tenantRepository;
@@ -59,6 +60,7 @@ namespace Nssol.Platypus.Controllers.spa
             IInferenceHistoryRepository inferenceHistoryRepository,
             ITensorBoardContainerRepository tensorBoardContainerRepository,
             ITrainingSearchHistoryRepository trainingSearchHistoryRepository,
+            IUserRepository userRepository,
             IDataSetRepository dataSetRepository,
             ITagRepository tagRepository,
             ITenantRepository tenantRepository,
@@ -78,6 +80,7 @@ namespace Nssol.Platypus.Controllers.spa
             this.inferenceHistoryRepository = inferenceHistoryRepository;
             this.tensorBoardContainerRepository = tensorBoardContainerRepository;
             this.trainingSearchHistoryRepository = trainingSearchHistoryRepository;
+            this.userRepository = userRepository;
             this.dataSetRepository = dataSetRepository;
             this.tagRepository = tagRepository;
             this.tenantRepository = tenantRepository;
@@ -532,6 +535,12 @@ namespace Nssol.Platypus.Controllers.spa
 
             var model = new DetailsOutputModel(history);
             model.Tags = tagLogic.GetAllTrainingHistoryTag(history.Id).Select(t => t.Name);
+
+            UserInfo userInfo = await userRepository.GetUserInfoAsync(model.CreatedBy);
+            if (userInfo != null)
+            {
+                model.DisplayNameCreatedBy = userInfo.DisplayName;
+            }
 
             var status = history.GetStatus();
             model.StatusType = status.StatusType;

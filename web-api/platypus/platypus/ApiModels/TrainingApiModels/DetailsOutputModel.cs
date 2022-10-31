@@ -109,6 +109,11 @@ namespace Nssol.Platypus.ApiModels.TrainingApiModels
         public string CompletedAt { get; set; }
 
         /// <summary>
+        /// 登録者表示名
+        /// </summary>
+        public string DisplayNameCreatedBy { get; set; }
+
+        /// <summary>
         /// 開始日時
         /// </summary>
         public string StartedAt { get; set; }

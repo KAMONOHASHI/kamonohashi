@@ -43,7 +43,18 @@
             <kqi-display-text-form v-else value="可" />
           </el-form-item>
           <el-form-item label="登録者">
-            <kqi-display-text-form v-model="detail.createdBy" />
+            <kqi-display-text-form
+              :value="
+                detail
+                  ? detail.displayNameCreatedBy
+                    ? detail.createdBy +
+                      '【' +
+                      detail.displayNameCreatedBy +
+                      '】'
+                    : detail.createdBy
+                  : ''
+              "
+            />
           </el-form-item>
           <el-form-item label="登録日時">
             <kqi-display-text-form v-model="detail.createdAt" />

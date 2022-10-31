@@ -10,6 +10,11 @@ namespace Nssol.Platypus.ApiModels.DataSetApiModels
         }
 
         /// <summary>
+        /// 登録者表示名
+        /// </summary>
+        public string DisplayNameCreatedBy { get; set; }
+
+        /// <summary>
         /// データセットのエントリ。キーにデータ種別、値にデータ情報集合を持つ。
         /// </summary>
         public Dictionary<string, List<ApiModels.DataApiModels.IndexOutputModel>> Entries { get; set; }

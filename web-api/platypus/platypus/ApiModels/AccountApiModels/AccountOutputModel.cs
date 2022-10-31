@@ -16,6 +16,11 @@ namespace Nssol.Platypus.ApiModels.AccountApiModels
         public string UserName { get; set; }
 
         /// <summary>
+        /// ログインユーザ表示名
+        /// </summary>
+        public string UserDisplayName { get; set; }
+
+        /// <summary>
         /// パスワード変更が可能か
         /// </summary>
         public bool PasswordChangeEnabled { get; set; }

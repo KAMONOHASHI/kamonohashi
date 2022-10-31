@@ -29,6 +29,8 @@ namespace Nssol.Platypus.Controllers.spa
     [Route("api/v{api-version:apiVersion}/notebook")]
     public class NotebookController : PlatypusApiControllerBase
     {
+
+        private readonly IUserRepository userRepository;
         private readonly INotebookHistoryRepository notebookHistoryRepository;
         private readonly ITrainingHistoryRepository trainingHistoryRepository;
         private readonly IInferenceHistoryRepository inferenceHistoryRepository;
@@ -45,6 +47,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// コンストラクタ
         /// </summary>
         public NotebookController(
+            IUserRepository userRepository,
             INotebookHistoryRepository notebookHistoryRepository,
             ITrainingHistoryRepository trainingHistoryRepository,
             IInferenceHistoryRepository inferenceHistoryRepository,
@@ -58,6 +61,7 @@ namespace Nssol.Platypus.Controllers.spa
             IUnitOfWork unitOfWork,
             IHttpContextAccessor accessor) : base(accessor)
         {
+            this.userRepository = userRepository;
             this.notebookHistoryRepository = notebookHistoryRepository;
             this.trainingHistoryRepository = trainingHistoryRepository;
             this.inferenceHistoryRepository = inferenceHistoryRepository;
@@ -188,6 +192,12 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             var model = new DetailsOutputModel(notebookHistory);
+
+            UserInfo userInfo = await userRepository.GetUserInfoAsync(model.CreatedBy);
+            if (userInfo != null)
+            {
+                model.DisplayNameCreatedBy = userInfo.DisplayName;
+            }           
 
             var status = notebookHistory.GetStatus();
             model.StatusType = status.StatusType;

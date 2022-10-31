@@ -96,6 +96,7 @@ let api = {
   account: {
     get: gen.getApiV2Account,
     put: gen.putApiV2Account,
+    putDisplayName: gen.putApiV2AccountDisplayName,
     putPassword: gen.putApiV2AccountPassword,
     postLogin: gen.postApiV2AccountLogin,
     postTokenTenants: gen.postApiV2AccountTenantsByTenantIdToken,
@@ -315,6 +316,7 @@ let api = {
       getById: gen.getApiV2AdminUsersById,
       delete: gen.deleteApiV2AdminUsersById,
       put: gen.putApiV2AdminUsersById,
+      putDisplayName: gen.putApiV2AdminUsersByIdDisplayName,
       putPassword: simpleStringBody(gen.putApiV2AdminUsersByIdPassword, 'body'),
       postSyncLdap: gen.postApiV2AdminUsersSyncLdap,
     },

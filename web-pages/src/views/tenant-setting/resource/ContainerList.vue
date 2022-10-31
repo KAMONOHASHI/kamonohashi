@@ -11,7 +11,16 @@
       @row-click="handleEditOpen"
     >
       <el-table-column prop="name" label="コンテナ" width="auto" />
-      <el-table-column prop="createdBy" label="ユーザ" width="auto" />
+      <el-table-column prop="createdBy" label="ユーザ" width="auto">
+        <template slot-scope="scope">
+          <span>
+            {{ scope.row.createdBy
+            }}<span v-if="scope.row.displayNameCreatedBy"
+              >【{{ scope.row.displayNameCreatedBy }}】
+            </span></span
+          >
+        </template>
+      </el-table-column>
       <el-table-column prop="nodeName" label="ノード" width="auto" />
       <el-table-column prop="cpu" label="CPU" width="auto" />
       <el-table-column prop="memory" label="メモリ" width="auto" />

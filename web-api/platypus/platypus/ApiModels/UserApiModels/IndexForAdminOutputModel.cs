@@ -11,6 +11,7 @@ namespace Nssol.Platypus.ApiModels.UserApiModels
         {
             Id = user.Id;
             Name = user.Name;
+            DisplayName = user.DisplayName;
             ServiceType = user.ServiceType;
         }
 
@@ -23,6 +24,11 @@ namespace Nssol.Platypus.ApiModels.UserApiModels
         /// 名前
         /// </summary>
         public string Name { get; set; }
+
+        /// <summary>
+        /// 表示名
+        /// </summary>
+        public string DisplayName { get; set; }
 
         /// <summary>
         /// 認証サービス種別

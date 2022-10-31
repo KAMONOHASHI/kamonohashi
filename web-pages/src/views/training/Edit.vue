@@ -166,7 +166,16 @@
             </div>
           </el-form-item>
 
-          <kqi-display-text-form label="実行者" :value="detail.createdBy" />
+          <kqi-display-text-form
+            label="実行者"
+            :value="
+              detail
+                ? detail.displayNameCreatedBy
+                  ? detail.createdBy + '【' + detail.displayNameCreatedBy + '】'
+                  : detail.createdBy
+                : ''
+            "
+          />
           <kqi-display-text-form label="開始日時" :value="detail.createdAt" />
           <kqi-display-text-form label="完了日時" :value="detail.completedAt" />
 
@@ -408,7 +417,6 @@ export default {
     async retrieveData() {
       await this.fetchDetail(this.id)
       await this.fetchUploadedFiles(this.detail.id)
-
       if (
         this.detail.statusType === 'Running' ||
         this.detail.statusType === 'Error'
