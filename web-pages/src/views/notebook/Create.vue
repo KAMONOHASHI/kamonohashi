@@ -512,8 +512,8 @@ export default {
       isReRunCreation: false,
       jupyterLabInfo: {
         description:
-          'デフォルト: 2.3.1 (JupyterLabがインストール済みのコンテナイメージでは選択してもスキップされます)',
-        defaultVersion: 'デフォルト: 2.3.1',
+          'デフォルト: 3.4.2 (JupyterLabがインストール済みのコンテナイメージでは選択してもスキップされます)',
+        defaultVersion: 'デフォルト: 3.4.2',
       },
     }
   },

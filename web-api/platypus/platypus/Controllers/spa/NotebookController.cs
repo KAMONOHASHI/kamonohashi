@@ -544,7 +544,7 @@ namespace Nssol.Platypus.Controllers.spa
                 //コンテナイメージの設定がない場合デフォルトのイメージを設定
                 notebookHistory.ContainerRegistryId = null;
                 notebookHistory.ContainerImage = "kamonohashi/jupyterlab";
-                notebookHistory.ContainerTag = "tensorflow-2.2.0";
+                notebookHistory.ContainerTag = "tensorflow-2.9-pytorch-1.12";
             }
 
             //gitが指定されているかチェック
@@ -581,7 +581,7 @@ namespace Nssol.Platypus.Controllers.spa
             if (string.IsNullOrEmpty(notebookHistory.JupyterLabVersion))
             {
                 // null または 空文字 の場合はデフォルトのバージョンを指定
-                notebookHistory.JupyterLabVersion = "2.3.1";
+                notebookHistory.JupyterLabVersion = "3.4.2";
             }
 
             if (notebookHistory.OptionDic.ContainsKey("")) //空文字は除外する
@@ -817,7 +817,7 @@ namespace Nssol.Platypus.Controllers.spa
                 // コンテナイメージの設定がない場合デフォルトのイメージを設定
                 notebookHistory.ContainerRegistryId = null;
                 notebookHistory.ContainerImage = "kamonohashi/jupyterlab";
-                notebookHistory.ContainerTag = "tensorflow-2.2.0";
+                notebookHistory.ContainerTag = "tensorflow-2.9-pytorch-1.12";
             }
             // gitが指定されているかチェック
             if (model.GitModel != null)
@@ -862,7 +862,7 @@ namespace Nssol.Platypus.Controllers.spa
             if (string.IsNullOrEmpty(model.JupyterLabVersion))
             {
                 // null または 空文字 の場合はデフォルトのバージョンを指定
-                notebookHistory.JupyterLabVersion = "2.3.1";
+                notebookHistory.JupyterLabVersion = "3.4.2";
             }
             else
             {
