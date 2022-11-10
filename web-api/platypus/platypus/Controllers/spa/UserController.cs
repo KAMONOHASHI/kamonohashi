@@ -103,7 +103,7 @@ namespace Nssol.Platypus.Controllers.spa
 
         /// <summary>
         /// ユーザをローカルアカウントとして新規追加する
-        /// </summary>
+        /// </summary>model
         [HttpPost]
         [PermissionFilter(MenuCode.User)]
         [ProducesResponseType(typeof(IndexForAdminOutputModel), (int)HttpStatusCode.Created)]
@@ -140,6 +140,7 @@ namespace Nssol.Platypus.Controllers.spa
             user = new User()
             {
                 Name = model.Name,
+                DisplayName = model.DisplayName,
                 Password = Infrastructure.Util.GenerateHash(model.Password, model.Name),
                 ServiceType = AuthServiceType.Local,
                 DefaultTenantId = defaultTenant.Id.Value
@@ -310,6 +311,28 @@ namespace Nssol.Platypus.Controllers.spa
             var userModel = new IndexForAdminOutputModel(user);
             userModel.SystemRoles = roleRepository.GetSystemRoles(user.Id);
             return JsonOK(userModel);
+        }
+
+        /// <summary>
+        /// 指定したユーザの表示名を変更する
+        /// </summary>
+        [HttpPut("{id}/displayName")]
+        [PermissionFilter(MenuCode.User)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        public async Task<IActionResult> ChangeDisplayName([FromRoute] long id, [FromBody] string displayName)
+        {
+            //データの存在チェック
+            var user = await userRepository.GetByIdAsync(id);
+            if (user == null)
+            {
+                return JsonNotFound($"User ID {id} is not found.");
+            }
+          
+            user.DisplayName = displayName;
+
+            unitOfWork.Commit();
+
+            return JsonNoContent();
         }
 
         /// <summary>

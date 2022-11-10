@@ -5,6 +5,7 @@ using Nssol.Platypus.ApiModels.DataApiModels;
 using Nssol.Platypus.Controllers.Util;
 using Nssol.Platypus.DataAccess.Core;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories;
+using Nssol.Platypus.DataAccess.Repositories.Interfaces;
 using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Infrastructure.Types;
 using Nssol.Platypus.Logic.Interfaces;
@@ -27,6 +28,7 @@ namespace Nssol.Platypus.Controllers.spa
     {
         private readonly IDataRepository dataRepository;
         private readonly IPreprocessHistoryRepository preprocessHistoryRepository;
+        private readonly IUserRepository userRepository;
         private readonly IDataLogic dataLogic;
         private readonly ITagLogic tagLogic;
         private readonly IStorageLogic storageLogic;
@@ -35,6 +37,7 @@ namespace Nssol.Platypus.Controllers.spa
         public DataController(
             IDataRepository dataRepository,
             IPreprocessHistoryRepository preprocessHistoryRepository,
+            IUserRepository userRepository,
             IDataLogic dataLogic,
             ITagLogic tagLogic,
             IStorageLogic storageLogic,
@@ -43,6 +46,7 @@ namespace Nssol.Platypus.Controllers.spa
         {
             this.dataRepository = dataRepository;
             this.preprocessHistoryRepository = preprocessHistoryRepository;
+            this.userRepository = userRepository;
             this.dataLogic = dataLogic;
             this.tagLogic = tagLogic;
             this.storageLogic = storageLogic;
@@ -166,6 +170,13 @@ namespace Nssol.Platypus.Controllers.spa
             }
             var model = new DetailsOutputModel(data);
             model.Tags = tagLogic.GetAllDataTag(data.Id).Select(t => t.Name);
+
+            UserInfo userInfo = await userRepository.GetUserInfoAsync(model.CreatedBy);
+            if (userInfo != null)
+            {
+                model.DisplayNameCreatedBy = userInfo.DisplayName;
+            }
+
             var parent = await preprocessHistoryRepository.GetInputDataAsync(data.Id);
             if (parent != null)
             {

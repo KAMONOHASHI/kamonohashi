@@ -32,6 +32,11 @@ namespace Nssol.Platypus.ApiModels.ResourceApiModels
         public string CreatedBy { get; set; }
 
         /// <summary>
+        /// 実行者表示名
+        /// </summary>
+        public string DisplayNameCreatedBy { get; set; }
+
+        /// <summary>
         /// コンテナ種別
         /// </summary>
         public ContainerType ContainerType { get; set; }

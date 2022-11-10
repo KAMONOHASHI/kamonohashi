@@ -32,7 +32,13 @@
         />
         <kqi-display-text-form
           label="ユーザ"
-          :value="detail ? detail.createdBy : ''"
+          :value="
+            detail
+              ? detail.displayNameCreatedBy
+                ? detail.createdBy + '【' + detail.displayNameCreatedBy + '】'
+                : detail.createdBy
+              : ''
+          "
         />
       </el-col>
     </el-row>

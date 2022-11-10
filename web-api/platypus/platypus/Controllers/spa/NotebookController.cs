@@ -29,6 +29,8 @@ namespace Nssol.Platypus.Controllers.spa
     [Route("api/v{api-version:apiVersion}/notebook")]
     public class NotebookController : PlatypusApiControllerBase
     {
+
+        private readonly IUserRepository userRepository;
         private readonly INotebookHistoryRepository notebookHistoryRepository;
         private readonly ITrainingHistoryRepository trainingHistoryRepository;
         private readonly IInferenceHistoryRepository inferenceHistoryRepository;
@@ -45,6 +47,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// コンストラクタ
         /// </summary>
         public NotebookController(
+            IUserRepository userRepository,
             INotebookHistoryRepository notebookHistoryRepository,
             ITrainingHistoryRepository trainingHistoryRepository,
             IInferenceHistoryRepository inferenceHistoryRepository,
@@ -58,6 +61,7 @@ namespace Nssol.Platypus.Controllers.spa
             IUnitOfWork unitOfWork,
             IHttpContextAccessor accessor) : base(accessor)
         {
+            this.userRepository = userRepository;
             this.notebookHistoryRepository = notebookHistoryRepository;
             this.trainingHistoryRepository = trainingHistoryRepository;
             this.inferenceHistoryRepository = inferenceHistoryRepository;
@@ -188,6 +192,12 @@ namespace Nssol.Platypus.Controllers.spa
             }
 
             var model = new DetailsOutputModel(notebookHistory);
+
+            UserInfo userInfo = await userRepository.GetUserInfoAsync(model.CreatedBy);
+            if (userInfo != null)
+            {
+                model.DisplayNameCreatedBy = userInfo.DisplayName;
+            }           
 
             var status = notebookHistory.GetStatus();
             model.StatusType = status.StatusType;
@@ -534,7 +544,7 @@ namespace Nssol.Platypus.Controllers.spa
                 //コンテナイメージの設定がない場合デフォルトのイメージを設定
                 notebookHistory.ContainerRegistryId = null;
                 notebookHistory.ContainerImage = "kamonohashi/jupyterlab";
-                notebookHistory.ContainerTag = "tensorflow-2.2.0";
+                notebookHistory.ContainerTag = "tensorflow-2.9-pytorch-1.12";
             }
 
             //gitが指定されているかチェック
@@ -571,7 +581,7 @@ namespace Nssol.Platypus.Controllers.spa
             if (string.IsNullOrEmpty(notebookHistory.JupyterLabVersion))
             {
                 // null または 空文字 の場合はデフォルトのバージョンを指定
-                notebookHistory.JupyterLabVersion = "2.3.1";
+                notebookHistory.JupyterLabVersion = "3.4.2";
             }
 
             if (notebookHistory.OptionDic.ContainsKey("")) //空文字は除外する
@@ -807,7 +817,7 @@ namespace Nssol.Platypus.Controllers.spa
                 // コンテナイメージの設定がない場合デフォルトのイメージを設定
                 notebookHistory.ContainerRegistryId = null;
                 notebookHistory.ContainerImage = "kamonohashi/jupyterlab";
-                notebookHistory.ContainerTag = "tensorflow-2.2.0";
+                notebookHistory.ContainerTag = "tensorflow-2.9-pytorch-1.12";
             }
             // gitが指定されているかチェック
             if (model.GitModel != null)
@@ -852,7 +862,7 @@ namespace Nssol.Platypus.Controllers.spa
             if (string.IsNullOrEmpty(model.JupyterLabVersion))
             {
                 // null または 空文字 の場合はデフォルトのバージョンを指定
-                notebookHistory.JupyterLabVersion = "2.3.1";
+                notebookHistory.JupyterLabVersion = "3.4.2";
             }
             else
             {

@@ -19,9 +19,14 @@ namespace Nssol.Platypus.Infrastructure
         public long Id { get; set; }
 
         /// <summary>
-        /// 表示名
+        /// 名前
         /// </summary>
         public string Name { get; set; }
+
+        /// <summary>
+        /// ユーザ表示名
+        /// </summary>
+        public string DisplayName { get; set; }
 
         /// <summary>
         /// ユーザコードとなるユーザの別名

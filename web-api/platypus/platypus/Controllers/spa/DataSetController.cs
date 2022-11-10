@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Nssol.Platypus.ApiModels.DataSetApiModels;
 using Nssol.Platypus.Controllers.Util;
 using Nssol.Platypus.DataAccess.Core;
+using Nssol.Platypus.DataAccess.Repositories.Interfaces;
 using Nssol.Platypus.DataAccess.Repositories.Interfaces.TenantRepositories;
 using Nssol.Platypus.Infrastructure;
 using Nssol.Platypus.Logic.Interfaces;
@@ -26,6 +27,7 @@ namespace Nssol.Platypus.Controllers.spa
         private readonly IDataRepository dataRepository;
         private readonly IDataSetRepository dataSetRepository;
         private readonly IDataTypeRepository dataTypeRepository;
+        private readonly IUserRepository userRepository;
         private readonly IDataLogic dataLogic;
         private readonly IUnitOfWork unitOfWork;
         private static readonly string dummyDataType = "training";
@@ -34,6 +36,7 @@ namespace Nssol.Platypus.Controllers.spa
         /// コンストラクタ
         /// </summary>
         public DataSetController(
+            IUserRepository userRepository,
             IDataRepository dataRepository,
             IDataSetRepository dataSetRepository,
             IDataTypeRepository dataTypeRepository,
@@ -41,6 +44,7 @@ namespace Nssol.Platypus.Controllers.spa
             IUnitOfWork unitOfWork,
             IHttpContextAccessor accessor) : base(accessor)
         {
+            this.userRepository = userRepository;
             this.dataRepository = dataRepository;
             this.dataSetRepository = dataSetRepository;
             this.dataTypeRepository = dataTypeRepository;
@@ -121,6 +125,12 @@ namespace Nssol.Platypus.Controllers.spa
                 return JsonNotFound($"DataSet Id {id.Value} is not found.");
             }
             var model = new DetailsOutputModel(dataSet);
+
+            UserInfo userInfo = await userRepository.GetUserInfoAsync(model.CreatedBy);
+            if (userInfo != null)
+            {
+                model.DisplayNameCreatedBy = userInfo.DisplayName;
+            }
 
             if (dataSet.DataSetEntries != null)
             {

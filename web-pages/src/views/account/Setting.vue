@@ -5,6 +5,7 @@
       <!-- 選択中テナント情報 -->
       <tenant-info
         :user-name="account.userName"
+        :user-display-name="account.userDisplayName"
         :tenant="account.selectedTenant"
       />
 
@@ -56,7 +57,7 @@
             aria-controls="sixth_tab01"
           />
           <label v-if="passwordChangeEnabled" for="tab1_6">
-            Password
+            User Settings
           </label>
 
           <div class="cp_tabpanels">
@@ -110,15 +111,17 @@
               />
             </div>
 
-            <!-- パスワード変更 -->
+            <!-- パスワード変更・ユーザ表示名変更 -->
             <div
               v-if="passwordChangeEnabled"
               id="sixth_tab01"
               class="cp_tabpanel"
             >
               <kqi-display-error :error="passwordError" />
-              <Password-Setting
+              <user-setting
                 v-model="passForm"
+                :old-display-name="account.userDisplayName"
+                @updateDisplayName="updateDisplayName"
                 @updatePassword="updatePassword"
               />
             </div>
@@ -136,7 +139,7 @@ import DefaultTenantSetting from './DefaultTenantSetting'
 import AccessTokenSetting from './AccessTokenSetting'
 import GitTokenSetting from '@/views/account/GitTokenSetting'
 import RegistryTokenSetting from '@/views/account/RegistryTokenSetting'
-import PasswordSetting from './PasswordSetting'
+import UserSetting from './UserSetting'
 import WebhookSetting from './WebhookSetting'
 import { mapGetters, mapActions } from 'vuex'
 
@@ -149,7 +152,7 @@ export default {
     AccessTokenSetting,
     GitTokenSetting,
     RegistryTokenSetting,
-    PasswordSetting,
+    UserSetting,
     WebhookSetting,
   },
   data() {
@@ -180,6 +183,7 @@ export default {
       },
       passwordChangeEnabled: true,
       passForm: {
+        displayName: '',
         currentPassword: '',
         password: ['', ''],
       },
@@ -205,6 +209,7 @@ export default {
     await this['account/fetchAccount']()
     this.defaultTenantName = this.account.defaultTenant.name
     this.passwordChangeEnabled = this.account.passwordChangeEnabled
+    this.passForm.displayName = this.account.userDisplayName
 
     // 選択中のテナントにおけるGit情報を取得する
     await this['gitSelector/fetchGits']()
@@ -229,6 +234,7 @@ export default {
       'account/fetchAccount',
       'account/fetchWebhook',
       'account/put',
+      'account/putDisplayName',
       'account/putPassword',
       'account/postTokenTenants',
       'account/putGitToken',
@@ -303,6 +309,17 @@ export default {
       } catch (error) {
         this.registryTokenError = error
       }
+    },
+
+    async updateDisplayName() {
+      let params = {
+        body: {
+          displayName: this.passForm.displayName,
+        },
+      }
+      await this['account/putDisplayName'](params)
+      this.showSuccessMessage()
+      await this['account/fetchAccount']()
     },
 
     async updatePassword() {

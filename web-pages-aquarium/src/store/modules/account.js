@@ -115,6 +115,11 @@ const actions = {
   },
 
   // eslint-disable-next-line no-unused-vars
+  async putDisplayName({ commit }, params) {
+    return await api.account.putDisplayName(params)
+  },
+
+  // eslint-disable-next-line no-unused-vars
   async putPassword({ commit }, params) {
     return await api.account.putPassword(params)
   },
