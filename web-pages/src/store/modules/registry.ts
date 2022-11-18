@@ -1,14 +1,21 @@
 import api from '@/api/api'
-
+import { GetterTree, ActionTree, MutationTree } from 'vuex'
+import { RootState } from '../index'
+import * as gen from '@/api/api.generate'
+interface StateType {
+  serviceTypes: Array<gen.NssolPlatypusInfrastructureInfosEnumInfo>
+  registries: Array<gen.NssolPlatypusApiModelsRegistryApiModelsIndexOutputModel>
+  detail: gen.NssolPlatypusApiModelsRegistryApiModelsDetailsOutputModel
+}
 // initial state
-const state = {
+const state: StateType = {
   serviceTypes: [],
   registries: [],
   detail: {},
 }
 
 // getters
-const getters = {
+const getters: GetterTree<StateType, RootState> = {
   serviceTypes(state) {
     return state.serviceTypes
   },
@@ -23,7 +30,7 @@ const getters = {
 }
 
 // action
-const actions = {
+const actions: ActionTree<StateType, RootState> = {
   async fetchRegistries({ commit }) {
     let registries = (await api.registry.admin.get()).data
     commit('setRegistries', { registries })
@@ -35,7 +42,7 @@ const actions = {
     commit('setRegistries', { registries })
   },
 
-  async fetchDetail({ commit }, id) {
+  async fetchDetail({ commit }, id: number) {
     let detail = (await api.registry.admin.getById({ id: id })).data
     commit('setDetail', { detail })
   },
@@ -46,17 +53,31 @@ const actions = {
   },
 
   // eslint-disable-next-line no-unused-vars
-  async post({ commit }, params) {
+  async post(
+    // eslint-disable-next-line no-unused-vars
+    { commit },
+    params: gen.NssolPlatypusApiModelsRegistryApiModelsCreateInputModel,
+  ) {
     return await api.registry.admin.post({ body: params })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async put({ commit }, { id, params }) {
+  async put(
+    // eslint-disable-next-line no-unused-vars
+    { commit },
+    {
+      id,
+      params,
+    }: {
+      id: number
+      params: gen.NssolPlatypusApiModelsRegistryApiModelsCreateInputModel
+    },
+  ) {
     return await api.registry.admin.putById({ id: id, body: params })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async delete({ commit }, id) {
+  async delete({ commit }, id: number) {
     return await api.registry.admin.deleteById({
       id: id,
     })
@@ -64,7 +85,7 @@ const actions = {
 }
 
 // mutations
-const mutations = {
+const mutations: MutationTree<StateType> = {
   setServiceTypes(state, { serviceTypes }) {
     state.serviceTypes = serviceTypes
   },

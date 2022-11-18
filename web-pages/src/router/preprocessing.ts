@@ -1,13 +1,13 @@
 // 前処理管理
-import Index from '@/views/preprocessing/Index'
-import Edit from '@/views/preprocessing/Edit'
-import Run from '@/views/common/RunPreprocessing'
+import Index from '@/views/preprocessing/Index.vue'
+import Edit from '@/views/preprocessing/Edit.vue'
+import Run from '@/views/common/RunPreprocessing.vue'
 
 // 前処理履歴管理
-import HistoryIndex from '@/views/preprocessing/HistoryIndex'
-import HistoryEdit from '@/views/preprocessing/HistoryEdit'
-import Shell from '@/views/common/Shell'
-import LogViewer from '@/views/common/LogViewer'
+import HistoryIndex from '@/views/preprocessing/HistoryIndex.vue'
+import HistoryEdit from '@/views/preprocessing/HistoryEdit.vue'
+import Shell from '@/views/common/Shell.vue'
+import LogViewer from '@/views/common/LogViewer.vue'
 
 export default [
   // 前処理管理

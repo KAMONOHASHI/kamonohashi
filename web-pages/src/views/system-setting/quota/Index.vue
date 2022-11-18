@@ -57,17 +57,24 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue'
+
 import KqiDisplayError from '@/components/KqiDisplayError'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('quota')
 
-export default {
-  title: 'クォータ管理',
+import * as gen from '@/api/api.generate'
+interface DataType {
+  error: null | Error
+  quotasData: Array<gen.NssolPlatypusApiModelsClusterApiModelsQuotaOutputModel>
+}
+
+export default Vue.extend({
   components: {
     KqiDisplayError,
   },
-  data() {
+  data(): DataType {
     return {
       error: null,
       quotasData: [],
@@ -84,7 +91,9 @@ export default {
     ...mapActions(['fetchQuotas', 'post']),
     async update() {
       try {
-        let body = this.quotasData.map(function(quota) {
+        let body = this.quotasData.map(function(
+          quota: gen.NssolPlatypusApiModelsClusterApiModelsQuotaOutputModel,
+        ) {
           return {
             tenantId: quota.tenantId,
             cpu: quota.cpu,
@@ -96,11 +105,11 @@ export default {
         this.showSuccessMessage()
         this.error = null
       } catch (e) {
-        this.error = e
+        if (e instanceof Error) this.error = e
       }
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

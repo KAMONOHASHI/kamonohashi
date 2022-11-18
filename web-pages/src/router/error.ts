@@ -1,4 +1,4 @@
-import error from '@/components/KqiError'
+import error from '@/components/KqiError.vue'
 
 export default [
   {

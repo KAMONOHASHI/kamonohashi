@@ -1,9 +1,9 @@
-import Index from '@/views/inference/Index'
-import Edit from '@/views/inference/Edit'
-import Create from '@/views/inference/Create'
-import FileList from '@/views/inference/FileList'
-import Shell from '@/views/common/Shell'
-import LogViewer from '@/views/common/LogViewer'
+import Index from '@/views/inference/Index.vue'
+import Edit from '@/views/inference/Edit.vue'
+import Create from '@/views/inference/Create.vue'
+import FileList from '@/views/inference/FileList.vue'
+import Shell from '@/views/common/Shell.vue'
+import LogViewer from '@/views/common/LogViewer.vue'
 
 export default [
   {

@@ -278,19 +278,33 @@
   </kqi-dialog>
 </template>
 
-<script>
-import KqiDialog from '@/components/KqiDialog'
-import KqiDisplayError from '@/components/KqiDisplayError'
-import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
-import KqiDeleteButton from '@/components/KqiDeleteButton'
-import KqiDataSetDetails from '@/components/selector/KqiDataSetDetails'
-import KqiTrainingHistoryDetails from '@/components/selector/KqiTrainingHistoryDetails'
-import KqiInferenceHistoryDetails from '@/components/selector/KqiInferenceHistoryDetails'
+<script lang="ts">
+import Vue from 'vue'
+import KqiDialog from '@/components/KqiDialog.vue'
+import KqiDisplayError from '@/components/KqiDisplayError.vue'
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
+import KqiDeleteButton from '@/components/KqiDeleteButton.vue'
+import KqiDataSetDetails from '@/components/selector/KqiDataSetDetails.vue'
+import KqiTrainingHistoryDetails from '@/components/selector/KqiTrainingHistoryDetails.vue'
+import KqiInferenceHistoryDetails from '@/components/selector/KqiInferenceHistoryDetails.vue'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('notebook')
 const kqiHost = process.env.VUE_APP_KAMONOHASHI_HOST || window.location.hostname
+//import * as gen from '@/api/api.generate'
+interface DataType {
+  rules: {
+    name: [{ required: boolean; trigger: string; message: string }]
+  }
+  form: {
+    name: string | null
+    favorite: boolean
+    memo: string | null
+  }
+  title: string
+  error: null | Error
+}
 
-export default {
+export default Vue.extend({
   components: {
     KqiDialog,
     KqiDisplayError,
@@ -306,7 +320,7 @@ export default {
       default: null,
     },
   },
-  data() {
+  data(): DataType {
     return {
       rules: {
         name: [{ required: true, trigger: 'blur', message: '必須項目です' }],
@@ -368,7 +382,7 @@ export default {
             this.$emit('done')
             this.error = null
           } catch (e) {
-            this.error = e
+            if (e instanceof Error) this.error = e
           }
         }
       })
@@ -379,7 +393,7 @@ export default {
         await this.retrieveData()
         this.error = null
       } catch (e) {
-        this.error = e
+        if (e instanceof Error) this.error = e
       }
     },
     async deleteJob() {
@@ -388,7 +402,7 @@ export default {
         this.$emit('done', 'delete')
         this.error = null
       } catch (e) {
-        this.error = e
+        if (e instanceof Error) this.error = e
       }
     },
     async openNotebook() {
@@ -399,11 +413,11 @@ export default {
     },
 
     // 親ジョブ履歴の表示
-    showParent(parentId) {
+    showParent(parentId: number) {
       // 表示内容の変更は、beforeUpdated内で行う
       this.$router.push('/training/' + parentId)
     },
-    showInference(inferenceId) {
+    showInference(inferenceId: number) {
       // 表示内容の変更は、beforeUpdated内で行う
       this.$router.push('/inference/' + inferenceId)
     },
@@ -426,7 +440,7 @@ export default {
       this.$emit('cancel')
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

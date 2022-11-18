@@ -1,7 +1,35 @@
 import api from '@/api/api'
-
+import { GetterTree, ActionTree, MutationTree } from 'vuex'
+import { RootState } from '../index'
+import * as gen from '@/api/api.generate'
+interface StateType {
+  nodes: Array<
+    gen.NssolPlatypusApiModelsResourceApiModelsNodeResourceOutputModel
+  >
+  tenants: Array<
+    gen.NssolPlatypusApiModelsResourceApiModelsTenantResourceOutputModel
+  >
+  containerLists: Array<
+    gen.NssolPlatypusApiModelsResourceApiModelsContainerDetailsOutputModel
+  >
+  detail: gen.NssolPlatypusApiModelsResourceApiModelsContainerDetailsOutputModel
+  events: gen.SystemIOStream
+  containerLog: gen.SystemIOStream
+  tenantNodes: Array<
+    gen.NssolPlatypusApiModelsResourceApiModelsNodeResourceOutputModel
+  >
+  tenantContainerLists: Array<
+    gen.NssolPlatypusApiModelsResourceApiModelsContainerDetailsForTenantOutputModel
+  >
+  tenantDetail: gen.NssolPlatypusApiModelsResourceApiModelsContainerDetailsForTenantOutputModel
+  tenantContainerLog: gen.SystemIOStream
+  historiesContainersMetadata: gen.NssolPlatypusApiModelsResourceApiModelsHistoryMetadataOutputModel
+  historiesContainersData: [] //TODO voidが返る？
+  historiesJobsMetadata: gen.NssolPlatypusApiModelsResourceApiModelsHistoryMetadataOutputModel
+  historiesJobsData: [] //TODO voidが返る？
+}
 // initial state
-const state = {
+const state: StateType = {
   nodes: [],
   tenants: [],
   containerLists: [],
@@ -19,7 +47,7 @@ const state = {
 }
 
 // getters
-const getters = {
+const getters: GetterTree<StateType, RootState> = {
   nodes(state) {
     return state.nodes
   },
@@ -65,7 +93,7 @@ const getters = {
 }
 
 // action
-const actions = {
+const actions: ActionTree<StateType, RootState> = {
   // admin系
   async fetchNodes({ commit }) {
     let response = await api.resource.admin.getNodes()
@@ -85,7 +113,10 @@ const actions = {
     commit('setContainerLists', { containerLists })
   },
 
-  async fetchDetail({ commit }, params) {
+  async fetchDetail(
+    { commit },
+    params: gen.ResourceApiApiV2AdminResourceContainersTenantIdNameGetRequest,
+  ) {
     let detail = (await api.resource.admin.getContainerByName(params)).data
     commit('setDetail', { detail })
     let events = (await api.resource.admin.getContainerEventsByName(params))
@@ -93,14 +124,21 @@ const actions = {
     commit('setEvents', { events })
   },
 
-  async fetchContainerLog({ commit }, params) {
+  async fetchContainerLog(
+    { commit },
+    params: gen.ResourceApiApiV2AdminResourceContainersTenantIdNameLogGetRequest,
+  ) {
     let response = await api.resource.admin.getContainerLogByName(params)
     let containerLog = response.data
     commit('setContainerLog', { containerLog })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async delete({ commit }, params) {
+  async delete(
+    // eslint-disable-next-line no-unused-vars
+    { commit },
+    params: gen.ResourceApiApiV2AdminResourceContainersTenantIdNameDeleteRequest,
+  ) {
     return await api.resource.admin.deleteContainerByName(params)
   },
 
@@ -115,13 +153,19 @@ const actions = {
     commit('setTenantContainerLists', { tenantContainerLists })
   },
 
-  async fetchTenantDetail({ commit }, params) {
+  async fetchTenantDetail(
+    { commit },
+    params: gen.ResourceApiApiV2TenantResourceContainersNameGetRequest,
+  ) {
     let tenantDetail = (await api.resource.tenant.getContainerByName(params))
       .data
     commit('setTenantDetail', { tenantDetail })
   },
 
-  async fetchTenantContainerLog({ commit }, params) {
+  async fetchTenantContainerLog(
+    { commit },
+    params: gen.ResourceApiApiV2TenantResourceContainersNameLogGetRequest,
+  ) {
     let tenantContainerLog = (
       await api.resource.tenant.getContainerLogByName(params)
     ).data
@@ -129,7 +173,11 @@ const actions = {
   },
 
   // eslint-disable-next-line no-unused-vars
-  async deleteTenantContainer({ commit }, params) {
+  async deleteTenantContainer(
+    // eslint-disable-next-line no-unused-vars
+    { commit },
+    params: gen.ResourceApiApiV2TenantResourceContainersNameDeleteRequest,
+  ) {
     return await api.resource.tenant.deleteContainerByName(params)
   },
 
@@ -140,7 +188,10 @@ const actions = {
     commit('setHistoriesContainersMetadata', { historiesContainersMetadata })
   },
 
-  async fetchHistoriesContainersData({ commit }, params) {
+  async fetchHistoriesContainersData(
+    { commit },
+    params: gen.ResourceApiApiV2AdminResourceHistoriesContainersDataGetRequest,
+  ) {
     let historiesContainersData = await api.resource.admin.getHistoriesContainersData(
       params,
     )
@@ -148,7 +199,11 @@ const actions = {
   },
 
   // eslint-disable-next-line no-unused-vars
-  async deleteHistoriesContainers({ commit }, params) {
+  async deleteHistoriesContainers(
+    // eslint-disable-next-line no-unused-vars
+    { commit },
+    params: gen.NssolPlatypusApiModelsResourceApiModelsHistoryDeleteInputModel,
+  ) {
     return await api.resource.admin.deleteHistoriesContainers({ body: params })
   },
 
@@ -159,7 +214,10 @@ const actions = {
     commit('setHistoriesJobsMetadata', { historiesJobsMetadata })
   },
 
-  async fetchHistoriesJobsData({ commit }, params) {
+  async fetchHistoriesJobsData(
+    { commit },
+    params: gen.ResourceApiApiV2AdminResourceHistoriesJobsDataGetRequest,
+  ) {
     let historiesJobsData = (
       await api.resource.admin.getHistoriesJobsData(params)
     ).data
@@ -167,13 +225,17 @@ const actions = {
   },
 
   // eslint-disable-next-line no-unused-vars
-  async deleteHistoriesJobs({ commit }, params) {
+  async deleteHistoriesJobs(
+    // eslint-disable-next-line no-unused-vars
+    { commit },
+    params: gen.NssolPlatypusApiModelsResourceApiModelsHistoryDeleteInputModel,
+  ) {
     return await api.resource.admin.deleteHistoriesJobs({ body: params })
   },
 }
 
 // mutations
-const mutations = {
+const mutations: MutationTree<StateType> = {
   setNodes(state, { nodes }) {
     state.nodes = nodes
   },

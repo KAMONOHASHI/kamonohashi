@@ -92,15 +92,30 @@
   </div>
 </template>
 
-<script>
-import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
-import KqiTrainingHistorySelector from '@/components/selector/KqiTrainingHistorySelector'
-import KqiTrainingHistoryDetails from '@/components/selector/KqiTrainingHistoryDetails'
+<script lang="ts">
+import Vue from 'vue'
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
+import KqiTrainingHistorySelector from '@/components/selector/KqiTrainingHistorySelector.vue'
+import KqiTrainingHistoryDetails from '@/components/selector/KqiTrainingHistoryDetails.vue'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('training')
 const kqiHost = process.env.VUE_APP_KAMONOHASHI_HOST || window.location.hostname
-
-export default {
+import * as gen from '@/api/api.generate'
+interface DataType {
+  statusName: string | null // 現在のステータス。スクリプト中から適宜変更できるようにstatusとは切り離す。
+  tensorboardUrl: string | null // tensorboardへのアクセスURL
+  intervalId: number // ポーリングを止めるためにIDを退避しておく
+  polling: boolean // ポーリング中かの判定フラグ
+  expiresIn: number // 起動期間(h)
+  remainingTime: string | null // 残り起動期間の文字列表記('0d 1h 0m')
+  selectedMountHistories: Array<
+    gen.NssolPlatypusApiModelsTrainingApiModelsIndexOutputModel
+  > // 選択した学習履歴
+  mountedHistories: Array<
+    gen.NssolPlatypusApiModelsTrainingApiModelsIndexOutputModel
+  > // セレクタで表示される学習履歴}
+}
+export default Vue.extend({
   components: {
     KqiDisplayTextForm,
     KqiTrainingHistorySelector,
@@ -113,7 +128,7 @@ export default {
     },
     visible: Boolean,
   },
-  data() {
+  data(): DataType {
     return {
       statusName: null, // 現在のステータス。スクリプト中から適宜変更できるようにstatusとは切り離す。
       tensorboardUrl: null, // tensorboardへのアクセスURL
@@ -224,17 +239,17 @@ export default {
       this.statusName = 'Starting'
 
       // 追加でマウントする学習がある場合
-      let selectedHistoryIds = []
+      let selectedHistoryIds: Array<number> = []
       if (this.selectedMountHistories) {
         this.selectedMountHistories.sort(function(a, b) {
-          if (a.id > b.id) {
+          if (a.id! > b.id!) {
             return 1
           } else {
             return -1
           }
         })
         this.selectedMountHistories.forEach(history => {
-          selectedHistoryIds.push(history.id)
+          selectedHistoryIds.push(history.id!)
         })
       }
 
@@ -250,7 +265,7 @@ export default {
     },
     // TensorBoardを開く
     openTensorBoard() {
-      window.open(this.tensorboardUrl)
+      window.open(this.tensorboardUrl!)
     },
     // TensorBoard削除
     async deleteTensorBoard() {
@@ -258,11 +273,11 @@ export default {
       this.statusName = 'Deleting'
       await this.deleteTensorboard(this.id)
     },
-    async showMountedHistory(selectedMountHistoryId) {
+    async showMountedHistory(selectedMountHistoryId: number) {
       this.$router.push('/training/' + selectedMountHistoryId)
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

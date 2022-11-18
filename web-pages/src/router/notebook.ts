@@ -1,9 +1,9 @@
-import Index from '@/views/notebook/Index'
-import Edit from '@/views/notebook/Edit'
-import Create from '@/views/notebook/Create'
-import FileList from '@/views/notebook/FileList'
-import Shell from '@/views/common/Shell'
-import LogViewer from '@/views/common/LogViewer'
+import Index from '@/views/notebook/Index.vue'
+import Edit from '@/views/notebook/Edit.vue'
+import Create from '@/views/notebook/Create.vue'
+import FileList from '@/views/notebook/FileList.vue'
+import Shell from '@/views/common/Shell.vue'
+import LogViewer from '@/views/common/LogViewer.vue'
 
 export default [
   {

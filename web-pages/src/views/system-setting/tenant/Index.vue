@@ -35,12 +35,15 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue'
+
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('tenant')
 
-export default {
-  title: 'テナント管理',
+import * as gen from '@/api/api.generate'
+
+export default Vue.extend({
   computed: {
     ...mapGetters(['tenants']),
   },
@@ -61,13 +64,15 @@ export default {
       this.showSuccessMessage()
     },
 
-    async openEditDialog(row) {
+    async openEditDialog(
+      row: gen.NssolPlatypusApiModelsTenantApiModelsIndexOutputModel,
+    ) {
       if (row) {
         this.$router.push('/tenant/edit/' + row.id)
       }
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

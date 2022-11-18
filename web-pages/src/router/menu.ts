@@ -1,4 +1,4 @@
-import Index from '@/views/system-setting/menu/Index'
+import Index from '@/views/system-setting/menu/Index.vue'
 
 export default [
   {

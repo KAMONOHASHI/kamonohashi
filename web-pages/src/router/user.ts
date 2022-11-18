@@ -1,6 +1,6 @@
-import Index from '@/views/system-setting/user/Index'
-import Edit from '@/views/system-setting/user/Edit'
-import SyncLdap from '@/views/system-setting/user/SyncLdap'
+import Index from '@/views/system-setting/user/Index.vue'
+import Edit from '@/views/system-setting/user/Edit.vue'
+import SyncLdap from '@/views/system-setting/user/SyncLdap.vue'
 
 export default [
   {

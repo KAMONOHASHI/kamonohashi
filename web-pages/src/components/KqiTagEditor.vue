@@ -32,19 +32,21 @@
   </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue from 'vue'
+import { PropType } from 'vue'
+export default Vue.extend({
   props: {
     // 選択中のタグ
     value: {
-      type: Array,
+      type: Array as PropType<Array<string>>,
       default: () => {
         return []
       },
     },
     // テナントの登録済みのタグ
     registeredTags: {
-      type: Array,
+      type: Array as PropType<Array<string>>,
       default: () => {
         return []
       },
@@ -76,13 +78,13 @@ export default {
       this.tagValue = ''
     },
     // タグを削除しemit
-    async removeTag(tag) {
+    async removeTag(tag: string) {
       let tags = this.value
       tags.splice(tags.indexOf(tag), 1)
       this.$emit('input', tags)
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

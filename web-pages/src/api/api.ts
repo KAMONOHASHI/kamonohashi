@@ -152,13 +152,12 @@ let api = {
     tenant: {
       getEndpoints: () => registryApi.apiV2TenantRegistryEndpointsGet(),
     },
-    getImages: ({ registryId }: any) =>
-      registryApi.apiV2RegistriesRegistryIdImagesGet(registryId),
-    getTags: ({ registryId, image }: any) =>
-      registryApi.apiV2RegistriesRegistryIdImagesImageTagsGet({
-        registryId,
-        image,
-      }),
+    getImages: (
+      params: gen.RegistryApiApiV2RegistriesRegistryIdImagesGetRequest,
+    ) => registryApi.apiV2RegistriesRegistryIdImagesGet(params),
+    getTags: (
+      params: gen.RegistryApiApiV2RegistriesRegistryIdImagesImageTagsGetRequest,
+    ) => registryApi.apiV2RegistriesRegistryIdImagesImageTagsGet(params),
   },
 
   account: {
@@ -398,8 +397,14 @@ let api = {
       }),
     delete: (params: gen.PreprocessingApiApiV2PreprocessingsIdDeleteRequest) =>
       preprocessingApi.apiV2PreprocessingsIdDelete(params),
-    patch: (params: gen.PreprocessingApiApiV2PreprocessingsIdPatchRequest) =>
-      preprocessingApi.apiV2PreprocessingsIdPatch(params),
+    patch: (params: {
+      id: number
+      body: gen.NssolPlatypusApiModelsPreprocessingApiModelsEditInputModel
+    }) =>
+      preprocessingApi.apiV2PreprocessingsIdPatch({
+        id: params.id,
+        nssolPlatypusApiModelsPreprocessingApiModelsEditInputModel: params.body,
+      }),
     getFilesById: (
       params: gen.PreprocessingApiApiV2PreprocessingsIdHistoriesDataIdFilesGetRequest,
     ) => preprocessingApi.apiV2PreprocessingsIdHistoriesDataIdFilesGet(params),
@@ -559,9 +564,13 @@ let api = {
       trainingApi.apiV2TrainingTagsPost({
         nssolPlatypusApiModelsTrainingApiModelsTagsInputModel: params.body,
       }),
-    deleteTags: (params: gen.TrainingApiApiV2TrainingTagsDeleteRequest) =>
-      trainingApi.apiV2TrainingTagsDelete(params),
-    getSearchHistory: trainingApi.apiV2TrainingSearchHistoryGet,
+    deleteTags: (params: {
+      body: gen.NssolPlatypusApiModelsTrainingApiModelsTagsInputModel
+    }) =>
+      trainingApi.apiV2TrainingTagsDelete({
+        nssolPlatypusApiModelsTrainingApiModelsTagsInputModel: params.body,
+      }),
+    getSearchHistory: () => trainingApi.apiV2TrainingSearchHistoryGet(),
     postSearchHistory: (params: {
       body: gen.NssolPlatypusApiModelsTrainingApiModelsSearchHistoryInputModel
     }) =>

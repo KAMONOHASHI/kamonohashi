@@ -34,17 +34,22 @@
   </el-form-item>
 </template>
 
-<script>
-import KqiDataSetDetails from '@/components/selector/KqiDataSetDetails'
+<script lang="ts">
+import Vue from 'vue'
+import KqiDataSetDetails from '@/components/selector/KqiDataSetDetails.vue'
+import * as gen from '@/api/api.generate'
 
-export default {
+import { PropType } from 'vue'
+export default Vue.extend({
   components: {
     KqiDataSetDetails,
   },
   props: {
     // データセット一覧(オブジェクトの配列)
     dataSets: {
-      type: Array,
+      type: Array as PropType<
+        Array<gen.NssolPlatypusApiModelsDataSetApiModelsIndexOutputModel>
+      >,
       default: () => {
         return [{}]
       },
@@ -62,7 +67,11 @@ export default {
     },
   },
   methods: {
-    async onChange(dataSet) {
+    async onChange(
+      dataSet:
+        | string
+        | gen.NssolPlatypusApiModelsDataSetApiModelsIndexOutputModel,
+    ) {
       if (dataSet === '') {
         // clearボタンが押下された場合
         this.$emit('input', null)
@@ -71,7 +80,7 @@ export default {
       }
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

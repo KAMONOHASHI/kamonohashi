@@ -12,11 +12,16 @@
   </el-col>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue from 'vue'
+import { PropType } from 'vue'
+export default Vue.extend({
   props: {
     value: {
-      type: Object,
+      type: Object as PropType<{
+        currentPageSize: number
+        currentPage: number
+      }>,
       default: () => ({
         currentPageSize: 10,
         currentPage: 1,
@@ -29,17 +34,17 @@ export default {
   },
   methods: {
     // ページのサイズ(表示件数)変更
-    async handleSizeChange(pageSize) {
+    async handleSizeChange(pageSize: number) {
       this.value.currentPageSize = pageSize
       this.value.currentPage = 1
       this.$emit('change')
     },
-    async currentChange(page) {
+    async currentChange(page: number) {
       this.value.currentPage = page
       this.$emit('change')
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

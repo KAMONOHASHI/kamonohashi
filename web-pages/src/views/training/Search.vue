@@ -181,14 +181,22 @@
   </div>
 </template>
 
-<script>
-import MultiInput from './MultiInput'
-import KqiDisplayError from '@/components/KqiDisplayError'
+<script lang="ts">
+import Vue from 'vue'
+import { PropType } from 'vue'
+import MultiInput from './MultiInput.vue'
+import KqiDisplayError from '@/components/KqiDisplayError.vue'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('training')
+import * as gen from '@/api/api.generate'
 
-export default {
-  title: '詳細検索',
+interface DataType {
+  saveSearchFormDialogVisible: boolean
+  searchConditionName: null | string
+  error: null | Error
+}
+
+export default Vue.extend({
   components: {
     MultiInput,
     KqiDisplayError,
@@ -202,7 +210,28 @@ export default {
     },
 
     searchForm: {
-      type: Object,
+      type: Object as PropType<{
+        idLower: string
+        idUpper: string
+        name: Array<string>
+        nameOr: boolean
+        parentName: Array<string>
+        parentNameOr: boolean
+        startedAtLower: string
+        startedAtUpper: string
+        startedBy: Array<string>
+        startedByOr: boolean
+        dataSet: Array<string>
+        dataSetOr: boolean
+        memo: Array<string>
+        memoOr: boolean
+        status: Array<string>
+        statusOr: boolean
+        entryPoint: Array<string>
+        entryPointOr: boolean
+        tags: Array<string>
+        tagsOr: boolean
+      }>,
       default: () => {
         return {
           idLower: '',
@@ -229,7 +258,7 @@ export default {
       },
     },
   },
-  data() {
+  data(): DataType {
     return {
       saveSearchFormDialogVisible: false,
       searchConditionName: null,
@@ -293,7 +322,7 @@ export default {
       return form
     },
 
-    changeListToString(list) {
+    changeListToString(list: Array<string>) {
       if (list == null || list.length == 0) {
         return ''
       }
@@ -315,7 +344,10 @@ export default {
         this.error = new Error('4文字以上で入力してください')
         return
       }
-      let params = {}
+      let params: {
+        name?: string
+        searchDetailInputModel?: gen.NssolPlatypusApiModelsTrainingApiModelsSearchDetailInputModel
+      } = {}
       params.name = this.searchConditionName
       params.searchDetailInputModel = this.changeSearchFormListToString()
       try {
@@ -326,11 +358,11 @@ export default {
         this.error = null
         this.showSuccessMessage()
       } catch (e) {
-        this.error = e
+        if (e instanceof Error) this.error = e
       }
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

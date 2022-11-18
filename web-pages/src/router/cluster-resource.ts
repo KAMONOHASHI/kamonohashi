@@ -1,9 +1,9 @@
-import Index from '@/views/system-setting/cluster-resource/Index'
-import Edit from '@/views/system-setting/cluster-resource/Edit'
-import Node from '@/views/system-setting/cluster-resource/Node'
-import Tenant from '@/views/system-setting/cluster-resource/Tenant'
-import ContainerList from '@/views/system-setting/cluster-resource/ContainerList'
-import DataDL from '@/views/system-setting/cluster-resource/DataDL'
+import Index from '@/views/system-setting/cluster-resource/Index.vue'
+import Edit from '@/views/system-setting/cluster-resource/Edit.vue'
+import Node from '@/views/system-setting/cluster-resource/Node.vue'
+import Tenant from '@/views/system-setting/cluster-resource/Tenant.vue'
+import ContainerList from '@/views/system-setting/cluster-resource/ContainerList.vue'
+import DataDL from '@/views/system-setting/cluster-resource/DataDL.vue'
 
 export default [
   {

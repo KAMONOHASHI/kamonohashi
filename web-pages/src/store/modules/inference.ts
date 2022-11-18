@@ -1,8 +1,33 @@
+import { GetterTree, ActionTree, MutationTree } from 'vuex'
 import api from '@/api/api'
 import Util from '@/util/util'
+import * as gen from '@/api/api.generate'
+import { RootState } from '../index'
 
+interface StateType {
+  histories: Array<
+    gen.NssolPlatypusApiModelsInferenceApiModelsInferenceIndexOutputModel
+  >
+  total: number
+  historiesToMount: Array<
+    gen.NssolPlatypusApiModelsInferenceApiModelsInferenceIndexOutputModel
+  >
+  selections: [] //TODO 使用されていない？
+  detail: gen.NssolPlatypusApiModelsInferenceApiModelsInferenceDetailsOutputModel
+  events: gen.NssolPlatypusInfrastructureInfosContainerEventInfo
+  uploadedFiles: Array<
+    gen.NssolPlatypusApiModelsTrainingApiModelsAttachedFileOutputModel
+  >
+  fileList: Array<{
+    isDirectory: boolean
+    name: string
+    url?: string
+    size?: string
+    lastModified?: string
+  }>
+}
 // initial state
-const state = {
+const state: StateType = {
   histories: [],
   total: 0,
   historiesToMount: [],
@@ -14,7 +39,7 @@ const state = {
 }
 
 // getters
-const getters = {
+const getters: GetterTree<StateType, RootState> = {
   histories(state) {
     return state.histories
   },
@@ -37,7 +62,7 @@ const getters = {
     return state.uploadedFiles
   },
   tensorboard(state) {
-    return state.tensorboard
+    return state.tensorboard //TODO 存在しないのでここを消したい
   },
   fileList(state) {
     return state.fileList
@@ -45,8 +70,11 @@ const getters = {
 }
 
 // actions
-const actions = {
-  async fetchHistories({ commit }, params) {
+const actions: ActionTree<StateType, RootState> = {
+  async fetchHistories(
+    { commit },
+    params: gen.InferenceApiApiV2InferencesGetRequest,
+  ) {
     let response = await api.inference.get(params)
     let histories = response.data
     let total = response.headers['x-total-count']
@@ -57,22 +85,25 @@ const actions = {
     }
   },
 
-  async fetchHistoriesToMount({ commit }, params) {
+  async fetchHistoriesToMount(
+    { commit },
+    params: gen.InferenceApiApiV2InferencesMountGetRequest,
+  ) {
     let historiesToMount = (await api.inference.getMount(params)).data
     commit('setHistoriesToMount', { historiesToMount })
   },
 
-  async fetchDetail({ commit }, id) {
+  async fetchDetail({ commit }, id: number) {
     let detail = (await api.inference.getById({ id: id })).data
     commit('setDetail', { detail })
   },
 
-  async fetchEvents({ commit }, id) {
+  async fetchEvents({ commit }, id: number) {
     let events = (await api.inference.getEventsById({ id: id })).data
     commit('setEvents', { events })
   },
 
-  async fetchUploadedFiles({ commit }, id) {
+  async fetchUploadedFiles({ commit }, id: number) {
     let uploadedFiles = (
       await api.inference.getFilesById({
         id: id,
@@ -83,29 +114,50 @@ const actions = {
   },
 
   // eslint-disable-next-line no-unused-vars
-  async post({ commit }, params) {
+  async post(
+    // eslint-disable-next-line no-unused-vars
+    { commit },
+    params: gen.NssolPlatypusApiModelsInferenceApiModelsCreateInputModel,
+  ) {
     return await api.inference.post({ body: params })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async put({ commit }, params) {
+  async put(
+    // eslint-disable-next-line no-unused-vars
+    { commit },
+    params: {
+      id: number
+      body: gen.NssolPlatypusApiModelsTrainingApiModelsEditInputModel
+    },
+  ) {
     return await api.inference.putById(params)
   },
 
   // eslint-disable-next-line no-unused-vars
-  async postHalt({ commit }, id) {
+  async postHalt({ commit }, id: number) {
     return await api.inference.postHaltById({ id: id })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async postUserCancel({ commit }, id) {
+  async postUserCancel({ commit }, id: number) {
     return await api.inference.postUserCancelById({ id: id })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async postFiles({ commit }, { id, fileInfo }) {
+  async postFiles(
+    // eslint-disable-next-line no-unused-vars
+    { commit },
+    {
+      id,
+      fileInfo,
+    }: {
+      id: number
+      fileInfo: Array<gen.NssolPlatypusApiModelsComponentsAddFileInputModel> //TODO 型を編集する必要がある？
+    },
+  ) {
     for (let i = 0; i < fileInfo.length; i++) {
-      fileInfo[i].FileName = fileInfo[i].name
+      fileInfo[i].FileName = fileInfo[i].name //TODO name は存在しない?
       await api.inference.postFilesById({
         id: id,
         body: fileInfo[i],
@@ -114,32 +166,41 @@ const actions = {
   },
 
   // eslint-disable-next-line no-unused-vars
-  async delete({ commit }, id) {
+  async delete({ commit }, id: number) {
     await api.inference.deleteById({ id: id })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async deleteFile({ commit }, { id, fileId }) {
+  async deleteFile({ commit }, { id, fileId }: { id: number; fileId: number }) {
     await api.inference.deleteByIdFilesByFileId({
       id: id,
       fileId: fileId,
     })
   },
 
-  async fetchFileList({ commit }, params) {
+  async fetchFileList(
+    { commit },
+    params: gen.InferenceApiApiV2InferencesIdContainerFilesGetRequest,
+  ) {
     let response = (await api.inference.getContainerFilesById(params)).data
-    let newList = []
-    response.dirs.forEach(d =>
+    let newList: Array<{
+      isDirectory: boolean
+      name: string
+      url?: string
+      size?: string
+      lastModified?: string
+    }> = []
+    response.dirs!.forEach(d =>
       newList.push({
         isDirectory: true,
-        name: d.dirName,
+        name: d.dirName!,
       }),
     )
-    response.files.forEach(f =>
+    response.files!.forEach(f =>
       newList.push({
         isDirectory: false,
-        name: f.fileName,
-        url: f.url,
+        name: f.fileName!,
+        url: f.url!,
         size: Util.getByteString(f.size),
         lastModified: f.lastModified,
       }),
@@ -154,7 +215,7 @@ const actions = {
 }
 
 // mutations
-const mutations = {
+const mutations: MutationTree<StateType> = {
   setHistories(state, { histories }) {
     state.histories = histories
   },

@@ -62,6 +62,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import { PropType } from 'vue'
 import DataList from './DataList.vue'
 import Util from '@/util/util'
 import { createNamespacedHelpers } from 'vuex'
@@ -124,7 +125,18 @@ export default Vue.extend({
     // }
     // Arrayの中身はdata: {id: , name: , ...}
     value: {
-      type: Object,
+      type: Object as PropType<
+        | {
+            [key: string]: Array<
+              gen.NssolPlatypusApiModelsDataApiModelsIndexOutputModel
+            >
+          }
+        | {
+            selected: Array<
+              gen.NssolPlatypusApiModelsDataApiModelsIndexOutputModel
+            >
+          }
+      >,
       default: () => {
         return {}
       },

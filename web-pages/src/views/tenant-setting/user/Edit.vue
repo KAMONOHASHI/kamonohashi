@@ -32,12 +32,40 @@
   </kqi-dialog>
 </template>
 
-<script>
-import KqiDialog from '@/components/KqiDialog'
-import KqiDisplayError from '@/components/KqiDisplayError'
-import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
-import KqiRoleSelector from '@/components/selector/KqiRoleSelector'
+<script lang="ts">
+import Vue from 'vue'
+
+import KqiDialog from '@/components/KqiDialog.vue'
+import KqiDisplayError from '@/components/KqiDisplayError.vue'
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
+import KqiRoleSelector from '@/components/selector/KqiRoleSelector.vue'
 import { mapGetters, mapActions } from 'vuex'
+
+interface DataType {
+  form: {
+    tenantRoleIds: Array<number>
+  }
+  displayServiceType: string
+  disabledParams:
+    | {}
+    | {
+        deleteButton: boolean
+        submitButton: boolean
+      }
+  deleteButtonParams:
+    | {}
+    | {
+        isDanger: boolean
+        warningText: string
+        confirmText: string
+      }
+  dialogVisible: boolean
+  error: null | Error
+  rules: {
+    tenantRoleIds: null | Array<typeof formRule>
+  }
+  tenantNotOriginRoleIds: Array<number>
+}
 
 const formRule = {
   required: true,
@@ -45,7 +73,7 @@ const formRule = {
   message: '必須項目です',
 }
 
-export default {
+export default Vue.extend({
   components: {
     KqiDialog,
     KqiDisplayError,
@@ -58,7 +86,7 @@ export default {
       default: null,
     },
   },
-  data() {
+  data(): DataType {
     return {
       form: {
         tenantRoleIds: [],
@@ -126,7 +154,7 @@ export default {
       }
       this.error = null
     } catch (e) {
-      this.error = e
+      if (e instanceof Error) this.error = e
     }
   },
 
@@ -150,7 +178,7 @@ export default {
             this.emitDone()
             this.error = null
           } catch (e) {
-            this.error = e
+            if (e instanceof Error) this.error = e
           }
         }
       })
@@ -162,7 +190,7 @@ export default {
         this.emitDone()
         this.error = null
       } catch (e) {
-        this.error = e
+        if (e instanceof Error) this.error = e
       }
     },
 
@@ -174,7 +202,7 @@ export default {
       this.$emit('cancel')
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped></style>

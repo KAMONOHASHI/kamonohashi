@@ -64,11 +64,15 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue'
+
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('resource')
 
-export default {
+import * as gen from '@/api/api.generate'
+
+export default Vue.extend({
   computed: {
     ...mapGetters(['tenantNodes']),
     columnWidth: function() {
@@ -83,17 +87,26 @@ export default {
     async retrieveData() {
       await this.fetchTenantNodes()
     },
-    handleEditOpen(row) {
+    handleEditOpen(
+      row: gen.NssolPlatypusApiModelsResourceApiModelsContainerDetailsOutputModel,
+    ) {
       if (row) {
         this.$router.push('/manage/resource/' + row.nodeName + '/' + row.name)
       }
     },
-    rowClassName({ row }) {
+    rowClassName({
+      row,
+    }: {
+      row: gen.NssolPlatypusApiModelsResourceApiModelsNodeResourceOutputModel
+    }) {
       if (row.containerResourceList && row.containerResourceList.length === 0) {
         return 'row-disabled'
       }
     },
-    expandRow(refName, row) {
+    expandRow(
+      refName: string,
+      row: gen.NssolPlatypusApiModelsResourceApiModelsNodeResourceOutputModel,
+    ) {
       this.$refs[refName].toggleRowExpansion(row)
     },
     closeDialog() {
@@ -105,7 +118,7 @@ export default {
       this.showSuccessMessage()
     },
   },
-}
+})
 </script>
 
 <style scoped>

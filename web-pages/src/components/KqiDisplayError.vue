@@ -11,8 +11,13 @@
   </span>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue from 'vue'
+interface DataType {
+  title: string | Error | null
+  errors: Array<Error> | null
+}
+export default Vue.extend({
   props: {
     error: {
       type: Error,
@@ -20,7 +25,7 @@ export default {
     },
   },
 
-  data() {
+  data(): DataType {
     return {
       title: '',
       errors: null,
@@ -61,7 +66,7 @@ export default {
       }
     },
   },
-}
+})
 </script>
 
 <style scoped>

@@ -1,7 +1,22 @@
+import { GetterTree, ActionTree, MutationTree } from 'vuex'
 import api from '@/api/api'
+import * as gen from '@/api/api.generate'
+import { RootState } from '../index'
 
+interface StateType {
+  gits: Array<
+    gen.NssolPlatypusApiModelsAccountApiModelsGitCredentialOutputModel
+  >
+  defaultGitId: number | null
+  repositories: Array<gen.NssolPlatypusServiceModelsGitRepositoryModel>
+  branches: Array<gen.NssolPlatypusServiceModelsGitBranchModel>
+  commits: Array<gen.NssolPlatypusServiceModelsGitCommitModel>
+  commitDetail: gen.NssolPlatypusServiceModelsGitCommitModel | null
+  // リポジトリのロードは時間がかかる可能性があるためフラグを設けて管理
+  loadingRepositories: boolean
+}
 // initial state
-const state = {
+const state: StateType = {
   gits: [],
   defaultGitId: null,
   repositories: [],
@@ -14,7 +29,7 @@ const state = {
 }
 
 // getters
-const getters = {
+const getters: GetterTree<StateType, RootState> = {
   gits(state) {
     return state.gits
   },
@@ -40,7 +55,7 @@ const getters = {
 }
 
 // actions
-const actions = {
+const actions: ActionTree<StateType, RootState> = {
   async fetchGits({ commit }) {
     let response = (await api.account.getGits()).data
     let gits = response.gits
@@ -49,7 +64,7 @@ const actions = {
     commit('setDefaultGitId', defaultGitId)
   },
 
-  async fetchRepositories({ commit }, gitId) {
+  async fetchRepositories({ commit }, gitId: number) {
     commit('setLoadingRepositories', true)
     try {
       let repositories = (await api.git.getRepos({ gitId: gitId })).data
@@ -61,7 +76,18 @@ const actions = {
     commit('setLoadingRepositories', false)
   },
 
-  async fetchBranches(context, { gitId, repository, manualInput }) {
+  async fetchBranches(
+    context,
+    {
+      gitId,
+      repository,
+      manualInput,
+    }: {
+      gitId: number
+      repository: gen.NssolPlatypusServiceModelsGitRepositoryModel
+      manualInput: boolean
+    },
+  ) {
     // 手入力された場合
     if (manualInput) {
       // リポジトリ一覧にない場合は追加
@@ -80,8 +106,8 @@ const actions = {
     }
     let params = {
       gitId: gitId,
-      owner: repository.owner,
-      repositoryName: repository.name,
+      owner: repository.owner!,
+      repositoryName: repository.name!,
     }
     try {
       let branches = (await api.git.getBranches(params)).data
@@ -91,7 +117,20 @@ const actions = {
     }
   },
 
-  async fetchCommits({ commit }, { gitId, repository, branchName, page }) {
+  async fetchCommits(
+    { commit },
+    {
+      gitId,
+      repository,
+      branchName,
+      page,
+    }: {
+      gitId: number
+      repository: gen.NssolPlatypusServiceModelsGitRepositoryModel
+      branchName: gen.NssolPlatypusServiceModelsGitBranchModel
+      page: number
+    },
+  ) {
     let params = {
       gitId: gitId,
       owner: repository.owner,
@@ -107,11 +146,22 @@ const actions = {
     }
   },
 
-  async fetchCommitDetail({ commit }, { gitId, repository, commitId }) {
+  async fetchCommitDetail(
+    { commit },
+    {
+      gitId,
+      repository,
+      commitId,
+    }: {
+      gitId: number
+      repository: gen.NssolPlatypusServiceModelsGitRepositoryModel
+      commitId: string
+    },
+  ) {
     let params = {
       gitId: gitId,
-      owner: repository.owner,
-      repositoryName: repository.name,
+      owner: repository.owner!,
+      repositoryName: repository.name!,
       commitId: commitId,
     }
     try {
@@ -125,7 +175,7 @@ const actions = {
 }
 
 // mutations
-const mutations = {
+const mutations: MutationTree<StateType> = {
   setGits(state, { gits }) {
     state.gits = gits
   },

@@ -1,4 +1,4 @@
-import Index from '@/views/dashboard/Index'
+import Index from '@/views/dashboard/Index.vue'
 
 export default [
   {

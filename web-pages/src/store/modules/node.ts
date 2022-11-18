@@ -1,15 +1,24 @@
 import api from '@/api/api'
+import { GetterTree, ActionTree, MutationTree } from 'vuex'
+import { RootState } from '../index'
+import * as gen from '@/api/api.generate'
+interface StateType {
+  nodes: Array<gen.NssolPlatypusApiModelsNodeApiModelsIndexOutputModel>
+  total: number
+  detail: gen.NssolPlatypusApiModelsNodeApiModelsDetailsOutputModel
+  tenants: {}
+}
 
 // initial state
-const state = {
+const state: StateType = {
   nodes: [],
   total: 0,
   detail: {},
-  tenants: {},
+  tenants: {}, //TODO 使用されていない
 }
 
 // getters
-const getters = {
+const getters: GetterTree<StateType, RootState> = {
   nodes(state) {
     return state.nodes
   },
@@ -28,8 +37,8 @@ const getters = {
 }
 
 // action
-const actions = {
-  async fetchNodes({ commit }, params) {
+const actions: ActionTree<StateType, RootState> = {
+  async fetchNodes({ commit }, params: gen.NodeApiApiV2AdminNodesGetRequest) {
     let response = await api.nodes.admin.get(params)
     let nodes = response.data
     let total = response.headers['x-total-count']
@@ -40,29 +49,43 @@ const actions = {
     }
   },
 
-  async fetchDetail({ commit }, id) {
+  async fetchDetail({ commit }, id: number) {
     let detail = (await api.nodes.admin.getById({ id: id })).data
     commit('setDetail', { detail })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async post({ commit }, params) {
+  async post(
+    // eslint-disable-next-line no-unused-vars
+    { commit },
+    params: gen.NssolPlatypusApiModelsNodeApiModelsCreateInputModel,
+  ) {
     return await api.nodes.admin.post({ body: params })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async put({ commit }, { id, params }) {
+  async put(
+    // eslint-disable-next-line no-unused-vars
+    { commit },
+    {
+      id,
+      params,
+    }: {
+      id: number
+      params: gen.NssolPlatypusApiModelsNodeApiModelsCreateInputModel
+    },
+  ) {
     return await api.nodes.admin.put({ id: id, body: params })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async delete({ commit }, id) {
+  async delete({ commit }, id: number) {
     return await api.nodes.admin.delete({ id: id })
   },
 }
 
 // mutations
-const mutations = {
+const mutations: MutationTree<StateType> = {
   setNodes(state, { nodes }) {
     state.nodes = nodes
   },

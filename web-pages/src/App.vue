@@ -14,12 +14,13 @@
   </div>
 </template>
 
-<script>
-import KqiHeader from '@/components/KqiHeader'
-import KqiMenu from '@/components/KqiMenu'
+<script lang="ts">
+import Vue from 'vue'
+import KqiHeader from '@/components/KqiHeader.vue'
+import KqiMenu from '@/components/KqiMenu.vue'
 import Util from '@/util/util'
 
-export default {
+export default Vue.extend({
   components: {
     KqiHeader,
     KqiMenu,
@@ -65,7 +66,7 @@ export default {
       }
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

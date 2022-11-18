@@ -155,10 +155,19 @@
   </el-form-item>
 </template>
 
-<script>
-import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
-
-export default {
+<script lang="ts">
+import Vue from 'vue'
+import * as gen from '@/api/api.generate'
+import { PropType } from 'vue'
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
+interface DataType {
+  listLoading: boolean
+  repositoryCreated: boolean
+  repositoryValueKey: string
+  containsPastCommit: boolean
+  filteredOptions: Array<any>
+}
+export default Vue.extend({
   components: {
     KqiDisplayTextForm,
   },
@@ -166,28 +175,38 @@ export default {
   props: {
     // gitサーバ一覧
     gits: {
-      type: Array,
+      type: Array as PropType<
+        Array<
+          gen.NssolPlatypusApiModelsAccountApiModelsGitCredentialOutputModel
+        >
+      >,
       default: () => {
         return []
       },
     },
     // リポジトリ一覧
     repositories: {
-      type: Array,
+      type: Array as PropType<
+        Array<gen.NssolPlatypusServiceModelsGitRepositoryModel>
+      >,
       default: () => {
         return []
       },
     },
     // ブランチ一覧
     branches: {
-      type: Array,
+      type: Array as PropType<
+        Array<gen.NssolPlatypusServiceModelsGitBranchModel>
+      >,
       default: () => {
         return []
       },
     },
     // コミット一覧
     commits: {
-      type: Array,
+      type: Array as PropType<
+        Array<gen.NssolPlatypusServiceModelsGitCommitModel>
+      >,
       default: () => {
         return []
       },
@@ -219,7 +238,7 @@ export default {
     },
   },
 
-  data() {
+  data(): DataType {
     return {
       // popover（コミットID一覧等）の「ローディング中」 文字列の表示制御
       listLoading: false,
@@ -287,7 +306,9 @@ export default {
     },
   },
   methods: {
-    changeGit(git) {
+    changeGit(
+      git: gen.NssolPlatypusApiModelsAccountApiModelsGitCredentialOutputModel,
+    ) {
       let gitModel = this.value
       if (git === '') {
         // clearボタンが押下された場合
@@ -300,7 +321,9 @@ export default {
     },
 
     // 選択しているリポジトリが切り替わった時に呼ばれるイベントハンドラ。
-    changeRepository(repository) {
+    changeRepository(
+      repository: gen.NssolPlatypusServiceModelsGitRepositoryModel,
+    ) {
       let gitModel = this.value
       if (repository === '') {
         // clearボタンが押下された場合
@@ -320,7 +343,7 @@ export default {
     },
 
     // 選択しているブランチが切り替わった時に呼ばれるイベントハンドラ。
-    changeBranch(branch) {
+    changeBranch(branch: gen.NssolPlatypusServiceModelsGitBranchModel) {
       let gitModel = this.value
       if (branch === '') {
         // clearボタンが押下された場合
@@ -337,7 +360,7 @@ export default {
       return
     },
     // 選択しているコミットが切り替わった時に呼ばれるイベントハンドラ。
-    changeCommit(commit) {
+    changeCommit(commit: gen.NssolPlatypusServiceModelsGitCommitModel) {
       let gitModel = this.value
       this.filteredOptions = [...this.commits]
       if (commit === '') {
@@ -365,7 +388,7 @@ export default {
       }
     },
 
-    commitIdFilter(query) {
+    commitIdFilter(query: string) {
       let ret = []
       if (query == '') {
         //フィルタが空の場合はすべての選択肢を表示する
@@ -392,7 +415,11 @@ export default {
     },
 
     // コミットidとコミットメッセージを組み合わせたメッセージを生成する
-    createCommitIdAndComment(commitId, committerName, comment) {
+    createCommitIdAndComment(
+      commitId: string,
+      committerName: string,
+      comment: string,
+    ) {
       if (comment === null || comment.length === 0) {
         return (
           commitId.slice(0, 10) +
@@ -421,7 +448,7 @@ export default {
       }
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped></style>

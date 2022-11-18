@@ -51,9 +51,11 @@
   </kqi-dialog>
 </template>
 
-<script>
-import KqiDialog from '@/components/KqiDialog'
-import KqiDisplayError from '@/components/KqiDisplayError'
+<script lang="ts">
+import Vue from 'vue'
+
+import KqiDialog from '@/components/KqiDialog.vue'
+import KqiDisplayError from '@/components/KqiDisplayError.vue'
 import { createNamespacedHelpers } from 'vuex'
 
 const { mapGetters, mapActions } = createNamespacedHelpers('role')
@@ -63,7 +65,27 @@ const formRule = {
   message: '必須項目です',
 }
 
-export default {
+interface DataType {
+  form: {
+    name: null | string
+    displayName: null | string
+    isSystemRole: boolean
+    sortOrder: number
+    tenantName: null | string
+    roleTypes: Array<{ label: string; value: boolean }>
+  }
+  title: string
+  error: Error | null
+  isNotEditable: boolean
+  rules: {
+    name: Array<typeof formRule>
+    displayName: Array<typeof formRule>
+    isSystemRole: Array<typeof formRule>
+    sortOrder: Array<typeof formRule>
+  }
+}
+
+export default Vue.extend({
   components: {
     KqiDialog,
     KqiDisplayError,
@@ -74,7 +96,7 @@ export default {
       default: null,
     },
   },
-  data() {
+  data(): DataType {
     return {
       form: {
         name: null,
@@ -100,7 +122,7 @@ export default {
   },
   computed: {
     ...mapGetters(['detail']),
-    disabledParams() {
+    disabledParams(): { deleteButton: boolean; submitButton: boolean } {
       return {
         deleteButton: this.isNotEditable,
         submitButton: false, // ロールの表示順のみ変更する場合に備えて、保存ボタンはdisableにしない
@@ -120,11 +142,12 @@ export default {
         this.form.sortOrder = this.detail.sortOrder
         this.error = null
         this.isNotEditable = this.detail.isNotEditable
+
         if (this.detail.tenantName) {
-          this.tenantName = `テナント(カスタム) / ${this.detail.tenantName}`
+          this.form.tenantName = `テナント(カスタム) / ${this.detail.tenantName}`
         }
       } catch (e) {
-        this.error = e
+        if (e instanceof Error) this.error = e
       }
     }
   },
@@ -150,7 +173,7 @@ export default {
             this.error = null
             this.emitDone()
           } catch (e) {
-            this.error = e
+            if (e instanceof Error) this.error = e
           }
         }
       })
@@ -161,7 +184,7 @@ export default {
         this.error = null
         this.emitDone()
       } catch (e) {
-        this.error = e
+        if (e instanceof Error) this.error = e
       }
     },
     emitDone() {
@@ -171,7 +194,7 @@ export default {
       this.$emit('cancel')
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped></style>

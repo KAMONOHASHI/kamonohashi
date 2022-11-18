@@ -67,32 +67,57 @@
   </div>
 </template>
 
-<script>
-import KqiAllocatableNodeInfo from '@/components/KqiAllocatableNodeInfo'
-import { createNamespacedHelpers } from 'vuex'
-const { mapGetters, mapActions } = createNamespacedHelpers('cluster')
+<script lang="ts">
+import Vue from 'vue'
 
-export default {
+import KqiAllocatableNodeInfo from '@/components/KqiAllocatableNodeInfo.vue'
+import { createNamespacedHelpers } from 'vuex'
+import * as gen from '@/api/api.generate'
+import { PropType } from 'vue'
+const { mapGetters, mapActions } = createNamespacedHelpers('cluster')
+interface DataType {
+  // デフォルトの最大値
+  defaultMax: {
+    cpu: number
+    memory: number
+    gpu: number
+  }
+  // 各リソース値の最大ノード情報
+  maxCpuNode: null | gen.NssolPlatypusApiModelsClusterApiModelsNodeResourceOutputModel
+  maxMemoryNode: null | gen.NssolPlatypusApiModelsClusterApiModelsNodeResourceOutputModel
+  maxGpuNode: null | gen.NssolPlatypusApiModelsClusterApiModelsNodeResourceOutputModel
+  // エラーメッセージ
+  errors: Array<Error | null | string> | null
+  // 元々の要求値から変更があった項目リスト
+  originChangedList: Array<string>
+  // 要求リソースの最大値
+  maxResource: {
+    cpu: number
+    memory: number
+    gpu: number
+  }
+}
+export default Vue.extend({
   components: {
     KqiAllocatableNodeInfo,
   },
   props: {
     // cpu, memory, gpuのリソース量
     value: {
-      type: Object,
+      type: Object as PropType<{ cpu: number; memory: number; gpu: number }>,
       default: () => {
         return { cpu: 1, memory: 1, gpu: 0 }
       },
     },
     // 接続中テナントのクォータ情報
     quota: {
-      type: Object,
+      type: Object as PropType<{ cpu: number; memory: number; gpu: number }>,
       default: () => {
         return { cpu: 0, memory: 0, gpu: 0 }
       },
     },
   },
-  data() {
+  data(): DataType {
     return {
       // デフォルトの最大値
       defaultMax: {
@@ -119,7 +144,7 @@ export default {
   computed: {
     ...mapGetters(['nodes']),
     // 警告メッセージ
-    warnMessage() {
+    warnMessage(): null | string {
       if (this.originChangedList.length > 0) {
         return (
           '元々の要求リソースから' +
@@ -139,13 +164,13 @@ export default {
       this.maxMemoryNode = this.nodes[0]
       this.maxGpuNode = this.nodes[0]
       this.nodes.forEach(node => {
-        if (node.allocatableCpu > this.maxCpuNode.allocatableCpu) {
+        if (node.allocatableCpu > this.maxCpuNode!.allocatableCpu!) {
           this.maxCpuNode = node
         }
-        if (node.allocatableMemory > this.maxMemoryNode.allocatableMemory) {
+        if (node.allocatableMemory > this.maxMemoryNode!.allocatableMemory!) {
           this.maxMemoryNode = node
         }
-        if (node.allocatableGpu > this.maxGpuNode.allocatableGpu) {
+        if (node.allocatableGpu > this.maxGpuNode!.allocatableGpu!) {
           this.maxGpuNode = node
         }
       })
@@ -172,19 +197,19 @@ export default {
         let message = []
         // CPUの設定値をもとにチェックする。
         if (this.maxCpuNode) {
-          if (this.maxCpuNode.allocatableCpu < this.value.cpu) {
+          if (this.maxCpuNode.allocatableCpu! < this.value.cpu) {
             message.push('CPU')
           }
         }
         // メモリの設定値をもとにチェックする。
         if (this.maxMemoryNode) {
-          if (this.maxMemoryNode.allocatableMemory < this.value.memory) {
+          if (this.maxMemoryNode.allocatableMemory! < this.value.memory) {
             message.push('メモリ')
           }
         }
         // GPUの設定値をもとにチェックする。
         if (this.maxGpuNode) {
-          if (this.maxGpuNode.allocatableGpu < this.value.gpu) {
+          if (this.maxGpuNode.allocatableGpu! < this.value.gpu) {
             message.push('GPU')
           }
         }
@@ -253,7 +278,7 @@ export default {
       return this.maxResource.gpu
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

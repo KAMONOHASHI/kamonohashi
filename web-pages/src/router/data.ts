@@ -1,6 +1,6 @@
-import Index from '@/views/data/Index'
-import Edit from '@/views/data/Edit'
-import Preprocessing from '@/views/common/RunPreprocessing'
+import Index from '@/views/data/Index.vue'
+import Edit from '@/views/data/Edit.vue'
+import Preprocessing from '@/views/common/RunPreprocessing.vue'
 
 export default [
   {

@@ -277,30 +277,93 @@
   </el-dialog>
 </template>
 
-<script>
-import KqiDisplayError from '@/components/KqiDisplayError'
-import KqiDataSetSelector from '@/components/selector/KqiDataSetSelector'
-import KqiTrainingHistorySelector from '@/components/selector/KqiTrainingHistorySelector'
-import KqiContainerSelector from '@/components/selector/KqiContainerSelector'
-import KqiGitSelector from '@/components/selector/KqiGitSelector'
-import KqiResourceSelector from '@/components/selector/KqiResourceSelector'
-import KqiPathInfo from '@/components/KqiPathInfo'
-import KqiEnvironmentVariables from '@/components/KqiEnvironmentVariables'
-import KqiExposePorts from '@/components/KqiExposePorts'
-import KqiTagEditor from '@/components/KqiTagEditor'
-import KqiPartitionSelector from '@/components/selector/KqiPartitionSelector'
+<script lang="ts">
+import Vue from 'vue'
+import KqiDisplayError from '@/components/KqiDisplayError.vue'
+import KqiDataSetSelector from '@/components/selector/KqiDataSetSelector.vue'
+import KqiTrainingHistorySelector from '@/components/selector/KqiTrainingHistorySelector.vue'
+import KqiContainerSelector from '@/components/selector/KqiContainerSelector.vue'
+import KqiGitSelector from '@/components/selector/KqiGitSelector.vue'
+import KqiResourceSelector from '@/components/selector/KqiResourceSelector.vue'
+import KqiPathInfo from '@/components/KqiPathInfo.vue'
+import KqiEnvironmentVariables from '@/components/KqiEnvironmentVariables.vue'
+import KqiExposePorts from '@/components/KqiExposePorts.vue'
+import KqiTagEditor from '@/components/KqiTagEditor.vue'
+import KqiPartitionSelector from '@/components/selector/KqiPartitionSelector.vue'
 import validator from '@/util/validator'
 import registrySelectorUtil from '@/util/registrySelectorUtil'
 import gitSelectorUtil from '@/util/gitSelectorUtil'
 import { mapActions, mapGetters } from 'vuex'
+import * as gen from '@/api/api.generate'
 
-const formRule = {
+interface DataType {
+  commitsList: Array<gen.NssolPlatypusServiceModelsGitCommitModel>
+  commitsPage: number
+  form: {
+    name: null | string
+    dataSetId: null | number | string
+    entryPoint: null | string
+    selectedParent: Array<
+      gen.NssolPlatypusApiModelsTrainingApiModelsIndexOutputModel
+    >
+    containerImage: {
+      registry: {
+        id: number
+        name: string
+      } | null
+      image: null | string
+      tag: null | string
+    }
+    gitModel: {
+      git: {
+        id: number
+        name: string
+      } | null
+      repository: { name: string; owner: string } | string | null
+      branch: { branchName: string } | string | null
+      commit: null | gen.NssolPlatypusServiceModelsGitCommitModel
+    }
+    resource: {
+      cpu: number
+      memory: number
+      gpu: number
+    }
+    variables: Array<{ key: string; value: string }>
+    ports: Array<number>
+    partition: string | null
+    zip: true
+    localDataSet: boolean
+    memo: null | string
+    tags: Array<string>
+  }
+  rules: {
+    name: Array<FormRule>
+    dataSetId: Array<FormRule>
+    entryPoint: Array<FormRule>
+    containerImage: {
+      required: boolean
+      trigger: string
+      validator: validator.containerImageValidator
+    }
+    gitModel: {
+      required: boolean
+      trigger: string
+      validator: validator.gitModelValidator
+    }
+  }
+  dialogVisible: boolean
+  error: Error | null
+  active: number
+  isCopyCreation: boolean
+}
+type FormRule = { required: boolean; trigger: string; message: string }
+const formRule: FormRule = {
   required: true,
   trigger: 'blur',
   message: '必須項目です',
 }
 
-export default {
+export default Vue.extend({
   components: {
     KqiDisplayError,
     KqiDataSetSelector,
@@ -320,7 +383,7 @@ export default {
       default: null,
     },
   },
-  data() {
+  data(): DataType {
     return {
       commitsList: [],
       commitsPage: 1,
@@ -530,13 +593,13 @@ export default {
       await form.validate(async valid => {
         if (valid) {
           try {
-            let options = {}
+            let options: { [key: string]: string } = {}
             // apiのフォーマットに合わせる(配列 => オブジェクト)
             this.form.variables.forEach(kvp => {
               options[kvp.key] = kvp.value
             })
             // training history ObjectのリストからIDのみを抜き出して格納
-            let selectedParentIds = []
+            let selectedParentIds: Array<number> = []
             this.form.selectedParent.forEach(parent => {
               selectedParentIds.push(parent.id)
             })
@@ -550,7 +613,7 @@ export default {
             }
             // コピー時ブランチを切り替えずに実行
             // パラメータに格納する際の形を統一するため整形を行う
-            if (typeof this.form.gitModel.branch.branchName === 'undefined') {
+            if (typeof this.form.gitModel.branch === 'string') {
               let branch = { branchName: this.form.gitModel.branch }
               this.form.gitModel.branch = branch
             }
@@ -565,9 +628,9 @@ export default {
                 tag: this.form.containerImage.tag,
               },
               GitModel: {
-                gitId: this.form.gitModel.git.id,
-                repository: this.form.gitModel.repository.name,
-                owner: this.form.gitModel.repository.owner,
+                gitId: this.form.gitModel.git!.id,
+                repository: this.form.gitModel.repository!.name,
+                owner: this.form.gitModel.repository!.owner,
                 branch: this.form.gitModel.branch
                   ? this.form.gitModel.branch.branchName
                   : null,
@@ -589,7 +652,7 @@ export default {
             this.emitDone()
             this.error = null
           } catch (e) {
-            this.error = e
+            if (e instanceof Error) this.error = e
           }
         }
       })
@@ -631,24 +694,24 @@ export default {
     },
 
     // コンテナイメージ
-    async selectRegistry(registryId) {
+    async selectRegistry(registryId: number) {
       await registrySelectorUtil.selectRegistry(
         this.form,
         this['registrySelector/fetchImages'],
         registryId,
       )
     },
-    async selectImage(image) {
+    async selectImage(image: string) {
       await registrySelectorUtil.selectImage(
         this.form,
         this['registrySelector/fetchTags'],
-        this.form.containerImage.registry.id,
+        this.form.containerImage.registry!.id,
         image,
       )
     },
 
     // モデル
-    async selectGit(gitId) {
+    async selectGit(gitId: number) {
       await gitSelectorUtil.selectGit(
         this.form,
         this['gitSelector/fetchRepositories'],
@@ -657,7 +720,7 @@ export default {
       )
     },
     // repositoryの型がstring：手入力, object: 選択
-    async selectRepository(repository) {
+    async selectRepository(repository: string) {
       try {
         await gitSelectorUtil.selectRepository(
           this.form,
@@ -670,7 +733,7 @@ export default {
         })
       }
     },
-    async selectBranch(branchName) {
+    async selectBranch(branchName: string) {
       this.commitsPage = 1
       // 過去の選択状態をリセット
       this.form.gitModel.commit = null
@@ -682,9 +745,9 @@ export default {
       )
       this.commitsList = [...this.commits]
     },
-    async searchCommitId(commitId) {
+    async searchCommitId(commitId: string | null) {
       await this['gitSelector/fetchCommitDetail']({
-        gitId: this.form.gitModel.git.id,
+        gitId: this.form.gitModel.git!.id,
         repository: this.form.gitModel.repository,
         commitId: commitId,
       })
@@ -695,20 +758,22 @@ export default {
     async getMoreCommits() {
       this.commitsPage++
       // コピー実行時、パラメータに格納する際の形を統一するため整形を行う
-      if (typeof this.form.gitModel.branch.branchName === 'undefined') {
-        let branch = { branchName: this.form.gitModel.branch }
+      if (typeof this.form.gitModel.branch === 'string') {
+        let branch = {
+          branchName: this.form.gitModel.branch,
+        }
         this.form.gitModel.branch = branch
       }
       await gitSelectorUtil.selectBranch(
         this.form,
         this['gitSelector/fetchCommits'],
-        this.form.gitModel.branch.branchName,
+        this.form.gitModel.branch!.branchName,
         this.commitsPage,
       )
       this.commitsList = this.commitsList.concat(this.commits)
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

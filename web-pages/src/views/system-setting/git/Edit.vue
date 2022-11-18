@@ -44,19 +44,41 @@
   </kqi-dialog>
 </template>
 
-<script>
-import KqiDialog from '@/components/KqiDialog'
-import KqiDisplayError from '@/components/KqiDisplayError'
+<script lang="ts">
+import Vue from 'vue'
+
+import KqiDialog from '@/components/KqiDialog.vue'
+import KqiDisplayError from '@/components/KqiDisplayError.vue'
 import { createNamespacedHelpers } from 'vuex'
 
 const { mapGetters, mapActions } = createNamespacedHelpers('git')
+
+import * as gen from '@/api/api.generate'
+interface DataType {
+  form: {
+    name: null | string
+    serviceType: null | gen.NssolPlatypusInfrastructureTypesGitServiceType
+    repositoryUrl: null | string
+    apiUrl: null | string
+  }
+  rules: {
+    name: Array<typeof formRule>
+    repositoryUrl: Array<typeof formRule>
+    serviceType: Array<typeof formRule>
+    apiUrl: Array<typeof formRule>
+  }
+  title: string
+  error: null | Error
+  isNotEditable: boolean
+  editApiUrl: boolean
+}
 const formRule = {
   required: true,
   trigger: 'blur',
   message: '必須項目です',
 }
 
-export default {
+export default Vue.extend({
   components: {
     KqiDialog,
     KqiDisplayError,
@@ -67,7 +89,7 @@ export default {
       default: null,
     },
   },
-  data() {
+  data(): DataType {
     return {
       form: {
         name: null,
@@ -89,7 +111,7 @@ export default {
   },
   computed: {
     ...mapGetters(['detail', 'serviceTypes']),
-    disabledParams() {
+    disabledParams(): { deleteButton: boolean; submitButton: boolean } {
       return {
         deleteButton: this.isNotEditable,
         submitButton: this.isNotEditable,
@@ -112,7 +134,7 @@ export default {
         this.editApiUrl = this.form.repositoryUrl !== this.form.apiUrl
         this.error = null
       } catch (e) {
-        this.error = e
+        if (e instanceof Error) this.error = e
       }
     }
     await this.fetchServiceTypes()
@@ -144,7 +166,7 @@ export default {
             this.error = null
             this.emitDone()
           } catch (e) {
-            this.error = e
+            if (e instanceof Error) this.error = e
           }
         }
       })
@@ -155,7 +177,7 @@ export default {
         this.error = null
         this.emitDone()
       } catch (e) {
-        this.error = e
+        if (e instanceof Error) this.error = e
       }
     },
     handleChange() {
@@ -170,7 +192,7 @@ export default {
       this.$emit('done')
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped></style>

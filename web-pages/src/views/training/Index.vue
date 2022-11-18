@@ -212,21 +212,95 @@
   </div>
 </template>
 
-<script>
-import KqiPagination from '@/components/KqiPagination'
-import Search from './Search'
-import MultiInput from './MultiInput'
+<script lang="ts">
+import Vue from 'vue'
+import KqiPagination from '@/components/KqiPagination.vue'
+import Search from './Search.vue'
+import MultiInput from './MultiInput.vue'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('training')
 
-export default {
-  title: '学習管理',
+import * as gen from '@/api/api.generate'
+interface DataType {
+  searchingFlg: boolean
+  updateTagDialogVisible: boolean
+  searchDialogVisible: boolean
+  saveSearchFormDialogVisible: boolean
+  selectBoxVisible: boolean // 新規タグの入力エリアの表示有無
+  tagValue: string // 新規タグの入力値
+  searchForm: {
+    idLower: string | null
+    idUpper: string | null
+    name: Array<string> | null
+    nameOr: boolean
+    parentName: Array<string> | null
+    parentNameOr: boolean
+    startedAtLower: string | null
+    startedAtUpper: string | null
+    startedBy: Array<string> | null
+    startedByOr: boolean
+    dataSet: Array<string> | null
+    dataSetOr: boolean
+    memo: Array<string> | null
+    memoOr: boolean
+    status: Array<string> | null
+    statusOr: boolean
+    entryPoint: Array<string> | null
+    entryPointOr: boolean
+    tags: Array<string> | null
+    tagsOr: boolean
+  }
+  tags: []
+  options: []
+  pageStatus: {
+    currentPage: number
+    currentPageSize: number
+  }
+  selections: Array<gen.NssolPlatypusApiModelsTrainingApiModelsIndexOutputModel>
+  searchConditionId: number | string | null
+  searchCondition: {
+    searchDetail: SearchDetail
+  } | null
+  searchConfigs: Array<{
+    prop: string
+    name: string
+    type: string
+    multiple?: boolean
+    option?: {
+      items: Array<string>
+    }
+  }>
+}
+type SearchDetail = {
+  idLower: string | null
+  idUpper: string | null
+  name: string | null
+  nameOr: boolean
+  parentName: string | null
+  parentNameOr: boolean
+  startedAtLower: string | null
+  startedAtUpper: string | null
+  startedBy: string | null
+  startedByOr: boolean
+  dataSet: string | null
+  dataSetOr: boolean
+  memo: string | null
+  memoOr: boolean
+  status: string | null
+  statusOr: boolean
+  entryPoint: string | null
+  entryPointOr: boolean
+  tags: string | null
+  tagsOr: boolean
+}
+
+export default Vue.extend({
   components: {
     KqiPagination,
     Search,
     MultiInput,
   },
-  data() {
+  data(): DataType {
     return {
       searchingFlg: false,
       updateTagDialogVisible: false,
@@ -320,7 +394,19 @@ export default {
       'deleteTags',
     ]),
     async retrieveData() {
-      let params
+      let params:
+        | {}
+        | SearchDetail
+        | (SearchDetail & {
+            page: number
+            perPage: number
+            withTotal: boolean
+          })
+        | {
+            page: number
+            perPage: number
+            withTotal: boolean
+          }
       if (this.searchCondition == null) {
         params = {}
       } else {
@@ -376,32 +462,32 @@ export default {
       this.searchingFlg = true
     },
 
-    changeSearchFormStringToList(item) {
+    changeSearchFormStringToList(item: SearchDetail) {
       let form = {
         idLower: item.idLower,
         idUpper: item.idUpper,
-        name: this.changeStringToList(item.name),
+        name: this.changeStringToList(item.name!),
         nameOr: item.nameOr,
-        parentName: this.changeStringToList(item.parentName),
+        parentName: this.changeStringToList(item.parentName!),
         parentNameOr: item.parentNameOr,
         startedAtLower: item.startedAtLower,
         startedAtUpper: item.startedAtUpper,
-        startedBy: this.changeStringToList(item.startedBy),
+        startedBy: this.changeStringToList(item.startedBy!),
         startedByOr: item.startedByOr,
-        dataSet: this.changeStringToList(item.dataSet),
+        dataSet: this.changeStringToList(item.dataSet!),
         dataSetOr: item.dataSetOr,
-        memo: this.changeStringToList(item.memo),
+        memo: this.changeStringToList(item.memo!),
         memoOr: item.memoOr,
-        status: this.changeStringToList(item.status),
+        status: this.changeStringToList(item.status!),
         statusOr: item.statusOr,
-        entryPoint: this.changeStringToList(item.entryPoint),
+        entryPoint: this.changeStringToList(item.entryPoint!),
         entryPointOr: item.entryPointOr,
-        tags: this.changeStringToList(item.tags),
+        tags: this.changeStringToList(item.tags!),
         tagsOr: item.tagsOr,
       }
       return form
     },
-    changeStringToList(str) {
+    changeStringToList(str: string) {
       if (str == null || str.length == 0) {
         return []
       }
@@ -417,29 +503,29 @@ export default {
       let form = {
         idLower: this.searchForm.idLower,
         idUpper: this.searchForm.idUpper,
-        name: this.changeListToString(this.searchForm.name),
+        name: this.changeListToString(this.searchForm.name!),
         nameOr: this.searchForm.nameOr,
-        parentName: this.changeListToString(this.searchForm.parentName),
+        parentName: this.changeListToString(this.searchForm.parentName!),
         parentNameOr: this.searchForm.parentNameOr,
         startedAtLower: this.searchForm.startedAtLower,
         startedAtUpper: this.searchForm.startedAtUpper,
-        startedBy: this.changeListToString(this.searchForm.startedBy),
+        startedBy: this.changeListToString(this.searchForm.startedBy!),
         startedByOr: this.searchForm.startedByOr,
-        dataSet: this.changeListToString(this.searchForm.dataSet),
+        dataSet: this.changeListToString(this.searchForm.dataSet!),
         dataSetOr: this.searchForm.dataSetOr,
-        memo: this.changeListToString(this.searchForm.memo),
+        memo: this.changeListToString(this.searchForm.memo!),
         memoOr: this.searchForm.memoOr,
-        status: this.changeListToString(this.searchForm.status),
+        status: this.changeListToString(this.searchForm.status!),
         statusOr: this.searchForm.statusOr,
-        entryPoint: this.changeListToString(this.searchForm.entryPoint),
+        entryPoint: this.changeListToString(this.searchForm.entryPoint!),
         entryPointOr: this.searchForm.entryPointOr,
-        tags: this.changeListToString(this.searchForm.tags),
+        tags: this.changeListToString(this.searchForm.tags!),
         tagsOr: this.searchForm.tagsOr,
       }
       return form
     },
 
-    changeListToString(list) {
+    changeListToString(list: Array<string>) {
       if (list == null || list.length == 0) {
         return null
       }
@@ -458,7 +544,17 @@ export default {
       await this.fetchSearchHistories()
     },
     async selectSearchCondition() {
-      let params = {}
+      let params:
+        | (SearchDetail & {
+            page?: number
+            perPage?: number
+            withTotal?: boolean
+          })
+        | {
+            page?: number
+            perPage?: number
+            withTotal?: boolean
+          } = {}
       this.searchCondition = null
       for (let i in this.searchHistories) {
         if (this.searchConditionId == this.searchHistories[i].id) {
@@ -480,12 +576,14 @@ export default {
       params.withTotal = true
       await this.fetchTrainHistories(params)
       this.searchForm = this.changeSearchFormStringToList(
-        this.searchCondition.searchDetail,
+        this.searchCondition!.searchDetail,
       )
       this.searchingFlg = false
     },
 
-    async clickDeleteSearchHistory(item) {
+    async clickDeleteSearchHistory(
+      item: gen.NssolPlatypusApiModelsTrainingApiModelsSearchHistoryOutputModel,
+    ) {
       // 選択中の検索履歴を削除したとき
       if (this.searchConditionId == item.id) {
         this.searchConditionId = 'search'
@@ -495,7 +593,7 @@ export default {
       await this.fetchSearchHistories()
     },
 
-    async updateTags(type) {
+    async updateTags(type: string) {
       let ids = []
       for (let i in this.selections) {
         ids.push(this.selections[i].id)
@@ -514,7 +612,9 @@ export default {
       this.showSuccessMessage()
     },
 
-    handleSelectionChange(val) {
+    handleSelectionChange(
+      val: Array<gen.NssolPlatypusApiModelsTrainingApiModelsIndexOutputModel>,
+    ) {
       // checkboxの要素変更
       this.selections = val
     },
@@ -544,7 +644,7 @@ export default {
         .catch(() => {})
     },
 
-    async done(type) {
+    async done(type: string) {
       if (type === 'delete') {
         // 削除時、表示していたページにデータが無くなっている可能性がある。
         // 総数 % ページサイズ === 1の時、残り1の状態で削除したため、currentPageが1で無ければ1つ前のページに戻す
@@ -565,26 +665,28 @@ export default {
     back() {
       this.$router.go(-1)
     },
-    openEditDialog(selectedRow) {
+    openEditDialog(
+      selectedRow: gen.NssolPlatypusApiModelsTrainingApiModelsIndexOutputModel,
+    ) {
       this.$router.push('/training/' + selectedRow.id)
     },
     openCreateDialog() {
       this.$router.push('/training/run/')
     },
-    copyCreate(parentId) {
+    copyCreate(parentId: number) {
       this.$router.push('/training/run/' + parentId)
     },
-    files(id) {
+    files(id: number) {
       this.$router.push('/training/' + id + '/files')
     },
-    shell(id) {
+    shell(id: number) {
       this.$router.push('/training/' + id + '/shell')
     },
-    log(id) {
+    log(id: number) {
       this.$router.push('/training/' + id + '/log')
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

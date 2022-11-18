@@ -1,7 +1,17 @@
 import api from '@/api/api'
-
+import { GetterTree, ActionTree, MutationTree } from 'vuex'
+import { RootState } from '../index'
+import * as gen from '@/api/api.generate'
+interface StateType {
+  users: Array<gen.NssolPlatypusApiModelsUserApiModelsIndexForAdminOutputModel>
+  detail: gen.NssolPlatypusApiModelsUserApiModelsIndexForAdminOutputModel
+  tenantUsers: Array<
+    gen.NssolPlatypusApiModelsUserApiModelsIndexForTenantOutputModel
+  >
+  tenantUserDetail: gen.NssolPlatypusApiModelsUserApiModelsIndexForTenantOutputModel
+}
 // initial state
-const state = {
+const state: StateType = {
   users: [],
   detail: {},
   tenantUsers: [],
@@ -9,7 +19,7 @@ const state = {
 }
 
 // getters
-const getters = {
+const getters: GetterTree<StateType, RootState> = {
   users(state) {
     return state.users
   },
@@ -28,24 +38,48 @@ const getters = {
 }
 
 // actions
-const actions = {
+const actions: ActionTree<StateType, RootState> = {
   async fetchUsers({ commit }) {
     let users = (await api.user.admin.get()).data
     commit('setUsers', { users })
   },
 
-  async fetchDetail({ commit }, id) {
+  async fetchDetail({ commit }, id: number) {
     let detail = (await api.user.admin.getById({ id: id })).data
     commit('setDetail', { detail })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async post({ commit }, params) {
+  async post(
+    // eslint-disable-next-line no-unused-vars
+    { commit },
+    params: gen.NssolPlatypusApiModelsUserApiModelsCreateInputModel,
+  ) {
     return await api.user.admin.post({ body: params })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async put({ commit }, { id, params }) {
+  async put(
+    // eslint-disable-next-line no-unused-vars
+    { commit },
+    {
+      id,
+      params,
+    }: {
+      id: number
+      params: {
+        name: string
+        password: string
+        systemRoles: Array<number>
+        tenants: Array<{
+          id: number
+          default: boolean
+          roles: Array<number>
+        }>
+        serviceType: number
+      }
+    },
+  ) {
     if (params.serviceType === 1) {
       if (params.password) {
         await api.user.admin.putPassword({ id: id, body: params.password })
@@ -55,7 +89,7 @@ const actions = {
   },
 
   // eslint-disable-next-line no-unused-vars
-  async delete({ commit }, id) {
+  async delete({ commit }, id: number) {
     return await api.user.admin.delete({ id: id })
   },
 
@@ -64,29 +98,42 @@ const actions = {
     commit('setTenantUsers', { tenantUsers })
   },
 
-  async fetchTenantUserDetail({ commit }, id) {
+  async fetchTenantUserDetail({ commit }, id: number) {
     let tenantUserDetail = (await api.user.tenant.getById({ id: id })).data
     commit('setTenantUserDetail', { tenantUserDetail })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async tenantRolesPut({ commit }, params) {
+  async tenantRolesPut(
+    // eslint-disable-next-line no-unused-vars
+    { commit },
+    params: {
+      id: number
+      body: Array<number>
+    },
+  ) {
     return await api.user.tenant.putRoles(params)
   },
 
   // eslint-disable-next-line no-unused-vars
-  async tenantUserDelete({ commit }, id) {
+  async tenantUserDelete({ commit }, id: number) {
     return await api.user.tenant.delete({ id: id })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async syncLdapUsers({ commit }, params) {
+  async syncLdapUsers(
+    // eslint-disable-next-line no-unused-vars
+    { commit },
+    params: {
+      body: gen.NssolPlatypusApiModelsUserApiModelsLdapAuthenticationInputModel
+    },
+  ) {
     return (await api.user.admin.postSyncLdap(params)).data
   },
 }
 
 // mutations
-const mutations = {
+const mutations: MutationTree<StateType> = {
   setUsers(state, { users }) {
     state.users = users
   },

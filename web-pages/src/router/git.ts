@@ -1,5 +1,5 @@
-import Index from '@/views/system-setting/git/Index'
-import Edit from '@/views/system-setting/git/Edit'
+import Index from '@/views/system-setting/git/Index.vue'
+import Edit from '@/views/system-setting/git/Edit.vue'
 
 export default [
   {

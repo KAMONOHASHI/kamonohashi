@@ -1,10 +1,10 @@
-import ManageTenant from '@/views/tenant-setting/tenant/Setting'
-import ManageUserIndex from '@/views/tenant-setting/user/Index'
-import ManageUserEdit from '@/views/tenant-setting/user/Edit'
-import ManageResourceIndex from '@/views/tenant-setting/resource/Index'
-import ManageResourceNode from '@/views/tenant-setting/resource/Node'
-import ManageResourceContainerList from '@/views/tenant-setting/resource/ContainerList'
-import ManageResourceEdit from '@/views/tenant-setting/resource/Edit'
+import ManageTenant from '@/views/tenant-setting/tenant/Setting.vue'
+import ManageUserIndex from '@/views/tenant-setting/user/Index.vue'
+import ManageUserEdit from '@/views/tenant-setting/user/Edit.vue'
+import ManageResourceIndex from '@/views/tenant-setting/resource/Index.vue'
+import ManageResourceNode from '@/views/tenant-setting/resource/Node.vue'
+import ManageResourceContainerList from '@/views/tenant-setting/resource/ContainerList.vue'
+import ManageResourceEdit from '@/views/tenant-setting/resource/Edit.vue'
 
 export default [
   {

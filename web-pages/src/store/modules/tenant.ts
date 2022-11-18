@@ -1,13 +1,19 @@
 import api from '@/api/api'
-
+import { GetterTree, ActionTree, MutationTree } from 'vuex'
+import { RootState } from '../index'
+import * as gen from '@/api/api.generate'
+interface StateType {
+  tenants: Array<gen.NssolPlatypusApiModelsTenantApiModelsIndexOutputModel>
+  detail: gen.NssolPlatypusApiModelsTenantApiModelsDetailsOutputModel
+}
 // initial state
-const state = {
+const state: StateType = {
   tenants: [],
   detail: {},
 }
 
 // getters
-const getters = {
+const getters: GetterTree<StateType, RootState> = {
   tenants(state) {
     return state.tenants
   },
@@ -18,13 +24,13 @@ const getters = {
 }
 
 // actions
-const actions = {
+const actions: ActionTree<StateType, RootState> = {
   async fetchTenants({ commit }) {
     let tenants = (await api.tenant.admin.get()).data
     commit('setTenants', { tenants })
   },
 
-  async fetchDetail({ commit }, id) {
+  async fetchDetail({ commit }, id: number) {
     let detail = (await api.tenant.admin.getById({ id: id })).data
     commit('setDetail', { detail })
   },
@@ -35,28 +41,48 @@ const actions = {
   },
 
   // eslint-disable-next-line no-unused-vars
-  async post({ commit }, params) {
+  async post(
+    // eslint-disable-next-line no-unused-vars
+    { commit },
+    params: gen.NssolPlatypusApiModelsTenantApiModelsCreateInputModel,
+  ) {
     return await api.tenant.admin.post({ body: params })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async put({ commit }, { id, params }) {
+  async put(
+    // eslint-disable-next-line no-unused-vars
+    { commit },
+    {
+      id,
+      params,
+    }: {
+      id: number
+      params: gen.NssolPlatypusApiModelsTenantApiModelsEditInputModel
+    },
+  ) {
     return await api.tenant.admin.put({ id: id, body: params })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async putCurrentTenant({ commit }, params) {
+  async putCurrentTenant(
+    // eslint-disable-next-line no-unused-vars
+    { commit },
+    params: {
+      body: gen.NssolPlatypusApiModelsTenantApiModelsEditInputModel
+    },
+  ) {
     return await api.tenant.put(params)
   },
 
   // eslint-disable-next-line no-unused-vars
-  async delete({ commit }, id) {
+  async delete({ commit }, id: number) {
     return await api.tenant.admin.delete({ id: id })
   },
 }
 
 // mutations
-const mutations = {
+const mutations: MutationTree<StateType> = {
   setTenants(state, { tenants }) {
     state.tenants = tenants
   },

@@ -1,5 +1,5 @@
-import Index from '@/views/system-setting/tenant/Index'
-import Edit from '@/views/system-setting/tenant/Edit'
+import Index from '@/views/system-setting/tenant/Index.vue'
+import Edit from '@/views/system-setting/tenant/Edit.vue'
 
 export default [
   {

@@ -22,7 +22,9 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue'
+
 import '@/xterm.css'
 import { Terminal } from 'xterm'
 import { AttachAddon } from 'xterm-addon-attach'
@@ -31,14 +33,22 @@ import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('account')
 
 let socket
-export default {
+interface DataType {
+  type: null | string
+  dialogVisible: boolean
+  error: null | Error
+  title: null | string
+  intervalId: number
+}
+
+export default Vue.extend({
   props: {
     id: {
       type: String,
       default: null,
     },
   },
-  data() {
+  data(): DataType {
     return {
       type: null,
       dialogVisible: true,
@@ -125,7 +135,7 @@ export default {
       }
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

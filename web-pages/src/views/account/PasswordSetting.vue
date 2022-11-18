@@ -36,18 +36,42 @@
   </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue from 'vue'
+import { PropType } from 'vue'
+interface DataType {
+  labelwidth: string
+
+  passRules: {
+    currentPassword: {
+      required: boolean
+      trigger: string
+      message: string
+    }
+    password: [
+      {
+        required: boolean
+        trigger: string
+        validator: any
+      },
+    ]
+  }
+}
+
+export default Vue.extend({
   props: {
     value: {
-      type: Object,
+      type: Object as PropType<{
+        currentPassword: string
+        password: Array<string>
+      }>,
       default: () => ({
         currentPassword: '',
         password: ['', ''],
       }),
     },
   },
-  data() {
+  data(): DataType {
     return {
       labelwidth: '220px',
 
@@ -91,7 +115,7 @@ export default {
       })
     },
   },
-}
+})
 </script>
 
 <style scoped>

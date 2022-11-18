@@ -75,17 +75,52 @@
   </el-dialog>
 </template>
 
-<script>
-import Util from '@/util/util'
-import KqiDisplayError from '@/components/KqiDisplayError'
-import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
-import KqiPreprocessingsSelector from '@/components/selector/KqiPreprocessingSelector'
-import KqiResourceSelector from '@/components/selector/KqiResourceSelector'
-import KqiEnvironmentVariables from '@/components/KqiEnvironmentVariables'
-import KqiPartitionSelector from '@/components/selector/KqiPartitionSelector'
-import { mapActions, mapGetters } from 'vuex'
+<script lang="ts">
+import Vue from 'vue'
 
-export default {
+import Util from '@/util/util'
+import KqiDisplayError from '@/components/KqiDisplayError.vue'
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
+import KqiPreprocessingsSelector from '@/components/selector/KqiPreprocessingSelector.vue'
+import KqiResourceSelector from '@/components/selector/KqiResourceSelector.vue'
+import KqiEnvironmentVariables from '@/components/KqiEnvironmentVariables.vue'
+import KqiPartitionSelector from '@/components/selector/KqiPartitionSelector.vue'
+import { mapActions, mapGetters } from 'vuex'
+interface DataType {
+  rules: {
+    preprocessing: [
+      {
+        required: boolean
+        trigger: string
+        validator: any
+      },
+    ]
+    data: [
+      {
+        required: boolean
+        trigger: string
+        validator: any
+      },
+    ]
+  }
+  form: {
+    selectedDataId: Array<number>
+    preprocessingId: null | number
+    resource: {
+      cpu: number
+      memory: number
+      gpu: number
+    }
+    variables: [{ key: string; value: string }]
+    partition: null | string
+    movePreprocessingPage: boolean
+  }
+  enableDataSelection: boolean
+  dialogVisible: boolean
+  error: null | Error
+}
+
+export default Vue.extend({
   components: {
     KqiDisplayError,
     KqiDisplayTextForm,
@@ -100,7 +135,7 @@ export default {
       default: null,
     },
   },
-  data() {
+  data(): DataType {
     let dataSelectedIdsValidator = (rule, value, callback) => {
       if (this.enableDataSelection && this.form.selectedDataId.length === 0) {
         callback(new Error('必須項目です'))
@@ -222,7 +257,7 @@ export default {
                 message: `ID:${dataId}の前処理を実行しました`,
               })
             } catch (e) {
-              this.error = e
+              if (e instanceof Error) this.error = e
             }
           })
           await Util.wait(2000)
@@ -258,7 +293,7 @@ export default {
       this.$emit('done')
       this.dialogVisible = false
     },
-    emitHistoryPage(id) {
+    emitHistoryPage(id: number) {
       this.$router.push('/preprocessingHistory/' + id)
     },
     closeDialog(done) {
@@ -266,7 +301,7 @@ export default {
       this.$emit('close')
     },
   },
-}
+})
 </script>
 
 <style scoped>

@@ -69,18 +69,61 @@
   </kqi-dialog>
 </template>
 
-<script>
-import KqiDialog from '@/components/KqiDialog'
-import KqiDisplayError from '@/components/KqiDisplayError'
-import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
-import KqiContainerSelector from '@/components/selector/KqiContainerSelector'
-import KqiGitSelector from '@/components/selector/KqiGitSelector'
-import KqiResourceSelector from '@/components/selector/KqiResourceSelector'
+<script lang="ts">
+import Vue from 'vue'
+import KqiDialog from '@/components/KqiDialog.vue'
+import KqiDisplayError from '@/components/KqiDisplayError.vue'
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
+import KqiContainerSelector from '@/components/selector/KqiContainerSelector.vue'
+import KqiGitSelector from '@/components/selector/KqiGitSelector.vue'
+import KqiResourceSelector from '@/components/selector/KqiResourceSelector.vue'
 import registrySelectorUtil from '@/util/registrySelectorUtil'
 import gitSelectorUtil from '@/util/gitSelectorUtil'
 import { mapActions, mapGetters } from 'vuex'
+//import * as gen from '@/api/api.generate'
+interface DataType {
+  commitsList: Array<any>
+  commitsPage: number
+  form: {
+    name: null | string
+    entryPoint: null | string
+    memo: null | string
+    containerImage: {
+      registry: null | {
+        id: number
+        name: string
+      }
+      image: null | string
+      tag: null | Array<string>
+    }
+    gitModel: {
+      git: null | {
+        id: number
+        name: string
+      }
+      repository: null | string | { name: string; owner: string }
+      branch: null | { branchName: string }
+      commit: null
+    }
+    resource: {
+      cpu: number
+      memory: number
+      gpu: number
+    }
+  }
+  title: string
+  dialogVisible: boolean
+  error: null | Error
+  isCreateDialog: boolean
+  isCopyCreation: boolean
+  isEditDialog: boolean
+  isPatch: boolean // 利用済み前処理の場合name, memo, resourceのみ更新可能
 
-export default {
+  rules: {
+    name: [{ required: boolean; trigger: string; message: string }]
+  }
+}
+export default Vue.extend({
   components: {
     KqiDialog,
     KqiDisplayError,
@@ -95,7 +138,7 @@ export default {
       default: null,
     },
   },
-  data() {
+  data(): DataType {
     return {
       commitsList: [],
       commitsPage: 1,
@@ -270,7 +313,7 @@ export default {
           } else {
             // コミット一覧に含まれないコミットなので、コミット情報を新たに取得する
             await this['gitSelector/fetchCommitDetail']({
-              gitId: this.form.gitModel.git.id,
+              gitId: this.form.gitModel.git!.id,
               repository: this.form.gitModel.repository,
               commitId: this.detail.gitModel.commitId,
             })
@@ -301,7 +344,7 @@ export default {
                 this.form.containerImage.tag !== null
               ) {
                 containerImage = {
-                  registryId: this.form.containerImage.registry.id,
+                  registryId: this.form.containerImage.registry!.id,
                   image: this.form.containerImage.image,
                   tag: this.form.containerImage.tag,
                 }
@@ -313,11 +356,12 @@ export default {
               let gitModel = null
               if (
                 this.form.gitModel.repository !== null &&
+                typeof this.form.gitModel.repository !== 'string' &&
                 this.form.gitModel.branch !== null
               ) {
                 // HEAD指定の時はcommitsの先頭要素をcommitIDに指定する。コピー実行時の再現性を担保するため
                 gitModel = {
-                  gitId: this.form.gitModel.git.id,
+                  gitId: this.form.gitModel.git!.id,
                   repository: this.form.gitModel.repository.name,
                   owner: this.form.gitModel.repository.owner,
                   branch: this.form.gitModel.branch.branchName,
@@ -351,7 +395,7 @@ export default {
             this.$emit('done')
             this.error = null
           } catch (e) {
-            this.error = e
+            if (e instanceof Error) this.error = e
           }
         }
       })
@@ -375,28 +419,28 @@ export default {
         await this['preprocessing/delete'](this.id)
         this.$emit('done', 'delete')
       } catch (e) {
-        this.error = e
+        if (e instanceof Error) this.error = e
       }
     },
     // コンテナイメージ
-    async selectRegistry(registryId) {
+    async selectRegistry(registryId: number) {
       await registrySelectorUtil.selectRegistry(
         this.form,
         this['registrySelector/fetchImages'],
         registryId,
       )
     },
-    async selectImage(image) {
+    async selectImage(image: string) {
       await registrySelectorUtil.selectImage(
         this.form,
         this['registrySelector/fetchTags'],
-        this.form.containerImage.registry.id,
+        this.form.containerImage.registry!.id,
         image,
       )
     },
 
     // モデル
-    async selectGit(gitId) {
+    async selectGit(gitId: number) {
       await gitSelectorUtil.selectGit(
         this.form,
         this['gitSelector/fetchRepositories'],
@@ -405,7 +449,9 @@ export default {
       )
     },
     // repositoryの型がstring：手入力, object: 選択
-    async selectRepository(repository) {
+    async selectRepository(
+      repository: string | { name: string; owner: string },
+    ) {
       try {
         await gitSelectorUtil.selectRepository(
           this.form,
@@ -418,7 +464,7 @@ export default {
         })
       }
     },
-    async selectBranch(branchName) {
+    async selectBranch(branchName: string) {
       this.commitsPage = 1
       // 過去の選択状態をリセット
       this.form.gitModel.commit = null
@@ -430,9 +476,9 @@ export default {
       )
       this.commitsList = [...this.commits]
     },
-    async searchCommitId(commitId) {
+    async searchCommitId(commitId: string) {
       await this['gitSelector/fetchCommitDetail']({
-        gitId: this.form.gitModel.git.id,
+        gitId: this.form.gitModel.git!.id,
         repository: this.form.gitModel.repository,
         commitId: commitId,
       })
@@ -443,20 +489,20 @@ export default {
     async getMoreCommits() {
       this.commitsPage++
       // コピー実行時、パラメータに格納する際の形を統一するため整形を行う
-      if (typeof this.form.gitModel.branch.branchName === 'undefined') {
+      if (typeof this.form.gitModel.branch === 'string') {
         let branch = { branchName: this.form.gitModel.branch }
         this.form.gitModel.branch = branch
       }
       await gitSelectorUtil.selectBranch(
         this.form,
         this['gitSelector/fetchCommits'],
-        this.form.gitModel.branch.branchName,
+        this.form.gitModel.branch!.branchName,
         this.commitsPage,
       )
       this.commitsList = this.commitsList.concat(this.commits)
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

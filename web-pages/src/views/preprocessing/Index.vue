@@ -79,19 +79,33 @@
   </div>
 </template>
 
-<script>
-import KqiPagination from '@/components/KqiPagination'
-import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index'
+<script lang="ts">
+import Vue from 'vue'
+import KqiPagination from '@/components/KqiPagination.vue'
+import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index.vue'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('preprocessing')
+import * as gen from '@/api/api.generate'
+interface DataType {
+  pageStatus: {
+    currentPage: number
+    currentPageSize: number
+  }
+  searchCondition: {
+    page?: number
+    perPage?: number
+    withTotal?: boolean
+  }
+  searchConfigs: Array<{ prop: string; name: string; type: string }>
+  selectedRowId?: number
+}
 
-export default {
-  title: '前処理管理',
+export default Vue.extend({
   components: {
     KqiPagination,
     KqiSmartSearchInput,
   },
-  data() {
+  data(): DataType {
     return {
       pageStatus: {
         currentPage: 1,
@@ -127,7 +141,7 @@ export default {
       await this.retrieveData()
     },
 
-    async done(type) {
+    async done(type: string) {
       if (type === 'delete') {
         // 削除時、表示していたページにデータが無くなっている可能性がある。
         // 総数 % ページサイズ === 1の時、残り1の状態で削除したため、currentPageが1で無ければ1つ前のページに戻す
@@ -150,14 +164,18 @@ export default {
     openCreateDialog() {
       this.$router.push('/preprocessing/create')
     },
-    handleCopy(id) {
+    handleCopy(id: number) {
       this.$router.push('/preprocessing/create/' + id)
     },
-    async openHistoryIndex(row) {
+    async openHistoryIndex(
+      row: gen.NssolPlatypusApiModelsPreprocessingApiModelsIndexOutputModel,
+    ) {
       this.$router.push('/preprocessingHistory/' + row.id)
     },
 
-    async openEditDialog(selectedRow) {
+    async openEditDialog(
+      selectedRow: gen.NssolPlatypusApiModelsPreprocessingApiModelsIndexOutputModel,
+    ) {
       this.selectedRowId = selectedRow.id
       this.$router.push('/preprocessing/edit/' + selectedRow.id)
     },
@@ -170,7 +188,7 @@ export default {
       )
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

@@ -42,8 +42,10 @@
   </div>
 </template>
 
-<script>
-import KqiDisplayError from '@/components/KqiDisplayError'
+<script lang="ts">
+import Vue from 'vue'
+
+import KqiDisplayError from '@/components/KqiDisplayError.vue'
 import { createNamespacedHelpers } from 'vuex'
 const { mapActions } = createNamespacedHelpers('account')
 const formRule = {
@@ -52,12 +54,26 @@ const formRule = {
   message: '必須項目です',
 }
 
-export default {
-  title: 'ログイン',
+interface DataType {
+  labelwidth: string
+  error: Error | null
+  form: {
+    user: ''
+    password: ''
+  }
+  rules: {
+    user: Array<typeof formRule>
+    password: Array<typeof formRule>
+  }
+  returnUrl: string | Array<string | null>
+  labelPosition: string
+}
+
+export default Vue.extend({
   components: {
     KqiDisplayError,
   },
-  data() {
+  data(): DataType {
     let err = null
     if (this.$route.query.timeout) {
       err = Error('認証エラー：ログインしてください。')
@@ -91,7 +107,7 @@ export default {
             this.$router.push('/')
           } catch (error) {
             this.handleLogout()
-            this.error = error
+            if (error instanceof Error) this.error = error
           }
         }
       })
@@ -101,7 +117,7 @@ export default {
       this.$router.push('/login')
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

@@ -44,12 +44,15 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue'
+
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('registry')
 
-export default {
-  title: 'レジストリ管理', //<title>設定
+import * as gen from '@/api/api.generate'
+
+export default Vue.extend({
   computed: {
     ...mapGetters(['registries', 'serviceTypes']),
   },
@@ -60,14 +63,18 @@ export default {
   methods: {
     ...mapActions(['fetchRegistries', 'fetchServiceTypes']),
     // ServiceTypeの数値から表示名に変換
-    displayNameOfServiceType(serviceTypeId) {
-      let serviceType = this.serviceTypes.find(s => s.id === serviceTypeId)
+    displayNameOfServiceType(serviceTypeId: number) {
+      let serviceType: gen.NssolPlatypusInfrastructureInfosEnumInfo = this.serviceTypes.find(
+        s => s.id === serviceTypeId,
+      )
       return serviceType.name
     },
     openCreateDialog() {
       this.$router.push('/registry/edit')
     },
-    openEditDialog(selectedRow) {
+    openEditDialog(
+      selectedRow: gen.NssolPlatypusApiModelsRegistryApiModelsIndexOutputModel,
+    ) {
       this.$router.push('/registry/edit/' + selectedRow.id)
     },
     closeDialog() {
@@ -79,7 +86,7 @@ export default {
       this.showSuccessMessage()
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

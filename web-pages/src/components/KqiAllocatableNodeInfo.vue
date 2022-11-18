@@ -20,8 +20,9 @@
   </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue from 'vue'
+export default Vue.extend({
   props: {
     allocatableNodes: {
       type: Array,
@@ -32,7 +33,7 @@ export default {
       default: '利用可能なノードがありません。',
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped></style>

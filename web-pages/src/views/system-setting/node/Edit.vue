@@ -52,9 +52,11 @@
   </kqi-dialog>
 </template>
 
-<script>
-import KqiDialog from '@/components/KqiDialog'
-import KqiDisplayError from '@/components/KqiDisplayError'
+<script lang="ts">
+import Vue from 'vue'
+
+import KqiDialog from '@/components/KqiDialog.vue'
+import KqiDisplayError from '@/components/KqiDisplayError.vue'
 import { mapGetters, mapActions } from 'vuex'
 
 const formRules = {
@@ -63,7 +65,25 @@ const formRules = {
   message: '必須項目です',
 }
 
-export default {
+interface DataType {
+  form: {
+    name: null | string
+    memo: null | string
+    partition: null
+    accessLevel: number
+    selectedTenants: [] // Selected tenants which can access this node.
+    tensorBoardEnabled: null | boolean
+    notebookEnabled: null | boolean
+  }
+  title: string
+  displayTenants: []
+  error: null | Error
+  rules: {
+    name: Array<typeof formRules>
+  }
+}
+
+export default Vue.extend({
   components: {
     KqiDialog,
     KqiDisplayError,
@@ -74,7 +94,7 @@ export default {
       default: null,
     },
   },
-  data() {
+  data(): DataType {
     return {
       form: {
         name: null,
@@ -131,7 +151,7 @@ export default {
         this.form.tensorBoardEnabled = this.detail.tensorBoardEnabled
         this.form.notebookEnabled = this.detail.notebookEnabled
       } catch (e) {
-        this.error = e
+        if (e instanceof Error) this.error = e
       }
     }
   },
@@ -166,7 +186,7 @@ export default {
             this.$emit('done')
             this.error = null
           } catch (e) {
-            this.error = e
+            if (e instanceof Error) this.error = e
           }
         }
       })
@@ -178,11 +198,11 @@ export default {
         this.error = null
         this.$emit('done', 'delete')
       } catch (e) {
-        this.error = e
+        if (e instanceof Error) this.error = e
       }
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped></style>

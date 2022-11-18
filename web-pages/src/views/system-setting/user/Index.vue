@@ -113,13 +113,19 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue'
+
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('user')
 
-export default {
-  title: 'ユーザ管理',
-  data() {
+import * as gen from '@/api/api.generate'
+interface DataType {
+  showTenants: { [key: number]: boolean }
+}
+
+export default Vue.extend({
+  data(): DataType {
     return { showTenants: {} }
   },
   computed: {
@@ -138,13 +144,17 @@ export default {
         this.$set(this.showTenants, d.id, true)
       })
     },
-    async handleToggleExpand(row) {
-      this.showTenants[row.id] = !this.showTenants[row.id]
+    async handleToggleExpand(
+      row: gen.NssolPlatypusApiModelsUserApiModelsIndexForAdminOutputModel,
+    ) {
+      this.showTenants[row.id!] = !this.showTenants[row.id!]
     },
     openCreateDialog() {
       this.$router.push('/user/edit')
     },
-    openEditDialog(row) {
+    openEditDialog(
+      row: gen.NssolPlatypusApiModelsUserApiModelsIndexForAdminOutputModel,
+    ) {
       if (row) {
         this.$router.push('/user/edit/' + row.id)
       }
@@ -161,7 +171,7 @@ export default {
       this.$router.push('/user')
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

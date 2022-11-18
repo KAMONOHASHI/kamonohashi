@@ -59,14 +59,16 @@
   </kqi-dialog>
 </template>
 
-<script>
-import KqiDialog from '@/components/KqiDialog'
-import KqiDisplayError from '@/components/KqiDisplayError'
-import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
-import KqiStorageEndpointSelector from '@/components/selector/KqiStorageEndpointSelector'
-import KqiGitEndpointSelector from '@/components/selector/KqiGitEndpointSelector'
-import KqiRegistryEndpointSelector from '@/components/selector/KqiRegistryEndpointSelector'
-import KqiUserGroupSelector from '@/components/selector/KqiUserGroupSelector'
+<script lang="ts">
+import Vue from 'vue'
+
+import KqiDialog from '@/components/KqiDialog.vue'
+import KqiDisplayError from '@/components/KqiDisplayError.vue'
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
+import KqiStorageEndpointSelector from '@/components/selector/KqiStorageEndpointSelector.vue'
+import KqiGitEndpointSelector from '@/components/selector/KqiGitEndpointSelector.vue'
+import KqiRegistryEndpointSelector from '@/components/selector/KqiRegistryEndpointSelector.vue'
+import KqiUserGroupSelector from '@/components/selector/KqiUserGroupSelector.vue'
 import { mapGetters, mapActions } from 'vuex'
 import validator from '@/util/validator'
 
@@ -75,8 +77,51 @@ const formRule = {
   trigger: 'blur',
   message: '必須項目です',
 }
+//import * as gen from '@/api/api.generate'
+interface DataType {
+  title: string
+  error: null | Error
+  deleteButtonParams:
+    | {}
+    | {
+        isDanger: boolean
+        warningText: string
+        confirmText: string
+      }
+  form: {
+    tenantName: string
+    displayName: string
+    gitEndpoint: {
+      selectedIds: Array<number>
+      defaultId: null | number
+    }
+    registry: {
+      selectedIds: Array<number>
+      defaultId: null | number
+    }
+    storageId: null | number
+    availableInfiniteTimeNotebook: false
+    userGroupIds: Array<number>
+  }
 
-export default {
+  rules: {
+    tenantName: Array<typeof formRule>
+    displayName: Array<typeof formRule>
+    gitEndpoint: {
+      required: true
+      trigger: string
+      validator: typeof validator.gitEndpointValidator
+    }
+    registry: {
+      required: true
+      validator: typeof validator.regystryEndpointValidator
+      trigger: string
+    }
+    storageId: Array<typeof formRule>
+  }
+}
+
+export default Vue.extend({
   components: {
     KqiDialog,
     KqiDisplayError,
@@ -92,7 +137,7 @@ export default {
       default: null,
     },
   },
-  data() {
+  data(): DataType {
     return {
       title: '',
       error: null,
@@ -168,7 +213,7 @@ export default {
           confirmText: this.form.tenantName,
         }
       } catch (e) {
-        this.error = e
+        if (e instanceof Error) this.error = e
       }
     }
   },
@@ -209,7 +254,7 @@ export default {
               this.error = null
               this.emitDone()
             } catch (e) {
-              this.error = e
+              if (e instanceof Error) this.error = e
             }
           }
         }
@@ -221,7 +266,7 @@ export default {
         this.error = null
         this.emitDone()
       } catch (e) {
-        this.error = e
+        if (e instanceof Error) this.error = e
       }
     },
     async showConfirm() {
@@ -266,7 +311,7 @@ export default {
       this.$emit('done')
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

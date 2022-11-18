@@ -1,14 +1,21 @@
 import api from '@/api/api'
-
+import { GetterTree, ActionTree, MutationTree } from 'vuex'
+import { RootState } from '../index'
+import * as gen from '@/api/api.generate'
+interface StateType {
+  serviceTypes: Array<gen.NssolPlatypusInfrastructureInfosEnumInfo>
+  endpoints: Array<gen.NssolPlatypusApiModelsGitApiModelsIndexOutputModel>
+  detail: gen.NssolPlatypusApiModelsGitApiModelsDetailsOutputModel
+}
 // initial state
-const state = {
+const state: StateType = {
   serviceTypes: [],
   endpoints: [],
   detail: {},
 }
 
 // getters
-const getters = {
+const getters: GetterTree<StateType, RootState> = {
   endpoints(state) {
     return state.endpoints
   },
@@ -23,7 +30,7 @@ const getters = {
 }
 
 // actions
-const actions = {
+const actions: ActionTree<StateType, RootState> = {
   async fetchEndpoints({ commit }) {
     let endpoints = (await api.git.admin.getEndpoints()).data
     commit('setEndpoints', { endpoints })
@@ -39,29 +46,43 @@ const actions = {
     commit('setServiceTypes', { serviceTypes })
   },
 
-  async fetchDetail({ commit }, id) {
+  async fetchDetail({ commit }, id: number) {
     let detail = (await api.git.admin.getById({ id: id })).data
     commit('setDetail', { detail })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async post({ commit }, params) {
+  async post(
+    // eslint-disable-next-line no-unused-vars
+    { commit },
+    params: gen.NssolPlatypusApiModelsGitApiModelsCreateInputModel,
+  ) {
     return await api.git.admin.postEndpoint({ body: params })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async put({ commit }, { id, params }) {
+  async put(
+    // eslint-disable-next-line no-unused-vars
+    { commit },
+    {
+      id,
+      params,
+    }: {
+      id: number
+      params: gen.NssolPlatypusApiModelsGitApiModelsCreateInputModel
+    },
+  ) {
     return await api.git.admin.putEndpoint({ id: id, body: params })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async delete({ commit }, id) {
+  async delete({ commit }, id: number) {
     return await api.git.admin.deleteById({ id: id })
   },
 }
 
 // mutations
-const mutations = {
+const mutations: MutationTree<StateType> = {
   setEndpoints(state, { endpoints }) {
     state.endpoints = endpoints
   },

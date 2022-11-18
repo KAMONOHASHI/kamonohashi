@@ -36,17 +36,21 @@
   </el-form-item>
 </template>
 
-<script>
-import KqiPreprocessingDetails from '@/components/selector/KqiPreprocessingDetails'
-
-export default {
+<script lang="ts">
+import Vue from 'vue'
+import KqiPreprocessingDetails from '@/components/selector/KqiPreprocessingDetails.vue'
+import { PropType } from 'vue'
+import * as gen from '@/api/api.generate'
+export default Vue.extend({
   components: {
     KqiPreprocessingDetails,
   },
   props: {
     // 前処理一覧
     preprocessings: {
-      type: Array,
+      type: Array as PropType<
+        Array<gen.NssolPlatypusApiModelsPreprocessingApiModelsIndexOutputModel>
+      >,
       default: () => {
         return []
       },
@@ -66,7 +70,11 @@ export default {
     },
   },
   methods: {
-    onChange(preprocessing) {
+    onChange(
+      preprocessing:
+        | string
+        | gen.NssolPlatypusApiModelsPreprocessingApiModelsIndexOutputModel,
+    ) {
       if (preprocessing === '') {
         this.$emit('input', null)
       } else {
@@ -74,7 +82,7 @@ export default {
       }
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

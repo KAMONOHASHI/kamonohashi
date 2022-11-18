@@ -129,19 +129,56 @@
   </div>
 </template>
 
-<script>
-import KqiDisplayError from '@/components/KqiDisplayError'
-import TenantInfo from './TenantInfo'
-import DefaultTenantSetting from './DefaultTenantSetting'
-import AccessTokenSetting from './AccessTokenSetting'
-import GitTokenSetting from '@/views/account/GitTokenSetting'
-import RegistryTokenSetting from '@/views/account/RegistryTokenSetting'
-import PasswordSetting from './PasswordSetting'
-import WebhookSetting from './WebhookSetting'
+<script lang="ts">
+import Vue from 'vue'
+
+import KqiDisplayError from '@/components/KqiDisplayError.vue'
+import TenantInfo from './TenantInfo.vue'
+import DefaultTenantSetting from './DefaultTenantSetting.vue'
+import AccessTokenSetting from './AccessTokenSetting.vue'
+import GitTokenSetting from '@/views/account/GitTokenSetting.vue'
+import RegistryTokenSetting from '@/views/account/RegistryTokenSetting.vue'
+import PasswordSetting from './PasswordSetting.vue'
+import WebhookSetting from './WebhookSetting.vue'
 import { mapGetters, mapActions } from 'vuex'
 
-export default {
-  title: 'ユーザ情報設定',
+interface DataType {
+  tenantError: null | Error
+  accessTokenError: null | Error
+  gitTokenError: null | Error
+  registryTokenError: null | Error
+  passwordError: null | Error
+  webhookError: null | Error
+  defaultTenantName: string
+  tokenForm: {
+    token: string
+    day: number
+  }
+  gitForm: {
+    id: number
+    name: string
+    token: string
+  }
+  registryForm: {
+    id: number
+    name: string
+    userName: string
+    password: string
+    serviceType: number
+    projectName: string
+  }
+  passwordChangeEnabled: boolean
+  passForm: {
+    currentPassword: string
+    password: [string, string]
+  }
+  webhookForm: {
+    slackUrl: string
+    mention: string
+  }
+}
+
+export default Vue.extend({
   components: {
     KqiDisplayError,
     TenantInfo,
@@ -152,7 +189,7 @@ export default {
     PasswordSetting,
     WebhookSetting,
   },
-  data() {
+  data(): DataType {
     return {
       tenantError: null,
       accessTokenError: null,
@@ -248,7 +285,7 @@ export default {
         this.showSuccessMessage()
         this.tenantError = null
       } catch (error) {
-        this.tenantError = error
+        if (error instanceof Error) this.tenantError = error
       }
     },
 
@@ -264,7 +301,7 @@ export default {
         this.showSuccessMessage()
         this.accessTokenError = null
       } catch (error) {
-        this.accessTokenError = error
+        if (error instanceof Error) this.accessTokenError = error
       }
     },
 
@@ -282,7 +319,7 @@ export default {
         this.showSuccessMessage()
         this.gitTokenError = null
       } catch (error) {
-        this.gitTokenError = error
+        if (error instanceof Error) this.gitTokenError = error
       }
     },
 
@@ -301,7 +338,7 @@ export default {
         this.showSuccessMessage()
         this.registryTokenError = null
       } catch (error) {
-        this.registryTokenError = error
+        if (error instanceof Error) this.registryTokenError = error
       }
     },
 
@@ -317,7 +354,7 @@ export default {
         this.showSuccessMessage()
         this.passwordError = null
       } catch (error) {
-        this.passwordError = error
+        if (error instanceof Error) this.passwordError = error
       }
     },
 
@@ -333,7 +370,7 @@ export default {
         this.showSuccessMessage()
         this.webhookError = null
       } catch (error) {
-        this.webhookError = error
+        if (error instanceof Error) this.webhookError = error
       }
     },
 
@@ -349,11 +386,11 @@ export default {
         this.showSuccessMessage()
         this.webhookError = null
       } catch (error) {
-        this.webhookError = error
+        if (error instanceof Error) this.webhookError = error
       }
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

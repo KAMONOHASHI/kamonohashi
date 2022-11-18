@@ -26,12 +26,14 @@
   </el-form-item>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue from 'vue'
+import { PropType } from 'vue'
+export default Vue.extend({
   props: {
     // 開放するポート番号(number)の配列
     value: {
-      type: Array,
+      type: Array as PropType<Array<number>>,
       default: () => {
         return []
       },
@@ -44,7 +46,7 @@ export default {
     }
   },
   methods: {
-    handleClose(port) {
+    handleClose(port: number) {
       let ports = this.value
       ports.splice(ports.indexOf(port), 1)
       this.$emit('input', ports)
@@ -72,11 +74,11 @@ export default {
       this.inputValue = ''
     },
 
-    portValidator(port) {
+    portValidator(port: number) {
       return 0 <= port && port <= 65535
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

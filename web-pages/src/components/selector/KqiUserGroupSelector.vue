@@ -25,12 +25,18 @@
   </el-form-item>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue from 'vue'
+
+import { PropType } from 'vue'
+import * as gen from '@/api/api.generate'
+export default Vue.extend({
   props: {
     // 表示するuseGroupsの一覧
     userGroups: {
-      type: Array,
+      type: Array as PropType<
+        Array<gen.NssolPlatypusApiModelsUserGroupApiModelsIndexOutputModel>
+      >,
       default: () => {
         return []
       },
@@ -42,7 +48,7 @@ export default {
     },
   },
   methods: {
-    async handleChange(userGroupId) {
+    async handleChange(userGroupId: number | string) {
       if (userGroupId === '') {
         this.$emit('input', null)
       } else {
@@ -50,7 +56,7 @@ export default {
       }
     },
   },
-}
+})
 </script>
 
 <style scoped>

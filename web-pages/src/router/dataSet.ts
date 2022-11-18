@@ -1,5 +1,5 @@
-import Index from '@/views/dataSet/Index'
-import Edit from '@/views/dataSet/Edit'
+import Index from '@/views/dataSet/Index.vue'
+import Edit from '@/views/dataSet/Edit.vue'
 
 export default [
   {

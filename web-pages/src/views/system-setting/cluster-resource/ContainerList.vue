@@ -43,11 +43,15 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue'
+
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('resource')
 
-export default {
+import * as gen from '@/api/api.generate'
+
+export default Vue.extend({
   computed: {
     ...mapGetters(['containerLists']),
     columnWidth: function() {
@@ -62,7 +66,9 @@ export default {
     async retrieveData() {
       await this.fetchContainerLists()
     },
-    handleEditOpen(row) {
+    handleEditOpen(
+      row: gen.NssolPlatypusApiModelsResourceApiModelsContainerDetailsOutputModel,
+    ) {
       // tenantIdが-1のものはDBに登録されていないテナントのものであり詳細情報を取得できないため選択不可とする
       if (row && row.tenantId !== -1) {
         this.$router.push(
@@ -79,7 +85,7 @@ export default {
       this.showSuccessMessage()
     },
   },
-}
+})
 </script>
 
 <style scoped></style>

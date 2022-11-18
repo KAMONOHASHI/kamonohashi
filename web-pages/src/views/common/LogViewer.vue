@@ -26,13 +26,22 @@
   </el-dialog>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue'
+
 import { mapGetters, mapActions } from 'vuex'
 
-const listItemHeight = 17
-const displayLogCount = 50
+const listItemHeight: number = 17
+const displayLogCount: number = 50
 
-export default {
+interface DataType {
+  type: undefined | string
+  title: string
+  logList: Array<string>
+  scroll: number
+  scrollMax: number
+}
+export default Vue.extend({
   props: {
     id: {
       type: String,
@@ -44,11 +53,10 @@ export default {
       default: null,
     },
   },
-  data() {
+  data(): DataType {
     return {
       type: undefined,
       title: 'Log',
-
       logList: [],
       scroll: 0,
       scrollMax: 0,
@@ -150,7 +158,7 @@ export default {
       this.scroll = e.target.scrollTop
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

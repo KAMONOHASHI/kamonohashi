@@ -1,7 +1,19 @@
+import { GetterTree, ActionTree, MutationTree } from 'vuex'
 import api from '@/api/api'
+import * as gen from '@/api/api.generate'
+import { RootState } from '../index'
+
+interface StateType {
+  registries: Array<
+    gen.NssolPlatypusApiModelsAccountApiModelsRegistryCredentialOutputModel
+  >
+  defaultRegistryId: number | null
+  images: Array<String>
+  tags: Array<String>
+}
 
 // initial state
-const state = {
+const state: StateType = {
   registries: [],
   defaultRegistryId: null,
   images: [],
@@ -9,7 +21,7 @@ const state = {
 }
 
 // getters
-const getters = {
+const getters: GetterTree<StateType, RootState> = {
   registries(state) {
     return state.registries
   },
@@ -25,7 +37,7 @@ const getters = {
 }
 
 // actions
-const actions = {
+const actions: ActionTree<StateType, RootState> = {
   async fetchRegistries({ commit }) {
     let response = (await api.account.getRegistries()).data
     let registries = response.registries
@@ -34,7 +46,7 @@ const actions = {
     commit('setDefaultRegistryId', defaultRegistryId)
   },
 
-  async fetchImages({ commit }, registryId) {
+  async fetchImages({ commit }, registryId: number) {
     try {
       let images = (await api.registry.getImages({ registryId: registryId }))
         .data
@@ -45,7 +57,10 @@ const actions = {
     }
   },
 
-  async fetchTags({ commit }, { registryId, image }) {
+  async fetchTags(
+    { commit },
+    { registryId, image }: { registryId: number; image: string },
+  ) {
     try {
       let params = {
         registryId: registryId,
@@ -61,7 +76,7 @@ const actions = {
 }
 
 // mutations
-const mutations = {
+const mutations: MutationTree<StateType> = {
   setRegistries(state, { registries }) {
     state.registries = registries
   },

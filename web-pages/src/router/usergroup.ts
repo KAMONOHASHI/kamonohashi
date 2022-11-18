@@ -1,5 +1,5 @@
-import Index from '@/views/system-setting/userGroup/Index'
-import Edit from '@/views/system-setting/userGroup/Edit'
+import Index from '@/views/system-setting/userGroup/Index.vue'
+import Edit from '@/views/system-setting/userGroup/Edit.vue'
 
 export default [
   {

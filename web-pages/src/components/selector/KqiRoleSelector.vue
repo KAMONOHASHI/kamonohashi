@@ -20,19 +20,24 @@
   </span>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue from 'vue'
+import { PropType } from 'vue'
+import * as gen from '@/api/api.generate'
+export default Vue.extend({
   props: {
     // 選択したロールIDの配列
     value: {
-      type: Array,
+      type: Array as PropType<Array<number>>,
       default: () => {
         return []
       },
     },
     // 選択肢となるロール
     roles: {
-      type: Array,
+      type: Array as PropType<
+        Array<gen.NssolPlatypusApiModelsRoleApiModelsIndexOutputModel>
+      >,
       default: () => {
         return []
       },
@@ -53,7 +58,7 @@ export default {
     },
   },
   methods: {
-    async handleChange(selectedRoleIds) {
+    async handleChange(selectedRoleIds: string | Array<number>) {
       let updateValue = this.value
       if (selectedRoleIds === '') {
         this.$emit('input', null)
@@ -63,7 +68,7 @@ export default {
       }
     },
   },
-}
+})
 </script>
 
 <style scoped>

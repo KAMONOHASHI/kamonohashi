@@ -1,13 +1,20 @@
 import api from '@/api/api'
+import { GetterTree, ActionTree, MutationTree } from 'vuex'
+import { RootState } from '../index'
+import * as gen from '@/api/api.generate'
+interface StateType {
+  menus: Array<gen.NssolPlatypusApiModelsMenuApiModelsMenuForAdminOutputModel>
+  types: Array<gen.NssolPlatypusInfrastructureInfosEnumInfo>
+}
 
 // initial state
-const state = {
+const state: StateType = {
   menus: [],
   types: [],
 }
 
 // getters
-const getters = {
+const getters: GetterTree<StateType, RootState> = {
   menus(state) {
     return state.menus
   },
@@ -17,7 +24,7 @@ const getters = {
 }
 
 // action
-const actions = {
+const actions: ActionTree<StateType, RootState> = {
   async fetchMenus({ commit }) {
     let response = await api.menu.admin.get()
     let menus = response.data
@@ -47,7 +54,7 @@ const actions = {
 }
 
 // mutations
-const mutations = {
+const mutations: MutationTree<StateType> = {
   setMenus(state, { menus }) {
     state.menus = menus
   },

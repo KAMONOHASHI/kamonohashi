@@ -59,12 +59,14 @@
   </kqi-dialog>
 </template>
 
-<script>
-import KqiDialog from '@/components/KqiDialog'
-import KqiDisplayError from '@/components/KqiDisplayError'
-import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
-import KqiRoleSelector from '@/components/selector/KqiRoleSelector'
-import TenantRoleSelector from '@/views/system-setting/user/TenantRoleSelector'
+<script lang="ts">
+import Vue from 'vue'
+
+import KqiDialog from '@/components/KqiDialog.vue'
+import KqiDisplayError from '@/components/KqiDisplayError.vue'
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
+import KqiRoleSelector from '@/components/selector/KqiRoleSelector.vue'
+import TenantRoleSelector from '@/views/system-setting/user/TenantRoleSelector.vue'
 import { mapGetters, mapActions } from 'vuex'
 
 const formRule = {
@@ -73,7 +75,51 @@ const formRule = {
   message: '必須項目です',
 }
 
-export default {
+interface DataType {
+  form: {
+    name: string
+    serviceType: number
+    displayServiceType: string | number
+    password: [string, string]
+    selectedSystemRoleIds: Array<number>
+    tenants: {
+      selectedTenantIds: Array<number>
+      selectedTenants: Array<{
+        tenantId: number
+        tenantName: string
+        selectedRoleIds: Array<number>
+        default: boolean
+      }>
+    }
+  }
+  rules: {
+    name: Array<typeof formRule>
+    password: [{ required: boolean; trigger: string; validator: any }]
+    tenants: [{ required: boolean; trigger: string; validator: any }]
+  }
+  error: null | Error
+  title: null | string
+  deleteButtonParams:
+    | {}
+    | {
+        isDanger: boolean
+        warningText: string
+        confirmText: string
+      }
+  passwordLabel: string
+  isCreateDialog: boolean
+  notOriginTenants: {
+    selectedTenantIds: Array<number>
+    selectedTenants: Array<{
+      tenantId: number
+      tenantName: string
+      selectedRoleIds: Array<number>
+      default: boolean
+    }>
+  }
+}
+
+export default Vue.extend({
   components: {
     KqiDialog,
     KqiDisplayError,
@@ -87,7 +133,7 @@ export default {
       default: null,
     },
   },
-  data() {
+  data(): DataType {
     let passwordValidator = (rule, value, callback) => {
       // 作成時はパスワード入力必須
       if (this.isCreateDialog && !value[0] && !value[1]) {
@@ -152,7 +198,7 @@ export default {
       tenants: ['tenant/tenants'],
       roles: ['role/roles'],
     }),
-    isEditDialog() {
+    isEditDialog(): boolean {
       return !this.isCreateDialog
     },
   },
@@ -183,8 +229,8 @@ export default {
         this.form.tenants.selectedNotOriginTenants = []
 
         this.detail.tenants.forEach(tenant => {
-          let selectedRoleIds = []
-          let selectedNotOriginTenants = []
+          let selectedRoleIds: Array<number> = []
+          let selectedNotOriginTenants: Array<number> = []
           tenant.roles.forEach(role => {
             // KQI上で付与されたロールかどうか
             if (role.isOrigin) {
@@ -217,7 +263,7 @@ export default {
           }
         })
 
-        this.form.error = null
+        this.error = null
         this.deleteButtonParams = {
           isDanger: true,
           warningText:
@@ -225,7 +271,7 @@ export default {
           confirmText: this.form.name,
         }
       } catch (e) {
-        this.error = e
+        if (e instanceof Error) this.error = e
       }
     }
   },
@@ -244,7 +290,11 @@ export default {
       await form.validate(async valid => {
         if (valid) {
           try {
-            let postTenants = []
+            let postTenants: Array<{
+              id: number
+              default: boolean
+              roles: Array<number>
+            }> = []
             this.form.tenants.selectedTenants.forEach(tenant => {
               let postTenant = {
                 id: tenant.tenantId,
@@ -277,7 +327,7 @@ export default {
             this.emitDone()
             this.error = null
           } catch (e) {
-            this.error = e
+            if (e instanceof Error) this.error = e
           }
         }
       })
@@ -288,7 +338,7 @@ export default {
         this.emitDone()
         this.error = null
       } catch (e) {
-        this.error = e
+        if (e instanceof Error) this.error = e
       }
     },
     setNotOriginTenants(tenants) {
@@ -301,7 +351,7 @@ export default {
       this.$emit('cancel')
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

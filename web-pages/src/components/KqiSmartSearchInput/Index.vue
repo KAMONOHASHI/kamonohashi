@@ -61,21 +61,55 @@
     />
   </span>
 </template>
+<script lang="ts">
+import Vue from 'vue'
+import { PropType } from 'vue'
+import SmartSearchInputText from './InputText.vue'
+import SmartSearchInputNumber from './InputNumber.vue'
+import SmartSearchInputDate from './InputDate.vue'
+import SmartSearchInputSelect from './InputSelect.vue'
 
-<script>
-import SmartSearchInputText from './InputText'
-import SmartSearchInputNumber from './InputNumber'
-import SmartSearchInputDate from './InputDate'
-import SmartSearchInputSelect from './InputSelect'
+interface Tag {
+  component:
+    | null
+    | typeof SmartSearchInputText
+    | typeof SmartSearchInputNumber
+    | typeof SmartSearchInputDate
+    | typeof SmartSearchInputSelect
+  config: {
+    type: string
+    name: string
+    prop: string
+    multiple: boolean
+    disabled: boolean
+    option: { default: string }
+  }
+  prefix: string
+  value: string
+  suffix: string
+  input?: boolean
 
-export default {
+  display?: any
+}
+interface DataType {
+  dynamicTags: Array<Tag>
+}
+export default Vue.extend({
   props: {
     value: {
-      type: Object,
+      type: Object as PropType<any>,
       default: () => ({}),
     },
     configs: {
-      type: Array,
+      type: Array as PropType<
+        Array<{
+          prop: string
+          name: string
+          type: string
+          disabled: boolean
+          option: { default: string }
+        }>
+      >,
       default: () => [
         {
           prop: 'id',
@@ -112,7 +146,7 @@ export default {
       default: false,
     },
   },
-  data() {
+  data(): DataType {
     return {
       dynamicTags: [],
     }
@@ -125,7 +159,7 @@ export default {
   },
   methods: {
     // 使用している検索条件の解除
-    handleClose(tag) {
+    handleClose(tag: Tag) {
       this.handleInputCancel(tag)
     },
 
@@ -148,7 +182,7 @@ export default {
     },
 
     // 検索に使用する条件の選択
-    handleEdit(tag) {
+    handleEdit(tag: Tag) {
       let component = null
       if (tag.config.type === 'text') component = SmartSearchInputText
       if (tag.config.type === 'number') component = SmartSearchInputNumber
@@ -173,7 +207,7 @@ export default {
     },
 
     // 下位コンポーネントから'done'を受け取った場合、追加した検索条件を使用して再検索
-    handleInputDone(tag, event) {
+    handleInputDone(tag: Tag, event: any) {
       tag.input = false
       tag.value = event.value
       tag.display = event.display
@@ -201,7 +235,7 @@ export default {
     },
 
     // 対象の検索条件を解除して再検索
-    handleInputCancel(tag) {
+    handleInputCancel(tag: Tag) {
       this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1)
 
       if (tag.config.multiple) {
@@ -228,7 +262,7 @@ export default {
       this.$emit('input', v)
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

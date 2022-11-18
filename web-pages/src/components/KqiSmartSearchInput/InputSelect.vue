@@ -28,15 +28,22 @@
   </span>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue from 'vue'
+import { PropType } from 'vue'
+interface DataType {
+  value: string
+  show: boolean
+  selectData: Array<{ label: string; detail: string; value: string }>
+}
+export default Vue.extend({
   props: {
     tag: {
-      type: Object,
+      type: Object as PropType<any>,
       default: () => {},
     },
   },
-  data() {
+  data(): DataType {
     return {
       value: '',
       show: true,
@@ -60,7 +67,7 @@ export default {
   },
   methods: {
     // 検索条件を指定し、検索
-    handleCommand(row) {
+    handleCommand(row: { label: string; detail: string; value: string }) {
       this.show = false
       this.value = row.label
       let value = row.value
@@ -94,7 +101,7 @@ export default {
       // なければデフォルト値を設定
       if (this.tag.config.option.items) {
         let items = this.tag.config.option.items
-        let ret = []
+        let ret: Array<{ label: string; value: string }> = []
         items.forEach(i => {
           if (typeof i === 'string') {
             ret.push({ label: i, value: i })
@@ -115,7 +122,7 @@ export default {
       this.$emit('cancel')
     },
   },
-}
+})
 </script>
 
 <style scoped></style>

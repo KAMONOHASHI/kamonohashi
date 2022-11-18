@@ -34,25 +34,27 @@
   </el-form-item>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue from 'vue'
+import { PropType } from 'vue'
+export default Vue.extend({
   props: {
     value: {
-      type: Array,
+      type: Array as PropType<Array<{ key: string; value: string }>>,
       default: () => {
         return [{ key: '', value: '' }]
       },
     },
   },
   methods: {
-    removeVariables(index) {
+    removeVariables(index: number) {
       this.value.splice(index, 1)
     },
     addVariables() {
       this.value.push({ key: '', value: '' })
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped></style>

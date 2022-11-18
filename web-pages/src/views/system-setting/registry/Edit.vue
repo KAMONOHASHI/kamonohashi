@@ -71,9 +71,11 @@
   </kqi-dialog>
 </template>
 
-<script>
-import KqiDialog from '@/components/KqiDialog'
-import KqiDisplayError from '@/components/KqiDisplayError'
+<script lang="ts">
+import Vue from 'vue'
+
+import KqiDialog from '@/components/KqiDialog.vue'
+import KqiDisplayError from '@/components/KqiDisplayError.vue'
 import { createNamespacedHelpers } from 'vuex'
 
 const defaultProtocol = 'https://'
@@ -83,8 +85,34 @@ const formRule = {
   trigger: 'blur',
   message: '必須項目です',
 }
+import * as gen from '@/api/api.generate'
 
-export default {
+interface DataType {
+  title: string
+  form: {
+    name: null | string
+    host: null | string
+    portNo: null | number
+    projectName: null | string
+    serviceType: null | gen.NssolPlatypusInfrastructureTypesRegistryServiceType
+    apiUrl: null | string
+    registryUrl: null | string
+  }
+  rules: {
+    name: Array<typeof formRule>
+    host: Array<typeof formRule>
+    apiUrl: Array<typeof formRule>
+    registryUrl: Array<typeof formRule>
+    portNo: Array<typeof formRule>
+    serviceType: Array<typeof formRule>
+    projectName: Array<typeof formRule>
+  }
+  dialogVisible: boolean
+  error: null | Error
+  isNotEditable: boolean
+}
+
+export default Vue.extend({
   components: {
     KqiDialog,
     KqiDisplayError,
@@ -95,8 +123,9 @@ export default {
       default: null,
     },
   },
-  data() {
+  data(): DataType {
     return {
+      title: '',
       form: {
         name: null,
         host: null,
@@ -122,7 +151,7 @@ export default {
   },
   computed: {
     ...mapGetters(['detail', 'serviceTypes']),
-    disabledParams() {
+    disabledParams(): { deleteButton: boolean; submitButton: boolean } {
       return {
         deleteButton: this.isNotEditable,
         submitButton: this.isNotEditable,
@@ -146,7 +175,7 @@ export default {
 
         this.isNotEditable = this.detail.isNotEditable
       } catch (e) {
-        this.error = e
+        if (e instanceof Error) this.error = e
       }
     }
     await this.fetchServiceTypes()
@@ -174,8 +203,8 @@ export default {
               registryUrl:
                 this.form.serviceType === 1
                   ? this.form.registryUrl
-                  : this.form.apiUrl.endsWith('/')
-                  ? this.form.apiUrl.slice(0, -1) + ':' + this.form.portNo
+                  : this.form.apiUrl!.endsWith('/')
+                  ? this.form.apiUrl!.slice(0, -1) + ':' + this.form.portNo
                   : this.form.apiUrl + ':' + this.form.portNo,
             }
             if (this.id === null) {
@@ -186,7 +215,7 @@ export default {
             this.emitDone()
             this.error = null
           } catch (e) {
-            this.error = e
+            if (e instanceof Error) this.error = e
           }
         }
       })
@@ -196,7 +225,7 @@ export default {
         await this.delete(this.id)
         this.emitDone()
       } catch (e) {
-        this.error = e
+        if (e instanceof Error) this.error = e
       }
     },
     handleChange() {
@@ -214,7 +243,7 @@ export default {
       this.$emit('cancel')
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped></style>

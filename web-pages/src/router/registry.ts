@@ -1,5 +1,5 @@
-import Index from '@/views/system-setting/registry/Index'
-import Edit from '@/views/system-setting/registry/Edit'
+import Index from '@/views/system-setting/registry/Index.vue'
+import Edit from '@/views/system-setting/registry/Edit.vue'
 
 export default [
   {

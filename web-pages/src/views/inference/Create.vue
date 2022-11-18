@@ -266,21 +266,85 @@
   </el-dialog>
 </template>
 
-<script>
-import KqiDisplayError from '@/components/KqiDisplayError'
-import KqiDataSetSelector from '@/components/selector/KqiDataSetSelector'
-import KqiTrainingHistorySelector from '@/components/selector/KqiTrainingHistorySelector'
-import KqiInferenceHistorySelector from '@/components/selector/KqiInferenceHistorySelector'
-import KqiContainerSelector from '@/components/selector/KqiContainerSelector'
-import KqiGitSelector from '@/components/selector/KqiGitSelector'
-import KqiResourceSelector from '@/components/selector/KqiResourceSelector'
-import KqiPathInfo from '@/components/KqiPathInfo'
-import KqiEnvironmentVariables from '@/components/KqiEnvironmentVariables'
-import KqiPartitionSelector from '@/components/selector/KqiPartitionSelector'
+<script lang="ts">
+import Vue from 'vue'
+import KqiDisplayError from '@/components/KqiDisplayError.vue'
+import KqiDataSetSelector from '@/components/selector/KqiDataSetSelector.vue'
+import KqiTrainingHistorySelector from '@/components/selector/KqiTrainingHistorySelector.vue'
+import KqiInferenceHistorySelector from '@/components/selector/KqiInferenceHistorySelector.vue'
+import KqiContainerSelector from '@/components/selector/KqiContainerSelector.vue'
+import KqiGitSelector from '@/components/selector/KqiGitSelector.vue'
+import KqiResourceSelector from '@/components/selector/KqiResourceSelector.vue'
+import KqiPathInfo from '@/components/KqiPathInfo.vue'
+import KqiEnvironmentVariables from '@/components/KqiEnvironmentVariables.vue'
+import KqiPartitionSelector from '@/components/selector/KqiPartitionSelector.vue'
 import validator from '@/util/validator'
 import registrySelectorUtil from '@/util/registrySelectorUtil'
 import gitSelectorUtil from '@/util/gitSelectorUtil'
 import { mapActions, mapGetters } from 'vuex'
+
+import * as gen from '@/api/api.generate'
+interface DataType {
+  commitsList: Array<gen.NssolPlatypusServiceModelsGitCommitModel>
+  commitsPage: number
+  form: {
+    name?: string | null
+    dataSetId: string | null
+    entryPoint?: string | null
+    selectedParent: Array<
+      gen.NssolPlatypusApiModelsTrainingApiModelsIndexOutputModel
+    >
+    selectedParentInference: Array<
+      gen.NssolPlatypusApiModelsInferenceApiModelsInferenceIndexOutputModel
+    >
+    containerImage: {
+      registry: {
+        id?: number | null
+        name?: string
+      } | null
+      image: string | null
+      tag: string | null
+    }
+    gitModel: {
+      git: {
+        id?: number | null
+        name?: string
+      } | null
+      repository: string | { name: string; owner: string } | null
+      branch?: string | { branchName: string } | null
+      commit: gen.NssolPlatypusServiceModelsGitCommitModel | null
+    }
+    resource: {
+      cpu?: number
+      memory?: number
+      gpu?: number
+    }
+    variables: [{ key: string; value: string }]
+    partition?: string | null
+    zip?: boolean
+    localDataSet?: boolean
+    memo?: string | null
+  }
+  rules: {
+    name: Array<typeof formRule>
+    dataSetId: Array<typeof formRule>
+    entryPoint: Array<typeof formRule>
+    containerImage: {
+      required: boolean
+      trigger: string
+      validator: any //TODO validator.containerImageValidator
+    }
+    gitModel: {
+      required: boolean
+      trigger: string
+      validator: any //TODO validator.gitModelValidator
+    }
+  }
+  dialogVisible: boolean
+  error: Error | null
+  active: number
+  isCopyCreation: boolean | null
+}
 
 const formRule = {
   required: true,
@@ -288,7 +352,7 @@ const formRule = {
   message: '必須項目です',
 }
 
-export default {
+export default Vue.extend({
   components: {
     KqiDisplayError,
     KqiDataSetSelector,
@@ -307,7 +371,7 @@ export default {
       default: null,
     },
   },
-  data() {
+  data(): DataType {
     return {
       commitsList: [],
       commitsPage: 1,
@@ -430,7 +494,9 @@ export default {
 
     // 学習からの遷移、もしくはコピー実行時はコピー元情報を各項目を設定
     if (this.isCopyCreation) {
-      let detail = {}
+      let detail:
+        | gen.NssolPlatypusApiModelsTrainingApiModelsDetailsOutputModel
+        | gen.NssolPlatypusApiModelsInferenceApiModelsInferenceDetailsOutputModel = {}
       if (fromTrainView) {
         // 学習からの遷移
         await this['training/fetchDetail'](this.originId)
@@ -447,7 +513,7 @@ export default {
         this.form.selectedParent = []
         if (detail.parents) {
           this.trainingHistories.forEach(history => {
-            detail.parents.forEach(parent => {
+            detail.parents!.forEach(parent => {
               if (history.id === parent.id) {
                 this.form.selectedParent.push(parent)
               }
@@ -469,48 +535,50 @@ export default {
         this.form.resource.gpu = detail.gpu
 
         this.form.variables =
-          detail.options.length === 0
+          detail.options!.length === 0
             ? [{ key: '', value: '' }]
             : detail.options
         this.form.partition = detail.partition
       }
 
       // 下記は学習からの遷移/コピー実行に関わらずコピー
-      this.form.dataSetId = String(detail.dataSet.id)
-      await this['dataSet/fetchDetail'](String(detail.dataSet.id))
+      this.form.dataSetId = String(detail.dataSet!.id)
+      await this['dataSet/fetchDetail'](String(detail.dataSet!.id))
 
       // レジストリの設定
       this.form.containerImage.registry = {
-        id: detail.containerImage.registryId,
-        name: detail.containerImage.name,
+        id: detail.containerImage!.registryId,
+        name: detail.containerImage!.name, //TODO nameが存在しないが使用していないので消してよいのでは
       }
-      await this.selectRegistry(detail.containerImage.registryId)
-      this.form.containerImage.image = detail.containerImage.image
-      await this.selectImage(detail.containerImage.image)
-      this.form.containerImage.tag = detail.containerImage.tag
+      await this.selectRegistry(detail.containerImage!.registryId!)
+      this.form.containerImage.image = detail.containerImage!.image
+      await this.selectImage(detail.containerImage!.image)
+      this.form.containerImage.tag = detail.containerImage!.tag
 
       // gitモデルの設定
       this.form.gitModel.git = {
-        id: detail.gitModel.gitId,
-        name: detail.gitModel.name,
+        id: detail.gitModel!.gitId,
+        name: detail.gitModel!.name, //TODO nameが存在しないが使用していないので消してよいのでは
       }
-      await this.selectGit(detail.gitModel.gitId)
-      this.form.gitModel.repository = `${detail.gitModel.owner}/${detail.gitModel.repository}`
+      await this.selectGit(detail.gitModel!.gitId)
+      this.form.gitModel.repository = `${detail.gitModel!.owner}/${
+        detail.gitModel!.repository
+      }`
       await this.selectRepository(this.form.gitModel.repository)
-      this.form.gitModel.branch = detail.gitModel.branch
-      await this.selectBranch(detail.gitModel.branch)
+      this.form.gitModel!.branch = detail.gitModel!.branch
+      await this.selectBranch(detail.gitModel!.branch!)
       // commitsから該当commitを抽出
       let commit = this.commits.find(commit => {
-        return commit.commitId === detail.gitModel.commitId
+        return commit.commitId === detail.gitModel!.commitId
       })
       if (commit) {
         this.form.gitModel.commit = commit
       } else {
         // コミット一覧に含まれないコミットなので、コミット情報を新たに取得する
         await this['gitSelector/fetchCommitDetail']({
-          gitId: this.form.gitModel.git.id,
+          gitId: this.form.gitModel!.git!.id,
           repository: this.form.gitModel.repository,
-          commitId: detail.gitModel.commitId,
+          commitId: detail.gitModel!.commitId,
         })
         this.form.gitModel.commit = this.commitDetail
       }
@@ -548,19 +616,19 @@ export default {
       await form.validate(async valid => {
         if (valid) {
           try {
-            let options = {}
+            let options: { [key: string]: string } = {}
             // apiのフォーマットに合わせる(配列 => オブジェクト)
             this.form.variables.forEach(kvp => {
               options[kvp.key] = kvp.value
             })
             // training history ObjectのリストからIDのみを抜き出して格納
-            let selectedParentIds = []
+            let selectedParentIds: Array<number> = []
             this.form.selectedParent.forEach(parent => {
-              selectedParentIds.push(parent.id)
+              selectedParentIds.push(parent.id!)
             })
-            let selectedParentInferenceIds = []
+            let selectedParentInferenceIds: Array<number> = []
             this.form.selectedParentInference.forEach(inference => {
-              selectedParentInferenceIds.push(inference.id)
+              selectedParentInferenceIds.push(inference.id!)
             })
             // ブランチ未指定の際はcommitIdも未指定で実行
             // ブランチ指定時、HEADが指定された際はcommitsの先頭要素をcommitIDに指定する。コピー実行時の再現性を担保するため
@@ -572,7 +640,7 @@ export default {
             }
             // コピー時ブランチを切り替えずに実行
             // パラメータに格納する際の形を統一するため整形を行う
-            if (typeof this.form.gitModel.branch.branchName === 'undefined') {
+            if (typeof this.form.gitModel.branch === 'string') {
               let branch = { branchName: this.form.gitModel.branch }
               this.form.gitModel.branch = branch
             }
@@ -583,16 +651,16 @@ export default {
               ParentIds: selectedParentIds,
               inferenceIds: selectedParentInferenceIds,
               ContainerImage: {
-                registryId: this.form.containerImage.registry.id,
+                registryId: this.form.containerImage.registry!.id,
                 image: this.form.containerImage.image,
                 tag: this.form.containerImage.tag,
               },
               GitModel: {
-                gitId: this.form.gitModel.git.id,
-                repository: this.form.gitModel.repository.name,
-                owner: this.form.gitModel.repository.owner,
+                gitId: this.form.gitModel.git!.id,
+                repository: this.form.gitModel.repository!.name,
+                owner: this.form.gitModel.repository!.owner,
                 branch: this.form.gitModel.branch
-                  ? this.form.gitModel.branch.branchName
+                  ? this.form.gitModel.branch!.branchName
                   : null,
                 commitId: commitId,
               },
@@ -610,7 +678,7 @@ export default {
             this.emitDone()
             this.error = null
           } catch (e) {
-            this.error = e
+            if (e instanceof Error) this.error = e
           }
         }
       })
@@ -652,24 +720,24 @@ export default {
     },
 
     // コンテナイメージ
-    async selectRegistry(registryId) {
+    async selectRegistry(registryId: number) {
       await registrySelectorUtil.selectRegistry(
         this.form,
         this['registrySelector/fetchImages'],
         registryId,
       )
     },
-    async selectImage(image) {
+    async selectImage(image: string) {
       await registrySelectorUtil.selectImage(
         this.form,
         this['registrySelector/fetchTags'],
-        this.form.containerImage.registry.id,
+        this.form.containerImage.registry!.id,
         image,
       )
     },
 
     // モデル
-    async selectGit(gitId) {
+    async selectGit(gitId: number | null | undefined) {
       await gitSelectorUtil.selectGit(
         this.form,
         this['gitSelector/fetchRepositories'],
@@ -678,7 +746,9 @@ export default {
       )
     },
     // repositoryの型がstring：手入力, object: 選択
-    async selectRepository(repository) {
+    async selectRepository(
+      repository: string | { owner: string; name: string; fulName: string },
+    ) {
       try {
         await gitSelectorUtil.selectRepository(
           this.form,
@@ -691,7 +761,7 @@ export default {
         })
       }
     },
-    async selectBranch(branchName) {
+    async selectBranch(branchName: string | null) {
       this.commitsPage = 1
       // 過去の選択状態をリセット
       this.form.gitModel.commit = null
@@ -703,9 +773,9 @@ export default {
       )
       this.commitsList = [...this.commits]
     },
-    async searchCommitId(commitId) {
+    async searchCommitId(commitId: string) {
       await this['gitSelector/fetchCommitDetail']({
-        gitId: this.form.gitModel.git.id,
+        gitId: this.form.gitModel.git!.id,
         repository: this.form.gitModel.repository,
         commitId: commitId,
       })
@@ -716,20 +786,20 @@ export default {
     async getMoreCommits() {
       this.commitsPage++
       // コピー実行時、パラメータに格納する際の形を統一するため整形を行う
-      if (typeof this.form.gitModel.branch.branchName === 'undefined') {
+      if (typeof this.form.gitModel.branch === 'string') {
         let branch = { branchName: this.form.gitModel.branch }
         this.form.gitModel.branch = branch
       }
       await gitSelectorUtil.selectBranch(
         this.form,
         this['gitSelector/fetchCommits'],
-        this.form.gitModel.branch.branchName,
+        this.form.gitModel.branch!.branchName,
         this.commitsPage,
       )
       this.commitsList = this.commitsList.concat(this.commits)
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>
