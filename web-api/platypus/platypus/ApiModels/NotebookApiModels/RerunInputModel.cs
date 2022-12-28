@@ -34,6 +34,9 @@ namespace Nssol.Platypus.ApiModels.NotebookApiModels
         /// </summary>
         public GitCommitInputModel GitModel { get; set; }
 
+        /// <summary>
+        /// 起動するJupyterLabのバージョン
+        /// </summary>
         public string JupyterLabVersion { get; set; }
 
         /// <summary>

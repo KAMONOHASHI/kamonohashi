@@ -23,7 +23,7 @@ namespace Nssol.Platypus.Services.Interfaces
         /// 指定したテナントに、新規にコンテナを作成する。
         /// 失敗した場合はnullが返る。
         /// </summary>
-        Task<Result<RunContainerOutputModel, string>> RunContainerAsync(RunContainerInputModel inModel);
+        Task<Result<RunContainerOutputModel, string>> RunContainerAsync(RunContainerInputModel inModel, string baseUrl);
 
         /// <summary>
         /// 全コンテナ情報を取得する
@@ -137,7 +137,7 @@ namespace Nssol.Platypus.Services.Interfaces
         /// <remarks>
         /// 名前空間とロールは作成済みの前提。存在確認は行わない。
         /// </remarks>
-        Task<string> RegistUserAsync(string tenantName, string userName);
+        Task<string> RegistUserAsync(string tenantName, string userName, KubernetesEndpointModel kubernetes = null);
 
         /// <summary>
         /// クラスタ管理サービスよりテナントを抹消(削除)する。

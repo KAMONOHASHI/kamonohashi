@@ -4,6 +4,7 @@ using Nssol.Platypus.Infrastructure.Infos;
 using Nssol.Platypus.Infrastructure.Types;
 using Nssol.Platypus.Models;
 using Nssol.Platypus.Models.TenantModels;
+using Nssol.Platypus.ServiceModels.ClusterManagementModels;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -64,6 +65,8 @@ namespace Nssol.Platypus.Logic.Interfaces
         /// 全コンテナの情報を取得する
         /// </summary>
         Task<Result<IEnumerable<ContainerDetailsInfo>, ContainerStatus>> GetAllContainerDetailsInfosAsync();
+
+        Task<Result<IEnumerable<ContainerDetailsInfo>, ContainerStatus>> GetAllContainerDetailsInfosAsync(KubernetesEndpointModel kubernetesEndpoint);
 
         /// <summary>
         /// 特定のテナントに紐づいた全コンテナの情報を取得する
@@ -207,7 +210,7 @@ namespace Nssol.Platypus.Logic.Interfaces
         /// ログイン中のユーザ＆テナントに対する、クラスタ管理サービスにアクセスするためのトークンを取得する。
         /// 存在しない場合、新規に作成する。
         /// </summary>
-        Task<string> GetUserAccessTokenAsync();
+        Task<string> GetUserAccessTokenAsync(KubernetesEndpointModel kubernetesEndpoint = null);
 
         /// <summary>
         /// 指定したテナントを抹消(削除)する。

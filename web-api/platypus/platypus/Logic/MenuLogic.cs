@@ -51,6 +51,7 @@ namespace Nssol.Platypus.Logic
                 NodeMenu,
                 MenuAccessMenu,
                 ResourceMenu,
+                EksMenu,
 
                 AquariumDataSetMenu,
                 TemplateMenu,
@@ -612,6 +613,16 @@ namespace Nssol.Platypus.Logic
             ShowSideMenu = true,
             MenuType = MenuType.System
         };
+        internal static MenuItemInfo EksMenu = new MenuItemInfo()
+        {
+            Name = "EKS管理",
+            Description = "EKSの登録と利用可能テナントの設定",
+            Code = MenuCode.Eks,
+            Url = "/eks",
+            ShowTopMenu = false,
+            ShowSideMenu = true,
+            MenuType = MenuType.System
+        };
         internal static MenuItemInfo UserMenu = new MenuItemInfo()
         {
             Name = "ユーザ管理",
@@ -707,7 +718,8 @@ namespace Nssol.Platypus.Logic
                     UserMenu,
                     UserGroupMenu,
                     MenuAccessMenu,
-                    ResourceMenu
+                    ResourceMenu,
+                    EksMenu
                 }
             }
         };

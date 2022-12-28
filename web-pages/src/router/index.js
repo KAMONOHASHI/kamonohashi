@@ -24,6 +24,7 @@ import usergroup from '@/router/usergroup'
 import menu from '@/router/menu'
 import clusterResource from '@/router/cluster-resource'
 import version from '@/router/version'
+import eks from '@/router/eks'
 import Util from '../util/util'
 
 Vue.use(Router)
@@ -53,6 +54,7 @@ let router = new Router({
     ...menu,
     ...clusterResource,
     ...version,
+    ...eks,
   ],
 })
 router.beforeEach(async (to, from, next) => {
