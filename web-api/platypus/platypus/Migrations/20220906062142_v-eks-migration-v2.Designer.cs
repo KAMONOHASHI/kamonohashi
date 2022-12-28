@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Nssol.Platypus.DataAccess;
@@ -9,9 +10,10 @@ using Nssol.Platypus.DataAccess;
 namespace Nssol.Platypus.Migrations
 {
     [DbContext(typeof(CommonDbContext))]
-    partial class CommonDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220906062142_v-eks-migration-v2")]
+    partial class veksmigrationv2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2927,46 +2929,6 @@ namespace Nssol.Platypus.Migrations
                     b.ToTable("UserRoleMaps");
                 });
 
-            modelBuilder.Entity("Nssol.Platypus.Models.UserTenantEksMap", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("ModifiedAt")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("ModifiedBy")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<long>("TenantEksMapId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TenantEksMapId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserTenantEksMaps");
-                });
-
             modelBuilder.Entity("Nssol.Platypus.Models.UserTenantGitMap", b =>
                 {
                     b.Property<long>("Id")
@@ -3873,21 +3835,6 @@ namespace Nssol.Platypus.Migrations
                     b.HasOne("Nssol.Platypus.Models.UserTenantMap", "TenantMap")
                         .WithMany()
                         .HasForeignKey("TenantMapId");
-
-                    b.HasOne("Nssol.Platypus.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Nssol.Platypus.Models.UserTenantEksMap", b =>
-                {
-                    b.HasOne("Nssol.Platypus.Models.TenantEksMap", "TenantEksMap")
-                        .WithMany()
-                        .HasForeignKey("TenantEksMapId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
 
                     b.HasOne("Nssol.Platypus.Models.User", "User")
                         .WithMany()

@@ -137,7 +137,7 @@ namespace Nssol.Platypus.Services.Interfaces
         /// <remarks>
         /// 名前空間とロールは作成済みの前提。存在確認は行わない。
         /// </remarks>
-        Task<string> RegistUserAsync(string tenantName, string userName);
+        Task<string> RegistUserAsync(string tenantName, string userName, KubernetesEndpointModel kubernetes = null);
 
         /// <summary>
         /// クラスタ管理サービスよりテナントを抹消(削除)する。

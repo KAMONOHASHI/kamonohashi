@@ -119,7 +119,6 @@
         /// EKS管理
         /// </summary>
         Eks,
-
         /// <summary>
         /// モデルテンプレート
         /// </summary>

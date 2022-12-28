@@ -140,7 +140,7 @@ namespace Nssol.Platypus.Services
         /// コンテナを削除する。
         /// 対象コンテナが存在しない場合はエラーになる。
         /// </summary>
-        public async Task<bool> DeleteContainerAsync(ContainerType type, string containerName, string tenantName, string token, string )
+        public async Task<bool> DeleteContainerAsync(ContainerType type, string containerName, string tenantName, string token)
         {
             //ServiceとConfigMapはない可能性があるので、要否を確認
             bool hasService = false;
@@ -1391,37 +1391,38 @@ namespace Nssol.Platypus.Services
         /// <remarks>
         /// 名前空間とロールは作成済みの前提。存在確認は行わない。
         /// </remarks>
-        public async Task<string> RegistUserAsync(string tenantName, string userName)
+        public async Task<string> RegistUserAsync(string tenantName, string userName, KubernetesEndpointModel kubernetesEndpoint = null)
         {
             //Admin権限で実行するため、共通トークンを使用する
-            string token = containerOptions.ResourceManageKey;
+            string token = kubernetesEndpoint == null ? containerOptions.ResourceManageKey: kubernetesEndpoint.Token;
+            string baseUrl = kubernetesEndpoint == null ? containerOptions.ContainerServiceBaseUrl : kubernetesEndpoint.ContainerServiceBaseUrl;
 
             //サービスアカウント（＝k8s側のユーザアカウント）を作成する
-            if (await CreateServiceAccountAsync(tenantName, userName, token) == false)
+            if (await CreateServiceAccountAsync(tenantName, userName, token, baseUrl) == false)
             {
                 return null;
             }
 
             //ロールバインディングを行う
-            if (await BindRoleToServiceAccountAsync(tenantName, userName, token) == false)
+            if (await BindRoleToServiceAccountAsync(tenantName, userName, token, baseUrl) == false)
             {
                 return null;
             }
 
             //トークンを作成する
-            return await GetUserTokenAsync(tenantName, userName, token);
+            return await GetUserTokenAsync(tenantName, userName, token, baseUrl);
         }
 
         /// <summary>
         /// サービスアカウントが存在するか確認する。
         /// 存在する場合はその認証トークン（シークレット）を返す。
         /// </summary>
-        private async Task<ResponseResult> GetServiceAccountAsync(string tenantName, string userName, string token)
+        private async Task<ResponseResult> GetServiceAccountAsync(string tenantName, string userName, string token, string baseUrl = null)
         {
             //既にアカウントがあるか確認
             var exists = (await SendGetRequestAsync(new RequestParam()
             {
-                BaseUrl = containerOptions.ContainerServiceBaseUrl,
+                BaseUrl = String.IsNullOrEmpty(baseUrl) ? containerOptions.ContainerServiceBaseUrl: baseUrl,
                 ApiPath = $"/api/v1/namespaces/{tenantName}/serviceaccounts/{userName}",
                 Token = token
             }));
@@ -1432,10 +1433,10 @@ namespace Nssol.Platypus.Services
         /// <summary>
         /// サービスアカウントを作成する。すでにある場合は何もしない。
         /// </summary>
-        private async Task<bool> CreateServiceAccountAsync(string tenantName, string userName, string token)
+        private async Task<bool> CreateServiceAccountAsync(string tenantName, string userName, string token, string baseUrl = null)
         {
             //既にアカウントがあるか確認
-            var exists = await GetServiceAccountAsync(tenantName, userName, token);
+            var exists = await GetServiceAccountAsync(tenantName, userName, token, baseUrl);
             if (exists.IsSuccess)
             {
                 LogInformation($"サービスアカウント {userName}@{tenantName} は既に作成済み");
@@ -1450,7 +1451,7 @@ namespace Nssol.Platypus.Services
             });
             var param = new RequestParam()
             {
-                BaseUrl = containerOptions.ContainerServiceBaseUrl,
+                BaseUrl = String.IsNullOrEmpty(baseUrl) ? containerOptions.ContainerServiceBaseUrl : baseUrl,
                 ApiPath = $"/api/v1/namespaces/{tenantName}/serviceaccounts",
                 Token = token,
                 Body = body,
@@ -1472,12 +1473,12 @@ namespace Nssol.Platypus.Services
         /// <summary>
         /// 指定したサービスアカウントにロールを紐づける。
         /// </summary>
-        private async Task<bool> BindRoleToServiceAccountAsync(string tenantName, string userName, string token)
+        private async Task<bool> BindRoleToServiceAccountAsync(string tenantName, string userName, string token, string baseUrl = null)
         {
             //既にバインド済みか確認
             var exists = (await SendGetRequestAsync(new RequestParam()
             {
-                BaseUrl = containerOptions.ContainerServiceBaseUrl,
+                BaseUrl = string.IsNullOrEmpty(baseUrl) ? containerOptions.ContainerServiceBaseUrl: baseUrl,
                 ApiPath = $"/apis/rbac.authorization.k8s.io/v1/namespaces/{tenantName}/rolebindings/{tenantName}-{userName}",
                 Token = token
             })).IsSuccess;
@@ -1496,7 +1497,7 @@ namespace Nssol.Platypus.Services
             });
             var param = new RequestParam()
             {
-                BaseUrl = containerOptions.ContainerServiceBaseUrl,
+                BaseUrl = string.IsNullOrEmpty(baseUrl) ? containerOptions.ContainerServiceBaseUrl : baseUrl,
                 ApiPath = $"/apis/rbac.authorization.k8s.io/v1/namespaces/{tenantName}/rolebindings",
                 Token = token,
                 Body = body,
@@ -1520,7 +1521,7 @@ namespace Nssol.Platypus.Services
         /// 存在しない場合は作成する。
         /// 取得に失敗した場合はnullを返す。
         /// </summary>
-        private async Task<string> GetUserTokenAsync(string tenantName, string userName, string token)
+        private async Task<string> GetUserTokenAsync(string tenantName, string userName, string token, string baseUrl = null)
         {
             // トークン取得前処理
             string secret = string.Empty;
@@ -1528,7 +1529,7 @@ namespace Nssol.Platypus.Services
             // 最大５回までポーリングする
             for (int i = 0; i < 5; i++)
             {
-                var result = await GetServiceAccountAsync(tenantName, userName, token);
+                var result = await GetServiceAccountAsync(tenantName, userName, token, baseUrl);
 
                 //そもそもアカウントが作られていない場合はエラー
                 if (result.IsSuccess == false)
@@ -1555,7 +1556,7 @@ namespace Nssol.Platypus.Services
             // トークン取得
             var response = (await SendGetRequestAsync(new RequestParam()
             {
-                BaseUrl = containerOptions.ContainerServiceBaseUrl,
+                BaseUrl = string.IsNullOrEmpty(baseUrl) ? containerOptions.ContainerServiceBaseUrl : baseUrl,
                 ApiPath = $"/api/v1/namespaces/{tenantName}/secrets/{secret}",
                 Token = token
             }));

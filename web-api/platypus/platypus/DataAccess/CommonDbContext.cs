@@ -146,6 +146,21 @@ namespace Nssol.Platypus.DataAccess
         /// </summary>
         public virtual DbSet<UserGroupTenantMap> UserGroupTenantMaps { get; set; }
 
+        /// <summary>
+        /// EKS情報
+        /// </summary>
+        public virtual DbSet<Eks> Eks { get; set; }
+
+        /// <summary>
+        /// EKS情報とテナントの中間テーブル
+        /// </summary>
+        public virtual DbSet<TenantEksMap> TenantEksMaps { get; set; }
+
+        /// <summary>
+        /// EKS情報とテナントとユーザーの中間テーブル
+        /// </summary>
+        public virtual DbSet<UserTenantEksMap> UserTenantEksMaps { get; set; }
+
         #endregion
 
         #region テナント用DbSet

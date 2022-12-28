@@ -58,7 +58,7 @@ export default {
 
       if (!cookieToken) {
         // Cookieにトークン情報がないときはログアウト
-        this.$store.dispatch['account/logout']
+        // this.$store.dispatch['account/logout']
       } else {
         // Cookieにトークン情報があるときはCookie情報を更新
         Util.setCookie(cookieTokenKey, token)

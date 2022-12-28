@@ -27,6 +27,7 @@ namespace Nssol.Platypus.Logic
         private readonly IUserRepository userRepository;
         private readonly INodeRepository nodeRepository;
         private readonly ITensorBoardContainerRepository tensorBoardContainerRepository;
+        private readonly IEksRepository eksRepository;
         private readonly IUnitOfWork unitOfWork;
         private readonly ILoginLogic loginLogic;
         private readonly IGitLogic gitLogic;
@@ -43,6 +44,7 @@ namespace Nssol.Platypus.Logic
             IUserRepository userRepository,
             INodeRepository nodeRepository,
             ITensorBoardContainerRepository tensorBoardContainerRepository,
+            IEksRepository eksRepository,
             IClusterManagementService clusterManagementService,
             IUnitOfWork unitOfWork,
             ILoginLogic loginLogic,
@@ -55,6 +57,7 @@ namespace Nssol.Platypus.Logic
             this.tensorBoardContainerRepository = tensorBoardContainerRepository;
             this.userRepository = userRepository;
             this.nodeRepository = nodeRepository;
+            this.eksRepository = eksRepository;
             this.clusterManagementService = clusterManagementService;
             this.loginLogic = loginLogic;
             this.gitLogic = gitLogic;
@@ -69,16 +72,28 @@ namespace Nssol.Platypus.Logic
         /// <summary>
         /// クラスタ管理サービスにアクセスするための認証トークンを取得する
         /// </summary>
-        private async Task<string> GetTokenAsync(bool force)
+        private async Task<string> GetTokenAsync(bool force, KubernetesEndpointModel kubernetesEndpoint = null)
         {
             if (force)
             {
-                return containerOptions.ResourceManageKey;
+                return kubernetesEndpoint == null || !kubernetesEndpoint.Id.HasValue ? containerOptions.ResourceManageKey : kubernetesEndpoint.Token;
             }
             else
             {
-                return await GetUserAccessTokenAsync();
+                return await GetUserAccessTokenAsync(kubernetesEndpoint);
             }
+        }
+
+        /// <summary>
+        /// 全コンテナの情報を取得する
+        /// </summary>
+        public async Task<Result<IEnumerable<ContainerDetailsInfo>, ContainerStatus>> GetAllContainerDetailsInfosAsync(KubernetesEndpointModel kubernetesEndpoint = null)
+        {
+            string token = await GetTokenAsync(true);
+            
+            var result = await clusterManagementService.GetAllContainerDetailsInfosAsync(token);
+            
+            return result;
         }
 
         /// <summary>
@@ -87,9 +102,12 @@ namespace Nssol.Platypus.Logic
         public async Task<Result<IEnumerable<ContainerDetailsInfo>, ContainerStatus>> GetAllContainerDetailsInfosAsync()
         {
             string token = await GetTokenAsync(true);
+
             var result = await clusterManagementService.GetAllContainerDetailsInfosAsync(token);
+
             return result;
         }
+
 
         /// <summary>
         /// 特定のテナントに紐づいた全コンテナの情報を取得する
@@ -410,7 +428,11 @@ namespace Nssol.Platypus.Logic
         public async Task<Result<ContainerInfo, string>> RunTrainContainerAsync(TrainingHistory trainHistory, string scriptType,
             string regisryTokenName, string gitToken)
         {
-            string token = await GetUserAccessTokenAsync();
+            // 接続先のk8sの情報を取得する
+            KubernetesEndpointModel kubernetesEndpoints = await GetAccessKubernetesEndpoint(false);
+
+            // 接続のk8s情報に応じて、トークンを取得する
+            string token = await GetUserAccessTokenAsync(kubernetesEndpoints);
             if (token == null)
             {
                 //トークンがない場合、結果はnull
@@ -1625,9 +1647,18 @@ namespace Nssol.Platypus.Logic
         /// ログイン中のユーザ＆テナントに対する、クラスタ管理サービスにアクセスするためのトークンを取得する。
         /// 存在しない場合、新規に作成する。
         /// </summary>
-        public async Task<string> GetUserAccessTokenAsync()
+        /// <param name="kubernetesEndpoint">接続先k8sエンドポイント (引数を指定しない場合は、KQIで管理するk8sクラスタに接続する)</param>
+        public async Task<string> GetUserAccessTokenAsync(KubernetesEndpointModel kubernetesEndpoint = null)
         {
-            string token = userRepository.GetClusterToken(CurrentUserInfo.Id, CurrentUserInfo.SelectedTenant.Id);
+            string token = null;
+            if (kubernetesEndpoint != null && kubernetesEndpoint.Id.HasValue)
+            {
+                token = eksRepository.GetUserToken(CurrentUserInfo.Id, CurrentUserInfo.SelectedTenant.Id, kubernetesEndpoint.Id.Value);
+            }
+            else
+            {
+                token = userRepository.GetClusterToken(CurrentUserInfo.Id, CurrentUserInfo.SelectedTenant.Id);
+            }
 
             if (token == null)
             {
@@ -1645,7 +1676,15 @@ namespace Nssol.Platypus.Logic
 
                     CurrentUserInfo.Alias = alias;
                 }
-                token = await clusterManagementService.RegistUserAsync(TenantName, CurrentUserInfo.Alias);
+
+                if (kubernetesEndpoint != null && kubernetesEndpoint.Id.HasValue)
+                {
+                    token = await clusterManagementService.RegistUserAsync(TenantName, CurrentUserInfo.Alias, kubernetesEndpoint);
+                }
+                else
+                {
+                    token = await clusterManagementService.RegistUserAsync(TenantName, CurrentUserInfo.Alias);
+                }
 
                 if (token == null)
                 {
@@ -1794,7 +1833,91 @@ namespace Nssol.Platypus.Logic
         /// </returns>
         public string GetAccessKubernetesEndpointsForRunningJob()
         {
+            // KQIで管理しているk8sから、ジョブの一覧を取得する
+            // var pendingJobs = await GetAllContainerDetailsInfosAsync();
+
             return containerOptions.ContainerServiceBaseUrl;
+        }
+
+        /// <summary>
+        /// 接続先のk8sのエンドポイントの情報を格納したクラスを取得する。
+        /// 実際の実装時にはkqiを管理しているk8sエンドポイントにキューイングされ待ちとなっている
+        /// ジョブの数の計測等を行う必要があるが、現時点ではダミーとして実装している。
+        /// </summary>
+        /// <param name="defaultKubernetes">Kamonohashiで管理しているk8sを指定するか</param>
+        /// <returns>
+        /// 接続先のk8sのAPIのエンドポイントの情報を格納したクラス
+        /// </returns>
+        public async Task<KubernetesEndpointModel> GetAccessKubernetesEndpoint(bool defaultKubernetes)
+        {
+            // KQIで管理しているk8sに接続する場合
+            if (defaultKubernetes)
+            {
+                return new KubernetesEndpointModel()
+                {
+                    HostName = containerOptions.KubernetesHostName,
+                    PortNumber = containerOptions.KubernetesPort,
+                    Token = containerOptions.ResourceManageKey,
+                };
+            }
+
+            // KQIで管理している以外のk8sに接続する場合
+            // 現在のテナントで利用可能なk8sの一覧を取得
+            var eksCluster = eksRepository.GetEksByTenantId(CurrentUserInfo.SelectedTenant.Id).FirstOrDefault();
+            // 利用可能なk8sがなければKQIで管理しているk8sを返す
+            if (eksCluster == null)
+            {
+                return new KubernetesEndpointModel()
+                {
+                    HostName = containerOptions.KubernetesHostName,
+                    PortNumber = containerOptions.KubernetesPort,
+                    Token = containerOptions.ResourceManageKey,
+                };
+            }
+
+            // 利用可能な外部のk8sが存在する場合、ペンディング状態のコンテナ数を計測し
+            // ペンディング状態のジョブの数を超えていればそのEksを使用する
+            var nodes = nodeRepository.GetAll().OrderBy(n => n.Name);
+            var result = await GetAllContainerDetailsInfosAsync(
+                new KubernetesEndpointModel()
+                {
+                    HostName = containerOptions.KubernetesHostName,
+                    PortNumber = containerOptions.KubernetesPort,
+                    Token = containerOptions.ResourceManageKey,
+                });
+            IEnumerable<ContainerDetailsInfo> pendingContainers = null;
+            if (result.IsSuccess)
+            {
+                // 登録ノードに所属していないコンテナを残す
+                pendingContainers = result.Value.Where(c => "Pending".Equals(c.Status.ToString()));
+            }
+            else
+            {   
+                // コンテナの取得に失敗した場合はnullを返す
+                return null;
+            }
+
+            // ペンディング状態のコンテナの数に応じて接続先のk8s情報を返す
+            if (pendingContainers.Count() > eksCluster.UsablePendingJobCounts)
+            {
+                return new KubernetesEndpointModel()
+                {
+                    Id = eksCluster.Id,
+                    Name = eksCluster.Name,
+                    HostName = eksCluster.HostName,
+                    Token = eksCluster.Token,
+                    PortNumber = eksCluster.PortNumber,
+                };
+            }
+            else
+            {
+                return new KubernetesEndpointModel()
+                {
+                    HostName = containerOptions.KubernetesHostName,
+                    PortNumber = containerOptions.KubernetesPort,
+                    Token = containerOptions.ResourceManageKey,
+                };
+            }
         }
         #endregion
     }

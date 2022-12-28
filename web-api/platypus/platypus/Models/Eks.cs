@@ -26,6 +26,11 @@ namespace Nssol.Platypus.Models
         public string HostName { get; set; }
 
         /// <summary>
+        /// 待ち状態のコンテナ数がいくつ以上の場合にEKSを利用するか
+        /// </summary>
+        public long UsablePendingJobCounts { get; set; }
+
+        /// <summary>
         /// ポート番号
         /// </summary>
         [Required]

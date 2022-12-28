@@ -24,6 +24,14 @@ namespace Nssol.Platypus.DataAccess.Repositories
         }
 
         /// <summary>
+        /// 対象のテナントで利用可能なEKSの一覧を取得する
+        /// </summary>
+        public IEnumerable<Eks> GetEksByTenantId(long tenantId)
+        {
+            return FindModelAll<TenantEksMap>(map => map.TenantId == tenantId).Include(map => map.Eks).Select(map => map.Eks);
+        }
+
+        /// <summary>
         /// EKSのノードへのアサイン状況をリセットする
         /// </summary>
         /// <param name="eksId">対象のEKSのデータのID</param>
@@ -58,6 +66,34 @@ namespace Nssol.Platypus.DataAccess.Repositories
                     map.EksId = eks.Id;
                 }
                 AddModel<TenantEksMap>(map);
+            }
+        }
+
+        /// <summary>
+        /// ユーザー、テナント、EKSのデータからユーザーのトークンを取得する
+        /// 存在しない場合は、nullが返る
+        /// </summary>
+        public string GetUserToken(long userId, long tenantId, long eksId)
+        {
+            // テナントとEKSのマッピングを取得する
+            var tenantEksMap = FindModelAll<TenantEksMap>(map => map.TenantId == tenantId && map.EksId == eksId).FirstOrDefault();
+            // 存在しない場合はnullが返る
+            if (tenantEksMap == null)
+            {
+                return null;
+            }
+
+            // ユーザー、テナント、EKSのデータからユーザーのトークンを取得する
+            var userTenantEksMap = FindModelAll<UserTenantEksMap>(map =>
+            map.TenantEksMapId == tenantEksMap.Id && map.UserId == userId).FirstOrDefault();
+            // 存在しない場合はnullが返る
+            if (userTenantEksMap == null)
+            {
+                return null;
+            }
+            else
+            {
+                return userTenantEksMap.Token;
             }
         }
     }
