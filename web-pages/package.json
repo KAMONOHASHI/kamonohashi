@@ -27,11 +27,11 @@
   },
   "devDependencies": {
     "@babel/helper-compilation-targets": "^7.10.4",
-    "@vue/cli-plugin-babel": "^4.5.7",
-    "@vue/cli-plugin-eslint": "^4.5.7",
+    "@vue/cli-plugin-babel": "^5.0.8",
+    "@vue/cli-plugin-eslint": "^5.0.8",
     "@vue/cli-plugin-router": "^4.5.7",
     "@vue/cli-plugin-vuex": "^4.5.7",
-    "@vue/cli-service": "^4.5.7",
+    "@vue/cli-service": "^5.0.8",
     "babel-eslint": "^10.1.0",
     "eslint": "^5.16.0",
     "eslint-config-prettier": "^6.12.0",
@@ -39,7 +39,7 @@
     "eslint-plugin-vue": "^5.0.0",
     "node-sass": "^4.14.1",
     "prettier": "^1.19.1",
-    "sass-loader": "^8.0.0",
+    "sass-loader": "^13.2.0",
     "swagger-vue": "^1.0.3",
     "vue-template-compiler": "^2.6.12"
   }
