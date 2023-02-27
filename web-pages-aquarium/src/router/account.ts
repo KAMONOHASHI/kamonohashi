@@ -1,4 +1,4 @@
-import Setting from '@/views/account/Setting'
+import Setting from '@/views/account/Setting.vue'
 
 export default [
   {

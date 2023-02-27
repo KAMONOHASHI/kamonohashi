@@ -72,13 +72,16 @@ router.beforeEach(async (to, from, next) => {
   // URLのテナントが未指定
   if (to.query.tenantId === undefined) {
     let tenantId = storeTenantId ?? from.query.tenantId
+
     if (tenantId !== undefined) {
+      //@ts-ignore
       next({
         ...to,
         query: { ...to.query, tenantId },
       })
     } else {
       await router.app.$store.dispatch('account/fetchAccount')
+      //@ts-ignore
       next({
         ...to,
         query: {
@@ -110,6 +113,7 @@ router.beforeEach(async (to, from, next) => {
 // clear notification
 router.afterEach(() => {
   let vue = new Vue()
+  //@ts-ignore
   vue.$notify.closeAll()
 })
 

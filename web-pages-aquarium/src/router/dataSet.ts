@@ -1,6 +1,6 @@
-import Index from '@/views/dataSet/Index'
-import Edit from '@/views/dataSet/Edit'
-import Detail from '@/views/dataSet/Detail'
+import Index from '@/views/dataSet/Index.vue'
+import Edit from '@/views/dataSet/Edit.vue'
+import Detail from '@/views/dataSet/Detail.vue'
 export default [
   {
     path: '/aquarium/dataset',

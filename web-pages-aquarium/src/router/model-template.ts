@@ -1,7 +1,7 @@
-import Index from '@/views/modelTemplate/Index'
-import Edit from '@/views/modelTemplate/Edit'
+import Index from '@/views/modelTemplate/Index.vue'
+import Edit from '@/views/modelTemplate/Edit.vue'
 //import TemplateIndex from '@/views/modelTemplate/TemplateIndex'
-import Detail from '@/views/modelTemplate/Detail/Index'
+import Detail from '@/views/modelTemplate/Detail/Index.vue'
 
 export default [
   {
