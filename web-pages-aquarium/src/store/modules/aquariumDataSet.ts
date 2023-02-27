@@ -1,16 +1,28 @@
 import api from '@/api/api'
+import { GetterTree, ActionTree, MutationTree } from 'vuex'
+import { RootState } from '../index'
+import * as gen from '@/api/api.generate'
 
+interface StateType {
+  dataSets: Array<
+    gen.NssolPlatypusApiModelsAquariumDataSetApiModelsIndexOutputModel
+  >
+  total: number
+  versions: Array<
+    gen.NssolPlatypusApiModelsAquariumDataSetApiModelsVersionIndexOutputModel
+  >
+  detailVersion: gen.NssolPlatypusApiModelsAquariumDataSetApiModelsVersionDetailsOutputModel
+}
 // initial state
-const state = {
+const state: StateType = {
   dataSets: [],
   total: 0,
   versions: [],
   detailVersion: {},
-  dataTypes: [],
 }
 
 // getters
-const getters = {
+const getters: GetterTree<StateType, RootState> = {
   dataSets(state) {
     return state.dataSets
   },
@@ -25,14 +37,14 @@ const getters = {
   detailVersion(state) {
     return state.detailVersion
   },
-  dataTypes(state) {
-    return state.dataTypes
-  },
 }
 
 // actions
-const actions = {
-  async fetchDataSets({ commit }, params) {
+const actions: ActionTree<StateType, RootState> = {
+  async fetchDataSets(
+    { commit },
+    params: gen.AquariumDataSetApiApiV2AquariumDatasetsGetRequest,
+  ) {
     let response = await api.aquariumDatasets.get(params)
     let dataSets = response.data
     let total = response.headers['x-total-count']
@@ -43,7 +55,7 @@ const actions = {
     }
   },
 
-  async fetchVersions({ commit }, id) {
+  async fetchVersions({ commit }, id: number) {
     if (id === null) {
       commit('clearVersions')
     } else {
@@ -53,40 +65,51 @@ const actions = {
     }
   },
 
-  async fetchDetailVersion({ commit }, params) {
+  async fetchDetailVersion(
+    { commit },
+    params: {
+      id: number
+      versionId: number
+    },
+  ) {
     if (params['id'] === null) {
       commit('clearDetailVersion')
     } else {
       let detailVersion = (
-        await api.aquariumDatasets.getByIdVersionsByVersionId({
-          id: params['id'],
-          versionId: params['versionId'],
-        })
+        await api.aquariumDatasets.getByIdVersionsByVersionId(params)
       ).data
       commit('setDetailVersion', { detailVersion })
     }
   },
 
   // eslint-disable-next-line no-unused-vars
-  async post({ commit }, params) {
+  async post(
+    // eslint-disable-next-line no-unused-vars
+    { commit },
+    params: gen.NssolPlatypusApiModelsAquariumDataSetApiModelsCreateInputModel,
+  ) {
     return await api.aquariumDatasets.post({ body: params })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async postByIdVersions({ commit }, params) {
+  async postByIdVersions(
+    // eslint-disable-next-line no-unused-vars
+    { commit },
+    params: { id: number; body: { datasetId: number } },
+  ) {
     return await api.aquariumDatasets.postByIdVersions({
       id: params.id,
-      body: params.body,
+      body: { dataSetId: params.body.datasetId },
     })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async delete({ state }, id) {
+  async delete({ state }, id: number) {
     await api.aquariumDatasets.delete({ id: id })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async deleteVersion({ state }, params) {
+  async deleteVersion({ state }, params: { id: number; versionId: number }) {
     await api.aquariumDatasets.deleteVersion({
       id: params.id,
       versionId: params.versionId,
@@ -95,7 +118,7 @@ const actions = {
 }
 
 // mutations
-const mutations = {
+const mutations: MutationTree<StateType> = {
   setDataSets(state, { dataSets }) {
     state.dataSets = dataSets
   },
@@ -112,13 +135,10 @@ const mutations = {
   },
 
   clearVersions(state) {
-    state.versions = {}
+    state.versions = []
   },
   clearDetailVersion(state) {
     state.detailVersion = {}
-  },
-  setDataTypes(state, dataTypes) {
-    state.dataTypes = dataTypes
   },
 }
 

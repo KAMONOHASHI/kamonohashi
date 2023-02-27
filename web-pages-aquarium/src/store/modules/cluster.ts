@@ -1,14 +1,24 @@
 import api from '@/api/api'
+import { GetterTree, ActionTree, MutationTree } from 'vuex'
+import { RootState } from '../index'
+import * as gen from '@/api/api.generate'
 
+interface StateType {
+  partitions: Array<string>
+  quota: {} | gen.NssolPlatypusApiModelsClusterApiModelsQuotaOutputModel
+  nodes: Array<
+    gen.NssolPlatypusApiModelsClusterApiModelsNodeResourceOutputModel
+  >
+}
 // initial state
-const state = {
+const state: StateType = {
   partitions: [],
   quota: {},
   nodes: [],
 }
 
 // getters
-const getters = {
+const getters: GetterTree<StateType, RootState> = {
   partitions(state) {
     return state.partitions
   },
@@ -21,7 +31,7 @@ const getters = {
 }
 
 // actions
-const actions = {
+const actions: ActionTree<StateType, RootState> = {
   async fetchPartitions({ commit }) {
     let partitions = (await api.cluster.getPartitions()).data
     commit('setPartitions', { partitions })
@@ -39,7 +49,7 @@ const actions = {
 }
 
 // mutations
-const mutations = {
+const mutations: MutationTree<StateType> = {
   setPartitions(state, { partitions }) {
     state.partitions = partitions
   },

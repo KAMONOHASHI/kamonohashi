@@ -1,7 +1,22 @@
 import api from '@/api/api'
+import { GetterTree, ActionTree, MutationTree } from 'vuex'
+import { RootState } from '../index'
+import * as gen from '@/api/api.generate'
+interface StateType {
+  gits: Array<
+    gen.NssolPlatypusApiModelsAccountApiModelsGitCredentialOutputModel
+  >
+  defaultGitId: number | null | undefined
+  repositories: Array<gen.NssolPlatypusServiceModelsGitRepositoryModel>
+  branches: Array<gen.NssolPlatypusServiceModelsGitBranchModel>
+  commits: Array<gen.NssolPlatypusServiceModelsGitCommitModel>
+  commitDetail: gen.NssolPlatypusServiceModelsGitCommitModel | null
+
+  loadingRepositories: boolean
+}
 
 // initial state
-const state = {
+const state: StateType = {
   gits: [],
   defaultGitId: null,
   repositories: [],
@@ -14,7 +29,7 @@ const state = {
 }
 
 // getters
-const getters = {
+const getters: GetterTree<StateType, RootState> = {
   gits(state) {
     return state.gits
   },
@@ -40,7 +55,7 @@ const getters = {
 }
 
 // actions
-const actions = {
+const actions: ActionTree<StateType, RootState> = {
   async fetchGits({ commit }) {
     let response = (await api.account.getGits()).data
     let gits = response.gits
@@ -49,7 +64,7 @@ const actions = {
     commit('setDefaultGitId', defaultGitId)
   },
 
-  async fetchRepositories({ commit }, gitId) {
+  async fetchRepositories({ commit }, gitId: number) {
     commit('setLoadingRepositories', true)
     try {
       let repositories = (await api.git.getRepos({ gitId: gitId })).data
@@ -61,9 +76,9 @@ const actions = {
     commit('setLoadingRepositories', false)
   },
 
-  async getRepositories({ commit }, gitId) {
+  async getRepositories({ commit }, gitId: number) {
     commit('setLoadingRepositories', true)
-    let repositories = []
+    let repositories: Array<gen.NssolPlatypusServiceModelsGitRepositoryModel> = []
     try {
       repositories = (await api.git.getRepos({ gitId: gitId })).data
     } catch {
@@ -73,7 +88,18 @@ const actions = {
     return repositories
   },
 
-  async fetchBranches(context, { gitId, repository, manualInput }) {
+  async fetchBranches(
+    context,
+    {
+      gitId,
+      repository,
+      manualInput,
+    }: {
+      gitId: number
+      repository: gen.NssolPlatypusServiceModelsGitRepositoryModel
+      manualInput: boolean
+    },
+  ) {
     // 手入力された場合
     if (manualInput) {
       // リポジトリ一覧にない場合は追加
@@ -92,8 +118,8 @@ const actions = {
     }
     let params = {
       gitId: gitId,
-      owner: repository.owner,
-      repositoryName: repository.name,
+      owner: repository.owner!,
+      repositoryName: repository.name!,
     }
     try {
       let branches = (await api.git.getBranches(params)).data
@@ -104,11 +130,21 @@ const actions = {
   },
 
   // eslint-disable-next-line no-unused-vars
-  async getBranches({ state }, { gitId, repository }) {
+  async getBranches(
+    // eslint-disable-next-line no-unused-vars
+    { state },
+    {
+      gitId,
+      repository,
+    }: {
+      gitId: number
+      repository: gen.NssolPlatypusServiceModelsGitRepositoryModel
+    },
+  ) {
     let params = {
       gitId: gitId,
-      owner: repository.owner,
-      repositoryName: repository.name,
+      owner: repository.owner!,
+      repositoryName: repository.name!,
     }
     try {
       let branches = (await api.git.getBranches(params)).data
@@ -118,11 +154,24 @@ const actions = {
     }
   },
 
-  async fetchCommits({ commit }, { gitId, repository, branchName, page }) {
+  async fetchCommits(
+    { commit },
+    {
+      gitId,
+      repository,
+      branchName,
+      page,
+    }: {
+      gitId: number
+      repository: gen.NssolPlatypusServiceModelsGitRepositoryModel
+      branchName?: string
+      page?: string
+    },
+  ) {
     let params = {
       gitId: gitId,
-      owner: repository.owner,
-      repositoryName: repository.name,
+      owner: repository.owner!,
+      repositoryName: repository.name!,
       branch: branchName,
       page: page,
     }
@@ -135,11 +184,23 @@ const actions = {
   },
 
   // eslint-disable-next-line no-unused-vars
-  async getCommits({ state }, { gitId, repository, branchName }) {
+  async getCommits(
+    // eslint-disable-next-line no-unused-vars
+    { state },
+    {
+      gitId,
+      repository,
+      branchName,
+    }: {
+      gitId: number
+      repository: gen.NssolPlatypusServiceModelsGitRepositoryModel
+      branchName?: string
+    },
+  ) {
     let params = {
       gitId: gitId,
-      owner: repository.owner,
-      repositoryName: repository.name,
+      owner: repository.owner!,
+      repositoryName: repository.name!,
       branch: branchName,
     }
     try {
@@ -150,11 +211,22 @@ const actions = {
     }
   },
 
-  async fetchCommitDetail({ commit }, { gitId, repository, commitId }) {
+  async fetchCommitDetail(
+    { commit },
+    {
+      gitId,
+      repository,
+      commitId,
+    }: {
+      gitId: number
+      repository: gen.NssolPlatypusServiceModelsGitRepositoryModel
+      commitId: string
+    },
+  ) {
     let params = {
       gitId: gitId,
-      owner: repository.owner,
-      repositoryName: repository.name,
+      owner: repository.owner!,
+      repositoryName: repository.name!,
       commitId: commitId,
     }
     try {
@@ -167,11 +239,23 @@ const actions = {
   },
 
   // eslint-disable-next-line no-unused-vars
-  async getCommitDetail({ state }, { gitId, repository, commitId }) {
+  async getCommitDetail(
+    // eslint-disable-next-line no-unused-vars
+    { state },
+    {
+      gitId,
+      repository,
+      commitId,
+    }: {
+      gitId: number
+      repository: gen.NssolPlatypusServiceModelsGitRepositoryModel
+      commitId: string
+    },
+  ) {
     let params = {
       gitId: gitId,
-      owner: repository.owner,
-      repositoryName: repository.name,
+      owner: repository.owner!,
+      repositoryName: repository.name!,
       commitId: commitId,
     }
     try {
@@ -184,7 +268,7 @@ const actions = {
 }
 
 // mutations
-const mutations = {
+const mutations: MutationTree<StateType> = {
   setGits(state, { gits }) {
     state.gits = gits
   },

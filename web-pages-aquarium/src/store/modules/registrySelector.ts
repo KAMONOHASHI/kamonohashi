@@ -1,7 +1,18 @@
 import api from '@/api/api'
+import { GetterTree, ActionTree, MutationTree } from 'vuex'
+import { RootState } from '../index'
+import * as gen from '@/api/api.generate'
+interface StateType {
+  registries: Array<
+    gen.NssolPlatypusApiModelsAccountApiModelsRegistryCredentialOutputModel
+  >
+  defaultRegistryId: number | null | undefined
+  images: Array<string>
+  tags: Array<string>
+}
 
 // initial state
-const state = {
+const state: StateType = {
   registries: [],
   defaultRegistryId: null,
   images: [],
@@ -9,7 +20,8 @@ const state = {
 }
 
 // getters
-const getters = {
+
+const getters: GetterTree<StateType, RootState> = {
   registries(state) {
     return state.registries
   },
@@ -25,7 +37,7 @@ const getters = {
 }
 
 // actions
-const actions = {
+const actions: ActionTree<StateType, RootState> = {
   async fetchRegistries({ commit }) {
     let response = (await api.account.getRegistries()).data
     let registries = response.registries
@@ -34,7 +46,7 @@ const actions = {
     commit('setDefaultRegistryId', defaultRegistryId)
   },
 
-  async fetchImages({ commit }, registryId) {
+  async fetchImages({ commit }, registryId: number) {
     try {
       let images = (await api.registry.getImages({ registryId: registryId }))
         .data
@@ -46,7 +58,7 @@ const actions = {
   },
 
   // eslint-disable-next-line no-unused-vars
-  async getImages({ commit }, registryId) {
+  async getImages({ commit }, registryId: number) {
     try {
       let images = (await api.registry.getImages({ registryId: registryId }))
         .data
@@ -57,7 +69,10 @@ const actions = {
     }
   },
 
-  async fetchTags({ commit }, { registryId, image }) {
+  async fetchTags(
+    { commit },
+    { registryId, image }: { registryId: number; image: string },
+  ) {
     try {
       let params = {
         registryId: registryId,
@@ -72,7 +87,11 @@ const actions = {
   },
 
   // eslint-disable-next-line no-unused-vars
-  async getTags({ commit }, { registryId, image }) {
+  async getTags(
+    // eslint-disable-next-line no-unused-vars
+    { commit },
+    { registryId, image }: { registryId: number; image: string },
+  ) {
     try {
       let params = {
         registryId: registryId,
@@ -88,7 +107,7 @@ const actions = {
 }
 
 // mutations
-const mutations = {
+const mutations: MutationTree<StateType> = {
   setRegistries(state, { registries }) {
     state.registries = registries
   },

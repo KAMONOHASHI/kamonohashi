@@ -1,8 +1,28 @@
 import api from '@/api/api'
+import { GetterTree, ActionTree, MutationTree } from 'vuex'
+import { RootState } from '../index'
+import * as gen from '@/api/api.generate'
+interface StateType {
+  histories: Array<gen.NssolPlatypusApiModelsTrainingApiModelsIndexOutputModel>
+  total: number
+  historiesToMount: Array<
+    gen.NssolPlatypusApiModelsTrainingApiModelsIndexOutputModel
+  >
+  selections: []
+  detail: gen.NssolPlatypusApiModelsTrainingApiModelsDetailsOutputModel
+  events: gen.NssolPlatypusInfrastructureInfosContainerEventInfo
+  uploadedFiles: Array<
+    gen.NssolPlatypusApiModelsTrainingApiModelsAttachedFileOutputModel
+  >
+  tenantTags: Array<string>
+  tensorboard: gen.NssolPlatypusApiModelsTrainingApiModelsTensorBoardOutputModel
+  fileList: []
+}
+
 import Util from '@/util/util'
 
 // initial state
-const state = {
+const state: StateType = {
   histories: [],
   total: 0,
   historiesToMount: [],
@@ -16,7 +36,7 @@ const state = {
 }
 
 // getters
-const getters = {
+const getters: GetterTree<StateType, RootState> = {
   histories(state) {
     return state.histories
   },
@@ -50,8 +70,11 @@ const getters = {
 }
 
 // actions
-const actions = {
-  async fetchHistories({ commit }, params) {
+const actions: ActionTree<StateType, RootState> = {
+  async fetchHistories(
+    { commit },
+    params: gen.TrainingApiApiV2TrainingSearchGetRequest,
+  ) {
     let response = await api.training.get(params)
     let histories = response.data
     let total = response.headers['x-total-count']
@@ -62,22 +85,25 @@ const actions = {
     }
   },
 
-  async fetchHistoriesToMount({ commit }, params) {
+  async fetchHistoriesToMount(
+    { commit },
+    params: gen.TrainingApiApiV2TrainingMountGetRequest,
+  ) {
     let historiesToMount = (await api.training.getMount(params)).data
     commit('setHistoriesToMount', { historiesToMount })
   },
 
-  async fetchDetail({ commit }, id) {
+  async fetchDetail({ commit }, id: number) {
     let detail = (await api.training.getById({ id: id })).data
     commit('setDetail', { detail })
   },
 
-  async fetchEvents({ commit }, id) {
+  async fetchEvents({ commit }, id: number) {
     let events = (await api.training.getEventsById({ id: id })).data
     commit('setEvents', { events })
   },
 
-  async fetchUploadedFiles({ commit }, id) {
+  async fetchUploadedFiles({ commit }, id: number) {
     let uploadedFiles = (
       await api.training.getFilesById({
         id: id,
@@ -93,43 +119,70 @@ const actions = {
   },
 
   // eslint-disable-next-line no-unused-vars
-  async post({ commit }, params) {
+  async post(
+    // eslint-disable-next-line no-unused-vars
+    { commit },
+    params: gen.NssolPlatypusApiModelsTrainingApiModelsCreateInputModel,
+  ) {
     return await api.training.post({ body: params })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async put({ commit }, params) {
+  async put(
+    // eslint-disable-next-line no-unused-vars
+    { commit },
+    params: {
+      id: number
+      body: gen.NssolPlatypusApiModelsTrainingApiModelsEditInputModel
+    },
+  ) {
     return await api.training.putById(params)
   },
 
   // eslint-disable-next-line no-unused-vars
-  async postHalt({ commit }, id) {
+  async postHalt({ commit }, id: number) {
     return await api.training.postHaltById({ id: id })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async postUserCancel({ commit }, id) {
+  async postUserCancel({ commit }, id: number) {
     return await api.training.postUserCancelById({ id: id })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async postFiles({ commit }, { id, fileInfo }) {
+  async postFiles(
+    // eslint-disable-next-line no-unused-vars
+    { commit },
+    {
+      id,
+      fileInfo,
+    }: {
+      id: number
+      fileInfo: Array<{
+        name: string
+        storedPath: string | null | undefined
+      }>
+    },
+  ) {
     for (let i = 0; i < fileInfo.length; i++) {
-      fileInfo[i].FileName = fileInfo[i].name
+      //fileInfo[i].fileName = fileInfo[i].name
       await api.training.postFilesById({
         id: id,
-        body: fileInfo[i],
+        body: {
+          fileName: fileInfo[i].name,
+          storedPath: fileInfo[i].storedPath!,
+        },
       })
     }
   },
 
   // eslint-disable-next-line no-unused-vars
-  async delete({ commit }, id) {
+  async delete({ commit }, id: number) {
     await api.training.deleteById({ id: id })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async deleteFile({ commit }, { id, fileId }) {
+  async deleteFile({ commit }, { id, fileId }: { id: number; fileId: number }) {
     await api.training.deleteByIdFilesByFileId({
       id: id,
       fileId: fileId,
@@ -137,40 +190,57 @@ const actions = {
   },
 
   // tensorboard関連
-  async fetchTensorboard({ commit }, id) {
+  async fetchTensorboard({ commit }, id: number) {
     let tensorboard = (
       await api.training.getTensorboardById({
         id: id,
-        $config: { apiDisabledLoading: true },
+        // $config: { apiDisabledLoading: true },//TODO 不要？
       })
     ).data
     commit('setTensorboard', { tensorboard })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async putTensorboard({ commit }, params) {
+  async putTensorboard(
+    // eslint-disable-next-line no-unused-vars
+    { commit },
+    params: {
+      id: number
+      body: gen.NssolPlatypusApiModelsTrainingApiModelsTensorBoardInputModel
+    },
+  ) {
     await api.training.putTensorboardById(params)
   },
 
   // eslint-disable-next-line no-unused-vars
-  async deleteTensorboard({ commit }, id) {
+  async deleteTensorboard({ commit }, id: number) {
     await api.training.deleteTensorboardById({ id: id })
   },
 
-  async fetchFileList({ commit }, params) {
+  async fetchFileList(
+    { commit },
+    params: gen.TrainingApiApiV2TrainingIdContainerFilesGetRequest,
+  ) {
     let response = (await api.training.getContainerFilesById(params)).data
-    let newList = []
-    response.dirs.forEach(d =>
+    let newList: Array<{
+      isDirectory: boolean
+      name: string | null | undefined
+      url?: string | null
+      size?: string
+      lastModified?: string
+    }> = []
+    response!.dirs!.forEach(d =>
       newList.push({
         isDirectory: true,
         name: d.dirName,
       }),
     )
-    response.files.forEach(f =>
+    response!.files!.forEach(f =>
       newList.push({
         isDirectory: false,
         name: f.fileName,
         url: f.url,
+        //@ts-ignore
         size: Util.getByteString(f.size),
         lastModified: f.lastModified,
       }),
@@ -179,13 +249,17 @@ const actions = {
   },
 
   // eslint-disable-next-line no-unused-vars
-  async fetchFileSize({ state }, params) {
+  async fetchFileSize(
+    // eslint-disable-next-line no-unused-vars
+    { state },
+    params: gen.TrainingApiApiV2TrainingIdFilesNameSizeGetRequest,
+  ) {
     return (await api.training.getFileSize(params)).data.fileSize
   },
 }
 
 // mutations
-const mutations = {
+const mutations: MutationTree<StateType> = {
   setHistories(state, { histories }) {
     state.histories = histories
   },

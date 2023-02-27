@@ -1,19 +1,25 @@
 import api from '@/api/api'
+import { GetterTree, ActionTree, MutationTree } from 'vuex'
+import { RootState } from '../index'
+import * as gen from '@/api/api.generate'
+interface StateType {
+  version: gen.NssolPlatypusApiModelsVersionApiModelsVersionOutputModel
+}
 
 // initial state
-const state = {
+const state: StateType = {
   version: {},
 }
 
 // getters
-const getters = {
+const getters: GetterTree<StateType, RootState> = {
   version(state) {
     return state.version
   },
 }
 
 // action
-const actions = {
+const actions: ActionTree<StateType, RootState> = {
   async fetchVersion({ commit }) {
     let response = await api.version.get()
     let version = response.data
@@ -22,7 +28,7 @@ const actions = {
 }
 
 // mutations
-const mutations = {
+const mutations: MutationTree<StateType> = {
   setVersion(state, { version }) {
     state.version = version
   },

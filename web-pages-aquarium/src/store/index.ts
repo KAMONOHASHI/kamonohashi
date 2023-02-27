@@ -12,6 +12,11 @@ import version from './modules/version'
 import template from './modules/template'
 import experiment from './modules/experiment'
 
+export interface RootState {
+  version?: string
+  loading?: boolean
+  loadingCnt?: number
+}
 Vue.use(Vuex)
 export default new Vuex.Store({
   modules: {
@@ -41,10 +46,10 @@ export default new Vuex.Store({
       state.loading = loading
     },
     incrementLoading(state) {
-      state.loadingCnt++
+      state.loadingCnt!++
     },
     decrementLoading(state) {
-      state.loadingCnt--
+      state.loadingCnt!--
     },
   },
   actions: {

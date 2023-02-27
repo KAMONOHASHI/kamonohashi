@@ -1,20 +1,32 @@
 import api from '@/api/api'
+import { GetterTree, ActionTree, MutationTree } from 'vuex'
+import { RootState } from '../index'
+import * as gen from '@/api/api.generate'
+interface StateType {
+  experiments: Array<
+    gen.NssolPlatypusApiModelsExperimentApiModelsIndexOutputModel
+  >
+  total: number
+  detail: gen.NssolPlatypusApiModelsExperimentApiModelsDetailsOutputModel
 
+  logFiles: any //TODO generateにない？
+  preprocessLogFiles: any //TODO generateにない？
+  evaluations: Array<
+    gen.NssolPlatypusApiModelsExperimentApiModelsEvaluationIndexOutputModel
+  >
+}
 // initial state
-const state = {
+const state: StateType = {
   experiments: [],
   total: 0,
   detail: {},
-  events: {},
-  tensorboard: {},
-  preprocessHistories: {},
   logFiles: {},
   preprocessLogFiles: {},
   evaluations: [],
 }
 
 // getters
-const getters = {
+const getters: GetterTree<StateType, RootState> = {
   experiments(state) {
     return state.experiments
   },
@@ -22,24 +34,15 @@ const getters = {
     return state.detail
   },
 
-  preprocessHistories(state) {
-    return state.preprocessHistories
-  },
   total(state) {
     return state.total
   },
 
-  events(state) {
-    return state.events
-  },
   logFiles(state) {
     return state.logFiles
   },
   preprocessLogFiles(state) {
     return state.preprocessLogFiles
-  },
-  tensorboard(state) {
-    return state.tensorboard
   },
 
   evaluations(state) {
@@ -48,8 +51,11 @@ const getters = {
 }
 
 // actions
-const actions = {
-  async fetchExperiments({ commit }, params) {
+const actions: ActionTree<StateType, RootState> = {
+  async fetchExperiments(
+    { commit },
+    params: gen.ExperimentApiApiV2ExperimentGetRequest,
+  ) {
     let response = await api.experiment.get(params)
     let experiments = response.data
     let total = response.headers['x-total-count']
@@ -59,7 +65,7 @@ const actions = {
       commit('setTotal', parseInt(total))
     }
   },
-  async fetchDetail({ commit }, id) {
+  async fetchDetail({ commit }, id: number) {
     let detail = (await api.experiment.getById({ id: id })).data
     commit('setDetail', { detail })
   },
@@ -67,25 +73,7 @@ const actions = {
   async post({ commit }, params) {
     return await api.experiment.post({ body: params })
   },
-  // eslint-disable-next-line no-unused-vars
-  async postPreprocessingComplete({ commit }, { id, params }) {
-    return await api.experiment.postPreprocessingCompleteById({
-      id: id,
-      body: params,
-    })
-  },
-
-  async fetchPreprocessHistories({ commit }, id) {
-    let response = await api.experiment.getPreprocessById(id)
-    let preprocessHistories = response.data
-    commit('setPreprocessHistories', { preprocessHistories })
-  },
-
-  async fetchEvents({ commit }, id) {
-    let events = (await api.experiment.getEventsById({ id: id })).data
-    commit('setEvents', { events })
-  },
-
+  /*
   async fetchLogFiles({ commit }, id) {
     commit('clearLogfiles')
     let logFiles = (
@@ -117,7 +105,7 @@ const actions = {
   },
 
   // eslint-disable-next-line no-unused-vars
-  async postUserCancel({ commit }, id) {
+  async postUserCancel({ commit }, id: number) {
     return await api.experiment.postUserCancelById({ id: id })
   },
 
@@ -131,13 +119,13 @@ const actions = {
       })
     }
   },
-
-  async delete({ commit }, id) {
+*/
+  async delete({ commit }, id: number) {
     await api.experiment.deleteById({ id: id })
     commit('clearDetail')
     commit('clearEvaluations')
   },
-
+  /*
   // eslint-disable-next-line no-unused-vars
   async deleteFile({ commit }, { id, fileId }) {
     await api.experiment.deleteByIdFilesByFileId({
@@ -145,15 +133,25 @@ const actions = {
       fileId: fileId,
     })
   },
-
-  async fetchEvaluations({ commit }, id) {
+*/
+  async fetchEvaluations({ commit }, id: number) {
     let response = await api.experiment.getEvaluationsById({ id: id })
     let evaluations = response.data
     commit('setEvaluations', { evaluations })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async postEvaluations({ commit }, { id, params }) {
+  async postEvaluations(
+    // eslint-disable-next-line no-unused-vars
+    { commit },
+    {
+      id,
+      params,
+    }: {
+      id: number
+      params: gen.NssolPlatypusApiModelsExperimentApiModelsEvaluationCreateInputModel
+    },
+  ) {
     return await api.experiment.postEvaluationsById({
       id: id,
       body: params,
@@ -161,7 +159,11 @@ const actions = {
   },
 
   // eslint-disable-next-line no-unused-vars
-  async deleteEvaluations({ commit }, { id, evaluationId }) {
+  async deleteEvaluations(
+    // eslint-disable-next-line no-unused-vars
+    { commit },
+    { id, evaluationId }: { id: number; evaluationId: number },
+  ) {
     await api.experiment.deleteByIdEvaluationsByEvaluationId({
       id: id,
       evaluationId: evaluationId,
@@ -170,13 +172,9 @@ const actions = {
 }
 
 // mutations
-const mutations = {
+const mutations: MutationTree<StateType> = {
   setExperiments(state, { experiments }) {
     state.experiments = experiments
-  },
-
-  setHistories(state, { histories }) {
-    state.histories = histories
   },
 
   setTotal(state, total) {
@@ -186,12 +184,7 @@ const mutations = {
   setDetail(state, { detail }) {
     state.detail = detail
   },
-  setPreprocessHistories(state, { preprocessHistories }) {
-    state.preprocessHistories = preprocessHistories
-  },
-  setEvents(state, { events }) {
-    state.events = events
-  },
+
   setLogFiles(state, { logFiles }) {
     state.logFiles = logFiles
   },
@@ -206,9 +199,6 @@ const mutations = {
     state.logFiles = {}
   },
 
-  setTensorboard(state, { tensorboard }) {
-    state.tensorboard = tensorboard
-  },
   setEvaluations(state, { evaluations }) {
     state.evaluations = evaluations
   },

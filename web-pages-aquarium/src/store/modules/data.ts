@@ -1,5 +1,17 @@
+import { GetterTree, ActionTree, MutationTree } from 'vuex'
+import * as gen from '@/api/api.generate'
 import api from '@/api/api'
+import { RootState } from '../index'
 
+interface StateType {
+  data: Array<gen.NssolPlatypusApiModelsDataSetApiModelsIndexOutputModel>
+  total: number
+  detail: gen.NssolPlatypusApiModelsDataApiModelsDetailsOutputModel
+  uploadedFiles: Array<
+    gen.NssolPlatypusApiModelsDataApiModelsDataFileOutputModel
+  >
+  tenantTags: Array<string>
+}
 // initial state
 const state = {
   data: [],
@@ -10,7 +22,7 @@ const state = {
 }
 
 // getters
-const getters = {
+const getters: GetterTree<StateType, RootState> = {
   data(state) {
     return state.data
   },
@@ -33,8 +45,8 @@ const getters = {
 }
 
 // actions
-const actions = {
-  async fetchData({ commit }, params) {
+const actions: ActionTree<StateType, RootState> = {
+  async fetchData({ commit }, params: gen.DataApiApiV2DataGetRequest) {
     let response = await api.data.get(params)
     let data = response.data
     let total = response.headers['x-total-count']
@@ -45,7 +57,7 @@ const actions = {
     }
   },
 
-  async fetchDetail({ commit }, id) {
+  async fetchDetail({ commit }, id: number) {
     if (id === null) {
       commit('clearDetail')
     } else {
@@ -61,7 +73,7 @@ const actions = {
   async clearUploadedFiles({ commit }) {
     commit('clearUploadedFiles')
   },
-  async fetchUploadedFiles({ commit }, id) {
+  async fetchUploadedFiles({ commit }, id: number) {
     let uploadedFiles = (
       await api.data.getFilesById({
         id: id,
@@ -72,22 +84,51 @@ const actions = {
   },
 
   // eslint-disable-next-line no-unused-vars
-  async post({ state }, params) {
+  async post(
+    // eslint-disable-next-line no-unused-vars
+    { state },
+    params: gen.NssolPlatypusApiModelsDataApiModelsCreateInputModel,
+  ) {
     return await api.data.post({ body: params })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async put({ commit }, params) {
+  async put(
+    // eslint-disable-next-line no-unused-vars
+    { commit },
+    params: {
+      id: number
+      body: gen.NssolPlatypusApiModelsDataApiModelsEditInputModel
+    },
+  ) {
     return await api.data.putById(params)
   },
 
   // eslint-disable-next-line no-unused-vars
-  async putFile({ commit }, { id, fileInfo }) {
-    let model = { files: [] }
+  async putFile(
+    // eslint-disable-next-line no-unused-vars
+    { commit },
+    {
+      id,
+      fileInfo,
+    }: {
+      id: number
+      fileInfo: Array<{
+        name: any
+        storedPath: string | null | undefined
+      }>
+    },
+  ) {
+    let model: {
+      files: Array<{
+        fileName: string
+        storedPath: string
+      }>
+    } = { files: [] }
     for (let i = 0; i < fileInfo.length; i++) {
       model.files.push({
         fileName: fileInfo[i].name,
-        storedPath: fileInfo[i].storedPath,
+        storedPath: fileInfo[i].storedPath!,
       })
     }
     await api.data.putFilesById({
@@ -97,12 +138,12 @@ const actions = {
   },
 
   // eslint-disable-next-line no-unused-vars
-  async delete({ state }, id) {
+  async delete({ state }, id: number) {
     await api.data.deleteById({ id: id })
   },
 
   // eslint-disable-next-line no-unused-vars
-  async deleteFile({ commit }, { id, fileId }) {
+  async deleteFile({ commit }, { id, fileId }: { id: number; fileId: number }) {
     await api.data.deleteFilesById({
       id: id,
       fileId: fileId,
@@ -110,13 +151,17 @@ const actions = {
   },
 
   // eslint-disable-next-line no-unused-vars
-  async fetchFileSize({ state }, params) {
+  async fetchFileSize(
+    // eslint-disable-next-line no-unused-vars
+    { state },
+    params: gen.DataApiApiV2DataIdFilesNameSizeGetRequest,
+  ) {
     return (await api.data.getFileSize(params)).data.fileSize
   },
 }
 
 // mutations
-const mutations = {
+const mutations: MutationTree<StateType> = {
   setData(state, { data }) {
     state.data = data
   },
