@@ -184,7 +184,7 @@ const actions: ActionTree<StateType, RootState> = {
   async postTokenTenants(
     { commit, dispatch },
     params: {
-      body: any
+      body: { expiresIn: number | null }
       tenantId: number
     },
   ) {

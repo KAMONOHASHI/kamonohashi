@@ -61,9 +61,9 @@ const getters: GetterTree<StateType, RootState> = {
   uploadedFiles(state) {
     return state.uploadedFiles
   },
-  tensorboard(state) {
-    return state.tensorboard //TODO 存在しないのでここを消したい
-  },
+  //tensorboard(state) {
+  //  return state.tensorboard //TODO 存在しないのでここを消したい
+  //},
   fileList(state) {
     return state.fileList
   },
@@ -153,14 +153,21 @@ const actions: ActionTree<StateType, RootState> = {
       fileInfo,
     }: {
       id: number
-      fileInfo: Array<gen.NssolPlatypusApiModelsComponentsAddFileInputModel> //TODO 型を編集する必要がある？
+      fileInfo: Array<{
+        name: string
+        storedPath: string
+      }>
     },
   ) {
     for (let i = 0; i < fileInfo.length; i++) {
-      fileInfo[i].FileName = fileInfo[i].name //TODO name は存在しない?
+      //fileInfo[i].fileName = fileInfo[i].name
       await api.inference.postFilesById({
         id: id,
-        body: fileInfo[i],
+        body: {
+          fileName: fileInfo[i].name,
+          storedPath: fileInfo[i].storedPath,
+        },
+        //body:fileInfo[i],
       })
     }
   },
@@ -201,7 +208,7 @@ const actions: ActionTree<StateType, RootState> = {
         isDirectory: false,
         name: f.fileName!,
         url: f.url!,
-        size: Util.getByteString(f.size),
+        size: Util.getByteString(f.size!),
         lastModified: f.lastModified,
       }),
     )

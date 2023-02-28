@@ -3,7 +3,13 @@ import { GetterTree, ActionTree, MutationTree } from 'vuex'
 import { RootState } from '../index'
 import * as gen from '@/api/api.generate'
 interface StateType {
-  menus: Array<gen.NssolPlatypusApiModelsMenuApiModelsMenuForAdminOutputModel>
+  menus: Array<{
+    id?: gen.NssolPlatypusInfrastructureMenuCode
+    name?: string | null
+    description?: string | null
+    menuType?: gen.NssolPlatypusInfrastructureTypesMenuType
+    roles?: Array<number>
+  }>
   types: Array<gen.NssolPlatypusInfrastructureInfosEnumInfo>
 }
 
@@ -28,17 +34,33 @@ const actions: ActionTree<StateType, RootState> = {
   async fetchMenus({ commit }) {
     let response = await api.menu.admin.get()
     let menus = response.data
+    let menus_ret: Array<{
+      id?: gen.NssolPlatypusInfrastructureMenuCode
+      name?: string | null
+      description?: string | null
+      menuType?: gen.NssolPlatypusInfrastructureTypesMenuType
+      roles?: Array<number>
+    }> = []
 
     // roleオブジェクトの配列であるrolesから、idを抜き出して設定
     menus.forEach(menu => {
-      let roles = []
-      menu.roles.forEach(role => {
-        roles.push(role.id)
+      let roles: Array<number> = []
+
+      menu.roles!.forEach(role => {
+        roles.push(role.id!)
       })
-      menu.roles = roles
+
+      let menu_ret = {
+        id: menu.id,
+        name: menu.name,
+        description: menu.description,
+        menuType: menu.menuType,
+        roles: roles,
+      }
+      menus_ret.push(menu_ret)
     })
 
-    commit('setMenus', { menus })
+    commit('setMenus', { menus_ret })
   },
 
   async fetchTypes({ commit }) {
@@ -48,7 +70,14 @@ const actions: ActionTree<StateType, RootState> = {
   },
 
   // eslint-disable-next-line no-unused-vars
-  async put({ commit }, params: { id: number }) {
+  async put(
+    // eslint-disable-next-line no-unused-vars
+    { commit },
+    params: {
+      id: gen.NssolPlatypusInfrastructureMenuCode
+      body: Array<number>
+    },
+  ) {
     return await api.menu.admin.put(params)
   },
 }

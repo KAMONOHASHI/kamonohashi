@@ -9,7 +9,7 @@ interface StateType {
   historiesToMount: Array<
     gen.NssolPlatypusApiModelsTrainingApiModelsIndexOutputModel
   >
-  selections: any //TODO
+  selections: any //TODO 使用されていない？
   detail: gen.NssolPlatypusApiModelsTrainingApiModelsDetailsOutputModel
   events: gen.NssolPlatypusInfrastructureInfosContainerEventInfo
   uploadedFiles: Array<
@@ -190,14 +190,21 @@ const actions: ActionTree<StateType, RootState> = {
       fileInfo,
     }: {
       id: number
-      fileInfo: Array<gen.NssolPlatypusApiModelsComponentsAddFileInputModel>
+      fileInfo: Array<{
+        name: string
+        storedPath: string
+      }>
     },
   ) {
     for (let i = 0; i < fileInfo.length; i++) {
-      fileInfo[i].FileName = fileInfo[i].name
+      //fileInfo[i].FileName = fileInfo[i].name
       await api.training.postFilesById({
         id: id,
-        body: fileInfo[i],
+        body: {
+          fileName: fileInfo[i].name,
+          storedPath: fileInfo[i].storedPath,
+        },
+        //body:fileInfo[i],
       })
     }
   },
@@ -220,6 +227,7 @@ const actions: ActionTree<StateType, RootState> = {
     let tensorboard = (
       await api.training.getTensorboardById({
         id: id,
+        //@ts-ignore
         $config: { apiDisabledLoading: true },
       })
     ).data
@@ -266,7 +274,7 @@ const actions: ActionTree<StateType, RootState> = {
         isDirectory: false,
         name: f.fileName!,
         url: f.url!,
-        size: Util.getByteString(f.size),
+        size: Util.getByteString(f.size!),
         lastModified: f.lastModified,
       }),
     )

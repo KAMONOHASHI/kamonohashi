@@ -24,7 +24,9 @@ import userGroup from './modules/userGroup'
 import version from './modules/version'
 
 export interface RootState {
-  version: string
+  version?: string
+  loading?: boolean
+  loadingCnt?: number
 }
 
 Vue.use(Vuex)
@@ -67,10 +69,10 @@ export default new Vuex.Store({
       state.loading = loading
     },
     incrementLoading(state) {
-      state.loadingCnt++
+      state.loadingCnt!++
     },
     decrementLoading(state) {
-      state.loadingCnt--
+      state.loadingCnt!--
     },
   },
   actions: {

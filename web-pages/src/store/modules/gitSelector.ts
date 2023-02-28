@@ -133,10 +133,10 @@ const actions: ActionTree<StateType, RootState> = {
   ) {
     let params = {
       gitId: gitId,
-      owner: repository.owner,
-      repositoryName: repository.name,
-      branch: branchName,
-      page: page,
+      owner: repository.owner!,
+      repositoryName: repository.name!,
+      branch: branchName.branchName!,
+      page: String(page),
     }
     try {
       let commits = (await api.git.getCommits(params)).data

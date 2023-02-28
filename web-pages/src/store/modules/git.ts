@@ -36,8 +36,9 @@ const actions: ActionTree<StateType, RootState> = {
     commit('setEndpoints', { endpoints })
   },
 
-  async fetchTenantEndpoints({ commit }, tenantId) {
-    let endpoints = (await api.git.tenant.getEndpoints({ id: tenantId })).data
+  async fetchTenantEndpoints({ commit }) {
+    //TODO テナントIDを渡していたが受け取らないAPIなので削除
+    let endpoints = (await api.git.tenant.getEndpoints()).data
     commit('setEndpoints', { endpoints })
   },
 

@@ -181,9 +181,10 @@ const actions: ActionTree<StateType, RootState> = {
     return await api.resource.tenant.deleteContainerByName(params)
   },
 
-  async fetchHistoriesContainersMetadata({ commit }, params) {
+  async fetchHistoriesContainersMetadata({ commit }) {
+    //TODO テナントIDを渡していたが受け取らないAPIなので削除
     let historiesContainersMetadata = (
-      await api.resource.admin.getHistoriesContainersMetadata(params)
+      await api.resource.admin.getHistoriesContainersMetadata()
     ).data
     commit('setHistoriesContainersMetadata', { historiesContainersMetadata })
   },
@@ -207,9 +208,10 @@ const actions: ActionTree<StateType, RootState> = {
     return await api.resource.admin.deleteHistoriesContainers({ body: params })
   },
 
-  async fetchHistoriesJobsMetadata({ commit }, params) {
+  async fetchHistoriesJobsMetadata({ commit }) {
+    //TODO テナントIDを渡していたが受け取らないAPIなので削除
     let historiesJobsMetadata = (
-      await api.resource.admin.getHistoriesJobsMetadata(params)
+      await api.resource.admin.getHistoriesJobsMetadata()
     ).data
     commit('setHistoriesJobsMetadata', { historiesJobsMetadata })
   },

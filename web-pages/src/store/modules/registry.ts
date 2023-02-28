@@ -36,9 +36,9 @@ const actions: ActionTree<StateType, RootState> = {
     commit('setRegistries', { registries })
   },
 
-  async fetchTenantRegistries({ commit }, tenantId) {
-    let registries = (await api.registry.tenant.getEndpoints({ id: tenantId }))
-      .data
+  async fetchTenantRegistries({ commit }) {
+    //TODO テナントIDを渡していたが受け取らないAPIなので削除
+    let registries = (await api.registry.tenant.getEndpoints()).data
     commit('setRegistries', { registries })
   },
 
