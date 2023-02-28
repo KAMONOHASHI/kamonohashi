@@ -84,7 +84,7 @@ let api = {
   },
 
   menuList: {
-    getMenuList: (params: gen.AccountApiApiV2AccountMenusListGetRequest) =>
+    getMenuList: (params?: gen.AccountApiApiV2AccountMenusListGetRequest) =>
       accountApi.apiV2AccountMenusListGet(params),
   },
 
@@ -176,7 +176,10 @@ let api = {
       accountApi.apiV2AccountLoginPost({
         nssolPlatypusApiModelsAccountApiModelsLoginInputModel: params.body,
       }),
-    postTokenTenants: (params: { body: any; tenantId: number }) =>
+    postTokenTenants: (params: {
+      body: { expiresIn: number | null }
+      tenantId: number
+    }) =>
       accountApi.apiV2AccountTenantsTenantIdTokenPost({
         tenantId: params.tenantId,
         nssolPlatypusApiModelsAccountApiModelsSwitchTenantInputModel:
@@ -368,8 +371,9 @@ let api = {
     getBranches: (
       params: gen.GitApiApiV2GitGitIdReposOwnerRepositoryNameBranchesGetRequest,
     ) => gitApi.apiV2GitGitIdReposOwnerRepositoryNameBranchesGet(params),
-    getCommits: (params: any) =>
-      gitApi.apiV2GitGitIdReposOwnerRepositoryNameCommitsGet(params),
+    getCommits: (
+      params: gen.GitApiApiV2GitGitIdReposOwnerRepositoryNameCommitsGetRequest,
+    ) => gitApi.apiV2GitGitIdReposOwnerRepositoryNameCommitsGet(params),
     getCommit: gitApi.apiV2GitGitIdReposOwnerRepositoryNameCommitsCommitIdGet,
     // GET /spa/git/repos/{segments}
   },
@@ -833,10 +837,10 @@ let api = {
 
   // dataを取り出すメソッド
   f: {
-    data(response) {
+    data(response: any) {
       return [response.data]
     },
-    dataTotal(response) {
+    dataTotal(response: any) {
       return [response.data, response.headers['x-total-count']]
     },
   },
