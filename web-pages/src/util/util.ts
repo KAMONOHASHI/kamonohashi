@@ -1,15 +1,15 @@
 // Utilityメソッドをまとめた静的クラス メソッド個別にImportするのは面倒であるためクラス化
 export default class Util {
   // 指定した秒数Sleepする
-  static wait(second) {
+  static wait(second: number) {
     return new Promise(resolve => {
       setTimeout(resolve, second)
     })
   }
 
-  static getByteString(byte) {
+  static getByteString(byte: number) {
     let suffix = ''
-    let val = byte
+    let val: string | number = byte
     if (val > 1024 * 1024) {
       val = val / (1024 * 1024)
       suffix = ' MB'
@@ -29,7 +29,7 @@ export default class Util {
    * @param {*} target  比較対象の数値
    * @param {*} filter フィルタ条件
    */
-  static isMatchAsNumber(target, filter) {
+  static isMatchAsNumber(target: number, filter: string) {
     if (filter) {
       let symbol = filter.substring(0, 1)
       let strValue = filter.slice(1)
@@ -59,7 +59,7 @@ export default class Util {
    * @param {*} target  比較対象の日時の文字列
    * @param {*} filter フィルタ条件
    */
-  static isMatchAsDate(target, filter) {
+  static isMatchAsDate(target: string, filter: string) {
     if (filter) {
       let symbol = filter.substring(0, 1)
       let strValue = filter.slice(1)
@@ -86,7 +86,7 @@ export default class Util {
    * @param {*} target  比較対象の文字列
    * @param {*} filter フィルタ条件
    */
-  static isMatchAsText(target, filter) {
+  static isMatchAsText(target: string, filter: string) {
     if (filter) {
       if (Util.startWith(filter, '!')) {
         return !target || target.includes(filter.slice(1)) === false
@@ -102,7 +102,10 @@ export default class Util {
    * @param {*} target  比較対象の文字列配列
    * @param {*} filter フィルタ条件配列
    */
-  static isMatchAsTextArrayByFilters(target, filters) {
+  static isMatchAsTextArrayByFilters(
+    target: Array<string>,
+    filters: Array<string>,
+  ) {
     if (filters && filters.length > 0) {
       return filters.every(f => Util.isMatchAsTextArray(target, f))
     }
@@ -114,7 +117,7 @@ export default class Util {
    * @param {*} target  比較対象の文字列配列
    * @param {*} filter フィルタ条件
    */
-  static isMatchAsTextArray(target, filter) {
+  static isMatchAsTextArray(target: Array<string>, filter: string) {
     if (filter) {
       if (Util.startWith(filter, '!')) {
         if (!target || target.length === 0) {
@@ -132,11 +135,11 @@ export default class Util {
     return true
   }
 
-  static startWith(text, prefix) {
+  static startWith(text: string, prefix: string) {
     return text.lastIndexOf(prefix, 0) === 0
   }
 
-  static getCookie(key) {
+  static getCookie(key: string) {
     var result = null
     var cookieName = key + '='
     var allcookies = document.cookie
@@ -154,11 +157,11 @@ export default class Util {
     return result
   }
 
-  static setCookie(key, val) {
+  static setCookie(key: string, val: string | boolean | null | undefined) {
     document.cookie = `${key}=${val}`
   }
 
-  static deleteCookie(key) {
+  static deleteCookie(key: string) {
     document.cookie = `${key}=; max-age=0`
   }
 }
