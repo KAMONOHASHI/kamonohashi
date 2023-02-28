@@ -27,6 +27,7 @@ export default Vue.extend({
   },
   data() {
     return {
+      //@ts-ignore
       menu: this.getMenu(),
     }
   },
@@ -45,7 +46,7 @@ export default Vue.extend({
     async handleMenu() {
       this.menu = !this.menu
     },
-    setMenu(showFlg) {
+    setMenu(showFlg: boolean) {
       Util.setCookie('.Platypus.ShowMenu', showFlg)
     },
     getMenu() {
@@ -55,10 +56,11 @@ export default Vue.extend({
     setCookieToken() {
       let token = this.$store.getters['account/token']
       let cookieTokenKey = '.Platypus.Auth'
-      let cookieToken = Util.getCookie(cookieTokenKey, token)
+      let cookieToken = Util.getCookie(cookieTokenKey)
 
       if (!cookieToken) {
         // Cookieにトークン情報がないときはログアウト
+        //@ts-ignore
         this.$store.dispatch['account/logout']
       } else {
         // Cookieにトークン情報があるときはCookie情報を更新
