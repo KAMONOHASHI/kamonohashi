@@ -213,8 +213,18 @@ export default Vue.extend({
     },
     // 選択されたgitサーバ、リポジトリ、ブランチ、コミットをvalueで保持
     value: {
-      type: Object,
-      default: () => {
+      type: Object as PropType<{
+        git: gen.NssolPlatypusApiModelsAccountApiModelsGitCredentialOutputModel | null
+        repository: gen.NssolPlatypusServiceModelsGitRepositoryModel | null
+        branch: gen.NssolPlatypusServiceModelsGitBranchModel | null
+        commit: null | gen.NssolPlatypusServiceModelsGitCommitModel
+      }>,
+      default: (): {
+        git: gen.NssolPlatypusApiModelsAccountApiModelsGitCredentialOutputModel | null
+        repository: gen.NssolPlatypusServiceModelsGitRepositoryModel | null
+        branch: gen.NssolPlatypusServiceModelsGitBranchModel | null
+        commit: null | gen.NssolPlatypusServiceModelsGitCommitModel
+      } => {
         return {
           git: null,
           repository: null,
@@ -256,7 +266,7 @@ export default Vue.extend({
       let msg = ''
       if (this.commits.length > 0 && this.value.commit) {
         let index = this.commits.findIndex(
-          commit => commit.commitId === this.value.commit.commitId,
+          commit => commit.commitId! === this.value.commit!.commitId!,
         )
         if (index === 0) {
           msg = `最新のコミットです。`
@@ -282,7 +292,7 @@ export default Vue.extend({
         if (this.commits.length > 0) {
           // コミット一覧に含まれていないコミットの場合、一覧に追加する。
           let index = this.commits.findIndex(
-            commit => commit.commitId === this.value.commit.commitId,
+            commit => commit.commitId === this.value.commit!.commitId,
           )
           if (index < 0) {
             this.containsPastCommit = true
@@ -290,17 +300,19 @@ export default Vue.extend({
         }
 
         let commitId = this.$refs.commitId
+        //@ts-ignore
         commitId.$el.childNodes[1].childNodes[1].placeholder = this.createCommitIdAndComment(
-          this.value.commit.commitId,
-          this.value.commit.committerName,
-          this.value.commit.comment,
+          this.value.commit.commitId!,
+          this.value.commit.committerName!,
+          this.value.commit.comment!,
         )
+        //@ts-ignore
         commitId.$el.childNodes[1].childNodes[1].value = this.createCommitIdAndComment(
-          this.value.commit.commitId,
-          this.value.commit.committerName,
-          this.value.commit.comment,
+          this.value.commit.commitId!,
+          this.value.commit.committerName!,
+          this.value.commit.comment!,
         )
-
+        //@ts-ignore
         this.$refs.commitId.$forceUpdate()
       }
     },
@@ -314,7 +326,7 @@ export default Vue.extend({
         // clearボタンが押下された場合
         gitModel.git = null
       } else {
-        gitModel.git = git
+        gitModel!.git! = git
       }
       this.$emit('input', gitModel)
       this.$emit('selectGit', git === '' ? null : git.id)
@@ -375,15 +387,17 @@ export default Vue.extend({
     visibleChangeCommit() {
       if (this.value.commit != null) {
         let commitId = this.$refs.commitId
+        //@ts-ignore
         commitId.$el.childNodes[1].childNodes[1].placeholder = this.createCommitIdAndComment(
-          this.value.commit.commitId,
-          this.value.commit.committerName,
-          this.value.commit.comment,
+          this.value.commit.commitId!,
+          this.value.commit.committerName!,
+          this.value.commit.comment!,
         )
+        //@ts-ignore
         commitId.$el.childNodes[1].childNodes[1].value = this.createCommitIdAndComment(
-          this.value.commit.commitId,
-          this.value.commit.committerName,
-          this.value.commit.comment,
+          this.value.commit.commitId!,
+          this.value.commit.committerName!,
+          this.value.commit.comment!,
         )
       }
     },
@@ -398,9 +412,9 @@ export default Vue.extend({
         //フィルタが空でない場合は部分一致する選択肢を表示する
         for (let i in this.commits) {
           if (
-            this.commits[i].commitId
-              .toLowerCase()
-              .indexOf(query.toLowerCase()) > -1
+            this.commits[i]!.commitId!.toLowerCase().indexOf(
+              query.toLowerCase(),
+            ) > -1
           ) {
             ret.push(this.commits[i])
           }

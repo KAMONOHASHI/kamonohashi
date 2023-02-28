@@ -264,11 +264,14 @@ export default Vue.extend({
             try {
               await this.delete(selection.id)
               successCount++
+              //@ts-ignore
               this.error = null
             } catch (e) {
+              //@ts-ignore
               this.error = e
             }
           }
+          //@ts-ignore
           await this.$notify.info({
             type: 'info',
             message: `推論履歴を削除しました。(成功：${successCount}件、 失敗：${this

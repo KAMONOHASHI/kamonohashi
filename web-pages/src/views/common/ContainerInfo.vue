@@ -118,7 +118,17 @@ export default Vue.extend({
         status: string
         conditionNote: string
       }>,
-      default: () => {
+      default: (): {
+        name: string
+        cpu: number
+        memory: number
+        gpu: number
+        nodeName: string
+        displayName: string
+        createdBy: string
+        status: string
+        conditionNote: string
+      } => {
         return {
           name: '',
           cpu: 0,

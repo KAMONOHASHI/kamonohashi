@@ -58,7 +58,7 @@ export default Vue.extend({
     },
   },
   methods: {
-    async handleChange(selectedRoleIds: string | Array<number>) {
+    async handleChange(selectedRoleIds: '' | Array<number>) {
       let updateValue = this.value
       if (selectedRoleIds === '') {
         this.$emit('input', null)

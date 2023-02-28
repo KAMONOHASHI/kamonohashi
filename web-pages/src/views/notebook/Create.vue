@@ -467,7 +467,7 @@ interface DataType {
     }
     gitModel: {
       git: null | {
-        id: number
+        id: number | null
         name: string
       }
       repository: { name: string; owner: string } | string | null
@@ -486,6 +486,7 @@ interface DataType {
     variables: Array<{ key: string; value: string }>
     partition: null | string
     memo: null | string
+    zip?: boolean
     entryPoint: string
   }
   rules: {
@@ -582,6 +583,7 @@ export default Vue.extend({
   },
   computed: {
     ...mapGetters({
+      //@ts-ignore
       trainingHistories: ['training/historiesToMount'],
       inferenceHistories: ['inference/historiesToMount'],
       dataSets: ['dataSet/dataSets'],
@@ -627,16 +629,24 @@ export default Vue.extend({
 
     // レジストリ一覧を取得し、デフォルトレジストリを設定
     await this['registrySelector/fetchRegistries']()
-    this.form.containerImage.registry = this.registries.find(registry => {
-      return registry.id === this.defaultRegistryId
-    })
+    this.form.containerImage.registry = this.registries.find(
+      (
+        registry: gen.NssolPlatypusApiModelsAccountApiModelsRegistryCredentialOutputModel,
+      ) => {
+        return registry.id === this.defaultRegistryId
+      },
+    )
     await this.selectRegistry(this.defaultRegistryId)
 
     // gitサーバ一覧を取得し、デフォルトgitサーバを設定
     await this['gitSelector/fetchGits']()
-    this.form.gitModel.git = this.gits.find(git => {
-      return git.id === this.defaultGitId
-    })
+    this.form.gitModel.git = this.gits.find(
+      (
+        git: gen.NssolPlatypusApiModelsAccountApiModelsGitCredentialOutputModel,
+      ) => {
+        return git.id === this.defaultGitId
+      },
+    )
     await this['gitSelector/fetchRepositories'](this.defaultGitId)
 
     await this['notebook/fetchAvailableInfiniteTime']()
@@ -673,24 +683,40 @@ export default Vue.extend({
 
       this.form.selectedParent = []
       if (this.detail.parents) {
-        this.trainingHistories.forEach(history => {
-          this.detail.parents.forEach(parent => {
-            if (history.id === parent.id) {
-              this.form.selectedParent.push(parent)
-            }
-          })
-        })
+        this.trainingHistories.forEach(
+          (
+            history: gen.NssolPlatypusApiModelsTrainingApiModelsIndexOutputModel,
+          ) => {
+            this.detail.parents.forEach(
+              (
+                parent: gen.NssolPlatypusApiModelsTrainingApiModelsIndexOutputModel,
+              ) => {
+                if (history.id === parent.id) {
+                  this.form.selectedParent.push(parent)
+                }
+              },
+            )
+          },
+        )
       }
 
       this.form.selectedParentInference = []
       if (this.detail.inferences) {
-        this.inferenceHistories.forEach(history => {
-          this.detail.inferences.forEach(parent => {
-            if (history.id === parent.id) {
-              this.form.selectedParentInference.push(parent)
-            }
-          })
-        })
+        this.inferenceHistories.forEach(
+          (
+            history: gen.NssolPlatypusApiModelsInferenceApiModelsInferenceIndexOutputModel,
+          ) => {
+            this.detail.inferences.forEach(
+              (
+                parent: gen.NssolPlatypusApiModelsInferenceApiModelsInferenceIndexOutputModel,
+              ) => {
+                if (history.id === parent.id) {
+                  this.form.selectedParentInference.push(parent)
+                }
+              },
+            )
+          },
+        )
       }
 
       if (this.detail.dataSet) {
@@ -722,9 +748,11 @@ export default Vue.extend({
         this.form.gitModel.branch = this.detail.gitModel.branch
         await this.selectBranch(this.detail.gitModel.branch)
         // commitsから該当commitを抽出
-        let commit = this.commits.find(commit => {
-          return commit.commitId === this.detail.gitModel.commitId
-        })
+        let commit = this.commits.find(
+          (commit: gen.NssolPlatypusServiceModelsGitCommitModel) => {
+            return commit.commitId === this.detail.gitModel.commitId
+          },
+        )
         if (commit) {
           this.form.gitModel.commit = commit
         } else {
@@ -812,10 +840,11 @@ export default Vue.extend({
         if (this.active !== 0) {
           form = this.$refs.form3
         }
+        //@ts-ignore
         await form.validate(async valid => {
           if (valid) {
             try {
-              let options = {}
+              let options: { [key: string]: string } = {}
               // apiのフォーマットに合わせる(配列 => オブジェクト)
               this.form.variables.forEach(kvp => {
                 options[kvp.key] = kvp.value
@@ -868,7 +897,7 @@ export default Vue.extend({
     emitCancel() {
       this.$emit('cancel')
     },
-    closeDialog(done) {
+    closeDialog(done: Function) {
       done()
       this.emitCancel()
     },
@@ -885,6 +914,7 @@ export default Vue.extend({
           form = this.$refs.form2
           break
       }
+      //@ts-ignore
       await form.validate(async valid => {
         if (valid) {
           this.active++
@@ -925,7 +955,10 @@ export default Vue.extend({
     },
     // repositoryの型がstring：手入力, object: 選択
     async selectRepository(
-      repository: { name: string; owner: string } | string | null,
+      repository:
+        | { name: string; owner: string; fulName?: string }
+        | string
+        | null,
     ) {
       try {
         await gitSelectorUtil.selectRepository(
@@ -934,6 +967,7 @@ export default Vue.extend({
           repository,
         )
       } catch (message) {
+        //@ts-ignore
         this.$notify.error({
           message: message,
         })
@@ -1016,6 +1050,9 @@ export default Vue.extend({
         if (typeof this.form.gitModel.branch === 'string') {
           let branch = { branchName: this.form.gitModel.branch }
           this.form.gitModel.branch = branch
+        }
+        if (typeof this.form.gitModel.repository == 'string') {
+          return
         }
         gitModel = {
           gitId: this.form.gitModel.git!.id,

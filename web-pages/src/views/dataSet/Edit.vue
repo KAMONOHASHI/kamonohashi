@@ -118,7 +118,17 @@ interface DataType {
   isLocked: boolean
   dialogVisible: boolean
   error: Error | null
-  rules: any //TODO
+  rules: {
+    [key: string]: [
+      {
+        required: boolean
+        that?: any
+        trigger: string
+        message?: string
+        validator?: Function
+      },
+    ]
+  }
 }
 export default Vue.extend({
   components: {
@@ -157,13 +167,14 @@ export default Vue.extend({
             required: true,
             that: this,
             trigger: 'blur',
-            validator(rule, value, callback) {
+            validator(rule: any, value: any, callback: Function) {
               let exists = false
               for (let key in value) {
                 if (value[key].length > 0) {
                   exists = true
                 }
               }
+              //@ts-ignore
               if (exists || this.that.form.isFlat) {
                 callback()
               } else {
@@ -177,13 +188,14 @@ export default Vue.extend({
             required: true,
             trigger: 'blur',
             that: this,
-            validator(rule, value, callback) {
+            validator(rule: any, value: any, callback: Function) {
               let exists = false
               if (value.selected.length > 0) {
                 exists = true
               }
               if (exists) {
                 callback()
+                //@ts-ignore
               } else if (this.that.form.isFlat) {
                 callback(new Error('必須項目です'))
               }
@@ -245,9 +257,13 @@ export default Vue.extend({
 
           this.form.flatEntries = { selected: [] }
           this.form.entries = {}
-          this.dataTypes.forEach(type => {
-            this.form.entries![type.name] = []
-          })
+          this.dataTypes.forEach(
+            (
+              type: gen.NssolPlatypusApiModelsDataSetApiModelsDataTypeOutputModel,
+            ) => {
+              this.form.entries![type.name!] = []
+            },
+          )
           this.error = null
         } catch (e) {
           if (e instanceof Error) {
@@ -296,6 +312,7 @@ export default Vue.extend({
 
     async submit() {
       let form = this.$refs.createForm
+      //@ts-ignore
       await form.validate(async valid => {
         if (valid) {
           try {

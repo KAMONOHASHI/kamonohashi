@@ -77,11 +77,13 @@ export default Vue.extend({
   methods: {
     async uploadFile() {
       if (this.$refs.uploadForm) {
+        //@ts-ignore
         let fileInfo = await this.$refs.uploadForm.uploadFile()
         return fileInfo
       }
     },
     selectedFilesLength() {
+      //@ts-ignore
       return this.$refs.uploadForm.selectedFilesLength()
     },
     isImage(fileName: string) {

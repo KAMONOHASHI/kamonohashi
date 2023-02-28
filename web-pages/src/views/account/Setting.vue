@@ -141,7 +141,7 @@ import RegistryTokenSetting from '@/views/account/RegistryTokenSetting.vue'
 import PasswordSetting from './PasswordSetting.vue'
 import WebhookSetting from './WebhookSetting.vue'
 import { mapGetters, mapActions } from 'vuex'
-
+import * as gen from '@/api/api.generate'
 interface DataType {
   tenantError: null | Error
   accessTokenError: null | Error
@@ -228,6 +228,7 @@ export default Vue.extend({
   },
   computed: {
     ...mapGetters({
+      //@ts-ignore
       account: ['account/account'],
       token: ['account/token'],
       gits: ['gitSelector/gits'],
@@ -246,15 +247,23 @@ export default Vue.extend({
     // 選択中のテナントにおけるGit情報を取得する
     await this['gitSelector/fetchGits']()
     // gitFormにデフォルトGit情報を設定
-    this.gitForm = this.gits.find(git => {
-      return git.id === this.defaultGitId
-    })
+    this.gitForm = this.gits.find(
+      (
+        git: gen.NssolPlatypusApiModelsAccountApiModelsGitCredentialOutputModel,
+      ) => {
+        return git.id === this.defaultGitId
+      },
+    )
 
     // 選択中のテナントにおけるレジストリ情報を取得する
     await this['registrySelector/fetchRegistries']()
-    this.registryForm = this.registries.find(registry => {
-      return registry.id === this.defaultRegistryId
-    })
+    this.registryForm = this.registries.find(
+      (
+        registry: gen.NssolPlatypusApiModelsAccountApiModelsRegistryCredentialOutputModel,
+      ) => {
+        return registry.id === this.defaultRegistryId
+      },
+    )
 
     // Webhook情報を取得する
     await this['account/fetchWebhook']()

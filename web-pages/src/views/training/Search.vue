@@ -328,7 +328,7 @@ export default Vue.extend({
       }
       let str = ''
       for (let i in list) {
-        if (i == 0) {
+        if (Number(i) == 0) {
           str = str + list[i]
         } else {
           str = str + ',' + list[i]

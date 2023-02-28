@@ -33,7 +33,7 @@
 import Vue from 'vue'
 import { PropType } from 'vue'
 interface DataType {
-  value?: null | number
+  value?: null | string
   show: boolean
   tableData: Array<{ name: string; detail: string; symbol: string }>
 }
@@ -60,8 +60,10 @@ export default Vue.extend({
   created() {
     this.$nextTick(() => {
       this.value = this.getValue()
+      //@ts-ignore
       this.$refs.saveTagInput.$refs.input.focus()
       this.$nextTick(() => {
+        //@ts-ignore
         this.$refs.saveTagInput.$refs.input.select()
       })
     })
@@ -101,7 +103,7 @@ export default Vue.extend({
     },
 
     // 'done'をemitし、検索
-    emitDone(value, display, suffix) {
+    emitDone(value: string, display: string | null, suffix: string) {
       this.$emit('done', { value, display, suffix })
     },
     emitCancel() {

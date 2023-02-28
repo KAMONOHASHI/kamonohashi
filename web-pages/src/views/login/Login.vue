@@ -58,8 +58,8 @@ interface DataType {
   labelwidth: string
   error: Error | null
   form: {
-    user: ''
-    password: ''
+    user: string
+    password: string
   }
   rules: {
     user: Array<typeof formRule>
@@ -96,6 +96,7 @@ export default Vue.extend({
   methods: {
     ...mapActions(['login', 'logout']),
     async handleLogin() {
+      //@ts-ignore
       this.$refs['loginForm'].validate(async valid => {
         if (valid) {
           try {

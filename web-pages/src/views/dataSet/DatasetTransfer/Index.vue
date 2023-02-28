@@ -68,11 +68,9 @@ import Util from '@/util/util'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('data')
 import * as gen from '@/api/api.generate'
-
-//TODO 型がnullの場合もある変数はtypescriptでnullの場合を無視する「!」を付けている
 type NssolPlatypusApiModelsDataApiModelsIndexOutputModel = gen.NssolPlatypusApiModelsDataApiModelsIndexOutputModel & {
-  assign: string | undefined
-  colorIndex: number
+  assign?: string | undefined
+  colorIndex?: number
 }
 
 type ViewInfo = {
@@ -83,7 +81,14 @@ type ViewInfo = {
   currentPage: number
   currentPageSize: number
   width: number
-  filter: { [key: string]: string | number | boolean | Array<string> } | null
+  filter: {
+    id: string
+    name: string
+    memo: string
+    createdBy: string
+    createdAt: string
+    tag: Array<string>
+  } | null
   dataList: Array<NssolPlatypusApiModelsDataApiModelsIndexOutputModel>
   filteredTotal?: number
 } | null
@@ -94,7 +99,14 @@ interface DataType {
     currentPage: number
     currentPageSize: number
     width: number
-    filter: { [key: string]: string | number | boolean | Array<string> } | null
+    filter: {
+      id: string
+      name: string
+      memo: string
+      createdBy: string
+      createdAt: string
+      tag: Array<string>
+    } | null
     dataList: Array<NssolPlatypusApiModelsDataApiModelsIndexOutputModel>
   }
   // 表示の性能問題が出たため、子に直接データをpropで渡さずに親側で表示分を取り出して渡す
@@ -125,18 +137,11 @@ export default Vue.extend({
     // }
     // Arrayの中身はdata: {id: , name: , ...}
     value: {
-      type: Object as PropType<
-        | {
-            [key: string]: Array<
-              gen.NssolPlatypusApiModelsDataApiModelsIndexOutputModel
-            >
-          }
-        | {
-            selected: Array<
-              gen.NssolPlatypusApiModelsDataApiModelsIndexOutputModel
-            >
-          }
-      >,
+      type: Object as PropType<{
+        [key: string]: Array<
+          NssolPlatypusApiModelsDataApiModelsIndexOutputModel
+        >
+      }>,
       default: () => {
         return {}
       },
@@ -247,7 +252,8 @@ export default Vue.extend({
     // 全データの割り当て状況をアップデートする
     refreshAssign() {
       this.dataViewInfo!.dataList.forEach(x => this.setAssign(x))
-      this.$refs.data.$forceUpdate()
+      //@ts-ignore
+      this.$refs.data!.$forceUpdate()
       this.$forceUpdate()
     },
 
@@ -420,7 +426,14 @@ export default Vue.extend({
 
     // 'filter'がemitされた際の処理
     handleFilter(info: {
-      filter: { [key: string]: string | number | boolean | string[] } | null
+      filter: {
+        id: string
+        name: string
+        memo: string
+        createdBy: string
+        createdAt: string
+        tag: Array<string>
+      } | null
       entryName: string
     }) {
       let { filter, entryName } = info
@@ -430,12 +443,12 @@ export default Vue.extend({
         // filterがnullでない＆空Objectでない場合はフィルタ
         this.filteredEntryList[entryName] = this.entryList[entryName].filter(
           x =>
-            Util.isMatchAsNumber(x.id, filter!.id) &&
-            Util.isMatchAsText(x.name, filter!.name) &&
-            Util.isMatchAsText(x.memo, filter!.memo) &&
-            Util.isMatchAsText(x.createdBy, filter!.createdBy) &&
-            Util.isMatchAsDate(x.createdAt, filter!.createdAt) &&
-            Util.isMatchAsTextArrayByFilters(x.tags, filter!.tag),
+            Util.isMatchAsNumber(x.id!, filter!.id) &&
+            Util.isMatchAsText(x.name!, filter!.name) &&
+            Util.isMatchAsText(x.memo!, filter!.memo) &&
+            Util.isMatchAsText(x.createdBy!, filter!.createdBy) &&
+            Util.isMatchAsDate(x.createdAt!, filter!.createdAt) &&
+            Util.isMatchAsTextArrayByFilters(x.tags!, filter!.tag),
         )
       } else {
         this.filteredEntryList[entryName] = this.entryList[entryName]

@@ -156,6 +156,7 @@ export default Vue.extend({
     ...mapActions(['fetchDetail', 'post', 'put', 'delete']),
     async submit() {
       let form = this.$refs.updateForm
+      //@ts-ignore
       await form.validate(async valid => {
         if (valid) {
           try {

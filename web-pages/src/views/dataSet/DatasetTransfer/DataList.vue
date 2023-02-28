@@ -155,6 +155,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import { PropType } from 'vue'
+//@ts-ignore
 import { Container, Draggable } from 'vue-smooth-dnd'
 import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
 import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index.vue'
@@ -284,12 +285,15 @@ export default Vue.extend({
     this.$forceUpdate()
   },
   beforeUpdate() {
-    for (let i = 0; i < this.$refs.pagination.$children.length; i++) {
+    //@ts-ignore
+    for (let i = 0; i < this.$refs.pagination!.$children.length; i++) {
       if (
-        this.$refs.pagination.$children[i].$el.className ===
+        //@ts-ignore
+        this.$refs.pagination!.$children[i].$el.className ===
         'el-pagination__jump'
       ) {
-        this.$refs.pagination.$children[i].$el.lastChild.textContent =
+        //@ts-ignore
+        this.$refs.pagination!.$children[i].$el.lastChild.textContent =
           '／' + this.getTotalPages() + 'ページ目へ'
       }
     }
@@ -334,6 +338,7 @@ export default Vue.extend({
     // 全EntryListにイベントが送られる。
     // 対象コンテナでremovedIndex か addedIndexが設定され、それ以外でnullを受け取る
     handleDrop(
+      //@ts-ignore
       collection,
       dropResult: {
         addedIndex: number

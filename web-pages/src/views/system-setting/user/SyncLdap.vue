@@ -76,7 +76,8 @@ export default Vue.extend({
     ...mapActions(['syncLdapUsers']),
     async syncLdap() {
       let form = this.$refs.createForm
-      await form.validate(async valid => {
+      //@ts-ignores
+      await form!.validate(async valid => {
         if (valid) {
           if (await this.showConfirm()) {
             try {

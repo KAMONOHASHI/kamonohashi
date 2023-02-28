@@ -72,7 +72,7 @@ export default Vue.extend({
   methods: {
     onChange(
       preprocessing:
-        | string
+        | ''
         | gen.NssolPlatypusApiModelsPreprocessingApiModelsIndexOutputModel,
     ) {
       if (preprocessing === '') {

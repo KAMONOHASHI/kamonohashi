@@ -29,6 +29,10 @@
 <script lang="ts">
 import Vue from 'vue'
 import { PropType } from 'vue'
+interface DataType {
+  inputVisible: boolean
+  inputValue: '' | number
+}
 export default Vue.extend({
   props: {
     // 開放するポート番号(number)の配列
@@ -39,7 +43,7 @@ export default Vue.extend({
       },
     },
   },
-  data() {
+  data(): DataType {
     return {
       inputVisible: false,
       inputValue: '',
@@ -56,6 +60,7 @@ export default Vue.extend({
       this.inputVisible = true
       // eslint-disable-next-line no-unused-vars
       this.$nextTick(_ => {
+        //@ts-ignore
         this.$refs.savePortInput.$refs.input.focus()
       })
     },

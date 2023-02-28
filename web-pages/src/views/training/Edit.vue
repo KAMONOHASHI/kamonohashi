@@ -339,9 +339,9 @@ interface DataType {
     ]
   }
   form: {
-    name: null
+    name: null | string
     favorite: boolean
-    memo: null
+    memo: null | string
     tags: Array<string>
   }
   title: string
@@ -453,7 +453,7 @@ export default Vue.extend({
     },
     async onSubmit() {
       let form = this.$refs.updateForm
-
+      //@ts-ignore
       await form.validate(async valid => {
         if (valid) {
           try {
@@ -497,9 +497,11 @@ export default Vue.extend({
     async uploadFile() {
       // 独自ローディング処理のため共通側は無効
       this.$store.commit('setLoading', false)
+      //@ts-ignore
       this.loading = true
 
       let uploader = this.$refs.uploadFile
+      //@ts-ignore
       let fileInfo = await uploader.uploadFile()
 
       if (fileInfo !== undefined) {
@@ -510,6 +512,7 @@ export default Vue.extend({
       }
 
       // 共通側ローディングを再度有効化
+      //@ts-ignore
       this.loading = false
       this.$store.commit('setLoading', true)
     },

@@ -35,7 +35,7 @@
 import Vue from 'vue'
 import { PropType } from 'vue'
 interface DataType {
-  value: null | string | Date
+  value: null | Date
   show: boolean
   tableData: Array<{
     name: string
@@ -69,6 +69,7 @@ export default Vue.extend({
     this.$nextTick(() => {
       this.value = this.getValue()
       setTimeout(() => {
+        //@ts-ignore
         this.$refs.saveTagInput.focus()
       }, 600)
     })
@@ -136,7 +137,7 @@ export default Vue.extend({
     },
 
     // 'done'をemitし、検索
-    emitDone(value, display, suffix) {
+    emitDone(value: string, display: string, suffix: string) {
       this.$emit('done', { value, display, suffix })
     },
     emitCancel() {

@@ -101,7 +101,7 @@ export default Vue.extend({
       }
       this.$emit('input', updateValue)
     },
-    async handleChangeDefaultId(defaultId: number | null | string) {
+    async handleChangeDefaultId(defaultId: number | null | '') {
       let updateValue = this.value
       if (defaultId === '') {
         updateValue.defaultId = null

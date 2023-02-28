@@ -182,7 +182,7 @@ export default Vue.extend({
     openPreprocessingDialog() {
       this.$router.push('preprocessing/run')
     },
-    shell(data) {
+    shell(data: { id: string; dataId: string }) {
       this.$router.push(
         '/preprocessing/' + data.id + '/' + data.dataId + '/shell',
       )

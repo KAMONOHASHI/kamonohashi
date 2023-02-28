@@ -60,7 +60,7 @@
 <script lang="ts">
 import Vue from 'vue'
 
-import KqiDisplayError from '@/components/KqiDisplayError'
+import KqiDisplayError from '@/components/KqiDisplayError.vue'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('quota')
 

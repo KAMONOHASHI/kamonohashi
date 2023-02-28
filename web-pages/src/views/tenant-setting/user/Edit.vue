@@ -40,6 +40,7 @@ import KqiDisplayError from '@/components/KqiDisplayError.vue'
 import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
 import KqiRoleSelector from '@/components/selector/KqiRoleSelector.vue'
 import { mapGetters, mapActions } from 'vuex'
+import * as gen from '@/api/api.generate'
 
 interface DataType {
   form: {
@@ -104,6 +105,7 @@ export default Vue.extend({
   },
   computed: {
     ...mapGetters({
+      //@ts-ignore
       detail: ['user/tenantUserDetail'],
       roles: ['role/tenantRoles'],
     }),
@@ -127,14 +129,16 @@ export default Vue.extend({
           break
       }
       // ロール一覧からIDを抽出
-      this.detail.roles.forEach(s => {
-        if (s.isOrigin) {
-          this.form.tenantRoleIds.push(s.id)
-        }
-        if (s.userGroupTanantMapIdLists.length > 0) {
-          this.tenantNotOriginRoleIds.push(s.id)
-        }
-      })
+      this.detail.roles.forEach(
+        (s: gen.NssolPlatypusInfrastructureInfosRoleInfo) => {
+          if (s.isOrigin) {
+            this.form.tenantRoleIds.push(s.id!)
+          }
+          if (s.userGroupTanantMapIdLists!.length > 0) {
+            this.tenantNotOriginRoleIds.push(s.id!)
+          }
+        },
+      )
       // ユーザグループ由来のロールがある時は必須チェックしない
       if (this.tenantNotOriginRoleIds.length > 0) {
         this.rules.tenantRoleIds = null
@@ -167,6 +171,7 @@ export default Vue.extend({
     ]),
     async submit() {
       let form = this.$refs.form
+      //@ts-ignore
       await form.validate(async valid => {
         if (valid) {
           try {

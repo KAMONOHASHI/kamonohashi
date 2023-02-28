@@ -140,9 +140,14 @@ export default Vue.extend({
       await this.fetchUsers()
       // add data
       this.showTenants = {}
-      this.users.forEach(d => {
-        this.$set(this.showTenants, d.id, true)
-      })
+      this.users.forEach(
+        (
+          d: gen.NssolPlatypusApiModelsUserApiModelsIndexForAdminOutputModel,
+        ) => {
+          //@ts-ignore
+          this.$set(this.showTenants, d.id, true)
+        },
+      )
     },
     async handleToggleExpand(
       row: gen.NssolPlatypusApiModelsUserApiModelsIndexForAdminOutputModel,

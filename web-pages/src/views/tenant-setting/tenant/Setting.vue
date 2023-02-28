@@ -83,11 +83,11 @@ interface DataType {
     gitEndpoint: {
       required: boolean
       trigger: string
-      validator: validator.gitEndpointValidator
+      validator: Function
     }
     registry: {
       required: boolean
-      validator: validator.regystryEndpointValidator
+      validator: Function
       trigger: string
     }
   }
@@ -141,6 +141,7 @@ export default Vue.extend({
   },
   computed: {
     ...mapGetters({
+      //@ts-ignore
       tenant: ['tenant/detail'],
       gitEndpoints: ['git/endpoints'],
       registryEndpoints: ['registry/registries'],
@@ -177,6 +178,7 @@ export default Vue.extend({
     },
     async saveData() {
       let form = this.$refs.editForm
+      //@ts-ignore
       await form.validate(async valid => {
         if (valid) {
           try {

@@ -79,7 +79,7 @@ export default Vue.extend({
       }
     },
 
-    async selectFiles(e) {
+    async selectFiles(e: any) {
       e.preventDefault()
       let files = e.target.files
       // filesは{"0": fileObject1, "1": fileObject2,...}という構造のFileListオブジェクトになっている

@@ -32,9 +32,7 @@ interface DataType {
   dialogVisible: boolean
   filename: string
   exists: boolean
-  containerInfo:
-    | {}
-    | NssolPlatypusApiModelsResourceApiModelsContainerDetailsForTenantOutputModel
+  containerInfo: NssolPlatypusApiModelsResourceApiModelsContainerDetailsForTenantOutputModel
 }
 type NssolPlatypusApiModelsResourceApiModelsContainerDetailsForTenantOutputModel = gen.NssolPlatypusApiModelsResourceApiModelsContainerDetailsForTenantOutputModel & {
   tenantName?: string
@@ -64,6 +62,7 @@ export default Vue.extend({
 
   computed: {
     ...mapGetters({
+      //@ts-ignore
       account: ['account/account'],
       tenantDetail: ['resource/tenantDetail'],
       tenantContainerLog: ['resource/tenantContainerLog'],
@@ -120,8 +119,10 @@ export default Vue.extend({
           }
 
           let a = document.getElementById('download')
-          a.download = this.filename
-          a.href =
+          //@ts-ignore
+          a!.download = this.filename
+          //@ts-ignore
+          a!.href =
             'data:application/octet-stream,' +
             encodeURIComponent(this.tenantContainerLog)
         } else {

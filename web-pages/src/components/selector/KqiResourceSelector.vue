@@ -105,7 +105,7 @@ export default Vue.extend({
     // cpu, memory, gpuのリソース量
     value: {
       type: Object as PropType<{ cpu: number; memory: number; gpu: number }>,
-      default: () => {
+      default: (): { cpu: number; memory: number; gpu: number } => {
         return { cpu: 1, memory: 1, gpu: 0 }
       },
     },
@@ -163,17 +163,23 @@ export default Vue.extend({
       this.maxCpuNode = this.nodes[0]
       this.maxMemoryNode = this.nodes[0]
       this.maxGpuNode = this.nodes[0]
-      this.nodes.forEach(node => {
-        if (node.allocatableCpu > this.maxCpuNode!.allocatableCpu!) {
-          this.maxCpuNode = node
-        }
-        if (node.allocatableMemory > this.maxMemoryNode!.allocatableMemory!) {
-          this.maxMemoryNode = node
-        }
-        if (node.allocatableGpu > this.maxGpuNode!.allocatableGpu!) {
-          this.maxGpuNode = node
-        }
-      })
+      this.nodes.forEach(
+        (
+          node: gen.NssolPlatypusApiModelsClusterApiModelsNodeResourceOutputModel | null,
+        ) => {
+          if (node!.allocatableCpu! > this.maxCpuNode!.allocatableCpu!) {
+            this.maxCpuNode = node
+          }
+          if (
+            node!.allocatableMemory! > this.maxMemoryNode!.allocatableMemory!
+          ) {
+            this.maxMemoryNode = node
+          }
+          if (node!.allocatableGpu! > this.maxGpuNode!.allocatableGpu!) {
+            this.maxGpuNode = node
+          }
+        },
+      )
     }
     this.resourceValidator()
   },
@@ -225,10 +231,18 @@ export default Vue.extend({
 
         // 各リソースの組み合わせに対して、条件を満たすノードが1つ以上存在するか判定する
         var allocatableNodes = this.nodes.filter(
-          n =>
-            n.allocatableCpu >= this.value.cpu &&
-            n.allocatableMemory >= this.value.memory &&
-            n.allocatableGpu >= this.value.gpu,
+          (n: {
+            name?: string | null
+            memo?: string | null
+            partition?: string | null
+            accessLevel?: gen.NssolPlatypusInfrastructureNodeAccessLevel
+            allocatableCpu?: number
+            allocatableMemory?: number
+            allocatableGpu?: number
+          }) =>
+            n.allocatableCpu! >= this.value.cpu &&
+            n.allocatableMemory! >= this.value.memory &&
+            n.allocatableGpu! >= this.value.gpu,
         )
         if (allocatableNodes.length == 0) {
           this.errors.push('要求分のリソースで実行可能なノードがありません。')

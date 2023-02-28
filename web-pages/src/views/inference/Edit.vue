@@ -303,7 +303,15 @@ const { mapGetters, mapActions } = createNamespacedHelpers('inference')
 //import * as gen from '@/api/api.generate'
 
 interface DataType {
-  rules: any //TODO,
+  rules: {
+    name: [
+      {
+        required: boolean
+        trigger: string
+        message: string
+      },
+    ]
+  }
   form: {
     name: string | null
     favorite: boolean
@@ -407,7 +415,7 @@ export default Vue.extend({
     },
     async onSubmit() {
       let form = this.$refs.updateForm
-
+      //@ts-ignore
       await form.validate(async valid => {
         if (valid) {
           try {
@@ -451,9 +459,11 @@ export default Vue.extend({
     async uploadFile() {
       // 独自ローディング処理のため共通側は無効
       this.$store.commit('setLoading', false)
+      //@ts-ignore
       this.loading = true
 
       let uploader = this.$refs.uploadFile
+      //@ts-ignore
       let fileInfo = await uploader.uploadFile()
 
       if (fileInfo !== undefined) {
@@ -464,6 +474,7 @@ export default Vue.extend({
       }
 
       // 共通側ローディングを再度有効化
+      //@ts-ignore
       this.loading = false
       this.$store.commit('setLoading', true)
     },

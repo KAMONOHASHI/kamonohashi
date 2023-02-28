@@ -65,7 +65,8 @@ export default Vue.extend({
     // ServiceTypeの数値から表示名に変換
     displayNameOfServiceType(serviceTypeId: number) {
       let serviceType: gen.NssolPlatypusInfrastructureInfosEnumInfo = this.serviceTypes.find(
-        s => s.id === serviceTypeId,
+        (s: gen.NssolPlatypusInfrastructureInfosEnumInfo) =>
+          s.id === serviceTypeId,
       )
       return serviceType.name
     },

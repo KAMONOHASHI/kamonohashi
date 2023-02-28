@@ -157,10 +157,10 @@ export default Vue.extend({
     async openPreprocessing() {
       this.$router.push('/preprocessing')
     },
-    shell(data) {
+    shell(data: { id: number | null }) {
       this.$router.push('/preprocessingShell/' + data.id)
     },
-    log(data) {
+    log(data: { id: string; dataId: string }) {
       this.$router.push(
         '/preprocessingHistory/' + data.id + '/' + data.dataId + '/log',
       )

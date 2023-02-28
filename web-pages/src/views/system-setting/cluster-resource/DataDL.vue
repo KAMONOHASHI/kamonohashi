@@ -167,22 +167,22 @@ const { mapGetters, mapActions } = createNamespacedHelpers('resource')
 
 interface DataType {
   // コンテナリソース
-  allContainersStartDate: string
-  allContainersEndDate: string
+  allContainersStartDate: Date | string
+  allContainersEndDate: Date | string
   containersCount: string
-  containersHistoryStartDate: null | string
-  containersHistoryEndDate: null | string
+  containersHistoryStartDate: null | Date
+  containersHistoryEndDate: null | Date
   containersHeader: boolean
-  containersDeleteEndDate: null | string
+  containersDeleteEndDate: null | Date
 
   // ジョブ実行履歴
-  allJobsStartDate: string
-  allJobsEndDate: string
+  allJobsStartDate: Date | string
+  allJobsEndDate: Date | string
   jobsCount: string
-  jobsHistoryStartDate: null | string
-  jobsHistoryEndDate: null | string
+  jobsHistoryStartDate: null | Date
+  jobsHistoryEndDate: null | Date
   jobsHeader: boolean
-  jobsDeleteEndDate: null | string
+  jobsDeleteEndDate: null | Date
 }
 
 export default Vue.extend({

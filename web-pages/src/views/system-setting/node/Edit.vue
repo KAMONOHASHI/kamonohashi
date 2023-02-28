@@ -59,6 +59,7 @@ import KqiDialog from '@/components/KqiDialog.vue'
 import KqiDisplayError from '@/components/KqiDisplayError.vue'
 import { mapGetters, mapActions } from 'vuex'
 
+import * as gen from '@/api/api.generate'
 const formRules = {
   required: true,
   trigger: 'blur',
@@ -76,7 +77,7 @@ interface DataType {
     notebookEnabled: null | boolean
   }
   title: string
-  displayTenants: []
+  displayTenants: Array<{ key?: null | number; label?: null | string }>
   error: null | Error
   rules: {
     name: Array<typeof formRules>
@@ -115,23 +116,31 @@ export default Vue.extend({
   },
   computed: {
     ...mapGetters({
+      //@ts-ignore
       detail: ['node/detail'],
       tenants: ['tenant/tenants'],
     }),
   },
   async created() {
     await this['tenant/fetchTenants']()
-    this.tenants.sort((a, b) => {
-      a = a.displayName.toString().toLowerCase()
-      b = b.displayName.toString().toLowerCase()
-      return a < b ? -1 : 1
-    })
-    this.tenants.forEach(t => {
-      this.displayTenants.push({
-        key: t.id,
-        label: t.displayName,
-      })
-    })
+    this.tenants.sort(
+      (
+        a: gen.NssolPlatypusApiModelsTenantApiModelsIndexOutputModel,
+        b: gen.NssolPlatypusApiModelsTenantApiModelsIndexOutputModel,
+      ) => {
+        let a_ = a.displayName!.toString().toLowerCase()
+        let b_ = b.displayName!.toString().toLowerCase()
+        return a_ < b_ ? -1 : 1
+      },
+    )
+    this.tenants.forEach(
+      (t: gen.NssolPlatypusApiModelsTenantApiModelsIndexOutputModel) => {
+        this.displayTenants.push({
+          key: t.id,
+          label: t.displayName,
+        })
+      },
+    )
 
     if (this.id === null) {
       this.title = 'ノード登録'
@@ -144,9 +153,13 @@ export default Vue.extend({
         this.form.partition = this.detail.partition
         this.form.accessLevel = this.detail.accessLevel
         this.form.selectedTenants = this.detail.assignedTenants
-          ? this.detail.assignedTenants.map(t => {
-              return t.id
-            })
+          ? this.detail.assignedTenants.map(
+              (
+                t: gen.NssolPlatypusApiModelsNodeApiModelsDetailsOutputModelAssignedTenant,
+              ) => {
+                return t.id
+              },
+            )
           : []
         this.form.tensorBoardEnabled = this.detail.tensorBoardEnabled
         this.form.notebookEnabled = this.detail.notebookEnabled
@@ -165,6 +178,7 @@ export default Vue.extend({
     ]),
     async submit() {
       let form = this.$refs.createForm
+      //@ts-ignore
       await form.validate(async valid => {
         if (valid) {
           try {

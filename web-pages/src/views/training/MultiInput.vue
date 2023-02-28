@@ -76,6 +76,7 @@ export default Vue.extend({
       this.selectBoxVisible = true
       this.$nextTick(() =>
         // 新しいタグ入力テキストボックスを出したら、すぐに入力開始できるよう、フォーカスする
+        //@ts-ignore
         this.$refs.saveItemInput.focus(),
       )
     },

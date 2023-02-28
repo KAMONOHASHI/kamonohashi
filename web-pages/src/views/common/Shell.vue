@@ -32,7 +32,7 @@ import { FitAddon } from 'xterm-addon-fit'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('account')
 
-let socket
+let socket: WebSocket | null
 interface DataType {
   type: null | string
   dialogVisible: boolean
@@ -94,7 +94,7 @@ export default Vue.extend({
       const fitAddon = new FitAddon()
       term.loadAddon(fitAddon)
       term.setOption('cursorBlink', true)
-      term.open(document.getElementById('terminal'))
+      term.open(document.getElementById('terminal')!)
       fitAddon.fit()
 
       try {
@@ -127,7 +127,7 @@ export default Vue.extend({
         }
         if (socket) {
           this.intervalId = setInterval(() => {
-            socket.send('')
+            socket!.send('')
           }, 30000)
         }
       } catch (e) {

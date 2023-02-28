@@ -34,7 +34,7 @@ import { PropType } from 'vue'
 interface DataType {
   value: string
   show: boolean
-  selectData: Array<{ label: string; detail: string; value: string }>
+  selectData: Array<{ label: string; detail?: string; value: string }>
 }
 export default Vue.extend({
   props: {
@@ -59,8 +59,10 @@ export default Vue.extend({
     this.$nextTick(() => {
       this.value = this.getValue()
       this.selectData = this.getSelectData()
+      //@ts-ignore
       this.$refs.saveTagInput.$refs.input.focus()
       this.$nextTick(() => {
+        //@ts-ignore
         this.$refs.saveTagInput.$refs.input.select()
       })
     })
@@ -102,7 +104,7 @@ export default Vue.extend({
       if (this.tag.config.option.items) {
         let items = this.tag.config.option.items
         let ret: Array<{ label: string; value: string }> = []
-        items.forEach(i => {
+        items.forEach((i: { label: string; value: string }) => {
           if (typeof i === 'string') {
             ret.push({ label: i, value: i })
           } else {
@@ -115,7 +117,7 @@ export default Vue.extend({
     },
 
     // 'done'をemitし、検索
-    emitDone(value, display, suffix) {
+    emitDone(value: string, display: string, suffix: string) {
       this.$emit('done', { value, display, suffix })
     },
     emitCancel() {

@@ -147,7 +147,7 @@ export default Vue.extend({
     async $route() {
       // 学習履歴間での画面移動時、tensorboardの表示を更新する
       this.selectedMountHistories = []
-      if (this.visible && this.id >= 0) {
+      if (this.visible && Number(this.id) >= 0) {
         this.checkTensorBoardStatus()
       }
     },
@@ -168,12 +168,12 @@ export default Vue.extend({
       ],
     })
     // 起動時の状態を確認する
-    if (this.visible && this.id >= 0) {
+    if (this.visible && Number(this.id) >= 0) {
       this.checkTensorBoardStatus()
     }
     this.intervalId = setInterval(() => {
       // 可視状態かつIDがセットされている状態でのみ、ポーリング
-      if (this.visible && this.id >= 0) {
+      if (this.visible && Number(this.id) >= 0) {
         this.checkTensorBoardStatus()
       }
     }, 5000) // 5秒間隔
@@ -217,16 +217,24 @@ export default Vue.extend({
       this.polling = false
 
       this.mountedHistories = []
-      this.historiesToMount.forEach(history => {
-        if (history.id !== +this.id) {
-          this.mountedHistories.push(history)
-        }
-      })
+      this.historiesToMount.forEach(
+        (
+          history: gen.NssolPlatypusApiModelsTrainingApiModelsIndexOutputModel,
+        ) => {
+          if (history.id !== +this.id) {
+            this.mountedHistories.push(history)
+          }
+        },
+      )
 
       if (this.tensorboard.mountedTrainingHistoryIds !== null) {
         this.selectedMountHistories = []
-        this.tensorboard.mountedTrainingHistoryIds.forEach(id => {
-          let tmp = this.historiesToMount.find(history => history.id === id)
+        this.tensorboard.mountedTrainingHistoryIds.forEach((id: number) => {
+          let tmp = this.historiesToMount.find(
+            (
+              history: gen.NssolPlatypusApiModelsTrainingApiModelsIndexOutputModel,
+            ) => history.id === id,
+          )
           if (tmp) {
             this.selectedMountHistories.push(tmp)
           }

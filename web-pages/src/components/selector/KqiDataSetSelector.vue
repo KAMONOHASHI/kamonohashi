@@ -50,7 +50,9 @@ export default Vue.extend({
       type: Array as PropType<
         Array<gen.NssolPlatypusApiModelsDataSetApiModelsIndexOutputModel>
       >,
-      default: () => {
+      default: (): Array<
+        gen.NssolPlatypusApiModelsDataSetApiModelsIndexOutputModel
+      > => {
         return [{}]
       },
     },
@@ -68,9 +70,7 @@ export default Vue.extend({
   },
   methods: {
     async onChange(
-      dataSet:
-        | string
-        | gen.NssolPlatypusApiModelsDataSetApiModelsIndexOutputModel,
+      dataSet: '' | gen.NssolPlatypusApiModelsDataSetApiModelsIndexOutputModel,
     ) {
       if (dataSet === '') {
         // clearボタンが押下された場合

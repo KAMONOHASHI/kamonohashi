@@ -55,6 +55,7 @@ import KqiDisplayError from '@/components/KqiDisplayError.vue'
 import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
 import KqiRoleSelector from '@/components/selector/KqiRoleSelector.vue'
 import { mapGetters, mapActions } from 'vuex'
+import * as gen from '@/api/api.generate'
 
 const formRule = {
   required: true,
@@ -120,6 +121,7 @@ export default Vue.extend({
   },
   computed: {
     ...mapGetters({
+      //@ts-ignore
       detail: ['userGroup/detail'],
       tenantRoles: ['role/tenantRoles'],
     }),
@@ -136,9 +138,11 @@ export default Vue.extend({
         this.form.isGroup = this.detail.isGroup
         this.form.dn = this.detail.dn
         this.form.isDirect = this.detail.isDirect
-        this.detail.roles.forEach(r => {
-          this.form.roleIds.push(r.id)
-        })
+        this.detail.roles.forEach(
+          (r: gen.NssolPlatypusInfrastructureInfosRoleInfo) => {
+            this.form.roleIds.push(r.id!)
+          },
+        )
       } catch (e) {
         if (e instanceof Error) this.error = e
       }
@@ -155,6 +159,7 @@ export default Vue.extend({
     ]),
     async submit() {
       let form = this.$refs.createForm
+      //@ts-ignore
       await form.validate(async valid => {
         if (valid) {
           try {

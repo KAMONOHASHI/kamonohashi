@@ -13,6 +13,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import { PropType } from 'vue'
 interface DataType {
   title: string | Error | null
   errors: Array<Error> | null
@@ -20,7 +21,7 @@ interface DataType {
 export default Vue.extend({
   props: {
     error: {
-      type: Error,
+      type: Object as PropType<Error | any>,
       default: null,
     },
   },

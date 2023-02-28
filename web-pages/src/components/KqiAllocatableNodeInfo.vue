@@ -22,10 +22,15 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import { PropType } from 'vue'
+import * as gen from '@/api/api.generate'
 export default Vue.extend({
   props: {
     allocatableNodes: {
-      type: Array,
+      type: Array as PropType<
+        Array<gen.NssolPlatypusApiModelsClusterApiModelsNodeResourceOutputModel>
+      >,
+
       default: () => [],
     },
     emptyMessage: {

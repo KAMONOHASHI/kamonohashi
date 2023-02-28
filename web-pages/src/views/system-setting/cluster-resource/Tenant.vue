@@ -112,7 +112,8 @@ export default Vue.extend({
       refName: string,
       row: gen.NssolPlatypusApiModelsResourceApiModelsTenantResourceOutputModel,
     ) {
-      this.$refs[refName].toggleRowExpansion(row)
+      //@ts-ignore
+      this.$refs[refName]!.toggleRowExpansion(row)
     },
     closeDialog() {
       this.$router.push('/cluster-resource/tenant')

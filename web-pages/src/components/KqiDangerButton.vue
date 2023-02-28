@@ -38,6 +38,7 @@ export default Vue.extend({
           this.$emit('delete')
         })
         .catch(() => {
+          //@ts-ignore
           this.$notify.info({
             type: 'info',
             message: 'キャンセルされました',

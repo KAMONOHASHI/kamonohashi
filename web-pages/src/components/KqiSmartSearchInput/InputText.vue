@@ -56,8 +56,10 @@ export default Vue.extend({
   created() {
     this.$nextTick(() => {
       this.value = this.getValue()
+      //@ts-ignore
       this.$refs.saveTagInput.$refs.input.focus()
       this.$nextTick(() => {
+        //@ts-ignore
         this.$refs.saveTagInput.$refs.input.select()
       })
     })
@@ -97,7 +99,7 @@ export default Vue.extend({
     },
 
     // 'done'をemitし、検索
-    emitDone(value, display, suffix) {
+    emitDone(value: string, display: string, suffix: string) {
       this.$emit('done', { value, display, suffix })
     },
     emitCancel() {

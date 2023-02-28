@@ -83,6 +83,7 @@
 <script lang="ts">
 import Vue from 'vue'
 
+import { PropType } from 'vue'
 import KqiDisplayImageButton from '@/components/KqiDisplayImageButton.vue'
 interface Datatype {
   dialogVisible: boolean
@@ -94,8 +95,22 @@ export default Vue.extend({
   components: { KqiDisplayImageButton },
   props: {
     fileList: {
-      type: Array,
-      default: () => {
+      type: Array as PropType<
+        Array<{
+          isDirectory: boolean
+          name: string
+          url?: string
+          size?: string
+          lastModified?: string
+        }>
+      >,
+      default: (): Array<{
+        isDirectory: boolean
+        name: string
+        url?: string
+        size?: string
+        lastModified?: string
+      }> => {
         return []
       },
     },
@@ -108,7 +123,7 @@ export default Vue.extend({
     }
   },
   computed: {
-    navigation() {
+    navigation(): Array<string> {
       return this.path.split('/')
     },
   },

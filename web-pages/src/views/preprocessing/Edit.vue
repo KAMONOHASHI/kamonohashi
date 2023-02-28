@@ -80,7 +80,7 @@ import KqiResourceSelector from '@/components/selector/KqiResourceSelector.vue'
 import registrySelectorUtil from '@/util/registrySelectorUtil'
 import gitSelectorUtil from '@/util/gitSelectorUtil'
 import { mapActions, mapGetters } from 'vuex'
-//import * as gen from '@/api/api.generate'
+import * as gen from '@/api/api.generate'
 interface DataType {
   commitsList: Array<any>
   commitsPage: number
@@ -90,20 +90,23 @@ interface DataType {
     memo: null | string
     containerImage: {
       registry: null | {
-        id: number
+        id: number | null
         name: string
       }
       image: null | string
-      tag: null | Array<string>
+      tag: null | string
     }
     gitModel: {
       git: null | {
-        id: number
+        id: number | null
         name: string
       }
-      repository: null | string | { name: string; owner: string }
+      repository:
+        | null
+        | string
+        | { name: string; owner: string; fullName?: string }
       branch: null | { branchName: string }
-      commit: null
+      commit: null | gen.NssolPlatypusServiceModelsGitCommitModel
     }
     resource: {
       cpu: number
@@ -178,6 +181,7 @@ export default Vue.extend({
   },
   computed: {
     ...mapGetters({
+      //@ts-ignore
       registries: ['registrySelector/registries'],
       defaultRegistryId: ['registrySelector/defaultRegistryId'],
       images: ['registrySelector/images'],
@@ -246,16 +250,24 @@ export default Vue.extend({
       // 指定に必要な情報を取得
       // レジストリ一覧を取得し、デフォルトレジストリを設定
       await this['registrySelector/fetchRegistries']()
-      this.form.containerImage.registry = this.registries.find(registry => {
-        return registry.id === this.defaultRegistryId
-      })
+      this.form.containerImage.registry = this.registries.find(
+        (
+          registry: gen.NssolPlatypusApiModelsAccountApiModelsRegistryCredentialOutputModel,
+        ) => {
+          return registry.id === this.defaultRegistryId
+        },
+      )
       await this.selectRegistry(this.defaultRegistryId)
 
       // gitサーバ一覧を取得し、デフォルトgitサーバを設定
       await this['gitSelector/fetchGits']()
-      this.form.gitModel.git = this.gits.find(git => {
-        return git.id === this.defaultGitId
-      })
+      this.form.gitModel.git = this.gits.find(
+        (
+          git: gen.NssolPlatypusApiModelsAccountApiModelsGitCredentialOutputModel,
+        ) => {
+          return git.id === this.defaultGitId
+        },
+      )
       await this['gitSelector/fetchRepositories'](this.defaultGitId)
 
       // 編集時で既に前処理で利用されている場合は、patchフラグを立てる
@@ -279,9 +291,13 @@ export default Vue.extend({
             id: this.detail.containerImage.registryId,
             name: this.detail.containerImage.name,
           }
-          this.form.containerImage.registry = this.registries.find(registry => {
-            return registry.id === this.detail.containerImage.registryId
-          })
+          this.form.containerImage.registry = this.registries.find(
+            (
+              registry: gen.NssolPlatypusApiModelsAccountApiModelsRegistryCredentialOutputModel,
+            ) => {
+              return registry.id === this.detail.containerImage.registryId
+            },
+          )
           await this.selectRegistry(this.detail.containerImage.registryId)
           this.form.containerImage.image = this.detail.containerImage.image
           await this.selectImage(this.detail.containerImage.image)
@@ -294,20 +310,28 @@ export default Vue.extend({
             id: this.detail.gitModel.gitId,
             name: this.detail.gitModel.name,
           }
-          this.form.gitModel.git = this.gits.find(git => {
-            return git.id === this.detail.gitModel.gitId
-          })
+          this.form.gitModel.git = this.gits.find(
+            (
+              git: gen.NssolPlatypusApiModelsAccountApiModelsGitCredentialOutputModel,
+            ) => {
+              return git.id === this.detail.gitModel.gitId
+            },
+          )
           await this.selectGit(this.detail.gitModel.gitId)
           this.form.gitModel.repository = `${this.detail.gitModel.owner}/${this.detail.gitModel.repository}`
           await this.selectRepository(this.form.gitModel.repository)
-          this.form.gitModel.branch = this.branches.find(branch => {
-            return branch.branchName === this.detail.gitModel.branch
-          })
+          this.form.gitModel.branch = this.branches.find(
+            (branch: gen.NssolPlatypusServiceModelsGitBranchModel) => {
+              return branch.branchName === this.detail.gitModel.branch
+            },
+          )
           await this.selectBranch(this.detail.gitModel.branch)
           // commitsから該当commitを抽出
-          let commit = this.commits.find(commit => {
-            return commit.commitId === this.detail.gitModel.commitId
-          })
+          let commit = this.commits.find(
+            (commit: gen.NssolPlatypusServiceModelsGitCommitModel) => {
+              return commit.commitId === this.detail.gitModel.commitId
+            },
+          )
           if (commit) {
             this.form.gitModel.commit = commit
           } else {
@@ -328,6 +352,7 @@ export default Vue.extend({
     },
     async submit() {
       let form = this.$refs.createForm
+      //@ts-ignore
       await form.validate(async valid => {
         if (valid) {
           try {
@@ -366,7 +391,7 @@ export default Vue.extend({
                   owner: this.form.gitModel.repository.owner,
                   branch: this.form.gitModel.branch.branchName,
                   commitId: this.form.gitModel.commit
-                    ? this.form.gitModel.commit.commitId
+                    ? this.form.gitModel.commit!.commitId
                     : this.commitsList[0].commitId,
                 }
               }
@@ -434,7 +459,7 @@ export default Vue.extend({
       await registrySelectorUtil.selectImage(
         this.form,
         this['registrySelector/fetchTags'],
-        this.form.containerImage.registry!.id,
+        this.form.containerImage.registry!.id!,
         image,
       )
     },
@@ -459,6 +484,7 @@ export default Vue.extend({
           repository,
         )
       } catch (message) {
+        //@ts-ignore
         this.$notify.error({
           message: message,
         })

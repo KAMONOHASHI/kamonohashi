@@ -134,7 +134,7 @@ export default Vue.extend({
 
   methods: {
     // 選択しているレジストリが切り替わった時に呼ばれるイベントハンドラ。
-    changeRegistry(registry: string | { id: number; name: string } | null) {
+    changeRegistry(registry: '' | { id: number; name: string } | null) {
       let containerImage = this.value
       if (registry === '') {
         // clearボタンが押下された場合

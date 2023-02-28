@@ -86,32 +86,34 @@ import KqiResourceSelector from '@/components/selector/KqiResourceSelector.vue'
 import KqiEnvironmentVariables from '@/components/KqiEnvironmentVariables.vue'
 import KqiPartitionSelector from '@/components/selector/KqiPartitionSelector.vue'
 import { mapActions, mapGetters } from 'vuex'
+import * as gen from '@/api/api.generate'
+
 interface DataType {
   rules: {
     preprocessing: [
       {
         required: boolean
         trigger: string
-        validator: any
+        validator: Function
       },
     ]
     data: [
       {
         required: boolean
         trigger: string
-        validator: any
+        validator: Function
       },
     ]
   }
   form: {
     selectedDataId: Array<number>
-    preprocessingId: null | number
+    preprocessingId: null | string
     resource: {
       cpu: number
       memory: number
       gpu: number
     }
-    variables: [{ key: string; value: string }]
+    variables: Array<{ key: string; value: string }>
     partition: null | string
     movePreprocessingPage: boolean
   }
@@ -136,7 +138,12 @@ export default Vue.extend({
     },
   },
   data(): DataType {
-    let dataSelectedIdsValidator = (rule, value, callback) => {
+    let dataSelectedIdsValidator = (
+      rule: any,
+      value: any,
+      callback: Function,
+    ) => {
+      //@ts-ignore
       if (this.enableDataSelection && this.form.selectedDataId.length === 0) {
         callback(new Error('必須項目です'))
       } else {
@@ -144,7 +151,12 @@ export default Vue.extend({
       }
     }
 
-    let preprocessingIdValidator = (rule, value, callback) => {
+    let preprocessingIdValidator = (
+      rule: any,
+      value: any,
+      callback: Function,
+    ) => {
+      //@ts-ignore
       if (this.form.preprocessingId === null)
         callback(new Error('必須項目です'))
       else {
@@ -188,6 +200,7 @@ export default Vue.extend({
   },
   computed: {
     ...mapGetters({
+      //@ts-ignore
       preprocessings: ['preprocessing/preprocessings'],
       partitions: ['cluster/partitions'],
       quota: ['cluster/quota'],
@@ -216,6 +229,7 @@ export default Vue.extend({
     ]),
     async runPreprocessing() {
       let form = this.$refs.preprocessingForm
+      //@ts-ignore
       await form.validate(async valid => {
         this.error = null
         if (valid) {
@@ -232,7 +246,7 @@ export default Vue.extend({
           }
 
           // 環境変数の作成
-          let options = {}
+          let options: { [key: string]: string } = {}
           // apiのフォーマットに合わせる(配列 => オブジェクト)
           this.form.variables.forEach(kvp => {
             options[kvp.key] = kvp.value
@@ -263,7 +277,7 @@ export default Vue.extend({
           await Util.wait(2000)
           // エラーがない場合、前処理履歴画面に遷移
           if (this.form.movePreprocessingPage && this.error === null) {
-            this.emitHistoryPage(this.form.preprocessingId)
+            this.emitHistoryPage(this.form.preprocessingId!)
           } else if (this.error === null) {
             this.emitDone()
           } else {
@@ -279,7 +293,9 @@ export default Vue.extend({
     onPreprocessingChanged() {
       // リソースサイズのデフォルト値を選択された前処理の値とする
       let preprocessing = this.preprocessings.find(
-        preprocessing => String(preprocessing.id) === this.form.preprocessingId,
+        (
+          preprocessing: gen.NssolPlatypusApiModelsPreprocessingApiModelsIndexOutputModel,
+        ) => String(preprocessing.id) === this.form.preprocessingId,
       )
       this.form.resource.cpu = preprocessing.cpu
       this.form.resource.memory = preprocessing.memory
@@ -293,10 +309,10 @@ export default Vue.extend({
       this.$emit('done')
       this.dialogVisible = false
     },
-    emitHistoryPage(id: number) {
+    emitHistoryPage(id: string) {
       this.$router.push('/preprocessingHistory/' + id)
     },
-    closeDialog(done) {
+    closeDialog(done: any) {
       done()
       this.$emit('close')
     },

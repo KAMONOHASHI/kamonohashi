@@ -375,6 +375,7 @@ export default Vue.extend({
     },
     async onSubmit() {
       let form = this.$refs.updateForm
+      //@ts-ignore
       await form.validate(async valid => {
         if (valid) {
           try {

@@ -102,7 +102,7 @@ interface DataType {
       message: string
     }>
     files: Array<{
-      validator: any //TODO
+      validator: Function //TODO
       trigger: string
     }>
   }
@@ -123,9 +123,10 @@ export default Vue.extend({
     },
   },
   data(): DataType {
-    let validateFiles = (rule, value, callback) => {
+    let validateFiles = (rule: any, value: any, callback: Function) => {
       // 1データのファイルが許容範囲外ならエラーを出す。
       // ただし、既存データのファイル数が最大値を超えていても、ファイル追加以外の編集は可能にする。
+      //@ts-ignore
       let uploaded = this.uploadedFiles.length
       const refDataFile = this.$refs.dataFile as InstanceType<
         typeof KqiFileManager
@@ -209,7 +210,7 @@ export default Vue.extend({
     },
     async submit() {
       let form = this.$refs.createForm
-
+      //@ts-ignore
       await form.validate(async valid => {
         if (valid) {
           // 独自ローディング処理のため共通側は無効
@@ -239,7 +240,9 @@ export default Vue.extend({
 
               this.error = error
               // 選択したファイルを削除する
+              //@ts-ignore
               this.$refs.dataFile.$refs.uploadForm.selectedFiles = undefined
+              //@ts-ignore
               this.$refs.dataFile.$refs.uploadForm.filesArray = []
             }
           } finally {

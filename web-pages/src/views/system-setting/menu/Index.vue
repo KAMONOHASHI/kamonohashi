@@ -115,6 +115,7 @@ export default Vue.extend({
   },
   computed: {
     ...mapGetters({
+      //@ts-ignore
       menus: ['menu/menus'],
       menuTypes: ['menu/types'],
       roles: ['role/roles'],
@@ -134,12 +135,14 @@ export default Vue.extend({
       // ロールの取得
       await this['role/fetchRoles']()
       this.roleTypes = []
-      this.roles.forEach(role => {
-        if (!role.tenantId) {
-          // テナント固有のロールは除外
-          this.roleTypes.push(role)
-        }
-      })
+      this.roles.forEach(
+        (role: gen.NssolPlatypusApiModelsRoleApiModelsIndexOutputModel) => {
+          if (!role.tenantId) {
+            // テナント固有のロールは除外
+            this.roleTypes.push(role)
+          }
+        },
+      )
 
       // メニュー種別の取得
       await this['menu/fetchTypes']()
@@ -166,7 +169,9 @@ export default Vue.extend({
     },
 
     displayTypeName(id: number) {
-      let type = this.menuTypes.find(s => s.id === id)
+      let type = this.menuTypes.find(
+        (s: gen.NssolPlatypusInfrastructureInfosEnumInfo) => s.id === id,
+      )
       if (type) {
         return type.name
       } else {

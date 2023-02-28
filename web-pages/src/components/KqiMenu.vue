@@ -111,7 +111,7 @@ export default Vue.extend({
       }
     },
 
-    handleResize(event) {
+    handleResize(event: any) {
       if (event.currentTarget.innerWidth < 1000) {
         this.isCollapse = true
       } else {

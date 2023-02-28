@@ -70,7 +70,9 @@ export default Vue.extend({
           gen.NssolPlatypusApiModelsAccountApiModelsRegistryCredentialOutputModel
         >
       >,
-      default: () => {
+      default: (): Array<
+        gen.NssolPlatypusApiModelsAccountApiModelsRegistryCredentialOutputModel
+      > => {
         return []
       },
     },

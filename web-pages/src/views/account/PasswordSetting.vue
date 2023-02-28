@@ -52,7 +52,7 @@ interface DataType {
       {
         required: boolean
         trigger: string
-        validator: any
+        validator: Function
       },
     ]
   }
@@ -65,7 +65,10 @@ export default Vue.extend({
         currentPassword: string
         password: Array<string>
       }>,
-      default: () => ({
+      default: (): {
+        currentPassword: string
+        password: Array<string>
+      } => ({
         currentPassword: '',
         password: ['', ''],
       }),
@@ -85,6 +88,7 @@ export default Vue.extend({
           {
             required: true,
             trigger: 'blur',
+            //@ts-ignore
             validator: this.passwordValidator,
           },
         ],
@@ -97,7 +101,7 @@ export default Vue.extend({
     },
   },
   methods: {
-    passwordValidator(rule, value, callback) {
+    passwordValidator(rule: any, value: [string, string], callback: Function) {
       if (!(value[0] && value[1])) {
         callback(new Error('必須項目です'))
       } else if (!(value[0] === value[1])) {
@@ -108,6 +112,7 @@ export default Vue.extend({
     },
 
     handlePassword() {
+      //@ts-ignore
       this.$refs['passForm'].validate(async valid => {
         if (valid) {
           this.$emit('updatePassword')

@@ -343,12 +343,12 @@ interface DataType {
     containerImage: {
       required: boolean
       trigger: string
-      validator: validator.containerImageValidator
+      validator: Function
     }
     gitModel: {
       required: boolean
       trigger: string
-      validator: validator.gitModelValidator
+      validator: Function
     }
   }
   dialogVisible: boolean
@@ -414,6 +414,7 @@ export default Vue.extend({
         zip: true,
         localDataSet: false,
         memo: null,
+        tags: [],
       },
       rules: {
         name: [formRule],
@@ -438,6 +439,7 @@ export default Vue.extend({
   },
   computed: {
     ...mapGetters({
+      //@ts-ignore
       trainingHistories: ['training/historiesToMount'],
       dataSets: ['dataSet/dataSets'],
       dataSetDetail: ['dataSet/detail'],
@@ -481,16 +483,24 @@ export default Vue.extend({
 
     // レジストリ一覧を取得し、デフォルトレジストリを設定
     await this['registrySelector/fetchRegistries']()
-    this.form.containerImage.registry = this.registries.find(registry => {
-      return registry.id === this.defaultRegistryId
-    })
+    this.form.containerImage.registry = this.registries.find(
+      (
+        registry: gen.NssolPlatypusApiModelsAccountApiModelsRegistryCredentialOutputModel,
+      ) => {
+        return registry.id === this.defaultRegistryId
+      },
+    )
     await this.selectRegistry(this.defaultRegistryId)
 
     // gitサーバ一覧を取得し、デフォルトgitサーバを設定
     await this['gitSelector/fetchGits']()
-    this.form.gitModel.git = this.gits.find(git => {
-      return git.id === this.defaultGitId
-    })
+    this.form.gitModel.git = this.gits.find(
+      (
+        git: gen.NssolPlatypusApiModelsAccountApiModelsGitCredentialOutputModel,
+      ) => {
+        return git.id === this.defaultGitId
+      },
+    )
     await this['gitSelector/fetchRepositories'](this.defaultGitId)
 
     // コピー実行時はコピー元情報を各項目を設定
@@ -506,13 +516,21 @@ export default Vue.extend({
       this.form.memo = this.detail.memo
       this.form.selectedParent = []
       if (this.detail.parents) {
-        this.trainingHistories.forEach(history => {
-          this.detail.parents.forEach(parent => {
-            if (history.id === parent.id) {
-              this.form.selectedParent.push(parent)
-            }
-          })
-        })
+        this.trainingHistories.forEach(
+          (
+            history: gen.NssolPlatypusApiModelsTrainingApiModelsIndexOutputModel,
+          ) => {
+            this.detail.parents.forEach(
+              (
+                parent: gen.NssolPlatypusApiModelsTrainingApiModelsIndexOutputModel,
+              ) => {
+                if (history.id === parent.id) {
+                  this.form.selectedParent.push(parent)
+                }
+              },
+            )
+          },
+        )
       }
       this.form.resource.cpu = this.detail.cpu
       this.form.resource.memory = this.detail.memory
@@ -546,9 +564,11 @@ export default Vue.extend({
       this.form.gitModel.branch = this.detail.gitModel.branch
       await this.selectBranch(this.detail.gitModel.branch)
       // commitsから該当commitを抽出
-      let commit = this.commits.find(commit => {
-        return commit.commitId === this.detail.gitModel.commitId
-      })
+      let commit = this.commits.find(
+        (commit: gen.NssolPlatypusServiceModelsGitCommitModel) => {
+          return commit.commitId === this.detail.gitModel.commitId
+        },
+      )
       if (commit) {
         this.form.gitModel.commit = commit
       } else {
@@ -590,6 +610,7 @@ export default Vue.extend({
       if (this.active !== 0) {
         form = this.$refs.form3
       }
+      //@ts-ignore
       await form.validate(async valid => {
         if (valid) {
           try {
@@ -601,7 +622,7 @@ export default Vue.extend({
             // training history ObjectのリストからIDのみを抜き出して格納
             let selectedParentIds: Array<number> = []
             this.form.selectedParent.forEach(parent => {
-              selectedParentIds.push(parent.id)
+              selectedParentIds.push(parent!.id!)
             })
             // ブランチ未指定の際はcommitIdも未指定で実行
             // ブランチ指定時、HEADが指定された際はcommitsの先頭要素をcommitIDに指定する。コピー実行時の再現性を担保するため
@@ -617,13 +638,15 @@ export default Vue.extend({
               let branch = { branchName: this.form.gitModel.branch }
               this.form.gitModel.branch = branch
             }
-
+            if (typeof this.form.gitModel.repository == 'string') {
+              return
+            }
             let params = {
               Name: this.form.name,
               DataSetId: this.form.dataSetId,
               ParentIds: selectedParentIds,
               ContainerImage: {
-                registryId: this.form.containerImage.registry.id,
+                registryId: this.form!.containerImage!.registry!.id,
                 image: this.form.containerImage.image,
                 tag: this.form.containerImage.tag,
               },
@@ -664,7 +687,7 @@ export default Vue.extend({
     emitDone() {
       this.$emit('done')
     },
-    closeDialog(done) {
+    closeDialog(done: Function) {
       done()
       this.emitCancel()
     },
@@ -681,6 +704,7 @@ export default Vue.extend({
           form = this.$refs.form2
           break
       }
+      //@ts-ignore
       await form.validate(async valid => {
         if (valid) {
           this.active++
@@ -728,6 +752,7 @@ export default Vue.extend({
           repository,
         )
       } catch (message) {
+        //@ts-ignore
         this.$notify.error({
           message: message,
         })

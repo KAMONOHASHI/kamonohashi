@@ -165,10 +165,10 @@ export default Vue.extend({
 
     async changeValue() {
       //TODO 使用していない変数名4行 すべて削除したい
-      this.dataName = ''
-      this.preprocessName = ''
-      this.createdAt = ''
-      this.status = ''
+      //this.dataName = ''
+      //this.preprocessName = ''
+      //this.createdAt = ''
+      //this.status = ''
 
       if (this.id && this.dataId) {
         try {
@@ -210,7 +210,7 @@ export default Vue.extend({
     emitLog() {
       this.$emit('log', { id: this.id, dataId: this.dataId })
     },
-    redirectDataEdit(dataId) {
+    redirectDataEdit(dataId: number) {
       this.$router.push('/data/edit/' + dataId)
     },
 

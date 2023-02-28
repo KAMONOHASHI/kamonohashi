@@ -395,17 +395,15 @@ export default Vue.extend({
     ]),
     async retrieveData() {
       let params:
-        | {}
-        | SearchDetail
         | (SearchDetail & {
-            page: number
-            perPage: number
-            withTotal: boolean
+            page?: number
+            perPage?: number
+            withTotal?: boolean
           })
         | {
-            page: number
-            perPage: number
-            withTotal: boolean
+            page?: number
+            perPage?: number
+            withTotal?: boolean
           }
       if (this.searchCondition == null) {
         params = {}
@@ -531,7 +529,7 @@ export default Vue.extend({
       }
       let str = ''
       for (let i in list) {
-        if (i == 0) {
+        if (Number(i) == 0) {
           str = str + list[i]
         } else {
           str = str + ',' + list[i]
@@ -633,6 +631,7 @@ export default Vue.extend({
               .then(() => successCount++)
               .catch(() => {})
           }
+          //@ts-ignore
           await this.$notify.info({
             type: 'info',
             message: `学習履歴を削除しました。(成功：${successCount}件、 失敗：${this

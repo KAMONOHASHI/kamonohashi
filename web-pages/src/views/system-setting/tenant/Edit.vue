@@ -178,6 +178,7 @@ export default Vue.extend({
   },
   computed: {
     ...mapGetters({
+      //@ts-ignore
       detail: ['tenant/detail'],
       gitEndpoints: ['git/endpoints'],
       registryEndpoints: ['registry/registries'],
@@ -230,6 +231,7 @@ export default Vue.extend({
     ]),
     async submit() {
       let form = this.$refs.createForm
+      //@ts-ignore
       await form.validate(async valid => {
         if (valid) {
           if (await this.showConfirm()) {
@@ -296,7 +298,7 @@ export default Vue.extend({
         return true
       }
       let count = 0
-      this.detail.userGroupIds.forEach(id => {
+      this.detail.userGroupIds.forEach((id: number) => {
         if (this.form.userGroupIds.includes(id)) count++
       })
       return this.detail.userGroupIds.length == count

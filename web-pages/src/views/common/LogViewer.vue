@@ -64,17 +64,18 @@ export default Vue.extend({
   },
   computed: {
     ...mapGetters({
+      //@ts-ignore
       historyDetail: ['preprocessing/historyDetail'],
       logUrl: ['storage/logUrl'],
     }),
-    displayLogList: function() {
-      let startIndex = parseInt(this.scroll / listItemHeight, 10)
+    displayLogList: function(): Array<string> {
+      let startIndex = this.scroll / listItemHeight
       return this.logList.slice(
         Math.max(0, startIndex - displayLogCount),
         Math.min(this.logList.length, startIndex + displayLogCount),
       )
     },
-    listStyle: function() {
+    listStyle: function(): { [key: string]: string } {
       return {
         'padding-top':
           Math.max(0, this.scroll - listItemHeight * displayLogCount) + 'px',
@@ -108,6 +109,7 @@ export default Vue.extend({
         id: this.id,
         dataId: this.dataId,
       })
+      //@ts-ignore
       let key = this.historyDetail.key
       let historyId = key.split('-')[1] // "preproc-{id}" => ["preproc", "{id}"]
       fileName = `preproc_stdout_stderr_${this.id}_${this.dataId}.log`
@@ -130,6 +132,7 @@ export default Vue.extend({
 
     // ログをダウンロードし、logListに格納
     this.$store.dispatch('incrementLoading')
+    //@ts-ignore
     fetch(this.logUrl, {
       method: 'GET',
     })
@@ -139,7 +142,7 @@ export default Vue.extend({
         this.scrollMax = this.logList.length * listItemHeight
       })
       .then(() => {
-        document.getElementById('logArea').scrollTop = this.scrollMax
+        document.getElementById('logArea')!.scrollTop = this.scrollMax
         this.$store.dispatch('decrementLoading')
       })
   },
@@ -151,7 +154,7 @@ export default Vue.extend({
     emitReturn() {
       this.$emit('return')
     },
-    getScrollParam(e) {
+    getScrollParam(e: any) {
       if (e.target.scrollTop >= this.scrollMax) {
         e.target.scrollTop = this.scrollMax
       }

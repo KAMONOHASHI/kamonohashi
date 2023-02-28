@@ -105,7 +105,9 @@ export default Vue.extend({
           }
 
           let a = document.getElementById('download')
+          //@ts-ignore
           a!.download = this.filename
+          //@ts-ignore
           a!.href =
             'data:application/octet-stream,' +
             encodeURIComponent(this.containerLog)

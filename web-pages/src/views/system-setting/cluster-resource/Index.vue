@@ -86,6 +86,7 @@ export default Vue.extend({
       }
     },
     handleReload() {
+      //@ts-ignore
       this.$router.go()
     },
   },

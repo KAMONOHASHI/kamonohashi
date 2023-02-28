@@ -164,7 +164,16 @@ export default Vue.extend({
     },
 
     // 検索条件の追加
-    handlePlus(config) {
+    handlePlus(config: {
+      type: string
+      name: string
+      prop: string
+      multiple: boolean
+      disabled: boolean
+      option: {
+        default: string
+      }
+    }) {
       let component = null
       if (config.type === 'text') component = SmartSearchInputText
       if (config.type === 'number') component = SmartSearchInputNumber
@@ -183,7 +192,12 @@ export default Vue.extend({
 
     // 検索に使用する条件の選択
     handleEdit(tag: Tag) {
-      let component = null
+      let component:
+        | null
+        | typeof SmartSearchInputText
+        | typeof SmartSearchInputNumber
+        | typeof SmartSearchInputDate
+        | typeof SmartSearchInputSelect = null
       if (tag.config.type === 'text') component = SmartSearchInputText
       if (tag.config.type === 'number') component = SmartSearchInputNumber
       if (tag.config.type === 'date') component = SmartSearchInputDate
@@ -203,6 +217,7 @@ export default Vue.extend({
 
     //検索条件のリストを開く
     openDropDown() {
+      //@ts-ignore
       this.$refs.inputSpace.$el.click()
     },
 
@@ -258,7 +273,7 @@ export default Vue.extend({
     emitSearch() {
       this.$emit('search')
     },
-    emitValue(v) {
+    emitValue(v: any) {
       this.$emit('input', v)
     },
   },
