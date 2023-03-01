@@ -12,6 +12,7 @@ module.exports = {
   rules: {
     'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'warn',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'warn',
+    'vue/multi-word-component-names': 'off',
   },
   parserOptions: {
     parser: '@typescript-eslint/parser',
