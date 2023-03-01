@@ -140,14 +140,39 @@
   </div>
 </template>
 
-<script>
-import KqiContainerSelector from '@/components/selector/KqiContainerSelector'
-import KqiGitSelector from '@/components/selector/KqiGitSelector'
-import KqiResourceSelector from '@/components/selector/KqiResourceSelector'
+<script lang="ts">
+import Vue from 'vue'
+import { PropType } from 'vue'
+
+import KqiContainerSelector from '@/components/selector/KqiContainerSelector.vue'
+import KqiGitSelector from '@/components/selector/KqiGitSelector.vue'
+import KqiResourceSelector from '@/components/selector/KqiResourceSelector.vue'
 import api from '@/api/api'
 import { mapActions, mapGetters } from 'vuex'
-export default {
-  title: 'モデルテンプレート',
+import * as gen from '@/api/api.generate'
+
+interface DataType {
+  commitsList: Array<gen.NssolPlatypusServiceModelsGitCommitModel>
+  commitsPage: number
+  rules: {
+    containerImage: Array<{
+      required: boolean
+      trigger: string
+      message: string
+    }>
+  }
+  error: null | Error
+  isPatch: boolean
+  images: Array<string>
+  tags: Array<string>
+  repositories: Array<gen.NssolPlatypusServiceModelsGitRepositoryModel>
+  branches: Array<gen.NssolPlatypusServiceModelsGitBranchModel>
+  commits: Array<gen.NssolPlatypusServiceModelsGitCommitModel>
+  commitDetail: null | gen.NssolPlatypusServiceModelsGitCommitModel
+  updateValue: boolean
+}
+
+export default Vue.extend({
   components: {
     KqiContainerSelector,
     KqiGitSelector,
@@ -155,8 +180,66 @@ export default {
   },
   props: {
     value: {
-      type: Object,
-      default: () => {
+      type: Object as PropType<{
+        containerImage: {
+          registry:
+            | string
+            | null
+            | {
+                id: number
+                name: string
+              }
+          registryId?: number
+          image: string | null
+          tag: string | null
+          token: string | null
+        }
+        gitModel: {
+          git: null | gen.NssolPlatypusApiModelsAccountApiModelsGitCredentialOutputModel
+          gitId?: number
+          repository:
+            | null
+            | gen.NssolPlatypusServiceModelsGitRepositoryModel
+            | string
+          owner?: string | null
+          branch: null | gen.NssolPlatypusServiceModelsGitBranchModel | string
+          commit: null | gen.NssolPlatypusServiceModelsGitCommitModel
+          token: null | string
+        }
+        entryPoint: string
+        resource: {
+          cpu: number
+          memory: number
+          gpu: number
+        }
+      }>,
+      default: (): {
+        containerImage: {
+          registry:
+            | string
+            | null
+            | {
+                id: number
+                name: string
+              }
+          image: string | null
+          tag: string | null
+          token: string | null
+        }
+        gitModel: {
+          git: null | gen.NssolPlatypusApiModelsAccountApiModelsGitCredentialOutputModel
+          repository: null | gen.NssolPlatypusServiceModelsGitRepositoryModel
+          branch: null | gen.NssolPlatypusServiceModelsGitBranchModel
+          commit: null | gen.NssolPlatypusServiceModelsGitCommitModel
+          token: string | null
+        }
+        entryPoint: string
+        resource: {
+          cpu: number
+          memory: number
+          gpu: number
+        }
+      } => {
         return {
           containerImage: {
             registry: null,
@@ -196,7 +279,7 @@ export default {
       default: '',
     },
   },
-  data() {
+  data(): DataType {
     return {
       commitsList: [],
       commitsPage: 1,
@@ -218,15 +301,6 @@ export default {
   },
   computed: {
     // レジストリサーバ、gitサーバ周りはコンテナ単位で共通のためstoreされた値を使用する
-    ...mapGetters({
-      registries: ['registrySelector/registries'],
-      defaultRegistryId: ['registrySelector/defaultRegistryId'],
-      gits: ['gitSelector/gits'],
-      defaultGitId: ['gitSelector/defaultGitId'],
-      quota: ['cluster/quota'],
-      loadingRepositories: ['gitSelector/loadingRepositories'],
-      searchCommitDetail: ['gitSelector/commitDetail'],
-    }),
     form: {
       get() {
         return this.value
@@ -235,6 +309,16 @@ export default {
         this.$emit('input', value)
       },
     },
+    ...mapGetters({
+      //@ts-ignore
+      registries: ['registrySelector/registries'],
+      defaultRegistryId: ['registrySelector/defaultRegistryId'],
+      gits: ['gitSelector/gits'],
+      defaultGitId: ['gitSelector/defaultGitId'],
+      quota: ['cluster/quota'],
+      loadingRepositories: ['gitSelector/loadingRepositories'],
+      searchCommitDetail: ['gitSelector/commitDetail'],
+    }),
   },
   watch: {
     async value() {
@@ -258,12 +342,20 @@ export default {
       if (this.createTemplate) {
         // 更新フラグがfalseの時、新規作成と判断する。（formのコピーは実行されていない）
         if (!this.updateValue) {
-          this.form.containerImage.registry = this.registries.find(registry => {
-            return registry.id === this.defaultRegistryId
-          })
-          this.form.gitModel.git = this.gits.find(git => {
-            return git.id === this.defaultGitId
-          })
+          this.form.containerImage.registry = this.registries.find(
+            (
+              registry: gen.NssolPlatypusApiModelsAccountApiModelsRegistryCredentialOutputModel,
+            ) => {
+              return registry.id === this.defaultRegistryId
+            },
+          )
+          this.form.gitModel.git = this.gits.find(
+            (
+              git: gen.NssolPlatypusApiModelsAccountApiModelsGitCredentialOutputModel,
+            ) => {
+              return git.id === this.defaultGitId
+            },
+          )
         }
       }
 
@@ -278,7 +370,7 @@ export default {
       this.form.resource = { ...this.value.resource }
       this.updateValue = false
     },
-    copy(from) {
+    copy(from: string) {
       let formtype = ''
       if (this.formType == '前処理') {
         formtype = 'preprocessing'
@@ -294,7 +386,12 @@ export default {
       this.$emit('copy', { from: from, to: formtype })
     },
     // テンプレート詳細画面の場合にコンテナイメージの初期情報を設定する
-    async setupFromContainerImage(containerImage) {
+    async setupFromContainerImage(containerImage: {
+      registry: string | null
+      image: string | null
+      tag: string | null
+      token: string | null
+    }) {
       this.form.containerImage = {
         registry: null,
         image: null,
@@ -308,9 +405,13 @@ export default {
         Object.keys(containerImage).length == 0 ||
         containerImage.registry === null
       ) {
-        this.form.containerImage.registry = this.registries.find(registry => {
-          return registry.id == this.defaultRegistryId
-        })
+        this.form.containerImage.registry = this.registries.find(
+          (
+            registry: gen.NssolPlatypusApiModelsAccountApiModelsRegistryCredentialOutputModel,
+          ) => {
+            return registry.id == this.defaultRegistryId
+          },
+        )
         return
       }
 
@@ -331,7 +432,13 @@ export default {
       this.form.containerImage.tag = containerImage.tag
     },
     // テンプレート詳細画面の場合にgit情報の詳細を設定する
-    async setupFormGitModel(gitModel) {
+    async setupFormGitModel(gitModel: {
+      git: null | gen.NssolPlatypusApiModelsAccountApiModelsGitCredentialOutputModel
+      repository: null | gen.NssolPlatypusServiceModelsGitRepositoryModel
+      branch: null | gen.NssolPlatypusServiceModelsGitBranchModel
+      commit: null | gen.NssolPlatypusServiceModelsGitCommitModel
+      token: string | null
+    }) {
       this.form.gitModel = {
         git: null,
         repository: null,
@@ -346,12 +453,16 @@ export default {
         Object.keys(gitModel).length == 0 ||
         gitModel.git === null
       ) {
-        this.form.gitModel.git = this.gits.find(git => {
-          return git.id == this.defaultGitId
-        })
+        this.form.gitModel.git = this.gits.find(
+          (
+            git: gen.NssolPlatypusApiModelsAccountApiModelsGitCredentialOutputModel,
+          ) => {
+            return git.id == this.defaultGitId
+          },
+        )
         return
       }
-      let commitId = null
+      let commitId: string | null = null
       if (gitModel.gitId != null) {
         await this.selectGit(gitModel.gitId)
         await this.selectRepository(gitModel.owner + '/' + gitModel.repository)
@@ -389,7 +500,7 @@ export default {
       }
     },
     // レジストリサーバーを選択する
-    async selectRegistry(registryId) {
+    async selectRegistry(registryId: null | number) {
       // 過去の選択を削除
       this.form.containerImage.registry = null
       this.form.containerImage.image = null
@@ -399,16 +510,18 @@ export default {
 
       // 選択したレジストリをフォームに設定し、イメージの一覧をapi経由で取得する
       if (registryId !== null) {
-        this.form.containerImage.registry = this.registries.find(registry => {
-          return registry.id == registryId
-        })
+        this.form.containerImage.registry = this.registries.find(
+          (registry: { id: number }) => {
+            return registry.id == registryId
+          },
+        )
         this.images = (
           await api.registry.getImages({ registryId: registryId })
         ).data
       }
     },
     // イメージを選択
-    async selectImage(image) {
+    async selectImage(image: null | string) {
       // 過去の選択を削除
       this.form.containerImage.imatge = null
       this.form.containerImage.tag = null
@@ -433,7 +546,7 @@ export default {
       this.tags = (await api.registry.getTags(params)).data
     },
     // gitサーバーを選択
-    async selectGit(gitId) {
+    async selectGit(gitId: null | number) {
       // 過去の選択をリセット
       this.form.gitModel.git = null
       this.form.gitModel.repository = null
@@ -446,14 +559,14 @@ export default {
       // クリアされた場合は何もしない
       // そうでない場合はgitサーバーを設定してapi経由でリポジトリ一覧を取得
       if (gitId !== null) {
-        this.form.gitModel.git = this.gits.find(git => {
+        this.form.gitModel.git = this.gits.find((git: { id: number }) => {
           return git.id == gitId
         })
         this.repositories = (await api.git.getRepos({ gitId: gitId })).data
       }
     },
     // リポジトリを選択
-    async selectRepository(repository) {
+    async selectRepository(repository: string | null) {
       // 過去の選択をリセット
       this.form.gitModel.repository = null
       this.form.gitModel.branch = null
@@ -483,6 +596,7 @@ export default {
           }
         } else {
           // 構文エラー
+          //@ts-ignore
           this.$notify.error({
             message:
               '{owner}/{name}の形式で入力してください。例：KAMONOHASHI/tutorial',
@@ -503,7 +617,7 @@ export default {
       this.branches = (await api.git.getBranches(params)).data
     },
     // ブランチを選択
-    async selectBranch(branchName) {
+    async selectBranch(branchName: null | string) {
       // コミットページを元に戻す
       this.commitsPage = 1
       // 過去の選択をリセット
@@ -513,21 +627,23 @@ export default {
 
       // クリアでない場合には設定してコミット一覧を取得する
       if (branchName !== null) {
-        this.form.gitModel.branch = this.branches.find(branch => {
-          return branch.branchName == branchName
-        })
+        this.form.gitModel.branch = this.branches.find(
+          (branch: gen.NssolPlatypusServiceModelsGitBranchModel) => {
+            return branch.branchName == branchName
+          },
+        )
         let params = {
           gitId: this.form.gitModel.git.id,
           owner: this.form.gitModel.repository.owner,
           repositoryName: this.form.gitModel.repository.name,
           branch: branchName,
-          page: this.commitsPage,
+          page: String(this.commitsPage),
         }
         this.commits = (await api.git.getCommits(params)).data
         this.commitsList = [...this.commits]
       }
     },
-    async searchCommitId(commitId) {
+    async searchCommitId(commitId: string) {
       await this['gitSelector/fetchCommitDetail']({
         gitId: this.form.gitModel.git.id,
         repository: this.form.gitModel.repository,
@@ -546,7 +662,7 @@ export default {
         owner: this.form.gitModel.repository.owner,
         repositoryName: this.form.gitModel.repository.name,
         branch: this.form.gitModel.branch.branchName,
-        page: this.commitsPage,
+        page: String(this.commitsPage),
       }
       this.commits = (await api.git.getCommits(params)).data
 
@@ -656,7 +772,7 @@ export default {
       'gitSelector/fetchCommitDetail',
     ]),
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

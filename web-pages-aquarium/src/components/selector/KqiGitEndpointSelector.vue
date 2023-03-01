@@ -46,19 +46,28 @@
   </el-form-item>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue from 'vue'
+import { PropType } from 'vue'
+import * as gen from '@/api/api.generate'
+
+export default Vue.extend({
   props: {
     // 表示するgitエンドポイントの一覧
     endpoints: {
-      type: Array,
+      type: Array as PropType<
+        Array<gen.NssolPlatypusApiModelsGitApiModelsIndexOutputModel>
+      >,
       default: () => {
         return []
       },
     },
     // 選択されたgitエンドポイントIDの配列とその中から選んだデフォルトのID
     value: {
-      type: Object,
+      type: Object as PropType<{
+        selectedIds: Array<number>
+        defaultId: number | null
+      }>,
       default: () => {
         return {
           selectedIds: [], // 選択中のgit idの配列
@@ -70,7 +79,7 @@ export default {
   computed: {
     availableEndpoints: function() {
       // selectedIdsとendpointsを突き合わせて該当するものを抜き出し、表示に用いる配列を作成する。
-      let endpointList = []
+      let endpointList: Array<gen.NssolPlatypusApiModelsGitApiModelsIndexOutputModel> = []
       this.endpoints.forEach(endpoint => {
         if (this.value.selectedIds.some(id => id === endpoint.id)) {
           endpointList.push(endpoint)
@@ -80,7 +89,7 @@ export default {
     },
   },
   methods: {
-    async handleChange(selectedIds) {
+    async handleChange(selectedIds: Array<number>) {
       let updateValue = this.value
       updateValue.selectedIds = selectedIds
       // selectedIdsに含まれないものがdefaultIdに指定されていた場合はdefaultIdをリセット
@@ -89,7 +98,7 @@ export default {
       }
       this.$emit('input', updateValue)
     },
-    async handleChangeDefaultId(defaultId) {
+    async handleChangeDefaultId(defaultId: '' | number) {
       let updateValue = this.value
       if (defaultId === '') {
         updateValue.defaultId = null
@@ -99,7 +108,7 @@ export default {
       this.$emit('input', updateValue)
     },
   },
-}
+})
 </script>
 
 <style scoped>

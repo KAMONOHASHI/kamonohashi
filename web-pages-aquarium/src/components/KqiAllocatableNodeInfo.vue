@@ -20,11 +20,16 @@
   </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue from 'vue'
+import { PropType } from 'vue'
+import * as gen from '@/api/api.generate'
+export default Vue.extend({
   props: {
     allocatableNodes: {
-      type: Array,
+      type: Array as PropType<
+        Array<gen.NssolPlatypusApiModelsClusterApiModelsNodeResourceOutputModel>
+      >,
       default: () => [],
     },
     emptyMessage: {
@@ -32,7 +37,7 @@ export default {
       default: '利用可能なノードがありません。',
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped></style>

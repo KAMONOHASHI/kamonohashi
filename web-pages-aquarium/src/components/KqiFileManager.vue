@@ -32,12 +32,16 @@
   </div>
 </template>
 
-<script>
-import KqiDownloadButton from '@/components/KqiDownloadButton'
-import KqiDeleteButton from '@/components/KqiDeleteButton'
-import KqiUploadForm from '@/components/KqiUploadForm'
+<script lang="ts">
+import Vue from 'vue'
+import { PropType } from 'vue'
 
-export default {
+import KqiDownloadButton from '@/components/KqiDownloadButton.vue'
+import KqiDeleteButton from '@/components/KqiDeleteButton.vue'
+import KqiUploadForm from '@/components/KqiUploadForm.vue'
+import * as gen from '@/api/api.generate'
+
+export default Vue.extend({
   name: 'FileManager',
   components: {
     KqiDownloadButton,
@@ -46,7 +50,9 @@ export default {
   },
   props: {
     uploadedFiles: {
-      type: Array,
+      type: Array as PropType<
+        Array<gen.NssolPlatypusApiModelsDataApiModelsDataFileOutputModel>
+      >,
       default: () => {
         return []
       },
@@ -63,15 +69,17 @@ export default {
   methods: {
     async uploadFile() {
       if (this.$refs.uploadForm) {
+        //@ts-ignore
         let fileInfo = await this.$refs.uploadForm.uploadFile()
         return fileInfo
       }
     },
     isFileSelected() {
+      //@ts-ignore
       return this.$refs.uploadForm.isFileSelected()
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped></style>

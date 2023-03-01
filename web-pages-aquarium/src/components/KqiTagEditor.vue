@@ -32,25 +32,31 @@
   </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue from 'vue'
+import { PropType } from 'vue'
+interface DataType {
+  selectBoxVisible: boolean // 新規タグの入力エリアの表示有無
+  tagValue: string // 新規タグの入力値}
+}
+export default Vue.extend({
   props: {
     // 選択中のタグ
     value: {
-      type: Array,
-      default: () => {
+      type: Array as PropType<Array<string>>,
+      default: (): Array<string> => {
         return []
       },
     },
     // テナントの登録済みのタグ
     registeredTags: {
-      type: Array,
-      default: () => {
+      type: Array as PropType<Array<string>>,
+      default: (): Array<string> => {
         return []
       },
     },
   },
-  data() {
+  data(): DataType {
     return {
       selectBoxVisible: false, // 新規タグの入力エリアの表示有無
       tagValue: '', // 新規タグの入力値
@@ -62,6 +68,7 @@ export default {
       this.selectBoxVisible = true
       this.$nextTick(() =>
         // 新しいタグ入力テキストボックスを出したら、すぐに入力開始できるよう、フォーカスする
+        //@ts-ignore
         this.$refs.saveTagInput.focus(),
       )
     },
@@ -76,13 +83,13 @@ export default {
       this.tagValue = ''
     },
     // タグを削除しemit
-    async removeTag(tag) {
+    async removeTag(tag: string) {
       let tags = this.value
       tags.splice(tags.indexOf(tag), 1)
       this.$emit('input', tags)
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

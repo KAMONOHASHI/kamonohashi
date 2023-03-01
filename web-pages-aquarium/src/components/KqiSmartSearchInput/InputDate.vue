@@ -31,15 +31,30 @@
   </span>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue from 'vue'
+import { PropType } from 'vue'
+
+interface DataType {
+  value: null | any
+  show: boolean
+  tableData: Array<{
+    name: string
+    detail: string
+    symbol: string
+    days?: number
+  }>
+}
+
+export default Vue.extend({
   props: {
     tag: {
-      type: Object,
+      type: Object as PropType<any>,
       default: () => {},
     },
   },
-  data() {
+
+  data(): DataType {
     return {
       value: null,
       show: false,
@@ -57,6 +72,7 @@ export default {
     this.$nextTick(() => {
       this.value = this.getValue()
       setTimeout(() => {
+        //@ts-ignore
         this.$refs.saveTagInput.focus()
       }, 600)
     })
@@ -68,7 +84,12 @@ export default {
     },
 
     // 検索条件を指定し、検索
-    handleCommand(row) {
+    handleCommand(row: {
+      name: string
+      detail: string
+      symbol: string
+      days?: number
+    }) {
       if (this.value) {
         this.show = false
         let value = row.symbol + this.getNowYMD(this.value, row.days)
@@ -90,7 +111,7 @@ export default {
     },
 
     // 入力された値の整形
-    getNowYMD(date, days) {
+    getNowYMD(date: Date, days?: number) {
       let dt = new Date(date.valueOf())
       if (days) {
         dt.setDate(dt.getDate() + days)
@@ -119,14 +140,14 @@ export default {
     },
 
     // 'done'をemitし、検索
-    emitDone(value, display, suffix) {
+    emitDone(value: string, display: string, suffix: string) {
       this.$emit('done', { value, display, suffix })
     },
     emitCancel() {
       this.$emit('cancel')
     },
   },
-}
+})
 </script>
 
 <style scoped></style>

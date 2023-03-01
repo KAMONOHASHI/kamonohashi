@@ -69,18 +69,39 @@
   </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue from 'vue'
+import { PropType } from 'vue'
+interface DataType {
+  dialogVisible: boolean
+  error: undefined | Error
+  path: string
+}
+export default Vue.extend({
   name: 'FileIndex',
   props: {
     fileList: {
-      type: Array,
-      default: () => {
+      type: Array as PropType<
+        Array<{
+          isDirectory: boolean
+          name: string
+          url?: string
+          size?: string
+          lastModified?: string
+        }>
+      >,
+      default: (): Array<{
+        isDirectory: boolean
+        name: string
+        url?: string
+        size?: string
+        lastModified?: string
+      }> => {
         return []
       },
     },
   },
-  data() {
+  data(): DataType {
     return {
       dialogVisible: true,
       error: undefined,
@@ -88,21 +109,21 @@ export default {
     }
   },
   computed: {
-    navigation() {
+    navigation(): Array<string> {
       return this.path.split('/')
     },
   },
   methods: {
-    async handleNav(path) {
+    async handleNav(path: string) {
       this.path = path
       this.$emit('updatePath', this.path)
     },
-    async handleNavAdd(dir) {
+    async handleNavAdd(dir: string) {
       this.path += dir + '/'
       this.$emit('updatePath', this.path)
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>
