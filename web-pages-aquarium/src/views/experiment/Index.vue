@@ -94,17 +94,37 @@
   </div>
 </template>
 
-<script>
-import KqiPagination from '@/components/KqiPagination'
+<script lang="ts">
+import Vue from 'vue'
+
+import KqiPagination from '@/components/KqiPagination.vue'
 //import { createNamespacedHelpers } from 'vuex'
 //const { mapGetters, mapActions } = createNamespacedHelpers('experiment')
 import { mapActions, mapGetters } from 'vuex'
-export default {
-  title: '実験',
+import * as gen from '@/api/api.generate'
+interface DataType {
+  viewHistoryes: Array<any> //TODO 使用していない？
+  iconname: string
+  pageStatus: {
+    currentPage: number
+    currentPageSize: number
+  }
+  searchCondition: { page?: number; perPage?: number; withTotal?: boolean }
+  searchConfigs: Array<{
+    prop: string
+    name: string
+    type: string
+    option?: {
+      items: Array<string>
+    }
+  }>
+}
+
+export default Vue.extend({
   components: {
     KqiPagination,
   },
-  data() {
+  data(): DataType {
     return {
       viewHistoryes: [],
       iconname: 'pl-plus',
@@ -151,6 +171,7 @@ export default {
   },
   computed: {
     ...mapGetters({
+      //@ts-ignore
       experiments: ['experiment/experiments'],
       total: ['experiment/total'],
       dataSets: ['aquariumDataSet/dataSets'],
@@ -165,7 +186,7 @@ export default {
   methods: {
     ...mapActions(['experiment/fetchExperiments', 'experiment/fetchDetail']),
 
-    async currentChange(page) {
+    async currentChange(page: number) {
       this.pageStatus.currentPage = page
       await this.retrieveData()
     },
@@ -179,7 +200,7 @@ export default {
       await this['experiment/fetchExperiments'](params)
     },
 
-    async done(type) {
+    async done(type: string) {
       if (type === 'delete') {
         // 削除時、表示していたページにデータが無くなっている可能性がある。
         // 総数 % ページサイズ === 1の時、残り1の状態で削除したため、currentPageが1で無ければ1つ前のページに戻す
@@ -202,21 +223,23 @@ export default {
     openCreateDialog() {
       this.$router.push('/aquarium/experiment/create')
     },
-    openEditExperiment(selectedRow) {
+    openEditExperiment(
+      selectedRow: gen.NssolPlatypusApiModelsExperimentApiModelsIndexOutputModel,
+    ) {
       this.$router.push('/aquarium/experiment/detail/' + selectedRow.id)
     },
-    handleCopy(id) {
+    handleCopy(id: number) {
       this.$router.push('/aquarium/experiment/create/' + id)
     },
     async search() {
       this.pageStatus.currentPage = 1
       await this.retrieveData()
     },
-    files(id) {
+    files(id: number) {
       this.$router.push('/aquarium/experiment/' + id + '/files')
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

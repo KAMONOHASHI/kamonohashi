@@ -34,26 +34,47 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue'
+import { PropType } from 'vue'
+
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('template')
-export default {
-  title: 'モデルテンプレート',
+
+interface DataType {
+  rules: {
+    name: [{ required: boolean; trigger: string; message: string }]
+  }
+  error: null | Error
+  isPatch: boolean
+}
+
+export default Vue.extend({
   components: {},
   props: {
     value: {
-      type: Object,
-      default: () => {
+      type: Object as PropType<{
+        name: string
+        memo: string
+        accessLevel: number
+        assignedTenants: Array<any>
+      }>,
+      default: (): {
+        name: string
+        memo: string
+        accessLevel: number
+        assignedTenants: Array<any>
+      } => {
         return {
           name: 'string',
           memo: 'string',
           accessLevel: 0,
-          assignedTenants: [],
+          assignedTenants: [], //TODO 使用していない？
         }
       },
     },
   },
-  data() {
+  data(): DataType {
     return {
       rules: {
         name: [{ required: true, trigger: 'blur', message: '必須項目です' }],
@@ -80,7 +101,7 @@ export default {
   methods: {
     ...mapActions(['fetchModelTemplates']),
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

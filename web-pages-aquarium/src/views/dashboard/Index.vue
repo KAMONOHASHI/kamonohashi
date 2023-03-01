@@ -44,12 +44,12 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters } = createNamespacedHelpers('account')
 
-export default {
-  title: 'ダッシュボード',
+export default Vue.extend({
   data() {
     return {
       iconname: 'pl-arrow-right',
@@ -61,26 +61,26 @@ export default {
       return [
         {
           description: 'データの準備を行う',
-          menus: this.menuList.filter(menu => {
+          menus: this.menuList.filter((menu: { category: string }) => {
             return menu.category === 'aq-dataset'
           }),
         },
         {
           description: '実験を行う',
-          menus: this.menuList.filter(menu => {
+          menus: this.menuList.filter((menu: { category: string }) => {
             return menu.category.startsWith('aq-experiment')
           }),
         },
         {
           description: 'テンプレートを管理する',
-          menus: this.menuList.filter(menu => {
+          menus: this.menuList.filter((menu: { category: string }) => {
             return menu.category === 'aq-template'
           }),
         },
       ]
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

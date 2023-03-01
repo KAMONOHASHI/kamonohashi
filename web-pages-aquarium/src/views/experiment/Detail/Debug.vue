@@ -74,12 +74,52 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue'
+import { PropType } from 'vue'
+
 import KqiDownloadButton from '../../../components/KqiDownloadButton.vue'
 import { mapActions, mapGetters } from 'vuex'
+import * as gen from '@/api/api.generate'
 
-export default {
-  title: '実験結果',
+interface DataType {
+  importfile: any //TODO 使用していない？
+  logFileData: Array<any> //TODO 使用していない？
+  preprocessLogFileData: null | Array<
+    gen.NssolPlatypusApiModelsTrainingApiModelsAttachedFileOutputModel
+  >
+  trainingLogFileData: null | Array<
+    gen.NssolPlatypusApiModelsTrainingApiModelsAttachedFileOutputModel
+  >
+  evaluationLogFileDatas: Array<{
+    name: string
+    status: string
+    log: Array<
+      gen.NssolPlatypusApiModelsTrainingApiModelsAttachedFileOutputModel
+    >
+  }>
+}
+interface Form {
+  createdAt: null | string
+  createdBy: null | string
+  completedAt: null | string
+  id: number
+  name: null | string
+  status: null | string
+  dataSetId: number
+  dataSetName: null | string
+  dataSetVersion: gen.NssolPlatypusApiModelsAquariumDataSetApiModelsVersionIndexOutputModel
+  templateId: number
+  templateName: null | string
+  templateVersion: gen.NssolPlatypusApiModelsTemplateApiModelsVersionIndexOutputModel
+  dataSetURL: null | string
+  templateURL: null | string
+  preprocessId: null | number
+  preprocessStatus: null | string
+  trainingId: null | number
+  trainingStatus: null | string
+}
+export default Vue.extend({
   components: { KqiDownloadButton },
   props: {
     id: {
@@ -88,11 +128,11 @@ export default {
     },
 
     value: {
-      type: Object,
+      type: Object as PropType<Form>,
       default: null,
     },
   },
-  data() {
+  data(): DataType {
     return {
       importfile: null,
       logFileData: [],
@@ -103,6 +143,7 @@ export default {
   },
   computed: {
     ...mapGetters({
+      //@ts-ignore
       uploadedFiles: ['training/uploadedFiles'],
       evaluations: ['experiment/evaluations'],
     }),
@@ -151,7 +192,7 @@ export default {
       }
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

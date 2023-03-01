@@ -36,18 +36,45 @@
   </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue from 'vue'
+import { PropType } from 'vue'
+interface DataType {
+  labelwidth: string
+
+  passRules: {
+    currentPassword: {
+      required: boolean
+      trigger: string
+      message: string
+    }
+    password: [
+      {
+        required: boolean
+        trigger: string
+        validator: Function
+      },
+    ]
+  }
+}
+
+export default Vue.extend({
   props: {
     value: {
-      type: Object,
-      default: () => ({
+      type: Object as PropType<{
+        currentPassword: string
+        password: Array<string>
+      }>,
+      default: (): {
+        currentPassword: string
+        password: Array<string>
+      } => ({
         currentPassword: '',
         password: ['', ''],
       }),
     },
   },
-  data() {
+  data(): DataType {
     return {
       labelwidth: '220px',
 
@@ -61,6 +88,7 @@ export default {
           {
             required: true,
             trigger: 'blur',
+            //@ts-ignore
             validator: this.passwordValidator,
           },
         ],
@@ -73,7 +101,7 @@ export default {
     },
   },
   methods: {
-    passwordValidator(rule, value, callback) {
+    passwordValidator(rule: any, value: Array<string>, callback: Function) {
       if (!(value[0] && value[1])) {
         callback(new Error('必須項目です'))
       } else if (!(value[0] === value[1])) {
@@ -84,6 +112,7 @@ export default {
     },
 
     handlePassword() {
+      //@ts-ignore
       this.$refs['passForm'].validate(async valid => {
         if (valid) {
           this.$emit('updatePassword')
@@ -91,7 +120,7 @@ export default {
       })
     },
   },
-}
+})
 </script>
 
 <style scoped>

@@ -47,17 +47,30 @@
   </div>
 </template>
 
-<script>
-import KqiPagination from '@/components/KqiPagination'
+<script lang="ts">
+import Vue from 'vue'
+import * as gen from '@/api/api.generate'
+import KqiPagination from '@/components/KqiPagination.vue'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('aquariumDataSet')
 
-export default {
-  title: 'データセット',
+//import * as gen from '@/api/api.generate'
+interface DataType {
+  iconname: string
+  pageStatus: {
+    currentPage: number
+    currentPageSize: number
+  }
+  searchCondition: { page?: number; perPage?: number; withTotal?: boolean }
+  searchConfigs: Array<{ prop: string; name: string; type: string }>
+  tableData: []
+}
+
+export default Vue.extend({
   components: {
     KqiPagination,
   },
-  data() {
+  data(): DataType {
     return {
       iconname: 'pl-plus',
       pageStatus: {
@@ -85,7 +98,7 @@ export default {
   methods: {
     ...mapActions(['fetchDataSets']),
 
-    async currentChange(page) {
+    async currentChange(page: number) {
       this.pageStatus.currentPage = page
       await this.retrieveData()
     },
@@ -111,10 +124,12 @@ export default {
     openCreateDialog() {
       this.$router.push('/aquarium/dataset/create')
     },
-    openEditDataset(selectedRow) {
+    openEditDataset(
+      selectedRow: gen.NssolPlatypusApiModelsDataSetApiModelsIndexOutputModel,
+    ) {
       this.$router.push('/aquarium/dataset/detail/' + selectedRow.id)
     },
-    handleCopy(id) {
+    handleCopy(id: number) {
       this.$router.push('/aquarium/dataset/create/' + id)
     },
     async search() {
@@ -122,7 +137,7 @@ export default {
       await this.retrieveData()
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

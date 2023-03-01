@@ -55,13 +55,24 @@
   </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue from 'vue'
+import { PropType } from 'vue'
+
+import * as gen from '@/api/api.generate'
+
+export default Vue.extend({
   props: {
     // レジストリ一覧
     registries: {
-      type: Array,
-      default: () => {
+      type: Array as PropType<
+        Array<
+          gen.NssolPlatypusApiModelsAccountApiModelsRegistryCredentialOutputModel
+        >
+      >,
+      default: (): Array<
+        gen.NssolPlatypusApiModelsAccountApiModelsRegistryCredentialOutputModel
+      > => {
         return []
       },
     },
@@ -81,7 +92,7 @@ export default {
   },
 
   methods: {
-    selectedRegistryChange(registryName) {
+    selectedRegistryChange(registryName: string) {
       let form = Object.assign({}, this.value)
       form.name = registryName
       for (const data of this.registries) {
@@ -96,19 +107,19 @@ export default {
       this.$emit('input', form)
     },
 
-    userChange(userName) {
+    userChange(userName: string) {
       let form = Object.assign({}, this.value)
       form.userName = userName
       this.$emit('input', form)
     },
 
-    tokenChange(password) {
+    tokenChange(password: string) {
       let form = Object.assign({}, this.value)
       form.password = password
       this.$emit('input', form)
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>
