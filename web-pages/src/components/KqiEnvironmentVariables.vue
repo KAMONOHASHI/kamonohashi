@@ -48,9 +48,11 @@ export default Vue.extend({
   },
   methods: {
     removeVariables(index: number) {
+      // eslint-disable-next-line vue/no-mutating-props
       this.value.splice(index, 1)
     },
     addVariables() {
+      // eslint-disable-next-line vue/no-mutating-props
       this.value.push({ key: '', value: '' })
     },
   },

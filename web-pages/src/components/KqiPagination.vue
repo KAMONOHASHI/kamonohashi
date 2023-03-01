@@ -35,11 +35,14 @@ export default Vue.extend({
   methods: {
     // ページのサイズ(表示件数)変更
     async handleSizeChange(pageSize: number) {
+      // eslint-disable-next-line vue/no-mutating-props
       this.value.currentPageSize = pageSize
+      // eslint-disable-next-line vue/no-mutating-props
       this.value.currentPage = 1
       this.$emit('change')
     },
     async currentChange(page: number) {
+      // eslint-disable-next-line vue/no-mutating-props
       this.value.currentPage = page
       this.$emit('change')
     },
