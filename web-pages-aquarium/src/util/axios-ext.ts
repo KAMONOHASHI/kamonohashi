@@ -1,25 +1,25 @@
 import store from '@/store'
 import { Loading } from 'element-ui'
-import Util from '@/util/util'
 import Vue from 'vue'
 import router from '@/router'
+import Util from './util'
 
 // output logs
-export function axiosLoggerInterceptors($axios) {
+export function axiosLoggerInterceptors($axios: any) {
   $axios.interceptors.request.use(
-    function(config) {
+    function(config: any) {
       return config
     },
-    function(error) {
+    function(error: any) {
       return Promise.reject(error)
     },
   )
 }
 
 // append JWT auth
-export function axiosAuthInterceptors($axios) {
+export function axiosAuthInterceptors($axios: any) {
   $axios.interceptors.request.use(
-    function(config) {
+    function(config: any) {
       let token = store.getters['account/token']
       let cookieToken = Util.getCookie('.Platypus.Auth')
       // ログインしているか確認
@@ -30,26 +30,27 @@ export function axiosAuthInterceptors($axios) {
       }
       return config
     },
-    function(error) {
+    function(error: Error | null) {
       return Promise.reject(error)
     },
   )
 }
 
 // append element ui loading
-export function axiosLoadingInterceptors($axios) {
-  let enableLoading = function(config) {
+export function axiosLoadingInterceptors($axios: any) {
+  let enableLoading = function(config: any) {
     return !config.apiDisabledLoading
   }
 
   $axios.interceptors.request.use(
-    function(config) {
+    function(config: any) {
       if (enableLoading(config)) {
         store.dispatch('incrementLoading')
       }
       return config
     },
-    error => {
+
+    (error: { config: any }) => {
       if (enableLoading(error.config)) {
         store.dispatch('incrementLoading')
       }
@@ -57,13 +58,13 @@ export function axiosLoadingInterceptors($axios) {
     },
   )
   $axios.interceptors.response.use(
-    response => {
+    (response: { config: any }) => {
       if (enableLoading(response.config)) {
         store.dispatch('decrementLoading')
       }
       return response
     },
-    error => {
+    (error: { config: any }) => {
       if (enableLoading(error.config)) {
         store.dispatch('decrementLoading')
       }
@@ -72,7 +73,7 @@ export function axiosLoadingInterceptors($axios) {
   )
 
   let loadingEnabled = store.state.loading
-  let loadingInstance = null
+  let loadingInstance: any = null
   store.watch(store.getters.getLoadingCnt, v => {
     if (loadingEnabled) {
       if (v && !loadingInstance) {
@@ -83,6 +84,7 @@ export function axiosLoadingInterceptors($axios) {
           background: 'rgba(255, 255, 255, 0.6)',
         })
       }
+      //@ts-ignore
       if (v <= 0 && loadingInstance) {
         loadingInstance.close()
         loadingInstance = null
@@ -94,14 +96,18 @@ export function axiosLoadingInterceptors($axios) {
       loadingInstance.close()
       loadingInstance = null
     }
+    //@ts-ignore
     loadingEnabled = f
   })
 }
 
 // append error handling
-export function axiosErrorHandlingInterceptors($axios, errorCallback) {
+export function axiosErrorHandlingInterceptors(
+  $axios: any,
+  errorCallback: any,
+) {
   let vue = new Vue()
-  let moveErrorPage = function(status, message) {
+  let moveErrorPage = function(status: any, message: any) {
     let url =
       '/error?status=' +
       encodeURIComponent(status) +
@@ -109,10 +115,10 @@ export function axiosErrorHandlingInterceptors($axios, errorCallback) {
       encodeURIComponent(message)
     router.push(url)
   }
-  let success = response => {
+  let success = (response: any) => {
     return response
   }
-  let failure = error => {
+  let failure = (error: any) => {
     let handring = true
 
     if (errorCallback) {

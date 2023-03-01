@@ -13,13 +13,15 @@ export default class MultiPartUpload {
 
   file
 
-  constructor(file) {
+  constructor(file: File) {
     this.file = file
+    //@ts-ignore
     this.total = Math.ceil(file.size / this.constructor.chunkSize)
   }
 
   chunkedFile() {
     this.start = this.end
+    //@ts-ignore
     this.end += this.constructor.chunkSize
     if (this.end > this.file.size) {
       this.end = this.file.size
@@ -27,21 +29,32 @@ export default class MultiPartUpload {
     return this.file.slice(this.start, this.end)
   }
 
-  async getSignedUrlAsync(fileInfo) {
+  async getSignedUrlAsync(fileInfo: {
+    fileName: string
+    partSum: number
+    type: string
+  }) {
     let result = await api.storage.getUploadParameter(fileInfo)
     return result.data
   }
 
-  async completeUploadAsync(completeInfo) {
+  async completeUploadAsync(completeInfo: {
+    body: {
+      key: string
+      uploadId: string
+      partETags: string[]
+    }
+  }) {
     let result = await api.storage.postUploadComplete(completeInfo)
     return result.statusText
   }
 
   // 呼び出されるごとに1partずつアップロードする
   // アップロード途中はアップロードしたpart数、完了時は保存先情報を返す
-  async *uploadAsync(type, caller) {
+  async *uploadAsync(type: string, caller: any) {
     let fileInfo = {
       fileName: this.file.name,
+      //@ts-ignore
       partSum: Math.ceil(this.file.size / this.constructor.chunkSize),
       type: type,
     }
@@ -49,13 +62,14 @@ export default class MultiPartUpload {
     let uploadInfo = await this.getSignedUrlAsync(fileInfo)
     let etags = []
 
-    for (let i = 0; i < uploadInfo.partsSum; i++) {
+    for (let i = 0; i < uploadInfo.partsSum!; i++) {
       let f = this.chunkedFile()
       let result
 
+      // eslint-disable-next-line no-useless-catch
       try {
         // `multipart upload request: ${new Date()} ${uploadInfo.uris[i]}`,
-        result = await AxiosInst.put(uploadInfo.uris[i], f)
+        result = await AxiosInst.put(uploadInfo.uris![i], f)
       } catch (error) {
         // `multipart upload failure: ${new Date()} ${uploadInfo.uris[i]}`,
         throw error
@@ -69,9 +83,9 @@ export default class MultiPartUpload {
     }
     let completeInfo = {
       body: {
-        key: uploadInfo.key,
-        uploadId: uploadInfo.uploadId,
-        partETags: etags,
+        key: uploadInfo.key!,
+        uploadId: uploadInfo.uploadId!,
+        partETags: etags!,
       },
     }
     await this.completeUploadAsync(completeInfo)

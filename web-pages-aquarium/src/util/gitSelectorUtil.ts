@@ -1,9 +1,57 @@
+import * as gen from '@/api/api.generate'
+type Form = {
+  name?: string | null
+  dataSetId: string | null | number
+  entryPoint?: string | null
+  selectedParent: Array<
+    gen.NssolPlatypusApiModelsTrainingApiModelsIndexOutputModel
+  >
+  selectedParentInference?: Array<
+    gen.NssolPlatypusApiModelsInferenceApiModelsInferenceIndexOutputModel
+  >
+  containerImage: {
+    registry: {
+      id?: number | null
+      name?: string
+    } | null
+    image: string | null
+    tag: string | null
+  }
+  gitModel: {
+    git: {
+      id?: number | null
+      name?: string
+    } | null
+    repository:
+      | string
+      | {
+          name?: string | null
+          owner?: string | null
+          fullName?: string | null
+        }
+      | null
+    branch?: string | { branchName: string } | null
+    commit: gen.NssolPlatypusServiceModelsGitCommitModel | null
+  }
+  resource: {
+    cpu?: number
+    memory?: number
+    gpu?: number
+  }
+  variables: Array<{ key: string; value: string }>
+  partition?: string | null
+  zip?: boolean
+  localDataSet?: boolean
+  memo?: string | null
+  ports?: Array<number>
+  tags?: Array<string>
+}
 export default class GitSelectorUtil {
   // gitサーバを選択し、リポジトリを取得する
   // form: form object
   // fetchRepositories: 'gitSelector/fetchRepositories'
   // gitId: 選択したサーバID
-  static async selectGit(form, getRepositories, gitId) {
+  static async selectGit(form: Form, getRepositories: Function, gitId: number) {
     // 過去の選択状態をリセット
     form.gitModel.repository = null
     form.gitModel.branch = null
@@ -23,13 +71,18 @@ export default class GitSelectorUtil {
   // fetchBranches: 'gitSelector/getBranches'
   // repository: 選択したリポジトリ: 手入力の場合はstring, 選択肢から選んだ場合はobject
   // repositories: リポジトリ一覧
-  static async selectRepository(form, getBranches, repository, repositories) {
+  static async selectRepository(
+    form: Form,
+    getBranches: Function,
+    repository: string | gen.NssolPlatypusServiceModelsGitRepositoryModel,
+    repositories?: Array<gen.NssolPlatypusServiceModelsGitRepositoryModel>,
+  ) {
     // 過去の選択状態をリセット
     form.gitModel.branch = null
     form.gitModel.commit = null
 
     let manualInput = false
-    let argRepository = {}
+    let argRepository: gen.NssolPlatypusServiceModelsGitRepositoryModel = {}
     if (typeof repository === 'string') {
       manualInput = true
       let repositoryName = repository
@@ -41,7 +94,7 @@ export default class GitSelectorUtil {
           fullName: repositoryName,
         }
         form.gitModel.repository = argRepository
-        repositories.push(argRepository)
+        repositories!.push(argRepository)
       } else {
         // 構文エラー
         form.gitModel.repository = null
@@ -55,7 +108,7 @@ export default class GitSelectorUtil {
     if (repository !== null) {
       try {
         branches = await getBranches({
-          gitId: form.gitModel.git.id,
+          gitId: form.gitModel.git!.id,
           repository: argRepository,
           manualInput: manualInput,
         })
@@ -70,12 +123,16 @@ export default class GitSelectorUtil {
   // form: form object
   // fetchCommits: 'gitSelector/fetchCommits'
   // branchName: 選択したブランチ名
-  static async selectBranch(form, getCommits, branchName) {
+  static async selectBranch(
+    form: Form,
+    getCommits: Function,
+    branchName: string | null,
+  ) {
     // clearの場合リセット、ブランチが選択された場合はコミット取得
     let commits
     if (branchName !== null) {
       commits = await getCommits({
-        gitId: form.gitModel.git.id,
+        gitId: form.gitModel.git!.id,
         repository: form.gitModel.repository,
         branchName: branchName,
       })

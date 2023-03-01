@@ -1,5 +1,6 @@
 export default {
   mounted() {
+    //@ts-ignore
     let { title } = this.$options
     if (title) {
       title = typeof title === 'function' ? title.call(this) : title
@@ -7,10 +8,12 @@ export default {
     }
   },
   methods: {
-    showSuccessMessage: function(msg) {
+    showSuccessMessage: function(msg: string) {
       if (msg) {
+        //@ts-ignore
         this.$notify.success({ title: msg })
       } else {
+        //@ts-ignore
         this.$notify.success({ title: '正常に処理されました' })
       }
     },
