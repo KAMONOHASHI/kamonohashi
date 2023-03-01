@@ -2,28 +2,33 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import App from './App.vue'
+//const App = require('./App')
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
-
+//@ts-ignore
 import router from './router'
+//const router = require('./router')
 import store from './store'
 import componentExt from './util/component-ext'
 import VueI18n from 'vue-i18n'
 //@ts-ignore
 import lineClamp from 'vue-line-clamp'
+//const lineClamp = require('vue-line-clamp')
 import VueClipboard from 'vue-clipboard2'
 //@ts-ignore
 import message from './message/index'
+//iconst message = require('./message/index')
 //@ts-ignore
 import Icon from 'vue-awesome/components/Icon'
+//const Icon = require('vue-awesome/components/Icon')
 import './icon'
 
 Vue.config.productionTip = false
 
 Vue.use(VueI18n)
 const i18n = new VueI18n({ locale: 'ja', messages: message })
-//@ts-ignore
-Vue.use(ElementUI, { i18n: (key, value) => i18n.t(key, value) })
+
+Vue.use(ElementUI, { i18n: (key: any, value: any) => i18n.t(key, value) })
 Vue.use(lineClamp, {})
 Vue.use(VueClipboard)
 
@@ -34,6 +39,7 @@ Vue.component('Icon', Icon)
 new Vue({
   store,
   el: '#app',
+  //@ts-ignore
   router,
   i18n,
   components: { App },
