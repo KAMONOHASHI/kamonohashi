@@ -66,7 +66,6 @@ import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('account')
 
 export default Vue.extend({
-  name: 'Header',
   computed: {
     ...mapGetters(['account', 'isLogined']),
   },
