@@ -125,7 +125,7 @@ export default Vue.extend({
         }
         if (socket) {
           this.intervalId = setInterval(() => {
-            socket.send('')
+            socket!.send('')
           }, 30000)
         }
       } catch (e) {
