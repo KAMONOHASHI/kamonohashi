@@ -7,7 +7,6 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 //@ts-ignore
 import router from './router'
-)
 import store from './store'
 import componentExt from './util/component-ext'
 import VueI18n from 'vue-i18n'
