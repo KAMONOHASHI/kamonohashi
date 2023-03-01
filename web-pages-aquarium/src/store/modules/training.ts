@@ -240,8 +240,7 @@ const actions: ActionTree<StateType, RootState> = {
         isDirectory: false,
         name: f.fileName,
         url: f.url,
-        //@ts-ignore
-        size: Util.getByteString(f.size),
+        size: Util.getByteString(f.size!),
         lastModified: f.lastModified,
       }),
     )

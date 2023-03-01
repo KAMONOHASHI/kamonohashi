@@ -114,7 +114,7 @@ const actions: ActionTree<StateType, RootState> = {
     }: {
       id: number
       fileInfo: Array<{
-        name: any
+        name: string
         storedPath: string | null | undefined
       }>
     },
