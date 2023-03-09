@@ -218,8 +218,10 @@ export default Vue.extend({
             }
           }
         }
+        // eslint-disable-next-line vue/no-mutating-props
         this.value[tag.config.prop!] = currentValue
       } else {
+        // eslint-disable-next-line vue/no-mutating-props
         this.value[tag.config.prop!] = event.value
         tag.config.disabled = true
       }
@@ -236,8 +238,10 @@ export default Vue.extend({
         let currentValue = this.value[tag.config.prop!]
         currentValue.splice(currentValue.indexOf(tag.value), 1)
         if (currentValue.length > 0) {
+          // eslint-disable-next-line vue/no-mutating-props
           this.value[tag.config.prop!] = currentValue
         } else {
+          // eslint-disable-next-line vue/no-mutating-props
           this.value[tag.config.prop!] = null
         }
       } else {

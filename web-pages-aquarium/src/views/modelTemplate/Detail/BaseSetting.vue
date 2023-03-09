@@ -40,7 +40,6 @@ import { PropType } from 'vue'
 
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('template')
-
 interface DataType {
   rules: {
     name: [{ required: boolean; trigger: string; message: string }]
@@ -50,7 +49,6 @@ interface DataType {
 }
 
 export default Vue.extend({
-  components: {},
   props: {
     value: {
       type: Object as PropType<{
@@ -86,17 +84,17 @@ export default Vue.extend({
   computed: {
     ...mapGetters(['templates']),
     form: {
-      get() {
-        return this.value
+      get: function() {
+        return (this as any).value
       },
-      set(value) {
-        this.$emit('input', value)
+      set: function(value) {
+        ;(this as any).$emit('input', value)
       },
     },
   },
 
   async created() {
-    this.form = { ...this.value }
+    ;(this as any).form = { ...(this as any).value }
   },
   methods: {
     ...mapActions(['fetchModelTemplates']),
