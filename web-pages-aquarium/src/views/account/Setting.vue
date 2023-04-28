@@ -304,7 +304,7 @@ export default Vue.extend({
           body: { expiresIn: this.tokenForm.day * 60 * 60 * 24 },
         }
         // 新規アクセストークンを取得する
-        await this['account/'](params)
+        await this['account/postTokenTenants'](params)
         this.tokenForm.token = this.token
         this.showSuccessMessage()
         this.accessTokenError = null
