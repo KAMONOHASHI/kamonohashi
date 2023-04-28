@@ -309,9 +309,9 @@ const actions: ActionTree<StateType, RootState> = {
   async deleteTags(
     // eslint-disable-next-line no-unused-vars
     { commit },
-    params: gen.NssolPlatypusApiModelsTrainingApiModelsTagsInputModel,
+    data: { data: gen.NssolPlatypusApiModelsTrainingApiModelsTagsInputModel },
   ) {
-    await api.training.deleteTags({ body: params })
+    await api.training.deleteTags({ body: data.data })
   },
 
   // eslint-disable-next-line no-unused-vars
