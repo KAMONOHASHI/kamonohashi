@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-mutating-props -->
 <template>
   <div>
     <el-dialog
@@ -211,26 +212,26 @@ export default Vue.extend({
 
     searchForm: {
       type: Object as PropType<{
-        idLower: string
-        idUpper: string
-        name: Array<string>
-        nameOr: boolean
-        parentName: Array<string>
-        parentNameOr: boolean
-        startedAtLower: string
-        startedAtUpper: string
-        startedBy: Array<string>
-        startedByOr: boolean
-        dataSet: Array<string>
-        dataSetOr: boolean
-        memo: Array<string>
-        memoOr: boolean
-        status: Array<string>
-        statusOr: boolean
-        entryPoint: Array<string>
-        entryPointOr: boolean
-        tags: Array<string>
-        tagsOr: boolean
+        idLower?: string
+        idUpper?: string
+        name?: Array<string>
+        nameOr?: boolean
+        parentName?: Array<string>
+        parentNameOr?: boolean
+        startedAtLower?: string
+        startedAtUpper?: string
+        startedBy?: Array<string>
+        startedByOr?: boolean
+        dataSet?: Array<string>
+        dataSetOr?: boolean
+        memo?: Array<string>
+        memoOr?: boolean
+        status?: Array<string>
+        statusOr?: boolean
+        entryPoint?: Array<string>
+        entryPointOr?: boolean
+        tags?: Array<string>
+        tagsOr?: boolean
       }>,
       default: () => {
         return {
@@ -298,33 +299,33 @@ export default Vue.extend({
 
     changeSearchFormListToString() {
       let form = {
-        idLower: parseInt(this.searchForm.idLower),
-        idUpper: parseInt(this.searchForm.idUpper),
-        name: this.changeListToString(this.searchForm.name),
+        idLower: parseInt(this.searchForm.idLower!),
+        idUpper: parseInt(this.searchForm.idUpper!),
+        name: this.changeListToString(this.searchForm.name!),
         nameOr: this.searchForm.nameOr,
-        parentName: this.changeListToString(this.searchForm.parentName),
+        parentName: this.changeListToString(this.searchForm.parentName!),
         parentNameOr: this.searchForm.parentNameOr,
         startedAtLower: this.searchForm.startedAtLower,
         startedAtUpper: this.searchForm.startedAtUpper,
-        startedBy: this.changeListToString(this.searchForm.startedBy),
+        startedBy: this.changeListToString(this.searchForm.startedBy!),
         startedByOr: this.searchForm.startedByOr,
-        dataSet: this.changeListToString(this.searchForm.dataSet),
+        dataSet: this.changeListToString(this.searchForm.dataSet!),
         dataSetOr: this.searchForm.dataSetOr,
-        memo: this.changeListToString(this.searchForm.memo),
+        memo: this.changeListToString(this.searchForm.memo!),
         memoOr: this.searchForm.memoOr,
-        status: this.changeListToString(this.searchForm.status),
+        status: this.changeListToString(this.searchForm.status!),
         statusOr: this.searchForm.statusOr,
-        entryPoint: this.changeListToString(this.searchForm.entryPoint),
+        entryPoint: this.changeListToString(this.searchForm.entryPoint!),
         entryPointOr: this.searchForm.entryPointOr,
-        tags: this.changeListToString(this.searchForm.tags),
+        tags: this.changeListToString(this.searchForm.tags!),
         tagsOr: this.searchForm.tagsOr,
       }
       return form
     },
 
-    changeListToString(list: Array<string>) {
-      if (list == null || list.length == 0) {
-        return ''
+    changeListToString(list: Array<string> | undefined) {
+      if (list == null || list == undefined || list.length == 0) {
+        return undefined
       }
       let str = ''
       for (let i in list) {
@@ -350,6 +351,7 @@ export default Vue.extend({
       } = {}
       params.name = this.searchConditionName
       params.searchDetailInputModel = this.changeSearchFormListToString()
+
       try {
         await this.postSearchHistory(params)
         this.saveSearchFormDialogVisible = false

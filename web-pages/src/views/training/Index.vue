@@ -229,26 +229,26 @@ interface DataType {
   selectBoxVisible: boolean // 新規タグの入力エリアの表示有無
   tagValue: string // 新規タグの入力値
   searchForm: {
-    idLower: string | null
-    idUpper: string | null
-    name: Array<string> | null
-    nameOr: boolean
-    parentName: Array<string> | null
-    parentNameOr: boolean
-    startedAtLower: string | null
-    startedAtUpper: string | null
-    startedBy: Array<string> | null
-    startedByOr: boolean
-    dataSet: Array<string> | null
-    dataSetOr: boolean
-    memo: Array<string> | null
-    memoOr: boolean
-    status: Array<string> | null
-    statusOr: boolean
-    entryPoint: Array<string> | null
-    entryPointOr: boolean
-    tags: Array<string> | null
-    tagsOr: boolean
+    idLower?: string
+    idUpper?: string
+    name?: Array<string>
+    nameOr?: boolean
+    parentName?: Array<string>
+    parentNameOr?: boolean
+    startedAtLower?: string
+    startedAtUpper?: string
+    startedBy?: Array<string>
+    startedByOr?: boolean
+    dataSet?: Array<string>
+    dataSetOr?: boolean
+    memo?: Array<string>
+    memoOr?: boolean
+    status?: Array<string>
+    statusOr?: boolean
+    entryPoint?: Array<string>
+    entryPointOr?: boolean
+    tags?: Array<string>
+    tagsOr?: boolean
   }
   tags: []
   options: []
@@ -272,26 +272,26 @@ interface DataType {
   }>
 }
 type SearchDetail = {
-  idLower: string | null
-  idUpper: string | null
-  name: string | null
-  nameOr: boolean
-  parentName: string | null
-  parentNameOr: boolean
-  startedAtLower: string | null
-  startedAtUpper: string | null
-  startedBy: string | null
-  startedByOr: boolean
-  dataSet: string | null
-  dataSetOr: boolean
-  memo: string | null
-  memoOr: boolean
-  status: string | null
-  statusOr: boolean
-  entryPoint: string | null
-  entryPointOr: boolean
-  tags: string | null
-  tagsOr: boolean
+  idLower?: string
+  idUpper?: string
+  name?: string
+  nameOr?: boolean
+  parentName?: string
+  parentNameOr?: boolean
+  startedAtLower?: string
+  startedAtUpper?: string
+  startedBy?: string
+  startedByOr?: boolean
+  dataSet?: string
+  dataSetOr?: boolean
+  memo?: string
+  memoOr?: boolean
+  status?: string
+  statusOr?: boolean
+  entryPoint?: string
+  entryPointOr?: boolean
+  tags?: string
+  tagsOr?: boolean
 }
 
 export default Vue.extend({
@@ -308,28 +308,7 @@ export default Vue.extend({
       saveSearchFormDialogVisible: false,
       selectBoxVisible: false, // 新規タグの入力エリアの表示有無
       tagValue: '', // 新規タグの入力値
-      searchForm: {
-        idLower: '',
-        idUpper: '',
-        name: [],
-        nameOr: true,
-        parentName: [],
-        parentNameOr: true,
-        startedAtLower: '',
-        startedAtUpper: '',
-        startedBy: [],
-        startedByOr: true,
-        dataSet: [],
-        dataSetOr: true,
-        memo: [],
-        memoOr: true,
-        status: [],
-        statusOr: true,
-        entryPoint: [],
-        entryPointOr: true,
-        tags: [],
-        tagsOr: true,
-      },
+      searchForm: {},
       tags: [],
       options: [],
       pageStatus: {
@@ -420,28 +399,7 @@ export default Vue.extend({
 
     clear() {
       this.searchConditionId = null
-      this.searchForm = {
-        idLower: '',
-        idUpper: '',
-        name: [],
-        nameOr: true,
-        parentName: [],
-        parentNameOr: true,
-        startedAtLower: '',
-        startedAtUpper: '',
-        startedBy: [],
-        startedByOr: true,
-        dataSet: [],
-        dataSetOr: true,
-        memo: [],
-        memoOr: true,
-        status: [],
-        statusOr: true,
-        entryPoint: [],
-        entryPointOr: true,
-        tags: [],
-        tagsOr: true,
-      }
+      this.searchForm = {}
       this.searchCondition = {
         searchDetail: this.changeSearchFormListToString(),
       }
@@ -461,33 +419,34 @@ export default Vue.extend({
     },
 
     changeSearchFormStringToList(item: SearchDetail) {
-      let form = {
-        idLower: item.idLower,
-        idUpper: item.idUpper,
+      let form: { [key: string]: any } = {
+        idLower: item.idLower!,
+        idUpper: item.idUpper!,
         name: this.changeStringToList(item.name!),
         nameOr: item.nameOr,
         parentName: this.changeStringToList(item.parentName!),
-        parentNameOr: item.parentNameOr,
-        startedAtLower: item.startedAtLower,
-        startedAtUpper: item.startedAtUpper,
+        parentNameOr: item.parentNameOr!,
+        startedAtLower: item.startedAtLower!,
+        startedAtUpper: item.startedAtUpper!,
         startedBy: this.changeStringToList(item.startedBy!),
-        startedByOr: item.startedByOr,
+        startedByOr: item.startedByOr!,
         dataSet: this.changeStringToList(item.dataSet!),
-        dataSetOr: item.dataSetOr,
+        dataSetOr: item.dataSetOr!,
         memo: this.changeStringToList(item.memo!),
-        memoOr: item.memoOr,
+        memoOr: item.memoOr!,
         status: this.changeStringToList(item.status!),
-        statusOr: item.statusOr,
+        statusOr: item.statusOr!,
         entryPoint: this.changeStringToList(item.entryPoint!),
-        entryPointOr: item.entryPointOr,
+        entryPointOr: item.entryPointOr!,
         tags: this.changeStringToList(item.tags!),
-        tagsOr: item.tagsOr,
+        tagsOr: item.tagsOr!,
       }
+
       return form
     },
     changeStringToList(str: string) {
-      if (str == null || str.length == 0) {
-        return []
+      if (str == null || str == undefined || str.length == 0) {
+        return undefined
       }
       let strs = str.split(',')
       let list = []
@@ -524,8 +483,8 @@ export default Vue.extend({
     },
 
     changeListToString(list: Array<string>) {
-      if (list == null || list.length == 0) {
-        return null
+      if (list == null || list == undefined || list.length == 0) {
+        return undefined
       }
       let str = ''
       for (let i in list) {
@@ -572,6 +531,14 @@ export default Vue.extend({
       params.page = this.pageStatus.currentPage
       params.perPage = this.pageStatus.currentPageSize
       params.withTotal = true
+
+      for (let key in params) {
+        //@ts-ignore
+        if (params[key] === null) {
+          //@ts-ignore
+          params[key] = undefined
+        }
+      }
       await this.fetchTrainHistories(params)
       this.searchForm = this.changeSearchFormStringToList(
         this.searchCondition!.searchDetail,
