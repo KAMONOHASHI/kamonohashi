@@ -33,8 +33,8 @@ const getters: GetterTree<StateType, RootState> = {
 const actions: ActionTree<StateType, RootState> = {
   async fetchMenus({ commit }) {
     let response = await api.menu.admin.get()
-    let menus = response.data
-    let menus_ret: Array<{
+    let menus_res = response.data
+    let menus: Array<{
       id?: gen.NssolPlatypusInfrastructureMenuCode
       name?: string | null
       description?: string | null
@@ -43,7 +43,7 @@ const actions: ActionTree<StateType, RootState> = {
     }> = []
 
     // roleオブジェクトの配列であるrolesから、idを抜き出して設定
-    menus.forEach(menu => {
+    menus_res.forEach(menu => {
       let roles: Array<number> = []
 
       menu.roles!.forEach(role => {
@@ -57,10 +57,9 @@ const actions: ActionTree<StateType, RootState> = {
         menuType: menu.menuType,
         roles: roles,
       }
-      menus_ret.push(menu_ret)
+      menus.push(menu_ret)
     })
-
-    commit('setMenus', { menus_ret })
+    commit('setMenus', { menus })
   },
 
   async fetchTypes({ commit }) {
