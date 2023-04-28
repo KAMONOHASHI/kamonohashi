@@ -164,6 +164,7 @@ export default Vue.extend({
 
 .user-label {
   color: white;
+  fill: white;
   cursor: pointer;
 
   &:hover {
