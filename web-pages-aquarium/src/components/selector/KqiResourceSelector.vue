@@ -159,12 +159,17 @@ export default Vue.extend({
   },
   async created() {
     await this.getAllocatableNodes()
-
-    if ((this as any).nodes && (this as any).nodes.length > 0) {
+    //@ts-ignore
+    if (this.nodes && this.nodes.length > 0) {
       // 1つ目の要素をもとに最大値を求める。
-      this.maxCpuNode = (this as any).nodes[0]
-      this.maxMemoryNode = (this as any).nodes[0]
-      this.maxGpuNode = (this as any).nodes[0](this as any).nodes.forEach(
+      //@ts-ignore
+      this.maxCpuNode = this.nodes[0]
+      //@ts-ignore
+      this.maxMemoryNode = this.nodes[0]
+      //@ts-ignore
+      this.maxGpuNode = this.nodes[0]
+      //@ts-ignore
+      this.nodes.forEach(
         (
           node: gen.NssolPlatypusApiModelsClusterApiModelsNodeResourceOutputModel | null,
         ) => {
@@ -196,7 +201,8 @@ export default Vue.extend({
       this.errors = []
 
       // 利用可能なノードがあるか確認
-      if (!(this as any).nodes || (this as any).nodes.length < 1) {
+      //@ts-ignore
+      if (!this.nodes || this.nodes.length < 1) {
         this.errors.push('利用可能なノードがありません。')
         this.errors.push('システム管理者に確認してください。')
       } else {
@@ -231,7 +237,8 @@ export default Vue.extend({
         }
 
         // 各リソースの組み合わせに対して、条件を満たすノードが1つ以上存在するか判定する
-        var allocatableNodes = (this as any).nodes.filter(
+        //@ts-ignore
+        var allocatableNodes = this.nodes.filter(
           (n: {
             allocatableCpu: number
             allocatableMemory: number

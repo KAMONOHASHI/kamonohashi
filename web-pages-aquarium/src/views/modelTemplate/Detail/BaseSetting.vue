@@ -85,16 +85,19 @@ export default Vue.extend({
     ...mapGetters(['templates']),
     form: {
       get: function() {
-        return (this as any).value
+        //@ts-ignore
+        return this.value
       },
       set: function(value) {
-        ;(this as any).$emit('input', value)
+        //@ts-ignore
+        this.$emit('input', value)
       },
     },
   },
 
   async created() {
-    ;(this as any).form = { ...(this as any).value }
+    //@ts-ignore
+    this.form = { ...this.value }
   },
   methods: {
     ...mapActions(['fetchModelTemplates']),

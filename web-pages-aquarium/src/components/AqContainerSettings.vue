@@ -500,10 +500,9 @@ export default Vue.extend({
         }
 
         //@ts-ignore
-        let commitDetail = ((await api.git.getCommit(params)).data(
-          this as any,
-          //@ts-ignore
-        ).form.gitModel.commit = commitDetail)
+        let commitDetail = (await api.git.getCommit(params)).data
+        //@ts-ignore
+        this.form.gitModel.commit = commitDetail
       }
     },
     // レジストリサーバーを選択する
@@ -513,9 +512,7 @@ export default Vue.extend({
       //@ts-ignore
       this.form.containerImage.registry = null
       //@ts-ignore
-      this.form.containerImage.image = null(
-        this as any,
-      ).form.containerImage.tag = null
+      this.form.containerImage.image = this.form.containerImage.tag = null
       this.images = []
       this.tags = []
 
@@ -537,9 +534,9 @@ export default Vue.extend({
       // 過去の選択を削除
 
       //@ts-ignore
-      this.form.containerImage.image = null(
-        this as any,
-      ).form.containerImage.tag = null
+      this.form.containerImage.image = null
+      //@ts-ignore
+      this.form.containerImage.tag = null
       this.tags = []
 
       // クリアされた場合は何も設定しない
