@@ -374,7 +374,9 @@ let api = {
     getCommits: (
       params: gen.GitApiApiV2GitGitIdReposOwnerRepositoryNameCommitsGetRequest,
     ) => gitApi.apiV2GitGitIdReposOwnerRepositoryNameCommitsGet(params),
-    getCommit: gitApi.apiV2GitGitIdReposOwnerRepositoryNameCommitsCommitIdGet,
+    getCommit: (
+      params: gen.GitApiApiV2GitGitIdReposOwnerRepositoryNameCommitsCommitIdGetRequest,
+    ) => gitApi.apiV2GitGitIdReposOwnerRepositoryNameCommitsCommitIdGet(params),
     // GET /spa/git/repos/{segments}
   },
 
@@ -561,7 +563,7 @@ let api = {
       trainingApi.apiV2TrainingIdEventsGet(params),
     getMount: (params: gen.TrainingApiApiV2TrainingMountGetRequest) =>
       trainingApi.apiV2TrainingMountGet(params),
-    getTags: trainingApi.apiV2TrainingTagsGet,
+    getTags: () => trainingApi.apiV2TrainingTagsGet(),
     postTags: (params: {
       body: gen.NssolPlatypusApiModelsTrainingApiModelsTagsInputModel
     }) =>
