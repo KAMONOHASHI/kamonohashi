@@ -76,7 +76,8 @@ const actions: ActionTree<StateType, RootState> = {
     { commit },
     params: gen.StorageApiApiV2DownloadUrlGetRequest,
   ) {
-    let logUrl = (await api.storage.getDownloadUrl(params)).data //.url
+    //@ts-ignore
+    let logUrl: string = (await api.storage.getDownloadUrl(params)).data.url
     commit('setLogUrl', { logUrl })
   },
 }
