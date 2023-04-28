@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-mutating-props -->
 <template>
   <div>
     <el-row type="flex">
@@ -157,12 +158,16 @@ export default Vue.extend({
   },
   async created() {
     await this.getAllocatableNodes()
-
+    //@ts-ignore
     if (this.nodes && this.nodes.length > 0) {
       // 1つ目の要素をもとに最大値を求める。
+      //@ts-ignore
       this.maxCpuNode = this.nodes[0]
+      //@ts-ignore
       this.maxMemoryNode = this.nodes[0]
+      //@ts-ignore
       this.maxGpuNode = this.nodes[0]
+      //@ts-ignore
       this.nodes.forEach(
         (
           node: gen.NssolPlatypusApiModelsClusterApiModelsNodeResourceOutputModel | null,
@@ -195,6 +200,7 @@ export default Vue.extend({
       this.errors = []
 
       // 利用可能なノードがあるか確認
+      //@ts-ignore
       if (!this.nodes || this.nodes.length < 1) {
         this.errors.push('利用可能なノードがありません。')
         this.errors.push('システム管理者に確認してください。')
@@ -230,6 +236,7 @@ export default Vue.extend({
         }
 
         // 各リソースの組み合わせに対して、条件を満たすノードが1つ以上存在するか判定する
+        //@ts-ignore
         var allocatableNodes = this.nodes.filter(
           (n: {
             name?: string | null
