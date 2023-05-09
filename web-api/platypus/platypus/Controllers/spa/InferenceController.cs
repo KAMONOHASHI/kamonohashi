@@ -106,15 +106,16 @@ namespace Nssol.Platypus.Controllers.spa
             var data = inferenceHistoryRepository.GetAllIncludeDataSetAndParentWithOrdering().AsEnumerable();
             data = Search(data, filter);
 
+            // 合計件数が必要な場合ヘッダに格納する
+            if (withTotal)
+            {
+                int total = data.Count();
+                SetTotalCountToHeader(total);
+            }
+
             //未指定、あるいは1000件以上であれば、1000件に指定
             int pageCount = (perPage.HasValue && perPage.Value < 1000) ? perPage.Value : 1000;
             data = data.Paging(page, pageCount);
-
-            if (withTotal)
-            {
-                int total = GetTotalCount(filter);
-                SetTotalCountToHeader(total);
-            }
 
             //SQLが多重実行されることを防ぐため、ToListで即時発行させたうえで、結果を生成
             return JsonOK(data.ToList().Select(history => GetUpdatedIndexOutputModelAsync(history).Result));
@@ -153,27 +154,6 @@ namespace Nssol.Platypus.Controllers.spa
                 model.OutputValue = content;
             }
             return model;
-        }
-
-        /// <summary>
-        /// データ件数を取得する
-        /// </summary>
-        /// <param name="filter">検索条件</param>
-        private int GetTotalCount(InferenceSearchInputModel filter)
-        {
-            IEnumerable<InferenceHistory> histories;
-            if (string.IsNullOrEmpty(filter.DataSet))
-            {
-                histories = inferenceHistoryRepository.GetAll().AsEnumerable();
-            }
-            else
-            {
-                //データセット名のフィルターがかかっている場合、データセットも併せて取得しないといけない
-                histories = inferenceHistoryRepository.GetAllIncludeDataSet().AsEnumerable();
-            }
-
-            histories = Search(histories, filter);
-            return histories.Count();
         }
 
         /// <summary>
