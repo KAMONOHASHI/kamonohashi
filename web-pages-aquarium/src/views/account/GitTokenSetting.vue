@@ -64,7 +64,11 @@ export default Vue.extend({
     },
     // 選択したgit情報
     value: {
-      type: Object,
+      type: Object as PropType<{
+        id?: number
+        name?: string
+        token?: string | null
+      }>,
       default: () => ({
         id: 0,
         name: '',
