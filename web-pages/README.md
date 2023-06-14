@@ -2,7 +2,7 @@
 
 ## 開発環境整備方法
 
-1. node のインストール v12.16
+1. node のインストール v16.19
 
 - [node 公式ページ](https://nodejs.org/ja/download/)からインストーラをダウンロードし、インストールする。
 
@@ -38,8 +38,12 @@ VUE_APP_KAMONOHASHI_HOST='KAMONOHASHI-hostname'
 
 1. swagger の画面から`swagger.json`を取得し、モノリポジトリ直下に配置
 
-2. `npm run generate-api`を実行
+2. `npm run codegen`を実行(javaがinstallされていること)
 
-3. `src/api/api.generator.js`が自動生成される
+3. `src/codegen/api.ts`が自動生成される
 
-4. API を追加する場合は`src/api/api.js`を編集する
+4. `src/codegen/api.ts`を`src/codegen/api.generate.ts`にリネームする
+
+5. `src/api`にsrc/codegen/api.generate.ts`を配置する
+
+6. API を追加する場合は`src/api/api.ts`を編集する
