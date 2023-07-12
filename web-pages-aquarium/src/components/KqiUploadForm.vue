@@ -20,11 +20,23 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue'
+
 import MultiPartUpload from '@/util/multipart-upload'
 import Util from '@/util/util'
-
-export default {
+interface DataType {
+  progress: number
+  selectedFiles?: Array<any>
+  showProgress: boolean
+  filesArray: Array<{
+    name: string
+    storedPath: string | null | undefined
+  }>
+  partCount: number
+  totalPart: number
+}
+export default Vue.extend({
   name: 'UploadForm',
   props: {
     type: {
@@ -32,7 +44,7 @@ export default {
       default: '',
     },
   },
-  data: function() {
+  data(): DataType {
     return {
       progress: 0,
       selectedFiles: undefined,
@@ -70,7 +82,7 @@ export default {
       }
     },
 
-    async selectFiles(e) {
+    async selectFiles(e: any) {
       e.preventDefault()
       let files = e.target.files
       // filesは{"0": fileObject1, "1": fileObject2,...}という構造のFileListオブジェクトになっている
@@ -87,7 +99,7 @@ export default {
     },
 
     // ファイルの分割数の合計を取得する
-    getTotalPart(selectedFiles) {
+    getTotalPart(selectedFiles: Array<any>) {
       if (!selectedFiles) this.totalPart = 0
 
       for (let i = 0; i < selectedFiles.length; i++) {
@@ -97,7 +109,7 @@ export default {
       }
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

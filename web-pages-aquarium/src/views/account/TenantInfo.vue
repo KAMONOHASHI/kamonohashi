@@ -25,8 +25,11 @@
   </el-card>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue from 'vue'
+import { PropType } from 'vue'
+import * as gen from '@/api/api.generate'
+export default Vue.extend({
   props: {
     userName: {
       type: String,
@@ -37,8 +40,16 @@ export default {
       default: '',
     },
     tenant: {
-      type: Object,
-      default: () => {
+      type: Object as PropType<{
+        id: null | number
+        displayName: string
+        roles: Array<gen.NssolPlatypusInfrastructureInfosRoleInfo>
+      }>,
+      default: (): {
+        id: null | number
+        displayName: string
+        roles: Array<gen.NssolPlatypusInfrastructureInfosRoleInfo>
+      } => {
         return {
           id: null,
           displayName: '',
@@ -47,7 +58,7 @@ export default {
       },
     },
   },
-}
+})
 </script>
 
 <style scoped>

@@ -64,12 +64,12 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('version')
 
-export default {
-  title: 'バージョン情報',
+export default Vue.extend({
   computed: {
     ...mapGetters(['version']),
   },
@@ -79,7 +79,7 @@ export default {
   methods: {
     ...mapActions(['fetchVersion']),
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

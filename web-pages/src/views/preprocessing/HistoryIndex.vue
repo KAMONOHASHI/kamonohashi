@@ -64,14 +64,26 @@
   </div>
 </template>
 
-<script>
-import KqiDisplayError from '@/components/KqiDisplayError'
-import KqiPagination from '@/components/KqiPagination'
+<script lang="ts">
+import Vue from 'vue'
+import KqiDisplayError from '@/components/KqiDisplayError.vue'
+import KqiPagination from '@/components/KqiPagination.vue'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('preprocessing')
 
-export default {
-  title: '前処理履歴',
+import * as gen from '@/api/api.generate'
+interface DataType {
+  pageStatus: {
+    currentPage: number
+    currentPageSize: number
+  }
+  tableData: Array<
+    gen.NssolPlatypusApiModelsPreprocessingApiModelsHistoriesOutputModel
+  >
+  error: null | Error
+}
+
+export default Vue.extend({
   components: {
     KqiDisplayError,
     KqiPagination,
@@ -82,7 +94,7 @@ export default {
       default: null,
     },
   },
-  data() {
+  data(): DataType {
     return {
       pageStatus: {
         currentPage: 1,
@@ -107,7 +119,7 @@ export default {
           await this.fetchHistories(this.id)
           this.error = null
         } catch (e) {
-          this.error = e
+          if (e instanceof Error) this.error = e
         }
         // fetchHistories()で、全履歴が取得できているため、手動でページ分割して表示
         this.tableData = this.histories.slice(
@@ -118,7 +130,9 @@ export default {
       }
     },
 
-    async openEditDialog(row) {
+    async openEditDialog(
+      row: gen.NssolPlatypusApiModelsPreprocessingApiModelsHistoriesOutputModel,
+    ) {
       if (row) {
         this.$router.push('/preprocessingHistory/' + this.id + '/' + row.dataId)
       }
@@ -126,7 +140,7 @@ export default {
     async closeEditDialog() {
       this.$router.push('/preprocessingHistory/' + this.id)
     },
-    async done(type) {
+    async done(type: string) {
       if (type === 'delete') {
         // 削除時、表示していたページにデータが無くなっている可能性がある。
         // 総数 % ページサイズ === 1の時、残り1の状態で削除したため、currentPageが1で無ければ1つ前のページに戻す
@@ -143,10 +157,10 @@ export default {
     async openPreprocessing() {
       this.$router.push('/preprocessing')
     },
-    shell(data) {
+    shell(data: { id: number | null }) {
       this.$router.push('/preprocessingShell/' + data.id)
     },
-    log(data) {
+    log(data: { id: string; dataId: string }) {
       this.$router.push(
         '/preprocessingHistory/' + data.id + '/' + data.dataId + '/log',
       )
@@ -158,7 +172,7 @@ export default {
       this.$router.go(-2)
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

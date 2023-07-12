@@ -152,12 +152,54 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue'
+import { PropType } from 'vue'
+//@ts-ignore
 import { Container, Draggable } from 'vue-smooth-dnd'
-import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
-import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index'
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
+import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index.vue'
+import * as gen from '@/api/api.generate'
 
-export default {
+//TODO 型がnullの場合もある変数はtypescriptでnullの場合を無視する「!」を付けている
+interface DataType {
+  emptyspace: string
+  searchCondition: {} // 検索条件
+  searchConfigs: Array<{
+    prop: string
+    name: string
+    type: string
+    multiple?: boolean
+  }>
+  checkSpanSize: number
+  idSpanSize: number
+  nameSpanSize: number
+  dataSpanSize: number
+  tagSpanSize: number
+  assignSpanSize: number
+  infoSpanSize: number
+  isAllChecked: boolean // 全選択ボタンを押されているかどうか
+}
+
+type NssolPlatypusApiModelsDataApiModelsIndexOutputModel = gen.NssolPlatypusApiModelsDataApiModelsIndexOutputModel & {
+  assign: string | undefined
+  colorIndex: number
+  checked: boolean
+}
+type ViewInfo = {
+  entryName?: string
+  colorIndex?: number
+  showAssign?: boolean
+  visible?: boolean
+  currentPage?: number
+  currentPageSize?: number
+  width?: number
+  filter?: { [key: string]: string | number | boolean | Array<string> } | null
+  dataList?: Array<NssolPlatypusApiModelsDataApiModelsIndexOutputModel>
+  filteredTotal?: number
+} | null
+
+export default Vue.extend({
   components: {
     Container,
     Draggable,
@@ -167,8 +209,8 @@ export default {
   props: {
     // dataのpaging情報やentry自体の表示情報
     viewInfo: {
-      type: Object,
-      default: () => {
+      type: Object as PropType<ViewInfo>,
+      default: (): ViewInfo => {
         return {
           visible: true,
           currentPage: 1,
@@ -185,15 +227,19 @@ export default {
     // Entry名とドロップダウンに表示する移動メッセージの連想配列
     // "選択をtrainingに移動"など
     moveList: {
-      type: Object,
-      default: () => {
+      type: Object as PropType<{ [key: string]: string }>,
+      default: (): { [key: string]: string } => {
         return {}
       },
     },
     // 表示するデータの配列
     dataList: {
-      type: Array,
-      default: () => {
+      type: Array as PropType<
+        Array<NssolPlatypusApiModelsDataApiModelsIndexOutputModel>
+      >,
+      default: (): Array<
+        NssolPlatypusApiModelsDataApiModelsIndexOutputModel
+      > => {
         return []
       },
     },
@@ -203,7 +249,7 @@ export default {
       default: 330,
     },
   },
-  data() {
+  data(): DataType {
     return {
       emptyspace: ' ',
       searchCondition: {}, // 検索条件
@@ -239,13 +285,16 @@ export default {
     this.$forceUpdate()
   },
   beforeUpdate() {
-    for (let i = 0; i < this.$refs.pagination.$children.length; i++) {
+    //@ts-ignore
+    for (let i = 0; i < this.$refs.pagination!.$children.length; i++) {
       if (
-        this.$refs.pagination.$children[i].$el.className ===
+        //@ts-ignore
+        this.$refs.pagination!.$children[i].$el.className ===
         'el-pagination__jump'
       ) {
-        this.$refs.pagination.$children[i].$el.lastChild.textContent =
-          '／' + this.getTotalPages(this.viewInfo) + 'ページ目へ'
+        //@ts-ignore
+        this.$refs.pagination!.$children[i].$el.lastChild.textContent =
+          '／' + this.getTotalPages() + 'ページ目へ'
       }
     }
   },
@@ -255,40 +304,48 @@ export default {
       if (this.width > 1000) {
         this.checkSpanSize = 0
         this.idSpanSize = 2
-        this.nameSpanSize = this.viewInfo.showAssign ? 13 : 15
+        this.nameSpanSize = this.viewInfo!.showAssign ? 13 : 15
         this.dataSpanSize = 3
         this.tagSpanSize = 3
-        this.assignSpanSize = this.viewInfo.showAssign ? 2 : 0
+        this.assignSpanSize = this.viewInfo!.showAssign ? 2 : 0
         this.infoSpanSize = 1
       } else if (this.width > 600) {
         this.checkSpanSize = 0
         this.idSpanSize = 4
-        this.nameSpanSize = this.viewInfo.showAssign ? 10 : 13
+        this.nameSpanSize = this.viewInfo!.showAssign ? 10 : 13
         this.dataSpanSize = 0
         this.tagSpanSize = 6
-        this.assignSpanSize = this.viewInfo.showAssign ? 3 : 0
+        this.assignSpanSize = this.viewInfo!.showAssign ? 3 : 0
         this.infoSpanSize = 1
       } else if (this.width > 400) {
         this.checkSpanSize = 2
         this.idSpanSize = 0
-        this.nameSpanSize = this.viewInfo.showAssign ? 16 : 20
+        this.nameSpanSize = this.viewInfo!.showAssign ? 16 : 20
         this.dataSpanSize = 0
         this.tagSpanSize = 0
-        this.assignSpanSize = this.viewInfo.showAssign ? 4 : 0
+        this.assignSpanSize = this.viewInfo!.showAssign ? 4 : 0
         this.infoSpanSize = 2
       } else {
         this.checkSpanSize = 2
         this.idSpanSize = 0
-        this.nameSpanSize = this.viewInfo.showAssign ? 13 : 20
+        this.nameSpanSize = this.viewInfo!.showAssign ? 13 : 20
         this.dataSpanSize = 0
         this.tagSpanSize = 0
-        this.assignSpanSize = this.viewInfo.showAssign ? 7 : 0
+        this.assignSpanSize = this.viewInfo!.showAssign ? 7 : 0
         this.infoSpanSize = 2
       }
     },
     // 全EntryListにイベントが送られる。
     // 対象コンテナでremovedIndex か addedIndexが設定され、それ以外でnullを受け取る
-    handleDrop(collection, dropResult) {
+    handleDrop(
+      //@ts-ignore
+      collection,
+      dropResult: {
+        addedIndex: number
+        removedIndex: number
+        payload: NssolPlatypusApiModelsDataApiModelsIndexOutputModel
+      },
+    ) {
       const { addedIndex, removedIndex, payload } = dropResult
 
       // 同じ列内の操作の場合は何もしない
@@ -301,28 +358,31 @@ export default {
         let addedInfo = {
           data: payload,
           addedIndex,
-          entryName: this.viewInfo.entryName,
+          entryName: this.viewInfo!.entryName!,
         }
         this.emitAdd(addedInfo)
       }
 
       if (removedIndex !== null) {
-        let removedInfo = { data: payload, entryName: this.viewInfo.entryName }
+        let removedInfo = {
+          data: payload,
+          entryName: this.viewInfo!.entryName!,
+        }
         this.emitRemove(removedInfo)
       }
     },
 
-    getChildPayload(index) {
-      return this.viewInfo.dataList[index]
+    getChildPayload(index: number) {
+      return this.viewInfo!.dataList![index]
     },
 
-    handleAllCheck(checked) {
+    handleAllCheck(checked: boolean) {
       this.dataList.forEach(x => {
         x.checked = checked
       })
       this.$forceUpdate()
     },
-    handleSelectedCommand(command) {
+    handleSelectedCommand(command: string) {
       let moveDataList = this.dataList.filter(x => x.checked)
       moveDataList.forEach(originalData => {
         originalData.checked = false
@@ -333,7 +393,7 @@ export default {
           let data = Object.assign({}, originalData)
           let addedInfo = { data, addedIndex: 0, entryName: command } // 移動先に追加
           this.emitAdd(addedInfo)
-          let removedInfo = { data, entryName: this.viewInfo.entryName } // このリストから削除
+          let removedInfo = { data, entryName: this.viewInfo!.entryName! } // このリストから削除
           this.emitRemove(removedInfo)
         } else {
           this.$forceUpdate() // そのままだとチェックボックスの変更が反映されないので、強制更新
@@ -344,41 +404,54 @@ export default {
     handleCheck() {
       this.$forceUpdate()
     },
-    async showData(data) {
+    async showData(data: NssolPlatypusApiModelsDataApiModelsIndexOutputModel) {
       this.$emit('showData', data.id)
     },
     // addとremoveはドラッグ, moveはドロップダウンから呼ばれる
-    emitAdd(info) {
+    emitAdd(info: {
+      data: NssolPlatypusApiModelsDataApiModelsIndexOutputModel
+      addedIndex: number
+      entryName: string
+    }) {
       this.$emit('add', info)
     },
-    emitRemove(info) {
+    emitRemove(info: {
+      data: NssolPlatypusApiModelsDataApiModelsIndexOutputModel
+      entryName: string
+    }) {
       this.$emit('remove', info)
     },
     emitFilter() {
       this.$emit('filter', {
-        entryName: this.viewInfo.entryName,
+        entryName: this.viewInfo!.entryName,
         filter: this.searchCondition,
         changeFilter: true,
       })
     },
-    emitPaging(entryName, page, searchCondition) {
+    emitPaging(
+      entryName: string,
+      page: number,
+      searchCondition: {
+        [key: string]: string | number | boolean | Array<string>
+      } | null,
+    ) {
       this.$emit('paging', { entryName, page, searchCondition })
     },
     getTotalPages() {
       if (
-        this.viewInfo.filteredTotal !== undefined &&
-        this.viewInfo.filteredTotal !== 0 &&
-        this.viewInfo.filteredTotal > this.viewInfo.currentPageSize
+        this.viewInfo!.filteredTotal !== undefined &&
+        this.viewInfo!.filteredTotal !== 0 &&
+        this.viewInfo!.filteredTotal > this.viewInfo!.currentPageSize!
       ) {
         return Math.ceil(
-          this.viewInfo.filteredTotal / this.viewInfo.currentPageSize,
+          this.viewInfo!.filteredTotal / this.viewInfo!.currentPageSize!,
         )
       } else {
         return 1
       }
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

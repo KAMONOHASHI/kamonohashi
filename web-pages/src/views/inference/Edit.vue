@@ -295,19 +295,42 @@
   </kqi-dialog>
 </template>
 
-<script>
-import KqiDialog from '@/components/KqiDialog'
-import KqiDisplayError from '@/components/KqiDisplayError'
-import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
-import KqiJobStopButton from '@/components/KqiJobStopButton'
-import KqiFileManager from '@/components/KqiFileManager'
-import KqiDataSetDetails from '@/components/selector/KqiDataSetDetails'
-import KqiTrainingHistoryDetails from '@/components/selector/KqiTrainingHistoryDetails'
-import KqiInferenceHistoryDetails from '@/components/selector/KqiInferenceHistoryDetails'
+<script lang="ts">
+import Vue from 'vue'
+import KqiDialog from '@/components/KqiDialog.vue'
+import KqiDisplayError from '@/components/KqiDisplayError.vue'
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
+import KqiJobStopButton from '@/components/KqiJobStopButton.vue'
+import KqiFileManager from '@/components/KqiFileManager.vue'
+import KqiDataSetDetails from '@/components/selector/KqiDataSetDetails.vue'
+import KqiTrainingHistoryDetails from '@/components/selector/KqiTrainingHistoryDetails.vue'
+import KqiInferenceHistoryDetails from '@/components/selector/KqiInferenceHistoryDetails.vue'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('inference')
+//import { DeepWriteable } from '@/@types/type'
+//import * as gen from '@/api/api.generate'
 
-export default {
+interface DataType {
+  rules: {
+    name: [
+      {
+        required: boolean
+        trigger: string
+        message: string
+      },
+    ]
+  }
+  form: {
+    name: string | null
+    favorite: boolean
+    memo: string | null
+  }
+  title: string
+  dialogVisible: boolean
+  error: Error | null
+}
+
+export default Vue.extend({
   components: {
     KqiDialog,
     KqiDisplayError,
@@ -325,7 +348,7 @@ export default {
     },
   },
 
-  data() {
+  data(): DataType {
     return {
       rules: {
         name: [
@@ -400,7 +423,7 @@ export default {
     },
     async onSubmit() {
       let form = this.$refs.updateForm
-
+      //@ts-ignore
       await form.validate(async valid => {
         if (valid) {
           try {
@@ -409,7 +432,7 @@ export default {
             this.$emit('done')
             this.error = null
           } catch (e) {
-            this.error = e
+            if (e instanceof Error) this.error = e
           }
         }
       })
@@ -420,7 +443,7 @@ export default {
         await this.retrieveData()
         this.error = null
       } catch (e) {
-        this.error = e
+        if (e instanceof Error) this.error = e
       }
     },
     async handleUserCancel() {
@@ -429,7 +452,7 @@ export default {
         await this.retrieveData()
         this.error = null
       } catch (e) {
-        this.error = e
+        if (e instanceof Error) this.error = e
       }
     },
     async deleteInferenceJob() {
@@ -438,15 +461,17 @@ export default {
         this.$emit('done', 'delete')
         this.error = null
       } catch (e) {
-        this.error = e
+        if (e instanceof Error) this.error = e
       }
     },
     async uploadFile() {
       // 独自ローディング処理のため共通側は無効
       this.$store.commit('setLoading', false)
+      //@ts-ignore
       this.loading = true
 
       let uploader = this.$refs.uploadFile
+      //@ts-ignore
       let fileInfo = await uploader.uploadFile()
 
       if (fileInfo !== undefined) {
@@ -457,11 +482,12 @@ export default {
       }
 
       // 共通側ローディングを再度有効化
+      //@ts-ignore
       this.loading = false
       this.$store.commit('setLoading', true)
     },
 
-    async deleteAttachedFile(fileId) {
+    async deleteAttachedFile(fileId: number) {
       try {
         await this.deleteFile({
           id: this.detail.id,
@@ -470,14 +496,14 @@ export default {
         await this.retrieveData()
         this.error = null
       } catch (e) {
-        this.error = e
+        if (e instanceof Error) this.error = e
       }
     },
     // 親ジョブ履歴の表示指示
-    async showParent(parentId) {
+    async showParent(parentId: number) {
       this.$router.push('/training/' + parentId)
     },
-    async showParentInference(parentInferenceId) {
+    async showParentInference(parentInferenceId: number) {
       this.$router.push('/inference/' + parentInferenceId)
     },
     redirectEditDataSet() {
@@ -512,7 +538,7 @@ export default {
       }
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

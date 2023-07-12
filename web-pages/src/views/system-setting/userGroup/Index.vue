@@ -34,12 +34,15 @@
     <router-view @cancel="closeDialog()" @done="done()" />
   </div>
 </template>
-<script>
+<script lang="ts">
+import Vue from 'vue'
+
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('userGroup')
 
-export default {
-  title: 'ユーザグループ管理',
+import * as gen from '@/api/api.generate'
+
+export default Vue.extend({
   computed: {
     ...mapGetters(['userGroups']),
   },
@@ -51,7 +54,9 @@ export default {
     openCreateDialog() {
       this.$router.push('/usergroup/edit')
     },
-    openEditDialog(selectedRow) {
+    openEditDialog(
+      selectedRow: gen.NssolPlatypusApiModelsUserGroupApiModelsIndexOutputModel,
+    ) {
       this.$router.push('/usergroup/edit/' + selectedRow.id)
     },
     closeDialog() {
@@ -63,7 +68,7 @@ export default {
       this.showSuccessMessage()
     },
   },
-}
+})
 </script>
 <style lang="scss" scoped>
 .right-top-button {

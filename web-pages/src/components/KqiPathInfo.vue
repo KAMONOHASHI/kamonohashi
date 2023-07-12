@@ -34,16 +34,21 @@
   </span>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue from 'vue'
+import { PropType } from 'vue'
+import * as gen from '@/api/api.generate'
+export default Vue.extend({
   name: 'PathInfo',
   props: {
     dataSet: {
-      type: Object,
+      type: Object as PropType<
+        gen.NssolPlatypusApiModelsDataSetApiModelsDetailsOutputModel
+      >,
       default: () => {},
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

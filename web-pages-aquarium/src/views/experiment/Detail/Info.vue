@@ -151,11 +151,19 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue'
+import { PropType } from 'vue'
 import AqualiumTensorboardHandler from './AqualiumTensorboardHandler.vue'
 import { mapActions, mapGetters } from 'vuex'
-export default {
-  title: '実験情報',
+import * as gen from '@/api/api.generate'
+
+interface DataType {
+  tesorboardVisible: boolean
+  deleteExperimentDialog: boolean
+}
+
+export default Vue.extend({
   components: { AqualiumTensorboardHandler },
   props: {
     // 選択した実験情報
@@ -166,7 +174,16 @@ export default {
     },
 
     value: {
-      type: Object,
+      type: Object as PropType<{
+        id: number
+        name: string
+        createdAt: string
+        createdBy: string
+        dataSetId: number
+        dataSetVersion: gen.NssolPlatypusApiModelsAquariumDataSetApiModelsVersionIndexOutputModel
+        dataSetURL: string
+        templateURL: string
+      }>,
       default: () => ({
         id: null,
         name: '',
@@ -179,13 +196,14 @@ export default {
       }),
     },
   },
-  data() {
+  data(): DataType {
     return {
       tesorboardVisible: true,
       deleteExperimentDialog: false,
     }
   },
   computed: {
+    //@ts-ignore
     ...mapGetters({ detail: ['experiment/detail'] }),
   },
 
@@ -225,7 +243,7 @@ export default {
       await this['experiment/delete'](this.detail.id)
       this.$router.push('/aquarium/experiment')
     },
-    tagType(val) {
+    tagType(val: string) {
       let tag = null
       if (val == 'Running' || val == 'Opened') {
         tag = ''
@@ -247,7 +265,7 @@ export default {
       return tag
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

@@ -121,13 +121,65 @@
   </el-dialog>
 </template>
 
-<script>
-import KqiDisplayError from '@/components/KqiDisplayError'
-import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
-import AqContainerSettings from '@/components/AqContainerSettings'
-import { mapActions } from 'vuex'
+<script lang="ts">
+import Vue from 'vue'
 
-export default {
+import KqiDisplayError from '@/components/KqiDisplayError.vue'
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
+import AqContainerSettings from '@/components/AqContainerSettings.vue'
+import { mapActions } from 'vuex'
+import * as gen from '@/api/api.generate'
+interface Form {
+  containerImage: {
+    registry:
+      | string
+      | null
+      | {
+          id: number
+          name: string
+        }
+    registryId?: number
+    image: string | null
+    tag: string | null
+    token: string | null
+  }
+  gitModel: {
+    git: null | gen.NssolPlatypusApiModelsAccountApiModelsGitCredentialOutputModel
+    gitId?: number
+    repository: null | gen.NssolPlatypusServiceModelsGitRepositoryModel | string
+    owner?: string | null
+    branch: null | gen.NssolPlatypusServiceModelsGitBranchModel | string
+    commit: null | gen.NssolPlatypusServiceModelsGitCommitModel
+    token: null | string
+  }
+  resource: {
+    cpu: number
+    memory: number
+    gpu: number
+  }
+  entryPoint: string | null
+}
+interface DataType {
+  active: number
+  form: {
+    name: string | null
+    entryPoint: string | null
+    memo: string | null
+    accessLevel: number
+    preprocForm: Form
+    trainingForm: Form
+    evaluationForm: Form
+  }
+  title: string
+  dialogVisible: boolean
+  error: null | Error
+  isEditDialog: boolean
+  rules: {
+    name: Array<{ required: boolean; trigger: string; message: string }>
+  }
+}
+
+export default Vue.extend({
   components: {
     KqiDisplayError,
     KqiDisplayTextForm,
@@ -141,7 +193,7 @@ export default {
       default: null,
     },
   },
-  data() {
+  data(): DataType {
     return {
       active: 0,
       form: {
@@ -239,7 +291,7 @@ export default {
       'template/post',
       'template/put',
     ]),
-    copyAqContainer(info) {
+    copyAqContainer(info: { from: string; to: string }) {
       let from = info.from
       let to = info.to
       let fromData = null
@@ -273,7 +325,7 @@ export default {
       switch (type) {
         case 'create':
           this.title = '新しいテンプレートの登録'
-          this.isCopyCreation = this.id !== null
+          //this.isCopyCreation = this.id !== null//TODO 不要コード？
           this.isEditDialog = false
           break
       }
@@ -305,8 +357,11 @@ export default {
         }
 
         // 前処理、学習、評価のフォームの値を取得
+        //@ts-ignore
         submitPreprocForm = await this.$refs.preprocessing.prepareSubmit()
+        //@ts-ignore
         submitTrainingForm = await this.$refs.training.prepareSubmit()
+        //@ts-ignore
         submitEvalutionForm = await this.$refs.evaluation.prepareSubmit()
 
         //基本設定情報
@@ -350,6 +405,7 @@ export default {
         //dialogを閉じる
         this.dialogVisible = false
       } catch (message) {
+        //@ts-ignore
         this.$notify.error({
           message: message,
         })
@@ -359,14 +415,15 @@ export default {
 
     async deleteTemplate() {
       try {
+        //@ts-ignore
         await this['modelTemplate/delete'](this.id)
         this.$emit('done', 'delete')
       } catch (e) {
-        this.error = e
+        if (e instanceof Error) this.error = e
       }
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

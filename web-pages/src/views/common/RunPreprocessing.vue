@@ -75,17 +75,54 @@
   </el-dialog>
 </template>
 
-<script>
-import Util from '@/util/util'
-import KqiDisplayError from '@/components/KqiDisplayError'
-import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
-import KqiPreprocessingsSelector from '@/components/selector/KqiPreprocessingSelector'
-import KqiResourceSelector from '@/components/selector/KqiResourceSelector'
-import KqiEnvironmentVariables from '@/components/KqiEnvironmentVariables'
-import KqiPartitionSelector from '@/components/selector/KqiPartitionSelector'
-import { mapActions, mapGetters } from 'vuex'
+<script lang="ts">
+import Vue from 'vue'
 
-export default {
+import Util from '@/util/util'
+import KqiDisplayError from '@/components/KqiDisplayError.vue'
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
+import KqiPreprocessingsSelector from '@/components/selector/KqiPreprocessingSelector.vue'
+import KqiResourceSelector from '@/components/selector/KqiResourceSelector.vue'
+import KqiEnvironmentVariables from '@/components/KqiEnvironmentVariables.vue'
+import KqiPartitionSelector from '@/components/selector/KqiPartitionSelector.vue'
+import { mapActions, mapGetters } from 'vuex'
+import * as gen from '@/api/api.generate'
+
+interface DataType {
+  rules: {
+    preprocessing: [
+      {
+        required: boolean
+        trigger: string
+        validator: Function
+      },
+    ]
+    data: [
+      {
+        required: boolean
+        trigger: string
+        validator: Function
+      },
+    ]
+  }
+  form: {
+    selectedDataId: Array<number>
+    preprocessingId: null | string
+    resource: {
+      cpu: number
+      memory: number
+      gpu: number
+    }
+    variables: Array<{ key: string; value: string }>
+    partition: null | string
+    movePreprocessingPage: boolean
+  }
+  enableDataSelection: boolean
+  dialogVisible: boolean
+  error: null | Error
+}
+
+export default Vue.extend({
   components: {
     KqiDisplayError,
     KqiDisplayTextForm,
@@ -100,8 +137,13 @@ export default {
       default: null,
     },
   },
-  data() {
-    let dataSelectedIdsValidator = (rule, value, callback) => {
+  data(): DataType {
+    let dataSelectedIdsValidator = (
+      rule: any,
+      value: any,
+      callback: Function,
+    ) => {
+      //@ts-ignore
       if (this.enableDataSelection && this.form.selectedDataId.length === 0) {
         callback(new Error('必須項目です'))
       } else {
@@ -109,7 +151,12 @@ export default {
       }
     }
 
-    let preprocessingIdValidator = (rule, value, callback) => {
+    let preprocessingIdValidator = (
+      rule: any,
+      value: any,
+      callback: Function,
+    ) => {
+      //@ts-ignore
       if (this.form.preprocessingId === null)
         callback(new Error('必須項目です'))
       else {
@@ -153,6 +200,7 @@ export default {
   },
   computed: {
     ...mapGetters({
+      //@ts-ignore
       preprocessings: ['preprocessing/preprocessings'],
       partitions: ['cluster/partitions'],
       quota: ['cluster/quota'],
@@ -181,6 +229,7 @@ export default {
     ]),
     async runPreprocessing() {
       let form = this.$refs.preprocessingForm
+      //@ts-ignore
       await form.validate(async valid => {
         this.error = null
         if (valid) {
@@ -197,7 +246,7 @@ export default {
           }
 
           // 環境変数の作成
-          let options = {}
+          let options: { [key: string]: string } = {}
           // apiのフォーマットに合わせる(配列 => オブジェクト)
           this.form.variables.forEach(kvp => {
             options[kvp.key] = kvp.value
@@ -222,13 +271,13 @@ export default {
                 message: `ID:${dataId}の前処理を実行しました`,
               })
             } catch (e) {
-              this.error = e
+              if (e instanceof Error) this.error = e
             }
           })
           await Util.wait(2000)
           // エラーがない場合、前処理履歴画面に遷移
           if (this.form.movePreprocessingPage && this.error === null) {
-            this.emitHistoryPage(this.form.preprocessingId)
+            this.emitHistoryPage(this.form.preprocessingId!)
           } else if (this.error === null) {
             this.emitDone()
           } else {
@@ -244,7 +293,9 @@ export default {
     onPreprocessingChanged() {
       // リソースサイズのデフォルト値を選択された前処理の値とする
       let preprocessing = this.preprocessings.find(
-        preprocessing => String(preprocessing.id) === this.form.preprocessingId,
+        (
+          preprocessing: gen.NssolPlatypusApiModelsPreprocessingApiModelsIndexOutputModel,
+        ) => String(preprocessing.id) === this.form.preprocessingId,
       )
       this.form.resource.cpu = preprocessing.cpu
       this.form.resource.memory = preprocessing.memory
@@ -258,15 +309,15 @@ export default {
       this.$emit('done')
       this.dialogVisible = false
     },
-    emitHistoryPage(id) {
+    emitHistoryPage(id: string) {
       this.$router.push('/preprocessingHistory/' + id)
     },
-    closeDialog(done) {
+    closeDialog(done: any) {
       done()
       this.$emit('close')
     },
   },
-}
+})
 </script>
 
 <style scoped>

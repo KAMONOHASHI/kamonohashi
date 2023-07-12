@@ -7,8 +7,9 @@
   </span>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue from 'vue'
+export default Vue.extend({
   props: {
     buttonLabel: { type: String, default: '' },
     warningText: {
@@ -21,7 +22,7 @@ export default {
     },
   },
   methods: {
-    validateInput(input) {
+    validateInput(input: string) {
       if (input === this.confirmText) {
         return true
       } else return '入力内容が不一致です'
@@ -37,6 +38,7 @@ export default {
           this.$emit('delete')
         })
         .catch(() => {
+          //@ts-ignore
           this.$notify.info({
             type: 'info',
             message: 'キャンセルされました',
@@ -44,7 +46,7 @@ export default {
         })
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped></style>

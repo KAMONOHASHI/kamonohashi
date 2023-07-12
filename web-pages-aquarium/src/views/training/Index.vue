@@ -127,19 +127,44 @@
   </div>
 </template>
 
-<script>
-import KqiPagination from '@/components/KqiPagination'
-import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index'
+<script lang="ts">
+import Vue from 'vue'
+
+import KqiPagination from '@/components/KqiPagination.vue'
+import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index.vue'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('training')
 
-export default {
-  title: '学習管理',
+import { DeepWriteable } from '@/@types/type'
+import * as gen from '@/api/api.generate'
+
+type TrainingApiApiV2TrainingSearchGetRequest = DeepWriteable<
+  gen.TrainingApiApiV2TrainingSearchGetRequest
+>
+interface DataType {
+  pageStatus: {
+    currentPage: number
+    currentPageSize: number
+  }
+  selections: Array<gen.NssolPlatypusApiModelsTrainingApiModelsIndexOutputModel>
+  searchCondition: TrainingApiApiV2TrainingSearchGetRequest
+  searchConfigs: Array<{
+    prop: string
+    name: string
+    type: string
+    multiple?: boolean
+    option?: {
+      items: Array<string>
+    }
+  }>
+}
+
+export default Vue.extend({
   components: {
     KqiPagination,
     KqiSmartSearchInput,
   },
-  data() {
+  data(): DataType {
     return {
       pageStatus: {
         currentPage: 1,
@@ -192,10 +217,11 @@ export default {
   methods: {
     ...mapActions(['fetchHistories', 'delete']),
     async retrieveData() {
-      let params = this.searchCondition
-      params.page = this.pageStatus.currentPage
-      params.perPage = this.pageStatus.currentPageSize
-      params.withTotal = true
+      let params: TrainingApiApiV2TrainingSearchGetRequest = this
+        .searchCondition
+      params!.page! = this.pageStatus.currentPage
+      params!.perPage = this.pageStatus.currentPageSize
+      params!.withTotal = true
       await this.fetchHistories(params)
     },
     async search() {
@@ -203,7 +229,9 @@ export default {
       await this.retrieveData()
     },
 
-    handleSelectionChange(val) {
+    handleSelectionChange(
+      val: Array<gen.NssolPlatypusApiModelsTrainingApiModelsIndexOutputModel>,
+    ) {
       // checkboxの要素変更
       this.selections = val
     },
@@ -222,6 +250,7 @@ export default {
               .then(() => successCount++)
               .catch(() => {})
           }
+          //@ts-ignore
           await this.$notify.info({
             type: 'info',
             message: `学習履歴を削除しました。(成功：${successCount}件、 失敗：${this
@@ -233,7 +262,7 @@ export default {
         .catch(() => {})
     },
 
-    async done(type) {
+    async done(type: string) {
       if (type === 'delete') {
         // 削除時、表示していたページにデータが無くなっている可能性がある。
         // 総数 % ページサイズ === 1の時、残り1の状態で削除したため、currentPageが1で無ければ1つ前のページに戻す
@@ -254,26 +283,28 @@ export default {
     back() {
       this.$router.go(-1)
     },
-    openEditDialog(selectedRow) {
+    openEditDialog(
+      selectedRow: gen.NssolPlatypusApiModelsTrainingApiModelsIndexOutputModel,
+    ) {
       this.$router.push('/training/' + selectedRow.id)
     },
     openCreateDialog() {
       this.$router.push('/training/run/')
     },
-    copyCreate(parentId) {
+    copyCreate(parentId: number) {
       this.$router.push('/training/run/' + parentId)
     },
-    files(id) {
+    files(id: number) {
       this.$router.push('/training/' + id + '/files')
     },
-    shell(id) {
+    shell(id: number) {
       this.$router.push('/training/' + id + '/shell')
     },
-    log(id) {
+    log(id: number) {
       this.$router.push('/training/' + id + '/log')
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

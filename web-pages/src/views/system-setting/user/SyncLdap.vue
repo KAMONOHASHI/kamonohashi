@@ -29,8 +29,10 @@
   </el-dialog>
 </template>
 
-<script>
-import KqiDisplayError from '@/components/KqiDisplayError'
+<script lang="ts">
+import Vue from 'vue'
+
+import KqiDisplayError from '@/components/KqiDisplayError.vue'
 import { createNamespacedHelpers } from 'vuex'
 const { mapActions } = createNamespacedHelpers('user')
 
@@ -39,11 +41,24 @@ const formRule = {
   trigger: 'blur',
   message: '必須項目です',
 }
-export default {
+interface DataType {
+  form: {
+    name: string
+    password: string
+  }
+  rules: {
+    name: Array<typeof formRule>
+    password: Array<typeof formRule>
+  }
+  dialogVisible: boolean
+  error: null | Error
+}
+
+export default Vue.extend({
   components: {
     KqiDisplayError,
   },
-  data() {
+  data(): DataType {
     return {
       form: {
         name: '',
@@ -61,7 +76,8 @@ export default {
     ...mapActions(['syncLdapUsers']),
     async syncLdap() {
       let form = this.$refs.createForm
-      await form.validate(async valid => {
+      //@ts-ignores
+      await form!.validate(async valid => {
         if (valid) {
           if (await this.showConfirm()) {
             try {
@@ -75,7 +91,7 @@ export default {
               this.emitDone()
               this.error = null
             } catch (e) {
-              this.error = e
+              if (e instanceof Error) this.error = e
             }
           }
         }
@@ -103,7 +119,7 @@ export default {
       this.$emit('cancel')
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

@@ -45,11 +45,12 @@
   </el-dialog>
 </template>
 
-<script>
-import KqiDeleteButton from '@/components/KqiDeleteButton'
-import KqiDangerButton from '@/components/KqiDangerButton'
+<script lang="ts">
+import Vue from 'vue'
+import KqiDeleteButton from '@/components/KqiDeleteButton.vue'
+import KqiDangerButton from '@/components/KqiDangerButton.vue'
 
-export default {
+export default Vue.extend({
   components: {
     KqiDeleteButton,
     KqiDangerButton,
@@ -101,7 +102,7 @@ export default {
       this.$emit('submit')
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

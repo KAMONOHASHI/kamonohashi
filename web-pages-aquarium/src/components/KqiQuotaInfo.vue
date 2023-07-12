@@ -15,24 +15,35 @@
   </div>
 </template>
 
-<script>
-import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
+<script lang="ts">
+import Vue from 'vue'
+import { PropType } from 'vue'
 
-export default {
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
+
+export default Vue.extend({
   components: {
     KqiDisplayTextForm,
   },
   props: {
     quota: {
-      type: Object,
-      default: () => ({
+      type: Object as PropType<{
+        cpu: null | number
+        memory: null | number
+        gpu: null | number
+      }>,
+      default: (): {
+        cpu: null | number
+        memory: null | number
+        gpu: null | number
+      } => ({
         cpu: null,
         memory: null,
         gpu: null,
       }),
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped></style>

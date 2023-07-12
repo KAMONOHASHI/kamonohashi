@@ -32,17 +32,30 @@
   </div>
 </template>
 
-<script>
-import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
+<script lang="ts">
+import Vue from 'vue'
+import { PropType } from 'vue'
 
-export default {
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
+
+export default Vue.extend({
   components: {
     KqiDisplayTextForm,
   },
   props: {
     training: {
-      type: Object,
-      default: () => ({
+      type: Object as PropType<{
+        id: number
+        name: string
+        status: string
+        memo: string
+      }>,
+      default: (): {
+        id: number
+        name: string
+        status: string
+        memo: string
+      } => ({
         id: 0,
         name: '',
         status: '',
@@ -50,7 +63,7 @@ export default {
       }),
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

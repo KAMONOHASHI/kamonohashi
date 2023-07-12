@@ -155,10 +155,19 @@
   </el-form-item>
 </template>
 
-<script>
-import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
-
-export default {
+<script lang="ts">
+import Vue from 'vue'
+import * as gen from '@/api/api.generate'
+import { PropType } from 'vue'
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
+interface DataType {
+  listLoading: boolean
+  repositoryCreated: boolean
+  repositoryValueKey: string
+  containsPastCommit: boolean
+  filteredOptions: Array<any>
+}
+export default Vue.extend({
   components: {
     KqiDisplayTextForm,
   },
@@ -166,36 +175,56 @@ export default {
   props: {
     // gitサーバ一覧
     gits: {
-      type: Array,
+      type: Array as PropType<
+        Array<
+          gen.NssolPlatypusApiModelsAccountApiModelsGitCredentialOutputModel
+        >
+      >,
       default: () => {
         return []
       },
     },
     // リポジトリ一覧
     repositories: {
-      type: Array,
+      type: Array as PropType<
+        Array<gen.NssolPlatypusServiceModelsGitRepositoryModel>
+      >,
       default: () => {
         return []
       },
     },
     // ブランチ一覧
     branches: {
-      type: Array,
+      type: Array as PropType<
+        Array<gen.NssolPlatypusServiceModelsGitBranchModel>
+      >,
       default: () => {
         return []
       },
     },
     // コミット一覧
     commits: {
-      type: Array,
+      type: Array as PropType<
+        Array<gen.NssolPlatypusServiceModelsGitCommitModel>
+      >,
       default: () => {
         return []
       },
     },
     // 選択されたgitサーバ、リポジトリ、ブランチ、コミットをvalueで保持
     value: {
-      type: Object,
-      default: () => {
+      type: Object as PropType<{
+        git: gen.NssolPlatypusApiModelsAccountApiModelsGitCredentialOutputModel | null
+        repository: gen.NssolPlatypusServiceModelsGitRepositoryModel | null
+        branch: gen.NssolPlatypusServiceModelsGitBranchModel | null
+        commit: null | gen.NssolPlatypusServiceModelsGitCommitModel
+      }>,
+      default: (): {
+        git: gen.NssolPlatypusApiModelsAccountApiModelsGitCredentialOutputModel | null
+        repository: gen.NssolPlatypusServiceModelsGitRepositoryModel | null
+        branch: gen.NssolPlatypusServiceModelsGitBranchModel | null
+        commit: null | gen.NssolPlatypusServiceModelsGitCommitModel
+      } => {
         return {
           git: null,
           repository: null,
@@ -219,7 +248,7 @@ export default {
     },
   },
 
-  data() {
+  data(): DataType {
     return {
       // popover（コミットID一覧等）の「ローディング中」 文字列の表示制御
       listLoading: false,
@@ -237,7 +266,7 @@ export default {
       let msg = ''
       if (this.commits.length > 0 && this.value.commit) {
         let index = this.commits.findIndex(
-          commit => commit.commitId === this.value.commit.commitId,
+          commit => commit.commitId! === this.value.commit!.commitId!,
         )
         if (index === 0) {
           msg = `最新のコミットです。`
@@ -263,7 +292,7 @@ export default {
         if (this.commits.length > 0) {
           // コミット一覧に含まれていないコミットの場合、一覧に追加する。
           let index = this.commits.findIndex(
-            commit => commit.commitId === this.value.commit.commitId,
+            commit => commit.commitId === this.value.commit!.commitId,
           )
           if (index < 0) {
             this.containsPastCommit = true
@@ -271,36 +300,42 @@ export default {
         }
 
         let commitId = this.$refs.commitId
+        //@ts-ignore
         commitId.$el.childNodes[1].childNodes[1].placeholder = this.createCommitIdAndComment(
-          this.value.commit.commitId,
-          this.value.commit.committerName,
-          this.value.commit.comment,
+          this.value.commit.commitId!,
+          this.value.commit.committerName!,
+          this.value.commit.comment!,
         )
+        //@ts-ignore
         commitId.$el.childNodes[1].childNodes[1].value = this.createCommitIdAndComment(
-          this.value.commit.commitId,
-          this.value.commit.committerName,
-          this.value.commit.comment,
+          this.value.commit.commitId!,
+          this.value.commit.committerName!,
+          this.value.commit.comment!,
         )
-
+        //@ts-ignore
         this.$refs.commitId.$forceUpdate()
       }
     },
   },
   methods: {
-    changeGit(git) {
+    changeGit(
+      git: gen.NssolPlatypusApiModelsAccountApiModelsGitCredentialOutputModel,
+    ) {
       let gitModel = this.value
       if (git === '') {
         // clearボタンが押下された場合
         gitModel.git = null
       } else {
-        gitModel.git = git
+        gitModel!.git! = git
       }
       this.$emit('input', gitModel)
       this.$emit('selectGit', git === '' ? null : git.id)
     },
 
     // 選択しているリポジトリが切り替わった時に呼ばれるイベントハンドラ。
-    changeRepository(repository) {
+    changeRepository(
+      repository: gen.NssolPlatypusServiceModelsGitRepositoryModel,
+    ) {
       let gitModel = this.value
       if (repository === '') {
         // clearボタンが押下された場合
@@ -320,7 +355,7 @@ export default {
     },
 
     // 選択しているブランチが切り替わった時に呼ばれるイベントハンドラ。
-    changeBranch(branch) {
+    changeBranch(branch: gen.NssolPlatypusServiceModelsGitBranchModel) {
       let gitModel = this.value
       if (branch === '') {
         // clearボタンが押下された場合
@@ -337,7 +372,7 @@ export default {
       return
     },
     // 選択しているコミットが切り替わった時に呼ばれるイベントハンドラ。
-    changeCommit(commit) {
+    changeCommit(commit: gen.NssolPlatypusServiceModelsGitCommitModel) {
       let gitModel = this.value
       this.filteredOptions = [...this.commits]
       if (commit === '') {
@@ -352,20 +387,22 @@ export default {
     visibleChangeCommit() {
       if (this.value.commit != null) {
         let commitId = this.$refs.commitId
+        //@ts-ignore
         commitId.$el.childNodes[1].childNodes[1].placeholder = this.createCommitIdAndComment(
-          this.value.commit.commitId,
-          this.value.commit.committerName,
-          this.value.commit.comment,
+          this.value.commit.commitId!,
+          this.value.commit.committerName!,
+          this.value.commit.comment!,
         )
+        //@ts-ignore
         commitId.$el.childNodes[1].childNodes[1].value = this.createCommitIdAndComment(
-          this.value.commit.commitId,
-          this.value.commit.committerName,
-          this.value.commit.comment,
+          this.value.commit.commitId!,
+          this.value.commit.committerName!,
+          this.value.commit.comment!,
         )
       }
     },
 
-    commitIdFilter(query) {
+    commitIdFilter(query: string) {
       let ret = []
       if (query == '') {
         //フィルタが空の場合はすべての選択肢を表示する
@@ -375,9 +412,9 @@ export default {
         //フィルタが空でない場合は部分一致する選択肢を表示する
         for (let i in this.commits) {
           if (
-            this.commits[i].commitId
-              .toLowerCase()
-              .indexOf(query.toLowerCase()) > -1
+            this.commits[i]!.commitId!.toLowerCase().indexOf(
+              query.toLowerCase(),
+            ) > -1
           ) {
             ret.push(this.commits[i])
           }
@@ -392,7 +429,11 @@ export default {
     },
 
     // コミットidとコミットメッセージを組み合わせたメッセージを生成する
-    createCommitIdAndComment(commitId, committerName, comment) {
+    createCommitIdAndComment(
+      commitId: string,
+      committerName: string,
+      comment: string,
+    ) {
       if (comment === null || comment.length === 0) {
         return (
           commitId.slice(0, 10) +
@@ -421,7 +462,7 @@ export default {
       }
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped></style>

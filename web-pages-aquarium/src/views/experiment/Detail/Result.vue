@@ -45,13 +45,29 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue'
+
 import { createNamespacedHelpers } from 'vuex'
 import AqualiumTensorboardHandler from './AqualiumTensorboardHandler.vue'
 const { mapGetters, mapActions } = createNamespacedHelpers('experiment')
 
-export default {
-  title: '実験結果',
+interface DataType {
+  importfile: any //TODO使用していない？
+  labelName: Array<string>
+  tesorboardVisible: boolean
+  outputValue: any //TODO使用していない？
+  matrixdata: Array<{
+    true: string
+    labelname1: number
+    labelname2: number
+    labelname3: number
+    labelname4: number
+    labelname5: number
+  }>
+}
+
+export default Vue.extend({
   components: { AqualiumTensorboardHandler },
   props: {
     id: {
@@ -59,7 +75,7 @@ export default {
       default: null,
     },
   },
-  data() {
+  data(): DataType {
     return {
       importfile: null,
       labelName: [
@@ -122,7 +138,7 @@ export default {
   methods: {
     ...mapActions(['fetchDetail']),
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

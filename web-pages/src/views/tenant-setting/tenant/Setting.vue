@@ -53,29 +53,59 @@
   </div>
 </template>
 
-<script>
-import KqiDisplayError from '@/components/KqiDisplayError'
-import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
-import KqiGitEndpointSelector from '@/components/selector/KqiGitEndpointSelector'
-import KqiRegistryEndpointSelector from '@/components/selector/KqiRegistryEndpointSelector'
+<script lang="ts">
+import Vue from 'vue'
+import KqiDisplayError from '@/components/KqiDisplayError.vue'
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
+import KqiGitEndpointSelector from '@/components/selector/KqiGitEndpointSelector.vue'
+import KqiRegistryEndpointSelector from '@/components/selector/KqiRegistryEndpointSelector.vue'
 import { mapGetters, mapActions } from 'vuex'
 import validator from '@/util/validator'
-
+interface DataType {
+  error: null | Error
+  form: {
+    id: null | string
+    name: string
+    displayName: string
+    gitEndpoint: {
+      selectedIds: Array<number>
+      defaultId: null | number
+    }
+    registry: {
+      selectedIds: Array<number>
+      defaultId: null | number
+    }
+    storageId: null | number
+    availableInfiniteTimeNotebook: boolean
+  }
+  rules: {
+    displayName: Array<typeof formRule>
+    gitEndpoint: {
+      required: boolean
+      trigger: string
+      validator: Function
+    }
+    registry: {
+      required: boolean
+      validator: Function
+      trigger: string
+    }
+  }
+}
 const formRule = {
   required: true,
   trigger: 'blur',
   message: '必須項目です',
 }
 
-export default {
-  title: '接続テナント設定',
+export default Vue.extend({
   components: {
     KqiDisplayError,
     KqiDisplayTextForm,
     KqiGitEndpointSelector,
     KqiRegistryEndpointSelector,
   },
-  data() {
+  data(): DataType {
     return {
       error: null,
 
@@ -111,6 +141,7 @@ export default {
   },
   computed: {
     ...mapGetters({
+      //@ts-ignore
       tenant: ['tenant/detail'],
       gitEndpoints: ['git/endpoints'],
       registryEndpoints: ['registry/registries'],
@@ -142,11 +173,12 @@ export default {
         this.form.availableInfiniteTimeNotebook = this.tenant.availableInfiniteTimeNotebook
         this.error = null
       } catch (e) {
-        this.error = e
+        if (e instanceof Error) this.error = e
       }
     },
     async saveData() {
       let form = this.$refs.editForm
+      //@ts-ignore
       await form.validate(async valid => {
         if (valid) {
           try {
@@ -167,13 +199,13 @@ export default {
             this.retrieveData()
             this.error = null
           } catch (e) {
-            this.error = e
+            if (e instanceof Error) this.error = e
           }
         }
       })
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

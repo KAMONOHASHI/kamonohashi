@@ -22,7 +22,8 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue'
 import '@/xterm.css'
 import { Terminal } from 'xterm'
 import { AttachAddon } from 'xterm-addon-attach'
@@ -30,15 +31,22 @@ import { FitAddon } from 'xterm-addon-fit'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('account')
 
-let socket
-export default {
+let socket: WebSocket | null
+interface DataType {
+  type: null | string
+  dialogVisible: boolean
+  error: null | Error
+  title: null | string
+  intervalId: number
+}
+export default Vue.extend({
   props: {
     id: {
       type: String,
       default: null,
     },
   },
-  data() {
+  data(): DataType {
     return {
       type: null,
       dialogVisible: true,
@@ -84,7 +92,7 @@ export default {
       const fitAddon = new FitAddon()
       term.loadAddon(fitAddon)
       term.setOption('cursorBlink', true)
-      term.open(document.getElementById('terminal'))
+      term.open(document.getElementById('terminal')!)
       fitAddon.fit()
 
       try {
@@ -117,7 +125,7 @@ export default {
         }
         if (socket) {
           this.intervalId = setInterval(() => {
-            socket.send('')
+            socket!.send('')
           }, 30000)
         }
       } catch (e) {
@@ -125,7 +133,7 @@ export default {
       }
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

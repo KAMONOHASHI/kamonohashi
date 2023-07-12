@@ -125,11 +125,55 @@
   </div>
 </template>
 
-<script>
-import KqiDisplayError from '@/components/KqiDisplayError'
-import KqiPagination from '@/components/KqiPagination'
+<script lang="ts">
+import Vue from 'vue'
+
+import KqiDisplayError from '@/components/KqiDisplayError.vue'
+import KqiPagination from '@/components/KqiPagination.vue'
 import { mapActions, mapGetters } from 'vuex'
-export default {
+import * as gen from '@/api/api.generate'
+interface DataType {
+  oldDataSetE: any
+  oldVersionE: any
+  listType: null | string
+  direction: null | string
+  selectedDataSet: null | gen.NssolPlatypusApiModelsAquariumDataSetApiModelsIndexOutputModel
+  selectedDataSetName: null | string | undefined
+  selectedVersion: null | gen.NssolPlatypusApiModelsAquariumDataSetApiModelsVersionIndexOutputModel
+  selectedVersionName: null | number | undefined
+  searchCondition: { page?: number; perPage?: number; withTotal?: boolean }
+  pageStatus: {
+    currentPage: number
+    currentPageSize: number
+  }
+  drawer: boolean
+  templateName: null | string
+  selectResource: number
+  form: {
+    name: null | string
+    selectedDataSetVersionName: null | string
+    templateVersionValue: null | number
+  }
+  title: string
+  dialogVisible: boolean
+  error: null | Error
+  isCreateDialog: boolean
+  rules: {
+    name: Array<{ required: boolean; trigger: string; message: string }>
+    selectedDataSetVersionName: Array<{
+      required: boolean
+      trigger: string
+      message: string
+    }>
+    templateVersionValue: Array<{
+      required: boolean
+      trigger: string
+      message: string
+    }>
+  }
+}
+
+export default Vue.extend({
   components: {
     KqiDisplayError,
     KqiPagination,
@@ -140,7 +184,7 @@ export default {
       default: null,
     },
   },
-  data() {
+  data(): DataType {
     return {
       oldDataSetE: null,
       oldVersionE: null,
@@ -180,6 +224,7 @@ export default {
   },
   computed: {
     ...mapGetters({
+      //@ts-ignore
       versions: ['aquariumDataSet/versions'],
       dataSets: ['aquariumDataSet/dataSets'],
       total: ['aquariumDataSet/total'],
@@ -254,7 +299,10 @@ export default {
       this.selectedDataSetName = null
     },
     //データセット一覧からデータセットを選択
-    selectDataSet(item, e) {
+    selectDataSet(
+      item: gen.NssolPlatypusApiModelsAquariumDataSetApiModelsIndexOutputModel,
+      e: any,
+    ) {
       //元のactiveを外す
       if (this.oldDataSetE) {
         this.oldDataSetE.target.classList.remove('active-li')
@@ -264,7 +312,10 @@ export default {
       this.selectedDataSet = item
       this.selectedDataSetName = item.name
     },
-    selectVersion(item, e) {
+    selectVersion(
+      item: gen.NssolPlatypusApiModelsAquariumDataSetApiModelsVersionIndexOutputModel,
+      e: any,
+    ) {
       //元のactiveを外す
       if (this.oldVersionE) {
         this.oldVersionE.target.classList.remove('active-li')
@@ -277,8 +328,8 @@ export default {
     //選択ボタン押下
     async select() {
       if (this.listType == 'dataSet') {
-        if (this.selectedDataSet.id != null) {
-          await this['aquariumDataSet/fetchVersions'](this.selectedDataSet.id)
+        if (this.selectedDataSet!.id != null) {
+          await this['aquariumDataSet/fetchVersions'](this.selectedDataSet!.id)
           this.selectedVersionName = null
 
           this.listType = 'version'
@@ -287,7 +338,7 @@ export default {
         if (this.selectedVersionName != null) {
           this.form.selectedDataSetVersionName =
             'dataset id:' +
-            this.selectedDataSet.id +
+            this.selectedDataSet!.id +
             ' dataset name:' +
             this.selectedDataSetName +
             ' version:' +
@@ -301,13 +352,14 @@ export default {
     },
     async submit() {
       let form = this.$refs.createForm
+      //@ts-ignore
       await form.validate(async valid => {
         if (valid) {
           try {
             let params = {
               name: this.form.name,
-              dataSetId: this.selectedVersion.aquariumDataSetId,
-              dataSetVersionId: this.selectedVersion.id,
+              dataSetId: this.selectedVersion!.aquariumDataSetId,
+              dataSetVersionId: this.selectedVersion!.id,
               templateId: this.templateId,
               templateVersionId: this.form.templateVersionValue,
               options: null,
@@ -317,13 +369,13 @@ export default {
             this.$emit('done')
             this.error = null
           } catch (e) {
-            this.error = e
+            if (e instanceof Error) this.error = e
           }
         }
       })
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

@@ -89,16 +89,49 @@
   </kqi-dialog>
 </template>
 
-<script>
-import KqiDialog from '@/components/KqiDialog'
-import KqiDisplayError from '@/components/KqiDisplayError'
-import KqiUploadForm from '@/components/KqiUploadForm'
+<script lang="ts">
+import Vue from 'vue'
+import KqiDialog from '@/components/KqiDialog.vue'
+import KqiDisplayError from '@/components/KqiDisplayError.vue'
+import KqiUploadForm from '@/components/KqiUploadForm.vue'
 import { mapActions, mapGetters } from 'vuex'
-import KqiPagination from '@/components/KqiPagination'
+import KqiPagination from '@/components/KqiPagination.vue'
 //import { createNamespacedHelpers } from 'vuex'
 //const { mapGetters, mapActions } = createNamespacedHelpers('aquariumDataSet')
+import * as gen from '@/api/api.generate'
+interface DataType {
+  importfile: null
+  submitText: string
+  type: string
+  loading: boolean
+  fileNumLimit: number
+  form: {
+    name: string
+    //datalist: Array<any> //TODO 使用していない？
+  }
+  title: string
+  isCreateDialog: boolean
+  isCopyCreation: boolean
+  isLocked: boolean
+  dialogVisible: boolean
+  error: null | Error
+  rules: {
+    name: Array<{ required: boolean; trigger: string; message: string }>
+  }
+  searchCondition: {
+    perPage?: number
+    page?: number
+    withTotal?: boolean
+  }
+  dataPageStatus: {
+    currentPage: number
+    currentPageSize: number
+  }
+  checkList: Array<gen.NssolPlatypusApiModelsDataSetApiModelsIndexOutputModel>
+  datas: Array<gen.NssolPlatypusApiModelsDataSetApiModelsIndexOutputModel>
+}
 
-export default {
+export default Vue.extend({
   components: {
     KqiDialog,
     KqiDisplayError,
@@ -106,7 +139,7 @@ export default {
     KqiPagination,
   },
 
-  data() {
+  data(): DataType {
     return {
       importfile: null,
       submitText: '新規登録',
@@ -115,7 +148,7 @@ export default {
       fileNumLimit: 10000,
       form: {
         name: '',
-        datalist: [],
+        //datalist: [],//TODO 使用していない？
       },
       title: '',
       isCreateDialog: false,
@@ -137,6 +170,7 @@ export default {
   },
   computed: {
     ...mapGetters({
+      //@ts-ignore
       registries: ['aquariumDataSet/detail'],
       uploadedFiles: ['data/uploadedFiles'],
       dataTotal: ['data/total'],
@@ -167,7 +201,7 @@ export default {
       'data/fetchData',
     ]),
 
-    async deleteAttachedFile(fileId) {
+    async deleteAttachedFile(fileId: number) {
       try {
         await this.deleteFile({
           id: this.id,
@@ -176,7 +210,7 @@ export default {
         this.retrieveData()
         this.error = null
       } catch (e) {
-        this.error = e
+        if (e instanceof Error) this.error = e
       }
     },
     async initialize() {
@@ -200,12 +234,15 @@ export default {
     async submit() {
       let form = this.$refs.createForm
       if (this.importfile == 1) {
+        //@ts-ignore
         await form.validate(async valid => {
           if (valid) {
             this.$store.commit('setLoading', false)
             this.loading = true
             if (
+              //@ts-ignore
               this.$refs.uploadForm._data.selectedFiles == null ||
+              //@ts-ignore
               this.$refs.uploadForm._data.selectedFiles.length == 0
             ) {
               this.error = new Error('ファイルを選択してください')
@@ -218,7 +255,7 @@ export default {
               this.$emit('done')
               this.error = null
             } catch (e) {
-              this.error = e
+              if (e instanceof Error) this.error = e
             } finally {
               // 共通側ローディングを再度有効化
               this.loading = false
@@ -227,6 +264,7 @@ export default {
           }
         })
       } else if (this.importfile == 2) {
+        //@ts-ignore
         await form.validate(async valid => {
           if (valid) {
             this.$store.commit('setLoading', false)
@@ -236,7 +274,7 @@ export default {
               this.$emit('done')
               this.error = null
             } catch (e) {
-              this.error = e
+              if (e instanceof Error) this.error = e
             } finally {
               this.loading = false
               this.$store.commit('setLoading', true)
@@ -246,6 +284,7 @@ export default {
       }
     },
 
+    /** //TODO 不要？？
     // ファイルリストの×を押下した時
     handleRemove: function(file, fileList) {
       this.form.datalist = fileList
@@ -254,9 +293,9 @@ export default {
     handleAdd: function(file, fileList) {
       this.form.datalist = fileList
     },
-
+    */
     // データファイルのアップロード
-    async updateData(filename) {
+    async updateData(filename: string) {
       let model = {
         name: filename,
         memo: '',
@@ -268,9 +307,9 @@ export default {
       return result.id
     },
 
-    async uploadFile(datasetname) {
+    async uploadFile(datasetname: string) {
       //データファイルのアップロード
-
+      //@ts-ignore
       let dataFileInfos = await this.$refs.uploadForm.uploadFile()
 
       let dataId = null
@@ -333,15 +372,15 @@ export default {
         await this.delete(this.id)
         this.$emit('done', 'delete')
       } catch (e) {
-        this.error = e
+        if (e instanceof Error) this.error = e
       }
     },
 
-    handleShowData(id) {
+    handleShowData(id: number) {
       this.$router.push(`/data/edit/${id}`)
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>
