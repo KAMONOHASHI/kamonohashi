@@ -6,4 +6,4 @@ A python client SDK for KAMONOHASHI. To install kamonohashi-sdk, use pip:
 $ pip install kamonohashi-sdk
 ```
 
-It supports python 3.5 and later.
+It supports python 3.8 and later.
