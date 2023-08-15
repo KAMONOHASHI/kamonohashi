@@ -159,12 +159,34 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue'
+
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('resource')
 
-export default {
-  data: function() {
+interface DataType {
+  // コンテナリソース
+  allContainersStartDate: Date | string
+  allContainersEndDate: Date | string
+  containersCount: string
+  containersHistoryStartDate: null | Date
+  containersHistoryEndDate: null | Date
+  containersHeader: boolean
+  containersDeleteEndDate: null | Date
+
+  // ジョブ実行履歴
+  allJobsStartDate: Date | string
+  allJobsEndDate: Date | string
+  jobsCount: string
+  jobsHistoryStartDate: null | Date
+  jobsHistoryEndDate: null | Date
+  jobsHeader: boolean
+  jobsDeleteEndDate: null | Date
+}
+
+export default Vue.extend({
+  data(): DataType {
     return {
       // コンテナリソース
       allContainersStartDate: '　',
@@ -221,7 +243,7 @@ export default {
       })
       let link = document.createElement('a')
       link.href = window.URL.createObjectURL(blob)
-      let date = new Date()
+      let date: Date | string = new Date()
       date =
         date.getFullYear() +
         ('0' + (date.getMonth() + 1)).slice(-2) +
@@ -283,7 +305,7 @@ export default {
       })
       let link = document.createElement('a')
       link.href = window.URL.createObjectURL(blob)
-      let date = new Date()
+      let date: Date | string = new Date()
       date =
         date.getFullYear() +
         ('0' + (date.getMonth() + 1)).slice(-2) +
@@ -327,7 +349,7 @@ export default {
         .catch(() => {})
     },
   },
-}
+})
 </script>
 
 <style scoped>

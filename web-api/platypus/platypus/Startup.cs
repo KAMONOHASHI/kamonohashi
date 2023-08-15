@@ -347,6 +347,9 @@ namespace Nssol.Platypus
 
                         // integrate xml comments
                         options.IncludeXmlComments(XmlCommentsFilePath);
+                        options.CustomSchemaIds(
+                            type => type.FullName.Replace('+', '_').Replace('`', '_').Replace("[[System.String, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]", "_")//TODO tokenは 正規表現化する
+                        );
                     });
             }
 
@@ -437,7 +440,8 @@ namespace Nssol.Platypus
                     app.UseSwagger(options =>
                     {
                         // 2.0系への下位互換をサポートする
-                        options.SerializeAsV2 = true;
+                        //options.SerializeAsV2 = true;
+                        options.SerializeAsV2 = false;
                     });
 
                     app.UseSwaggerUI(options =>

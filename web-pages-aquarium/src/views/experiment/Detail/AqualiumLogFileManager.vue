@@ -22,12 +22,14 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue'
+
 import { createNamespacedHelpers } from 'vuex'
 import KqiDownloadButton from '../../../components/KqiDownloadButton.vue'
 const { mapGetters, mapActions } = createNamespacedHelpers('experiment')
 
-export default {
+export default Vue.extend({
   components: { KqiDownloadButton },
   props: {
     experimentPreprocessHistoryId: {
@@ -65,7 +67,7 @@ export default {
       }
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped></style>

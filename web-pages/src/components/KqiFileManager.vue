@@ -40,13 +40,15 @@
   </div>
 </template>
 
-<script>
-import KqiDownloadButton from '@/components/KqiDownloadButton'
-import KqiDeleteButton from '@/components/KqiDeleteButton'
-import KqiUploadForm from '@/components/KqiUploadForm'
-import KqiDisplayImageButton from '@/components/KqiDisplayImageButton'
-
-export default {
+<script lang="ts">
+import Vue from 'vue'
+import { PropType } from 'vue'
+import KqiDownloadButton from '@/components/KqiDownloadButton.vue'
+import KqiDeleteButton from '@/components/KqiDeleteButton.vue'
+import KqiUploadForm from '@/components/KqiUploadForm.vue'
+import KqiDisplayImageButton from '@/components/KqiDisplayImageButton.vue'
+import * as gen from '@/api/api.generate'
+export default Vue.extend({
   name: 'FileManager',
   components: {
     KqiDownloadButton,
@@ -56,7 +58,9 @@ export default {
   },
   props: {
     uploadedFiles: {
-      type: Array,
+      type: Array as PropType<
+        Array<gen.NssolPlatypusApiModelsDataApiModelsDataFileOutputModel>
+      >,
       default: () => {
         return []
       },
@@ -73,14 +77,16 @@ export default {
   methods: {
     async uploadFile() {
       if (this.$refs.uploadForm) {
+        //@ts-ignore
         let fileInfo = await this.$refs.uploadForm.uploadFile()
         return fileInfo
       }
     },
     selectedFilesLength() {
+      //@ts-ignore
       return this.$refs.uploadForm.selectedFilesLength()
     },
-    isImage(fileName) {
+    isImage(fileName: string) {
       return (
         fileName.endsWith('.png') ||
         fileName.endsWith('.jpg') ||
@@ -90,7 +96,7 @@ export default {
       )
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped></style>

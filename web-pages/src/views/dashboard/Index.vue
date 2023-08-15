@@ -39,19 +39,20 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue'
+
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters } = createNamespacedHelpers('account')
 
-export default {
-  title: 'ダッシュボード',
+export default Vue.extend({
   data() {
     return {}
   },
   computed: {
     ...mapGetters(['menuList']),
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

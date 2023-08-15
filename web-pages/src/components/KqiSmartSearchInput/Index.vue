@@ -61,21 +61,55 @@
     />
   </span>
 </template>
+<script lang="ts">
+import Vue from 'vue'
+import { PropType } from 'vue'
+import SmartSearchInputText from './InputText.vue'
+import SmartSearchInputNumber from './InputNumber.vue'
+import SmartSearchInputDate from './InputDate.vue'
+import SmartSearchInputSelect from './InputSelect.vue'
 
-<script>
-import SmartSearchInputText from './InputText'
-import SmartSearchInputNumber from './InputNumber'
-import SmartSearchInputDate from './InputDate'
-import SmartSearchInputSelect from './InputSelect'
+interface Tag {
+  component:
+    | null
+    | typeof SmartSearchInputText
+    | typeof SmartSearchInputNumber
+    | typeof SmartSearchInputDate
+    | typeof SmartSearchInputSelect
+  config: {
+    type: string
+    name: string
+    prop: string
+    multiple: boolean
+    disabled: boolean
+    option: { default: string }
+  }
+  prefix: string
+  value: string
+  suffix: string
+  input?: boolean
 
-export default {
+  display?: any
+}
+interface DataType {
+  dynamicTags: Array<Tag>
+}
+export default Vue.extend({
   props: {
     value: {
-      type: Object,
+      type: Object as PropType<any>,
       default: () => ({}),
     },
     configs: {
-      type: Array,
+      type: Array as PropType<
+        Array<{
+          prop: string
+          name: string
+          type: string
+          disabled: boolean
+          option: { default: string }
+        }>
+      >,
       default: () => [
         {
           prop: 'id',
@@ -112,7 +146,7 @@ export default {
       default: false,
     },
   },
-  data() {
+  data(): DataType {
     return {
       dynamicTags: [],
     }
@@ -125,12 +159,21 @@ export default {
   },
   methods: {
     // 使用している検索条件の解除
-    handleClose(tag) {
+    handleClose(tag: Tag) {
       this.handleInputCancel(tag)
     },
 
     // 検索条件の追加
-    handlePlus(config) {
+    handlePlus(config: {
+      type: string
+      name: string
+      prop: string
+      multiple: boolean
+      disabled: boolean
+      option: {
+        default: string
+      }
+    }) {
       let component = null
       if (config.type === 'text') component = SmartSearchInputText
       if (config.type === 'number') component = SmartSearchInputNumber
@@ -148,8 +191,13 @@ export default {
     },
 
     // 検索に使用する条件の選択
-    handleEdit(tag) {
-      let component = null
+    handleEdit(tag: Tag) {
+      let component:
+        | null
+        | typeof SmartSearchInputText
+        | typeof SmartSearchInputNumber
+        | typeof SmartSearchInputDate
+        | typeof SmartSearchInputSelect = null
       if (tag.config.type === 'text') component = SmartSearchInputText
       if (tag.config.type === 'number') component = SmartSearchInputNumber
       if (tag.config.type === 'date') component = SmartSearchInputDate
@@ -169,11 +217,12 @@ export default {
 
     //検索条件のリストを開く
     openDropDown() {
+      //@ts-ignore
       this.$refs.inputSpace.$el.click()
     },
 
     // 下位コンポーネントから'done'を受け取った場合、追加した検索条件を使用して再検索
-    handleInputDone(tag, event) {
+    handleInputDone(tag: Tag, event: any) {
       tag.input = false
       tag.value = event.value
       tag.display = event.display
@@ -191,8 +240,10 @@ export default {
             }
           }
         }
+        // eslint-disable-next-line vue/no-mutating-props
         this.value[tag.config.prop] = currentValue
       } else {
+        // eslint-disable-next-line vue/no-mutating-props
         this.value[tag.config.prop] = event.value
         tag.config.disabled = true
       }
@@ -201,7 +252,7 @@ export default {
     },
 
     // 対象の検索条件を解除して再検索
-    handleInputCancel(tag) {
+    handleInputCancel(tag: Tag) {
       this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1)
 
       if (tag.config.multiple) {
@@ -209,8 +260,10 @@ export default {
         let currentValue = this.value[tag.config.prop]
         currentValue.splice(currentValue.indexOf(tag.value), 1)
         if (currentValue.length > 0) {
+          // eslint-disable-next-line vue/no-mutating-props
           this.value[tag.config.prop] = currentValue
         } else {
+          // eslint-disable-next-line vue/no-mutating-props
           this.value[tag.config.prop] = null
         }
       } else {
@@ -224,11 +277,11 @@ export default {
     emitSearch() {
       this.$emit('search')
     },
-    emitValue(v) {
+    emitValue(v: any) {
       this.$emit('input', v)
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

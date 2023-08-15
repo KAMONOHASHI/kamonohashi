@@ -24,18 +24,19 @@
   </span>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue from 'vue'
+export default Vue.extend({
   props: {
     title: { type: String, default: 'title' },
     buttonLabel: { type: String, default: '' },
   },
-  data() {
+  data(): { dialogVisible: boolean } {
     return {
       dialogVisible: false,
     }
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

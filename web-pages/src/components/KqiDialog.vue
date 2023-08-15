@@ -45,11 +45,13 @@
   </el-dialog>
 </template>
 
-<script>
-import KqiDeleteButton from '@/components/KqiDeleteButton'
-import KqiDangerButton from '@/components/KqiDangerButton'
+<script lang="ts">
+import Vue from 'vue'
+import { PropType } from 'vue'
+import KqiDeleteButton from '@/components/KqiDeleteButton.vue'
+import KqiDangerButton from '@/components/KqiDangerButton.vue'
 
-export default {
+export default Vue.extend({
   components: {
     KqiDeleteButton,
     KqiDangerButton,
@@ -68,7 +70,10 @@ export default {
       default: '登録',
     },
     disabledParams: {
-      type: Object,
+      type: Object as PropType<{
+        deleteButton: boolean
+        submitButton: boolean
+      }>,
       default() {
         return {
           deleteButton: false,
@@ -101,7 +106,7 @@ export default {
       this.$emit('submit')
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-mutating-props -->
 <!-- 
   KQIではコンテナの情報設定で使用するリポジトリ一覧、ブランチ一覧などはVuexのストアを用いて管理しているが、
   アクアリウムではコンポーネント内で直接apiを呼び値を保持することにする。
@@ -6,6 +7,12 @@
   KQIではリポジトリ一覧、ブランチ一覧などは1画面あたり1データしか持たないが、アクアリウムのテンプレート作成と
   テンプレート登録では、前処理、学習、推論の3項目についてそれぞれ独立した値を保持する必要がある。
   そのため、Vuexのストアを用いると意図しない参照が起こるため。
+-->
+<!--
+  多数の@ts-ignoreで型エラーを回避しているのは
+  computed句に「...mapGetters」以外の変数があるせいか、
+  「this.form」などの箇所がすべて型エラーとなるため。
+  当初はthisを(this as any)で回避しようとしたが別のエラーが残り使用できなかった。
 -->
 <template>
   <div>
@@ -140,14 +147,62 @@
   </div>
 </template>
 
-<script>
-import KqiContainerSelector from '@/components/selector/KqiContainerSelector'
-import KqiGitSelector from '@/components/selector/KqiGitSelector'
-import KqiResourceSelector from '@/components/selector/KqiResourceSelector'
+<script lang="ts">
+import Vue from 'vue'
+import { PropType } from 'vue'
+
+import KqiContainerSelector from '@/components/selector/KqiContainerSelector.vue'
+import KqiGitSelector from '@/components/selector/KqiGitSelector.vue'
+import KqiResourceSelector from '@/components/selector/KqiResourceSelector.vue'
 import api from '@/api/api'
 import { mapActions, mapGetters } from 'vuex'
-export default {
-  title: 'モデルテンプレート',
+import * as gen from '@/api/api.generate'
+type ContainerImage = {
+  registry:
+    | string
+    | null
+    | {
+        id: number
+        name: string
+      }
+  registryId?: number
+  image: string | null
+  tag: string | null
+  token: string | null
+}
+type GitModel = {
+  git: null | gen.NssolPlatypusApiModelsAccountApiModelsGitCredentialOutputModel
+  gitId?: number
+  repository: null | gen.NssolPlatypusServiceModelsGitRepositoryModel | string
+  owner?: string | null
+  branch: null | gen.NssolPlatypusServiceModelsGitBranchModel | string
+  commit: null | gen.NssolPlatypusServiceModelsGitCommitModel
+  token: null | string
+  commitId?: string
+}
+
+interface DataType {
+  commitsList: Array<gen.NssolPlatypusServiceModelsGitCommitModel>
+  commitsPage: number
+  rules: {
+    containerImage: Array<{
+      required: boolean
+      trigger: string
+      message: string
+    }>
+  }
+  error: null | Error
+  isPatch: boolean
+  images: Array<string>
+  tags: Array<string>
+  repositories: Array<gen.NssolPlatypusServiceModelsGitRepositoryModel>
+  branches: Array<gen.NssolPlatypusServiceModelsGitBranchModel>
+  commits: Array<gen.NssolPlatypusServiceModelsGitCommitModel>
+  commitDetail: null | gen.NssolPlatypusServiceModelsGitCommitModel
+  updateValue: boolean
+}
+
+export default Vue.extend({
   components: {
     KqiContainerSelector,
     KqiGitSelector,
@@ -155,8 +210,26 @@ export default {
   },
   props: {
     value: {
-      type: Object,
-      default: () => {
+      type: Object as PropType<{
+        containerImage: ContainerImage | null
+        gitModel: GitModel | null
+        entryPoint: string
+        resource: {
+          cpu: number
+          memory: number
+          gpu: number
+        }
+      }>,
+      default: (): {
+        containerImage: ContainerImage | null
+        gitModel: GitModel | null
+        entryPoint: string
+        resource: {
+          cpu: number
+          memory: number
+          gpu: number
+        }
+      } => {
         return {
           containerImage: {
             registry: null,
@@ -196,7 +269,7 @@ export default {
       default: '',
     },
   },
-  data() {
+  data(): DataType {
     return {
       commitsList: [],
       commitsPage: 1,
@@ -218,15 +291,6 @@ export default {
   },
   computed: {
     // レジストリサーバ、gitサーバ周りはコンテナ単位で共通のためstoreされた値を使用する
-    ...mapGetters({
-      registries: ['registrySelector/registries'],
-      defaultRegistryId: ['registrySelector/defaultRegistryId'],
-      gits: ['gitSelector/gits'],
-      defaultGitId: ['gitSelector/defaultGitId'],
-      quota: ['cluster/quota'],
-      loadingRepositories: ['gitSelector/loadingRepositories'],
-      searchCommitDetail: ['gitSelector/commitDetail'],
-    }),
     form: {
       get() {
         return this.value
@@ -235,6 +299,16 @@ export default {
         this.$emit('input', value)
       },
     },
+    ...mapGetters({
+      //@ts-ignore
+      registries: ['registrySelector/registries'],
+      defaultRegistryId: ['registrySelector/defaultRegistryId'],
+      gits: ['gitSelector/gits'],
+      defaultGitId: ['gitSelector/defaultGitId'],
+      quota: ['cluster/quota'],
+      loadingRepositories: ['gitSelector/loadingRepositories'],
+      searchCommitDetail: ['gitSelector/commitDetail'],
+    }),
   },
   watch: {
     async value() {
@@ -258,27 +332,41 @@ export default {
       if (this.createTemplate) {
         // 更新フラグがfalseの時、新規作成と判断する。（formのコピーは実行されていない）
         if (!this.updateValue) {
-          this.form.containerImage.registry = this.registries.find(registry => {
-            return registry.id === this.defaultRegistryId
-          })
-          this.form.gitModel.git = this.gits.find(git => {
-            return git.id === this.defaultGitId
-          })
+          //@ts-ignore
+          this.form.containerImage.registry = this.registries.find(
+            (
+              registry: gen.NssolPlatypusApiModelsAccountApiModelsRegistryCredentialOutputModel,
+            ) => {
+              //@ts-ignore
+              return registry.id === this.defaultRegistryId
+            },
+          )
+          //@ts-ignore
+          this.form.gitModel.git = this.gits.find(
+            (
+              git: gen.NssolPlatypusApiModelsAccountApiModelsGitCredentialOutputModel,
+            ) => {
+              //@ts-ignore
+              return git.id === this.defaultGitId
+            },
+          )
         }
       }
 
       // 以下はテンプレート詳細画面で開かれた場合
-      const gitModel = { ...this.value.gitModel }
-      const containerImage = { ...this.value.containerImage }
+      const gitModel = { ...this.value.gitModel! }
+      const containerImage = { ...this.value.containerImage! }
 
       await this.setupFromContainerImage(containerImage)
+      //@ts-ignore
       await this.setupFormGitModel(gitModel)
-
+      //@ts-ignore
       this.form.entryPoint = this.value.entryPoint
+      //@ts-ignore
       this.form.resource = { ...this.value.resource }
       this.updateValue = false
     },
-    copy(from) {
+    copy(from: string) {
       let formtype = ''
       if (this.formType == '前処理') {
         formtype = 'preprocessing'
@@ -294,7 +382,8 @@ export default {
       this.$emit('copy', { from: from, to: formtype })
     },
     // テンプレート詳細画面の場合にコンテナイメージの初期情報を設定する
-    async setupFromContainerImage(containerImage) {
+    async setupFromContainerImage(containerImage: ContainerImage) {
+      //@ts-ignore
       this.form.containerImage = {
         registry: null,
         image: null,
@@ -308,9 +397,15 @@ export default {
         Object.keys(containerImage).length == 0 ||
         containerImage.registry === null
       ) {
-        this.form.containerImage.registry = this.registries.find(registry => {
-          return registry.id == this.defaultRegistryId
-        })
+        //@ts-ignore
+        this.form.containerImage.registry = this.registries.find(
+          (
+            registry: gen.NssolPlatypusApiModelsAccountApiModelsRegistryCredentialOutputModel,
+          ) => {
+            //@ts-ignore
+            return registry.id == this.defaultRegistryId
+          },
+        )
         return
       }
 
@@ -318,20 +413,24 @@ export default {
       if (containerImage.registryId != null) {
         await this.selectRegistry(containerImage.registryId)
       } else {
-        await this.selectRegistry(containerImage.registry.id)
+        if (typeof containerImage.registry != 'string') {
+          await this.selectRegistry(containerImage.registry.id!)
+        }
       }
       await this.selectImage(containerImage.image)
       // タグ一覧に該当のタグがない場合、タグを追加して選択
       if (
-        !this.tags.includes(containerImage.tag) &&
+        !this.tags.includes(containerImage.tag!) &&
         containerImage.tag !== null
       ) {
         this.tags.push(containerImage.tag)
       }
+      //@ts-ignore
       this.form.containerImage.tag = containerImage.tag
     },
     // テンプレート詳細画面の場合にgit情報の詳細を設定する
-    async setupFormGitModel(gitModel) {
+    async setupFormGitModel(gitModel: GitModel) {
+      //@ts-ignore
       this.form.gitModel = {
         git: null,
         repository: null,
@@ -346,24 +445,35 @@ export default {
         Object.keys(gitModel).length == 0 ||
         gitModel.git === null
       ) {
-        this.form.gitModel.git = this.gits.find(git => {
-          return git.id == this.defaultGitId
-        })
+        //@ts-ignore
+        this.form.gitModel.git = this.gits.find(
+          (
+            git: gen.NssolPlatypusApiModelsAccountApiModelsGitCredentialOutputModel,
+          ) => {
+            //@ts-ignore
+            return git.id == this.defaultGitId
+          },
+        )
         return
       }
-      let commitId = null
+      let commitId: string | null = null
       if (gitModel.gitId != null) {
         await this.selectGit(gitModel.gitId)
         await this.selectRepository(gitModel.owner + '/' + gitModel.repository)
-        await this.selectBranch(gitModel.branch)
-        commitId = gitModel.commitId
+        await this.selectBranch(gitModel.branch as string)
+        commitId = gitModel.commitId!
       } else {
-        await this.selectGit(gitModel.git.id)
-        await this.selectRepository(
-          gitModel.repository.owner + '/' + gitModel.repository.name,
+        await this.selectGit(gitModel.git.id!)
+        if (typeof gitModel.repository != 'string') {
+          await this.selectRepository(
+            gitModel.repository!.owner + '/' + gitModel.repository!.name,
+          )
+        }
+        await this.selectBranch(
+          (gitModel.branch as gen.NssolPlatypusServiceModelsGitBranchModel)
+            .branchName!,
         )
-        await this.selectBranch(gitModel.branch.branchName)
-        commitId = gitModel.commit.commitId
+        commitId = gitModel.commit!.commitId!
       }
 
       // commitを抽出
@@ -375,42 +485,57 @@ export default {
       }
 
       if (commit) {
+        //@ts-ignore
         this.form.gitModel.commit = commit
       } else {
         // コミット一覧に含まれないコミットなので、コミット情報を新たに取得する
         let params = {
+          //@ts-ignore
           gitId: this.form.gitModel.git.id,
+          //@ts-ignore
           owner: this.form.gitModel.repository.owner,
+          //@ts-ignore
           repositoryName: this.form.gitModel.repository.name,
           commitId: commitId,
         }
+
+        //@ts-ignore
         let commitDetail = (await api.git.getCommit(params)).data
+        //@ts-ignore
         this.form.gitModel.commit = commitDetail
       }
     },
     // レジストリサーバーを選択する
-    async selectRegistry(registryId) {
+    async selectRegistry(registryId: null | number) {
       // 過去の選択を削除
+
+      //@ts-ignore
       this.form.containerImage.registry = null
-      this.form.containerImage.image = null
-      this.form.containerImage.tag = null
+      //@ts-ignore
+      this.form.containerImage.image = this.form.containerImage.tag = null
       this.images = []
       this.tags = []
 
       // 選択したレジストリをフォームに設定し、イメージの一覧をapi経由で取得する
       if (registryId !== null) {
-        this.form.containerImage.registry = this.registries.find(registry => {
-          return registry.id == registryId
-        })
+        //@ts-ignore
+        this.form.containerImage.registry = this.registries.find(
+          (registry: { id: number }) => {
+            return registry.id == registryId
+          },
+        )
         this.images = (
           await api.registry.getImages({ registryId: registryId })
         ).data
       }
     },
     // イメージを選択
-    async selectImage(image) {
+    async selectImage(image: null | string) {
       // 過去の選択を削除
-      this.form.containerImage.imatge = null
+
+      //@ts-ignore
+      this.form.containerImage.image = null
+      //@ts-ignore
       this.form.containerImage.tag = null
       this.tags = []
 
@@ -423,21 +548,27 @@ export default {
       if (!this.images.includes(image)) {
         this.images.push(image)
       }
+      //@ts-ignore
       this.form.containerImage.image = image
 
       // tagの一覧をapi経由で取得する
       let params = {
+        //@ts-ignore
         registryId: this.form.containerImage.registry.id,
         image: image,
       }
       this.tags = (await api.registry.getTags(params)).data
     },
     // gitサーバーを選択
-    async selectGit(gitId) {
+    async selectGit(gitId: null | number) {
       // 過去の選択をリセット
+      //@ts-ignore
       this.form.gitModel.git = null
+      //@ts-ignore
       this.form.gitModel.repository = null
+      //@ts-ignore
       this.form.gitModel.branch = null
+      //@ts-ignore
       this.form.gitModel.commit = null
       this.repositories = []
       this.branches = []
@@ -446,17 +577,21 @@ export default {
       // クリアされた場合は何もしない
       // そうでない場合はgitサーバーを設定してapi経由でリポジトリ一覧を取得
       if (gitId !== null) {
-        this.form.gitModel.git = this.gits.find(git => {
+        //@ts-ignore
+        this.form.gitModel.git = this.gits.find((git: { id: number }) => {
           return git.id == gitId
         })
         this.repositories = (await api.git.getRepos({ gitId: gitId })).data
       }
     },
     // リポジトリを選択
-    async selectRepository(repository) {
+    async selectRepository(repository: string | null) {
       // 過去の選択をリセット
+      //@ts-ignore
       this.form.gitModel.repository = null
+      //@ts-ignore
       this.form.gitModel.branch = null
+      //@ts-ignore
       this.form.gitModel.commit = null
       this.branches = []
       this.commits = []
@@ -483,6 +618,7 @@ export default {
           }
         } else {
           // 構文エラー
+          //@ts-ignore
           this.$notify.error({
             message:
               '{owner}/{name}の形式で入力してください。例：KAMONOHASHI/tutorial',
@@ -492,10 +628,12 @@ export default {
       } else {
         argRepository = repository
       }
+      //@ts-ignore
       this.form.gitModel.repository = argRepository
 
       // ブランチの一覧をapi経由で取得する
       let params = {
+        //@ts-ignore
         gitId: this.form.gitModel.git.id,
         owner: argRepository.owner,
         repositoryName: argRepository.name,
@@ -503,38 +641,51 @@ export default {
       this.branches = (await api.git.getBranches(params)).data
     },
     // ブランチを選択
-    async selectBranch(branchName) {
+    async selectBranch(branchName: null | string) {
       // コミットページを元に戻す
+      //@ts-ignore
       this.commitsPage = 1
       // 過去の選択をリセット
+      //@ts-ignore
       this.form.gitModel.branch = null
-      this.form.gitModel.commit = null
+
+      //@ts-ignorethis.form.gitModel.commit = null
       this.commits = []
 
       // クリアでない場合には設定してコミット一覧を取得する
       if (branchName !== null) {
-        this.form.gitModel.branch = this.branches.find(branch => {
-          return branch.branchName == branchName
-        })
+        //@ts-ignore
+        this.form.gitModel.branch = this.branches.find(
+          (branch: gen.NssolPlatypusServiceModelsGitBranchModel) => {
+            return branch.branchName == branchName
+          },
+        )
         let params = {
+          //@ts-ignore
           gitId: this.form.gitModel.git.id,
+          //@ts-ignore
           owner: this.form.gitModel.repository.owner,
+          //@ts-ignore
           repositoryName: this.form.gitModel.repository.name,
           branch: branchName,
-          page: this.commitsPage,
+          page: String(this.commitsPage),
         }
         this.commits = (await api.git.getCommits(params)).data
         this.commitsList = [...this.commits]
       }
     },
-    async searchCommitId(commitId) {
+    async searchCommitId(commitId: string) {
       await this['gitSelector/fetchCommitDetail']({
+        //@ts-ignore
         gitId: this.form.gitModel.git.id,
+        //@ts-ignore
         repository: this.form.gitModel.repository,
         commitId: commitId,
       })
 
+      //@ts-ignore
       if (this.searchCommitDetail != null) {
+        //@ts-ignore
         this.form.gitModel.commit = this.searchCommitDetail
       }
     },
@@ -542,11 +693,15 @@ export default {
     async getMoreCommits() {
       this.commitsPage++
       let params = {
+        //@ts-ignore
         gitId: this.form.gitModel.git.id,
+        //@ts-ignore
         owner: this.form.gitModel.repository.owner,
+        //@ts-ignore
         repositoryName: this.form.gitModel.repository.name,
+        //@ts-ignore
         branch: this.form.gitModel.branch.branchName,
-        page: this.commitsPage,
+        page: String(this.commitsPage),
       }
       this.commits = (await api.git.getCommits(params)).data
 
@@ -555,6 +710,7 @@ export default {
     // apiでテンプレートを登録するための入力値チェックを行い、formの中身を成形する
     async prepareSubmit() {
       // 入力値チェック
+      // eslint-disable-next-line no-useless-catch
       try {
         if (this.requiredForm) {
           await this.prepareSubmitRequired()
@@ -567,39 +723,58 @@ export default {
       }
 
       // 入力なしの場合はnullを返却する
+      //@ts-ignore
       if (this.form.containerImage.image === null) {
         return {
           entryPoint: null,
           containerImage: null,
           gitModel: null,
+          //@ts-ignore
           cpu: this.form.resource.cpu,
+          //@ts-ignore
           memory: this.form.resource.memory,
+          //@ts-ignore
           gpu: this.form.resource.gpu,
         }
       }
 
       // フォームを成形して返却
       return {
+        //@ts-ignore
         entryPoint: this.form.entryPoint,
         containerImage: {
+          //@ts-ignore
           token: this.form.containerImage.token,
+          //@ts-ignore
           registryId: this.form.containerImage.registry.id,
+          //@ts-ignore
           image: this.form.containerImage.image,
+          //@ts-ignore
           tag: this.form.containerImage.tag,
         },
         gitModel: {
+          //@ts-ignore
           token: this.form.gitModel.token,
+          //@ts-ignore
           gitId: this.form.gitModel.git.id,
+          //@ts-ignore
           repository: this.form.gitModel.repository.name,
+          //@ts-ignore
           owner: this.form.gitModel.repository.owner,
+          //@ts-ignore
           branch: this.form.gitModel.branch.branchName,
           commitId:
+            //@ts-ignore
             this.form.gitModel.commit === null
               ? this.commitsList[0].commitId
-              : this.form.gitModel.commit.commitId,
+              : //@ts-ignore
+                this.form.gitModel.commit.commitId,
         },
+        //@ts-ignore
         cpu: this.form.resource.cpu,
+        //@ts-ignore
         memory: this.form.resource.memory,
+        //@ts-ignore
         gpu: this.form.resource.gpu,
       }
     },
@@ -607,17 +782,27 @@ export default {
     async prepareSubmitRequired() {
       if (
         // 学習コンテナイメージ設定
+        //@ts-ignore
         this.form.containerImage === null ||
+        //@ts-ignore
         this.form.containerImage.registry === null ||
+        //@ts-ignore
         this.form.containerImage.image === null ||
+        //@ts-ignore
         this.form.containerImage.tag === null ||
         // 学習Git設定
+        //@ts-ignore
         this.form.gitModel === null ||
+        //@ts-ignore
         this.form.gitModel.git === null ||
+        //@ts-ignore
         this.form.gitModel.repository === null ||
+        //@ts-ignore
         this.form.gitModel.branch === null ||
         // 実行コマンド
+        //@ts-ignore
         this.form.entryPoint === null ||
+        //@ts-ignore
         this.form.entryPoint === ''
       ) {
         throw '必須項目が入力されていません : ' +
@@ -628,21 +813,34 @@ export default {
     // 任意項目 (前処理、評価) に関する入力値チェック
     async prepareSubmitNotRequired() {
       if (
+        //@ts-ignore
         (this.form.containerImage.image !== null ||
+          //@ts-ignore
           this.form.gitModel.repository !== null ||
+          //@ts-ignore
           (this.form.entryPoint !== null && this.form.entryPoint !== '')) &&
         // コンテナイメージ設定
+        //@ts-ignore
         (this.form.containerImage === null ||
+          //@ts-ignore
           this.form.containerImage.registry === null ||
+          //@ts-ignore
           this.form.containerImage.image === null ||
+          //@ts-ignore
           this.form.containerImage.tag === null ||
+          //@ts-ignore
           // Git設定
           this.form.gitModel === null ||
+          //@ts-ignore
           this.form.gitModel.git === null ||
+          //@ts-ignore
           this.form.gitModel.repository === null ||
+          //@ts-ignore
           this.form.gitModel.branch === null ||
+          //@ts-ignore
           // 実行コマンド
           this.form.entryPoint === null ||
+          //@ts-ignore
           this.form.entryPoint === '')
       ) {
         throw this.formType +
@@ -656,7 +854,7 @@ export default {
       'gitSelector/fetchCommitDetail',
     ]),
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

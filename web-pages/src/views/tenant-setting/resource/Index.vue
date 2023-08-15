@@ -25,17 +25,21 @@
   </div>
 </template>
 
-<script>
-import KqiQuotaInfo from '@/components/KqiQuotaInfo'
+<script lang="ts">
+import Vue from 'vue'
+import KqiQuotaInfo from '@/components/KqiQuotaInfo.vue'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('cluster')
 
-export default {
-  title: 'テナントリソース管理',
+interface DataType {
+  mode?: string
+}
+
+export default Vue.extend({
   components: {
     KqiQuotaInfo,
   },
-  data: function() {
+  data(): DataType {
     return {
       mode: '',
     }
@@ -69,7 +73,7 @@ export default {
       }
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

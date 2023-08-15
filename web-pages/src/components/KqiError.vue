@@ -55,10 +55,9 @@
   </div>
 </template>
 
-<script>
-export default {
-  title: 'エラー',
-
+<script lang="ts">
+import Vue from 'vue'
+export default Vue.extend({
   data() {
     return {
       url: this.$route.query.url,
@@ -73,7 +72,7 @@ export default {
       this.message = this.$route.query.message
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

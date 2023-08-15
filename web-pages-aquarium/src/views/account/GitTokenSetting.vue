@@ -44,19 +44,31 @@
   </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue from 'vue'
+import { PropType } from 'vue'
+import * as gen from '@/api/api.generate'
+
+export default Vue.extend({
   props: {
     // git一覧
     gits: {
-      type: Array,
+      type: Array as PropType<
+        Array<
+          gen.NssolPlatypusApiModelsAccountApiModelsGitCredentialOutputModel
+        >
+      >,
       default: () => {
         return []
       },
     },
     // 選択したgit情報
     value: {
-      type: Object,
+      type: Object as PropType<{
+        id?: number
+        name?: string
+        token?: string | null
+      }>,
       default: () => ({
         id: 0,
         name: '',
@@ -65,7 +77,7 @@ export default {
     },
   },
   methods: {
-    selectedGitChange(gitName) {
+    selectedGitChange(gitName: string) {
       let form = Object.assign({}, this.value)
       form.name = gitName
 
@@ -78,13 +90,13 @@ export default {
       this.$emit('input', form)
     },
 
-    tokenChange(token) {
+    tokenChange(token: string) {
       let form = Object.assign({}, this.value)
       form.token = token
       this.$emit('input', form)
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

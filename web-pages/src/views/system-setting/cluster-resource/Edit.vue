@@ -20,13 +20,21 @@
   </el-dialog>
 </template>
 
-<script>
-import KqiDisplayError from '@/components/KqiDisplayError'
-import ContainerInfo from '@/views/common/ContainerInfo'
+<script lang="ts">
+import Vue from 'vue'
+import KqiDisplayError from '@/components/KqiDisplayError.vue'
+import ContainerInfo from '@/views/common/ContainerInfo.vue'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('resource')
 
-export default {
+interface DataType {
+  error: null | Error
+  dialogVisible: boolean
+  filename: string
+  exists: boolean
+}
+
+export default Vue.extend({
   components: {
     KqiDisplayError,
     ContainerInfo,
@@ -41,7 +49,7 @@ export default {
       default: null,
     },
   },
-  data() {
+  data(): DataType {
     return {
       error: null,
       dialogVisible: true,
@@ -68,7 +76,7 @@ export default {
         await this.fetchDetail(params)
         this.error = null
       } catch (e) {
-        this.error = e
+        if (e instanceof Error) this.error = e
       }
     },
 
@@ -97,8 +105,10 @@ export default {
           }
 
           let a = document.getElementById('download')
-          a.download = this.filename
-          a.href =
+          //@ts-ignore
+          a!.download = this.filename
+          //@ts-ignore
+          a!.href =
             'data:application/octet-stream,' +
             encodeURIComponent(this.containerLog)
         } else {
@@ -108,7 +118,7 @@ export default {
 
         this.error = null
       } catch (e) {
-        this.error = e
+        if (e instanceof Error) this.error = e
       }
     },
 
@@ -122,7 +132,7 @@ export default {
         this.emitDone()
         this.error = null
       } catch (e) {
-        this.error = e
+        if (e instanceof Error) this.error = e
       }
     },
 
@@ -139,7 +149,7 @@ export default {
       this.$emit('cancel')
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

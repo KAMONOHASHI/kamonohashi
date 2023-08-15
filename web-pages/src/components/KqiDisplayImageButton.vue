@@ -18,10 +18,16 @@
   </span>
 </template>
 
-<script>
-import { mapActions } from 'vuex'
+<script lang="ts">
+import Vue from 'vue'
 
-export default {
+import { mapActions } from 'vuex'
+interface DataType {
+  show: boolean
+  size: number
+}
+
+export default Vue.extend({
   props: {
     downloadUrl: {
       type: String,
@@ -48,7 +54,7 @@ export default {
       default: '',
     },
   },
-  data() {
+  data(): DataType {
     return {
       show: this.showImage,
       size: this.fileSize,
@@ -85,7 +91,7 @@ export default {
       }
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

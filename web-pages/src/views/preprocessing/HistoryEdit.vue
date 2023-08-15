@@ -94,15 +94,25 @@
   </el-dialog>
 </template>
 
-<script>
-import KqiDisplayError from '@/components/KqiDisplayError'
-import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
-import KqiDeleteButton from '@/components/KqiDeleteButton'
-import KqiDownloadButton from '@/components/KqiDownloadButton'
+<script lang="ts">
+import Vue from 'vue'
+import KqiDisplayError from '@/components/KqiDisplayError.vue'
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
+import KqiDeleteButton from '@/components/KqiDeleteButton.vue'
+import KqiDownloadButton from '@/components/KqiDownloadButton.vue'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('preprocessing')
 
-export default {
+//import * as gen from '@/api/api.generate'
+interface DataType {
+  dialogVisible: boolean
+  preprocessingId: null | number
+  viewDataIds: boolean
+  outputDataIds: null | Array<number>
+  error: Error | null
+}
+
+export default Vue.extend({
   components: {
     KqiDisplayError,
     KqiDisplayTextForm,
@@ -119,7 +129,7 @@ export default {
       default: null,
     },
   },
-  data() {
+  data(): DataType {
     return {
       dialogVisible: true,
       preprocessingId: null,
@@ -154,10 +164,11 @@ export default {
     ]),
 
     async changeValue() {
-      this.dataName = ''
-      this.preprocessName = ''
-      this.createdAt = ''
-      this.status = ''
+      //TODO 使用していない変数名4行 すべて削除したい
+      //this.dataName = ''
+      //this.preprocessName = ''
+      //this.createdAt = ''
+      //this.status = ''
 
       if (this.id && this.dataId) {
         try {
@@ -175,7 +186,7 @@ export default {
             this.outputDataIds = this.historyDetail.outputDataIds
           }
         } catch (e) {
-          this.error = e
+          if (e instanceof Error) this.error = e
         }
       }
     },
@@ -186,7 +197,7 @@ export default {
         this.$emit('done', 'delete')
         this.error = null
       } catch (e) {
-        this.error = e
+        if (e instanceof Error) this.error = e
       }
     },
 
@@ -199,7 +210,7 @@ export default {
     emitLog() {
       this.$emit('log', { id: this.id, dataId: this.dataId })
     },
-    redirectDataEdit(dataId) {
+    redirectDataEdit(dataId: number) {
       this.$router.push('/data/edit/' + dataId)
     },
 
@@ -207,7 +218,7 @@ export default {
       this.$emit('cancel')
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

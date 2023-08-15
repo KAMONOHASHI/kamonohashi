@@ -94,11 +94,23 @@
   </span>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue from 'vue'
+import { PropType } from 'vue'
+import * as gen from '@/api/api.generate'
+
+export default Vue.extend({
   props: {
     value: {
-      type: Object,
+      type: Object as PropType<{
+        selectedTenantIds: Array<number>
+        selectedTenants: Array<{
+          tenantId: number
+          tenantName: string
+          selectedRoleIds: Array<number>
+          default: boolean
+        }>
+      }>,
       default: () => {
         return {
           selectedTenantIds: [], // 選択されたテナントID一覧
@@ -108,21 +120,33 @@ export default {
     },
     // 選択可能なテナントの配列
     tenants: {
-      type: Array,
+      type: Array as PropType<
+        Array<gen.NssolPlatypusApiModelsTenantApiModelsIndexOutputModel>
+      >,
       default: () => {
         return []
       },
     },
     // 選択可能なロールの配列
     roles: {
-      type: Array,
+      type: Array as PropType<
+        Array<gen.NssolPlatypusApiModelsRoleApiModelsIndexOutputModel>
+      >,
       default: () => {
         return []
       },
     },
     // LDAP経由で所属しているテナント情報
     notOriginTenants: {
-      type: Object,
+      type: Object as PropType<{
+        selectedTenantIds: Array<number>
+        selectedTenants: Array<{
+          tenantId: number
+          tenantName: string
+          selectedRoleIds: Array<number>
+          default: boolean
+        }>
+      }>,
       default: () => {
         return {
           selectedTenantIds: [],
@@ -143,12 +167,18 @@ export default {
     // ...
     // ]
     rolesOfTenant() {
-      let rolesOfTenant = []
+      let rolesOfTenant: Array<{
+        tenantId: number
+        tenantName: string
+        roles: Array<gen.NssolPlatypusApiModelsRoleApiModelsIndexOutputModel>
+        selectedRoleIds: Array<number>
+        default: boolean
+      }> = []
       this.tenants.forEach(tenant => {
         // 選択済みのテナントについて、それぞれ設定
-        if (this.value.selectedTenantIds.includes(tenant.id)) {
+        if (this.value.selectedTenantIds.includes(tenant.id!)) {
           // システムロール以外のロールの抽出
-          let tmpRoles = []
+          let tmpRoles: Array<gen.NssolPlatypusApiModelsRoleApiModelsIndexOutputModel> = []
           this.roles.forEach(role => {
             if (!role.isSystemRole) {
               tmpRoles.push(role)
@@ -156,7 +186,7 @@ export default {
           })
 
           // 選択済みのロールの設定
-          let selectedRoleIds = []
+          let selectedRoleIds: Array<number> = []
           let isDefaultTenant = false
           this.value.selectedTenants.forEach(selectedTenant => {
             if (selectedTenant.tenantId === tenant.id) {
@@ -168,8 +198,8 @@ export default {
           })
 
           let element = {
-            tenantId: tenant.id,
-            tenantName: tenant.displayName,
+            tenantId: tenant.id!,
+            tenantName: tenant.displayName!,
             roles: tmpRoles,
             selectedRoleIds: selectedRoleIds,
             default: isDefaultTenant,
@@ -181,12 +211,18 @@ export default {
     },
     // LDAP経由で所属しているテナントのロール情報
     noOriginRolesOfTenant() {
-      let noOriginRolesOfTenant = []
+      let noOriginRolesOfTenant: Array<{
+        tenantId: number
+        tenantName: string
+        roles: Array<gen.NssolPlatypusApiModelsRoleApiModelsIndexOutputModel>
+        selectedRoleIds: Array<number>
+        default: boolean
+      }> = []
       this.tenants.forEach(tenant => {
         // 選択済みのテナントについて、それぞれ設定
-        if (this.notOriginTenants.selectedTenantIds.includes(tenant.id)) {
+        if (this.notOriginTenants.selectedTenantIds.includes(tenant.id!)) {
           // システムロール以外のロールの抽出
-          let tmpRoles = []
+          let tmpRoles: Array<gen.NssolPlatypusApiModelsRoleApiModelsIndexOutputModel> = []
           this.roles.forEach(role => {
             if (!role.isSystemRole) {
               tmpRoles.push(role)
@@ -194,7 +230,7 @@ export default {
           })
 
           // 選択済みのロールの設定
-          let selectedRoleIds = []
+          let selectedRoleIds: Array<number> = []
           let isDefaultTenant = false
           this.notOriginTenants.selectedTenants.forEach(selectedTenant => {
             if (selectedTenant.tenantId === tenant.id) {
@@ -206,8 +242,8 @@ export default {
           })
 
           let element = {
-            tenantId: tenant.id,
-            tenantName: tenant.displayName,
+            tenantId: tenant.id!,
+            tenantName: tenant.displayName!,
             roles: tmpRoles,
             selectedRoleIds: selectedRoleIds,
             default: isDefaultTenant,
@@ -219,7 +255,7 @@ export default {
     },
   },
   methods: {
-    async handleTenantChange(selectedIds) {
+    async handleTenantChange(selectedIds: Array<number>) {
       // selectedTenantIdsの変更をemit
       let select = this.value
       select.selectedTenantIds = selectedIds
@@ -234,13 +270,13 @@ export default {
             return tenant.tenantId === id
           })
           // rolesの一番初めの要素を初期選択ロールとする
-          tenantInfo.selectedRoleIds = [tenantInfo.roles[0].id]
-          select.selectedTenants.push(tenantInfo)
+          tenantInfo!.selectedRoleIds = [tenantInfo!.roles[0].id!]
+          select.selectedTenants.push(tenantInfo!)
         }
       })
 
       // selectedTenantsのIDで、selectedIdsの中に存在しないものがあれば削除する
-      let removeTenantIndexList = []
+      let removeTenantIndexList: Array<number> = []
       select.selectedTenants.forEach((tenant, tenantIndex) => {
         let index = selectedIds.indexOf(tenant.tenantId)
         if (index < 0) {
@@ -281,7 +317,13 @@ export default {
       this.$emit('default', selectNotOrigin)
     },
 
-    handleRoleChange(row) {
+    handleRoleChange(row: {
+      tenantId: number
+      tenantName: string
+      roles: Array<gen.NssolPlatypusApiModelsRoleApiModelsIndexOutputModel>
+      selectedRoleIds: Array<number>
+      default: boolean
+    }) {
       // selectedTenantsの変更をemit
       let select = Object.assign({}, this.value)
       let index = select.selectedTenants.findIndex(tenant => {
@@ -291,7 +333,13 @@ export default {
       this.$emit('input', select)
     },
 
-    handleDefaultChange(row) {
+    handleDefaultChange(row: {
+      tenantId: number
+      tenantName: string
+      roles: Array<gen.NssolPlatypusApiModelsRoleApiModelsIndexOutputModel>
+      selectedRoleIds: Array<number>
+      default: boolean
+    }) {
       // defaultの変更をemit
       let select = Object.assign({}, this.value)
       select.selectedTenants.forEach(tenant => {
@@ -313,7 +361,7 @@ export default {
       this.$emit('default', selectNotOrigin)
     },
   },
-}
+})
 </script>
 
 <style scoped>

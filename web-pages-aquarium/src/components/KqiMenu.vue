@@ -59,12 +59,17 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue'
+
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('account')
-
-export default {
-  data() {
+interface DataType {
+  isCollapse: boolean
+  activeIndex: null | string
+}
+export default Vue.extend({
+  data(): DataType {
     return {
       isCollapse: false,
       activeIndex: null,
@@ -106,13 +111,13 @@ export default {
         this.activeIndex += `/${this.$route.path.split('/')[2]}`
       }
     },
-    async handleClick(url) {
+    async handleClick(url: string) {
       if (url) {
         this.$router.push(url)
       }
     },
 
-    handleResize(event) {
+    handleResize(event: any) {
       if (event.currentTarget.innerWidth < 1000) {
         this.isCollapse = true
       } else {
@@ -120,7 +125,7 @@ export default {
       }
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

@@ -63,13 +63,16 @@
   </kqi-dialog>
 </template>
 
-<script>
-import KqiDialog from '@/components/KqiDialog'
-import KqiDisplayError from '@/components/KqiDisplayError'
-import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
-import KqiRoleSelector from '@/components/selector/KqiRoleSelector'
-import TenantRoleSelector from '@/views/system-setting/user/TenantRoleSelector'
+<script lang="ts">
+import Vue from 'vue'
+
+import KqiDialog from '@/components/KqiDialog.vue'
+import KqiDisplayError from '@/components/KqiDisplayError.vue'
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
+import KqiRoleSelector from '@/components/selector/KqiRoleSelector.vue'
+import TenantRoleSelector from '@/views/system-setting/user/TenantRoleSelector.vue'
 import { mapGetters, mapActions } from 'vuex'
+import * as gen from '@/api/api.generate'
 
 const formRule = {
   required: true,
@@ -77,7 +80,53 @@ const formRule = {
   message: '必須項目です',
 }
 
-export default {
+interface DataType {
+  form: {
+    name: string
+    displayName: string
+    serviceType: number
+    displayServiceType: string | number
+    password: [string, string]
+    selectedSystemRoleIds: Array<number>
+    tenants: {
+      selectedTenantIds: Array<number>
+      selectedTenants: Array<{
+        tenantId: number
+        tenantName: string
+        selectedRoleIds: Array<number>
+        default: boolean
+      }>
+      selectedNotOriginTenants?: Array<number>
+    }
+  }
+  rules: {
+    name: Array<typeof formRule>
+    password: [{ required: boolean; trigger: string; validator: Function }]
+    tenants: [{ required: boolean; trigger: string; validator: Function }]
+  }
+  error: null | Error
+  title: null | string
+  deleteButtonParams:
+    | {}
+    | {
+        isDanger: boolean
+        warningText: string
+        confirmText: string
+      }
+  passwordLabel: string
+  isCreateDialog: boolean
+  notOriginTenants: {
+    selectedTenantIds: Array<number>
+    selectedTenants: Array<{
+      tenantId: number
+      tenantName: string
+      selectedRoleIds: Array<number>
+      default: boolean
+    }>
+  }
+}
+
+export default Vue.extend({
   components: {
     KqiDialog,
     KqiDisplayError,
@@ -91,13 +140,16 @@ export default {
       default: null,
     },
   },
-  data() {
+  data(): DataType {
+    //@ts-ignore
     let passwordValidator = (rule, value, callback) => {
       // 作成時はパスワード入力必須
+      //@ts-ignore
       if (this.isCreateDialog && !value[0] && !value[1]) {
         callback(new Error('必須項目です'))
       }
       // 編集時に両方空の場合は、パスワードは未編集とみなして続行
+      //@ts-ignore
       if (this.isEditDialog && !value[0] && !value[1]) {
         callback()
       }
@@ -106,15 +158,21 @@ export default {
       }
       callback()
     }
+    //@ts-ignore
     let tenantsValidator = (rule, value, callback) => {
+      //@ts-ignore
       if (this.form.tenants.selectedTenantIds.length === 0) {
         callback(new Error('必須項目です'))
       } else {
-        this.form.tenants.selectedTenants.forEach(tenant => {
-          if (tenant.selectedRoleIds.length === 0) {
-            callback(new Error('ロールが選択されていないテナントがあります'))
-          }
-        })
+        //@ts-ignore
+        this.form.tenants.selectedTenants.forEach(
+          (tenant: { selectedTenantIds: []; selectedTenants: [] }) => {
+            //@ts-ignore
+            if (tenant.selectedRoleIds.length === 0) {
+              callback(new Error('ロールが選択されていないテナントがあります'))
+            }
+          },
+        )
       }
       callback()
     }
@@ -153,11 +211,12 @@ export default {
   },
   computed: {
     ...mapGetters({
+      //@ts-ignore
       detail: ['user/detail'],
       tenants: ['tenant/tenants'],
       roles: ['role/roles'],
     }),
-    isEditDialog() {
+    isEditDialog(): boolean {
       return !this.isCreateDialog
     },
   },
@@ -175,55 +234,63 @@ export default {
       this.passwordLabel = 'パスワード（変更する場合のみ入力）'
       await this['user/fetchDetail'](this.id)
       try {
+        //@ts-ignore
         this.form.name = this.detail.name
-        this.form.displayName = this.detail.displayName
+        //@ts-ignore
         this.form.serviceType = this.detail.serviceType
         this.form.displayServiceType = this.form.serviceType
         if (this.form.serviceType === 1)
           this.form.displayServiceType = 'ローカル'
         if (this.form.serviceType === 2) this.form.displayServiceType = 'LDAP'
-        this.detail.systemRoles.forEach(s => {
-          this.form.selectedSystemRoleIds.push(s.id)
-        })
+        //@ts-ignore
+        this.detail.systemRoles.forEach(
+          (s: gen.NssolPlatypusInfrastructureInfosRoleInfo) => {
+            this.form.selectedSystemRoleIds.push(s.id!)
+          },
+        )
         this.form.tenants.selectedTenants = []
         this.form.tenants.selectedNotOriginTenants = []
-
-        this.detail.tenants.forEach(tenant => {
-          let selectedRoleIds = []
-          let selectedNotOriginTenants = []
-          tenant.roles.forEach(role => {
-            // KQI上で付与されたロールかどうか
-            if (role.isOrigin) {
-              selectedRoleIds.push(role.id)
+        //@ts-ignore
+        this.detail.tenants.forEach(
+          (tenant: gen.NssolPlatypusInfrastructureInfosTenantInfo) => {
+            let selectedRoleIds: Array<number> = []
+            let selectedNotOriginTenants: Array<number> = []
+            tenant.roles!.forEach(
+              (role: gen.NssolPlatypusInfrastructureInfosRoleInfo) => {
+                // KQI上で付与されたロールかどうか
+                if (role.isOrigin) {
+                  selectedRoleIds.push(role.id!)
+                }
+                // LDAP経由で付与されたロールかどうか
+                if (role.userGroupTanantMapIdLists!.length > 0) {
+                  selectedNotOriginTenants.push(role.id!)
+                }
+              },
+            )
+            // KQI上で参加したテナントかどうか
+            if (tenant.isOrigin) {
+              this.form.tenants.selectedTenants.push({
+                tenantId: tenant.id!,
+                tenantName: tenant.name!,
+                selectedRoleIds: selectedRoleIds,
+                default: tenant.default!,
+              })
+              this.form.tenants.selectedTenantIds.push(tenant.id!)
             }
-            // LDAP経由で付与されたロールかどうか
-            if (role.userGroupTanantMapIdLists.length > 0) {
-              selectedNotOriginTenants.push(role.id)
+            // LDAP経由で参加したテナントかどうか
+            if (selectedNotOriginTenants.length > 0) {
+              this.notOriginTenants.selectedTenants.push({
+                tenantId: tenant.id!,
+                tenantName: tenant.name!,
+                selectedRoleIds: selectedNotOriginTenants!,
+                default: tenant.default!,
+              })
+              this.notOriginTenants.selectedTenantIds.push(tenant.id!)
             }
-          })
-          // KQI上で参加したテナントかどうか
-          if (tenant.isOrigin) {
-            this.form.tenants.selectedTenants.push({
-              tenantId: tenant.id,
-              tenantName: tenant.name,
-              selectedRoleIds: selectedRoleIds,
-              default: tenant.default,
-            })
-            this.form.tenants.selectedTenantIds.push(tenant.id)
-          }
-          // LDAP経由で参加したテナントかどうか
-          if (selectedNotOriginTenants.length > 0) {
-            this.notOriginTenants.selectedTenants.push({
-              tenantId: tenant.id,
-              tenantName: tenant.name,
-              selectedRoleIds: selectedNotOriginTenants,
-              default: tenant.default,
-            })
-            this.notOriginTenants.selectedTenantIds.push(tenant.id)
-          }
-        })
+          },
+        )
 
-        this.form.error = null
+        this.error = null
         this.deleteButtonParams = {
           isDanger: true,
           warningText:
@@ -231,7 +298,7 @@ export default {
           confirmText: this.form.name,
         }
       } catch (e) {
-        this.error = e
+        if (e instanceof Error) this.error = e
       }
     }
   },
@@ -247,10 +314,15 @@ export default {
     ]),
     async submit() {
       let form = this.$refs.createForm
+      //@ts-ignore
       await form.validate(async valid => {
         if (valid) {
           try {
-            let postTenants = []
+            let postTenants: Array<{
+              id: number
+              default: boolean
+              roles: Array<number>
+            }> = []
             this.form.tenants.selectedTenants.forEach(tenant => {
               let postTenant = {
                 id: tenant.tenantId,
@@ -284,7 +356,7 @@ export default {
             this.emitDone()
             this.error = null
           } catch (e) {
-            this.error = e
+            if (e instanceof Error) this.error = e
           }
         }
       })
@@ -295,10 +367,18 @@ export default {
         this.emitDone()
         this.error = null
       } catch (e) {
-        this.error = e
+        if (e instanceof Error) this.error = e
       }
     },
-    setNotOriginTenants(tenants) {
+    setNotOriginTenants(tenants: {
+      selectedTenantIds: Array<number>
+      selectedTenants: Array<{
+        tenantId: number
+        tenantName: string
+        selectedRoleIds: Array<number>
+        default: boolean
+      }>
+    }) {
       this.notOriginTenants = tenants
     },
     emitDone() {
@@ -308,7 +388,7 @@ export default {
       this.$emit('cancel')
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

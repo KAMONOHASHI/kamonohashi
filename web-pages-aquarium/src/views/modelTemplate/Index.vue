@@ -84,18 +84,38 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue'
+
 import { createNamespacedHelpers } from 'vuex'
 // import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index'
 // TODO template API に変更
 const { mapGetters, mapActions } = createNamespacedHelpers('template')
+import * as gen from '@/api/api.generate'
 
-export default {
-  title: 'モデルテンプレート',
+interface DataType {
+  templateList: null | Array<
+    gen.NssolPlatypusApiModelsTemplateApiModelsIndexOutputModel
+  >
+  pageStatus: {
+    currentPage: number
+    currentPageSize: number
+  }
+  unwatchLogin: undefined
+  searchCondition: { page?: number; perPage?: number; withTotal?: boolean }
+  searchConfigs: Array<{
+    prop: string
+    name: string
+    type: string
+    multiple?: boolean
+  }>
+}
+
+export default Vue.extend({
   components: {
     // KqiSmartSearchInput,
   },
-  data() {
+  data(): DataType {
     return {
       templateList: null,
       pageStatus: {
@@ -112,7 +132,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['templates']),
+    ...mapGetters(['templates', 'total']),
   },
   async created() {
     await this.retrieveData()
@@ -120,7 +140,7 @@ export default {
 
   methods: {
     ...mapActions(['fetchModelTemplates']),
-    openDiscriptionURL(url) {
+    openDiscriptionURL(url: string) {
       window.open(url, '_blank')
     },
     async retrieveData() {
@@ -137,7 +157,7 @@ export default {
         this.templateList.push(this.templates[i])
       }
     },
-    urlSplitter(memo, that) {
+    urlSplitter(memo: string, that: any) {
       if (
         memo != null &&
         memo.length > 0 &&
@@ -194,7 +214,7 @@ export default {
       this.pageStatus.currentPage = 1
       await this.retrieveData()
     },
-    async done(type) {
+    async done(type: string) {
       if (type === 'delete') {
         // 削除時、表示していたページにデータが無くなっている可能性がある。
         // 総数 % ページサイズ === 1の時、残り1の状態で削除したため、currentPageが1で無ければ1つ前のページに戻す
@@ -216,7 +236,7 @@ export default {
       this.$router.push('/aquarium/model-template')
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

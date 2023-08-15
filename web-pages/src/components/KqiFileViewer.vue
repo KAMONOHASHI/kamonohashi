@@ -80,21 +80,42 @@
   </div>
 </template>
 
-<script>
-import KqiDisplayImageButton from '@/components/KqiDisplayImageButton'
+<script lang="ts">
+import Vue from 'vue'
 
-export default {
+import { PropType } from 'vue'
+import KqiDisplayImageButton from '@/components/KqiDisplayImageButton.vue'
+interface Datatype {
+  dialogVisible: boolean
+  error?: Error
+  path: string
+}
+export default Vue.extend({
   name: 'FileIndex',
   components: { KqiDisplayImageButton },
   props: {
     fileList: {
-      type: Array,
-      default: () => {
+      type: Array as PropType<
+        Array<{
+          isDirectory: boolean
+          name: string
+          url?: string
+          size?: string
+          lastModified?: string
+        }>
+      >,
+      default: (): Array<{
+        isDirectory: boolean
+        name: string
+        url?: string
+        size?: string
+        lastModified?: string
+      }> => {
         return []
       },
     },
   },
-  data() {
+  data(): Datatype {
     return {
       dialogVisible: true,
       error: undefined,
@@ -102,20 +123,20 @@ export default {
     }
   },
   computed: {
-    navigation() {
+    navigation(): Array<string> {
       return this.path.split('/')
     },
   },
   methods: {
-    async handleNav(path) {
+    async handleNav(path: string) {
       this.path = path
       this.$emit('updatePath', this.path)
     },
-    async handleNavAdd(dir) {
+    async handleNavAdd(dir: string) {
       this.path += dir + '/'
       this.$emit('updatePath', this.path)
     },
-    isImage(fileName) {
+    isImage(fileName: string) {
       return (
         fileName.endsWith('.png') ||
         fileName.endsWith('.jpg') ||
@@ -124,7 +145,7 @@ export default {
         fileName.endsWith('.bmp')
       )
     },
-    checkFileSize(fileSizeString) {
+    checkFileSize(fileSizeString: string) {
       if (fileSizeString.endsWith('Byte') || fileSizeString.endsWith('KB')) {
         return true
       } else {
@@ -134,7 +155,7 @@ export default {
       }
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>
