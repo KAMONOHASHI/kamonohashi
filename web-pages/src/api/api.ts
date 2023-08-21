@@ -216,6 +216,13 @@ let api = {
       accountApi.apiV2AccountWebhookSlackTestPost({
         nssolPlatypusApiModelsAccountApiModelsWebhookModel: params.body,
       }),
+    putDisplayName: (params: {
+      body: gen.NssolPlatypusApiModelsAccountApiModelsDisplayNameInputModel
+    }) =>
+      accountApi.apiV2AccountDisplayNamePut({
+        nssolPlatypusApiModelsAccountApiModelsDisplayNameInputModel:
+          params.body,
+      }),
   },
 
   role: {
@@ -785,7 +792,6 @@ let api = {
           id: params.id,
           body: JSON.stringify(params.body),
         }),
-
       postSyncLdap: (params: {
         body: gen.NssolPlatypusApiModelsUserApiModelsLdapAuthenticationInputModel
       }) =>
@@ -793,6 +799,8 @@ let api = {
           nssolPlatypusApiModelsUserApiModelsLdapAuthenticationInputModel:
             params.body,
         }),
+      putDisplayName: (params: { id: number; body: string }) =>
+        userApi.apiV2AdminUsersIdDisplayNamePut(params),
     },
 
     tenant: {

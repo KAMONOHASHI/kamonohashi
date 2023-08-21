@@ -141,7 +141,7 @@ import DefaultTenantSetting from './DefaultTenantSetting.vue'
 import AccessTokenSetting from './AccessTokenSetting.vue'
 import GitTokenSetting from '@/views/account/GitTokenSetting.vue'
 import RegistryTokenSetting from '@/views/account/RegistryTokenSetting.vue'
-import PasswordSetting from './PasswordSetting.vue'
+import UserSetting from '@/views/account/UserSetting.vue'
 import WebhookSetting from './WebhookSetting.vue'
 import { mapGetters, mapActions } from 'vuex'
 import * as gen from '@/api/api.generate'
@@ -172,6 +172,7 @@ interface DataType {
   }
   passwordChangeEnabled: boolean
   passForm: {
+    displayName: string
     currentPassword: string
     password: [string, string]
   }

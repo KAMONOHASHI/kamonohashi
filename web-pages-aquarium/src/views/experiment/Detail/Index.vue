@@ -30,6 +30,7 @@
 import Vue from 'vue'
 
 import Info from './Info.vue'
+//@ts-ignore
 import Inference from './Inference.vue'
 import Debug from './Debug.vue'
 import * as gen from '@/api/api.generate'

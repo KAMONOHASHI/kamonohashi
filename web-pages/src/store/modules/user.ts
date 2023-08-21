@@ -77,6 +77,7 @@ const actions: ActionTree<StateType, RootState> = {
           roles: Array<number>
         }>
         serviceType: number
+        displayName: string
       }
     },
   ) {

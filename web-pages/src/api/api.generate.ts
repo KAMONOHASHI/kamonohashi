@@ -40,6 +40,12 @@ export interface NssolPlatypusApiModelsAccountApiModelsAccountOutputModel {
      */
     'userName'?: string | null;
     /**
+     * ログインユーザ表示名
+     * @type {string}
+     * @memberof NssolPlatypusApiModelsAccountApiModelsAccountOutputModel
+     */
+    'userDisplayName'?: string | null;
+    /**
      * パスワード変更が可能か
      * @type {boolean}
      * @memberof NssolPlatypusApiModelsAccountApiModelsAccountOutputModel
@@ -63,6 +69,19 @@ export interface NssolPlatypusApiModelsAccountApiModelsAccountOutputModel {
      * @memberof NssolPlatypusApiModelsAccountApiModelsAccountOutputModel
      */
     'tenants'?: Array<NssolPlatypusInfrastructureInfosTenantInfo> | null;
+}
+/**
+ * 
+ * @export
+ * @interface NssolPlatypusApiModelsAccountApiModelsDisplayNameInputModel
+ */
+export interface NssolPlatypusApiModelsAccountApiModelsDisplayNameInputModel {
+    /**
+     * ユーザ表示名
+     * @type {string}
+     * @memberof NssolPlatypusApiModelsAccountApiModelsDisplayNameInputModel
+     */
+    'displayName'?: string | null;
 }
 /**
  * 
@@ -1123,6 +1142,12 @@ export interface NssolPlatypusApiModelsDataApiModelsDetailsOutputModel {
      */
     'tags'?: Array<string> | null;
     /**
+     * 登録者表示名
+     * @type {string}
+     * @memberof NssolPlatypusApiModelsDataApiModelsDetailsOutputModel
+     */
+    'displayNameCreatedBy'?: string | null;
+    /**
      * データファイル名リスト
      * @type {Array<string>}
      * @memberof NssolPlatypusApiModelsDataApiModelsDetailsOutputModel
@@ -1208,6 +1233,12 @@ export interface NssolPlatypusApiModelsDataApiModelsIndexOutputModel {
      * @memberof NssolPlatypusApiModelsDataApiModelsIndexOutputModel
      */
     'displayId'?: number | null;
+    /**
+     * 登録者表示名
+     * @type {string}
+     * @memberof NssolPlatypusApiModelsDataApiModelsIndexOutputModel
+     */
+    'displayNameCreatedBy'?: string | null;
     /**
      * 名前
      * @type {string}
@@ -1503,6 +1534,12 @@ export interface NssolPlatypusApiModelsDataSetApiModelsDetailsOutputModel {
      * @memberof NssolPlatypusApiModelsDataSetApiModelsDetailsOutputModel
      */
     'isFlat'?: boolean;
+    /**
+     * 登録者表示名
+     * @type {string}
+     * @memberof NssolPlatypusApiModelsDataSetApiModelsDetailsOutputModel
+     */
+    'displayNameCreatedBy'?: string | null;
     /**
      * データセットのエントリ。キーにデータ種別、値にデータ情報集合を持つ。
      * @type {{ [key: string]: Array<NssolPlatypusApiModelsDataApiModelsIndexOutputModel>; }}
@@ -2523,6 +2560,12 @@ export interface NssolPlatypusApiModelsInferenceApiModelsInferenceDetailsOutputM
      */
     'startedAt'?: string | null;
     /**
+     * 登録者表示名
+     * @type {string}
+     * @memberof NssolPlatypusApiModelsInferenceApiModelsInferenceDetailsOutputModel
+     */
+    'displayNameCreatedBy'?: string | null;
+    /**
      * コンテナが実行されたノード名
      * @type {string}
      * @memberof NssolPlatypusApiModelsInferenceApiModelsInferenceDetailsOutputModel
@@ -3296,6 +3339,12 @@ export interface NssolPlatypusApiModelsNotebookApiModelsDetailsOutputModel {
      * @memberof NssolPlatypusApiModelsNotebookApiModelsDetailsOutputModel
      */
     'fullName'?: string | null;
+    /**
+     * 登録者表示名
+     * @type {string}
+     * @memberof NssolPlatypusApiModelsNotebookApiModelsDetailsOutputModel
+     */
+    'displayNameCreatedBy'?: string | null;
     /**
      * コンテナ名になる一意識別文字列
      * @type {string}
@@ -4407,6 +4456,12 @@ export interface NssolPlatypusApiModelsResourceApiModelsContainerDetailsForTenan
      */
     'createdBy'?: string | null;
     /**
+     * 実行者表示名
+     * @type {string}
+     * @memberof NssolPlatypusApiModelsResourceApiModelsContainerDetailsForTenantOutputModel
+     */
+    'displayNameCreatedBy'?: string | null;
+    /**
      * 
      * @type {NssolPlatypusInfrastructureTypesContainerType}
      * @memberof NssolPlatypusApiModelsResourceApiModelsContainerDetailsForTenantOutputModel
@@ -4539,6 +4594,12 @@ export interface NssolPlatypusApiModelsResourceApiModelsContainerDetailsOutputMo
      * @memberof NssolPlatypusApiModelsResourceApiModelsContainerDetailsOutputModel
      */
     'displayName'?: string | null;
+    /**
+     * 登録者表示名
+     * @type {string}
+     * @memberof NssolPlatypusApiModelsResourceApiModelsContainerDetailsOutputModel
+     */
+    'displayNameCreatedBy'?: string | null;
 }
 /**
  * 履歴削除の入力モデル
@@ -6371,6 +6432,12 @@ export interface NssolPlatypusApiModelsTrainingApiModelsDetailsOutputModel {
      */
     'completedAt'?: string | null;
     /**
+     * 登録者表示名
+     * @type {string}
+     * @memberof NssolPlatypusApiModelsTrainingApiModelsDetailsOutputModel
+     */
+    'displayNameCreatedBy'?: string | null;
+    /**
      * 開始日時
      * @type {string}
      * @memberof NssolPlatypusApiModelsTrainingApiModelsDetailsOutputModel
@@ -7025,6 +7092,12 @@ export interface NssolPlatypusApiModelsUserApiModelsCreateInputModel {
      */
     'name': string;
     /**
+     * 表示名
+     * @type {string}
+     * @memberof NssolPlatypusApiModelsUserApiModelsCreateInputModel
+     */
+    'displayName'?: string | null;
+    /**
      * パスワード
      * @type {string}
      * @memberof NssolPlatypusApiModelsUserApiModelsCreateInputModel
@@ -7155,6 +7228,12 @@ export interface NssolPlatypusApiModelsUserApiModelsIndexForAdminOutputModel {
      */
     'name'?: string | null;
     /**
+     * 表示名
+     * @type {string}
+     * @memberof NssolPlatypusApiModelsUserApiModelsIndexForAdminOutputModel
+     */
+    'displayName'?: string | null;
+    /**
      * 
      * @type {NssolPlatypusInfrastructureTypesAuthServiceType}
      * @memberof NssolPlatypusApiModelsUserApiModelsIndexForAdminOutputModel
@@ -7215,6 +7294,12 @@ export interface NssolPlatypusApiModelsUserApiModelsIndexForTenantOutputModel {
      * @memberof NssolPlatypusApiModelsUserApiModelsIndexForTenantOutputModel
      */
     'name'?: string | null;
+    /**
+     * 表示名
+     * @type {string}
+     * @memberof NssolPlatypusApiModelsUserApiModelsIndexForTenantOutputModel
+     */
+    'displayName'?: string | null;
     /**
      * 
      * @type {NssolPlatypusInfrastructureTypesAuthServiceType}
@@ -8156,6 +8241,43 @@ export const AccountApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
+         * @summary ログインユーザの表示名を変更する
+         * @param {NssolPlatypusApiModelsAccountApiModelsDisplayNameInputModel} [nssolPlatypusApiModelsAccountApiModelsDisplayNameInputModel] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiV2AccountDisplayNamePut: async (nssolPlatypusApiModelsAccountApiModelsDisplayNameInputModel?: NssolPlatypusApiModelsAccountApiModelsDisplayNameInputModel, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/v2/account/displayName`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication api_key required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json-patch+json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(nssolPlatypusApiModelsAccountApiModelsDisplayNameInputModel, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary ログインユーザのアカウント情報を取得する
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -8696,6 +8818,17 @@ export const AccountApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary ログインユーザの表示名を変更する
+         * @param {NssolPlatypusApiModelsAccountApiModelsDisplayNameInputModel} [nssolPlatypusApiModelsAccountApiModelsDisplayNameInputModel] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async apiV2AccountDisplayNamePut(nssolPlatypusApiModelsAccountApiModelsDisplayNameInputModel?: NssolPlatypusApiModelsAccountApiModelsDisplayNameInputModel, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiV2AccountDisplayNamePut(nssolPlatypusApiModelsAccountApiModelsDisplayNameInputModel, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary ログインユーザのアカウント情報を取得する
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -8877,6 +9010,16 @@ export const AccountApiFactory = function (configuration?: Configuration, basePa
         },
         /**
          * 
+         * @summary ログインユーザの表示名を変更する
+         * @param {NssolPlatypusApiModelsAccountApiModelsDisplayNameInputModel} [nssolPlatypusApiModelsAccountApiModelsDisplayNameInputModel] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiV2AccountDisplayNamePut(nssolPlatypusApiModelsAccountApiModelsDisplayNameInputModel?: NssolPlatypusApiModelsAccountApiModelsDisplayNameInputModel, options?: any): AxiosPromise<void> {
+            return localVarFp.apiV2AccountDisplayNamePut(nssolPlatypusApiModelsAccountApiModelsDisplayNameInputModel, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary ログインユーザのアカウント情報を取得する
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -9041,6 +9184,20 @@ export interface AccountApiApiV2AccountAquariumMenusTreeGetRequest {
      * @memberof AccountApiApiV2AccountAquariumMenusTreeGet
      */
     readonly lang?: string
+}
+
+/**
+ * Request parameters for apiV2AccountDisplayNamePut operation in AccountApi.
+ * @export
+ * @interface AccountApiApiV2AccountDisplayNamePutRequest
+ */
+export interface AccountApiApiV2AccountDisplayNamePutRequest {
+    /**
+     * 
+     * @type {NssolPlatypusApiModelsAccountApiModelsDisplayNameInputModel}
+     * @memberof AccountApiApiV2AccountDisplayNamePut
+     */
+    readonly nssolPlatypusApiModelsAccountApiModelsDisplayNameInputModel?: NssolPlatypusApiModelsAccountApiModelsDisplayNameInputModel
 }
 
 /**
@@ -9219,6 +9376,18 @@ export class AccountApi extends BaseAPI {
      */
     public apiV2AccountAquariumMenusTreeGet(requestParameters: AccountApiApiV2AccountAquariumMenusTreeGetRequest = {}, options?: AxiosRequestConfig) {
         return AccountApiFp(this.configuration).apiV2AccountAquariumMenusTreeGet(requestParameters.lang, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary ログインユーザの表示名を変更する
+     * @param {AccountApiApiV2AccountDisplayNamePutRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AccountApi
+     */
+    public apiV2AccountDisplayNamePut(requestParameters: AccountApiApiV2AccountDisplayNamePutRequest = {}, options?: AxiosRequestConfig) {
+        return AccountApiFp(this.configuration).apiV2AccountDisplayNamePut(requestParameters.nssolPlatypusApiModelsAccountApiModelsDisplayNameInputModel, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -29159,6 +29328,47 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
         },
         /**
          * 
+         * @summary 指定したユーザの表示名を変更する
+         * @param {number} id 
+         * @param {string} [body] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiV2AdminUsersIdDisplayNamePut: async (id: number, body?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('apiV2AdminUsersIdDisplayNamePut', 'id', id)
+            const localVarPath = `/api/v2/admin/users/{id}/displayName`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication api_key required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json-patch+json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(body, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary 管理者向けに指定したユーザの情報を取得する。
          * @param {number} id 
          * @param {*} [options] Override http request option.
@@ -29531,6 +29741,18 @@ export const UserApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary 指定したユーザの表示名を変更する
+         * @param {number} id 
+         * @param {string} [body] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async apiV2AdminUsersIdDisplayNamePut(id: number, body?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiV2AdminUsersIdDisplayNamePut(id, body, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary 管理者向けに指定したユーザの情報を取得する。
          * @param {number} id 
          * @param {*} [options] Override http request option.
@@ -29661,6 +29883,17 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
         },
         /**
          * 
+         * @summary 指定したユーザの表示名を変更する
+         * @param {number} id 
+         * @param {string} [body] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiV2AdminUsersIdDisplayNamePut(id: number, body?: string, options?: any): AxiosPromise<void> {
+            return localVarFp.apiV2AdminUsersIdDisplayNamePut(id, body, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary 管理者向けに指定したユーザの情報を取得する。
          * @param {number} id 
          * @param {*} [options] Override http request option.
@@ -29766,6 +29999,27 @@ export interface UserApiApiV2AdminUsersIdDeleteRequest {
      * @memberof UserApiApiV2AdminUsersIdDelete
      */
     readonly id: number
+}
+
+/**
+ * Request parameters for apiV2AdminUsersIdDisplayNamePut operation in UserApi.
+ * @export
+ * @interface UserApiApiV2AdminUsersIdDisplayNamePutRequest
+ */
+export interface UserApiApiV2AdminUsersIdDisplayNamePutRequest {
+    /**
+     * 
+     * @type {number}
+     * @memberof UserApiApiV2AdminUsersIdDisplayNamePut
+     */
+    readonly id: number
+
+    /**
+     * 
+     * @type {string}
+     * @memberof UserApiApiV2AdminUsersIdDisplayNamePut
+     */
+    readonly body?: string
 }
 
 /**
@@ -29929,6 +30183,18 @@ export class UserApi extends BaseAPI {
      */
     public apiV2AdminUsersIdDelete(requestParameters: UserApiApiV2AdminUsersIdDeleteRequest, options?: AxiosRequestConfig) {
         return UserApiFp(this.configuration).apiV2AdminUsersIdDelete(requestParameters.id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary 指定したユーザの表示名を変更する
+     * @param {UserApiApiV2AdminUsersIdDisplayNamePutRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof UserApi
+     */
+    public apiV2AdminUsersIdDisplayNamePut(requestParameters: UserApiApiV2AdminUsersIdDisplayNamePutRequest, options?: AxiosRequestConfig) {
+        return UserApiFp(this.configuration).apiV2AdminUsersIdDisplayNamePut(requestParameters.id, requestParameters.body, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
