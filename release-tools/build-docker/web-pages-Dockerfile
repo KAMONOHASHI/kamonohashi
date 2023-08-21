@@ -1,4 +1,4 @@
-FROM node:16.19.0-stretch AS build
+FROM node:16.19.0-bullseye AS build
 
 COPY /web-pages /src/web-pages
 RUN cd /src/web-pages && npm install && npm run build
