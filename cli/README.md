@@ -6,5 +6,4 @@ A python command line interface for KAMONOHASHI. To install kamonohashi-cli, use
 $ pip install kamonohashi-cli
 ```
 
-It supports python 3.5 and later.
- 
+It supports python 3.8 and later.
