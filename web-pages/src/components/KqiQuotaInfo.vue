@@ -15,16 +15,21 @@
   </div>
 </template>
 
-<script>
-import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
+<script lang="ts">
+import Vue from 'vue'
+import { PropType } from 'vue'
 
-export default {
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
+import * as gen from '@/api/api.generate'
+export default Vue.extend({
   components: {
     KqiDisplayTextForm,
   },
   props: {
     quota: {
-      type: Object,
+      type: Object as PropType<
+        gen.NssolPlatypusApiModelsClusterApiModelsQuotaOutputModel
+      >,
       default: () => ({
         cpu: null,
         memory: null,
@@ -32,7 +37,7 @@ export default {
       }),
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped></style>

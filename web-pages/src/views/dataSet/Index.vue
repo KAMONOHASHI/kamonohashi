@@ -56,19 +56,33 @@
   </div>
 </template>
 
-<script>
-import KqiPagination from '@/components/KqiPagination'
-import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index'
+<script lang="ts">
+import Vue from 'vue'
+import KqiPagination from '@/components/KqiPagination.vue'
+import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index.vue'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('dataSet')
 
-export default {
-  title: 'データセット管理',
+import { DeepWriteable } from '@/@types/type'
+import * as gen from '@/api/api.generate'
+type DataSetApiApiV2DatasetsGetRequest = DeepWriteable<
+  gen.DataSetApiApiV2DatasetsGetRequest
+>
+interface DataType {
+  pageStatus: {
+    currentPage: number
+    currentPageSize: number
+  }
+  searchCondition: DataSetApiApiV2DatasetsGetRequest
+  searchConfigs: Array<{ prop: string; name: string; type: string }>
+}
+
+export default Vue.extend({
   components: {
     KqiPagination,
     KqiSmartSearchInput,
   },
-  data() {
+  data(): DataType {
     return {
       pageStatus: {
         currentPage: 1,
@@ -81,7 +95,6 @@ export default {
         { prop: 'memo', name: 'メモ', type: 'text' },
         { prop: 'createdAt', name: '登録日時', type: 'date' },
       ],
-      tableData: [],
     }
   },
   computed: {
@@ -94,7 +107,7 @@ export default {
   methods: {
     ...mapActions(['fetchDataSets']),
 
-    async currentChange(page) {
+    async currentChange(page: number) {
       this.pageStatus.currentPage = page
       await this.retrieveData()
     },
@@ -108,7 +121,7 @@ export default {
     closeDialog() {
       this.$router.push('/dataset')
     },
-    async done(type) {
+    async done(type: string) {
       if (type === 'delete') {
         // 削除時、表示していたページにデータが無くなっている可能性がある。
         // 総数 % ページサイズ === 1の時、残り1の状態で削除したため、currentPageが1で無ければ1つ前のページに戻す
@@ -125,10 +138,12 @@ export default {
     openCreateDialog() {
       this.$router.push('/dataset/create')
     },
-    openEditDialog(selectedRow) {
+    openEditDialog(
+      selectedRow: gen.NssolPlatypusApiModelsDataSetApiModelsIndexOutputModel,
+    ) {
       this.$router.push('/dataset/edit/' + selectedRow.id)
     },
-    handleCopy(id) {
+    handleCopy(id: number) {
       this.$router.push('/dataset/create/' + id)
     },
     async search() {
@@ -136,7 +151,7 @@ export default {
       await this.retrieveData()
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

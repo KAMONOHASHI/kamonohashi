@@ -212,21 +212,95 @@
   </div>
 </template>
 
-<script>
-import KqiPagination from '@/components/KqiPagination'
-import Search from './Search'
-import MultiInput from './MultiInput'
+<script lang="ts">
+import Vue from 'vue'
+import KqiPagination from '@/components/KqiPagination.vue'
+import Search from './Search.vue'
+import MultiInput from './MultiInput.vue'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('training')
 
-export default {
-  title: '学習管理',
+import * as gen from '@/api/api.generate'
+interface DataType {
+  searchingFlg: boolean
+  updateTagDialogVisible: boolean
+  searchDialogVisible: boolean
+  saveSearchFormDialogVisible: boolean
+  selectBoxVisible: boolean // 新規タグの入力エリアの表示有無
+  tagValue: string // 新規タグの入力値
+  searchForm: {
+    idLower?: string
+    idUpper?: string
+    name?: Array<string>
+    nameOr?: boolean
+    parentName?: Array<string>
+    parentNameOr?: boolean
+    startedAtLower?: string
+    startedAtUpper?: string
+    startedBy?: Array<string>
+    startedByOr?: boolean
+    dataSet?: Array<string>
+    dataSetOr?: boolean
+    memo?: Array<string>
+    memoOr?: boolean
+    status?: Array<string>
+    statusOr?: boolean
+    entryPoint?: Array<string>
+    entryPointOr?: boolean
+    tags?: Array<string>
+    tagsOr?: boolean
+  }
+  tags: []
+  options: []
+  pageStatus: {
+    currentPage: number
+    currentPageSize: number
+  }
+  selections: Array<gen.NssolPlatypusApiModelsTrainingApiModelsIndexOutputModel>
+  searchConditionId: number | string | null
+  searchCondition: {
+    searchDetail: SearchDetail
+  } | null
+  searchConfigs: Array<{
+    prop: string
+    name: string
+    type: string
+    multiple?: boolean
+    option?: {
+      items: Array<string>
+    }
+  }>
+}
+type SearchDetail = {
+  idLower?: string
+  idUpper?: string
+  name?: string
+  nameOr?: boolean
+  parentName?: string
+  parentNameOr?: boolean
+  startedAtLower?: string
+  startedAtUpper?: string
+  startedBy?: string
+  startedByOr?: boolean
+  dataSet?: string
+  dataSetOr?: boolean
+  memo?: string
+  memoOr?: boolean
+  status?: string
+  statusOr?: boolean
+  entryPoint?: string
+  entryPointOr?: boolean
+  tags?: string
+  tagsOr?: boolean
+}
+
+export default Vue.extend({
   components: {
     KqiPagination,
     Search,
     MultiInput,
   },
-  data() {
+  data(): DataType {
     return {
       searchingFlg: false,
       updateTagDialogVisible: false,
@@ -234,28 +308,7 @@ export default {
       saveSearchFormDialogVisible: false,
       selectBoxVisible: false, // 新規タグの入力エリアの表示有無
       tagValue: '', // 新規タグの入力値
-      searchForm: {
-        idLower: '',
-        idUpper: '',
-        name: [],
-        nameOr: true,
-        parentName: [],
-        parentNameOr: true,
-        startedAtLower: '',
-        startedAtUpper: '',
-        startedBy: [],
-        startedByOr: true,
-        dataSet: [],
-        dataSetOr: true,
-        memo: [],
-        memoOr: true,
-        status: [],
-        statusOr: true,
-        entryPoint: [],
-        entryPointOr: true,
-        tags: [],
-        tagsOr: true,
-      },
+      searchForm: {},
       tags: [],
       options: [],
       pageStatus: {
@@ -320,7 +373,17 @@ export default {
       'deleteTags',
     ]),
     async retrieveData() {
-      let params
+      let params:
+        | (SearchDetail & {
+            page?: number
+            perPage?: number
+            withTotal?: boolean
+          })
+        | {
+            page?: number
+            perPage?: number
+            withTotal?: boolean
+          }
       if (this.searchCondition == null) {
         params = {}
       } else {
@@ -336,28 +399,7 @@ export default {
 
     clear() {
       this.searchConditionId = null
-      this.searchForm = {
-        idLower: '',
-        idUpper: '',
-        name: [],
-        nameOr: true,
-        parentName: [],
-        parentNameOr: true,
-        startedAtLower: '',
-        startedAtUpper: '',
-        startedBy: [],
-        startedByOr: true,
-        dataSet: [],
-        dataSetOr: true,
-        memo: [],
-        memoOr: true,
-        status: [],
-        statusOr: true,
-        entryPoint: [],
-        entryPointOr: true,
-        tags: [],
-        tagsOr: true,
-      }
+      this.searchForm = {}
       this.searchCondition = {
         searchDetail: this.changeSearchFormListToString(),
       }
@@ -376,34 +418,35 @@ export default {
       this.searchingFlg = true
     },
 
-    changeSearchFormStringToList(item) {
-      let form = {
-        idLower: item.idLower,
-        idUpper: item.idUpper,
-        name: this.changeStringToList(item.name),
+    changeSearchFormStringToList(item: SearchDetail) {
+      let form: { [key: string]: any } = {
+        idLower: item.idLower!,
+        idUpper: item.idUpper!,
+        name: this.changeStringToList(item.name!),
         nameOr: item.nameOr,
-        parentName: this.changeStringToList(item.parentName),
-        parentNameOr: item.parentNameOr,
-        startedAtLower: item.startedAtLower,
-        startedAtUpper: item.startedAtUpper,
-        startedBy: this.changeStringToList(item.startedBy),
-        startedByOr: item.startedByOr,
-        dataSet: this.changeStringToList(item.dataSet),
-        dataSetOr: item.dataSetOr,
-        memo: this.changeStringToList(item.memo),
-        memoOr: item.memoOr,
-        status: this.changeStringToList(item.status),
-        statusOr: item.statusOr,
-        entryPoint: this.changeStringToList(item.entryPoint),
-        entryPointOr: item.entryPointOr,
-        tags: this.changeStringToList(item.tags),
-        tagsOr: item.tagsOr,
+        parentName: this.changeStringToList(item.parentName!),
+        parentNameOr: item.parentNameOr!,
+        startedAtLower: item.startedAtLower!,
+        startedAtUpper: item.startedAtUpper!,
+        startedBy: this.changeStringToList(item.startedBy!),
+        startedByOr: item.startedByOr!,
+        dataSet: this.changeStringToList(item.dataSet!),
+        dataSetOr: item.dataSetOr!,
+        memo: this.changeStringToList(item.memo!),
+        memoOr: item.memoOr!,
+        status: this.changeStringToList(item.status!),
+        statusOr: item.statusOr!,
+        entryPoint: this.changeStringToList(item.entryPoint!),
+        entryPointOr: item.entryPointOr!,
+        tags: this.changeStringToList(item.tags!),
+        tagsOr: item.tagsOr!,
       }
+
       return form
     },
-    changeStringToList(str) {
-      if (str == null || str.length == 0) {
-        return []
+    changeStringToList(str: string) {
+      if (str == null || str == undefined || str.length == 0) {
+        return undefined
       }
       let strs = str.split(',')
       let list = []
@@ -417,35 +460,35 @@ export default {
       let form = {
         idLower: this.searchForm.idLower,
         idUpper: this.searchForm.idUpper,
-        name: this.changeListToString(this.searchForm.name),
+        name: this.changeListToString(this.searchForm.name!),
         nameOr: this.searchForm.nameOr,
-        parentName: this.changeListToString(this.searchForm.parentName),
+        parentName: this.changeListToString(this.searchForm.parentName!),
         parentNameOr: this.searchForm.parentNameOr,
         startedAtLower: this.searchForm.startedAtLower,
         startedAtUpper: this.searchForm.startedAtUpper,
-        startedBy: this.changeListToString(this.searchForm.startedBy),
+        startedBy: this.changeListToString(this.searchForm.startedBy!),
         startedByOr: this.searchForm.startedByOr,
-        dataSet: this.changeListToString(this.searchForm.dataSet),
+        dataSet: this.changeListToString(this.searchForm.dataSet!),
         dataSetOr: this.searchForm.dataSetOr,
-        memo: this.changeListToString(this.searchForm.memo),
+        memo: this.changeListToString(this.searchForm.memo!),
         memoOr: this.searchForm.memoOr,
-        status: this.changeListToString(this.searchForm.status),
+        status: this.changeListToString(this.searchForm.status!),
         statusOr: this.searchForm.statusOr,
-        entryPoint: this.changeListToString(this.searchForm.entryPoint),
+        entryPoint: this.changeListToString(this.searchForm.entryPoint!),
         entryPointOr: this.searchForm.entryPointOr,
-        tags: this.changeListToString(this.searchForm.tags),
+        tags: this.changeListToString(this.searchForm.tags!),
         tagsOr: this.searchForm.tagsOr,
       }
       return form
     },
 
-    changeListToString(list) {
-      if (list == null || list.length == 0) {
-        return null
+    changeListToString(list: Array<string>) {
+      if (list == null || list == undefined || list.length == 0) {
+        return undefined
       }
       let str = ''
       for (let i in list) {
-        if (i == 0) {
+        if (Number(i) == 0) {
           str = str + list[i]
         } else {
           str = str + ',' + list[i]
@@ -458,7 +501,17 @@ export default {
       await this.fetchSearchHistories()
     },
     async selectSearchCondition() {
-      let params = {}
+      let params:
+        | (SearchDetail & {
+            page?: number
+            perPage?: number
+            withTotal?: boolean
+          })
+        | {
+            page?: number
+            perPage?: number
+            withTotal?: boolean
+          } = {}
       this.searchCondition = null
       for (let i in this.searchHistories) {
         if (this.searchConditionId == this.searchHistories[i].id) {
@@ -478,14 +531,24 @@ export default {
       params.page = this.pageStatus.currentPage
       params.perPage = this.pageStatus.currentPageSize
       params.withTotal = true
+
+      for (let key in params) {
+        //@ts-ignore
+        if (params[key] === null) {
+          //@ts-ignore
+          params[key] = undefined
+        }
+      }
       await this.fetchTrainHistories(params)
       this.searchForm = this.changeSearchFormStringToList(
-        this.searchCondition.searchDetail,
+        this.searchCondition!.searchDetail,
       )
       this.searchingFlg = false
     },
 
-    async clickDeleteSearchHistory(item) {
+    async clickDeleteSearchHistory(
+      item: gen.NssolPlatypusApiModelsTrainingApiModelsSearchHistoryOutputModel,
+    ) {
       // 選択中の検索履歴を削除したとき
       if (this.searchConditionId == item.id) {
         this.searchConditionId = 'search'
@@ -495,7 +558,7 @@ export default {
       await this.fetchSearchHistories()
     },
 
-    async updateTags(type) {
+    async updateTags(type: string) {
       let ids = []
       for (let i in this.selections) {
         ids.push(this.selections[i].id)
@@ -514,7 +577,9 @@ export default {
       this.showSuccessMessage()
     },
 
-    handleSelectionChange(val) {
+    handleSelectionChange(
+      val: Array<gen.NssolPlatypusApiModelsTrainingApiModelsIndexOutputModel>,
+    ) {
       // checkboxの要素変更
       this.selections = val
     },
@@ -533,6 +598,7 @@ export default {
               .then(() => successCount++)
               .catch(() => {})
           }
+          //@ts-ignore
           await this.$notify.info({
             type: 'info',
             message: `学習履歴を削除しました。(成功：${successCount}件、 失敗：${this
@@ -544,7 +610,7 @@ export default {
         .catch(() => {})
     },
 
-    async done(type) {
+    async done(type: string) {
       if (type === 'delete') {
         // 削除時、表示していたページにデータが無くなっている可能性がある。
         // 総数 % ページサイズ === 1の時、残り1の状態で削除したため、currentPageが1で無ければ1つ前のページに戻す
@@ -565,26 +631,28 @@ export default {
     back() {
       this.$router.go(-1)
     },
-    openEditDialog(selectedRow) {
+    openEditDialog(
+      selectedRow: gen.NssolPlatypusApiModelsTrainingApiModelsIndexOutputModel,
+    ) {
       this.$router.push('/training/' + selectedRow.id)
     },
     openCreateDialog() {
       this.$router.push('/training/run/')
     },
-    copyCreate(parentId) {
+    copyCreate(parentId: number) {
       this.$router.push('/training/run/' + parentId)
     },
-    files(id) {
+    files(id: number) {
       this.$router.push('/training/' + id + '/files')
     },
-    shell(id) {
+    shell(id: number) {
       this.$router.push('/training/' + id + '/shell')
     },
-    log(id) {
+    log(id: number) {
       this.$router.push('/training/' + id + '/log')
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

@@ -1,10 +1,10 @@
-FROM node:12.18.4-stretch AS build
+FROM node:16.19.0-bullseye AS build
 
 COPY /web-pages /src/web-pages
-RUN cd /src/web-pages && npm install && npm run build 
+RUN cd /src/web-pages && npm install && npm run build
 
 COPY /web-pages-aquarium /src/web-pages-aquarium
-RUN cd /src/web-pages-aquarium && npm install && npm run build 
+RUN cd /src/web-pages-aquarium && npm install && npm run build
 
 
 FROM nginx:1.17.9

@@ -39,12 +39,14 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue'
+
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('storage')
+import * as gen from '@/api/api.generate'
 
-export default {
-  title: 'ストレージ管理',
+export default Vue.extend({
   computed: {
     ...mapGetters(['storages']),
   },
@@ -56,7 +58,9 @@ export default {
     openCreateDialog() {
       this.$router.push('/storage/edit')
     },
-    openEditDialog(selectedRow) {
+    openEditDialog(
+      selectedRow: gen.NssolPlatypusApiModelsStorageApiModelsIndexOutputModel,
+    ) {
       this.$router.push('/storage/edit/' + selectedRow.id)
     },
     closeDialog() {
@@ -68,7 +72,7 @@ export default {
       this.showSuccessMessage()
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

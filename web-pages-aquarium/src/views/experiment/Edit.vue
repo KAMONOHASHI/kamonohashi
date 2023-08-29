@@ -70,17 +70,38 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue'
+
 import { createNamespacedHelpers } from 'vuex'
 // import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index'
 // TODO template API に変更
 const { mapGetters, mapActions } = createNamespacedHelpers('template')
-export default {
-  title: '新規学習実行',
+import * as gen from '@/api/api.generate'
+
+interface DataType {
+  pageStatus: {
+    currentPage: number
+    currentPageSize: number
+  }
+  unwatchLogin?: any //TODO 使用していない？
+  searchCondition: { page?: number; perPage?: number; withTotal?: boolean }
+  templateList: null | Array<
+    gen.NssolPlatypusApiModelsTemplateApiModelsIndexOutputModel
+  >
+  searchConfigs: Array<{
+    prop: string
+    name: string
+    type: string
+    multiple?: boolean
+  }>
+}
+
+export default Vue.extend({
   components: {
     // KqiSmartSearchInput,
   },
-  data() {
+  data(): DataType {
     return {
       pageStatus: {
         currentPage: 1,
@@ -105,7 +126,7 @@ export default {
 
   methods: {
     ...mapActions(['fetchTenantModelTemplates']),
-    openDiscriptionURL(url) {
+    openDiscriptionURL(url: string) {
       window.open(url, '_blank')
     },
     async retrieveData() {
@@ -123,7 +144,7 @@ export default {
       }
     },
 
-    urlSplitter(memo, that) {
+    urlSplitter(memo: string, that: any) {
       if (
         memo != null &&
         memo.length > 0 &&
@@ -181,7 +202,7 @@ export default {
       await this.retrieveData()
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

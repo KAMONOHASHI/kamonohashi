@@ -14,18 +14,19 @@
   </div>
 </template>
 
-<script>
-import KqiHeader from '@/components/KqiHeader'
-import KqiMenu from '@/components/KqiMenu'
+<script lang="ts">
+import Vue from 'vue'
+import KqiHeader from '@/components/KqiHeader.vue'
+import KqiMenu from '@/components/KqiMenu.vue'
 import Util from '@/util/util'
-
-export default {
+export default Vue.extend({
   components: {
     KqiHeader,
     KqiMenu,
   },
   data() {
     return {
+      //@ts-ignore
       menu: this.getMenu(),
     }
   },
@@ -44,7 +45,7 @@ export default {
     async handleMenu() {
       this.menu = !this.menu
     },
-    setMenu(showFlg) {
+    setMenu(showFlg: boolean) {
       Util.setCookie('.Platypus.ShowMenu', showFlg)
     },
     getMenu() {
@@ -54,10 +55,11 @@ export default {
     setCookieToken() {
       let token = this.$store.getters['account/token']
       let cookieTokenKey = '.Platypus.Auth'
-      let cookieToken = Util.getCookie(cookieTokenKey, token)
+      let cookieToken = Util.getCookie(cookieTokenKey)
 
       if (!cookieToken) {
         // Cookieにトークン情報がないときはログアウト
+        //@ts-ignore
         this.$store.dispatch['account/logout']
       } else {
         // Cookieにトークン情報があるときはCookie情報を更新
@@ -65,7 +67,7 @@ export default {
       }
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

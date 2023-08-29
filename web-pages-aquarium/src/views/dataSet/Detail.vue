@@ -297,16 +297,68 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue'
+
 import { mapActions, mapGetters } from 'vuex'
 
-import KqiDisplayError from '@/components/KqiDisplayError'
-import KqiUploadForm from '@/components/KqiUploadForm'
+import KqiDisplayError from '@/components/KqiDisplayError.vue'
+import KqiUploadForm from '@/components/KqiUploadForm.vue'
 
-import KqiPagination from '@/components/KqiPagination'
-export default {
-  title: 'データセット',
+import KqiPagination from '@/components/KqiPagination.vue'
+import * as gen from '@/api/api.generate'
+import { DeepWriteable } from '@/@types/type'
+interface DataType {
+  deleteDialog: boolean
+  uploadDialog: boolean
+  deleteVersionDialog: boolean
 
+  deleteDataSetDialog: boolean
+  selectDeleteData: gen.NssolPlatypusApiModelsDataApiModelsIndexOutputModel
+  selectImageList: Array<
+    gen.NssolPlatypusApiModelsDataApiModelsDataFileOutputModel
+  >
+  versionValue: null
+  version: null | number
+  type: string
+  loading: boolean
+  drawer: boolean
+  direction: string
+  importfile: null
+  searchCondition: DataApiApiV2DataGetRequest
+  dataPageStatus: {
+    currentPage: number
+    currentPageSize: number
+  }
+  pageStatus: {
+    currentPage: number
+    currentPageSize: number
+  }
+  checkList: Array<gen.NssolPlatypusApiModelsDataSetApiModelsIndexOutputModel>
+  datas: Array<gen.NssolPlatypusApiModelsDataSetApiModelsIndexOutputModel>
+  error: null | Error
+  name: null | string
+  memo: string
+  uploadMemo: string
+  deleteMemo: string
+  viewVersion:
+    | {
+        memo?: string | null
+        flatEntries?: null | Array<
+          gen.NssolPlatypusApiModelsDataApiModelsIndexOutputModel
+        >
+        version?: number | string
+      }
+    | gen.NssolPlatypusApiModelsAquariumDataSetApiModelsVersionDetailsOutputModel
+  errVersion: number | null
+}
+
+type DataApiApiV2DataGetRequest = DeepWriteable<gen.DataApiApiV2DataGetRequest>
+type NssolPlatypusApiModelsDataApiModelsIndexOutputModel = gen.NssolPlatypusApiModelsDataApiModelsIndexOutputModel & {
+  list: Array<gen.NssolPlatypusApiModelsDataApiModelsDataFileOutputModel>
+  show: boolean
+}
+export default Vue.extend({
   components: { KqiUploadForm, KqiDisplayError, KqiPagination },
   props: {
     id: {
@@ -315,7 +367,7 @@ export default {
     },
   },
 
-  data() {
+  data(): DataType {
     return {
       deleteDialog: false,
       uploadDialog: false,
@@ -354,6 +406,7 @@ export default {
 
   computed: {
     ...mapGetters({
+      //@ts-ignore
       dataSets: ['aquariumDataSet/dataSets'],
       total: ['aquariumDataSet/total'],
       versions: ['aquariumDataSet/versions'],
@@ -404,6 +457,7 @@ export default {
 
       //再描画
       this.$forceUpdate()
+      //@ts-ignore
       await this.$notify.success({
         type: 'Success',
         message: `バージョンを削除しました。`,
@@ -415,14 +469,19 @@ export default {
       this.$router.push('/aquarium/dataset')
     },
 
-    openDeleteDialog(item) {
+    openDeleteDialog(
+      item: gen.NssolPlatypusApiModelsDataApiModelsIndexOutputModel,
+    ) {
       this.selectDeleteData = item
       this.deleteDialog = true
     },
-    fileClick(file, e) {
+    fileClick(
+      file: gen.NssolPlatypusApiModelsDataApiModelsDataFileOutputModel,
+      e: any,
+    ) {
       let imgList = ['png', 'PNG', 'jpg', 'JPG', 'jpeg', 'JPEG']
-      let nm = file.key.split('.').slice(-1)[0]
-      let filenm = file.fileName.split('.').slice(-1)[0]
+      let nm = file.key!.split('.').slice(-1)[0]
+      let filenm = file.fileName!.split('.').slice(-1)[0]
       if (imgList.indexOf(nm) == -1 && imgList.indexOf(filenm) == -1) {
         //画像ファイルではないときは何も表示しない
         return
@@ -430,15 +489,15 @@ export default {
       for (let i in this.selectImageList) {
         if (this.selectImageList[i].fileId == file.fileId) {
           //同じものをクリックした場合、リストから削除する
-          this.selectImageList.splice(i, 1)
-          e.target.classList.remove('active-datafile')
+          this.selectImageList.splice(parseInt(i), 1)
+          e.target!.classList!.remove('active-datafile')
           return
         }
       }
       e.target.classList.add('active-datafile')
       this.selectImageList.push(file)
     },
-    async dataClick(item) {
+    async dataClick(item: NssolPlatypusApiModelsDataApiModelsIndexOutputModel) {
       //データのファイルリストを取得する
 
       if (item['show'] == null) {
@@ -458,9 +517,12 @@ export default {
 
       for (let i in this.viewVersion.flatEntries) {
         //selectDeleteData
-        if (this.selectDeleteData.id != this.viewVersion.flatEntries[i]['id']) {
+        if (
+          this.selectDeleteData.id !=
+          this.viewVersion.flatEntries[parseInt(i)]['id']
+        ) {
           flatEntry.push({
-            id: this.viewVersion.flatEntries[i]['id'],
+            id: this.viewVersion.flatEntries[parseInt(i)]['id'],
           })
         }
       }
@@ -487,32 +549,35 @@ export default {
 
       //再描画
       this.$forceUpdate()
+      //@ts-ignore
       await this.$notify.success({
         type: 'Success',
         message: `データを削除して新しいデータセットバージョンを作成しました。`,
       })
     },
 
-    async currentChange(version) {
+    async currentChange(version: number) {
       //選択されたバージョンのデータセットバージョンを取得する
-      let params = {}
+      let params: { versionId?: number; id?: string | number } = {}
       params.versionId = version
       params.id = this.id
       await this['aquariumDataSet/fetchDetailVersion'](params)
 
       this.viewVersion = Object.assign({}, this.detailVersion)
       this.$router.replace({
+        //@ts-ignore
         query: { version: this.viewVersion.version },
       })
       this.selectImageList = []
     },
     async retrieveData() {
       //アクアリウムデータセットバージョン情報を取得
-      let params = {}
-      params.page = 1
-      params.perPage = 10
-      params.withTotal = true
-      params.id = this.id
+      let params = {
+        page: 1,
+        perPage: 10,
+        withTotal: true,
+        id: this.id,
+      }
       await this['aquariumDataSet/fetchDataSets'](params)
       await this['aquariumDataSet/fetchVersions'](this.id)
       let latestVersionId = null
@@ -525,9 +590,10 @@ export default {
           latestVersionId = this.versions[i].id
         }
         //バージョンごとのメモを取得する
-        let param = {}
-        param.versionId = this.versions[i].id
-        param.id = this.id
+        let param = {
+          versionId: this.versions[i].id,
+          id: this.id,
+        }
 
         await this['aquariumDataSet/fetchDetailVersion'](param)
         if (this.detailVersion.memo.length > 30) {
@@ -566,7 +632,9 @@ export default {
         //最新のバージョンに存在するDataはカモノハシデータリストのdatasに入れない
         let same = false
         for (let j in this.viewVersion.flatEntries) {
-          if (this.allDatas[i].id == this.viewVersion.flatEntries[j].id) {
+          if (
+            this.allDatas[i].id == this.viewVersion.flatEntries[parseInt(j)].id
+          ) {
             same = true
             break
           }
@@ -579,11 +647,13 @@ export default {
       this.selectImageList = []
       this.$router
         .replace({
+          //@ts-ignore
           query: { version: this.viewVersion.version },
         })
         .catch(function() {})
 
       if (this.errVersion != null) {
+        //@ts-ignore
         await this.$notify.error({
           type: 'Error',
           message:
@@ -604,7 +674,7 @@ export default {
     },
     //----------------
 
-    async selectData(dataId) {
+    async selectData(dataId: number) {
       //セレクトボックスからデータを選択
       await this['data/fetchUploadedFiles'](dataId)
     },
@@ -625,23 +695,27 @@ export default {
         this.closeDialog()
         this.version = null
         this.retrieveData()
+        //@ts-ignore
         await this.$notify.success({
           type: 'Success',
           message: `データを追加して新しいデータセットバージョンを作成しました。`,
         })
       } catch (e) {
-        this.error = e
+        if (e instanceof Error) this.error = e
       } finally {
         // 共通側ローディングを再度有効化
         this.loading = false
         this.$store.commit('setLoading', true)
         this['data/clearUploadedFiles']()
         if (this.$refs.uploadForm != null) {
+          //@ts-ignore
           this.$refs.uploadForm.showProgress = false
         }
         if (this.importfile == 1) {
           // 選択したファイルを削除する
+          //@ts-ignore
           this.$refs.uploadForm.selectedFiles = undefined
+          //@ts-ignore
           this.$refs.uploadForm.filesArray = []
         }
       }
@@ -655,7 +729,7 @@ export default {
       }
     },
     // データファイルのアップロード
-    async updateData(filename) {
+    async updateData(filename: string) {
       let model = {
         name: filename,
         memo: this.uploadMemo,
@@ -667,8 +741,9 @@ export default {
       return result.id
     },
 
-    async uploadFile(name) {
+    async uploadFile(name: string | null) {
       //データファイルのアップロード
+      //@ts-ignore
       let dataFileInfos = await this.$refs.uploadForm.uploadFile()
 
       let dataId = null
@@ -685,11 +760,13 @@ export default {
       let datas = this.viewVersion.flatEntries
       let flatEntry = []
       for (let i in datas) {
-        flatEntry.push({ id: datas[i]['id'] })
+        flatEntry.push({ id: datas[parseInt(i)]['id'] })
       }
       if (this.importfile == 1) {
         if (
+          //@ts-ignore
           this.$refs.uploadForm._data.selectedFiles == null ||
+          //@ts-ignore
           this.$refs.uploadForm._data.selectedFiles.length == 0
         ) {
           throw new Error('ファイルを選択してください')
@@ -730,13 +807,14 @@ export default {
       // アップロード完了後の初期化
       this.uploadMemo = ''
       if (this.importfile == 1) {
+        //@ts-ignore
         this.$refs.uploadForm._data.selectedFiles = null
       }
     },
 
     //-----------------
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

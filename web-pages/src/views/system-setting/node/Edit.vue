@@ -52,18 +52,39 @@
   </kqi-dialog>
 </template>
 
-<script>
-import KqiDialog from '@/components/KqiDialog'
-import KqiDisplayError from '@/components/KqiDisplayError'
+<script lang="ts">
+import Vue from 'vue'
+
+import KqiDialog from '@/components/KqiDialog.vue'
+import KqiDisplayError from '@/components/KqiDisplayError.vue'
 import { mapGetters, mapActions } from 'vuex'
 
+import * as gen from '@/api/api.generate'
 const formRules = {
   required: true,
   trigger: 'blur',
   message: '必須項目です',
 }
 
-export default {
+interface DataType {
+  form: {
+    name: null | string
+    memo: null | string
+    partition: null
+    accessLevel: number
+    selectedTenants: [] // Selected tenants which can access this node.
+    tensorBoardEnabled: null | boolean
+    notebookEnabled: null | boolean
+  }
+  title: string
+  displayTenants: Array<{ key?: null | number; label?: null | string }>
+  error: null | Error
+  rules: {
+    name: Array<typeof formRules>
+  }
+}
+
+export default Vue.extend({
   components: {
     KqiDialog,
     KqiDisplayError,
@@ -74,7 +95,7 @@ export default {
       default: null,
     },
   },
-  data() {
+  data(): DataType {
     return {
       form: {
         name: null,
@@ -95,23 +116,31 @@ export default {
   },
   computed: {
     ...mapGetters({
+      //@ts-ignore
       detail: ['node/detail'],
       tenants: ['tenant/tenants'],
     }),
   },
   async created() {
     await this['tenant/fetchTenants']()
-    this.tenants.sort((a, b) => {
-      a = a.displayName.toString().toLowerCase()
-      b = b.displayName.toString().toLowerCase()
-      return a < b ? -1 : 1
-    })
-    this.tenants.forEach(t => {
-      this.displayTenants.push({
-        key: t.id,
-        label: t.displayName,
-      })
-    })
+    this.tenants.sort(
+      (
+        a: gen.NssolPlatypusApiModelsTenantApiModelsIndexOutputModel,
+        b: gen.NssolPlatypusApiModelsTenantApiModelsIndexOutputModel,
+      ) => {
+        let a_ = a.displayName!.toString().toLowerCase()
+        let b_ = b.displayName!.toString().toLowerCase()
+        return a_ < b_ ? -1 : 1
+      },
+    )
+    this.tenants.forEach(
+      (t: gen.NssolPlatypusApiModelsTenantApiModelsIndexOutputModel) => {
+        this.displayTenants.push({
+          key: t.id,
+          label: t.displayName,
+        })
+      },
+    )
 
     if (this.id === null) {
       this.title = 'ノード登録'
@@ -124,14 +153,18 @@ export default {
         this.form.partition = this.detail.partition
         this.form.accessLevel = this.detail.accessLevel
         this.form.selectedTenants = this.detail.assignedTenants
-          ? this.detail.assignedTenants.map(t => {
-              return t.id
-            })
+          ? this.detail.assignedTenants.map(
+              (
+                t: gen.NssolPlatypusApiModelsNodeApiModelsDetailsOutputModelAssignedTenant,
+              ) => {
+                return t.id
+              },
+            )
           : []
         this.form.tensorBoardEnabled = this.detail.tensorBoardEnabled
         this.form.notebookEnabled = this.detail.notebookEnabled
       } catch (e) {
-        this.error = e
+        if (e instanceof Error) this.error = e
       }
     }
   },
@@ -145,6 +178,7 @@ export default {
     ]),
     async submit() {
       let form = this.$refs.createForm
+      //@ts-ignore
       await form.validate(async valid => {
         if (valid) {
           try {
@@ -166,7 +200,7 @@ export default {
             this.$emit('done')
             this.error = null
           } catch (e) {
-            this.error = e
+            if (e instanceof Error) this.error = e
           }
         }
       })
@@ -178,11 +212,11 @@ export default {
         this.error = null
         this.$emit('done', 'delete')
       } catch (e) {
-        this.error = e
+        if (e instanceof Error) this.error = e
       }
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped></style>

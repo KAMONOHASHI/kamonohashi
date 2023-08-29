@@ -107,15 +107,64 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue'
 import { createNamespacedHelpers } from 'vuex'
-import BaseSetting from './BaseSetting'
-import AqContainerSettings from '@/components/AqContainerSettings'
+import BaseSetting from './BaseSetting.vue'
+import AqContainerSettings from '@/components/AqContainerSettings.vue'
+import * as gen from '@/api/api.generate'
 
 const { mapGetters, mapActions } = createNamespacedHelpers('template')
+interface DataType {
+  deleteDialog: boolean
+  deleteVersionDialog: boolean
+  iconname: string
 
-export default {
-  title: 'モデルテンプレート',
+  activeName: string | (string | null)[]
+  preprocForm: null | Form
+  trainingForm: null | Form
+  evaluationForm: null | Form
+  baseForm: null | {
+    name: string
+    memo: string
+    accessLevel: gen.NssolPlatypusInfrastructureTemplateAccessLevel
+    assignedTenants: any //TODO 使用していない？
+  }
+  versionValue: null | number
+  version: null | number
+  changeFlg: boolean
+  errVersion: null | number
+}
+interface Form {
+  name: string
+  containerImage: {
+    registry: null | {
+      id: number
+      name: string
+    }
+    image: null | string
+    tag: null | Array<string>
+    token: null | string
+  }
+  gitModel: {
+    git: null | {
+      id: number
+      name: string
+    }
+    repository: null | string | { name: string; owner: string }
+    branch: null | { branchName: string }
+    commit: null | string
+    token: null | string
+  }
+  resource: {
+    cpu: number
+    memory: number
+    gpu: number
+  }
+  entryPoint: null | string
+}
+
+export default Vue.extend({
   components: {
     BaseSetting,
     Preprocessing: AqContainerSettings,
@@ -128,30 +177,12 @@ export default {
       default: null,
     },
   },
-  data() {
+  data(): DataType {
     return {
       deleteDialog: false,
       deleteVersionDialog: false,
       iconname: 'pl-plus',
-      pageStatus: {
-        currentPage: 1,
-        currentPageSize: 10,
-      },
-      searchCondition: {},
-      searchConfigs: [
-        { prop: 'id', name: 'ID', type: 'number' },
-        { prop: 'name', name: 'データセット名', type: 'text' },
-        { prop: 'type', name: '種類', type: 'text' },
-        { prop: 'totalImageNumber', name: 'イメージの総数', type: 'text' },
-        {
-          prop: 'labeledImageNumber',
-          name: 'ラベル付きのイメージ数',
-          type: 'text',
-        },
-        { prop: 'lastModified', name: '最終更新日時', type: 'date' },
-        { prop: 'status', name: 'ステータス', type: 'text' },
-      ],
-      tableData: [],
+
       activeName: 'baseSetting',
       preprocForm: null,
       trainingForm: null,
@@ -163,6 +194,7 @@ export default {
       errVersion: null,
     }
   },
+
   computed: {
     ...mapGetters(['detail', 'versionDetail', 'total', 'versions']),
   },
@@ -189,7 +221,7 @@ export default {
       'delete',
       'deleteVersion',
     ]),
-    copyAqContainer(info) {
+    copyAqContainer(info: { from: string; to: string }) {
       let from = info.from
       let to = info.to
       let fromData = null
@@ -246,6 +278,7 @@ export default {
 
       //再描画
       this.$forceUpdate()
+      //@ts-ignore
       await this.$notify.success({
         type: 'Success',
         message: `バージョンを削除しました。`,
@@ -288,11 +321,11 @@ export default {
         this.version = latestVersion.version
       }
 
-      this.baseForm = {
+      this.baseForm! = {
         name: this.detail.name,
         memo: this.detail.memo,
         accessLevel: this.detail.accessLevel,
-        assignedTenants: this.detail.assignedTenants,
+        assignedTenants: this.detail.assignedTenants, //TODO このプロパティはdetailに存在しない？
       }
       //最新バージョンを取得する
       await this.fetchDetail({
@@ -300,7 +333,7 @@ export default {
         versionId: this.versionValue,
       })
 
-      this.preprocForm = {
+      this.preprocForm! = {
         name: 'preprocForm',
         containerImage: { ...this.versionDetail.preprocessContainerImage },
         gitModel: { ...this.versionDetail.preprocessGitModel },
@@ -312,7 +345,7 @@ export default {
         },
       }
 
-      this.trainingForm = {
+      this.trainingForm! = {
         name: 'trainingForm',
         containerImage: { ...this.versionDetail.trainingContainerImage },
         gitModel: { ...this.versionDetail.trainingGitModel },
@@ -324,7 +357,7 @@ export default {
         },
       }
 
-      this.evaluationForm = {
+      this.evaluationForm! = {
         name: 'evaluationForms',
         containerImage: { ...this.versionDetail.evaluationContainerImage },
         gitModel: { ...this.versionDetail.evaluationGitModel },
@@ -338,11 +371,13 @@ export default {
       this.changeFlg = true
       this.$router
         .replace({
+          //@ts-ignore
           query: { tab: this.activeName, version: this.version },
         })
         .catch(function() {})
 
       if (this.errVersion != null) {
+        //@ts-ignore
         await this.$notify.error({
           type: 'Error',
           message:
@@ -368,9 +403,9 @@ export default {
 
     async updateBase() {
       const baseParam = {
-        name: this.baseForm.name,
-        memo: this.baseForm.memo,
-        accessLevel: this.baseForm.accessLevel,
+        name: this.baseForm!.name,
+        memo: this.baseForm!.memo,
+        accessLevel: this.baseForm!.accessLevel,
       }
       if (
         this.detail.name != baseParam.name ||
@@ -394,18 +429,22 @@ export default {
         // 必須項目の入力チェック
         if (
           // テンプレート名
-          this.baseForm.name === null ||
-          this.baseForm.name === '' ||
+          this.baseForm!.name === null ||
+          this.baseForm!.name === '' ||
           // 公開設定
-          this.baseForm.accessLevel === null
+          this.baseForm!.accessLevel === null
         ) {
           throw '必須項目が入力されていません : テンプレート名、公開設定は必須項目です。'
         }
         // 前処理、学習、評価のフォームの値を取得
+        //@ts-ignore
         submitTrainingForm = await this.$refs.training.prepareSubmit()
+        //@ts-ignore
         submitPreprocForm = await this.$refs.preprocessing.prepareSubmit()
+        //@ts-ignore
         submitEvaluationForm = await this.$refs.evaluation.prepareSubmit()
       } catch (message) {
+        //@ts-ignore
         this.$notify.error({
           message: message,
         })
@@ -540,11 +579,13 @@ export default {
 
       if (update == false) {
         if (updatedBase) {
+          //@ts-ignore
           await this.$notify.success({
             type: 'Success',
             message: `更新しました`,
           })
         } else {
+          //@ts-ignore
           await this.$notify.error({
             message: '変更点がありません',
           })
@@ -578,7 +619,7 @@ export default {
 
       //新規バージョン作成
       await this['postByIdVersions']({ id: this.id, body: params })
-
+      //@ts-ignore
       await this.$notify.success({
         type: 'Success',
         message: `更新しました`,
@@ -594,7 +635,7 @@ export default {
       await this.retrieveData()
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

@@ -75,11 +75,15 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue'
+
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('resource')
 
-export default {
+import * as gen from '@/api/api.generate'
+
+export default Vue.extend({
   computed: {
     ...mapGetters(['tenants']),
     columnWidth: function() {
@@ -94,7 +98,9 @@ export default {
     async retrieveData() {
       await this.fetchTenants()
     },
-    handleEditOpen(row) {
+    handleEditOpen(
+      row: gen.NssolPlatypusApiModelsResourceApiModelsContainerDetailsOutputModel,
+    ) {
       // tenantIdが-1のものはDBに登録されていないテナントのものであり詳細情報を取得できないため選択不可とする
       if (row && row.tenantId !== -1) {
         this.$router.push(
@@ -102,13 +108,21 @@ export default {
         )
       }
     },
-    rowClassName({ row }) {
+    rowClassName({
+      row,
+    }: {
+      row: gen.NssolPlatypusApiModelsResourceApiModelsTenantResourceOutputModel
+    }) {
       if (row.containerResourceList && row.containerResourceList.length === 0) {
         return 'row-disabled'
       }
     },
-    expandRow(refName, row) {
-      this.$refs[refName].toggleRowExpansion(row)
+    expandRow(
+      refName: string,
+      row: gen.NssolPlatypusApiModelsResourceApiModelsTenantResourceOutputModel,
+    ) {
+      //@ts-ignore
+      this.$refs[refName]!.toggleRowExpansion(row)
     },
     closeDialog() {
       this.$router.push('/cluster-resource/tenant')
@@ -119,7 +133,7 @@ export default {
       this.showSuccessMessage()
     },
   },
-}
+})
 </script>
 
 <style scoped>

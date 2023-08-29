@@ -26,13 +26,43 @@
   </div>
 </template>
 
-<script>
-import Info from './Info'
-import Inference from './Inference'
-import Debug from './Debug'
+<script lang="ts">
+import Vue from 'vue'
+
+import Info from './Info.vue'
+//@ts-ignore
+import Inference from './Inference.vue'
+import Debug from './Debug.vue'
+import * as gen from '@/api/api.generate'
+
 import { mapActions, mapGetters } from 'vuex'
-export default {
-  title: '実験詳細',
+interface DataType {
+  iconname: string
+  name: null
+  infoForm: Form | null
+  activeName: string | Array<string | null>
+}
+interface Form {
+  createdAt?: null | string
+  createdBy?: null | string
+  completedAt?: null | string
+  id?: number
+  name?: null | string
+  status?: null | string
+  dataSetId?: number
+  dataSetName?: null | string
+  dataSetVersion?: gen.NssolPlatypusApiModelsAquariumDataSetApiModelsVersionIndexOutputModel
+  templateId?: number
+  templateName?: null | string
+  templateVersion?: gen.NssolPlatypusApiModelsTemplateApiModelsVersionIndexOutputModel
+  dataSetURL?: null | string
+  templateURL?: null | string
+  preprocessId?: null | number
+  preprocessStatus?: null | string
+  trainingId?: null | number
+  trainingStatus?: null | string
+}
+export default Vue.extend({
   // components: { Info, Inference, Debug },
   components: { Info, Inference, Debug },
   props: {
@@ -41,7 +71,7 @@ export default {
       default: null,
     },
   },
-  data() {
+  data(): DataType {
     return {
       iconname: 'pl-plus',
       name: null,
@@ -50,6 +80,7 @@ export default {
     }
   },
   computed: {
+    //@ts-ignore
     ...mapGetters({
       detail: ['experiment/detail'],
     }),
@@ -134,7 +165,7 @@ export default {
       this.$router.push('/aquarium/experiment')
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

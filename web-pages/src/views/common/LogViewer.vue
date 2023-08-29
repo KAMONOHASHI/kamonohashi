@@ -26,13 +26,22 @@
   </el-dialog>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue'
+
 import { mapGetters, mapActions } from 'vuex'
 
-const listItemHeight = 17
-const displayLogCount = 50
+const listItemHeight: number = 17
+const displayLogCount: number = 50
 
-export default {
+interface DataType {
+  type: undefined | string
+  title: string
+  logList: Array<string>
+  scroll: number
+  scrollMax: number
+}
+export default Vue.extend({
   props: {
     id: {
       type: String,
@@ -44,11 +53,10 @@ export default {
       default: null,
     },
   },
-  data() {
+  data(): DataType {
     return {
       type: undefined,
       title: 'Log',
-
       logList: [],
       scroll: 0,
       scrollMax: 0,
@@ -56,17 +64,18 @@ export default {
   },
   computed: {
     ...mapGetters({
+      //@ts-ignore
       historyDetail: ['preprocessing/historyDetail'],
       logUrl: ['storage/logUrl'],
     }),
-    displayLogList: function() {
-      let startIndex = parseInt(this.scroll / listItemHeight, 10)
+    displayLogList: function(): Array<string> {
+      let startIndex = this.scroll / listItemHeight
       return this.logList.slice(
         Math.max(0, startIndex - displayLogCount),
         Math.min(this.logList.length, startIndex + displayLogCount),
       )
     },
-    listStyle: function() {
+    listStyle: function(): { [key: string]: string } {
       return {
         'padding-top':
           Math.max(0, this.scroll - listItemHeight * displayLogCount) + 'px',
@@ -100,6 +109,7 @@ export default {
         id: this.id,
         dataId: this.dataId,
       })
+      //@ts-ignore
       let key = this.historyDetail.key
       let historyId = key.split('-')[1] // "preproc-{id}" => ["preproc", "{id}"]
       fileName = `preproc_stdout_stderr_${this.id}_${this.dataId}.log`
@@ -122,6 +132,7 @@ export default {
 
     // ログをダウンロードし、logListに格納
     this.$store.dispatch('incrementLoading')
+    //@ts-ignore
     fetch(this.logUrl, {
       method: 'GET',
     })
@@ -131,7 +142,7 @@ export default {
         this.scrollMax = this.logList.length * listItemHeight
       })
       .then(() => {
-        document.getElementById('logArea').scrollTop = this.scrollMax
+        document.getElementById('logArea')!.scrollTop = this.scrollMax
         this.$store.dispatch('decrementLoading')
       })
   },
@@ -143,14 +154,14 @@ export default {
     emitReturn() {
       this.$emit('return')
     },
-    getScrollParam(e) {
+    getScrollParam(e: any) {
       if (e.target.scrollTop >= this.scrollMax) {
         e.target.scrollTop = this.scrollMax
       }
       this.scroll = e.target.scrollTop
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

@@ -36,13 +36,20 @@
   </div>
 </template>
 
-<script>
-import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
-import KqiFileViewer from '@/components/KqiFileViewer'
+<script lang="ts">
+import Vue from 'vue'
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
+import KqiFileViewer from '@/components/KqiFileViewer.vue'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('notebook')
+interface DataType {
+  dialogVisible: boolean
+  error?: Error
+  job: any //TODO 使用してない？
+  path: string
+}
 
-export default {
+export default Vue.extend({
   components: {
     KqiDisplayTextForm,
     KqiFileViewer,
@@ -54,11 +61,11 @@ export default {
     },
   },
 
-  data() {
+  data(): DataType {
     return {
       dialogVisible: true,
       error: undefined,
-      job: {},
+      job: {}, //TODO 使用してない？
       path: '/',
     }
   },
@@ -79,7 +86,7 @@ export default {
       }
       await this.fetchFileList(params)
     },
-    async updatePath(path) {
+    async updatePath(path: string) {
       this.path = path
       await this.retrieveData()
     },
@@ -91,7 +98,7 @@ export default {
       this.$emit('return')
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

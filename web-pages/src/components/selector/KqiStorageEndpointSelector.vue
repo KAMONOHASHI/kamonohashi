@@ -23,12 +23,18 @@
   </el-form-item>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue from 'vue'
+
+import { PropType } from 'vue'
+import * as gen from '@/api/api.generate'
+export default Vue.extend({
   props: {
     // 表示するstorageの一覧
     storages: {
-      type: Array,
+      type: Array as PropType<
+        Array<gen.NssolPlatypusApiModelsStorageApiModelsIndexOutputModel>
+      >,
       default: () => {
         return []
       },
@@ -40,7 +46,7 @@ export default {
     },
   },
   methods: {
-    async handleChange(storageId) {
+    async handleChange(storageId: number | string) {
       if (storageId === '') {
         this.$emit('input', null)
       } else {
@@ -48,7 +54,7 @@ export default {
       }
     },
   },
-}
+})
 </script>
 
 <style scoped>

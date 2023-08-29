@@ -51,13 +51,22 @@
   </div>
 </template>
 
-<script>
-import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
+<script lang="ts">
+import Vue from 'vue'
+
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('training')
 const kqiHost = process.env.VUE_APP_KAMONOHASHI_HOST || window.location.hostname
-
-export default {
+interface DataType {
+  statusName: string | null
+  tensorboardUrl: string | null
+  intervalId: number
+  polling: boolean
+  expiresIn: number
+  remainingTime: null | string
+}
+export default Vue.extend({
   components: {
     KqiDisplayTextForm,
   },
@@ -68,7 +77,7 @@ export default {
     },
     visible: Boolean,
   },
-  data() {
+  data(): DataType {
     return {
       statusName: null, // 現在のステータス。スクリプト中から適宜変更できるようにstatusとは切り離す。
       tensorboardUrl: null, // tensorboardへのアクセスURL
@@ -84,12 +93,12 @@ export default {
   // 準備ができたらステータスのポーリング開始
   async created() {
     // 起動時の状態を確認する
-    if (this.visible && this.id >= 0) {
+    if (this.visible && parseInt(this.id) >= 0) {
       this.checkTensorBoardStatus()
     }
     this.intervalId = setInterval(() => {
       // 可視状態かつIDがセットされている状態でのみ、ポーリング
-      if (this.visible && this.id >= 0) {
+      if (this.visible && parseInt(this.id) >= 0) {
         this.checkTensorBoardStatus()
       }
     }, 5000) // 5秒間隔
@@ -142,7 +151,7 @@ export default {
     },
     // TensorBoardを開く
     openTensorBoard() {
-      window.open(this.tensorboardUrl)
+      window.open(this.tensorboardUrl!)
     },
     // TensorBoard削除
     async deleteTensorBoard() {
@@ -151,7 +160,7 @@ export default {
       await this.deleteTensorboard(this.id)
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped></style>

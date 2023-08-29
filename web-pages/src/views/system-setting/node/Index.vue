@@ -65,17 +65,25 @@
   </div>
 </template>
 
-<script>
-import KqiPagination from '@/components/KqiPagination'
+<script lang="ts">
+import Vue from 'vue'
+
+import KqiPagination from '@/components/KqiPagination.vue'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('node')
+import * as gen from '@/api/api.generate'
+interface DataType {
+  pageStatus: {
+    currentPage: number
+    currentPageSize: number
+  }
+}
 
-export default {
-  title: 'ノード管理', //<title>設定
+export default Vue.extend({
   components: {
     KqiPagination,
   },
-  data() {
+  data(): DataType {
     return {
       pageStatus: {
         currentPage: 1,
@@ -99,22 +107,24 @@ export default {
       }
       await this.fetchNodes(params)
     },
-    getTensorBoardFlag(enabled) {
+    getTensorBoardFlag(enabled: boolean) {
       return enabled ? 'OK' : 'NG'
     },
-    getNotebookFlag(enabled) {
+    getNotebookFlag(enabled: boolean) {
       return enabled ? 'OK' : 'NG'
     },
     openCreateDialog() {
       this.$router.push('node/edit')
     },
-    openEditDialog(selectedRow) {
+    openEditDialog(
+      selectedRow: gen.NssolPlatypusApiModelsNodeApiModelsIndexOutputModel,
+    ) {
       this.$router.push('/node/edit/' + selectedRow.id)
     },
     closeDialog() {
       this.$router.push('/node')
     },
-    async done(type) {
+    async done(type: string) {
       if (type === 'delete') {
         // 削除時、表示していたページにデータが無くなっている可能性がある。
         // 総数 % ページサイズ === 1の時、残り1の状態で削除したため、currentPageが1で無ければ1つ前のページに戻す
@@ -129,7 +139,7 @@ export default {
       this.showSuccessMessage()
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

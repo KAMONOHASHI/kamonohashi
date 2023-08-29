@@ -136,19 +136,37 @@
   </div>
 </template>
 
-<script>
-import KqiPagination from '@/components/KqiPagination'
-import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index'
+<script lang="ts">
+import Vue from 'vue'
+import KqiPagination from '@/components/KqiPagination.vue'
+import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index.vue'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('inference')
+//import { DeepWriteable } from '@/@types/type'
+import * as gen from '@/api/api.generate'
 
-export default {
-  title: '推論管理',
+interface DataType {
+  pageStatus: {
+    currentPage: number
+    currentPageSize: number
+  }
+  selections: Array<
+    gen.NssolPlatypusApiModelsInferenceApiModelsInferenceIndexOutputModel
+  >
+  searchCondition: { page?: number; perPage?: number; withTotal?: boolean }
+  searchConfigs: Array<{
+    prop: string
+    name: string
+    type: string
+    option?: { items: Array<string> }
+  }>
+}
+export default Vue.extend({
   components: {
     KqiPagination,
     KqiSmartSearchInput,
   },
-  data() {
+  data(): DataType {
     return {
       pageStatus: {
         currentPage: 1,
@@ -223,7 +241,11 @@ export default {
       await this.retrieveData()
     },
 
-    handleSelectionChange(val) {
+    handleSelectionChange(
+      val: Array<
+        gen.NssolPlatypusApiModelsInferenceApiModelsInferenceIndexOutputModel
+      >,
+    ) {
       // checkboxの要素変更
       this.selections = val
     },
@@ -242,11 +264,14 @@ export default {
             try {
               await this.delete(selection.id)
               successCount++
+              //@ts-ignore
               this.error = null
             } catch (e) {
+              //@ts-ignore
               this.error = e
             }
           }
+          //@ts-ignore
           await this.$notify.info({
             type: 'info',
             message: `推論履歴を削除しました。(成功：${successCount}件、 失敗：${this
@@ -259,7 +284,7 @@ export default {
           // キャンセル時はなにもしないので例外を無視
         })
     },
-    async done(type) {
+    async done(type: string) {
       if (type === 'delete') {
         // 削除時、表示していたページにデータが無くなっている可能性がある。
         // 総数 % ページサイズ === 1の時、残り1の状態で削除したため、currentPageが1で無ければ1つ前のページに戻す
@@ -279,26 +304,28 @@ export default {
     back() {
       this.$router.go(-1)
     },
-    openEditDialog(selectedRow) {
+    openEditDialog(
+      selectedRow: gen.NssolPlatypusApiModelsInferenceApiModelsInferenceIndexOutputModel,
+    ) {
       this.$router.push('/inference/' + selectedRow.id)
     },
     openCreateDialog() {
       this.$router.push('/inference/create')
     },
-    copyCreate(originId) {
+    copyCreate(originId: number) {
       this.$router.push('/inference/create/' + originId)
     },
-    files(id) {
+    files(id: number) {
       this.$router.push('/inference/' + id + '/files')
     },
-    shell(id) {
+    shell(id: number) {
       this.$router.push('/inference/' + id + '/shell')
     },
-    log(id) {
+    log(id: number) {
       this.$router.push('/inference/' + id + '/log')
     },
   },
-}
+})
 </script>
 
 <style scoped>

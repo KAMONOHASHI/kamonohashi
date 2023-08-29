@@ -64,21 +64,23 @@ title
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue'
+
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('account')
 
-export default {
+export default Vue.extend({
   name: 'Header',
   computed: {
     ...mapGetters(['account', 'isLogined']),
   },
   methods: {
     ...mapActions(['switchTenant', 'logout']),
-    omitIfLong(str) {
+    omitIfLong(str: string) {
       return str.length <= 25 ? str : str.substr(0, 25) + '...'
     },
-    async handleSwitchTenant(tenant) {
+    async handleSwitchTenant(tenant: string) {
       if (tenant === '@setting') {
         this.$router.push('/setting')
       } else {
@@ -94,7 +96,7 @@ export default {
       this.$router.push('/login')
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>
@@ -166,6 +168,7 @@ export default {
 
 .user-label {
   color: white;
+  fill: white;
   cursor: pointer;
 
   &:hover {

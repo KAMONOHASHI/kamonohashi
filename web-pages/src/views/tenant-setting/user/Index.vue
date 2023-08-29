@@ -41,13 +41,18 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue'
+
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('user')
+import * as gen from '@/api/api.generate'
+interface DataType {
+  tenantEditDialogVisible: boolean
+}
 
-export default {
-  title: 'テナントユーザ管理',
-  data() {
+export default Vue.extend({
+  data(): DataType {
     return {
       tenantEditDialogVisible: false,
     }
@@ -62,7 +67,9 @@ export default {
   methods: {
     ...mapActions(['fetchTenantUsers']),
 
-    async openEditDialog(row) {
+    async openEditDialog(
+      row: gen.NssolPlatypusApiModelsUserApiModelsIndexForTenantOutputModel,
+    ) {
       this.$router.push('/manage/user/' + row.id)
     },
     closeDialog() {
@@ -74,7 +81,7 @@ export default {
       this.showSuccessMessage()
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

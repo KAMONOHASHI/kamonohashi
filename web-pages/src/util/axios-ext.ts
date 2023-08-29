@@ -1,0 +1,195 @@
+import store from '@/store'
+import { Loading } from 'element-ui'
+import Vue from 'vue'
+import router from '@/router'
+import Util from './util'
+
+// output logs
+export function axiosLoggerInterceptors($axios: any) {
+  $axios.interceptors.request.use(
+    function(config: any) {
+      return config
+    },
+    function(error: any) {
+      return Promise.reject(error)
+    },
+  )
+}
+
+// append JWT auth
+export function axiosAuthInterceptors($axios: any) {
+  $axios.interceptors.request.use(
+    function(config: any) {
+      let token = store.getters['account/token']
+      let cookieToken = Util.getCookie('.Platypus.Auth')
+      // ログインしているか確認
+      if (token && cookieToken) {
+        config.headers.Authorization = `Bearer ${token}`
+        // 操作タブの認証トークンをcookieに設定
+        Util.setCookie('.Platypus.Auth', token)
+      }
+      return config
+    },
+    function(error: any) {
+      return Promise.reject(error)
+    },
+  )
+}
+
+// append element ui loading
+export function axiosLoadingInterceptors($axios: any) {
+  let enableLoading = function(config: any) {
+    return !config.apiDisabledLoading
+  }
+
+  $axios.interceptors.request.use(
+    function(config: any) {
+      if (enableLoading(config)) {
+        store.dispatch('incrementLoading')
+      }
+      return config
+    },
+    (error: { config: any }) => {
+      if (enableLoading(error.config)) {
+        store.dispatch('incrementLoading')
+      }
+      return Promise.reject(error)
+    },
+  )
+  $axios.interceptors.response.use(
+    (response: { config: any }) => {
+      if (enableLoading(response.config)) {
+        store.dispatch('decrementLoading')
+      }
+      return response
+    },
+    (error: { config: any }) => {
+      if (enableLoading(error.config)) {
+        store.dispatch('decrementLoading')
+      }
+      return Promise.reject(error)
+    },
+  )
+
+  let loadingEnabled = store.state.loading
+  let loadingInstance: any = null
+  store.watch(store.getters.getLoadingCnt, v => {
+    if (loadingEnabled) {
+      if (v && !loadingInstance) {
+        loadingInstance = Loading.service({
+          fullscreen: true,
+          text: 'Loading',
+          spinner: 'el-icon-loading',
+          background: 'rgba(255, 255, 255, 0.6)',
+        })
+      }
+      //@ts-ignore
+      if (v <= 0 && loadingInstance) {
+        loadingInstance.close()
+        loadingInstance = null
+      }
+    }
+  })
+  store.watch(store.getters.getLoading, f => {
+    if (!f && loadingInstance) {
+      loadingInstance.close()
+      loadingInstance = null
+    }
+    //@ts-ignore
+    loadingEnabled = f
+  })
+}
+
+// append error handling
+export function axiosErrorHandlingInterceptors(
+  $axios: any,
+  errorCallback: any,
+) {
+  let vue = new Vue()
+  let moveErrorPage = function(status: string, message: string) {
+    let url =
+      '/error?status=' +
+      encodeURIComponent(status) +
+      '&message=' +
+      encodeURIComponent(message)
+    router.push(url)
+  }
+  let success = (response: any) => {
+    return response
+  }
+  let failure = (error: any) => {
+    let handring = true
+
+    if (errorCallback) {
+      handring = errorCallback(error)
+    }
+
+    if (typeof handring === 'boolean' && handring === false) {
+      // callback handringed
+    } else {
+      if (error.response) {
+        let status = error.response.status
+        let returnUrl = window.location.hash.slice(1)
+        let url =
+          '/login?timeout=true&return_url=' + encodeURIComponent(returnUrl)
+
+        // auth check
+        if (status === 401) {
+          store.dispatch('account/logout')
+          router.push(url)
+          vue.$notify.info({
+            title: 'ログインしてください',
+            message: '有効な認証情報がありません',
+          })
+        } else if (status >= 400 && status < 600) {
+          // common error
+          if (
+            typeof error === 'object' &&
+            'response' in error &&
+            typeof error.response === 'object' &&
+            'data' in error.response &&
+            typeof error.response.data === 'object' &&
+            'title' in error.response.data
+          ) {
+            if (!error.config.apiDisabledError) {
+              let msg = error.response.data.title
+              vue.$notify.error({
+                title: 'エラーが発生しました',
+                dangerouslyUseHTMLString: true,
+                message: msg,
+              })
+            } else {
+              if (status === 500) {
+                // internal server error
+                let msg = '再度操作をお願い致します'
+                vue.$notify.error({
+                  title: status + 'エラーが発生しました',
+                  dangerouslyUseHTMLString: true,
+                  message: msg,
+                })
+              } else if (status === 503) {
+                // service temporarily unavailable
+                let msg = '再度操作をお願い致します'
+                vue.$notify.error({
+                  title: status + 'エラーが発生しました',
+                  dangerouslyUseHTMLString: true,
+                  message: msg,
+                })
+              }
+            }
+          } else {
+            moveErrorPage(status, error.message)
+          }
+        } else {
+          moveErrorPage(status, error.message)
+        }
+      } else {
+        // can't handring error
+        moveErrorPage('None', error.message)
+      }
+
+      return Promise.reject(error)
+    }
+  }
+  $axios.interceptors.response.use(success, failure)
+}

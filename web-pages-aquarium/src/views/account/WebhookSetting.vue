@@ -40,30 +40,38 @@
   </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue from 'vue'
+import { PropType } from 'vue'
+export default Vue.extend({
   props: {
     value: {
-      type: Object,
-      default: () => ({
+      type: Object as PropType<{
+        slackUrl: string
+        mention: string
+      }>,
+      default: (): {
+        slackUrl: string
+        mention: string
+      } => ({
         slackUrl: '',
         mention: '',
       }),
     },
   },
   methods: {
-    slackUrlChange(slackUrl) {
+    slackUrlChange(slackUrl: string) {
       let form = Object.assign({}, this.value)
       form.slackUrl = slackUrl
       this.$emit('input', form)
     },
-    mentionChange(mention) {
+    mentionChange(mention: string) {
       let form = Object.assign({}, this.value)
       form.mention = mention
       this.$emit('input', form)
     },
   },
-}
+})
 </script>
 
 <style>

@@ -76,16 +76,45 @@
   </kqi-dialog>
 </template>
 
-<script>
-import KqiDialog from '@/components/KqiDialog'
-import KqiDisplayError from '@/components/KqiDisplayError'
-import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
-import KqiFileManager from '@/components/KqiFileManager'
-import KqiTagEditor from '@/components/KqiTagEditor'
+<script lang="ts">
+import Vue from 'vue'
+import KqiDialog from '@/components/KqiDialog.vue'
+import KqiDisplayError from '@/components/KqiDisplayError.vue'
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
+import KqiFileManager from '@/components/KqiFileManager.vue'
+import KqiTagEditor from '@/components/KqiTagEditor.vue'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapMutations, mapActions } = createNamespacedHelpers('data')
 
-export default {
+//import { TypedVueRef } from '@/@types/type'
+//import * as gen from '@/api/api.generate'
+
+interface DataType {
+  form: {
+    name: string | null
+    memo: string | null
+    tags: Array<string> | null
+  }
+  isEditDialog: boolean
+  viewAllFiles: boolean
+  title: string
+  dialogVisible: boolean
+  error: Error | null | unknown
+  loading: boolean
+  rules: {
+    name: Array<{
+      required: boolean
+      trigger: string
+      message: string
+    }>
+    files: Array<{
+      validator: Function //TODO
+      trigger: string
+    }>
+  }
+}
+
+export default Vue.extend({
   components: {
     KqiDialog,
     KqiDisplayError,
@@ -99,12 +128,16 @@ export default {
       default: null,
     },
   },
-  data() {
-    let validateFiles = (rule, value, callback) => {
+  data(): DataType {
+    let validateFiles = (rule: any, value: any, callback: Function) => {
       // 1データのファイルが許容範囲外ならエラーを出す。
       // ただし、既存データのファイル数が最大値を超えていても、ファイル追加以外の編集は可能にする。
+      //@ts-ignore
       let uploaded = this.uploadedFiles.length
-      let selected = this.$refs.dataFile.selectedFilesLength()
+      const refDataFile = this.$refs.dataFile as InstanceType<
+        typeof KqiFileManager
+      >
+      let selected = refDataFile.selectedFilesLength()
       let max = 10000
       if (uploaded <= 0 && selected <= 0) {
         callback(new Error('ファイルを1つ以上選択してください'))
@@ -123,11 +156,9 @@ export default {
       isEditDialog: false,
       viewAllFiles: false,
       title: '',
-      result: [],
       dialogVisible: true,
       error: null,
       loading: false,
-      files: [],
       rules: {
         name: [
           {
@@ -185,7 +216,7 @@ export default {
     },
     async submit() {
       let form = this.$refs.createForm
-
+      //@ts-ignore
       await form.validate(async valid => {
         if (valid) {
           // 独自ローディング処理のため共通側は無効
@@ -205,14 +236,19 @@ export default {
                 await this.delete(dataId)
               }
             } finally {
-              this.$notify.error({
-                title: error.message,
-                message: 'データ登録に失敗しました',
-                duration: 0,
-              })
+              if (error instanceof Error) {
+                this.$notify.error({
+                  title: error.message,
+                  message: 'データ登録に失敗しました',
+                  duration: 0,
+                })
+              }
+
               this.error = error
               // 選択したファイルを削除する
+              //@ts-ignore
               this.$refs.dataFile.$refs.uploadForm.selectedFiles = undefined
+              //@ts-ignore
               this.$refs.dataFile.$refs.uploadForm.filesArray = []
             }
           } finally {
@@ -246,8 +282,10 @@ export default {
       return result.id
     },
 
-    async uploadFile(dataId) {
-      let dataFileInfo = await this.$refs.dataFile.uploadFile()
+    async uploadFile(dataId: number) {
+      let dataFileInfo = await (this.$refs.dataFile as InstanceType<
+        typeof KqiFileManager
+      >).uploadFile()
       if (dataFileInfo !== undefined) {
         await this.putFile({ id: dataId, fileInfo: dataFileInfo })
       }
@@ -263,7 +301,7 @@ export default {
       }
     },
 
-    async deleteAttachedFile(fileId) {
+    async deleteAttachedFile(fileId: number) {
       try {
         await this.deleteFile({
           id: this.id,
@@ -280,7 +318,7 @@ export default {
       this.$router.push('/data/' + this.id + '/preprocessing')
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

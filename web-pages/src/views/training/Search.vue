@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-mutating-props -->
 <template>
   <div>
     <el-dialog
@@ -181,14 +182,22 @@
   </div>
 </template>
 
-<script>
-import MultiInput from './MultiInput'
-import KqiDisplayError from '@/components/KqiDisplayError'
+<script lang="ts">
+import Vue from 'vue'
+import { PropType } from 'vue'
+import MultiInput from './MultiInput.vue'
+import KqiDisplayError from '@/components/KqiDisplayError.vue'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('training')
+import * as gen from '@/api/api.generate'
 
-export default {
-  title: '詳細検索',
+interface DataType {
+  saveSearchFormDialogVisible: boolean
+  searchConditionName: null | string
+  error: null | Error
+}
+
+export default Vue.extend({
   components: {
     MultiInput,
     KqiDisplayError,
@@ -202,7 +211,28 @@ export default {
     },
 
     searchForm: {
-      type: Object,
+      type: Object as PropType<{
+        idLower?: string
+        idUpper?: string
+        name?: Array<string>
+        nameOr?: boolean
+        parentName?: Array<string>
+        parentNameOr?: boolean
+        startedAtLower?: string
+        startedAtUpper?: string
+        startedBy?: Array<string>
+        startedByOr?: boolean
+        dataSet?: Array<string>
+        dataSetOr?: boolean
+        memo?: Array<string>
+        memoOr?: boolean
+        status?: Array<string>
+        statusOr?: boolean
+        entryPoint?: Array<string>
+        entryPointOr?: boolean
+        tags?: Array<string>
+        tagsOr?: boolean
+      }>,
       default: () => {
         return {
           idLower: '',
@@ -229,7 +259,7 @@ export default {
       },
     },
   },
-  data() {
+  data(): DataType {
     return {
       saveSearchFormDialogVisible: false,
       searchConditionName: null,
@@ -269,37 +299,37 @@ export default {
 
     changeSearchFormListToString() {
       let form = {
-        idLower: parseInt(this.searchForm.idLower),
-        idUpper: parseInt(this.searchForm.idUpper),
-        name: this.changeListToString(this.searchForm.name),
+        idLower: parseInt(this.searchForm.idLower!),
+        idUpper: parseInt(this.searchForm.idUpper!),
+        name: this.changeListToString(this.searchForm.name!),
         nameOr: this.searchForm.nameOr,
-        parentName: this.changeListToString(this.searchForm.parentName),
+        parentName: this.changeListToString(this.searchForm.parentName!),
         parentNameOr: this.searchForm.parentNameOr,
         startedAtLower: this.searchForm.startedAtLower,
         startedAtUpper: this.searchForm.startedAtUpper,
-        startedBy: this.changeListToString(this.searchForm.startedBy),
+        startedBy: this.changeListToString(this.searchForm.startedBy!),
         startedByOr: this.searchForm.startedByOr,
-        dataSet: this.changeListToString(this.searchForm.dataSet),
+        dataSet: this.changeListToString(this.searchForm.dataSet!),
         dataSetOr: this.searchForm.dataSetOr,
-        memo: this.changeListToString(this.searchForm.memo),
+        memo: this.changeListToString(this.searchForm.memo!),
         memoOr: this.searchForm.memoOr,
-        status: this.changeListToString(this.searchForm.status),
+        status: this.changeListToString(this.searchForm.status!),
         statusOr: this.searchForm.statusOr,
-        entryPoint: this.changeListToString(this.searchForm.entryPoint),
+        entryPoint: this.changeListToString(this.searchForm.entryPoint!),
         entryPointOr: this.searchForm.entryPointOr,
-        tags: this.changeListToString(this.searchForm.tags),
+        tags: this.changeListToString(this.searchForm.tags!),
         tagsOr: this.searchForm.tagsOr,
       }
       return form
     },
 
-    changeListToString(list) {
-      if (list == null || list.length == 0) {
-        return ''
+    changeListToString(list: Array<string> | undefined) {
+      if (list == null || list == undefined || list.length == 0) {
+        return undefined
       }
       let str = ''
       for (let i in list) {
-        if (i == 0) {
+        if (Number(i) == 0) {
           str = str + list[i]
         } else {
           str = str + ',' + list[i]
@@ -315,9 +345,13 @@ export default {
         this.error = new Error('4文字以上で入力してください')
         return
       }
-      let params = {}
+      let params: {
+        name?: string
+        searchDetailInputModel?: gen.NssolPlatypusApiModelsTrainingApiModelsSearchDetailInputModel
+      } = {}
       params.name = this.searchConditionName
       params.searchDetailInputModel = this.changeSearchFormListToString()
+
       try {
         await this.postSearchHistory(params)
         this.saveSearchFormDialogVisible = false
@@ -326,11 +360,11 @@ export default {
         this.error = null
         this.showSuccessMessage()
       } catch (e) {
-        this.error = e
+        if (e instanceof Error) this.error = e
       }
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

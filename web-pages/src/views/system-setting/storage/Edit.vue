@@ -34,9 +34,11 @@
   </kqi-dialog>
 </template>
 
-<script>
-import KqiDialog from '@/components/KqiDialog'
-import KqiDisplayError from '@/components/KqiDisplayError'
+<script lang="ts">
+import Vue from 'vue'
+
+import KqiDialog from '@/components/KqiDialog.vue'
+import KqiDisplayError from '@/components/KqiDisplayError.vue'
 import { createNamespacedHelpers } from 'vuex'
 
 const { mapGetters, mapActions } = createNamespacedHelpers('storage')
@@ -46,7 +48,28 @@ const formRule = {
   message: '必須項目です',
 }
 
-export default {
+interface DataType {
+  form: {
+    name: null | string
+    serverUrl: null | string
+    accessKey: null | string
+    secretKey: null | string
+    nfsServer: null | string
+    nfsRoot: null | string
+  }
+  title: string
+  error: null | Error
+  rules: {
+    name: Array<typeof formRule>
+    serverUrl: Array<typeof formRule>
+    accessKey: Array<typeof formRule>
+    secretKey: Array<typeof formRule>
+    nfsServer: Array<typeof formRule>
+    nfsRoot: Array<typeof formRule>
+  }
+}
+
+export default Vue.extend({
   components: {
     KqiDialog,
     KqiDisplayError,
@@ -57,7 +80,7 @@ export default {
       default: null,
     },
   },
-  data() {
+  data(): DataType {
     return {
       form: {
         name: null,
@@ -96,7 +119,7 @@ export default {
         this.form.nfsServer = this.detail.nfsServer
         this.form.nfsRoot = this.detail.nfsRoot
       } catch (e) {
-        this.error = e
+        if (e instanceof Error) this.error = e
       }
     }
   },
@@ -104,6 +127,7 @@ export default {
     ...mapActions(['fetchDetail', 'delete', 'put', 'post']),
     async submit() {
       let form = this.$refs.createForm
+      //@ts-ignore
       await form.validate(async valid => {
         if (valid) {
           try {
@@ -123,7 +147,7 @@ export default {
             this.emitDone()
             this.error = null
           } catch (e) {
-            this.error = e
+            if (e instanceof Error) this.error = e
           }
         }
       })
@@ -134,7 +158,7 @@ export default {
         this.error = null
         this.emitDone()
       } catch (e) {
-        this.error = e
+        if (e instanceof Error) this.error = e
       }
     },
     emitDone() {
@@ -144,7 +168,7 @@ export default {
       this.$emit('cancel')
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped></style>

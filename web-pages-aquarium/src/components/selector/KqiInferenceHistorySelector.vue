@@ -35,17 +35,25 @@
   </el-form-item>
 </template>
 
-<script>
-import KqiTrainingHistoryDetails from '@/components/selector/KqiTrainingHistoryDetails'
+<script lang="ts">
+import Vue from 'vue'
+import { PropType } from 'vue'
 
-export default {
+import * as gen from '@/api/api.generate'
+import KqiTrainingHistoryDetails from '@/components/selector/KqiTrainingHistoryDetails.vue'
+
+export default Vue.extend({
   components: {
     KqiTrainingHistoryDetails,
   },
   props: {
     // 学習履歴一覧
     histories: {
-      type: Array,
+      type: Array as PropType<
+        Array<
+          gen.NssolPlatypusApiModelsInferenceApiModelsInferenceIndexOutputModel
+        >
+      >,
       default: () => {
         return []
       },
@@ -57,7 +65,11 @@ export default {
     },
     // 選択項目を表す配列
     value: {
-      type: Array,
+      type: Array as PropType<
+        Array<
+          gen.NssolPlatypusApiModelsInferenceApiModelsInferenceIndexOutputModel
+        >
+      >,
       default: () => {
         return []
       },
@@ -75,7 +87,14 @@ export default {
     },
   },
   methods: {
-    async onChange(inference) {
+    async onChange(
+      inference:
+        | string
+        | gen.NssolPlatypusApiModelsInferenceApiModelsInferenceIndexOutputModel
+        | Array<
+            gen.NssolPlatypusApiModelsInferenceApiModelsInferenceIndexOutputModel
+          >,
+    ) {
       if (inference === '') {
         // clearボタンが押下された場合、空配列でemit
         this.$emit('input', [])
@@ -91,7 +110,7 @@ export default {
       }
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>
