@@ -1,4 +1,4 @@
-FROM python:3.7.2-stretch AS build
+FROM python:3.8.18-bullseye AS build
 
 COPY /sdk/ /src/sdk/
 COPY /cli/ /src/cli/
@@ -13,7 +13,7 @@ RUN echo $version > /src/sdk/VERSION \
     && cd /src/cli/ \
     && python setup.py bdist_wheel --universal -d /dist
 
-FROM python:3.7.2-stretch
+FROM python:3.8.18-bullseye
 
 RUN apt-get update && apt-get install -y \
     git \
