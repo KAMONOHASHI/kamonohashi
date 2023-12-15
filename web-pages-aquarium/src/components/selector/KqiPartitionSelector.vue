@@ -19,12 +19,15 @@
   </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue from 'vue'
+import { PropType } from 'vue'
+
+export default Vue.extend({
   props: {
     // パーティション名の一覧
     partitions: {
-      type: Array,
+      type: Array as PropType<Array<string>>,
       default: () => {
         return []
       },
@@ -36,7 +39,7 @@ export default {
     },
   },
   methods: {
-    changePartition(partition) {
+    changePartition(partition: string) {
       if (partition === '') {
         this.$emit('input', null)
       } else {
@@ -44,7 +47,7 @@ export default {
       }
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped></style>

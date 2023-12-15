@@ -26,25 +26,31 @@
   </el-form-item>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue from 'vue'
+import { PropType } from 'vue'
+interface DataType {
+  inputVisible: boolean
+  inputValue: '' | number
+}
+export default Vue.extend({
   props: {
     // 開放するポート番号(number)の配列
     value: {
-      type: Array,
+      type: Array as PropType<Array<number>>,
       default: () => {
         return []
       },
     },
   },
-  data() {
+  data(): DataType {
     return {
       inputVisible: false,
       inputValue: '',
     }
   },
   methods: {
-    handleClose(port) {
+    handleClose(port: number) {
       let ports = this.value
       ports.splice(ports.indexOf(port), 1)
       this.$emit('input', ports)
@@ -54,6 +60,7 @@ export default {
       this.inputVisible = true
       // eslint-disable-next-line no-unused-vars
       this.$nextTick(_ => {
+        //@ts-ignore
         this.$refs.savePortInput.$refs.input.focus()
       })
     },
@@ -72,11 +79,11 @@ export default {
       this.inputValue = ''
     },
 
-    portValidator(port) {
+    portValidator(port: number) {
       return 0 <= port && port <= 65535
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

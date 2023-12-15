@@ -87,16 +87,26 @@
   </div>
 </template>
 
-<script>
-import KqiDisplayError from '@/components/KqiDisplayError'
+<script lang="ts">
+import Vue from 'vue'
+
+import KqiDisplayError from '@/components/KqiDisplayError.vue'
 import { mapGetters, mapActions } from 'vuex'
 
-export default {
-  title: 'メニューアクセス管理',
+import * as gen from '@/api/api.generate'
+interface DataType {
+  error: null | Error
+  tableData: Array<
+    gen.NssolPlatypusApiModelsMenuApiModelsMenuForAdminOutputModel
+  >
+  roleTypes: Array<gen.NssolPlatypusApiModelsRoleApiModelsIndexOutputModel>
+}
+
+export default Vue.extend({
   components: {
     KqiDisplayError,
   },
-  data() {
+  data(): DataType {
     return {
       error: null,
       tableData: [],
@@ -105,6 +115,7 @@ export default {
   },
   computed: {
     ...mapGetters({
+      //@ts-ignore
       menus: ['menu/menus'],
       menuTypes: ['menu/types'],
       roles: ['role/roles'],
@@ -124,12 +135,14 @@ export default {
       // ロールの取得
       await this['role/fetchRoles']()
       this.roleTypes = []
-      this.roles.forEach(role => {
-        if (!role.tenantId) {
-          // テナント固有のロールは除外
-          this.roleTypes.push(role)
-        }
-      })
+      this.roles.forEach(
+        (role: gen.NssolPlatypusApiModelsRoleApiModelsIndexOutputModel) => {
+          if (!role.tenantId) {
+            // テナント固有のロールは除外
+            this.roleTypes.push(role)
+          }
+        },
+      )
 
       // メニュー種別の取得
       await this['menu/fetchTypes']()
@@ -151,12 +164,14 @@ export default {
         this.showSuccessMessage()
         this.error = null
       } catch (e) {
-        this.error = e
+        if (e instanceof Error) this.error = e
       }
     },
 
-    displayTypeName(id) {
-      let type = this.menuTypes.find(s => s.id === id)
+    displayTypeName(id: number) {
+      let type = this.menuTypes.find(
+        (s: gen.NssolPlatypusInfrastructureInfosEnumInfo) => s.id === id,
+      )
       if (type) {
         return type.name
       } else {
@@ -168,12 +183,12 @@ export default {
     getRoleDisplayWidth() {
       let wordCount = 0
       for (let i = 0; i < this.roleTypes.length; i++) {
-        wordCount = wordCount + this.roleTypes[i].displayName.length
+        wordCount = wordCount + this.roleTypes[i].displayName!.length
       }
       return wordCount * 15
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

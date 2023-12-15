@@ -60,13 +60,71 @@
   </div>
 </template>
 
-<script>
-import DataList from './DataList'
+<script lang="ts">
+import Vue from 'vue'
+import { PropType } from 'vue'
+import DataList from './DataList.vue'
 import Util from '@/util/util'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('data')
+import * as gen from '@/api/api.generate'
+type NssolPlatypusApiModelsDataApiModelsIndexOutputModel = gen.NssolPlatypusApiModelsDataApiModelsIndexOutputModel & {
+  assign?: string | undefined
+  colorIndex?: number
+}
 
-export default {
+type ViewInfo = {
+  entryName: string
+  colorIndex: number
+  showAssign: boolean
+  visible: boolean
+  currentPage: number
+  currentPageSize: number
+  width: number
+  filter: {
+    id: string
+    name: string
+    memo: string
+    createdBy: string
+    createdAt: string
+    tag: Array<string>
+  } | null
+  dataList: Array<NssolPlatypusApiModelsDataApiModelsIndexOutputModel>
+  filteredTotal?: number
+} | null
+
+interface DataType {
+  defaultViewInfo: {
+    visible: boolean
+    currentPage: number
+    currentPageSize: number
+    width: number
+    filter: {
+      id: string
+      name: string
+      memo: string
+      createdBy: string
+      createdAt: string
+      tag: Array<string>
+    } | null
+    dataList: Array<NssolPlatypusApiModelsDataApiModelsIndexOutputModel>
+  }
+  // 表示の性能問題が出たため、子に直接データをpropで渡さずに親側で表示分を取り出して渡す
+  dataViewInfo: ViewInfo
+  // all dataのpaging情報やentry自体の表示情報。createdで初期化
+  entryViewInfo: Array<ViewInfo> // 各entry(training, testing, ...)のpaging情報やentry自体の表示情報
+
+  selectedList: Array<string> // checkListの内選択されたもの
+  checkList: Array<string> // checkListの項目名
+  moveList: { [key: string]: string } // Entry名とドロップダウンに表示する移動メッセージの連想配列
+  entryList: {
+    [key: string]: Array<NssolPlatypusApiModelsDataApiModelsIndexOutputModel>
+  } // datasetの各entryの持つ dataリストの連想配列。dataset APIから受け取ったもの
+  filteredEntryList: {
+    [key: string]: Array<NssolPlatypusApiModelsDataApiModelsIndexOutputModel>
+  } // フィルタを適用したentryList
+}
+export default Vue.extend({
   components: {
     DataList,
   },
@@ -79,7 +137,11 @@ export default {
     // }
     // Arrayの中身はdata: {id: , name: , ...}
     value: {
-      type: Object,
+      type: Object as PropType<{
+        [key: string]: Array<
+          NssolPlatypusApiModelsDataApiModelsIndexOutputModel
+        >
+      }>,
       default: () => {
         return {}
       },
@@ -93,7 +155,7 @@ export default {
       default: false,
     },
   },
-  data() {
+  data(): DataType {
     return {
       defaultViewInfo: {
         visible: true,
@@ -101,9 +163,10 @@ export default {
         currentPageSize: 100,
         width: 330,
         filter: null, // 検索条件
+        dataList: [],
       },
       // 表示の性能問題が出たため、子に直接データをpropで渡さずに親側で表示分を取り出して渡す
-      dataViewInfo: {}, // all dataのpaging情報やentry自体の表示情報。createdで初期化
+      dataViewInfo: null, // all dataのpaging情報やentry自体の表示情報。createdで初期化
       entryViewInfo: [], // 各entry(training, testing, ...)のpaging情報やentry自体の表示情報
 
       selectedList: [], // checkListの内選択されたもの
@@ -125,24 +188,26 @@ export default {
   },
   async created() {
     // all dataの初期化
+
     this.dataViewInfo = this.makeViewInfo({
       entryName: 'all　data', // 全角スペースによりエントリー名との衝突を回避
       colorIndex: 0,
       showAssign: true,
     })
+
     this.entryList = this.value
 
-    this.checkList = [this.dataViewInfo.entryName].concat(
+    this.checkList = [this.dataViewInfo!.entryName].concat(
       Object.keys(this.entryList),
     )
 
     for (let entryName in this.entryList) {
       this.moveList[entryName] = `選択を ${entryName} に移動`
     }
-    this.moveList[this.dataViewInfo.entryName] = '選択を削除'
+    this.moveList[this.dataViewInfo!.entryName] = '選択を削除'
 
     await this.initViewInfo()
-    await this.retrieveData(1, '')
+    await this.retrieveData(1, null)
 
     // 表示更新
     for (let entryName in this.entryList) {
@@ -150,13 +215,13 @@ export default {
       this.handlePaging({ entryName, page: 1 })
     }
     if (this.isFlat) {
-      this.selectedList = [this.dataViewInfo.entryName, 'selected']
+      this.selectedList = [this.dataViewInfo!.entryName, 'selected']
     } else {
       // 要素なしEntryは非表示
       let nonEmptyEntries = Object.keys(this.entryList).filter(
         x => this.entryList[x].length > 0,
       )
-      this.selectedList = [this.dataViewInfo.entryName].concat(nonEmptyEntries)
+      this.selectedList = [this.dataViewInfo!.entryName].concat(nonEmptyEntries)
     }
     this.handleViewGroupChange()
   },
@@ -164,33 +229,36 @@ export default {
     ...mapActions(['fetchData']),
 
     // データ一覧を取得し、それぞれのデータをentryに割り当てる
-    async retrieveData(page, filter, changeFilter) {
-      let params = Object.assign({}, filter)
+    async retrieveData(
+      page: number,
+      filter: {
+        [key: string]: string | number | boolean | Array<string>
+      } | null,
+    ) {
+      let params: {
+        [key: string]: string | number | boolean | Array<string>
+      } = Object.assign({}, filter)
+
       params.page = page
-      params.perPage = this.dataViewInfo.currentPageSize
+      params.perPage = this.dataViewInfo!.currentPageSize
       params.withTotal = true
-      if (changeFilter) {
-        params.page = 1
-      }
       await this.fetchData(params)
-      this.dataViewInfo.dataList = this.data
-      this.dataViewInfo.filteredTotal = this.total
-      this.dataViewInfo.currentPage = page
-      if (changeFilter) {
-        this.dataViewInfo.currentPage = 1
-      }
+      this.dataViewInfo!.dataList = this.data
+      this.dataViewInfo!.filteredTotal = this.total
+      this.dataViewInfo!.currentPage = page
       this.refreshAssign()
     },
 
     // 全データの割り当て状況をアップデートする
     refreshAssign() {
-      this.dataViewInfo.dataList.forEach(x => this.setAssign(x))
-      this.$refs.data.$forceUpdate()
+      this.dataViewInfo!.dataList.forEach(x => this.setAssign(x))
+      //@ts-ignore
+      this.$refs.data!.$forceUpdate()
       this.$forceUpdate()
     },
 
     // あるデータの割り当て状況を変更する
-    setAssign(data) {
+    setAssign(data: NssolPlatypusApiModelsDataApiModelsIndexOutputModel) {
       // 最初に初期化（見つからなかった場合に備える）
       data.assign = undefined
       data.colorIndex = 0
@@ -224,51 +292,66 @@ export default {
     },
 
     // defaultViewInfoにoptionalPropsを追加し、ViewInfoを作成する
-    makeViewInfo(optionalProps) {
+    makeViewInfo(optionalProps: {
+      entryName: string
+      colorIndex: number
+      showAssign: boolean
+    }) {
       return Object.assign(optionalProps, this.defaultViewInfo)
     },
 
     // training, testing等に対応するviewInfoを取得する
-    getViewInfo(entryName) {
-      return this.entryViewInfo.find(x => x.entryName === entryName)
+    getViewInfo(entryName: string) {
+      return this.entryViewInfo.find(x => x!.entryName === entryName)
     },
 
     // all dataのページング処理
-    handleDataViewPaging(x) {
+    handleDataViewPaging(x: {
+      entryName: string
+      page: number
+      searchCondition: {
+        [key: string]: string | number | boolean | Array<string>
+      } | null
+    }) {
       this.retrieveData(x.page, x.searchCondition)
     },
 
     // training, testingのページング処理
-    handlePaging(pagingInfo) {
+    handlePaging(pagingInfo: { entryName: string; page: number }) {
       let { entryName, page } = pagingInfo
       let viewInfo = this.getViewInfo(entryName)
       let entry = this.filteredEntryList[entryName]
-      let maxPage = Math.ceil(entry.length / viewInfo.currentPageSize)
+      let maxPage = Math.ceil(entry.length / viewInfo!.currentPageSize)
       let nextPage = Math.min(page, maxPage)
       nextPage = Math.max(nextPage, 1)
 
-      let pageStartIndex = (nextPage - 1) * viewInfo.currentPageSize // pageは1オリジン。配列は0オリジン
+      let pageStartIndex = (nextPage - 1) * viewInfo!.currentPageSize // pageは1オリジン。配列は0オリジン
       let pageEndIndex = Math.min(
-        pageStartIndex + viewInfo.currentPageSize,
+        pageStartIndex + viewInfo!.currentPageSize,
         entry.length,
       )
       let dataList = entry.slice(pageStartIndex, pageEndIndex)
-      viewInfo.currentPage = nextPage
-      viewInfo.dataList = dataList
-      viewInfo.filteredTotal = entry.length
+      viewInfo!.currentPage = nextPage
+      viewInfo!.dataList = dataList
+      viewInfo!.filteredTotal = entry.length
       this.$forceUpdate()
     },
 
     // entryにデータを追加する
-    insertData(entryName, viewInfo, addedIndex, data) {
+    insertData(
+      entryName: string,
+      viewInfo: ViewInfo,
+      addedIndex: number,
+      data: NssolPlatypusApiModelsDataApiModelsIndexOutputModel,
+    ) {
       // フィルタ上で一つ下隣になるDataからentryListに挿入するindexを割り出す
       // 挿入先indexにいる現在の要素が挿入後の下隣り。
       let neighborIndex =
-        (viewInfo.currentPage - 1) * viewInfo.currentPageSize + addedIndex
-      if (viewInfo.filteredTotal === 0) {
+        (viewInfo!.currentPage - 1) * viewInfo!.currentPageSize + addedIndex
+      if (viewInfo!.filteredTotal === 0) {
         // リストが空で隣が存在しない
         this.entryList[entryName].push(data)
-      } else if (neighborIndex <= viewInfo.filteredTotal - 1) {
+      } else if (neighborIndex <= viewInfo!.filteredTotal! - 1) {
         let neighborData = this.filteredEntryList[entryName][neighborIndex]
         let neighborOriginalIndex = this.entryList[entryName].indexOf(
           neighborData,
@@ -277,7 +360,7 @@ export default {
       } else {
         // 末尾への追加のため、下隣りが存在しない。現在の末尾要素を上隣りに挿入する
         let neighborData = this.filteredEntryList[entryName][
-          viewInfo.filteredTotal - 1
+          viewInfo!.filteredTotal! - 1
         ]
         let neighborOriginalIndex = this.entryList[entryName].indexOf(
           neighborData,
@@ -286,32 +369,46 @@ export default {
       }
     },
 
-    handleShowData(id) {
+    handleShowData(id: number) {
       this.$emit('showData', id)
     },
 
     // 'add'がemitされた際の処理
-    handleAdd({ data, addedIndex, entryName }) {
-      if (entryName !== this.dataViewInfo.entryName) {
+    handleAdd({
+      data,
+      addedIndex,
+      entryName,
+    }: {
+      data: NssolPlatypusApiModelsDataApiModelsIndexOutputModel
+      addedIndex: number
+      entryName: string
+    }) {
+      if (entryName !== this.dataViewInfo!.entryName) {
         // そのまま移すとチェックボックス等が連動してしまうのでコピーを作成
         data = Object.assign({}, data)
         let viewInfo = this.getViewInfo(entryName)
-        this.insertData(entryName, viewInfo, addedIndex, data)
-        viewInfo.currentPage =
-          addedIndex >= viewInfo.currentPageSize
-            ? viewInfo.currentPage + 1
-            : viewInfo.currentPage
-        this.handleFilter({ filter: viewInfo.filter, entryName })
+        this.insertData(entryName, viewInfo!, addedIndex, data)
+        viewInfo!.currentPage =
+          addedIndex >= viewInfo!.currentPageSize
+            ? viewInfo!.currentPage + 1
+            : viewInfo!.currentPage
+        this.handleFilter({ filter: viewInfo!.filter, entryName })
       }
       this.refreshAssign()
       this.emitInput()
     },
 
     // 'remove'がemitされた際の処理
-    handleRemove({ data, entryName }) {
+    handleRemove({
+      data,
+      entryName,
+    }: {
+      data: NssolPlatypusApiModelsDataApiModelsIndexOutputModel
+      entryName: string
+    }) {
       // データ列の場合はデータのアサインされているエントリの列から消す
       let removeEntryName =
-        entryName === this.dataViewInfo.entryName ? data.assign : entryName
+        entryName === this.dataViewInfo!.entryName ? data.assign : entryName
       // データ列かつ assign なしデータの場合、削除する列はない
       if (removeEntryName) {
         let viewInfo = this.getViewInfo(removeEntryName)
@@ -319,7 +416,7 @@ export default {
           removeEntryName
         ].filter(x => x.id !== data.id)
         this.handleFilter({
-          filter: viewInfo.filter,
+          filter: viewInfo!.filter,
           entryName: removeEntryName,
         })
         this.refreshAssign()
@@ -328,41 +425,48 @@ export default {
     },
 
     // 'filter'がemitされた際の処理
-    handleFilter(info) {
-      let { filter, entryName, changeFilter } = info
+    handleFilter(info: {
+      filter: {
+        id: string
+        name: string
+        memo: string
+        createdBy: string
+        createdAt: string
+        tag: Array<string>
+      } | null
+      entryName: string
+    }) {
+      let { filter, entryName } = info
       let viewInfo = this.getViewInfo(entryName)
-      viewInfo.filter = filter
+      viewInfo!.filter = filter
       if (filter && Object.keys(filter).length > 0) {
         // filterがnullでない＆空Objectでない場合はフィルタ
         this.filteredEntryList[entryName] = this.entryList[entryName].filter(
           x =>
-            Util.isMatchAsNumber(x.id, filter.id) &&
-            Util.isMatchAsText(x.name, filter.name) &&
-            Util.isMatchAsText(x.memo, filter.memo) &&
-            Util.isMatchAsText(x.createdBy, filter.createdBy) &&
-            Util.isMatchAsDate(x.createdAt, filter.createdAt) &&
-            Util.isMatchAsTextArrayByFilters(x.tags, filter.tag),
+            Util.isMatchAsNumber(x.id!, filter!.id) &&
+            Util.isMatchAsText(x.name!, filter!.name) &&
+            Util.isMatchAsText(x.memo!, filter!.memo) &&
+            Util.isMatchAsText(x.createdBy!, filter!.createdBy) &&
+            Util.isMatchAsDate(x.createdAt!, filter!.createdAt) &&
+            Util.isMatchAsTextArrayByFilters(x.tags!, filter!.tag),
         )
       } else {
         this.filteredEntryList[entryName] = this.entryList[entryName]
       }
-      if (changeFilter) {
-        viewInfo.currentPage = 1
-      }
-      this.handlePaging({ entryName, page: viewInfo.currentPage })
+      this.handlePaging({ entryName, page: viewInfo!.currentPage })
     },
 
     // entryの選択が変更された際の処理
     handleViewGroupChange() {
       let w = this.getListWidth()
       this.entryViewInfo.forEach(viewInfo => {
-        viewInfo.visible = this.selectedList.includes(viewInfo.entryName)
-        viewInfo.width = w
+        viewInfo!.visible = this.selectedList.includes(viewInfo!.entryName)
+        viewInfo!.width = w
       })
-      this.dataViewInfo.visible = this.selectedList.includes(
-        this.dataViewInfo.entryName,
+      this.dataViewInfo!.visible = this.selectedList.includes(
+        this.dataViewInfo!.entryName,
       )
-      this.dataViewInfo.width = w
+      this.dataViewInfo!.width = w
     },
 
     // コンポーネントの横幅の計算
@@ -371,7 +475,7 @@ export default {
       let obj = document.getElementById('list-container')
       let min = 330
       try {
-        let w = obj.getBoundingClientRect().width
+        let w = obj!.getBoundingClientRect().width
         let ret = Number(w / cnt) - 20
         return Math.max(ret, min)
       } catch (e) {
@@ -383,7 +487,7 @@ export default {
       this.$emit('input', this.entryList)
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

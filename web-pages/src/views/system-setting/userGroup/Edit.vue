@@ -47,12 +47,15 @@
   </kqi-dialog>
 </template>
 
-<script>
-import KqiDialog from '@/components/KqiDialog'
-import KqiDisplayError from '@/components/KqiDisplayError'
-import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
-import KqiRoleSelector from '@/components/selector/KqiRoleSelector'
+<script lang="ts">
+import Vue from 'vue'
+
+import KqiDialog from '@/components/KqiDialog.vue'
+import KqiDisplayError from '@/components/KqiDisplayError.vue'
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
+import KqiRoleSelector from '@/components/selector/KqiRoleSelector.vue'
 import { mapGetters, mapActions } from 'vuex'
+import * as gen from '@/api/api.generate'
 
 const formRule = {
   required: true,
@@ -60,7 +63,28 @@ const formRule = {
   message: '必須項目です',
 }
 
-export default {
+interface DataType {
+  form: {
+    name: string
+    memo: string
+    isGroup: boolean
+    dn: string
+    isDirect: boolean
+    roleIds: Array<number>
+  }
+  title: string
+  error: null | Error
+  rules: {
+    name: Array<typeof formRule>
+    memo: null | string
+    isGroup: Array<typeof formRule>
+    dn: Array<typeof formRule>
+    isDirect: Array<typeof formRule>
+    roleIds: Array<typeof formRule>
+  }
+}
+
+export default Vue.extend({
   components: {
     KqiDialog,
     KqiDisplayError,
@@ -73,7 +97,7 @@ export default {
       default: null,
     },
   },
-  data() {
+  data(): DataType {
     return {
       form: {
         name: '',
@@ -97,6 +121,7 @@ export default {
   },
   computed: {
     ...mapGetters({
+      //@ts-ignore
       detail: ['userGroup/detail'],
       tenantRoles: ['role/tenantRoles'],
     }),
@@ -113,11 +138,13 @@ export default {
         this.form.isGroup = this.detail.isGroup
         this.form.dn = this.detail.dn
         this.form.isDirect = this.detail.isDirect
-        this.detail.roles.forEach(r => {
-          this.form.roleIds.push(r.id)
-        })
+        this.detail.roles.forEach(
+          (r: gen.NssolPlatypusInfrastructureInfosRoleInfo) => {
+            this.form.roleIds.push(r.id!)
+          },
+        )
       } catch (e) {
-        this.error = e
+        if (e instanceof Error) this.error = e
       }
     }
     this['role/fetchTenantCommonRoles']()
@@ -132,6 +159,7 @@ export default {
     ]),
     async submit() {
       let form = this.$refs.createForm
+      //@ts-ignore
       await form.validate(async valid => {
         if (valid) {
           try {
@@ -151,7 +179,7 @@ export default {
             this.error = null
             this.emitDone()
           } catch (e) {
-            this.error = e
+            if (e instanceof Error) this.error = e
           }
         }
       })
@@ -162,7 +190,7 @@ export default {
         this.error = null
         this.emitDone()
       } catch (e) {
-        this.error = e
+        if (e instanceof Error) this.error = e
       }
     },
     emitDone() {
@@ -172,5 +200,5 @@ export default {
       this.$emit('cancel')
     },
   },
-}
+})
 </script>

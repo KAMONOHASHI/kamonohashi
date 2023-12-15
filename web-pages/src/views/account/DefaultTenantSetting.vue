@@ -31,26 +31,31 @@
   </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue from 'vue'
+import { PropType } from 'vue'
+import * as gen from '@/api/api.generate'
+export default Vue.extend({
   props: {
     value: {
       type: String,
       default: null,
     },
     tenants: {
-      type: Array,
+      type: Array as PropType<
+        Array<gen.NssolPlatypusInfrastructureInfosTenantInfo>
+      >,
       default: () => {
         return []
       },
     },
   },
   methods: {
-    defaultTenantChange(tenantName) {
+    defaultTenantChange(tenantName: string) {
       this.$emit('input', tenantName)
     },
   },
-}
+})
 </script>
 
 <style scoped>

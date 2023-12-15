@@ -79,26 +79,34 @@
   </el-form-item>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue from 'vue'
+import { PropType } from 'vue'
+import * as gen from '@/api/api.generate'
+
+export default Vue.extend({
   props: {
     // レジストリ一覧
     registries: {
-      type: Array,
+      type: Array as PropType<
+        Array<
+          gen.NssolPlatypusApiModelsAccountApiModelsRegistryCredentialOutputModel
+        >
+      >,
       default: () => {
         return []
       },
     },
     // イメージ一覧
     images: {
-      type: Array,
+      type: Array as PropType<Array<string>>,
       default: () => {
         return []
       },
     },
     // タグ一覧
     tags: {
-      type: Array,
+      type: Array as PropType<Array<string>>,
       default: () => {
         return []
       },
@@ -109,8 +117,25 @@ export default {
     },
     // 選択されたレジストリ、イメージ、タグをvalueで保持
     value: {
-      type: Object,
-      default: () => {
+      type: Object as PropType<{
+        registry:
+          | {
+              id: number
+              name: string
+            }
+          | null
+          | string
+        image: string
+        tag: string
+      }>,
+      default: (): {
+        registry: {
+          id: number
+          name: string
+        } | null
+        image: string | null
+        tag: string | null
+      } => {
         return {
           registry: null,
           image: null,
@@ -126,7 +151,15 @@ export default {
 
   methods: {
     // 選択しているレジストリが切り替わった時に呼ばれるイベントハンドラ。
-    changeRegistry(registry) {
+    changeRegistry(
+      registry:
+        | string
+        | {
+            id: number
+            name: string
+          }
+        | null,
+    ) {
       let containerImage = this.value
       if (registry === '') {
         // clearボタンが押下された場合
@@ -135,11 +168,12 @@ export default {
         containerImage.registry = registry
       }
       this.$emit('input', containerImage)
-      this.$emit('selectRegistry', registry === '' ? null : registry.id)
+      //@ts-ignore
+      this.$emit('selectRegistry', registry === '' ? null : registry!.id)
     },
 
     // 選択しているイメージが切り替わった時に呼ばれるイベントハンドラ。
-    changeImage(image) {
+    changeImage(image: string) {
       let containerImage = this.value
 
       if (image === '') {
@@ -153,7 +187,7 @@ export default {
     },
 
     // 選択しているタグが切り替わった時に呼ばれるイベントハンドラ。
-    changeTag(tag) {
+    changeTag(tag: string) {
       let containerImage = this.value
 
       if (tag === '') {
@@ -165,7 +199,7 @@ export default {
       this.$emit('input', containerImage)
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped></style>

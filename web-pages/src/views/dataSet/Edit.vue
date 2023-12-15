@@ -95,17 +95,53 @@
   </kqi-dialog>
 </template>
 
-<script>
-import KqiDialog from '@/components/KqiDialog'
-import KqiDisplayError from '@/components/KqiDisplayError'
-import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
-import DataSetTransfer from './DatasetTransfer/Index'
+<script lang="ts">
+import Vue from 'vue'
+import KqiDialog from '@/components/KqiDialog.vue'
+import KqiDisplayError from '@/components/KqiDisplayError.vue'
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
+import DataSetTransfer from './DatasetTransfer/Index.vue'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapMutations, mapActions } = createNamespacedHelpers(
   'dataSet',
 )
 
-export default {
+import * as gen from '@/api/api.generate'
+
+interface DataType {
+  form: {
+    name: string | null
+    memo: string | null
+    isFlat: boolean
+    entries: {
+      [key: string]: Array<
+        gen.NssolPlatypusApiModelsDataApiModelsIndexOutputModel
+      >
+    } | null
+    flatEntries: {
+      selected: Array<gen.NssolPlatypusApiModelsDataApiModelsIndexOutputModel>
+    }
+  }
+  title: string
+  isCreateDialog: boolean
+  isCopyCreation: boolean
+  isEditDialog: boolean
+  isLocked: boolean
+  dialogVisible: boolean
+  error: Error | null
+  rules: {
+    [key: string]: [
+      {
+        required: boolean
+        that?: any
+        trigger: string
+        message?: string
+        validator?: Function
+      },
+    ]
+  }
+}
+export default Vue.extend({
   components: {
     KqiDialog,
     KqiDisplayError,
@@ -119,14 +155,14 @@ export default {
       default: null,
     },
   },
-  data() {
+  data(): DataType {
     return {
       form: {
         name: '',
         memo: '',
         isFlat: false,
         entries: null,
-        flatEntries: [],
+        flatEntries: { selected: [] },
       },
       title: '',
       isCreateDialog: false,
@@ -142,13 +178,14 @@ export default {
             required: true,
             that: this,
             trigger: 'blur',
-            validator(rule, value, callback) {
+            validator(rule: any, value: any, callback: Function) {
               let exists = false
               for (let key in value) {
                 if (value[key].length > 0) {
                   exists = true
                 }
               }
+              //@ts-ignore
               if (exists || this.that.form.isFlat) {
                 callback()
               } else {
@@ -162,13 +199,14 @@ export default {
             required: true,
             trigger: 'blur',
             that: this,
-            validator(rule, value, callback) {
+            validator(rule: any, value: any, callback: Function) {
               let exists = false
               if (value.selected.length > 0) {
                 exists = true
               }
               if (exists) {
                 callback()
+                //@ts-ignore
               } else if (this.that.form.isFlat) {
                 callback(new Error('必須項目です'))
               }
@@ -205,8 +243,8 @@ export default {
     ...mapMutations(['setDataTypes']),
     async initialize() {
       let url = this.$route.path
-      let type = url.split('/')[2] // ["", "dataset", "{type}", "{id}"]
-      switch (type) {
+      let dialogType = url.split('/')[2] // ["", "dataset", "{dialogType}", "{id}"]
+      switch (dialogType) {
         case 'create':
           this.title = 'データセット作成'
           this.isCreateDialog = true
@@ -227,37 +265,37 @@ export default {
       if (this.isCreateDialog && !this.isCopyCreation) {
         try {
           await this.fetchDataTypes()
+
+          this.form.flatEntries = { selected: [] }
           this.form.entries = {}
-          this.form.flatEntries = {}
-          this.dataTypes.forEach(type => {
-            this.form.entries[type.name] = []
-            this.form.flatEntries['selected'] = []
-          })
+          this.dataTypes.forEach(
+            (
+              type: gen.NssolPlatypusApiModelsDataSetApiModelsDataTypeOutputModel,
+            ) => {
+              this.form.entries![type.name!] = []
+            },
+          )
           this.error = null
         } catch (e) {
-          this.error = e
+          if (e instanceof Error) {
+            this.error = e
+          }
         }
       }
-      this.dataViewInfo = this.makeViewInfo({
-        colorIndex: 0,
-        showAssign: true,
-      })
+
       // 編集時/コピー作成時は、既に登録されている情報を各項目を設定
       if (this.isEditDialog || this.isCopyCreation) {
         await this.retrieveData()
       }
     },
-    makeViewInfo(optionalProps) {
-      return Object.assign(optionalProps, this.defaultViewInfo)
-    },
+
     async retrieveData() {
-      this.form.entries = null
       try {
         await this.fetchDetail(this.id)
         this.form.name = this.detail.name
         this.form.memo = this.detail.memo
         this.form.isFlat = this.detail.isFlat
-        let ent = {}
+        let ent: typeof this.form.entries = {}
         let types = []
 
         for (let key in this.detail.entries) {
@@ -277,12 +315,15 @@ export default {
         this.setDataTypes(types)
         this.error = null
       } catch (e) {
-        this.error = e
+        if (e instanceof Error) {
+          this.error = e
+        }
       }
     },
 
     async submit() {
       let form = this.$refs.createForm
+      //@ts-ignore
       await form.validate(async valid => {
         if (valid) {
           try {
@@ -290,20 +331,28 @@ export default {
             this.$emit('done')
             this.error = null
           } catch (e) {
-            this.error = e
+            if (e instanceof Error) {
+              this.error = e
+            }
           }
         }
       })
     },
 
     async postDataSet() {
-      let postEntries = {}
+      let postEntries: {
+        [key: string]: Array<
+          gen.NssolPlatypusApiModelsDataSetApiModelsCreateInputModelEntry
+        >
+      } = {}
       for (let key in this.form.entries) {
         postEntries[key] = []
         this.form.entries[key].forEach(entry => {
-          postEntries[key].push({
-            id: entry.id,
-          })
+          if (entry.id != undefined) {
+            postEntries[key].push({
+              id: entry.id,
+            })
+          }
         })
       }
       let postFlatEntries = this.form.flatEntries.selected
@@ -335,15 +384,17 @@ export default {
         await this.delete(this.id)
         this.$emit('done', 'delete')
       } catch (e) {
-        this.error = e
+        if (e instanceof Error) {
+          this.error = e
+        }
       }
     },
 
-    handleShowData(id) {
+    handleShowData(id: number) {
       this.$router.push(`/data/edit/${id}`)
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

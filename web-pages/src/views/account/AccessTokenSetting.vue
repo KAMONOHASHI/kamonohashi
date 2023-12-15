@@ -39,8 +39,10 @@
   </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue from 'vue'
+
+export default Vue.extend({
   props: {
     // 期限切れまでの日数
     value: {
@@ -53,11 +55,11 @@ export default {
     },
   },
   methods: {
-    updateDay(day) {
+    updateDay(day: number) {
       this.$emit('input', day)
     },
   },
-}
+})
 </script>
 
 <style scoped>

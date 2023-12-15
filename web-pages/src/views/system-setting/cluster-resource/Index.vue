@@ -34,10 +34,16 @@
   </div>
 </template>
 
-<script>
-export default {
-  title: 'リソース利用状況',
-  data: function() {
+<script lang="ts">
+import Vue from 'vue'
+
+interface DataType {
+  mode?: string
+  dialogVisible: boolean
+}
+
+export default Vue.extend({
+  data(): DataType {
     return {
       mode: '',
       dialogVisible: false,
@@ -80,10 +86,11 @@ export default {
       }
     },
     handleReload() {
+      //@ts-ignore
       this.$router.go()
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

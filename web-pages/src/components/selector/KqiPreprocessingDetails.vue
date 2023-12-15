@@ -14,17 +14,17 @@
     />
   </div>
 </template>
-
-<script>
-import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
-
-export default {
+<script lang="ts">
+import Vue from 'vue'
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
+import { PropType } from 'vue'
+export default Vue.extend({
   components: {
     KqiDisplayTextForm,
   },
   props: {
     preprocessing: {
-      type: Object,
+      type: Object as PropType<{ id: number; name: string; memo: string }>,
       default: () => ({
         id: 0,
         name: '',
@@ -32,7 +32,7 @@ export default {
       }),
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped></style>

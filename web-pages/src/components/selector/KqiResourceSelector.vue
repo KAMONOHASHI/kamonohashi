@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-mutating-props -->
 <template>
   <div>
     <el-row type="flex">
@@ -67,32 +68,57 @@
   </div>
 </template>
 
-<script>
-import KqiAllocatableNodeInfo from '@/components/KqiAllocatableNodeInfo'
-import { createNamespacedHelpers } from 'vuex'
-const { mapGetters, mapActions } = createNamespacedHelpers('cluster')
+<script lang="ts">
+import Vue from 'vue'
 
-export default {
+import KqiAllocatableNodeInfo from '@/components/KqiAllocatableNodeInfo.vue'
+import { createNamespacedHelpers } from 'vuex'
+import * as gen from '@/api/api.generate'
+import { PropType } from 'vue'
+const { mapGetters, mapActions } = createNamespacedHelpers('cluster')
+interface DataType {
+  // デフォルトの最大値
+  defaultMax: {
+    cpu: number
+    memory: number
+    gpu: number
+  }
+  // 各リソース値の最大ノード情報
+  maxCpuNode: null | gen.NssolPlatypusApiModelsClusterApiModelsNodeResourceOutputModel
+  maxMemoryNode: null | gen.NssolPlatypusApiModelsClusterApiModelsNodeResourceOutputModel
+  maxGpuNode: null | gen.NssolPlatypusApiModelsClusterApiModelsNodeResourceOutputModel
+  // エラーメッセージ
+  errors: Array<Error | null | string> | null
+  // 元々の要求値から変更があった項目リスト
+  originChangedList: Array<string>
+  // 要求リソースの最大値
+  maxResource: {
+    cpu: number
+    memory: number
+    gpu: number
+  }
+}
+export default Vue.extend({
   components: {
     KqiAllocatableNodeInfo,
   },
   props: {
     // cpu, memory, gpuのリソース量
     value: {
-      type: Object,
-      default: () => {
+      type: Object as PropType<{ cpu: number; memory: number; gpu: number }>,
+      default: (): { cpu: number; memory: number; gpu: number } => {
         return { cpu: 1, memory: 1, gpu: 0 }
       },
     },
     // 接続中テナントのクォータ情報
     quota: {
-      type: Object,
+      type: Object as PropType<{ cpu: number; memory: number; gpu: number }>,
       default: () => {
         return { cpu: 0, memory: 0, gpu: 0 }
       },
     },
   },
-  data() {
+  data(): DataType {
     return {
       // デフォルトの最大値
       defaultMax: {
@@ -119,7 +145,7 @@ export default {
   computed: {
     ...mapGetters(['nodes']),
     // 警告メッセージ
-    warnMessage() {
+    warnMessage(): null | string {
       if (this.originChangedList.length > 0) {
         return (
           '元々の要求リソースから' +
@@ -132,23 +158,33 @@ export default {
   },
   async created() {
     await this.getAllocatableNodes()
-
+    //@ts-ignore
     if (this.nodes && this.nodes.length > 0) {
       // 1つ目の要素をもとに最大値を求める。
+      //@ts-ignore
       this.maxCpuNode = this.nodes[0]
+      //@ts-ignore
       this.maxMemoryNode = this.nodes[0]
+      //@ts-ignore
       this.maxGpuNode = this.nodes[0]
-      this.nodes.forEach(node => {
-        if (node.allocatableCpu > this.maxCpuNode.allocatableCpu) {
-          this.maxCpuNode = node
-        }
-        if (node.allocatableMemory > this.maxMemoryNode.allocatableMemory) {
-          this.maxMemoryNode = node
-        }
-        if (node.allocatableGpu > this.maxGpuNode.allocatableGpu) {
-          this.maxGpuNode = node
-        }
-      })
+      //@ts-ignore
+      this.nodes.forEach(
+        (
+          node: gen.NssolPlatypusApiModelsClusterApiModelsNodeResourceOutputModel | null,
+        ) => {
+          if (node!.allocatableCpu! > this.maxCpuNode!.allocatableCpu!) {
+            this.maxCpuNode = node
+          }
+          if (
+            node!.allocatableMemory! > this.maxMemoryNode!.allocatableMemory!
+          ) {
+            this.maxMemoryNode = node
+          }
+          if (node!.allocatableGpu! > this.maxGpuNode!.allocatableGpu!) {
+            this.maxGpuNode = node
+          }
+        },
+      )
     }
     this.resourceValidator()
   },
@@ -164,6 +200,7 @@ export default {
       this.errors = []
 
       // 利用可能なノードがあるか確認
+      //@ts-ignore
       if (!this.nodes || this.nodes.length < 1) {
         this.errors.push('利用可能なノードがありません。')
         this.errors.push('システム管理者に確認してください。')
@@ -172,19 +209,19 @@ export default {
         let message = []
         // CPUの設定値をもとにチェックする。
         if (this.maxCpuNode) {
-          if (this.maxCpuNode.allocatableCpu < this.value.cpu) {
+          if (this.maxCpuNode.allocatableCpu! < this.value.cpu) {
             message.push('CPU')
           }
         }
         // メモリの設定値をもとにチェックする。
         if (this.maxMemoryNode) {
-          if (this.maxMemoryNode.allocatableMemory < this.value.memory) {
+          if (this.maxMemoryNode.allocatableMemory! < this.value.memory) {
             message.push('メモリ')
           }
         }
         // GPUの設定値をもとにチェックする。
         if (this.maxGpuNode) {
-          if (this.maxGpuNode.allocatableGpu < this.value.gpu) {
+          if (this.maxGpuNode.allocatableGpu! < this.value.gpu) {
             message.push('GPU')
           }
         }
@@ -199,11 +236,20 @@ export default {
         }
 
         // 各リソースの組み合わせに対して、条件を満たすノードが1つ以上存在するか判定する
+        //@ts-ignore
         var allocatableNodes = this.nodes.filter(
-          n =>
-            n.allocatableCpu >= this.value.cpu &&
-            n.allocatableMemory >= this.value.memory &&
-            n.allocatableGpu >= this.value.gpu,
+          (n: {
+            name?: string | null
+            memo?: string | null
+            partition?: string | null
+            accessLevel?: gen.NssolPlatypusInfrastructureNodeAccessLevel
+            allocatableCpu?: number
+            allocatableMemory?: number
+            allocatableGpu?: number
+          }) =>
+            n.allocatableCpu! >= this.value.cpu &&
+            n.allocatableMemory! >= this.value.memory &&
+            n.allocatableGpu! >= this.value.gpu,
         )
         if (allocatableNodes.length == 0) {
           this.errors.push('要求分のリソースで実行可能なノードがありません。')
@@ -253,7 +299,7 @@ export default {
       return this.maxResource.gpu
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

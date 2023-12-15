@@ -47,20 +47,34 @@
   </el-form-item>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue from 'vue'
+import { PropType } from 'vue'
+import * as gen from '@/api/api.generate'
+
+export default Vue.extend({
   props: {
     // 表示するレジストリの一覧
     registries: {
-      type: Array,
+      type: Array as PropType<
+        Array<
+          gen.NssolPlatypusApiModelsAccountApiModelsRegistryCredentialOutputModel
+        >
+      >,
       default: () => {
         return []
       },
     },
     // 選択されたレジストリIDの配列とその中から選んだデフォルトのID
     value: {
-      type: Object,
-      default: () => {
+      type: Object as PropType<{
+        selectedIds: Array<number>
+        defaultId: number | null
+      }>,
+      default: (): {
+        selectedIds: Array<number>
+        defaultId: number | null
+      } => {
         return {
           selectedIds: [], // 選択中のregistry idの配列
           defaultId: 0, // selectedIdsの中からデフォルトとして設定したregistry id
@@ -71,7 +85,7 @@ export default {
   computed: {
     availableRegistries: function() {
       // selectedIdsとendpointsを突き合わせて該当するものを抜き出し、表示に用いる配列を作成する。
-      let registryList = []
+      let registryList: Array<gen.NssolPlatypusApiModelsAccountApiModelsRegistryCredentialOutputModel> = []
       this.registries.forEach(registry => {
         if (this.value.selectedIds.some(id => id === registry.id)) {
           registryList.push(registry)
@@ -81,7 +95,7 @@ export default {
     },
   },
   methods: {
-    async handleChange(selectedIds) {
+    async handleChange(selectedIds: Array<number>) {
       let updateValue = this.value
       updateValue.selectedIds = selectedIds
       // selectedIdsに含まれないものがdefaultIdに指定されていた場合はdefaultIdをリセット
@@ -90,7 +104,7 @@ export default {
       }
       this.$emit('input', updateValue)
     },
-    async handleChangeDefaultId(defaultId) {
+    async handleChangeDefaultId(defaultId: number | null | '') {
       let updateValue = this.value
       if (defaultId === '') {
         updateValue.defaultId = null
@@ -100,7 +114,7 @@ export default {
       this.$emit('input', updateValue)
     },
   },
-}
+})
 </script>
 
 <style scoped>

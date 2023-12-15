@@ -428,22 +428,86 @@
   </el-dialog>
 </template>
 
-<script>
-import KqiDisplayError from '@/components/KqiDisplayError'
-import KqiDataSetSelector from '@/components/selector/KqiDataSetSelector'
-import KqiTrainingHistorySelector from '@/components/selector/KqiTrainingHistorySelector'
-import KqiInferenceHistorySelector from '@/components/selector/KqiInferenceHistorySelector'
-import KqiContainerSelector from '@/components/selector/KqiContainerSelector'
-import KqiGitSelector from '@/components/selector/KqiGitSelector'
-import KqiResourceSelector from '@/components/selector/KqiResourceSelector'
-import KqiPathInfo from '@/components/KqiPathInfo'
-import KqiEnvironmentVariables from '@/components/KqiEnvironmentVariables'
-import KqiPartitionSelector from '@/components/selector/KqiPartitionSelector'
+<script lang="ts">
+import Vue from 'vue'
+import KqiDisplayError from '@/components/KqiDisplayError.vue'
+import KqiDataSetSelector from '@/components/selector/KqiDataSetSelector.vue'
+import KqiTrainingHistorySelector from '@/components/selector/KqiTrainingHistorySelector.vue'
+import KqiInferenceHistorySelector from '@/components/selector/KqiInferenceHistorySelector.vue'
+import KqiContainerSelector from '@/components/selector/KqiContainerSelector.vue'
+import KqiGitSelector from '@/components/selector/KqiGitSelector.vue'
+import KqiResourceSelector from '@/components/selector/KqiResourceSelector.vue'
+import KqiPathInfo from '@/components/KqiPathInfo.vue'
+import KqiEnvironmentVariables from '@/components/KqiEnvironmentVariables.vue'
+import KqiPartitionSelector from '@/components/selector/KqiPartitionSelector.vue'
 import registrySelectorUtil from '@/util/registrySelectorUtil'
 import gitSelectorUtil from '@/util/gitSelectorUtil'
 import { mapActions, mapGetters } from 'vuex'
 
-export default {
+import * as gen from '@/api/api.generate'
+interface DataType {
+  commitsList: Array<gen.NssolPlatypusServiceModelsGitCommitModel>
+  commitsPage: number
+  form: {
+    name: null | string
+    dataSetId: null | number | string
+    selectedParent: Array<
+      gen.NssolPlatypusApiModelsTrainingApiModelsIndexOutputModel
+    >
+    selectedParentInference: Array<
+      gen.NssolPlatypusApiModelsInferenceApiModelsInferenceIndexOutputModel
+    >
+    containerImage: {
+      registry: null | {
+        id: number
+        name: string
+      }
+      image: null | string
+      tag: null | string
+    }
+    gitModel: {
+      git: null | {
+        id: number | null
+        name: string
+      }
+      repository: { name: string; owner: string } | string | null
+      branch: { branchName: string } | string | null
+      commit: gen.NssolPlatypusServiceModelsGitCommitModel | null
+    }
+    jupyterLabVersion?: string | null
+    resource: {
+      cpu: number
+      memory: number
+      gpu: number
+    }
+    expiresIn: number
+    localDataSet: boolean
+    withExpiresInSetting: boolean
+    variables: Array<{ key: string; value: string }>
+    partition: null | string
+    memo: null | string
+    zip?: boolean
+    entryPoint: string
+  }
+  rules: {
+    name: Array<{
+      required: boolean
+      trigger: string
+      message: string
+    }>
+  }
+  dialogVisible: boolean
+  error?: null | Error
+  active: number
+  isCopyCreation: boolean
+  isReRunCreation: boolean
+  jupyterLabInfo: {
+    description: string
+    defaultVersion: string
+  }
+}
+
+export default Vue.extend({
   components: {
     KqiDisplayError,
     KqiDataSetSelector,
@@ -462,7 +526,7 @@ export default {
       default: null,
     },
   },
-  data() {
+  data(): DataType {
     return {
       commitsList: [],
       commitsPage: 1,
@@ -519,6 +583,7 @@ export default {
   },
   computed: {
     ...mapGetters({
+      //@ts-ignore
       trainingHistories: ['training/historiesToMount'],
       inferenceHistories: ['inference/historiesToMount'],
       dataSets: ['dataSet/dataSets'],
@@ -564,16 +629,24 @@ export default {
 
     // レジストリ一覧を取得し、デフォルトレジストリを設定
     await this['registrySelector/fetchRegistries']()
-    this.form.containerImage.registry = this.registries.find(registry => {
-      return registry.id === this.defaultRegistryId
-    })
+    this.form.containerImage.registry = this.registries.find(
+      (
+        registry: gen.NssolPlatypusApiModelsAccountApiModelsRegistryCredentialOutputModel,
+      ) => {
+        return registry.id === this.defaultRegistryId
+      },
+    )
     await this.selectRegistry(this.defaultRegistryId)
 
     // gitサーバ一覧を取得し、デフォルトgitサーバを設定
     await this['gitSelector/fetchGits']()
-    this.form.gitModel.git = this.gits.find(git => {
-      return git.id === this.defaultGitId
-    })
+    this.form.gitModel.git = this.gits.find(
+      (
+        git: gen.NssolPlatypusApiModelsAccountApiModelsGitCredentialOutputModel,
+      ) => {
+        return git.id === this.defaultGitId
+      },
+    )
     await this['gitSelector/fetchRepositories'](this.defaultGitId)
 
     await this['notebook/fetchAvailableInfiniteTime']()
@@ -610,24 +683,40 @@ export default {
 
       this.form.selectedParent = []
       if (this.detail.parents) {
-        this.trainingHistories.forEach(history => {
-          this.detail.parents.forEach(parent => {
-            if (history.id === parent.id) {
-              this.form.selectedParent.push(parent)
-            }
-          })
-        })
+        this.trainingHistories.forEach(
+          (
+            history: gen.NssolPlatypusApiModelsTrainingApiModelsIndexOutputModel,
+          ) => {
+            this.detail.parents.forEach(
+              (
+                parent: gen.NssolPlatypusApiModelsTrainingApiModelsIndexOutputModel,
+              ) => {
+                if (history.id === parent.id) {
+                  this.form.selectedParent.push(parent)
+                }
+              },
+            )
+          },
+        )
       }
 
       this.form.selectedParentInference = []
       if (this.detail.inferences) {
-        this.inferenceHistories.forEach(history => {
-          this.detail.inferences.forEach(parent => {
-            if (history.id === parent.id) {
-              this.form.selectedParentInference.push(parent)
-            }
-          })
-        })
+        this.inferenceHistories.forEach(
+          (
+            history: gen.NssolPlatypusApiModelsInferenceApiModelsInferenceIndexOutputModel,
+          ) => {
+            this.detail.inferences.forEach(
+              (
+                parent: gen.NssolPlatypusApiModelsInferenceApiModelsInferenceIndexOutputModel,
+              ) => {
+                if (history.id === parent.id) {
+                  this.form.selectedParentInference.push(parent)
+                }
+              },
+            )
+          },
+        )
       }
 
       if (this.detail.dataSet) {
@@ -659,9 +748,11 @@ export default {
         this.form.gitModel.branch = this.detail.gitModel.branch
         await this.selectBranch(this.detail.gitModel.branch)
         // commitsから該当commitを抽出
-        let commit = this.commits.find(commit => {
-          return commit.commitId === this.detail.gitModel.commitId
-        })
+        let commit = this.commits.find(
+          (commit: gen.NssolPlatypusServiceModelsGitCommitModel) => {
+            return commit.commitId === this.detail.gitModel.commitId
+          },
+        )
         if (commit) {
           this.form.gitModel.commit = commit
         } else {
@@ -710,11 +801,11 @@ export default {
             this.form.expiresIn = 0
           }
           // training history ObjectのリストからIDのみを抜き出して格納
-          let selectedParentIds = []
+          let selectedParentIds: Array<number | undefined> = []
           this.form.selectedParent.forEach(parent => {
             selectedParentIds.push(parent.id)
           })
-          let selectedParentInferenceIds = []
+          let selectedParentInferenceIds: Array<number | undefined> = []
           this.form.selectedParentInference.forEach(inference => {
             selectedParentInferenceIds.push(inference.id)
           })
@@ -741,7 +832,7 @@ export default {
           this.emitDone()
           this.error = null
         } catch (e) {
-          this.error = e
+          if (e instanceof Error) this.error = e
         }
       } else {
         // 実行
@@ -749,10 +840,11 @@ export default {
         if (this.active !== 0) {
           form = this.$refs.form3
         }
+        //@ts-ignore
         await form.validate(async valid => {
           if (valid) {
             try {
-              let options = {}
+              let options: { [key: string]: string } = {}
               // apiのフォーマットに合わせる(配列 => オブジェクト)
               this.form.variables.forEach(kvp => {
                 options[kvp.key] = kvp.value
@@ -761,11 +853,11 @@ export default {
                 this.form.expiresIn = 0
               }
               // training history ObjectのリストからIDのみを抜き出して格納
-              let selectedParentIds = []
+              let selectedParentIds: Array<number | undefined> = []
               this.form.selectedParent.forEach(parent => {
                 selectedParentIds.push(parent.id)
               })
-              let selectedParentInferenceIds = []
+              let selectedParentInferenceIds: Array<number | undefined> = []
               this.form.selectedParentInference.forEach(inference => {
                 selectedParentInferenceIds.push(inference.id)
               })
@@ -791,7 +883,7 @@ export default {
               this.emitDone()
               this.error = null
             } catch (e) {
-              this.error = e
+              if (e instanceof Error) this.error = e
             }
           }
         })
@@ -805,7 +897,7 @@ export default {
     emitCancel() {
       this.$emit('cancel')
     },
-    closeDialog(done) {
+    closeDialog(done: Function) {
       done()
       this.emitCancel()
     },
@@ -822,6 +914,7 @@ export default {
           form = this.$refs.form2
           break
       }
+      //@ts-ignore
       await form.validate(async valid => {
         if (valid) {
           this.active++
@@ -835,24 +928,24 @@ export default {
     },
 
     // コンテナイメージ
-    async selectRegistry(registryId) {
+    async selectRegistry(registryId: number) {
       await registrySelectorUtil.selectRegistry(
         this.form,
         this['registrySelector/fetchImages'],
         registryId,
       )
     },
-    async selectImage(image) {
+    async selectImage(image: string) {
       await registrySelectorUtil.selectImage(
         this.form,
         this['registrySelector/fetchTags'],
-        this.form.containerImage.registry.id,
+        this.form.containerImage.registry!.id,
         image,
       )
     },
 
     // モデル
-    async selectGit(gitId) {
+    async selectGit(gitId: number) {
       await gitSelectorUtil.selectGit(
         this.form,
         this['gitSelector/fetchRepositories'],
@@ -861,7 +954,12 @@ export default {
       )
     },
     // repositoryの型がstring：手入力, object: 選択
-    async selectRepository(repository) {
+    async selectRepository(
+      repository:
+        | { name: string; owner: string; fulName?: string }
+        | string
+        | null,
+    ) {
       try {
         await gitSelectorUtil.selectRepository(
           this.form,
@@ -869,12 +967,13 @@ export default {
           repository,
         )
       } catch (message) {
+        //@ts-ignore
         this.$notify.error({
           message: message,
         })
       }
     },
-    async selectBranch(branchName) {
+    async selectBranch(branchName: string) {
       this.commitsPage = 1
       // 過去の選択状態をリセット
       this.form.gitModel.commit = null
@@ -887,9 +986,9 @@ export default {
       this.commitsList = [...this.commits]
     },
 
-    async searchCommitId(commitId) {
+    async searchCommitId(commitId: string) {
       await this['gitSelector/fetchCommitDetail']({
-        gitId: this.form.gitModel.git.id,
+        gitId: this.form.gitModel.git!.id,
         repository: this.form.gitModel.repository,
         commitId: commitId,
       })
@@ -901,14 +1000,14 @@ export default {
     async getMoreCommits() {
       this.commitsPage++
       // コピー実行または再実行時、パラメータに格納する際の形を統一するため整形を行う
-      if (typeof this.form.gitModel.branch.branchName === 'undefined') {
+      if (typeof this.form.gitModel.branch === 'string') {
         let branch = { branchName: this.form.gitModel.branch }
         this.form.gitModel.branch = branch
       }
       await gitSelectorUtil.selectBranch(
         this.form,
         this['gitSelector/fetchCommits'],
-        this.form.gitModel.branch.branchName,
+        this.form.gitModel.branch!.branchName,
         this.commitsPage,
       )
       this.commitsList = this.commitsList.concat(this.commits)
@@ -924,7 +1023,7 @@ export default {
         this.form.containerImage.tag !== null
       ) {
         containerImage = {
-          registryId: this.form.containerImage.registry.id,
+          registryId: this.form.containerImage.registry!.id,
           image: this.form.containerImage.image,
           tag: this.form.containerImage.tag,
         }
@@ -948,12 +1047,15 @@ export default {
         }
         // コピー時ブランチを切り替えずに実行
         // パラメータに格納する際の形を統一するため整形を行う
-        if (typeof this.form.gitModel.branch.branchName === 'undefined') {
+        if (typeof this.form.gitModel.branch === 'string') {
           let branch = { branchName: this.form.gitModel.branch }
           this.form.gitModel.branch = branch
         }
+        if (typeof this.form.gitModel.repository == 'string') {
+          return
+        }
         gitModel = {
-          gitId: this.form.gitModel.git.id,
+          gitId: this.form.gitModel.git!.id,
           repository: this.form.gitModel.repository.name,
           owner: this.form.gitModel.repository.owner,
           branch: this.form.gitModel.branch
@@ -965,7 +1067,7 @@ export default {
       return gitModel
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

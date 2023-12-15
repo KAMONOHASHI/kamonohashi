@@ -109,20 +109,36 @@
   </div>
 </template>
 
-<script>
-import KqiPagination from '@/components/KqiPagination'
-import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index'
+<script lang="ts">
+import Vue from 'vue'
+import * as gen from '@/api/api.generate'
+import KqiPagination from '@/components/KqiPagination.vue'
+import KqiSmartSearchInput from '@/components/KqiSmartSearchInput/Index.vue'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('notebook')
 const kqiHost = process.env.VUE_APP_KAMONOHASHI_HOST || window.location.hostname
-
-export default {
-  title: 'ノートブック管理',
+interface DataType {
+  pageStatus: {
+    currentPage: number
+    currentPageSize: number
+  }
+  searchCondition: { page?: number; perPage?: number; withTotal?: boolean }
+  searchConfigs: Array<{
+    prop: string
+    name: string
+    type: string
+    option?: {
+      items: Array<string>
+    }
+  }>
+  statuses: Array<string>
+}
+export default Vue.extend({
   components: {
     KqiPagination,
     KqiSmartSearchInput,
   },
-  data() {
+  data(): DataType {
     return {
       pageStatus: {
         currentPage: 1,
@@ -177,7 +193,7 @@ export default {
       params.withTotal = true
       await this.fetchHistories(params)
     },
-    async done(type) {
+    async done(type: string) {
       if (type === 'delete') {
         // 削除時、表示していたページにデータが無くなっている可能性がある。
         // 総数 % ページサイズ === 1の時、残り1の状態で削除したため、currentPageが1で無ければ1つ前のページに戻す
@@ -197,7 +213,9 @@ export default {
     back() {
       this.$router.go(-1)
     },
-    openEditDialog(selectedRow) {
+    openEditDialog(
+      selectedRow: gen.NssolPlatypusApiModelsNotebookApiModelsIndexOutputModel,
+    ) {
       if (this.$route.path === '/notebook') {
         this.$router.push('/notebook/' + selectedRow.id)
       }
@@ -205,7 +223,9 @@ export default {
     openCreateDialog() {
       this.$router.push('/notebook/run/')
     },
-    async openNotebook(selectedRow) {
+    async openNotebook(
+      selectedRow: gen.NssolPlatypusApiModelsNotebookApiModelsIndexOutputModel,
+    ) {
       await this.fetchEndpoint(selectedRow.id)
       window.open(
         `http://${kqiHost}:${this.endpoint.nodePort}${this.endpoint.token}`,
@@ -215,23 +235,25 @@ export default {
       this.pageStatus.currentPage = 1
       await this.retrieveData()
     },
-    files(id) {
+    files(id: number) {
       this.$router.push('/notebook/' + id + '/files')
     },
-    shell(id) {
+    shell(id: number) {
       this.$router.push('/notebook/' + id + '/shell')
     },
-    log(id) {
+    log(id: number) {
       this.$router.push('/notebook/' + id + '/log')
     },
-    openRerunDialog(selectedRow) {
+    openRerunDialog(
+      selectedRow: gen.NssolPlatypusApiModelsNotebookApiModelsIndexOutputModel,
+    ) {
       this.$router.push('/notebook/run/' + selectedRow.id)
     },
-    copyCreateDialog(originId) {
+    copyCreateDialog(originId: number) {
       this.$router.push('/notebook/run/' + originId + '?run=copy')
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped>

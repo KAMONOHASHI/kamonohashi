@@ -31,11 +31,15 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue'
+
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapActions } = createNamespacedHelpers('resource')
 
-export default {
+import * as gen from '@/api/api.generate'
+
+export default Vue.extend({
   computed: {
     ...mapGetters(['tenantContainerLists']),
   },
@@ -44,7 +48,9 @@ export default {
   },
   methods: {
     ...mapActions(['fetchTenantContainerLists']),
-    handleEditOpen(row) {
+    handleEditOpen(
+      row: gen.NssolPlatypusApiModelsResourceApiModelsContainerDetailsForTenantOutputModel,
+    ) {
       if (row) {
         this.$router.push(
           '/manage/resource/container-list/' + row.nodeName + '/' + row.name,
@@ -60,7 +66,7 @@ export default {
       this.showSuccessMessage()
     },
   },
-}
+})
 </script>
 
 <style lang="scss" scoped></style>

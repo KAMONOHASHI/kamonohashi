@@ -100,19 +100,41 @@
   </el-form>
 </template>
 
-<script>
-import KqiDisplayTextForm from '@/components/KqiDisplayTextForm'
-import KqiDeleteButton from '@/components/KqiDeleteButton'
+<script lang="ts">
+import Vue from 'vue'
+import KqiDisplayTextForm from '@/components/KqiDisplayTextForm.vue'
+import KqiDeleteButton from '@/components/KqiDeleteButton.vue'
+import { PropType } from 'vue'
 
-export default {
+export default Vue.extend({
   components: {
     KqiDisplayTextForm,
     KqiDeleteButton,
   },
   props: {
     detail: {
-      type: Object,
-      default: () => {
+      type: Object as PropType<{
+        name: string
+        cpu: number
+        memory: number
+        gpu: number
+        nodeName: string
+        displayName: string
+        createdBy: string
+        status: string
+        conditionNote: string
+      }>,
+      default: (): {
+        name: string
+        cpu: number
+        memory: number
+        gpu: number
+        nodeName: string
+        displayName: string
+        createdBy: string
+        status: string
+        conditionNote: string
+      } => {
         return {
           name: '',
           cpu: 0,
@@ -141,7 +163,7 @@ export default {
       default: false,
     },
   },
-}
+})
 </script>
 
 <style scoped>
